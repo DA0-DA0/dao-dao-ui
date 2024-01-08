@@ -26,7 +26,7 @@ export interface GenericAuthorizationProtoMsg {
  */
 export interface GenericAuthorizationAmino {
   /** Msg, identified by it's type URL, to grant unrestricted permissions to execute */
-  msg: string;
+  msg?: string;
 }
 export interface GenericAuthorizationAminoMsg {
   type: "cosmos-sdk/GenericAuthorization";
@@ -107,8 +107,8 @@ export type GrantAuthorizationEncoded = Omit<GrantAuthorization, "authorization"
  * It is used in genesis.proto and query.proto
  */
 export interface GrantAuthorizationAmino {
-  granter: string;
-  grantee: string;
+  granter?: string;
+  grantee?: string;
   authorization?: AnyAmino | undefined;
   expiration?: string | undefined;
 }
@@ -138,7 +138,7 @@ export interface GrantQueueItemProtoMsg {
 /** GrantQueueItem contains the list of TypeURL of a sdk.Msg. */
 export interface GrantQueueItemAmino {
   /** msg_type_urls contains the list of TypeURL of a sdk.Msg. */
-  msg_type_urls: string[];
+  msg_type_urls?: string[];
 }
 export interface GrantQueueItemAminoMsg {
   type: "cosmos-sdk/GrantQueueItem";
@@ -185,9 +185,11 @@ export const GenericAuthorization = {
     return message;
   },
   fromAmino(object: GenericAuthorizationAmino): GenericAuthorization {
-    return {
-      msg: object.msg
-    };
+    const message = createBaseGenericAuthorization();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = object.msg;
+    }
+    return message;
   },
   toAmino(message: GenericAuthorization, useInterfaces: boolean = false): GenericAuthorizationAmino {
     const obj: any = {};
@@ -260,10 +262,14 @@ export const Grant = {
     return message;
   },
   fromAmino(object: GrantAmino): Grant {
-    return {
-      authorization: object?.authorization ? Cosmos_authzv1beta1Authorization_FromAmino(object.authorization) : undefined,
-      expiration: object?.expiration ? fromTimestamp(Timestamp.fromAmino(object.expiration)) : undefined
-    };
+    const message = createBaseGrant();
+    if (object.authorization !== undefined && object.authorization !== null) {
+      message.authorization = Cosmos_authzv1beta1Authorization_FromAmino(object.authorization);
+    }
+    if (object.expiration !== undefined && object.expiration !== null) {
+      message.expiration = fromTimestamp(Timestamp.fromAmino(object.expiration));
+    }
+    return message;
   },
   toAmino(message: Grant, useInterfaces: boolean = false): GrantAmino {
     const obj: any = {};
@@ -353,12 +359,20 @@ export const GrantAuthorization = {
     return message;
   },
   fromAmino(object: GrantAuthorizationAmino): GrantAuthorization {
-    return {
-      granter: object.granter,
-      grantee: object.grantee,
-      authorization: object?.authorization ? Cosmos_authzv1beta1Authorization_FromAmino(object.authorization) : undefined,
-      expiration: object?.expiration ? fromTimestamp(Timestamp.fromAmino(object.expiration)) : undefined
-    };
+    const message = createBaseGrantAuthorization();
+    if (object.granter !== undefined && object.granter !== null) {
+      message.granter = object.granter;
+    }
+    if (object.grantee !== undefined && object.grantee !== null) {
+      message.grantee = object.grantee;
+    }
+    if (object.authorization !== undefined && object.authorization !== null) {
+      message.authorization = Cosmos_authzv1beta1Authorization_FromAmino(object.authorization);
+    }
+    if (object.expiration !== undefined && object.expiration !== null) {
+      message.expiration = fromTimestamp(Timestamp.fromAmino(object.expiration));
+    }
+    return message;
   },
   toAmino(message: GrantAuthorization, useInterfaces: boolean = false): GrantAuthorizationAmino {
     const obj: any = {};
@@ -426,9 +440,9 @@ export const GrantQueueItem = {
     return message;
   },
   fromAmino(object: GrantQueueItemAmino): GrantQueueItem {
-    return {
-      msgTypeUrls: Array.isArray(object?.msg_type_urls) ? object.msg_type_urls.map((e: any) => e) : []
-    };
+    const message = createBaseGrantQueueItem();
+    message.msgTypeUrls = object.msg_type_urls?.map(e => e) || [];
+    return message;
   },
   toAmino(message: GrantQueueItem, useInterfaces: boolean = false): GrantQueueItemAmino {
     const obj: any = {};

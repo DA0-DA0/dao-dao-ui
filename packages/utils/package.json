@@ -6,7 +6,7 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "jest",
-    "protobuf": "node protobuf/scripts/codegen.js"
+    "protobuf": "node protobuf/scripts/codegen.js && git apply protobuf/patches.diff"
   },
   "dependencies": {
     "@chain-registry/assets": "^1.26.0",
@@ -35,7 +35,7 @@
     "@cosmjs/proto-signing": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
     "@cosmjs/tendermint-rpc": "^0.31.0",
-    "@cosmology/telescope": "^1.0.16",
+    "@cosmology/telescope": "^1.4.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@types/lodash.clonedeep": "^4.5.0",

@@ -54,23 +54,23 @@ export interface MsgCreateGaugeAmino {
    * at a single time and only distribute their tokens again once the gauge is
    * refilled
    */
-  is_perpetual: boolean;
+  is_perpetual?: boolean;
   /** owner is the address of gauge creator */
-  owner: string;
+  owner?: string;
   /**
    * distribute_to show which lock the gauge should distribute to by time
    * duration or by timestamp
    */
   distribute_to?: QueryConditionAmino | undefined;
   /** coins are coin(s) to be distributed by the gauge */
-  coins: CoinAmino[];
+  coins?: CoinAmino[];
   /** start_time is the distribution start time */
   start_time?: string | undefined;
   /**
    * num_epochs_paid_over is the number of epochs distribution will be completed
    * over
    */
-  num_epochs_paid_over: string;
+  num_epochs_paid_over?: string;
   /**
    * pool_id is the ID of the pool that the gauge is meant to be associated
    * with. if pool_id is set, then the "QueryCondition.LockQueryType" must be
@@ -80,7 +80,7 @@ export interface MsgCreateGaugeAmino {
    * incentivestypes.NoLockExternalGaugeDenom(<pool-id>) so that the gauges
    * associated with a pool can be queried by this prefix if needed.
    */
-  pool_id: string;
+  pool_id?: string;
 }
 export interface MsgCreateGaugeAminoMsg {
   type: "osmosis/incentives/create-gauge";
@@ -123,11 +123,11 @@ export interface MsgAddToGaugeProtoMsg {
 /** MsgAddToGauge adds coins to a previously created gauge */
 export interface MsgAddToGaugeAmino {
   /** owner is the gauge owner's address */
-  owner: string;
+  owner?: string;
   /** gauge_id is the ID of gauge that rewards are getting added to */
-  gauge_id: string;
+  gauge_id?: string;
   /** rewards are the coin(s) to add to gauge */
-  rewards: CoinAmino[];
+  rewards?: CoinAmino[];
 }
 export interface MsgAddToGaugeAminoMsg {
   type: "osmosis/incentives/add-to-gauge";
@@ -234,15 +234,27 @@ export const MsgCreateGauge = {
     return message;
   },
   fromAmino(object: MsgCreateGaugeAmino): MsgCreateGauge {
-    return {
-      isPerpetual: object.is_perpetual,
-      owner: object.owner,
-      distributeTo: object?.distribute_to ? QueryCondition.fromAmino(object.distribute_to) : undefined,
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromAmino(e)) : [],
-      startTime: object?.start_time ? fromTimestamp(Timestamp.fromAmino(object.start_time)) : undefined,
-      numEpochsPaidOver: BigInt(object.num_epochs_paid_over),
-      poolId: BigInt(object.pool_id)
-    };
+    const message = createBaseMsgCreateGauge();
+    if (object.is_perpetual !== undefined && object.is_perpetual !== null) {
+      message.isPerpetual = object.is_perpetual;
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.distribute_to !== undefined && object.distribute_to !== null) {
+      message.distributeTo = QueryCondition.fromAmino(object.distribute_to);
+    }
+    message.coins = object.coins?.map(e => Coin.fromAmino(e)) || [];
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.startTime = fromTimestamp(Timestamp.fromAmino(object.start_time));
+    }
+    if (object.num_epochs_paid_over !== undefined && object.num_epochs_paid_over !== null) {
+      message.numEpochsPaidOver = BigInt(object.num_epochs_paid_over);
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: MsgCreateGauge, useInterfaces: boolean = false): MsgCreateGaugeAmino {
     const obj: any = {};
@@ -308,7 +320,8 @@ export const MsgCreateGaugeResponse = {
     return message;
   },
   fromAmino(_: MsgCreateGaugeResponseAmino): MsgCreateGaugeResponse {
-    return {};
+    const message = createBaseMsgCreateGaugeResponse();
+    return message;
   },
   toAmino(_: MsgCreateGaugeResponse, useInterfaces: boolean = false): MsgCreateGaugeResponseAmino {
     const obj: any = {};
@@ -388,11 +401,15 @@ export const MsgAddToGauge = {
     return message;
   },
   fromAmino(object: MsgAddToGaugeAmino): MsgAddToGauge {
-    return {
-      owner: object.owner,
-      gaugeId: BigInt(object.gauge_id),
-      rewards: Array.isArray(object?.rewards) ? object.rewards.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgAddToGauge();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.gauge_id !== undefined && object.gauge_id !== null) {
+      message.gaugeId = BigInt(object.gauge_id);
+    }
+    message.rewards = object.rewards?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgAddToGauge, useInterfaces: boolean = false): MsgAddToGaugeAmino {
     const obj: any = {};
@@ -454,7 +471,8 @@ export const MsgAddToGaugeResponse = {
     return message;
   },
   fromAmino(_: MsgAddToGaugeResponseAmino): MsgAddToGaugeResponse {
-    return {};
+    const message = createBaseMsgAddToGaugeResponse();
+    return message;
   },
   toAmino(_: MsgAddToGaugeResponse, useInterfaces: boolean = false): MsgAddToGaugeResponseAmino {
     const obj: any = {};

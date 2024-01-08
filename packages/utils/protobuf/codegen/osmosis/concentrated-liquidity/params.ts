@@ -50,8 +50,8 @@ export interface ParamsAmino {
    * example, an authorized_tick_spacing of [1, 10, 30] allows for pools
    * to be created with tick spacing of 1, 10, or 30.
    */
-  authorized_tick_spacing: string[];
-  authorized_spread_factors: string[];
+  authorized_tick_spacing?: string[];
+  authorized_spread_factors?: string[];
   /**
    * balancer_shares_reward_discount is the rate by which incentives flowing
    * from CL to Balancer pools will be discounted to encourage LPs to migrate.
@@ -60,7 +60,7 @@ export interface ParamsAmino {
    * This field can range from (0,1]. If set to 1, it indicates that all
    * incentives stay at cl pool.
    */
-  balancer_shares_reward_discount: string;
+  balancer_shares_reward_discount?: string;
   /**
    * authorized_quote_denoms is a list of quote denoms that can be used as
    * token1 when creating a pool. We limit the quote assets to a small set for
@@ -70,8 +70,8 @@ export interface ParamsAmino {
    * desirable property in terms of UX as to allow users to set limit orders at
    * prices in terms of token1 (quote asset) that are easy to reason about.
    */
-  authorized_quote_denoms: string[];
-  authorized_uptimes: DurationAmino[];
+  authorized_quote_denoms?: string[];
+  authorized_uptimes?: DurationAmino[];
   /**
    * is_permissionless_pool_creation_enabled is a boolean that determines if
    * concentrated liquidity pools can be created via message. At launch,
@@ -79,7 +79,7 @@ export interface ParamsAmino {
    * allowing permissionless pool creation by switching this flag to true
    * with a governance proposal.
    */
-  is_permissionless_pool_creation_enabled: boolean;
+  is_permissionless_pool_creation_enabled?: boolean;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/concentratedliquidity/params";
@@ -178,14 +178,18 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      authorizedTickSpacing: Array.isArray(object?.authorized_tick_spacing) ? object.authorized_tick_spacing.map((e: any) => BigInt(e)) : [],
-      authorizedSpreadFactors: Array.isArray(object?.authorized_spread_factors) ? object.authorized_spread_factors.map((e: any) => e) : [],
-      balancerSharesRewardDiscount: object.balancer_shares_reward_discount,
-      authorizedQuoteDenoms: Array.isArray(object?.authorized_quote_denoms) ? object.authorized_quote_denoms.map((e: any) => e) : [],
-      authorizedUptimes: Array.isArray(object?.authorized_uptimes) ? object.authorized_uptimes.map((e: any) => Duration.fromAmino(e)) : [],
-      isPermissionlessPoolCreationEnabled: object.is_permissionless_pool_creation_enabled
-    };
+    const message = createBaseParams();
+    message.authorizedTickSpacing = object.authorized_tick_spacing?.map(e => BigInt(e)) || [];
+    message.authorizedSpreadFactors = object.authorized_spread_factors?.map(e => e) || [];
+    if (object.balancer_shares_reward_discount !== undefined && object.balancer_shares_reward_discount !== null) {
+      message.balancerSharesRewardDiscount = object.balancer_shares_reward_discount;
+    }
+    message.authorizedQuoteDenoms = object.authorized_quote_denoms?.map(e => e) || [];
+    message.authorizedUptimes = object.authorized_uptimes?.map(e => Duration.fromAmino(e)) || [];
+    if (object.is_permissionless_pool_creation_enabled !== undefined && object.is_permissionless_pool_creation_enabled !== null) {
+      message.isPermissionlessPoolCreationEnabled = object.is_permissionless_pool_creation_enabled;
+    }
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};

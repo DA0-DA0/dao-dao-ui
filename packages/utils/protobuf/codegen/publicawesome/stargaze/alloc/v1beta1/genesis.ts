@@ -59,9 +59,11 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};

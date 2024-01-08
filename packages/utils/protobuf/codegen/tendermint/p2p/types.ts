@@ -1,4 +1,5 @@
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { bytesFromBase64, base64FromBytes } from "../../helpers";
 export interface NetAddress {
   id: string;
   ip: string;
@@ -9,9 +10,9 @@ export interface NetAddressProtoMsg {
   value: Uint8Array;
 }
 export interface NetAddressAmino {
-  id: string;
-  ip: string;
-  port: number;
+  id?: string;
+  ip?: string;
+  port?: number;
 }
 export interface NetAddressAminoMsg {
   type: "/tendermint.p2p.NetAddress";
@@ -32,9 +33,9 @@ export interface ProtocolVersionProtoMsg {
   value: Uint8Array;
 }
 export interface ProtocolVersionAmino {
-  p2p: string;
-  block: string;
-  app: string;
+  p2p?: string;
+  block?: string;
+  app?: string;
 }
 export interface ProtocolVersionAminoMsg {
   type: "/tendermint.p2p.ProtocolVersion";
@@ -61,12 +62,12 @@ export interface DefaultNodeInfoProtoMsg {
 }
 export interface DefaultNodeInfoAmino {
   protocol_version?: ProtocolVersionAmino | undefined;
-  default_node_id: string;
-  listen_addr: string;
-  network: string;
-  version: string;
-  channels: Uint8Array;
-  moniker: string;
+  default_node_id?: string;
+  listen_addr?: string;
+  network?: string;
+  version?: string;
+  channels?: string;
+  moniker?: string;
   other?: DefaultNodeInfoOtherAmino | undefined;
 }
 export interface DefaultNodeInfoAminoMsg {
@@ -92,8 +93,8 @@ export interface DefaultNodeInfoOtherProtoMsg {
   value: Uint8Array;
 }
 export interface DefaultNodeInfoOtherAmino {
-  tx_index: string;
-  rpc_address: string;
+  tx_index?: string;
+  rpc_address?: string;
 }
 export interface DefaultNodeInfoOtherAminoMsg {
   type: "/tendermint.p2p.DefaultNodeInfoOther";
@@ -155,11 +156,17 @@ export const NetAddress = {
     return message;
   },
   fromAmino(object: NetAddressAmino): NetAddress {
-    return {
-      id: object.id,
-      ip: object.ip,
-      port: object.port
-    };
+    const message = createBaseNetAddress();
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
+    }
+    if (object.ip !== undefined && object.ip !== null) {
+      message.ip = object.ip;
+    }
+    if (object.port !== undefined && object.port !== null) {
+      message.port = object.port;
+    }
+    return message;
   },
   toAmino(message: NetAddress, useInterfaces: boolean = false): NetAddressAmino {
     const obj: any = {};
@@ -236,11 +243,17 @@ export const ProtocolVersion = {
     return message;
   },
   fromAmino(object: ProtocolVersionAmino): ProtocolVersion {
-    return {
-      p2p: BigInt(object.p2p),
-      block: BigInt(object.block),
-      app: BigInt(object.app)
-    };
+    const message = createBaseProtocolVersion();
+    if (object.p2p !== undefined && object.p2p !== null) {
+      message.p2p = BigInt(object.p2p);
+    }
+    if (object.block !== undefined && object.block !== null) {
+      message.block = BigInt(object.block);
+    }
+    if (object.app !== undefined && object.app !== null) {
+      message.app = BigInt(object.app);
+    }
+    return message;
   },
   toAmino(message: ProtocolVersion, useInterfaces: boolean = false): ProtocolVersionAmino {
     const obj: any = {};
@@ -357,16 +370,32 @@ export const DefaultNodeInfo = {
     return message;
   },
   fromAmino(object: DefaultNodeInfoAmino): DefaultNodeInfo {
-    return {
-      protocolVersion: object?.protocol_version ? ProtocolVersion.fromAmino(object.protocol_version) : undefined,
-      defaultNodeId: object.default_node_id,
-      listenAddr: object.listen_addr,
-      network: object.network,
-      version: object.version,
-      channels: object.channels,
-      moniker: object.moniker,
-      other: object?.other ? DefaultNodeInfoOther.fromAmino(object.other) : undefined
-    };
+    const message = createBaseDefaultNodeInfo();
+    if (object.protocol_version !== undefined && object.protocol_version !== null) {
+      message.protocolVersion = ProtocolVersion.fromAmino(object.protocol_version);
+    }
+    if (object.default_node_id !== undefined && object.default_node_id !== null) {
+      message.defaultNodeId = object.default_node_id;
+    }
+    if (object.listen_addr !== undefined && object.listen_addr !== null) {
+      message.listenAddr = object.listen_addr;
+    }
+    if (object.network !== undefined && object.network !== null) {
+      message.network = object.network;
+    }
+    if (object.version !== undefined && object.version !== null) {
+      message.version = object.version;
+    }
+    if (object.channels !== undefined && object.channels !== null) {
+      message.channels = bytesFromBase64(object.channels);
+    }
+    if (object.moniker !== undefined && object.moniker !== null) {
+      message.moniker = object.moniker;
+    }
+    if (object.other !== undefined && object.other !== null) {
+      message.other = DefaultNodeInfoOther.fromAmino(object.other);
+    }
+    return message;
   },
   toAmino(message: DefaultNodeInfo, useInterfaces: boolean = false): DefaultNodeInfoAmino {
     const obj: any = {};
@@ -375,7 +404,7 @@ export const DefaultNodeInfo = {
     obj.listen_addr = message.listenAddr;
     obj.network = message.network;
     obj.version = message.version;
-    obj.channels = message.channels;
+    obj.channels = message.channels ? base64FromBytes(message.channels) : undefined;
     obj.moniker = message.moniker;
     obj.other = message.other ? DefaultNodeInfoOther.toAmino(message.other, useInterfaces) : undefined;
     return obj;
@@ -440,10 +469,14 @@ export const DefaultNodeInfoOther = {
     return message;
   },
   fromAmino(object: DefaultNodeInfoOtherAmino): DefaultNodeInfoOther {
-    return {
-      txIndex: object.tx_index,
-      rpcAddress: object.rpc_address
-    };
+    const message = createBaseDefaultNodeInfoOther();
+    if (object.tx_index !== undefined && object.tx_index !== null) {
+      message.txIndex = object.tx_index;
+    }
+    if (object.rpc_address !== undefined && object.rpc_address !== null) {
+      message.rpcAddress = object.rpc_address;
+    }
+    return message;
   },
   toAmino(message: DefaultNodeInfoOther, useInterfaces: boolean = false): DefaultNodeInfoOtherAmino {
     const obj: any = {};

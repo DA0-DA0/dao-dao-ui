@@ -19,9 +19,9 @@ export interface MsgPromoteToPrivilegedContractAmino {
    * Authority is the address of the governance account or any whitelisted
    * address
    */
-  authority: string;
+  authority?: string;
   /** Contract is the bech32 address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface MsgPromoteToPrivilegedContractAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.MsgPromoteToPrivilegedContract";
@@ -60,9 +60,9 @@ export interface MsgDemoteFromPrivilegedContractAmino {
    * Authority is the address of the governance account or any whitelisted
    * address
    */
-  authority: string;
+  authority?: string;
   /** Contract is the bech32 address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface MsgDemoteFromPrivilegedContractAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.MsgDemoteFromPrivilegedContract";
@@ -95,7 +95,7 @@ export interface MsgUpdateParamsProtoMsg {
 }
 export interface MsgUpdateParamsAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** NOTE: All parameters must be supplied. */
   params?: ParamsAmino | undefined;
 }
@@ -162,10 +162,14 @@ export const MsgPromoteToPrivilegedContract = {
     return message;
   },
   fromAmino(object: MsgPromoteToPrivilegedContractAmino): MsgPromoteToPrivilegedContract {
-    return {
-      authority: object.authority,
-      contract: object.contract
-    };
+    const message = createBaseMsgPromoteToPrivilegedContract();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: MsgPromoteToPrivilegedContract, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractAmino {
     const obj: any = {};
@@ -216,7 +220,8 @@ export const MsgPromoteToPrivilegedContractResponse = {
     return message;
   },
   fromAmino(_: MsgPromoteToPrivilegedContractResponseAmino): MsgPromoteToPrivilegedContractResponse {
-    return {};
+    const message = createBaseMsgPromoteToPrivilegedContractResponse();
+    return message;
   },
   toAmino(_: MsgPromoteToPrivilegedContractResponse, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractResponseAmino {
     const obj: any = {};
@@ -282,10 +287,14 @@ export const MsgDemoteFromPrivilegedContract = {
     return message;
   },
   fromAmino(object: MsgDemoteFromPrivilegedContractAmino): MsgDemoteFromPrivilegedContract {
-    return {
-      authority: object.authority,
-      contract: object.contract
-    };
+    const message = createBaseMsgDemoteFromPrivilegedContract();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: MsgDemoteFromPrivilegedContract, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractAmino {
     const obj: any = {};
@@ -336,7 +345,8 @@ export const MsgDemoteFromPrivilegedContractResponse = {
     return message;
   },
   fromAmino(_: MsgDemoteFromPrivilegedContractResponseAmino): MsgDemoteFromPrivilegedContractResponse {
-    return {};
+    const message = createBaseMsgDemoteFromPrivilegedContractResponse();
+    return message;
   },
   toAmino(_: MsgDemoteFromPrivilegedContractResponse, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractResponseAmino {
     const obj: any = {};
@@ -402,10 +412,14 @@ export const MsgUpdateParams = {
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      authority: object.authority,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseMsgUpdateParams();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
@@ -456,7 +470,8 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
   },
   toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};

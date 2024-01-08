@@ -20,15 +20,15 @@ export interface ParamsProtoMsg {
 /** Params defines the set of params for the distribution module. */
 export interface ParamsAmino {
   /** share is % of tx fees or rewards allocated to distribution_entities */
-  share: string;
+  share?: string;
   /**
    * % of tx fees or rewards allocated to a set of global distribution entities
    * these shares must add up to 1
    */
-  distribution_entities: DistributionEntityAmino[];
-  transfer_fee_bps: string;
-  transfer_fee_max: string;
-  transfer_fee_denom: string;
+  distribution_entities?: DistributionEntityAmino[];
+  transfer_fee_bps?: string;
+  transfer_fee_max?: string;
+  transfer_fee_denom?: string;
 }
 export interface ParamsAminoMsg {
   type: "/noble.tariff.Params";
@@ -53,8 +53,8 @@ export interface DistributionEntityProtoMsg {
 }
 /** DistributionEntity defines a distribution entity */
 export interface DistributionEntityAmino {
-  address: string;
-  share: string;
+  address?: string;
+  share?: string;
 }
 export interface DistributionEntityAminoMsg {
   type: "/noble.tariff.DistributionEntity";
@@ -133,13 +133,21 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      share: object.share,
-      distributionEntities: Array.isArray(object?.distribution_entities) ? object.distribution_entities.map((e: any) => DistributionEntity.fromAmino(e)) : [],
-      transferFeeBps: object.transfer_fee_bps,
-      transferFeeMax: object.transfer_fee_max,
-      transferFeeDenom: object.transfer_fee_denom
-    };
+    const message = createBaseParams();
+    if (object.share !== undefined && object.share !== null) {
+      message.share = object.share;
+    }
+    message.distributionEntities = object.distribution_entities?.map(e => DistributionEntity.fromAmino(e)) || [];
+    if (object.transfer_fee_bps !== undefined && object.transfer_fee_bps !== null) {
+      message.transferFeeBps = object.transfer_fee_bps;
+    }
+    if (object.transfer_fee_max !== undefined && object.transfer_fee_max !== null) {
+      message.transferFeeMax = object.transfer_fee_max;
+    }
+    if (object.transfer_fee_denom !== undefined && object.transfer_fee_denom !== null) {
+      message.transferFeeDenom = object.transfer_fee_denom;
+    }
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
@@ -214,10 +222,14 @@ export const DistributionEntity = {
     return message;
   },
   fromAmino(object: DistributionEntityAmino): DistributionEntity {
-    return {
-      address: object.address,
-      share: object.share
-    };
+    const message = createBaseDistributionEntity();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.share !== undefined && object.share !== null) {
+      message.share = object.share;
+    }
+    return message;
   },
   toAmino(message: DistributionEntity, useInterfaces: boolean = false): DistributionEntityAmino {
     const obj: any = {};

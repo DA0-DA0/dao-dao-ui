@@ -367,7 +367,6 @@
     "failedToRelayPackets": "Failed to relay packets to {{chain}}.",
     "feeTokenNotFound": "Fee token not found.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
-    "governanceProposalsUnsupported": "Governance proposals are not supported on this chain.",
     "icaAddressNotLoaded": "ICA address not loaded.",
     "icaAlreadyExists": "You already have an account on {{chain}}.",
     "icaDoesNotExist": "You do not have an account on {{chain}}.",

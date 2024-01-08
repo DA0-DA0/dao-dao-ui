@@ -16,9 +16,9 @@ export interface GenesisStateProtoMsg {
 /** GenesisState defines the auth module's genesis state. */
 export interface GenesisStateAmino {
   /** params defines all the parameters of the module. */
-  params?: ParamsAmino | undefined;
+  params: ParamsAmino | undefined;
   /** accounts are the accounts present at genesis. */
-  accounts: AnyAmino[];
+  accounts?: AnyAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "cosmos-sdk/GenesisState";
@@ -73,14 +73,16 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      accounts: Array.isArray(object?.accounts) ? object.accounts.map((e: any) => Any.fromAmino(e)) : []
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.accounts = object.accounts?.map(e => Any.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
     if (message.accounts) {
       obj.accounts = message.accounts.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
     } else {

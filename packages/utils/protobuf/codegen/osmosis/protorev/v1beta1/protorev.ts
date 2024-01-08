@@ -16,11 +16,11 @@ export interface TokenPairArbRoutesProtoMsg {
 /** TokenPairArbRoutes tracks all of the hot routes for a given pair of tokens */
 export interface TokenPairArbRoutesAmino {
   /** Stores all of the possible hot paths for a given pair of tokens */
-  arb_routes: RouteAmino[];
+  arb_routes?: RouteAmino[];
   /** Token denomination of the first asset */
-  token_in: string;
+  token_in?: string;
   /** Token denomination of the second asset */
-  token_out: string;
+  token_out?: string;
 }
 export interface TokenPairArbRoutesAminoMsg {
   type: "osmosis/protorev/token-pair-arb-routes";
@@ -55,12 +55,12 @@ export interface RouteAmino {
    * The pool IDs that are travered in the directed cyclic graph (traversed left
    * -> right)
    */
-  trades: TradeAmino[];
+  trades?: TradeAmino[];
   /**
    * The step size that will be used to find the optimal swap amount in the
    * binary search
    */
-  step_size: string;
+  step_size?: string;
 }
 export interface RouteAminoMsg {
   type: "osmosis/protorev/route";
@@ -87,11 +87,11 @@ export interface TradeProtoMsg {
 /** Trade is a single trade in a route */
 export interface TradeAmino {
   /** The pool id of the pool that is traded on */
-  pool: string;
+  pool?: string;
   /** The denom of the token that is traded */
-  token_in: string;
+  token_in?: string;
   /** The denom of the token that is received */
-  token_out: string;
+  token_out?: string;
 }
 export interface TradeAminoMsg {
   type: "osmosis/protorev/trade";
@@ -128,14 +128,14 @@ export interface RouteStatisticsProtoMsg {
  */
 export interface RouteStatisticsAmino {
   /** profits is the total profit from all trades on this route */
-  profits: CoinAmino[];
+  profits?: CoinAmino[];
   /**
    * number_of_trades is the number of trades the module has executed using this
    * route
    */
-  number_of_trades: string;
+  number_of_trades?: string;
   /** route is the route that was used (pool ids along the arbitrage route) */
-  route: string[];
+  route?: string[];
 }
 export interface RouteStatisticsAminoMsg {
   type: "osmosis/protorev/route-statistics";
@@ -186,13 +186,13 @@ export interface PoolWeightsProtoMsg {
  */
 export interface PoolWeightsAmino {
   /** The weight of a stableswap pool */
-  stable_weight: string;
+  stable_weight?: string;
   /** The weight of a balancer pool */
-  balancer_weight: string;
+  balancer_weight?: string;
   /** The weight of a concentrated pool */
-  concentrated_weight: string;
+  concentrated_weight?: string;
   /** The weight of a cosmwasm pool */
-  cosmwasm_weight: string;
+  cosmwasm_weight?: string;
 }
 export interface PoolWeightsAminoMsg {
   type: "osmosis/protorev/pool-weights";
@@ -278,7 +278,7 @@ export interface StablePoolInfoProtoMsg {
 /** StablePoolInfo contains meta data pertaining to a stableswap pool type. */
 export interface StablePoolInfoAmino {
   /** The weight of a stableswap pool */
-  weight: string;
+  weight?: string;
 }
 export interface StablePoolInfoAminoMsg {
   type: "osmosis/protorev/stable-pool-info";
@@ -300,7 +300,7 @@ export interface BalancerPoolInfoProtoMsg {
 /** BalancerPoolInfo contains meta data pertaining to a balancer pool type. */
 export interface BalancerPoolInfoAmino {
   /** The weight of a balancer pool */
-  weight: string;
+  weight?: string;
 }
 export interface BalancerPoolInfoAminoMsg {
   type: "osmosis/protorev/balancer-pool-info";
@@ -330,9 +330,9 @@ export interface ConcentratedPoolInfoProtoMsg {
  */
 export interface ConcentratedPoolInfoAmino {
   /** The weight of a concentrated pool */
-  weight: string;
+  weight?: string;
   /** The maximum number of ticks we can move when rebalancing */
-  max_ticks_crossed: string;
+  max_ticks_crossed?: string;
 }
 export interface ConcentratedPoolInfoAminoMsg {
   type: "osmosis/protorev/concentrated-pool-info";
@@ -358,7 +358,7 @@ export interface CosmwasmPoolInfoProtoMsg {
 /** CosmwasmPoolInfo contains meta data pertaining to a cosmwasm pool type. */
 export interface CosmwasmPoolInfoAmino {
   /** The weight of a cosmwasm pool (by contract address) */
-  weight_maps: WeightMapAmino[];
+  weight_maps?: WeightMapAmino[];
 }
 export interface CosmwasmPoolInfoAminoMsg {
   type: "osmosis/protorev/cosmwasm-pool-info";
@@ -388,9 +388,9 @@ export interface WeightMapProtoMsg {
  */
 export interface WeightMapAmino {
   /** The weight of a cosmwasm pool (by contract address) */
-  weight: string;
+  weight?: string;
   /** The contract address */
-  contract_address: string;
+  contract_address?: string;
 }
 export interface WeightMapAminoMsg {
   type: "osmosis/protorev/weight-map";
@@ -429,12 +429,12 @@ export interface BaseDenomProtoMsg {
  */
 export interface BaseDenomAmino {
   /** The denom i.e. name of the base denom (ex. uosmo) */
-  denom: string;
+  denom?: string;
   /**
    * The step size of the binary search that is used to find the optimal swap
    * amount
    */
-  step_size: string;
+  step_size?: string;
 }
 export interface BaseDenomAminoMsg {
   type: "osmosis/protorev/base-denom";
@@ -501,11 +501,15 @@ export const TokenPairArbRoutes = {
     return message;
   },
   fromAmino(object: TokenPairArbRoutesAmino): TokenPairArbRoutes {
-    return {
-      arbRoutes: Array.isArray(object?.arb_routes) ? object.arb_routes.map((e: any) => Route.fromAmino(e)) : [],
-      tokenIn: object.token_in,
-      tokenOut: object.token_out
-    };
+    const message = createBaseTokenPairArbRoutes();
+    message.arbRoutes = object.arb_routes?.map(e => Route.fromAmino(e)) || [];
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = object.token_in;
+    }
+    if (object.token_out !== undefined && object.token_out !== null) {
+      message.tokenOut = object.token_out;
+    }
+    return message;
   },
   toAmino(message: TokenPairArbRoutes, useInterfaces: boolean = false): TokenPairArbRoutesAmino {
     const obj: any = {};
@@ -584,10 +588,12 @@ export const Route = {
     return message;
   },
   fromAmino(object: RouteAmino): Route {
-    return {
-      trades: Array.isArray(object?.trades) ? object.trades.map((e: any) => Trade.fromAmino(e)) : [],
-      stepSize: object.step_size
-    };
+    const message = createBaseRoute();
+    message.trades = object.trades?.map(e => Trade.fromAmino(e)) || [];
+    if (object.step_size !== undefined && object.step_size !== null) {
+      message.stepSize = object.step_size;
+    }
+    return message;
   },
   toAmino(message: Route, useInterfaces: boolean = false): RouteAmino {
     const obj: any = {};
@@ -673,11 +679,17 @@ export const Trade = {
     return message;
   },
   fromAmino(object: TradeAmino): Trade {
-    return {
-      pool: BigInt(object.pool),
-      tokenIn: object.token_in,
-      tokenOut: object.token_out
-    };
+    const message = createBaseTrade();
+    if (object.pool !== undefined && object.pool !== null) {
+      message.pool = BigInt(object.pool);
+    }
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = object.token_in;
+    }
+    if (object.token_out !== undefined && object.token_out !== null) {
+      message.tokenOut = object.token_out;
+    }
+    return message;
   },
   toAmino(message: Trade, useInterfaces: boolean = false): TradeAmino {
     const obj: any = {};
@@ -769,11 +781,13 @@ export const RouteStatistics = {
     return message;
   },
   fromAmino(object: RouteStatisticsAmino): RouteStatistics {
-    return {
-      profits: Array.isArray(object?.profits) ? object.profits.map((e: any) => Coin.fromAmino(e)) : [],
-      numberOfTrades: object.number_of_trades,
-      route: Array.isArray(object?.route) ? object.route.map((e: any) => BigInt(e)) : []
-    };
+    const message = createBaseRouteStatistics();
+    message.profits = object.profits?.map(e => Coin.fromAmino(e)) || [];
+    if (object.number_of_trades !== undefined && object.number_of_trades !== null) {
+      message.numberOfTrades = object.number_of_trades;
+    }
+    message.route = object.route?.map(e => BigInt(e)) || [];
+    return message;
   },
   toAmino(message: RouteStatistics, useInterfaces: boolean = false): RouteStatisticsAmino {
     const obj: any = {};
@@ -872,12 +886,20 @@ export const PoolWeights = {
     return message;
   },
   fromAmino(object: PoolWeightsAmino): PoolWeights {
-    return {
-      stableWeight: BigInt(object.stable_weight),
-      balancerWeight: BigInt(object.balancer_weight),
-      concentratedWeight: BigInt(object.concentrated_weight),
-      cosmwasmWeight: BigInt(object.cosmwasm_weight)
-    };
+    const message = createBasePoolWeights();
+    if (object.stable_weight !== undefined && object.stable_weight !== null) {
+      message.stableWeight = BigInt(object.stable_weight);
+    }
+    if (object.balancer_weight !== undefined && object.balancer_weight !== null) {
+      message.balancerWeight = BigInt(object.balancer_weight);
+    }
+    if (object.concentrated_weight !== undefined && object.concentrated_weight !== null) {
+      message.concentratedWeight = BigInt(object.concentrated_weight);
+    }
+    if (object.cosmwasm_weight !== undefined && object.cosmwasm_weight !== null) {
+      message.cosmwasmWeight = BigInt(object.cosmwasm_weight);
+    }
+    return message;
   },
   toAmino(message: PoolWeights, useInterfaces: boolean = false): PoolWeightsAmino {
     const obj: any = {};
@@ -969,12 +991,20 @@ export const InfoByPoolType = {
     return message;
   },
   fromAmino(object: InfoByPoolTypeAmino): InfoByPoolType {
-    return {
-      stable: object?.stable ? StablePoolInfo.fromAmino(object.stable) : undefined,
-      balancer: object?.balancer ? BalancerPoolInfo.fromAmino(object.balancer) : undefined,
-      concentrated: object?.concentrated ? ConcentratedPoolInfo.fromAmino(object.concentrated) : undefined,
-      cosmwasm: object?.cosmwasm ? CosmwasmPoolInfo.fromAmino(object.cosmwasm) : undefined
-    };
+    const message = createBaseInfoByPoolType();
+    if (object.stable !== undefined && object.stable !== null) {
+      message.stable = StablePoolInfo.fromAmino(object.stable);
+    }
+    if (object.balancer !== undefined && object.balancer !== null) {
+      message.balancer = BalancerPoolInfo.fromAmino(object.balancer);
+    }
+    if (object.concentrated !== undefined && object.concentrated !== null) {
+      message.concentrated = ConcentratedPoolInfo.fromAmino(object.concentrated);
+    }
+    if (object.cosmwasm !== undefined && object.cosmwasm !== null) {
+      message.cosmwasm = CosmwasmPoolInfo.fromAmino(object.cosmwasm);
+    }
+    return message;
   },
   toAmino(message: InfoByPoolType, useInterfaces: boolean = false): InfoByPoolTypeAmino {
     const obj: any = {};
@@ -1042,9 +1072,11 @@ export const StablePoolInfo = {
     return message;
   },
   fromAmino(object: StablePoolInfoAmino): StablePoolInfo {
-    return {
-      weight: BigInt(object.weight)
-    };
+    const message = createBaseStablePoolInfo();
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = BigInt(object.weight);
+    }
+    return message;
   },
   toAmino(message: StablePoolInfo, useInterfaces: boolean = false): StablePoolInfoAmino {
     const obj: any = {};
@@ -1109,9 +1141,11 @@ export const BalancerPoolInfo = {
     return message;
   },
   fromAmino(object: BalancerPoolInfoAmino): BalancerPoolInfo {
-    return {
-      weight: BigInt(object.weight)
-    };
+    const message = createBaseBalancerPoolInfo();
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = BigInt(object.weight);
+    }
+    return message;
   },
   toAmino(message: BalancerPoolInfo, useInterfaces: boolean = false): BalancerPoolInfoAmino {
     const obj: any = {};
@@ -1184,10 +1218,14 @@ export const ConcentratedPoolInfo = {
     return message;
   },
   fromAmino(object: ConcentratedPoolInfoAmino): ConcentratedPoolInfo {
-    return {
-      weight: BigInt(object.weight),
-      maxTicksCrossed: BigInt(object.max_ticks_crossed)
-    };
+    const message = createBaseConcentratedPoolInfo();
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = BigInt(object.weight);
+    }
+    if (object.max_ticks_crossed !== undefined && object.max_ticks_crossed !== null) {
+      message.maxTicksCrossed = BigInt(object.max_ticks_crossed);
+    }
+    return message;
   },
   toAmino(message: ConcentratedPoolInfo, useInterfaces: boolean = false): ConcentratedPoolInfoAmino {
     const obj: any = {};
@@ -1253,9 +1291,9 @@ export const CosmwasmPoolInfo = {
     return message;
   },
   fromAmino(object: CosmwasmPoolInfoAmino): CosmwasmPoolInfo {
-    return {
-      weightMaps: Array.isArray(object?.weight_maps) ? object.weight_maps.map((e: any) => WeightMap.fromAmino(e)) : []
-    };
+    const message = createBaseCosmwasmPoolInfo();
+    message.weightMaps = object.weight_maps?.map(e => WeightMap.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: CosmwasmPoolInfo, useInterfaces: boolean = false): CosmwasmPoolInfoAmino {
     const obj: any = {};
@@ -1332,10 +1370,14 @@ export const WeightMap = {
     return message;
   },
   fromAmino(object: WeightMapAmino): WeightMap {
-    return {
-      weight: BigInt(object.weight),
-      contractAddress: object.contract_address
-    };
+    const message = createBaseWeightMap();
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = BigInt(object.weight);
+    }
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    return message;
   },
   toAmino(message: WeightMap, useInterfaces: boolean = false): WeightMapAmino {
     const obj: any = {};
@@ -1409,10 +1451,14 @@ export const BaseDenom = {
     return message;
   },
   fromAmino(object: BaseDenomAmino): BaseDenom {
-    return {
-      denom: object.denom,
-      stepSize: object.step_size
-    };
+    const message = createBaseBaseDenom();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.step_size !== undefined && object.step_size !== null) {
+      message.stepSize = object.step_size;
+    }
+    return message;
   },
   toAmino(message: BaseDenom, useInterfaces: boolean = false): BaseDenomAmino {
     const obj: any = {};

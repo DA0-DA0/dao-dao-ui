@@ -14,9 +14,9 @@ export interface ParamsProtoMsg {
 /** Params holds parameters for the globalfee module. */
 export interface ParamsAmino {
   /** Addresses which are whitelisted to modify the gas free operations */
-  privileged_addresses: string[];
+  privileged_addresses?: string[];
   /** Minimum stores the minimum gas price(s) for all TX on the chain. */
-  minimum_gas_prices: DecCoinAmino[];
+  minimum_gas_prices?: DecCoinAmino[];
 }
 export interface ParamsAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.Params";
@@ -41,9 +41,9 @@ export interface CodeAuthorizationProtoMsg {
 /** Configuration for code Ids which can have zero gas operations */
 export interface CodeAuthorizationAmino {
   /** authorized code ids */
-  code_id: string;
+  code_id?: string;
   /** authorized contract operation methods */
-  methods: string[];
+  methods?: string[];
 }
 export interface CodeAuthorizationAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.CodeAuthorization";
@@ -68,9 +68,9 @@ export interface ContractAuthorizationProtoMsg {
 /** Configuration for contract addresses which can have zero gas operations */
 export interface ContractAuthorizationAmino {
   /** authorized contract addresses */
-  contract_address: string;
+  contract_address?: string;
   /** authorized contract operation methods */
-  methods: string[];
+  methods?: string[];
 }
 export interface ContractAuthorizationAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.ContractAuthorization";
@@ -125,10 +125,10 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      privilegedAddresses: Array.isArray(object?.privileged_addresses) ? object.privileged_addresses.map((e: any) => e) : [],
-      minimumGasPrices: Array.isArray(object?.minimum_gas_prices) ? object.minimum_gas_prices.map((e: any) => DecCoin.fromAmino(e)) : []
-    };
+    const message = createBaseParams();
+    message.privilegedAddresses = object.privileged_addresses?.map(e => e) || [];
+    message.minimumGasPrices = object.minimum_gas_prices?.map(e => DecCoin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
@@ -204,10 +204,12 @@ export const CodeAuthorization = {
     return message;
   },
   fromAmino(object: CodeAuthorizationAmino): CodeAuthorization {
-    return {
-      codeId: BigInt(object.code_id),
-      methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
-    };
+    const message = createBaseCodeAuthorization();
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    message.methods = object.methods?.map(e => e) || [];
+    return message;
   },
   toAmino(message: CodeAuthorization, useInterfaces: boolean = false): CodeAuthorizationAmino {
     const obj: any = {};
@@ -279,10 +281,12 @@ export const ContractAuthorization = {
     return message;
   },
   fromAmino(object: ContractAuthorizationAmino): ContractAuthorization {
-    return {
-      contractAddress: object.contract_address,
-      methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
-    };
+    const message = createBaseContractAuthorization();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    message.methods = object.methods?.map(e => e) || [];
+    return message;
   },
   toAmino(message: ContractAuthorization, useInterfaces: boolean = false): ContractAuthorizationAmino {
     const obj: any = {};

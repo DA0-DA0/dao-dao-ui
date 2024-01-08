@@ -20,8 +20,8 @@ export interface AccumulatorContentProtoMsg {
  * shares belonging to it from all positions.
  */
 export interface AccumulatorContentAmino {
-  accum_value: DecCoinAmino[];
-  total_shares: string;
+  accum_value?: DecCoinAmino[];
+  total_shares?: string;
 }
 export interface AccumulatorContentAminoMsg {
   type: "osmosis/accum/accumulator-content";
@@ -100,7 +100,7 @@ export interface RecordAmino {
    * num_shares is the number of shares belonging to the position associated
    * with this record.
    */
-  num_shares: string;
+  num_shares?: string;
   /**
    * accum_value_per_share is the subset of coins per shar of the global
    * accumulator value that allows to infer how much a position is entitled to
@@ -120,7 +120,7 @@ export interface RecordAmino {
    * get the growth inside the interval from the time of last update up until
    * the current block time.
    */
-  accum_value_per_share: DecCoinAmino[];
+  accum_value_per_share?: DecCoinAmino[];
   /**
    * unclaimed_rewards_total is the total amount of unclaimed rewards that the
    * position is entitled to. This value is updated whenever shares are added or
@@ -128,7 +128,7 @@ export interface RecordAmino {
    * this value for some custom use cases such as merging pre-existing positions
    * into a single one.
    */
-  unclaimed_rewards_total: DecCoinAmino[];
+  unclaimed_rewards_total?: DecCoinAmino[];
   options?: OptionsAmino | undefined;
 }
 export interface RecordAminoMsg {
@@ -189,10 +189,12 @@ export const AccumulatorContent = {
     return message;
   },
   fromAmino(object: AccumulatorContentAmino): AccumulatorContent {
-    return {
-      accumValue: Array.isArray(object?.accum_value) ? object.accum_value.map((e: any) => DecCoin.fromAmino(e)) : [],
-      totalShares: object.total_shares
-    };
+    const message = createBaseAccumulatorContent();
+    message.accumValue = object.accum_value?.map(e => DecCoin.fromAmino(e)) || [];
+    if (object.total_shares !== undefined && object.total_shares !== null) {
+      message.totalShares = object.total_shares;
+    }
+    return message;
   },
   toAmino(message: AccumulatorContent, useInterfaces: boolean = false): AccumulatorContentAmino {
     const obj: any = {};
@@ -253,7 +255,8 @@ export const Options = {
     return message;
   },
   fromAmino(_: OptionsAmino): Options {
-    return {};
+    const message = createBaseOptions();
+    return message;
   },
   toAmino(_: Options, useInterfaces: boolean = false): OptionsAmino {
     const obj: any = {};
@@ -341,12 +344,16 @@ export const Record = {
     return message;
   },
   fromAmino(object: RecordAmino): Record {
-    return {
-      numShares: object.num_shares,
-      accumValuePerShare: Array.isArray(object?.accum_value_per_share) ? object.accum_value_per_share.map((e: any) => DecCoin.fromAmino(e)) : [],
-      unclaimedRewardsTotal: Array.isArray(object?.unclaimed_rewards_total) ? object.unclaimed_rewards_total.map((e: any) => DecCoin.fromAmino(e)) : [],
-      options: object?.options ? Options.fromAmino(object.options) : undefined
-    };
+    const message = createBaseRecord();
+    if (object.num_shares !== undefined && object.num_shares !== null) {
+      message.numShares = object.num_shares;
+    }
+    message.accumValuePerShare = object.accum_value_per_share?.map(e => DecCoin.fromAmino(e)) || [];
+    message.unclaimedRewardsTotal = object.unclaimed_rewards_total?.map(e => DecCoin.fromAmino(e)) || [];
+    if (object.options !== undefined && object.options !== null) {
+      message.options = Options.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(message: Record, useInterfaces: boolean = false): RecordAmino {
     const obj: any = {};

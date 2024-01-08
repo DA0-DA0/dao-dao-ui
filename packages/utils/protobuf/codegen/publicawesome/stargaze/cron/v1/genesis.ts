@@ -21,7 +21,7 @@ export interface GenesisStateAmino {
    * List of all the contracts that have been given the privilege status via
    * governance. They can set up hooks to abci.EndBlocker
    */
-  privileged_contract_addresses: string[];
+  privileged_contract_addresses?: string[];
   /** Module params */
   params?: ParamsAmino | undefined;
 }
@@ -78,10 +78,12 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      privilegedContractAddresses: Array.isArray(object?.privileged_contract_addresses) ? object.privileged_contract_addresses.map((e: any) => e) : [],
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseGenesisState();
+    message.privilegedContractAddresses = object.privileged_contract_addresses?.map(e => e) || [];
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};

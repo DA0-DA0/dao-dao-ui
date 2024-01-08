@@ -15,9 +15,9 @@ export interface GenesisStateProtoMsg {
 /** GenesisState defines the mint module's genesis state. */
 export interface GenesisStateAmino {
   /** minter is a space for holding current inflation information. */
-  minter?: MinterAmino | undefined;
+  minter: MinterAmino | undefined;
   /** params defines all the parameters of the module. */
-  params?: ParamsAmino | undefined;
+  params: ParamsAmino | undefined;
 }
 export interface GenesisStateAminoMsg {
   type: "cosmos-sdk/GenesisState";
@@ -72,15 +72,19 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      minter: object?.minter ? Minter.fromAmino(object.minter) : undefined,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseGenesisState();
+    if (object.minter !== undefined && object.minter !== null) {
+      message.minter = Minter.fromAmino(object.minter);
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.minter = message.minter ? Minter.toAmino(message.minter, useInterfaces) : undefined;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
+    obj.minter = message.minter ? Minter.toAmino(message.minter, useInterfaces) : Minter.fromPartial({});
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

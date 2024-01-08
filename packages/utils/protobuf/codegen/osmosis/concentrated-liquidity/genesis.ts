@@ -38,9 +38,9 @@ export interface FullTickProtoMsg {
  */
 export interface FullTickAmino {
   /** pool id associated with the tick. */
-  pool_id: string;
+  pool_id?: string;
   /** tick's index. */
-  tick_index: string;
+  tick_index?: string;
   /** tick's info. */
   info?: TickInfoAmino | undefined;
 }
@@ -86,11 +86,11 @@ export interface PoolDataAmino {
   /** pool struct */
   pool?: AnyAmino | undefined;
   /** pool's ticks */
-  ticks: FullTickAmino[];
+  ticks?: FullTickAmino[];
   spread_reward_accumulator?: AccumObjectAmino | undefined;
-  incentives_accumulators: AccumObjectAmino[];
+  incentives_accumulators?: AccumObjectAmino[];
   /** incentive records to be set */
-  incentive_records: IncentiveRecordAmino[];
+  incentive_records?: IncentiveRecordAmino[];
 }
 export interface PoolDataAminoMsg {
   type: "osmosis/concentratedliquidity/pool-data";
@@ -119,9 +119,9 @@ export interface PositionDataProtoMsg {
 }
 export interface PositionDataAmino {
   position?: PositionAmino | undefined;
-  lock_id: string;
+  lock_id?: string;
   spread_reward_accum_record?: RecordAmino | undefined;
-  uptime_accum_records: RecordAmino[];
+  uptime_accum_records?: RecordAmino[];
 }
 export interface PositionDataAminoMsg {
   type: "osmosis/concentratedliquidity/position-data";
@@ -152,10 +152,10 @@ export interface GenesisStateAmino {
   /** params are all the parameters of the module */
   params?: ParamsAmino | undefined;
   /** pool data containining serialized pool struct and ticks. */
-  pool_data: PoolDataAmino[];
-  position_data: PositionDataAmino[];
-  next_position_id: string;
-  next_incentive_record_id: string;
+  pool_data?: PoolDataAmino[];
+  position_data?: PositionDataAmino[];
+  next_position_id?: string;
+  next_incentive_record_id?: string;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/concentratedliquidity/genesis-state";
@@ -180,7 +180,7 @@ export interface AccumObjectProtoMsg {
 }
 export interface AccumObjectAmino {
   /** Accumulator's name (pulled from AccumulatorContent) */
-  name: string;
+  name?: string;
   accum_content?: AccumulatorContentAmino | undefined;
 }
 export interface AccumObjectAminoMsg {
@@ -243,11 +243,17 @@ export const FullTick = {
     return message;
   },
   fromAmino(object: FullTickAmino): FullTick {
-    return {
-      poolId: BigInt(object.pool_id),
-      tickIndex: BigInt(object.tick_index),
-      info: object?.info ? TickInfo.fromAmino(object.info) : undefined
-    };
+    const message = createBaseFullTick();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.tick_index !== undefined && object.tick_index !== null) {
+      message.tickIndex = BigInt(object.tick_index);
+    }
+    if (object.info !== undefined && object.info !== null) {
+      message.info = TickInfo.fromAmino(object.info);
+    }
+    return message;
   },
   toAmino(message: FullTick, useInterfaces: boolean = false): FullTickAmino {
     const obj: any = {};
@@ -346,13 +352,17 @@ export const PoolData = {
     return message;
   },
   fromAmino(object: PoolDataAmino): PoolData {
-    return {
-      pool: object?.pool ? PoolI_FromAmino(object.pool) : undefined,
-      ticks: Array.isArray(object?.ticks) ? object.ticks.map((e: any) => FullTick.fromAmino(e)) : [],
-      spreadRewardAccumulator: object?.spread_reward_accumulator ? AccumObject.fromAmino(object.spread_reward_accumulator) : undefined,
-      incentivesAccumulators: Array.isArray(object?.incentives_accumulators) ? object.incentives_accumulators.map((e: any) => AccumObject.fromAmino(e)) : [],
-      incentiveRecords: Array.isArray(object?.incentive_records) ? object.incentive_records.map((e: any) => IncentiveRecord.fromAmino(e)) : []
-    };
+    const message = createBasePoolData();
+    if (object.pool !== undefined && object.pool !== null) {
+      message.pool = PoolI_FromAmino(object.pool);
+    }
+    message.ticks = object.ticks?.map(e => FullTick.fromAmino(e)) || [];
+    if (object.spread_reward_accumulator !== undefined && object.spread_reward_accumulator !== null) {
+      message.spreadRewardAccumulator = AccumObject.fromAmino(object.spread_reward_accumulator);
+    }
+    message.incentivesAccumulators = object.incentives_accumulators?.map(e => AccumObject.fromAmino(e)) || [];
+    message.incentiveRecords = object.incentive_records?.map(e => IncentiveRecord.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: PoolData, useInterfaces: boolean = false): PoolDataAmino {
     const obj: any = {};
@@ -457,12 +467,18 @@ export const PositionData = {
     return message;
   },
   fromAmino(object: PositionDataAmino): PositionData {
-    return {
-      position: object?.position ? Position.fromAmino(object.position) : undefined,
-      lockId: BigInt(object.lock_id),
-      spreadRewardAccumRecord: object?.spread_reward_accum_record ? Record.fromAmino(object.spread_reward_accum_record) : undefined,
-      uptimeAccumRecords: Array.isArray(object?.uptime_accum_records) ? object.uptime_accum_records.map((e: any) => Record.fromAmino(e)) : []
-    };
+    const message = createBasePositionData();
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Position.fromAmino(object.position);
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.spread_reward_accum_record !== undefined && object.spread_reward_accum_record !== null) {
+      message.spreadRewardAccumRecord = Record.fromAmino(object.spread_reward_accum_record);
+    }
+    message.uptimeAccumRecords = object.uptime_accum_records?.map(e => Record.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: PositionData, useInterfaces: boolean = false): PositionDataAmino {
     const obj: any = {};
@@ -566,13 +582,19 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      poolData: Array.isArray(object?.pool_data) ? object.pool_data.map((e: any) => PoolData.fromAmino(e)) : [],
-      positionData: Array.isArray(object?.position_data) ? object.position_data.map((e: any) => PositionData.fromAmino(e)) : [],
-      nextPositionId: BigInt(object.next_position_id),
-      nextIncentiveRecordId: BigInt(object.next_incentive_record_id)
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.poolData = object.pool_data?.map(e => PoolData.fromAmino(e)) || [];
+    message.positionData = object.position_data?.map(e => PositionData.fromAmino(e)) || [];
+    if (object.next_position_id !== undefined && object.next_position_id !== null) {
+      message.nextPositionId = BigInt(object.next_position_id);
+    }
+    if (object.next_incentive_record_id !== undefined && object.next_incentive_record_id !== null) {
+      message.nextIncentiveRecordId = BigInt(object.next_incentive_record_id);
+    }
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
@@ -657,10 +679,14 @@ export const AccumObject = {
     return message;
   },
   fromAmino(object: AccumObjectAmino): AccumObject {
-    return {
-      name: object.name,
-      accumContent: object?.accum_content ? AccumulatorContent.fromAmino(object.accum_content) : undefined
-    };
+    const message = createBaseAccumObject();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.accum_content !== undefined && object.accum_content !== null) {
+      message.accumContent = AccumulatorContent.fromAmino(object.accum_content);
+    }
+    return message;
   },
   toAmino(message: AccumObject, useInterfaces: boolean = false): AccumObjectAmino {
     const obj: any = {};

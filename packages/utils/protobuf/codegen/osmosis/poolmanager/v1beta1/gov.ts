@@ -19,9 +19,9 @@ export interface DenomPairTakerFeeProposalProtoMsg {
  * for one or more denom pairs.
  */
 export interface DenomPairTakerFeeProposalAmino {
-  title: string;
-  description: string;
-  denom_pair_taker_fee: DenomPairTakerFeeAmino[];
+  title?: string;
+  description?: string;
+  denom_pair_taker_fee?: DenomPairTakerFeeAmino[];
 }
 export interface DenomPairTakerFeeProposalAminoMsg {
   type: "osmosis/poolmanager/denom-pair-taker-fee-proposal";
@@ -88,11 +88,15 @@ export const DenomPairTakerFeeProposal = {
     return message;
   },
   fromAmino(object: DenomPairTakerFeeProposalAmino): DenomPairTakerFeeProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      denomPairTakerFee: Array.isArray(object?.denom_pair_taker_fee) ? object.denom_pair_taker_fee.map((e: any) => DenomPairTakerFee.fromAmino(e)) : []
-    };
+    const message = createBaseDenomPairTakerFeeProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    message.denomPairTakerFee = object.denom_pair_taker_fee?.map(e => DenomPairTakerFee.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: DenomPairTakerFeeProposal, useInterfaces: boolean = false): DenomPairTakerFeeProposalAmino {
     const obj: any = {};

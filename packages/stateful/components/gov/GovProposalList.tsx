@@ -26,7 +26,6 @@ export const GovProposalList = () => {
     govProposalsSelector({
       chainId: chain.chain_id,
       status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-      all: true,
     }),
     {
       proposals: [],
@@ -37,7 +36,6 @@ export const GovProposalList = () => {
     govProposalsSelector({
       chainId: chain.chain_id,
       status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
-      all: true,
     }),
     {
       proposals: [],

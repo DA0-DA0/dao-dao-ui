@@ -21,7 +21,7 @@ export interface CoinProtoMsg {
  * signatures required by gogoproto.
  */
 export interface CoinAmino {
-  denom: string;
+  denom?: string;
   amount: string;
 }
 export interface CoinAminoMsg {
@@ -59,8 +59,8 @@ export interface DecCoinProtoMsg {
  * signatures required by gogoproto.
  */
 export interface DecCoinAmino {
-  denom: string;
-  amount: string;
+  denom?: string;
+  amount?: string;
 }
 export interface DecCoinAminoMsg {
   type: "cosmos-sdk/DecCoin";
@@ -120,15 +120,19 @@ export const Coin = {
     return message;
   },
   fromAmino(object: CoinAmino): Coin {
-    return {
-      denom: object.denom,
-      amount: object.amount
-    };
+    const message = createBaseCoin();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    return message;
   },
   toAmino(message: Coin, useInterfaces: boolean = false): CoinAmino {
     const obj: any = {};
     obj.denom = message.denom;
-    obj.amount = message.amount;
+    obj.amount = message.amount ?? "";
     return obj;
   },
   fromAminoMsg(object: CoinAminoMsg): Coin {
@@ -197,10 +201,14 @@ export const DecCoin = {
     return message;
   },
   fromAmino(object: DecCoinAmino): DecCoin {
-    return {
-      denom: object.denom,
-      amount: object.amount
-    };
+    const message = createBaseDecCoin();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    return message;
   },
   toAmino(message: DecCoin, useInterfaces: boolean = false): DecCoinAmino {
     const obj: any = {};

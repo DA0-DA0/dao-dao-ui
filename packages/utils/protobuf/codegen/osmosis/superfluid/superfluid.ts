@@ -1,7 +1,6 @@
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { SyntheticLock, SyntheticLockAmino, SyntheticLockSDKType } from "../lockup/lock";
 import { BinaryReader, BinaryWriter } from "../../binary";
-import { isSet } from "../../helpers";
 import { Decimal } from "@cosmjs/math";
 /**
  * SuperfluidAssetType indicates whether the superfluid asset is
@@ -60,12 +59,12 @@ export interface SuperfluidAssetProtoMsg {
 }
 /** SuperfluidAsset stores the pair of superfluid asset type and denom pair */
 export interface SuperfluidAssetAmino {
-  denom: string;
+  denom?: string;
   /**
    * AssetType indicates whether the superfluid asset is a native token or an lp
    * share
    */
-  asset_type: SuperfluidAssetType;
+  asset_type?: SuperfluidAssetType;
 }
 export interface SuperfluidAssetAminoMsg {
   type: "osmosis/superfluid-asset";
@@ -99,10 +98,10 @@ export interface SuperfluidIntermediaryAccountProtoMsg {
  */
 export interface SuperfluidIntermediaryAccountAmino {
   /** Denom indicates the denom of the superfluid asset. */
-  denom: string;
-  val_addr: string;
+  denom?: string;
+  val_addr?: string;
   /** perpetual gauge for rewards distribution */
-  gauge_id: string;
+  gauge_id?: string;
 }
 export interface SuperfluidIntermediaryAccountAminoMsg {
   type: "osmosis/superfluid-intermediary-account";
@@ -147,10 +146,10 @@ export interface OsmoEquivalentMultiplierRecordProtoMsg {
  * change.
  */
 export interface OsmoEquivalentMultiplierRecordAmino {
-  epoch_number: string;
+  epoch_number?: string;
   /** superfluid asset denom, can be LP token or native token */
-  denom: string;
-  multiplier: string;
+  denom?: string;
+  multiplier?: string;
 }
 export interface OsmoEquivalentMultiplierRecordAminoMsg {
   type: "osmosis/osmo-equivalent-multiplier-record";
@@ -189,8 +188,8 @@ export interface SuperfluidDelegationRecordProtoMsg {
  * delegations of an account in the state machine in a user friendly form.
  */
 export interface SuperfluidDelegationRecordAmino {
-  delegator_address: string;
-  validator_address: string;
+  delegator_address?: string;
+  validator_address?: string;
   delegation_amount?: CoinAmino | undefined;
   equivalent_staked_amount?: CoinAmino | undefined;
 }
@@ -227,8 +226,8 @@ export interface LockIdIntermediaryAccountConnectionProtoMsg {
  * via lp shares.
  */
 export interface LockIdIntermediaryAccountConnectionAmino {
-  lock_id: string;
-  intermediary_account: string;
+  lock_id?: string;
+  intermediary_account?: string;
 }
 export interface LockIdIntermediaryAccountConnectionAminoMsg {
   type: "osmosis/lock-id-intermediary-account-connection";
@@ -251,7 +250,7 @@ export interface UnpoolWhitelistedPoolsProtoMsg {
   value: Uint8Array;
 }
 export interface UnpoolWhitelistedPoolsAmino {
-  ids: string[];
+  ids?: string[];
 }
 export interface UnpoolWhitelistedPoolsAminoMsg {
   type: "osmosis/unpool-whitelisted-pools";
@@ -273,9 +272,9 @@ export interface ConcentratedPoolUserPositionRecordProtoMsg {
   value: Uint8Array;
 }
 export interface ConcentratedPoolUserPositionRecordAmino {
-  validator_address: string;
-  position_id: string;
-  lock_id: string;
+  validator_address?: string;
+  position_id?: string;
+  lock_id?: string;
   synthetic_lock?: SyntheticLockAmino | undefined;
   delegation_amount?: CoinAmino | undefined;
   equivalent_staked_amount?: CoinAmino | undefined;
@@ -336,15 +335,19 @@ export const SuperfluidAsset = {
     return message;
   },
   fromAmino(object: SuperfluidAssetAmino): SuperfluidAsset {
-    return {
-      denom: object.denom,
-      assetType: isSet(object.asset_type) ? superfluidAssetTypeFromJSON(object.asset_type) : -1
-    };
+    const message = createBaseSuperfluidAsset();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.asset_type !== undefined && object.asset_type !== null) {
+      message.assetType = superfluidAssetTypeFromJSON(object.asset_type);
+    }
+    return message;
   },
   toAmino(message: SuperfluidAsset, useInterfaces: boolean = false): SuperfluidAssetAmino {
     const obj: any = {};
     obj.denom = message.denom;
-    obj.asset_type = message.assetType;
+    obj.asset_type = superfluidAssetTypeToJSON(message.assetType);
     return obj;
   },
   fromAminoMsg(object: SuperfluidAssetAminoMsg): SuperfluidAsset {
@@ -421,11 +424,17 @@ export const SuperfluidIntermediaryAccount = {
     return message;
   },
   fromAmino(object: SuperfluidIntermediaryAccountAmino): SuperfluidIntermediaryAccount {
-    return {
-      denom: object.denom,
-      valAddr: object.val_addr,
-      gaugeId: BigInt(object.gauge_id)
-    };
+    const message = createBaseSuperfluidIntermediaryAccount();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.val_addr !== undefined && object.val_addr !== null) {
+      message.valAddr = object.val_addr;
+    }
+    if (object.gauge_id !== undefined && object.gauge_id !== null) {
+      message.gaugeId = BigInt(object.gauge_id);
+    }
+    return message;
   },
   toAmino(message: SuperfluidIntermediaryAccount, useInterfaces: boolean = false): SuperfluidIntermediaryAccountAmino {
     const obj: any = {};
@@ -508,11 +517,17 @@ export const OsmoEquivalentMultiplierRecord = {
     return message;
   },
   fromAmino(object: OsmoEquivalentMultiplierRecordAmino): OsmoEquivalentMultiplierRecord {
-    return {
-      epochNumber: BigInt(object.epoch_number),
-      denom: object.denom,
-      multiplier: object.multiplier
-    };
+    const message = createBaseOsmoEquivalentMultiplierRecord();
+    if (object.epoch_number !== undefined && object.epoch_number !== null) {
+      message.epochNumber = BigInt(object.epoch_number);
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.multiplier !== undefined && object.multiplier !== null) {
+      message.multiplier = object.multiplier;
+    }
+    return message;
   },
   toAmino(message: OsmoEquivalentMultiplierRecord, useInterfaces: boolean = false): OsmoEquivalentMultiplierRecordAmino {
     const obj: any = {};
@@ -603,12 +618,20 @@ export const SuperfluidDelegationRecord = {
     return message;
   },
   fromAmino(object: SuperfluidDelegationRecordAmino): SuperfluidDelegationRecord {
-    return {
-      delegatorAddress: object.delegator_address,
-      validatorAddress: object.validator_address,
-      delegationAmount: object?.delegation_amount ? Coin.fromAmino(object.delegation_amount) : undefined,
-      equivalentStakedAmount: object?.equivalent_staked_amount ? Coin.fromAmino(object.equivalent_staked_amount) : undefined
-    };
+    const message = createBaseSuperfluidDelegationRecord();
+    if (object.delegator_address !== undefined && object.delegator_address !== null) {
+      message.delegatorAddress = object.delegator_address;
+    }
+    if (object.validator_address !== undefined && object.validator_address !== null) {
+      message.validatorAddress = object.validator_address;
+    }
+    if (object.delegation_amount !== undefined && object.delegation_amount !== null) {
+      message.delegationAmount = Coin.fromAmino(object.delegation_amount);
+    }
+    if (object.equivalent_staked_amount !== undefined && object.equivalent_staked_amount !== null) {
+      message.equivalentStakedAmount = Coin.fromAmino(object.equivalent_staked_amount);
+    }
+    return message;
   },
   toAmino(message: SuperfluidDelegationRecord, useInterfaces: boolean = false): SuperfluidDelegationRecordAmino {
     const obj: any = {};
@@ -684,10 +707,14 @@ export const LockIdIntermediaryAccountConnection = {
     return message;
   },
   fromAmino(object: LockIdIntermediaryAccountConnectionAmino): LockIdIntermediaryAccountConnection {
-    return {
-      lockId: BigInt(object.lock_id),
-      intermediaryAccount: object.intermediary_account
-    };
+    const message = createBaseLockIdIntermediaryAccountConnection();
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.intermediary_account !== undefined && object.intermediary_account !== null) {
+      message.intermediaryAccount = object.intermediary_account;
+    }
+    return message;
   },
   toAmino(message: LockIdIntermediaryAccountConnection, useInterfaces: boolean = false): LockIdIntermediaryAccountConnectionAmino {
     const obj: any = {};
@@ -762,9 +789,9 @@ export const UnpoolWhitelistedPools = {
     return message;
   },
   fromAmino(object: UnpoolWhitelistedPoolsAmino): UnpoolWhitelistedPools {
-    return {
-      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => BigInt(e)) : []
-    };
+    const message = createBaseUnpoolWhitelistedPools();
+    message.ids = object.ids?.map(e => BigInt(e)) || [];
+    return message;
   },
   toAmino(message: UnpoolWhitelistedPools, useInterfaces: boolean = false): UnpoolWhitelistedPoolsAmino {
     const obj: any = {};
@@ -873,14 +900,26 @@ export const ConcentratedPoolUserPositionRecord = {
     return message;
   },
   fromAmino(object: ConcentratedPoolUserPositionRecordAmino): ConcentratedPoolUserPositionRecord {
-    return {
-      validatorAddress: object.validator_address,
-      positionId: BigInt(object.position_id),
-      lockId: BigInt(object.lock_id),
-      syntheticLock: object?.synthetic_lock ? SyntheticLock.fromAmino(object.synthetic_lock) : undefined,
-      delegationAmount: object?.delegation_amount ? Coin.fromAmino(object.delegation_amount) : undefined,
-      equivalentStakedAmount: object?.equivalent_staked_amount ? Coin.fromAmino(object.equivalent_staked_amount) : undefined
-    };
+    const message = createBaseConcentratedPoolUserPositionRecord();
+    if (object.validator_address !== undefined && object.validator_address !== null) {
+      message.validatorAddress = object.validator_address;
+    }
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.synthetic_lock !== undefined && object.synthetic_lock !== null) {
+      message.syntheticLock = SyntheticLock.fromAmino(object.synthetic_lock);
+    }
+    if (object.delegation_amount !== undefined && object.delegation_amount !== null) {
+      message.delegationAmount = Coin.fromAmino(object.delegation_amount);
+    }
+    if (object.equivalent_staked_amount !== undefined && object.equivalent_staked_amount !== null) {
+      message.equivalentStakedAmount = Coin.fromAmino(object.equivalent_staked_amount);
+    }
+    return message;
   },
   toAmino(message: ConcentratedPoolUserPositionRecord, useInterfaces: boolean = false): ConcentratedPoolUserPositionRecordAmino {
     const obj: any = {};

@@ -13,9 +13,9 @@ export interface MsgLockTokensProtoMsg {
   value: Uint8Array;
 }
 export interface MsgLockTokensAmino {
-  owner: string;
+  owner?: string;
   duration?: DurationAmino | undefined;
-  coins: CoinAmino[];
+  coins?: CoinAmino[];
 }
 export interface MsgLockTokensAminoMsg {
   type: "osmosis/lockup/lock-tokens";
@@ -34,7 +34,7 @@ export interface MsgLockTokensResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgLockTokensResponseAmino {
-  ID: string;
+  ID?: string;
 }
 export interface MsgLockTokensResponseAminoMsg {
   type: "osmosis/lockup/lock-tokens-response";
@@ -51,7 +51,7 @@ export interface MsgBeginUnlockingAllProtoMsg {
   value: Uint8Array;
 }
 export interface MsgBeginUnlockingAllAmino {
-  owner: string;
+  owner?: string;
 }
 export interface MsgBeginUnlockingAllAminoMsg {
   type: "osmosis/lockup/begin-unlock-tokens";
@@ -68,7 +68,7 @@ export interface MsgBeginUnlockingAllResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgBeginUnlockingAllResponseAmino {
-  unlocks: PeriodLockAmino[];
+  unlocks?: PeriodLockAmino[];
 }
 export interface MsgBeginUnlockingAllResponseAminoMsg {
   type: "osmosis/lockup/begin-unlocking-all-response";
@@ -88,10 +88,10 @@ export interface MsgBeginUnlockingProtoMsg {
   value: Uint8Array;
 }
 export interface MsgBeginUnlockingAmino {
-  owner: string;
-  ID: string;
+  owner?: string;
+  ID?: string;
   /** Amount of unlocking coins. Unlock all if not set. */
-  coins: CoinAmino[];
+  coins?: CoinAmino[];
 }
 export interface MsgBeginUnlockingAminoMsg {
   type: "osmosis/lockup/begin-unlock-period-lock";
@@ -111,8 +111,8 @@ export interface MsgBeginUnlockingResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgBeginUnlockingResponseAmino {
-  success: boolean;
-  unlockingLockID: string;
+  success?: boolean;
+  unlockingLockID?: string;
 }
 export interface MsgBeginUnlockingResponseAminoMsg {
   type: "osmosis/lockup/begin-unlocking-response";
@@ -144,8 +144,8 @@ export interface MsgExtendLockupProtoMsg {
  * The new duration is longer than the original.
  */
 export interface MsgExtendLockupAmino {
-  owner: string;
-  ID: string;
+  owner?: string;
+  ID?: string;
   /**
    * duration to be set. fails if lower than the current duration, or is
    * unlocking
@@ -173,7 +173,7 @@ export interface MsgExtendLockupResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgExtendLockupResponseAmino {
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgExtendLockupResponseAminoMsg {
   type: "osmosis/lockup/extend-lockup-response";
@@ -201,10 +201,10 @@ export interface MsgForceUnlockProtoMsg {
  * addresses registered via governance.
  */
 export interface MsgForceUnlockAmino {
-  owner: string;
-  ID: string;
+  owner?: string;
+  ID?: string;
   /** Amount of unlocking coins. Unlock all if not set. */
-  coins: CoinAmino[];
+  coins?: CoinAmino[];
 }
 export interface MsgForceUnlockAminoMsg {
   type: "osmosis/lockup/force-unlock-tokens";
@@ -227,7 +227,7 @@ export interface MsgForceUnlockResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgForceUnlockResponseAmino {
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgForceUnlockResponseAminoMsg {
   type: "osmosis/lockup/force-unlock-response";
@@ -246,9 +246,9 @@ export interface MsgSetRewardReceiverAddressProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSetRewardReceiverAddressAmino {
-  owner: string;
-  lockID: string;
-  reward_receiver: string;
+  owner?: string;
+  lockID?: string;
+  reward_receiver?: string;
 }
 export interface MsgSetRewardReceiverAddressAminoMsg {
   type: "osmosis/lockup/set-reward-receiver-address";
@@ -267,7 +267,7 @@ export interface MsgSetRewardReceiverAddressResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSetRewardReceiverAddressResponseAmino {
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgSetRewardReceiverAddressResponseAminoMsg {
   type: "osmosis/lockup/set-reward-receiver-address-response";
@@ -328,11 +328,15 @@ export const MsgLockTokens = {
     return message;
   },
   fromAmino(object: MsgLockTokensAmino): MsgLockTokens {
-    return {
-      owner: object.owner,
-      duration: object?.duration ? Duration.fromAmino(object.duration) : undefined,
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgLockTokens();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.duration !== undefined && object.duration !== null) {
+      message.duration = Duration.fromAmino(object.duration);
+    }
+    message.coins = object.coins?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgLockTokens, useInterfaces: boolean = false): MsgLockTokensAmino {
     const obj: any = {};
@@ -403,9 +407,11 @@ export const MsgLockTokensResponse = {
     return message;
   },
   fromAmino(object: MsgLockTokensResponseAmino): MsgLockTokensResponse {
-    return {
-      ID: BigInt(object.ID)
-    };
+    const message = createBaseMsgLockTokensResponse();
+    if (object.ID !== undefined && object.ID !== null) {
+      message.ID = BigInt(object.ID);
+    }
+    return message;
   },
   toAmino(message: MsgLockTokensResponse, useInterfaces: boolean = false): MsgLockTokensResponseAmino {
     const obj: any = {};
@@ -470,9 +476,11 @@ export const MsgBeginUnlockingAll = {
     return message;
   },
   fromAmino(object: MsgBeginUnlockingAllAmino): MsgBeginUnlockingAll {
-    return {
-      owner: object.owner
-    };
+    const message = createBaseMsgBeginUnlockingAll();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    return message;
   },
   toAmino(message: MsgBeginUnlockingAll, useInterfaces: boolean = false): MsgBeginUnlockingAllAmino {
     const obj: any = {};
@@ -537,9 +545,9 @@ export const MsgBeginUnlockingAllResponse = {
     return message;
   },
   fromAmino(object: MsgBeginUnlockingAllResponseAmino): MsgBeginUnlockingAllResponse {
-    return {
-      unlocks: Array.isArray(object?.unlocks) ? object.unlocks.map((e: any) => PeriodLock.fromAmino(e)) : []
-    };
+    const message = createBaseMsgBeginUnlockingAllResponse();
+    message.unlocks = object.unlocks?.map(e => PeriodLock.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgBeginUnlockingAllResponse, useInterfaces: boolean = false): MsgBeginUnlockingAllResponseAmino {
     const obj: any = {};
@@ -624,11 +632,15 @@ export const MsgBeginUnlocking = {
     return message;
   },
   fromAmino(object: MsgBeginUnlockingAmino): MsgBeginUnlocking {
-    return {
-      owner: object.owner,
-      ID: BigInt(object.ID),
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgBeginUnlocking();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.ID !== undefined && object.ID !== null) {
+      message.ID = BigInt(object.ID);
+    }
+    message.coins = object.coins?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgBeginUnlocking, useInterfaces: boolean = false): MsgBeginUnlockingAmino {
     const obj: any = {};
@@ -707,10 +719,14 @@ export const MsgBeginUnlockingResponse = {
     return message;
   },
   fromAmino(object: MsgBeginUnlockingResponseAmino): MsgBeginUnlockingResponse {
-    return {
-      success: object.success,
-      unlockingLockID: BigInt(object.unlockingLockID)
-    };
+    const message = createBaseMsgBeginUnlockingResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    if (object.unlockingLockID !== undefined && object.unlockingLockID !== null) {
+      message.unlockingLockID = BigInt(object.unlockingLockID);
+    }
+    return message;
   },
   toAmino(message: MsgBeginUnlockingResponse, useInterfaces: boolean = false): MsgBeginUnlockingResponseAmino {
     const obj: any = {};
@@ -792,11 +808,17 @@ export const MsgExtendLockup = {
     return message;
   },
   fromAmino(object: MsgExtendLockupAmino): MsgExtendLockup {
-    return {
-      owner: object.owner,
-      ID: BigInt(object.ID),
-      duration: object?.duration ? Duration.fromAmino(object.duration) : undefined
-    };
+    const message = createBaseMsgExtendLockup();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.ID !== undefined && object.ID !== null) {
+      message.ID = BigInt(object.ID);
+    }
+    if (object.duration !== undefined && object.duration !== null) {
+      message.duration = Duration.fromAmino(object.duration);
+    }
+    return message;
   },
   toAmino(message: MsgExtendLockup, useInterfaces: boolean = false): MsgExtendLockupAmino {
     const obj: any = {};
@@ -863,9 +885,11 @@ export const MsgExtendLockupResponse = {
     return message;
   },
   fromAmino(object: MsgExtendLockupResponseAmino): MsgExtendLockupResponse {
-    return {
-      success: object.success
-    };
+    const message = createBaseMsgExtendLockupResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(message: MsgExtendLockupResponse, useInterfaces: boolean = false): MsgExtendLockupResponseAmino {
     const obj: any = {};
@@ -946,11 +970,15 @@ export const MsgForceUnlock = {
     return message;
   },
   fromAmino(object: MsgForceUnlockAmino): MsgForceUnlock {
-    return {
-      owner: object.owner,
-      ID: BigInt(object.ID),
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgForceUnlock();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.ID !== undefined && object.ID !== null) {
+      message.ID = BigInt(object.ID);
+    }
+    message.coins = object.coins?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgForceUnlock, useInterfaces: boolean = false): MsgForceUnlockAmino {
     const obj: any = {};
@@ -1021,9 +1049,11 @@ export const MsgForceUnlockResponse = {
     return message;
   },
   fromAmino(object: MsgForceUnlockResponseAmino): MsgForceUnlockResponse {
-    return {
-      success: object.success
-    };
+    const message = createBaseMsgForceUnlockResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(message: MsgForceUnlockResponse, useInterfaces: boolean = false): MsgForceUnlockResponseAmino {
     const obj: any = {};
@@ -1104,11 +1134,17 @@ export const MsgSetRewardReceiverAddress = {
     return message;
   },
   fromAmino(object: MsgSetRewardReceiverAddressAmino): MsgSetRewardReceiverAddress {
-    return {
-      owner: object.owner,
-      lockID: BigInt(object.lockID),
-      rewardReceiver: object.reward_receiver
-    };
+    const message = createBaseMsgSetRewardReceiverAddress();
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    if (object.lockID !== undefined && object.lockID !== null) {
+      message.lockID = BigInt(object.lockID);
+    }
+    if (object.reward_receiver !== undefined && object.reward_receiver !== null) {
+      message.rewardReceiver = object.reward_receiver;
+    }
+    return message;
   },
   toAmino(message: MsgSetRewardReceiverAddress, useInterfaces: boolean = false): MsgSetRewardReceiverAddressAmino {
     const obj: any = {};
@@ -1175,9 +1211,11 @@ export const MsgSetRewardReceiverAddressResponse = {
     return message;
   },
   fromAmino(object: MsgSetRewardReceiverAddressResponseAmino): MsgSetRewardReceiverAddressResponse {
-    return {
-      success: object.success
-    };
+    const message = createBaseMsgSetRewardReceiverAddressResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(message: MsgSetRewardReceiverAddressResponse, useInterfaces: boolean = false): MsgSetRewardReceiverAddressResponseAmino {
     const obj: any = {};

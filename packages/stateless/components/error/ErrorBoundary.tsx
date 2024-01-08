@@ -4,7 +4,6 @@ import { WithTranslationProps, withTranslation } from 'react-i18next'
 
 import { processError } from '@dao-dao/utils'
 
-import { ButtonLink } from '../buttons'
 import { ErrorPage } from './ErrorPage'
 
 interface ErrorBoundaryProps extends WithTranslationProps {
@@ -37,15 +36,13 @@ class ErrorBoundaryInner extends Component<
   render() {
     return this.state.hasError ? (
       <ErrorPage
+        className="!gap-2"
         title={
           this.props.i18n?.t?.('error.unexpectedError') ??
           'An unexpected error occurred.'
         }
+        titleClassName="!title-text"
       >
-        <ButtonLink href="/" variant="secondary">
-          {this.props.i18n?.t?.('button.returnHome') ?? 'Return home'}
-        </ButtonLink>
-
         {!!this.state.error && (
           <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
             {this.state.error}

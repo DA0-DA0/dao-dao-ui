@@ -13,7 +13,7 @@ export interface UserValidatorPreferencesRequestProtoMsg {
 /** Request type for UserValidatorPreferences. */
 export interface UserValidatorPreferencesRequestAmino {
   /** user account address */
-  address: string;
+  address?: string;
 }
 export interface UserValidatorPreferencesRequestAminoMsg {
   type: "osmosis/valsetpref/user-validator-preferences-request";
@@ -33,7 +33,7 @@ export interface UserValidatorPreferencesResponseProtoMsg {
 }
 /** Response type the QueryUserValidatorPreferences query request */
 export interface UserValidatorPreferencesResponseAmino {
-  preferences: ValidatorPreferenceAmino[];
+  preferences?: ValidatorPreferenceAmino[];
 }
 export interface UserValidatorPreferencesResponseAminoMsg {
   type: "osmosis/valsetpref/user-validator-preferences-response";
@@ -79,9 +79,11 @@ export const UserValidatorPreferencesRequest = {
     return message;
   },
   fromAmino(object: UserValidatorPreferencesRequestAmino): UserValidatorPreferencesRequest {
-    return {
-      address: object.address
-    };
+    const message = createBaseUserValidatorPreferencesRequest();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    return message;
   },
   toAmino(message: UserValidatorPreferencesRequest, useInterfaces: boolean = false): UserValidatorPreferencesRequestAmino {
     const obj: any = {};
@@ -146,9 +148,9 @@ export const UserValidatorPreferencesResponse = {
     return message;
   },
   fromAmino(object: UserValidatorPreferencesResponseAmino): UserValidatorPreferencesResponse {
-    return {
-      preferences: Array.isArray(object?.preferences) ? object.preferences.map((e: any) => ValidatorPreference.fromAmino(e)) : []
-    };
+    const message = createBaseUserValidatorPreferencesResponse();
+    message.preferences = object.preferences?.map(e => ValidatorPreference.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: UserValidatorPreferencesResponse, useInterfaces: boolean = false): UserValidatorPreferencesResponseAmino {
     const obj: any = {};
