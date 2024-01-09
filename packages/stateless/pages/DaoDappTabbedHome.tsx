@@ -29,11 +29,13 @@ export const DaoDappTabbedHome = ({
   DaoInfoBar,
   rightSidebarContent,
   SuspenseLoader,
+  ButtonLink,
   LinkWrapper,
   tabs,
   selectedTabId,
   onSelectTabId,
   breadcrumbsOverride,
+  parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
   const { config: chainConfig } = useChainContext()
@@ -89,10 +91,12 @@ export const DaoDappTabbedHome = ({
 
       <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
         <DaoSplashHeader
+          ButtonLink={ButtonLink}
           DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
           follow={follow}
+          parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         />
 
         <div className="h-[1px] bg-border-base" />
