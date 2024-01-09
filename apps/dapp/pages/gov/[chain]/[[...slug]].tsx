@@ -13,6 +13,7 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
+  ButtonLink,
   DaoCard,
   GovCommunityPoolTab,
   GovInfoBar,
@@ -115,6 +116,7 @@ const InnerGovHome = () => {
 
   return (
     <DaoDappTabbedHome
+      ButtonLink={ButtonLink}
       DaoInfoBar={GovInfoBar}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}

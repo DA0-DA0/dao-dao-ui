@@ -6,6 +6,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import {
   chainSupportsV1GovModuleSelector,
   genericTokenBalanceSelector,
+  genericTokenSelector,
   govParamsSelector,
 } from '@dao-dao/state'
 import {
@@ -163,7 +164,21 @@ const InnerComponent = ({
     ])
   }, [chainId, setValue, props.fieldNamePrefix, minDepositParams])
 
-  // Get address balances for min deposit denoms.
+  // Get token info for all deposit tokens.
+  const minDepositTokens = useCachedLoading(
+    waitForAll(
+      minDepositParams.map(({ denom }) =>
+        genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+          chainId,
+        })
+      )
+    ),
+    []
+  )
+
+  // Get address balances for all deposit tokens when wallet connected.
   const minDepositBalances = useCachedLoading(
     address
       ? waitForAll(
@@ -189,12 +204,18 @@ const InnerComponent = ({
       {...props}
       options={{
         supportsV1GovProposals,
-        minDeposits: minDepositBalances.loading
+        minDeposits: minDepositTokens.loading
           ? { loading: true }
           : {
               loading: false,
-              data: minDepositBalances.data.map((tokenBalance, index) => ({
-                ...tokenBalance,
+              data: minDepositTokens.data.map((token, index) => ({
+                token,
+                // Wallet's balance or 0 if not loaded.
+                balance:
+                  (!minDepositBalances.loading &&
+                    minDepositBalances.data[index]?.balance) ||
+                  '0',
+                // Min deposit required.
                 min: minDepositParams[index].amount,
               })),
             },
