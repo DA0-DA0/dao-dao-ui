@@ -9,7 +9,7 @@ export interface QueryCodeAuthorizationRequestProtoMsg {
   value: Uint8Array;
 }
 export interface QueryCodeAuthorizationRequestAmino {
-  code_id: string;
+  code_id?: string;
 }
 export interface QueryCodeAuthorizationRequestAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.QueryCodeAuthorizationRequest";
@@ -26,7 +26,7 @@ export interface QueryCodeAuthorizationResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryCodeAuthorizationResponseAmino {
-  methods: string[];
+  methods?: string[];
 }
 export interface QueryCodeAuthorizationResponseAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.QueryCodeAuthorizationResponse";
@@ -43,7 +43,7 @@ export interface QueryContractAuthorizationRequestProtoMsg {
   value: Uint8Array;
 }
 export interface QueryContractAuthorizationRequestAmino {
-  contract_address: string;
+  contract_address?: string;
 }
 export interface QueryContractAuthorizationRequestAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.QueryContractAuthorizationRequest";
@@ -60,7 +60,7 @@ export interface QueryContractAuthorizationResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryContractAuthorizationResponseAmino {
-  methods: string[];
+  methods?: string[];
 }
 export interface QueryContractAuthorizationResponseAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.QueryContractAuthorizationResponse";
@@ -117,8 +117,8 @@ export interface QueryAuthorizationsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryAuthorizationsResponseAmino {
-  code_authorizations: CodeAuthorizationAmino[];
-  contract_authorizations: ContractAuthorizationAmino[];
+  code_authorizations?: CodeAuthorizationAmino[];
+  contract_authorizations?: ContractAuthorizationAmino[];
 }
 export interface QueryAuthorizationsResponseAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.QueryAuthorizationsResponse";
@@ -164,9 +164,11 @@ export const QueryCodeAuthorizationRequest = {
     return message;
   },
   fromAmino(object: QueryCodeAuthorizationRequestAmino): QueryCodeAuthorizationRequest {
-    return {
-      codeId: BigInt(object.code_id)
-    };
+    const message = createBaseQueryCodeAuthorizationRequest();
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    return message;
   },
   toAmino(message: QueryCodeAuthorizationRequest, useInterfaces: boolean = false): QueryCodeAuthorizationRequestAmino {
     const obj: any = {};
@@ -225,9 +227,9 @@ export const QueryCodeAuthorizationResponse = {
     return message;
   },
   fromAmino(object: QueryCodeAuthorizationResponseAmino): QueryCodeAuthorizationResponse {
-    return {
-      methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
-    };
+    const message = createBaseQueryCodeAuthorizationResponse();
+    message.methods = object.methods?.map(e => e) || [];
+    return message;
   },
   toAmino(message: QueryCodeAuthorizationResponse, useInterfaces: boolean = false): QueryCodeAuthorizationResponseAmino {
     const obj: any = {};
@@ -290,9 +292,11 @@ export const QueryContractAuthorizationRequest = {
     return message;
   },
   fromAmino(object: QueryContractAuthorizationRequestAmino): QueryContractAuthorizationRequest {
-    return {
-      contractAddress: object.contract_address
-    };
+    const message = createBaseQueryContractAuthorizationRequest();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    return message;
   },
   toAmino(message: QueryContractAuthorizationRequest, useInterfaces: boolean = false): QueryContractAuthorizationRequestAmino {
     const obj: any = {};
@@ -351,9 +355,9 @@ export const QueryContractAuthorizationResponse = {
     return message;
   },
   fromAmino(object: QueryContractAuthorizationResponseAmino): QueryContractAuthorizationResponse {
-    return {
-      methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
-    };
+    const message = createBaseQueryContractAuthorizationResponse();
+    message.methods = object.methods?.map(e => e) || [];
+    return message;
   },
   toAmino(message: QueryContractAuthorizationResponse, useInterfaces: boolean = false): QueryContractAuthorizationResponseAmino {
     const obj: any = {};
@@ -407,7 +411,8 @@ export const QueryParamsRequest = {
     return message;
   },
   fromAmino(_: QueryParamsRequestAmino): QueryParamsRequest {
-    return {};
+    const message = createBaseQueryParamsRequest();
+    return message;
   },
   toAmino(_: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
@@ -465,9 +470,11 @@ export const QueryParamsResponse = {
     return message;
   },
   fromAmino(object: QueryParamsResponseAmino): QueryParamsResponse {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseQueryParamsResponse();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
@@ -517,7 +524,8 @@ export const QueryAuthorizationsRequest = {
     return message;
   },
   fromAmino(_: QueryAuthorizationsRequestAmino): QueryAuthorizationsRequest {
-    return {};
+    const message = createBaseQueryAuthorizationsRequest();
+    return message;
   },
   toAmino(_: QueryAuthorizationsRequest, useInterfaces: boolean = false): QueryAuthorizationsRequestAmino {
     const obj: any = {};
@@ -583,10 +591,10 @@ export const QueryAuthorizationsResponse = {
     return message;
   },
   fromAmino(object: QueryAuthorizationsResponseAmino): QueryAuthorizationsResponse {
-    return {
-      codeAuthorizations: Array.isArray(object?.code_authorizations) ? object.code_authorizations.map((e: any) => CodeAuthorization.fromAmino(e)) : [],
-      contractAuthorizations: Array.isArray(object?.contract_authorizations) ? object.contract_authorizations.map((e: any) => ContractAuthorization.fromAmino(e)) : []
-    };
+    const message = createBaseQueryAuthorizationsResponse();
+    message.codeAuthorizations = object.code_authorizations?.map(e => CodeAuthorization.fromAmino(e)) || [];
+    message.contractAuthorizations = object.contract_authorizations?.map(e => ContractAuthorization.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: QueryAuthorizationsResponse, useInterfaces: boolean = false): QueryAuthorizationsResponseAmino {
     const obj: any = {};

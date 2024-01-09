@@ -26,9 +26,9 @@ export interface UpdateFeeTokenProposalProtoMsg {
  * set to 0, it will remove the denom from the whitelisted set.
  */
 export interface UpdateFeeTokenProposalAmino {
-  title: string;
-  description: string;
-  feetokens: FeeTokenAmino[];
+  title?: string;
+  description?: string;
+  feetokens?: FeeTokenAmino[];
 }
 export interface UpdateFeeTokenProposalAminoMsg {
   type: "osmosis/UpdateFeeTokenProposal";
@@ -100,11 +100,15 @@ export const UpdateFeeTokenProposal = {
     return message;
   },
   fromAmino(object: UpdateFeeTokenProposalAmino): UpdateFeeTokenProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      feetokens: Array.isArray(object?.feetokens) ? object.feetokens.map((e: any) => FeeToken.fromAmino(e)) : []
-    };
+    const message = createBaseUpdateFeeTokenProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    message.feetokens = object.feetokens?.map(e => FeeToken.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: UpdateFeeTokenProposal, useInterfaces: boolean = false): UpdateFeeTokenProposalAmino {
     const obj: any = {};

@@ -10,8 +10,8 @@ export interface WeightedAddressProtoMsg {
   value: Uint8Array;
 }
 export interface WeightedAddressAmino {
-  address: string;
-  weight: string;
+  address?: string;
+  weight?: string;
 }
 export interface WeightedAddressAminoMsg {
   type: "/publicawesome.stargaze.alloc.v1beta1.WeightedAddress";
@@ -31,9 +31,9 @@ export interface DistributionProportionsProtoMsg {
   value: Uint8Array;
 }
 export interface DistributionProportionsAmino {
-  nft_incentives: string;
-  developer_rewards: string;
-  community_pool: string;
+  nft_incentives?: string;
+  developer_rewards?: string;
+  community_pool?: string;
 }
 export interface DistributionProportionsAminoMsg {
   type: "/publicawesome.stargaze.alloc.v1beta1.DistributionProportions";
@@ -65,14 +65,14 @@ export interface ParamsAmino {
   /** distribution_proportions defines the proportion of the minted denom */
   distribution_proportions?: DistributionProportionsAmino | undefined;
   /** addresses to receive developer rewards */
-  weighted_developer_rewards_receivers: WeightedAddressAmino[];
+  weighted_developer_rewards_receivers?: WeightedAddressAmino[];
   /** addresses to receive incentive rewards */
-  weighted_incentives_rewards_receivers: WeightedAddressAmino[];
+  weighted_incentives_rewards_receivers?: WeightedAddressAmino[];
   /**
    * SupplementAmount is the amount to be supplemented from the pool on top of
    * newly minted coins.
    */
-  supplement_amount: CoinAmino[];
+  supplement_amount?: CoinAmino[];
 }
 export interface ParamsAminoMsg {
   type: "/publicawesome.stargaze.alloc.v1beta1.Params";
@@ -128,10 +128,14 @@ export const WeightedAddress = {
     return message;
   },
   fromAmino(object: WeightedAddressAmino): WeightedAddress {
-    return {
-      address: object.address,
-      weight: object.weight
-    };
+    const message = createBaseWeightedAddress();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = object.weight;
+    }
+    return message;
   },
   toAmino(message: WeightedAddress, useInterfaces: boolean = false): WeightedAddressAmino {
     const obj: any = {};
@@ -207,11 +211,17 @@ export const DistributionProportions = {
     return message;
   },
   fromAmino(object: DistributionProportionsAmino): DistributionProportions {
-    return {
-      nftIncentives: object.nft_incentives,
-      developerRewards: object.developer_rewards,
-      communityPool: object.community_pool
-    };
+    const message = createBaseDistributionProportions();
+    if (object.nft_incentives !== undefined && object.nft_incentives !== null) {
+      message.nftIncentives = object.nft_incentives;
+    }
+    if (object.developer_rewards !== undefined && object.developer_rewards !== null) {
+      message.developerRewards = object.developer_rewards;
+    }
+    if (object.community_pool !== undefined && object.community_pool !== null) {
+      message.communityPool = object.community_pool;
+    }
+    return message;
   },
   toAmino(message: DistributionProportions, useInterfaces: boolean = false): DistributionProportionsAmino {
     const obj: any = {};
@@ -296,12 +306,14 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      distributionProportions: object?.distribution_proportions ? DistributionProportions.fromAmino(object.distribution_proportions) : undefined,
-      weightedDeveloperRewardsReceivers: Array.isArray(object?.weighted_developer_rewards_receivers) ? object.weighted_developer_rewards_receivers.map((e: any) => WeightedAddress.fromAmino(e)) : [],
-      weightedIncentivesRewardsReceivers: Array.isArray(object?.weighted_incentives_rewards_receivers) ? object.weighted_incentives_rewards_receivers.map((e: any) => WeightedAddress.fromAmino(e)) : [],
-      supplementAmount: Array.isArray(object?.supplement_amount) ? object.supplement_amount.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseParams();
+    if (object.distribution_proportions !== undefined && object.distribution_proportions !== null) {
+      message.distributionProportions = DistributionProportions.fromAmino(object.distribution_proportions);
+    }
+    message.weightedDeveloperRewardsReceivers = object.weighted_developer_rewards_receivers?.map(e => WeightedAddress.fromAmino(e)) || [];
+    message.weightedIncentivesRewardsReceivers = object.weighted_incentives_rewards_receivers?.map(e => WeightedAddress.fromAmino(e)) || [];
+    message.supplementAmount = object.supplement_amount?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};

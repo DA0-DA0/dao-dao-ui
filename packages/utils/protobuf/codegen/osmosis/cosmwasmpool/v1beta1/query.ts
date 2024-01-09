@@ -79,7 +79,7 @@ export type PoolsResponseEncoded = Omit<PoolsResponse, "pools"> & {
   pools: (Pool1ProtoMsg | CosmWasmPoolProtoMsg | Pool2ProtoMsg | Pool3ProtoMsg | AnyProtoMsg)[];
 };
 export interface PoolsResponseAmino {
-  pools: AnyAmino[];
+  pools?: AnyAmino[];
   /** pagination defines the pagination in the response. */
   pagination?: PageResponseAmino | undefined;
 }
@@ -103,7 +103,7 @@ export interface ContractInfoByPoolIdRequestProtoMsg {
 /** =============================== ContractInfoByPoolId */
 export interface ContractInfoByPoolIdRequestAmino {
   /** pool_id is the pool id of the requested pool. */
-  pool_id: string;
+  pool_id?: string;
 }
 export interface ContractInfoByPoolIdRequestAminoMsg {
   type: "osmosis/cosmwasmpool/contract-info-by-pool-id-request";
@@ -131,9 +131,9 @@ export interface ContractInfoByPoolIdResponseAmino {
    * contract_address is the pool address and contract address
    * of the requested pool id.
    */
-  contract_address: string;
+  contract_address?: string;
   /** code_id is the code id of the requested pool id. */
-  code_id: string;
+  code_id?: string;
 }
 export interface ContractInfoByPoolIdResponseAminoMsg {
   type: "osmosis/cosmwasmpool/contract-info-by-pool-id-response";
@@ -170,7 +170,8 @@ export const ParamsRequest = {
     return message;
   },
   fromAmino(_: ParamsRequestAmino): ParamsRequest {
-    return {};
+    const message = createBaseParamsRequest();
+    return message;
   },
   toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
     const obj: any = {};
@@ -234,9 +235,11 @@ export const ParamsResponse = {
     return message;
   },
   fromAmino(object: ParamsResponseAmino): ParamsResponse {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseParamsResponse();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
     const obj: any = {};
@@ -301,9 +304,11 @@ export const PoolsRequest = {
     return message;
   },
   fromAmino(object: PoolsRequestAmino): PoolsRequest {
-    return {
-      pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
-    };
+    const message = createBasePoolsRequest();
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAmino {
     const obj: any = {};
@@ -376,10 +381,12 @@ export const PoolsResponse = {
     return message;
   },
   fromAmino(object: PoolsResponseAmino): PoolsResponse {
-    return {
-      pools: Array.isArray(object?.pools) ? object.pools.map((e: any) => PoolI_FromAmino(e)) : [],
-      pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
-    };
+    const message = createBasePoolsResponse();
+    message.pools = object.pools?.map(e => PoolI_FromAmino(e)) || [];
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAmino {
     const obj: any = {};
@@ -449,9 +456,11 @@ export const ContractInfoByPoolIdRequest = {
     return message;
   },
   fromAmino(object: ContractInfoByPoolIdRequestAmino): ContractInfoByPoolIdRequest {
-    return {
-      poolId: BigInt(object.pool_id)
-    };
+    const message = createBaseContractInfoByPoolIdRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: ContractInfoByPoolIdRequest, useInterfaces: boolean = false): ContractInfoByPoolIdRequestAmino {
     const obj: any = {};
@@ -524,10 +533,14 @@ export const ContractInfoByPoolIdResponse = {
     return message;
   },
   fromAmino(object: ContractInfoByPoolIdResponseAmino): ContractInfoByPoolIdResponse {
-    return {
-      contractAddress: object.contract_address,
-      codeId: BigInt(object.code_id)
-    };
+    const message = createBaseContractInfoByPoolIdResponse();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    return message;
   },
   toAmino(message: ContractInfoByPoolIdResponse, useInterfaces: boolean = false): ContractInfoByPoolIdResponseAmino {
     const obj: any = {};

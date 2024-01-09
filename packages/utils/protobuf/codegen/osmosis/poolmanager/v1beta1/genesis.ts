@@ -26,7 +26,7 @@ export interface ParamsProtoMsg {
 }
 /** Params holds parameters for the poolmanager module */
 export interface ParamsAmino {
-  pool_creation_fee: CoinAmino[];
+  pool_creation_fee?: CoinAmino[];
   /** taker_fee_params is the container of taker fee parameters. */
   taker_fee_params?: TakerFeeParamsAmino | undefined;
   /**
@@ -39,7 +39,7 @@ export interface ParamsAmino {
    * orders at prices in terms of token1 (quote asset) that are easy to reason
    * about.
    */
-  authorized_quote_denoms: string[];
+  authorized_quote_denoms?: string[];
 }
 export interface ParamsAminoMsg {
   type: "osmosis/poolmanager/params";
@@ -67,11 +67,11 @@ export interface GenesisStateProtoMsg {
 /** GenesisState defines the poolmanager module's genesis state. */
 export interface GenesisStateAmino {
   /** the next_pool_id */
-  next_pool_id: string;
+  next_pool_id?: string;
   /** params is the container of poolmanager parameters. */
   params?: ParamsAmino | undefined;
   /** pool_routes is the container of the mappings from pool id to pool type. */
-  pool_routes: ModuleRouteAmino[];
+  pool_routes?: ModuleRouteAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/poolmanager/genesis-state";
@@ -135,7 +135,7 @@ export interface TakerFeeParamsAmino {
    * default_taker_fee is the fee used when creating a new pool that doesn't
    * fall under a custom pool taker fee or stableswap taker fee category.
    */
-  default_taker_fee: string;
+  default_taker_fee?: string;
   /**
    * osmo_taker_fee_distribution defines the distribution of taker fees
    * generated in OSMO. As of this writing, it has two catagories:
@@ -163,13 +163,13 @@ export interface TakerFeeParamsAmino {
    * and remove custom taker fees for denom pairs, but with the normal
    * governance delay.
    */
-  admin_addresses: string[];
+  admin_addresses?: string[];
   /**
    * community_pool_denom_to_swap_non_whitelisted_assets_to is the denom that
    * non-whitelisted taker fees will be swapped to before being sent to
    * the community pool.
    */
-  community_pool_denom_to_swap_non_whitelisted_assets_to: string;
+  community_pool_denom_to_swap_non_whitelisted_assets_to?: string;
 }
 export interface TakerFeeParamsAminoMsg {
   type: "osmosis/poolmanager/taker-fee-params";
@@ -200,8 +200,8 @@ export interface TakerFeeDistributionPercentageProtoMsg {
  * gets distributed to the available categories.
  */
 export interface TakerFeeDistributionPercentageAmino {
-  staking_rewards: string;
-  community_pool: string;
+  staking_rewards?: string;
+  community_pool?: string;
 }
 export interface TakerFeeDistributionPercentageAminoMsg {
   type: "osmosis/poolmanager/taker-fee-distribution-percentage";
@@ -267,11 +267,13 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      poolCreationFee: Array.isArray(object?.pool_creation_fee) ? object.pool_creation_fee.map((e: any) => Coin.fromAmino(e)) : [],
-      takerFeeParams: object?.taker_fee_params ? TakerFeeParams.fromAmino(object.taker_fee_params) : undefined,
-      authorizedQuoteDenoms: Array.isArray(object?.authorized_quote_denoms) ? object.authorized_quote_denoms.map((e: any) => e) : []
-    };
+    const message = createBaseParams();
+    message.poolCreationFee = object.pool_creation_fee?.map(e => Coin.fromAmino(e)) || [];
+    if (object.taker_fee_params !== undefined && object.taker_fee_params !== null) {
+      message.takerFeeParams = TakerFeeParams.fromAmino(object.taker_fee_params);
+    }
+    message.authorizedQuoteDenoms = object.authorized_quote_denoms?.map(e => e) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
@@ -362,11 +364,15 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      nextPoolId: BigInt(object.next_pool_id),
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      poolRoutes: Array.isArray(object?.pool_routes) ? object.pool_routes.map((e: any) => ModuleRoute.fromAmino(e)) : []
-    };
+    const message = createBaseGenesisState();
+    if (object.next_pool_id !== undefined && object.next_pool_id !== null) {
+      message.nextPoolId = BigInt(object.next_pool_id);
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.poolRoutes = object.pool_routes?.map(e => ModuleRoute.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
@@ -469,13 +475,21 @@ export const TakerFeeParams = {
     return message;
   },
   fromAmino(object: TakerFeeParamsAmino): TakerFeeParams {
-    return {
-      defaultTakerFee: object.default_taker_fee,
-      osmoTakerFeeDistribution: object?.osmo_taker_fee_distribution ? TakerFeeDistributionPercentage.fromAmino(object.osmo_taker_fee_distribution) : undefined,
-      nonOsmoTakerFeeDistribution: object?.non_osmo_taker_fee_distribution ? TakerFeeDistributionPercentage.fromAmino(object.non_osmo_taker_fee_distribution) : undefined,
-      adminAddresses: Array.isArray(object?.admin_addresses) ? object.admin_addresses.map((e: any) => e) : [],
-      communityPoolDenomToSwapNonWhitelistedAssetsTo: object.community_pool_denom_to_swap_non_whitelisted_assets_to
-    };
+    const message = createBaseTakerFeeParams();
+    if (object.default_taker_fee !== undefined && object.default_taker_fee !== null) {
+      message.defaultTakerFee = object.default_taker_fee;
+    }
+    if (object.osmo_taker_fee_distribution !== undefined && object.osmo_taker_fee_distribution !== null) {
+      message.osmoTakerFeeDistribution = TakerFeeDistributionPercentage.fromAmino(object.osmo_taker_fee_distribution);
+    }
+    if (object.non_osmo_taker_fee_distribution !== undefined && object.non_osmo_taker_fee_distribution !== null) {
+      message.nonOsmoTakerFeeDistribution = TakerFeeDistributionPercentage.fromAmino(object.non_osmo_taker_fee_distribution);
+    }
+    message.adminAddresses = object.admin_addresses?.map(e => e) || [];
+    if (object.community_pool_denom_to_swap_non_whitelisted_assets_to !== undefined && object.community_pool_denom_to_swap_non_whitelisted_assets_to !== null) {
+      message.communityPoolDenomToSwapNonWhitelistedAssetsTo = object.community_pool_denom_to_swap_non_whitelisted_assets_to;
+    }
+    return message;
   },
   toAmino(message: TakerFeeParams, useInterfaces: boolean = false): TakerFeeParamsAmino {
     const obj: any = {};
@@ -556,10 +570,14 @@ export const TakerFeeDistributionPercentage = {
     return message;
   },
   fromAmino(object: TakerFeeDistributionPercentageAmino): TakerFeeDistributionPercentage {
-    return {
-      stakingRewards: object.staking_rewards,
-      communityPool: object.community_pool
-    };
+    const message = createBaseTakerFeeDistributionPercentage();
+    if (object.staking_rewards !== undefined && object.staking_rewards !== null) {
+      message.stakingRewards = object.staking_rewards;
+    }
+    if (object.community_pool !== undefined && object.community_pool !== null) {
+      message.communityPool = object.community_pool;
+    }
+    return message;
   },
   toAmino(message: TakerFeeDistributionPercentage, useInterfaces: boolean = false): TakerFeeDistributionPercentageAmino {
     const obj: any = {};

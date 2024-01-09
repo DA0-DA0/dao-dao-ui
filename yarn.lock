@@ -900,6 +900,14 @@
     "@babel/highlight" "^7.23.4"
     chalk "^2.4.2"
 
+"@babel/code-frame@^7.23.5":
+  version "7.23.5"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.23.5.tgz#9009b69a8c602293476ad598ff53e4562e15c244"
+  integrity sha512-CgH3s1a96LipHCmSUmYFPwY7MNx8C3avkq7i4Wl3cfa662ldtUe4VM1TPXX70pfmrlWTb6jLqTYrZyT2ZTJBgA==
+  dependencies:
+    "@babel/highlight" "^7.23.4"
+    chalk "^2.4.2"
+
 "@babel/compat-data@^7.13.11", "@babel/compat-data@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.18.6.tgz#8b37d24e88e8e21c499d4328db80577d8882fa53"
@@ -1030,16 +1038,6 @@
     "@jridgewell/gen-mapping" "^0.3.2"
     jsesc "^2.5.1"
 
-"@babel/generator@7.21.4":
-  version "7.21.4"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.21.4.tgz#64a94b7448989f421f919d5239ef553b37bb26bc"
-  integrity sha512-NieM3pVIYW2SwGzKoqfPrQsf4xGs9M9AIG3ThppsSRmO+m7eQhmI6amajKMUeIO37wFfsvnvcxQFx6x6iqxDnA==
-  dependencies:
-    "@babel/types" "^7.21.4"
-    "@jridgewell/gen-mapping" "^0.3.2"
-    "@jridgewell/trace-mapping" "^0.3.17"
-    jsesc "^2.5.1"
-
 "@babel/generator@^7.12.11", "@babel/generator@^7.12.5", "@babel/generator@^7.18.6", "@babel/generator@^7.7.2":
   version "7.18.7"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.18.7.tgz#2aa78da3c05aadfc82dbac16c99552fc802284bd"
@@ -1078,12 +1076,12 @@
     "@jridgewell/gen-mapping" "^0.3.2"
     jsesc "^2.5.1"
 
-"@babel/generator@^7.23.0":
-  version "7.23.3"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.23.3.tgz#86e6e83d95903fbe7613f448613b8b319f330a8e"
-  integrity sha512-keeZWAV4LU3tW0qRi19HRpabC/ilM0HRBBzf9/k8FFiG4KVpiv0FIy4hHfLfFQZNhziCTPTmd59zoyv6DNISzg==
+"@babel/generator@^7.23.6":
+  version "7.23.6"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.23.6.tgz#9e1fca4811c77a10580d17d26b57b036133f3c2e"
+  integrity sha512-qrSfCYxYQB5owCmGLbl8XRpX1ytXlpueOb0N0UmQwA073KZxejgQTzAmJezxvpwQD9uGtK2shHdi55QT+MbjIw==
   dependencies:
-    "@babel/types" "^7.23.3"
+    "@babel/types" "^7.23.6"
     "@jridgewell/gen-mapping" "^0.3.2"
     "@jridgewell/trace-mapping" "^0.3.17"
     jsesc "^2.5.1"
@@ -1680,15 +1678,20 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.20.5.tgz#7f3c7335fe417665d929f34ae5dceae4c04015e8"
   integrity sha512-r27t/cy/m9uKLXQNWWebeCUHgnAZq0CpG1OwKRxzJMP1vpSU4bSIK2hq+/cp0bQxetkXx38n09rNu8jVkcK/zA==
 
-"@babel/parser@^7.18.11", "@babel/parser@^7.21.4", "@babel/parser@^7.22.10", "@babel/parser@^7.22.5":
+"@babel/parser@^7.18.11", "@babel/parser@^7.22.10", "@babel/parser@^7.22.5":
   version "7.22.10"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.22.10.tgz#e37634f9a12a1716136c44624ef54283cabd3f55"
   integrity sha512-lNbdGsQb9ekfsnjFGhEiF4hfFqGgfOP3H3d27re3n+CGhNuTSUEQdfWk556sTLNTloczcdM5TYF2LhzmDQKyvQ==
 
-"@babel/parser@^7.22.15", "@babel/parser@^7.23.0":
+"@babel/parser@^7.22.15":
   version "7.23.3"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.3.tgz#0ce0be31a4ca4f1884b5786057cadcb6c3be58f9"
   integrity sha512-uVsWNvlVsIninV2prNz/3lHCb+5CJ+e+IUBfbjToAHODtfGYLfCFuY4AU7TskI+dAKk+njsPiBjq1gKTvZOBaw==
+
+"@babel/parser@^7.23.6":
+  version "7.23.6"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.6.tgz#ba1c9e512bda72a47e285ae42aff9d2a635a9e3b"
+  integrity sha512-Z2uID7YJ7oNvAI20O9X0bblw7Qqs8Q2hFy0R9tAfnfLkp5MW0UH9eUvnDSnFwKZ0AvgS1ucqR4KzvVHgnke1VQ==
 
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.18.6":
   version "7.18.6"
@@ -3075,20 +3078,20 @@
     debug "^4.1.0"
     globals "^11.1.0"
 
-"@babel/traverse@7.23.2":
-  version "7.23.2"
-  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.23.2.tgz#329c7a06735e144a506bdb2cad0268b7f46f4ad8"
-  integrity sha512-azpe59SQ48qG6nu2CzcMLbxUudtN+dOM9kDbUqGq3HXUJRlo7i8fvPoxQUzYgLZ4cMVmuZgm8vvBpNeRhd6XSw==
+"@babel/traverse@7.23.6":
+  version "7.23.6"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.23.6.tgz#b53526a2367a0dd6edc423637f3d2d0f2521abc5"
+  integrity sha512-czastdK1e8YByZqezMPFiZ8ahwVMh/ESl9vPgvgdB9AmFMGP5jfpFax74AQgl5zj4XHzqeYAg2l8PuUeRS1MgQ==
   dependencies:
-    "@babel/code-frame" "^7.22.13"
-    "@babel/generator" "^7.23.0"
+    "@babel/code-frame" "^7.23.5"
+    "@babel/generator" "^7.23.6"
     "@babel/helper-environment-visitor" "^7.22.20"
     "@babel/helper-function-name" "^7.23.0"
     "@babel/helper-hoist-variables" "^7.22.5"
     "@babel/helper-split-export-declaration" "^7.22.6"
-    "@babel/parser" "^7.23.0"
-    "@babel/types" "^7.23.0"
-    debug "^4.1.0"
+    "@babel/parser" "^7.23.6"
+    "@babel/types" "^7.23.6"
+    debug "^4.3.1"
     globals "^11.1.0"
 
 "@babel/traverse@^7.1.6", "@babel/traverse@^7.12.11", "@babel/traverse@^7.12.9", "@babel/traverse@^7.13.0", "@babel/traverse@^7.18.6", "@babel/traverse@^7.7.2":
@@ -3164,13 +3167,13 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@babel/types@7.21.4":
-  version "7.21.4"
-  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.21.4.tgz#2d5d6bb7908699b3b416409ffd3b5daa25b030d4"
-  integrity sha512-rU2oY501qDxE8Pyo7i/Orqma4ziCOrby0/9mvbDUGEfvZjb279Nk9k19e2fiCxHbRRpY2ZyrgW1eq22mvmOIzA==
+"@babel/types@7.23.6", "@babel/types@^7.23.6":
+  version "7.23.6"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.23.6.tgz#be33fdb151e1f5a56877d704492c240fc71c7ccd"
+  integrity sha512-+uarb83brBzPKN38NX1MkB6vb6+mwvR6amUulqAE7ccQw1pEl+bCia9TbdG1lsnFP7lZySvUn37CHyXQdfTwzg==
   dependencies:
-    "@babel/helper-string-parser" "^7.19.4"
-    "@babel/helper-validator-identifier" "^7.19.1"
+    "@babel/helper-string-parser" "^7.23.4"
+    "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
 "@babel/types@^7.0.0", "@babel/types@^7.12.11", "@babel/types@^7.12.7", "@babel/types@^7.18.6", "@babel/types@^7.18.7", "@babel/types@^7.2.0", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
@@ -3199,7 +3202,7 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.21.4", "@babel/types@^7.22.10", "@babel/types@^7.22.5":
+"@babel/types@^7.22.10", "@babel/types@^7.22.5":
   version "7.22.10"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.22.10.tgz#4a9e76446048f2c66982d1a989dd12b8a2d2dc03"
   integrity sha512-obaoigiLrlDZ7TUQln/8m4mSqIW2QFeOrCQc9r+xsaHGNoplVNYlRVpsfE8Vj35GEm2ZH4ZhrNYogs/3fj85kg==
@@ -3774,26 +3777,26 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.31.3.tgz#f97bbfda35ad69e80cd5c7fe0a270cbda16db1ed"
   integrity sha512-VBhAgzrrYdIe0O5IbKRqwszbQa7ZyQLx9nEQuHQ3HUplQW7P44COG/ye2n6AzCudtqxmwdX7nyX8ta1J07GoqA==
 
-"@cosmology/ast@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@cosmology/ast/-/ast-1.0.14.tgz#ee3543b9991581ac92639885bc7f3a0ad8e64618"
-  integrity sha512-ZF/bZRFv00RAR26d/26cOIf5MKYAjzxkFOeuXF2BwWH75P7X5GjK7a3wUN2D51huw/91gyTIsRQe4ceQAWuEOA==
+"@cosmology/ast@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cosmology/ast/-/ast-1.4.1.tgz#d895ecc87071a77cb238503c9505770498720d1b"
+  integrity sha512-isWUqDqie12PhpN5+ow5ut+4d/I7s/X/fDy5hyKkt5apUbo/AjcQL0UFJeF7yyoty2HCyG/b1YJylRwRHi8jgA==
   dependencies:
-    "@babel/parser" "^7.21.4"
-    "@babel/types" "7.21.4"
-    "@cosmology/types" "^1.0.10"
-    "@cosmology/utils" "^1.0.10"
+    "@babel/parser" "^7.23.6"
+    "@babel/types" "7.23.6"
+    "@cosmology/types" "^1.4.0"
+    "@cosmology/utils" "^1.4.0"
     case "1.6.3"
     dotty "0.1.2"
 
-"@cosmology/proto-parser@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@cosmology/proto-parser/-/proto-parser-1.0.11.tgz#c4692f8276378c61595f40568bd77c1335e48ccf"
-  integrity sha512-qsBt60CViZ6xltdJTVTZi8PTUz/PA8MtwpXYMAx2eet9/jxVusLK6DqFaAqhdQqmDOgdH3uvyw3ZJ01hCip2pw==
+"@cosmology/proto-parser@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@cosmology/proto-parser/-/proto-parser-1.4.0.tgz#1173e81031158ff715f336935666ae3b1f75d861"
+  integrity sha512-TVyoUmPnISzXVuegNOYKuvNTwrZwsz/8sGWB6T4/JxKyBOZBn/GuGCnQeMlz+IS0Spr2FExvs//BrjchixvnYQ==
   dependencies:
     "@cosmology/protobufjs" "6.11.6"
-    "@cosmology/types" "^1.0.10"
-    "@cosmology/utils" "^1.0.10"
+    "@cosmology/types" "^1.4.0"
+    "@cosmology/utils" "^1.4.0"
     dotty "0.1.2"
     glob "8.0.3"
     minimatch "5.1.0"
@@ -3818,19 +3821,19 @@
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
-"@cosmology/telescope@^1.0.16":
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/@cosmology/telescope/-/telescope-1.0.16.tgz#b885ee113e1b6268a2b233b8e050a0dab1a027a4"
-  integrity sha512-G1b4EvM+3tmBLMCvpbIdgnLLFg8/vaNQ74gGiS/QwqR+Ij7oUuQa2VU5sIxT0zhVXpoq4+pjYAxrZ1uVBbxETA==
+"@cosmology/telescope@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cosmology/telescope/-/telescope-1.4.1.tgz#7b9ce9092982221ab3015ecd1ba4e1bc4aebc490"
+  integrity sha512-DZpRyag1epExwfqhQndZ7AVn8tnZ7noV5wKpMFHKQT0jXtJNSI4k/G/lCg9rUMQQTgB85YRwunQdOkwJhtj2/A==
   dependencies:
-    "@babel/generator" "7.21.4"
-    "@babel/parser" "^7.21.4"
-    "@babel/traverse" "7.23.2"
-    "@babel/types" "7.21.4"
-    "@cosmology/ast" "^1.0.14"
-    "@cosmology/proto-parser" "^1.0.11"
-    "@cosmology/types" "^1.0.10"
-    "@cosmology/utils" "^1.0.10"
+    "@babel/generator" "^7.23.6"
+    "@babel/parser" "^7.23.6"
+    "@babel/traverse" "7.23.6"
+    "@babel/types" "7.23.6"
+    "@cosmology/ast" "^1.4.1"
+    "@cosmology/proto-parser" "^1.4.0"
+    "@cosmology/types" "^1.4.0"
+    "@cosmology/utils" "^1.4.0"
     "@cosmwasm/ts-codegen" "0.34.0"
     "@types/parse-package-name" "0.1.0"
     case "1.6.3"
@@ -3848,19 +3851,19 @@
     rimraf "5.0.0"
     shelljs "0.8.5"
 
-"@cosmology/types@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@cosmology/types/-/types-1.0.10.tgz#75a22822740711d3eafd787e140628b436e9df58"
-  integrity sha512-izng9GZ9RdLNFd8qeNxmxuA+vmwMzEuU8Rd6LxD530h/+AUwKbFk6JaIILsijQgtTDcbI63vjBCJDnj05NmcnQ==
+"@cosmology/types@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@cosmology/types/-/types-1.4.0.tgz#fbc46b39f11c2cf0fc110d161d40b6c9e02bc69b"
+  integrity sha512-DQx63AKl7EX11IFlDUfMX5XmRnz7yqytLXzx3udaQnZln3GpowsAMZEj5f1IoHwfDpOyI5XLPkDAX3dYirjgSQ==
   dependencies:
     case "1.6.3"
 
-"@cosmology/utils@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@cosmology/utils/-/utils-1.0.10.tgz#5f82614b0c2f21b88994217dd2c805b325a98dae"
-  integrity sha512-trjOMsAKZK+CseFP1EUsjB+gaXzmbkbGfyouyO5las+8XKcrHBVdw37xQueO3vJKmw9Kw7wbUg2sT48IU6x6yQ==
+"@cosmology/utils@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@cosmology/utils/-/utils-1.4.0.tgz#246d2a230747675d75a7134b8059ea3e8cc28ced"
+  integrity sha512-Wh8TSAhJ8u+v4JVK//4T9pTE9bpv6gOyNpwPXS81CV571+sBCUbDyQPLOgovHxy/EqO5NIlC9CNfU5ip54sZ1Q==
   dependencies:
-    "@cosmology/types" "^1.0.10"
+    "@cosmology/types" "^1.4.0"
     dotty "0.1.2"
 
 "@cosmos-kit/coin98-extension@^2.6.2":

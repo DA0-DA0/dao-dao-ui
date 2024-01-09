@@ -1,0 +1,87 @@
+diff --git a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
+index c04740c22..98853e53d 100644
+--- a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
++++ b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
+@@ -3,6 +3,7 @@ import { Grant, GrantAmino, GrantSDKType } from "./authz";
+ import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+ import { BinaryReader, BinaryWriter } from "../../../binary";
+ import { bytesFromBase64, base64FromBytes } from "../../../helpers";
++import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from '../../../../../messages/protobuf'
+ /**
+  * MsgGrant is a request type for Grant method. It declares authorization to the grantee
+  * on behalf of the granter with the provided expiration time.
+@@ -371,14 +372,14 @@ export const MsgExec = {
+     if (object.grantee !== undefined && object.grantee !== null) {
+       message.grantee = object.grantee;
+     }
+-    message.msgs = object.msgs?.map(e => Cosmos_basev1beta1Msg_FromAmino(e)) || [];
++    message.msgs = object.msgs?.map(e => aminoToRawProtobufMsg(e)) || [];
+     return message;
+   },
+   toAmino(message: MsgExec, useInterfaces: boolean = false): MsgExecAmino {
+     const obj: any = {};
+     obj.grantee = message.grantee;
+     if (message.msgs) {
+-      obj.msgs = message.msgs.map(e => e ? Cosmos_basev1beta1Msg_ToAmino((e as Any), useInterfaces) : undefined);
++      obj.msgs = message.msgs.map(e => e ? rawProtobufMsgToAmino((e as Any), useInterfaces) : undefined);
+     } else {
+       obj.msgs = [];
+     }
+diff --git a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
+index 974dcf4b6..0599cc51f 100644
+--- a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
++++ b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
+@@ -18,6 +18,7 @@ import { PromoteToPrivilegedContractProposal, PromoteToPrivilegedContractProposa
+ import { SetCodeAuthorizationProposal, SetCodeAuthorizationProposalProtoMsg, SetCodeAuthorizationProposalSDKType, RemoveCodeAuthorizationProposal, RemoveCodeAuthorizationProposalProtoMsg, RemoveCodeAuthorizationProposalSDKType, SetContractAuthorizationProposal, SetContractAuthorizationProposalProtoMsg, SetContractAuthorizationProposalSDKType, RemoveContractAuthorizationProposal, RemoveContractAuthorizationProposalProtoMsg, RemoveContractAuthorizationProposalSDKType } from "../../../publicawesome/stargaze/globalfee/v1/proposal";
+ import { BinaryReader, BinaryWriter } from "../../../binary";
+ import { toTimestamp, fromTimestamp } from "../../../helpers";
++import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from "../../../../../messages";
+ /**
+  * MsgSubmitProposal defines an sdk.Msg type that supports submitting arbitrary
+  * proposal Content.
+@@ -573,7 +574,7 @@ export const MsgSubmitProposal = {
+   },
+   fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
+     const message = createBaseMsgSubmitProposal();
+-    message.messages = object.messages?.map(e => Any.fromAmino(e)) || [];
++    message.messages = object.messages?.map(e => aminoToRawProtobufMsg(e)) || [];
+     message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
+     if (object.proposer !== undefined && object.proposer !== null) {
+       message.proposer = object.proposer;
+@@ -595,7 +596,7 @@ export const MsgSubmitProposal = {
+   toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
+     const obj: any = {};
+     if (message.messages) {
+-      obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
++      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
+     } else {
+       obj.messages = [];
+     }
+@@ -608,7 +609,10 @@ export const MsgSubmitProposal = {
+     obj.metadata = message.metadata;
+     obj.title = message.title;
+     obj.summary = message.summary;
+-    obj.expedited = message.expedited;
++    // TODO(protobuf): is this still necessary?
++    if (message.expedited) {
++      obj.expedited = message.expedited;
++    }
+     return obj;
+   },
+   fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
+diff --git a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
+index 11d5dba92..a9e55d389 100644
+--- a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
++++ b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
+@@ -1770,7 +1770,10 @@ export const MsgInstantiateContract2 = {
+       obj.funds = [];
+     }
+     obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
+-    obj.fix_msg = message.fixMsg;
++    // TODO(protobuf): is this still necessary?
++    if (message.fixMsg) {
++      obj.fix_msg = message.fixMsg;
++    }
+     return obj;
+   },
+   fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {

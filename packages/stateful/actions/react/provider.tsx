@@ -4,9 +4,9 @@ import { waitForAll } from 'recoil'
 
 import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
+  ErrorPage,
   Loader,
   PageLoader,
-  WarningCard,
   useCachedLoadingWithError,
   useChain,
   useChainContext,
@@ -229,7 +229,11 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
   return govDataLoading.loading ? (
     <PageLoader />
   ) : govDataLoading.errored ? (
-    <WarningCard content={t('error.governanceProposalsUnsupported')} />
+    <ErrorPage title={t('error.unexpectedError')}>
+      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+        {govDataLoading.error.message}
+      </pre>
+    </ErrorPage>
   ) : (
     <BaseActionsProvider
       address={govDataLoading.data[0]}

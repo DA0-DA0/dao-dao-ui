@@ -48,7 +48,7 @@ export interface QueryListPrivilegedResponseAmino {
    * contract_addresses holds all the smart contract addresses which have
    * privilege status.
    */
-  contract_addresses: string[];
+  contract_addresses?: string[];
 }
 export interface QueryListPrivilegedResponseAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.QueryListPrivilegedResponse";
@@ -140,7 +140,8 @@ export const QueryListPrivilegedRequest = {
     return message;
   },
   fromAmino(_: QueryListPrivilegedRequestAmino): QueryListPrivilegedRequest {
-    return {};
+    const message = createBaseQueryListPrivilegedRequest();
+    return message;
   },
   toAmino(_: QueryListPrivilegedRequest, useInterfaces: boolean = false): QueryListPrivilegedRequestAmino {
     const obj: any = {};
@@ -198,9 +199,9 @@ export const QueryListPrivilegedResponse = {
     return message;
   },
   fromAmino(object: QueryListPrivilegedResponseAmino): QueryListPrivilegedResponse {
-    return {
-      contractAddresses: Array.isArray(object?.contract_addresses) ? object.contract_addresses.map((e: any) => e) : []
-    };
+    const message = createBaseQueryListPrivilegedResponse();
+    message.contractAddresses = object.contract_addresses?.map(e => e) || [];
+    return message;
   },
   toAmino(message: QueryListPrivilegedResponse, useInterfaces: boolean = false): QueryListPrivilegedResponseAmino {
     const obj: any = {};
@@ -254,7 +255,8 @@ export const QueryParamsRequest = {
     return message;
   },
   fromAmino(_: QueryParamsRequestAmino): QueryParamsRequest {
-    return {};
+    const message = createBaseQueryParamsRequest();
+    return message;
   },
   toAmino(_: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
@@ -312,9 +314,11 @@ export const QueryParamsResponse = {
     return message;
   },
   fromAmino(object: QueryParamsResponseAmino): QueryParamsResponse {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseQueryParamsResponse();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};

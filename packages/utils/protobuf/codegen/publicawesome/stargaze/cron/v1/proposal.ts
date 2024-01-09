@@ -26,11 +26,11 @@ export interface PromoteToPrivilegedContractProposalProtoMsg {
 /** @deprecated */
 export interface PromoteToPrivilegedContractProposalAmino {
   /** Title is a short summary */
-  title: string;
+  title?: string;
   /** Description is a human readable text */
-  description: string;
+  description?: string;
   /** Contract is the bech32 address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface PromoteToPrivilegedContractProposalAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal";
@@ -75,11 +75,11 @@ export interface DemotePrivilegedContractProposalProtoMsg {
 /** @deprecated */
 export interface DemotePrivilegedContractProposalAmino {
   /** Title is a short summary */
-  title: string;
+  title?: string;
   /** Description is a human readable text */
-  description: string;
+  description?: string;
   /** Contract is the bech32 address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface DemotePrivilegedContractProposalAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal";
@@ -150,11 +150,17 @@ export const PromoteToPrivilegedContractProposal = {
     return message;
   },
   fromAmino(object: PromoteToPrivilegedContractProposalAmino): PromoteToPrivilegedContractProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      contract: object.contract
-    };
+    const message = createBasePromoteToPrivilegedContractProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: PromoteToPrivilegedContractProposal, useInterfaces: boolean = false): PromoteToPrivilegedContractProposalAmino {
     const obj: any = {};
@@ -232,11 +238,17 @@ export const DemotePrivilegedContractProposal = {
     return message;
   },
   fromAmino(object: DemotePrivilegedContractProposalAmino): DemotePrivilegedContractProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      contract: object.contract
-    };
+    const message = createBaseDemotePrivilegedContractProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: DemotePrivilegedContractProposal, useInterfaces: boolean = false): DemotePrivilegedContractProposalAmino {
     const obj: any = {};

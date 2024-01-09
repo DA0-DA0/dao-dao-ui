@@ -64,7 +64,7 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
     },
     anyoneCanPropose: false,
     allowRevoting: false,
-    enableMultipleChoice: false,
+    enableMultipleChoice: true,
     approver: {
       enabled: false,
       address: '',

@@ -14,10 +14,10 @@ export const loadCommonVotingConfigItems =
     items: [
       makeVotingDurationVotingConfigItem(),
       makeProposalDepositVotingConfigItem(),
+      makeMultipleChoiceVotingConfigItem(),
     ],
     advancedItems: [
       makeQuorumVotingConfigItem(),
-      makeMultipleChoiceVotingConfigItem(),
       makeAllowRevotingVotingConfigItem(),
       makeProposalSubmissionPolicyVotingConfigItem(),
       makeApproverVotingConfigItem(),

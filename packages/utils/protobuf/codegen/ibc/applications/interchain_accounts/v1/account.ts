@@ -13,7 +13,7 @@ export interface InterchainAccountProtoMsg {
 /** An InterchainAccount is defined as a BaseAccount & the address of the account owner on the controller chain */
 export interface InterchainAccountAmino {
   base_account?: BaseAccountAmino | undefined;
-  account_owner: string;
+  account_owner?: string;
 }
 export interface InterchainAccountAminoMsg {
   type: "cosmos-sdk/InterchainAccount";
@@ -70,10 +70,14 @@ export const InterchainAccount = {
     return message;
   },
   fromAmino(object: InterchainAccountAmino): InterchainAccount {
-    return {
-      baseAccount: object?.base_account ? BaseAccount.fromAmino(object.base_account) : undefined,
-      accountOwner: object.account_owner
-    };
+    const message = createBaseInterchainAccount();
+    if (object.base_account !== undefined && object.base_account !== null) {
+      message.baseAccount = BaseAccount.fromAmino(object.base_account);
+    }
+    if (object.account_owner !== undefined && object.account_owner !== null) {
+      message.accountOwner = object.account_owner;
+    }
+    return message;
   },
   toAmino(message: InterchainAccount, useInterfaces: boolean = false): InterchainAccountAmino {
     const obj: any = {};

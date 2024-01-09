@@ -32,9 +32,9 @@ export interface ValidatorPreferenceAmino {
    * val_oper_address holds the validator address the user wants to delegate
    * funds to.
    */
-  val_oper_address: string;
+  val_oper_address?: string;
   /** weight is decimal between 0 and 1, and they all sum to 1. */
-  weight: string;
+  weight?: string;
 }
 export interface ValidatorPreferenceAminoMsg {
   type: "osmosis/valsetpref/validator-preference";
@@ -73,7 +73,7 @@ export interface ValidatorSetPreferencesProtoMsg {
  */
 export interface ValidatorSetPreferencesAmino {
   /** preference holds {valAddr, weight} for the user who created it. */
-  preferences: ValidatorPreferenceAmino[];
+  preferences?: ValidatorPreferenceAmino[];
 }
 export interface ValidatorSetPreferencesAminoMsg {
   type: "osmosis/valsetpref/validator-set-preferences";
@@ -132,10 +132,14 @@ export const ValidatorPreference = {
     return message;
   },
   fromAmino(object: ValidatorPreferenceAmino): ValidatorPreference {
-    return {
-      valOperAddress: object.val_oper_address,
-      weight: object.weight
-    };
+    const message = createBaseValidatorPreference();
+    if (object.val_oper_address !== undefined && object.val_oper_address !== null) {
+      message.valOperAddress = object.val_oper_address;
+    }
+    if (object.weight !== undefined && object.weight !== null) {
+      message.weight = object.weight;
+    }
+    return message;
   },
   toAmino(message: ValidatorPreference, useInterfaces: boolean = false): ValidatorPreferenceAmino {
     const obj: any = {};
@@ -201,9 +205,9 @@ export const ValidatorSetPreferences = {
     return message;
   },
   fromAmino(object: ValidatorSetPreferencesAmino): ValidatorSetPreferences {
-    return {
-      preferences: Array.isArray(object?.preferences) ? object.preferences.map((e: any) => ValidatorPreference.fromAmino(e)) : []
-    };
+    const message = createBaseValidatorSetPreferences();
+    message.preferences = object.preferences?.map(e => ValidatorPreference.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: ValidatorSetPreferences, useInterfaces: boolean = false): ValidatorSetPreferencesAmino {
     const obj: any = {};
