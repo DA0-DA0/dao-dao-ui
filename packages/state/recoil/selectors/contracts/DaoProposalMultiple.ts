@@ -180,10 +180,7 @@ export const reverseProposalsSelector = selectorFamily<
       return await client.reverseProposals(...params)
     },
 })
-export const proposalCountSelector = selectorFamily<
-  number | string,
-  QueryClientParams
->({
+export const proposalCountSelector = selectorFamily<number, QueryClientParams>({
   key: 'daoProposalMultipleProposalCount',
   get:
     (queryClientParams) =>
@@ -203,7 +200,7 @@ export const proposalCountSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return await client.proposalCount()
+      return Number(await client.proposalCount())
     },
 })
 export const getVoteSelector = selectorFamily<

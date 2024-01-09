@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useRecoilCallback, useSetRecoilState } from 'recoil'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -33,7 +34,7 @@ import { ProposalLine } from './ProposalLine'
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
 // Load proposals until at least this many are loaded.
-const MIN_LOAD_PROPS = 100
+const MIN_LOAD_PROPS = PROP_PAGINATE_LIMIT * 2
 
 enum ProposalType {
   Normal = 'normal',
@@ -47,6 +48,7 @@ type CommonProposalListInfoWithType = CommonProposalListInfo & {
 }
 
 export const ProposalList = () => {
+  const { t } = useTranslation()
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
@@ -79,6 +81,12 @@ export const ProposalList = () => {
   const [startBefores, setStartBefores] = useState<
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
+
+  const loadingProposalCounts = useCachedLoadingWithError(
+    waitForAll(
+      commonSelectors.map(({ selectors: { proposalCount } }) => proposalCount)
+    )
+  )
 
   const vetoableDaosLoading = useCachedLoadingWithError(
     daoVetoableDaosSelector({
@@ -307,10 +315,12 @@ export const ProposalList = () => {
       getDaoProposalPath,
     ]
   )
+
   // Load once on mount.
+  const loadMoreRef = useRef(loadMore)
+  loadMoreRef.current = loadMore
   useEffect(() => {
-    loadMore()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadMoreRef.current()
   }, [])
 
   // Refresh all proposals on proposal WebSocket messages.
@@ -344,7 +354,6 @@ export const ProposalList = () => {
           ? []
           : daosWithVetoableProposals.data
       }
-      historyProposals={historyProposals}
       isMember={isMember}
       loadMore={
         // Force no arguments.
@@ -352,6 +361,21 @@ export const ProposalList = () => {
       }
       loadingMore={loading}
       openProposals={openProposals}
+      sections={[
+        {
+          title: t('title.history'),
+          proposals: historyProposals,
+          total:
+            !loadingProposalCounts.loading && !loadingProposalCounts.errored
+              ? loadingProposalCounts.data.reduce(
+                  (acc, count) => acc + count,
+                  0
+                  // Remove open proposals from total history count since they
+                  // are shown above.
+                ) - openProposals.length
+              : undefined,
+        },
+      ]}
     />
   )
 }

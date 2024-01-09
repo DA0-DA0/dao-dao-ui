@@ -27,6 +27,23 @@ import {
 } from '@dao-dao/types/proposal-module-adapter'
 import { isFeatureSupportedByVersion } from '@dao-dao/utils'
 
+export const proposalCountSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+  }>
+) => RecoilValueReadOnly<number> = selectorFamily({
+  key: 'daoProposalSingleProposalCount',
+  get:
+    ({ chainId, proposalModuleAddress }) =>
+    ({ get }) =>
+      get(
+        DaoProposalSingleCommonSelectors.proposalCountSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+        })
+      ),
+})
+
 export const reverseProposalInfosSelector: (
   info: WithChainId<{
     proposalModuleAddress: string
