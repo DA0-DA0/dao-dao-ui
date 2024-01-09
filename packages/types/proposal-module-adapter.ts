@@ -33,6 +33,7 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
 
   // Selectors
   selectors: {
+    proposalCount: ProposalCountSelector
     reverseProposalInfos: ReverseProposalInfosSelector
     reversePreProposePendingProposalInfos?: ReversePreProposePendingProposalInfosSelector
     reversePreProposeCompletedProposalInfos?: ReversePreProposeCompletedProposalInfosSelector
@@ -186,6 +187,8 @@ export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined
   limit: number | undefined
 }) => RecoilValueReadOnly<CommonProposalListInfo[]>
+
+export type ProposalCountSelector = RecoilValueReadOnly<number>
 
 export type ReversePreProposePendingProposalInfosSelector = (data: {
   startBefore: number | undefined

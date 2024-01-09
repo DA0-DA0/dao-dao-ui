@@ -21,6 +21,23 @@ import {
   DepositInfoSelector,
 } from '@dao-dao/types/proposal-module-adapter'
 
+export const proposalCountSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+  }>
+) => RecoilValueReadOnly<number> = selectorFamily({
+  key: 'daoProposalMultipleProposalCount',
+  get:
+    ({ chainId, proposalModuleAddress }) =>
+    ({ get }) =>
+      get(
+        DaoProposalMultipleSelectors.proposalCountSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+        })
+      ),
+})
+
 export const reverseProposalInfosSelector: (
   info: WithChainId<{
     proposalModuleAddress: string

@@ -1414,6 +1414,7 @@
     "deposit": "Deposit",
     "depositFiat": "Deposit fiat",
     "depositNfts": "Import NFTs",
+    "depositPeriod": "Deposit period",
     "depositRefunds": "Deposit refunds",
     "depositToGovernanceProposal": "Deposit to Governance Proposal",
     "depositToken": "Deposit ${{tokenSymbol}}",

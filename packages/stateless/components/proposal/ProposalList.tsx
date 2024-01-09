@@ -1,6 +1,5 @@
 import { HowToVoteRounded } from '@mui/icons-material'
-import clsx from 'clsx'
-import { ComponentType, useState } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -10,34 +9,59 @@ import {
 
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
-import { DropdownIconButton } from '../icon_buttons'
+import { Collapsible } from '../Collapsible'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 import { VetoableProposals } from './VetoableProposals'
 
-export interface ProposalListProps<T extends { proposalId: string }> {
-  ProposalLine: ComponentType<T>
+type ProposalSection<T extends { proposalId: string }> = {
+  /**
+   * The title of the section.
+   */
+  title: string
+  /**
+   * The list of proposals in the section.
+   */
+  proposals: T[]
+  /**
+   * The total number of proposals to display next to the title. This may be
+   * more than the number of proposals in the list due to pagination.
+   */
+  total?: number
+  /**
+   * Whether or not the section is collapsed by default. Defaults to false.
+   */
+  defaultCollapsed?: boolean
+}
+
+export type ProposalListProps<T extends { proposalId: string }> = {
+  /**
+   * Open proposals are shown at the top of the list.
+   */
   openProposals: T[]
-  // DAOs with proposals that can be vetoed.
+  /**
+   * DAOs with proposals that can be vetoed. Shown below open proposals.
+   */
   daosWithVetoableProposals: DaoWithDropdownVetoableProposalList<T>[]
-  historyProposals: T[]
-  // Override array length as count.
-  historyCount?: number
+  /**
+   * Proposal sections are shown below open and vetoable proposals.
+   */
+  sections: ProposalSection<T>[]
   createNewProposalHref: string
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
   isMember: boolean
+  ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
-  ProposalLine,
   openProposals,
   daosWithVetoableProposals,
-  historyProposals,
-  historyCount,
+  sections,
+  ProposalLine,
   createNewProposalHref,
   canLoadMore,
   loadMore,
@@ -49,9 +73,12 @@ export const ProposalList = <T extends { proposalId: string }>({
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
 
-  const [historyExpanded, setHistoryExpanded] = useState(true)
+  const proposalsExist =
+    openProposals.length > 0 ||
+    daosWithVetoableProposals.length > 0 ||
+    sections.some((section) => section.proposals.length > 0)
 
-  return openProposals.length > 0 || historyProposals.length > 0 ? (
+  return proposalsExist ? (
     <div className="border-t border-border-secondary py-6">
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
@@ -60,7 +87,7 @@ export const ProposalList = <T extends { proposalId: string }>({
       </div>
 
       {openProposals.length > 0 && (
-        <div className="mb-9 space-y-1">
+        <div className="mb-6 space-y-1">
           {openProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />
           ))}
@@ -71,47 +98,46 @@ export const ProposalList = <T extends { proposalId: string }>({
         <VetoableProposals
           LinkWrapper={LinkWrapper}
           ProposalLine={ProposalLine}
-          className="mt-3 mb-6 animate-fade-in"
+          className="mb-6 animate-fade-in"
           daoName={daoName}
           daosWithVetoableProposals={daosWithVetoableProposals}
         />
       )}
 
-      <div className="link-text mt-3 ml-2 flex flex-row items-center gap-3 text-text-secondary">
-        <DropdownIconButton
-          className="text-icon-primary"
-          open={historyExpanded}
-          toggle={() => setHistoryExpanded((e) => !e)}
-        />
-
-        <p>
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          {t('title.history')} •{' '}
-          {t('title.numProposals', {
-            count: historyCount ?? historyProposals.length,
-          })}
-        </p>
-      </div>
-
-      <div className={clsx('animate-fade-in', !historyExpanded && 'hidden')}>
-        <div className="mt-6 space-y-1">
-          {historyProposals.map((props) => (
-            <ProposalLine {...props} key={props.proposalId} />
-          ))}
-        </div>
-
-        {(canLoadMore || loadingMore) && (
-          <div className="mt-4 flex flex-row justify-end">
-            <Button
-              className="secondary"
-              loading={loadingMore}
-              onClick={loadMore}
-            >
-              {t('button.loadMore')}
-            </Button>
-          </div>
+      <div className="space-y-4">
+        {sections.map(
+          ({ title, proposals, total, defaultCollapsed }, index) =>
+            proposals.length > 0 && (
+              <Collapsible
+                key={index}
+                containerClassName="gap-3"
+                contentContainerClassName="space-y-1"
+                defaultCollapsed={defaultCollapsed}
+                label={`${title} • ${t('title.numProposals', {
+                  count: total ?? proposals.length,
+                })}`}
+                labelClassName="text-text-secondary"
+                noContentIndent
+              >
+                {proposals.map((props) => (
+                  <ProposalLine {...props} key={props.proposalId} />
+                ))}
+              </Collapsible>
+            )
         )}
       </div>
+
+      {(canLoadMore || loadingMore) && (
+        <div className="mt-6 flex flex-row justify-end">
+          <Button
+            className="secondary"
+            loading={loadingMore}
+            onClick={loadMore}
+          >
+            {t('button.loadMore')}
+          </Button>
+        </div>
+      )}
     </div>
   ) : // If loading but no proposals are loaded yet, just show loader.
   loadingMore ? (
