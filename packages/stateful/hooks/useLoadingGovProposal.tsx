@@ -1,34 +1,25 @@
 import { useTranslation } from 'react-i18next'
-import TimeAgo from 'react-timeago'
 
 import {
   chainStakingPoolSelector,
   govParamsSelector,
   govProposalSelector,
   govProposalTallySelector,
-  govProposalVoteSelector,
 } from '@dao-dao/state'
 import {
   useCachedLoading,
   useConfiguredChainContext,
-  useTranslatedTimeDeltaFormatter,
+  useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
 import {
   GovProposalVotesInfo,
-  GovProposalWalletVoteInfo,
   GovProposalWithMetadata,
   LoadingData,
   ProcessedTQType,
-  ProposalTimestampInfo,
 } from '@dao-dao/types'
-import {
-  formatDate,
-  formatDateTimeTz,
-  formatPercentOf100,
-} from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { useWallet } from './useWallet'
+import { useLoadingGovProposalWalletVoteInfo } from './useLoadingGovProposalWalletVoteInfo'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
 // to its loading state.
@@ -37,7 +28,6 @@ export const useLoadingGovProposal = (
 ): LoadingData<GovProposalWithMetadata> => {
   const { t } = useTranslation()
   const { chain } = useConfiguredChainContext()
-  const { address: voter } = useWallet()
 
   const loadingProposal = useCachedLoading(
     govProposalSelector({
@@ -63,17 +53,6 @@ export const useLoadingGovProposal = (
     }
   )
 
-  const loadingWalletVote = useCachedLoading(
-    voter
-      ? govProposalVoteSelector({
-          chainId: chain.chain_id,
-          proposalId: Number(proposalId),
-          voter,
-        })
-      : undefined,
-    undefined
-  )
-
   const loadingGovParams = useCachedLoading(
     govParamsSelector({
       chainId: chain.chain_id,
@@ -96,7 +75,11 @@ export const useLoadingGovProposal = (
     }
   )
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+  const loadingTimestampInfo = useLoadingGovProposalTimestampInfo(
+    loadingProposal.loading ? undefined : loadingProposal.data?.proposal
+  )
+
+  const walletVoteInfo = useLoadingGovProposalWalletVoteInfo(proposalId)
 
   // Since an error will be thrown on a selector error, this .data check is just
   // a typecheck. It will not return loading forever if the selector fails.
@@ -108,44 +91,10 @@ export const useLoadingGovProposal = (
     loadingGovParams.loading ||
     !loadingGovParams.data ||
     loadingChainStakingPool.loading ||
-    !loadingChainStakingPool.data
+    !loadingChainStakingPool.data ||
+    loadingTimestampInfo.loading
   ) {
     return { loading: true }
-  }
-
-  const { proposal } = loadingProposal.data
-  const depositOrVotingEndDate =
-    (proposal.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
-      ? proposal.depositEndTime
-      : proposal.votingEndTime) || new Date(0)
-  const dateDisplay: ProposalTimestampInfo['display'] | undefined =
-    proposal.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
-    proposal.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-      ? {
-          label: t('title.timeLeft'),
-          tooltip: formatDateTimeTz(depositOrVotingEndDate),
-          content: (
-            <TimeAgo
-              date={depositOrVotingEndDate}
-              formatter={timeAgoFormatter}
-            />
-          ),
-        }
-      : proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED ||
-        proposal.status === ProposalStatus.PROPOSAL_STATUS_REJECTED
-      ? {
-          label:
-            proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED
-              ? t('proposalStatusTitle.passed')
-              : t('proposalStatusTitle.rejected'),
-          tooltip: formatDateTimeTz(proposal.votingEndTime || new Date(0)),
-          content: formatDate(proposal.votingEndTime || new Date(0)),
-        }
-      : undefined
-
-  const timestampInfo: ProposalTimestampInfo = {
-    display: dateDisplay,
-    expirationDate: depositOrVotingEndDate,
   }
 
   const yesVotes = Number(loadingProposalTally.data.yes)
@@ -207,30 +156,12 @@ export const useLoadingGovProposal = (
       turnoutNoWithVetoPercent >= loadingGovParams.data.vetoThreshold * 100,
   }
 
-  const walletVoteInfo: LoadingData<GovProposalWalletVoteInfo> =
-    loadingWalletVote.loading || !loadingWalletVote.data
-      ? {
-          loading: true,
-        }
-      : {
-          loading: false,
-          data: {
-            vote:
-              // If no votes, return undefined to indicate has not voted.
-              loadingWalletVote.data.length === 0
-                ? undefined
-                : loadingWalletVote.data.sort(
-                    (a, b) => Number(b.weight) - Number(a.weight)
-                  ),
-          },
-        }
-
   return {
     loading: false,
     updating: loadingProposal.updating,
     data: {
       ...loadingProposal.data,
-      timestampInfo,
+      timestampInfo: loadingTimestampInfo.data,
       votesInfo,
       walletVoteInfo,
       minDeposit: loadingGovParams.data.minDeposit,
