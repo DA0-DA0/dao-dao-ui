@@ -1,11 +1,12 @@
 import { HowToVoteRounded } from '@mui/icons-material'
-import { ComponentType } from 'react'
+import { ComponentType, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   DaoWithDropdownVetoableProposalList,
   LinkWrapperProps,
 } from '@dao-dao/types'
+import { getScrollableAncestor } from '@dao-dao/utils'
 
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
@@ -47,11 +48,37 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Proposal sections are shown below open and vetoable proposals.
    */
   sections: ProposalSection<T>[]
+  /**
+   * Link to create a new proposal.
+   */
   createNewProposalHref: string
+  /**
+   * Whether or not there are more proposals to load.
+   */
   canLoadMore: boolean
+  /**
+   * Load more proposals.
+   */
   loadMore: () => void
+  /**
+   * Whether or not more proposals are being loaded.
+   */
   loadingMore: boolean
+  /**
+   * Whether or not the current wallet is a member of the DAO.
+   */
   isMember: boolean
+  /**
+   * The infinite scroll factor is how close to the bottom the user has to be to
+   * load more proposals. 0 triggers loading when scrolled all the way to the
+   * bottom, and 0.5 triggers loading when the user has half the screen
+   * remaining before the bottom. 1 will ensure there is at least a screen's
+   * height worth of proposals loaded.
+   *
+   * Defaults to 0.5. Set to -1 to disable.
+   */
+  infiniteScrollFactor?: number
+
   ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
   LinkWrapper: ComponentType<LinkWrapperProps>
@@ -61,12 +88,13 @@ export const ProposalList = <T extends { proposalId: string }>({
   openProposals,
   daosWithVetoableProposals,
   sections,
-  ProposalLine,
   createNewProposalHref,
   canLoadMore,
   loadMore,
   loadingMore,
   isMember,
+  infiniteScrollFactor = 0.5,
+  ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
 }: ProposalListProps<T>) => {
@@ -78,8 +106,54 @@ export const ProposalList = <T extends { proposalId: string }>({
     daosWithVetoableProposals.length > 0 ||
     sections.some((section) => section.proposals.length > 0)
 
+  // Infinite scroll by loading more when scrolled near bottom.
+  const [container, setContainer] = useState<HTMLElement | null>(null)
+  const loadMoreRef = useRef(loadMore)
+  loadMoreRef.current = loadMore
+  useEffect(() => {
+    if (
+      loadingMore ||
+      !canLoadMore ||
+      !container ||
+      infiniteScrollFactor < 0 ||
+      typeof window === 'undefined'
+    ) {
+      return
+    }
+
+    const scrollContainer = getScrollableAncestor(container)
+    if (!scrollContainer) {
+      return
+    }
+
+    let executedLoadingMore = false
+    const onScroll = () => {
+      if (executedLoadingMore) {
+        return
+      }
+
+      // Check if container is near the bottom.
+      const { bottom } = container.getBoundingClientRect()
+      if (
+        bottom - window.innerHeight * infiniteScrollFactor <=
+        window.innerHeight
+      ) {
+        executedLoadingMore = true
+        loadMoreRef.current()
+      }
+    }
+
+    onScroll()
+
+    scrollContainer.addEventListener('scroll', onScroll)
+    return () => scrollContainer.removeEventListener('scroll', onScroll)
+  }, [loadingMore, canLoadMore, container, infiniteScrollFactor])
+
   return proposalsExist ? (
-    <div className="border-t border-border-secondary py-6">
+    <div
+      className="border-t border-border-secondary py-6"
+      ref={(ref) => setContainer(ref)}
+    >
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
@@ -113,7 +187,7 @@ export const ProposalList = <T extends { proposalId: string }>({
                 containerClassName="gap-3"
                 contentContainerClassName="space-y-1"
                 defaultCollapsed={defaultCollapsed}
-                label={`${title} • ${t('title.numProposals', {
+                label={`${title} • ${t('info.numProposals', {
                   count: total ?? proposals.length,
                 })}`}
                 labelClassName="text-text-secondary"

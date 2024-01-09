@@ -91,7 +91,7 @@ export const Collapsible = ({
       {children && (
         <div
           className={clsx(
-            // 'animate-fade-in',
+            'animate-fade-in',
             !expanded && 'hidden',
             !noContentIndent && 'ml-10',
             contentContainerClassName

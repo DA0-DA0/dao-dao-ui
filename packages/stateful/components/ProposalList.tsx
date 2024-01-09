@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
@@ -34,7 +34,7 @@ import { ProposalLine } from './ProposalLine'
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
 // Load proposals until at least this many are loaded.
-const MIN_LOAD_PROPS = 100
+const MIN_LOAD_PROPS = PROP_PAGINATE_LIMIT * 2
 
 enum ProposalType {
   Normal = 'normal',
@@ -315,10 +315,12 @@ export const ProposalList = () => {
       getDaoProposalPath,
     ]
   )
+
   // Load once on mount.
+  const loadMoreRef = useRef(loadMore)
+  loadMoreRef.current = loadMore
   useEffect(() => {
-    loadMore()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadMoreRef.current()
   }, [])
 
   // Refresh all proposals on proposal WebSocket messages.

@@ -1525,8 +1525,6 @@
     "numNotifications_other": "{{count}} notifications",
     "numPendingItems_one": "{{count}} pending item",
     "numPendingItems_other": "{{count}} pending items",
-    "numProposals_one": "{{count}} Proposal",
-    "numProposals_other": "{{count}} Proposals",
     "numSubDaos_one": "{{count}} SubDAO",
     "numSubDaos_other": "{{count}} SubDAOs",
     "numTasks_one": "{{count}} task",

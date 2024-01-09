@@ -1,10 +1,9 @@
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { govProposalsSelector } from '@dao-dao/state/recoil'
 import {
-  Pagination,
   ProposalList as StatelessProposalList,
   useCachedLoading,
   useChain,
@@ -14,7 +13,7 @@ import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1bet
 import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
 
-const PROPSALS_PER_PAGE = 10
+const PROPSALS_PER_PAGE = 20
 
 export const GovProposalList = () => {
   const { t } = useTranslation()
@@ -43,6 +42,22 @@ export const GovProposalList = () => {
     }
   )
 
+  // Get max page by loading a single item and then getting the total.
+  const loadingMaxPage = useCachedLoading(
+    govProposalsSelector({
+      chainId: chain.chain_id,
+      limit: 1,
+    }),
+    {
+      proposals: [],
+      total: 0,
+    }
+  )
+  const maxPage =
+    loadingMaxPage.loading || loadingMaxPage.updating
+      ? 1
+      : Math.ceil(loadingMaxPage.data.total / PROPSALS_PER_PAGE)
+
   const [page, setPage] = useState(1)
   const loadingAllGovProposals = useCachedLoading(
     govProposalsSelector({
@@ -59,6 +74,49 @@ export const GovProposalList = () => {
       throw new Error(t('error.loadingData'))
     }
   )
+  // Only allow incrementing the page once the current page has loaded and if
+  // we're below the max.
+  const goToNextPage = useCallback(() => {
+    if (loadingAllGovProposals.loading || loadingAllGovProposals.updating) {
+      return
+    }
+
+    setPage((page) => Math.min(page + 1, maxPage))
+  }, [loadingAllGovProposals, maxPage])
+
+  const [historyProposals, setHistoryProposals] = useState<
+    GovProposalLineProps[]
+  >([])
+
+  useEffect(() => {
+    if (loadingAllGovProposals.loading || loadingAllGovProposals.updating) {
+      return
+    }
+
+    const newHistoryProposals = loadingAllGovProposals.data.proposals
+      .filter(
+        (prop) =>
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED ||
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_REJECTED ||
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_FAILED
+      )
+      .map(
+        (proposal): GovProposalLineProps => ({
+          proposalId: proposal.id.toString(),
+          proposal,
+        })
+      )
+
+    // Add new proposals to history that aren't already there.
+    setHistoryProposals((prev) =>
+      [
+        ...prev,
+        ...newHistoryProposals.filter(
+          ({ proposalId }) => !prev.some((p) => p.proposalId === proposalId)
+        ),
+      ].sort((a, b) => Number(b.proposalId) - Number(a.proposalId))
+    )
+  }, [loadingAllGovProposals])
 
   const openProposals = openGovProposalsVotingPeriod.loading
     ? []
@@ -90,73 +148,39 @@ export const GovProposalList = () => {
             (a.proposal.proposal.depositEndTime ?? new Date(0)).getTime()
         )
 
-  const historyProposals = loadingAllGovProposals.loading
-    ? []
-    : loadingAllGovProposals.data.proposals
-        .filter(
-          (prop) =>
-            prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED ||
-            prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_REJECTED ||
-            prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_FAILED
-        )
-        .map(
-          (proposal): GovProposalLineProps => ({
-            proposalId: proposal.id.toString(),
-            proposal,
-          })
-        )
-
-  // Initial loading if any are loading for the first time. Since they're all
-  // cached, loading is only true on initial load.
-  const initialLoad =
-    openGovProposalsVotingPeriod.loading ||
-    govProposalsDepositPeriod.loading ||
-    loadingAllGovProposals.loading
-
   const historyCount = loadingAllGovProposals.loading
     ? 0
     : loadingAllGovProposals.data.total - openProposals.length
 
   return (
-    <>
-      <StatelessProposalList
-        DiscordNotifierConfigureModal={undefined}
-        LinkWrapper={LinkWrapper}
-        ProposalLine={GovProposalLine}
-        canLoadMore={false}
-        createNewProposalHref={asPath + '/create'}
-        daosWithVetoableProposals={[]}
-        isMember={true}
-        loadMore={() => {}}
-        loadingMore={initialLoad}
-        openProposals={openProposals}
-        sections={[
-          {
-            title: t('title.depositPeriod'),
-            proposals: depositPeriodProposals,
-            defaultCollapsed: true,
-          },
-          {
-            title: t('title.history'),
-            proposals: historyProposals,
-            total: historyCount,
-          },
-        ]}
-      />
-
-      {!loadingAllGovProposals.loading &&
-        loadingAllGovProposals.data.total > PROPSALS_PER_PAGE && (
-          <Pagination
-            className="mx-auto mt-4"
-            loading={
-              loadingAllGovProposals.loading || loadingAllGovProposals.updating
-            }
-            page={page}
-            pageSize={PROPSALS_PER_PAGE}
-            setPage={setPage}
-            total={historyCount}
-          />
-        )}
-    </>
+    <StatelessProposalList
+      DiscordNotifierConfigureModal={undefined}
+      LinkWrapper={LinkWrapper}
+      ProposalLine={GovProposalLine}
+      canLoadMore={page < maxPage}
+      createNewProposalHref={asPath + '/create'}
+      daosWithVetoableProposals={[]}
+      isMember={true}
+      loadMore={goToNextPage}
+      loadingMore={
+        openGovProposalsVotingPeriod.loading ||
+        govProposalsDepositPeriod.loading ||
+        loadingAllGovProposals.loading ||
+        !!loadingAllGovProposals.updating
+      }
+      openProposals={openProposals}
+      sections={[
+        {
+          title: t('title.depositPeriod'),
+          proposals: depositPeriodProposals,
+          defaultCollapsed: true,
+        },
+        {
+          title: t('title.history'),
+          proposals: historyProposals,
+          total: historyCount,
+        },
+      ]}
+    />
   )
 }
