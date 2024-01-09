@@ -3,12 +3,10 @@
 
 import type { GetStaticPaths, NextPage } from 'next'
 import React, { useEffect, useRef } from 'react'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
+  ButtonLink,
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
@@ -20,15 +18,13 @@ import {
   useFollowingDaos,
   useMembership,
 } from '@dao-dao/stateful'
-import { useActionForKey } from '@dao-dao/stateful/actions'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   DaoDappTabbedHome,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, DaoPageMode, DaoTabId } from '@dao-dao/types'
+import { ActionKey, DaoPageMode, DaoTabId, Feature } from '@dao-dao/types'
 import {
   SITE_URL,
   getDaoPath,
@@ -37,115 +33,50 @@ import {
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
   const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
   const daoInfo = useDaoInfoContext()
 
-  // If no parent, fallback to current address since it's already loaded from
-  // the above hook. We won't use this value unless there's a parent. It's
-  // redundant but has no effect.
-  const { isMember: isMemberOfParent } = useMembership(
+  // If no parent, fallback to current DAO since it's already loaded from the
+  // above hook. We won't use this value unless there's a parent. It's redundant
+  // but has no effect.
+  const { isMember: isMemberOfParent = false } = useMembership(
     daoInfo.parentDao ?? daoInfo
   )
-  const parentDaosSubDaosLoadable = useRecoilValueLoadable(
-    daoInfo.parentDao
-      ? DaoCoreV2Selectors.listAllSubDaosSelector({
-          chainId,
-          contractAddress: daoInfo.parentDao.coreAddress,
-        })
-      : constSelector(undefined)
-  )
 
-  // Check if action exists, since v1 DAOs do not have this action.
-  const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
-  // Prefill URL only valid if action exists.
-  const prefillValid = !!manageSubDaosAction
-  const addSubDaoProposalPrefillHref =
-    prefillValid && daoInfo.parentDao && manageSubDaosAction
+  const parentProposalRecognizeSubDaoHref =
+    // Only show this prefill proposal link if the wallet is a member of the
+    // parent.
+    isMemberOfParent &&
+    // Only v2+ DAOs support SubDAOs.
+    daoInfo.supportedFeatures[Feature.SubDaos] &&
+    // Only show if the parent has not already registered this as a SubDAO.
+    daoInfo.parentDao &&
+    !daoInfo.parentDao.registeredSubDao
       ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
-          prefill: getDaoProposalSinglePrefill(
-            manageSubDaosAction
-              ? {
-                  title: t('title.recognizeSubDao', {
-                    name: daoInfo.name,
-                  }),
-                  description: t('info.recognizeSubDaoDescription', {
-                    name: daoInfo.name,
-                  }),
-                  actions: [
+          prefill: getDaoProposalSinglePrefill({
+            title: t('title.recognizeSubDao', {
+              name: daoInfo.name,
+            }),
+            description: t('info.recognizeSubDaoDescription', {
+              name: daoInfo.name,
+            }),
+            actions: [
+              {
+                actionKey: ActionKey.ManageSubDaos,
+                data: {
+                  toAdd: [
                     {
-                      actionKey: manageSubDaosAction.action.key,
-                      data: {
-                        toAdd: [
-                          {
-                            addr: daoInfo.coreAddress,
-                          },
-                        ],
-                        toRemove: [],
-                      },
+                      addr: daoInfo.coreAddress,
                     },
                   ],
-                }
-              : {}
-          ),
+                  toRemove: [],
+                },
+              },
+            ],
+          }),
         })
       : undefined
-  useEffect(() => {
-    if (!addSubDaoProposalPrefillHref) {
-      return
-    }
-    router.prefetch(addSubDaoProposalPrefillHref)
-  }, [addSubDaoProposalPrefillHref, router])
-  // Notify if parent has not yet added subDAO.
-  const notifiedNotAddedSubDao = useRef<string | undefined>(undefined)
-  useEffect(() => {
-    if (
-      daoInfo.parentDao &&
-      parentDaosSubDaosLoadable.state === 'hasValue' &&
-      parentDaosSubDaosLoadable.contents &&
-      !parentDaosSubDaosLoadable.contents.some(
-        ({ addr }) => addr === daoInfo.coreAddress
-      ) &&
-      notifiedNotAddedSubDao.current !== daoInfo.coreAddress
-    ) {
-      if (isMemberOfParent && addSubDaoProposalPrefillHref) {
-        toast(
-          <p
-            className="cursor-pointer transition-opacity hover:opacity-80 active:opacity-70"
-            onClick={() => router.push(addSubDaoProposalPrefillHref)}
-          >
-            {t('info.subDaoNeedsAdding', {
-              parent: daoInfo.parentDao.name,
-              child: daoInfo.name,
-            })}{' '}
-            <span className="underline">
-              {t('button.clickHereToProposeAdding')}
-            </span>
-          </p>
-        )
-      } else {
-        toast.success(
-          t('info.subDaoNeedsAdding', {
-            parent: daoInfo.parentDao.name,
-            child: daoInfo.name,
-          })
-        )
-      }
-
-      notifiedNotAddedSubDao.current = daoInfo.coreAddress
-    }
-  }, [
-    addSubDaoProposalPrefillHref,
-    daoInfo.coreAddress,
-    daoInfo.name,
-    daoInfo.parentDao,
-    isMemberOfParent,
-    parentDaosSubDaosLoadable.contents,
-    parentDaosSubDaosLoadable.state,
-    router,
-    t,
-  ])
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos(daoInfo.chainId)
@@ -196,6 +127,7 @@ const InnerDaoHome = () => {
 
   return (
     <DaoDappTabbedHome
+      ButtonLink={ButtonLink}
       DaoInfoBar={DaoInfoBar}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
@@ -209,6 +141,7 @@ const InnerDaoHome = () => {
         updatingFollowing,
       }}
       onSelectTabId={onSelectTabId}
+      parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
       rightSidebarContent={
         <SuspenseLoader
           fallback={<ProfileDisconnectedCard className="animate-pulse" />}

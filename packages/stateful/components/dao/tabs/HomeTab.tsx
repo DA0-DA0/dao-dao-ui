@@ -15,6 +15,7 @@ import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 import { useWallet } from '../../../hooks'
 import { matchAndLoadCommon } from '../../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../../voting-module-adapter'
+import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { DaoInfoBar } from '../DaoInfoBar'
@@ -71,6 +72,7 @@ export const HomeTab = () => {
     <div className="flex flex-col items-center gap-4">
       {mode === DaoPageMode.Sda && (
         <DaoSplashHeader
+          ButtonLink={ButtonLink}
           DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}

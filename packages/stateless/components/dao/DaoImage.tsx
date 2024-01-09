@@ -95,7 +95,7 @@ export const DaoImage = ({
             parentDao.registeredSubDao ||
               parentDao.coreVersion === ContractVersion.Gov
               ? 'info.subDaoRegistered'
-              : 'info.subDaoNeedsAdding',
+              : 'info.subDaoNotYetRecognized',
             {
               parent: parentDao.name,
               child: daoName,
