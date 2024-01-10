@@ -1095,14 +1095,18 @@ export const moduleNameForAddressSelector = selectorFamily<
 // Check whether or not the address is a module account.
 export const addressIsModuleSelector = selectorFamily<
   boolean,
-  WithChainId<{ address: string }>
+  WithChainId<{
+    address: string
+    // If passed, check if it is this specific module.
+    moduleName?: string
+  }>
 >({
   key: 'addressIsModule',
   get:
-    ({ address, chainId }) =>
+    ({ chainId, address, moduleName }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      return await addressIsModule(client, address)
+      return await addressIsModule(client, address, moduleName)
     },
 })
 

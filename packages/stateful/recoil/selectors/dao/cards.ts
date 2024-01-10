@@ -28,6 +28,7 @@ import {
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  CHAIN_SUBDAOS,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -195,6 +196,7 @@ export const daoCardInfoSelector = selectorFamily<
             addressIsModuleSelector({
               chainId,
               address: admin,
+              moduleName: 'gov',
             })
           )
         ) {
@@ -207,7 +209,7 @@ export const daoCardInfoSelector = selectorFamily<
             name: getDisplayNameForChainId(chainId),
             imageUrl: getImageUrlForChainId(chainId),
             admin: '',
-            registeredSubDao: false,
+            registeredSubDao: !!CHAIN_SUBDAOS[chainId]?.includes(coreAddress),
           }
         }
       }

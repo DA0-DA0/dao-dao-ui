@@ -1,5 +1,7 @@
 // Constants NOT derived from environment variables.
 
+import { ChainId } from '@dao-dao/types'
+
 export const SITE_IMAGE = '/social.jpg'
 
 // 3 days
@@ -116,3 +118,16 @@ export const DISTRIBUTION_COLORS_EVERY_OTHER = [
   '#FC81A4', // 7
   '#F4925A', // 9
 ]
+
+// Legitimate SubDAOs with the chain governance module set as their admin. This
+// is necessray because chains cannot recognize SubDAOs as they are not DAO
+// contracts, and we need to establish which SubDAOs of a DAO are legitimate for
+// safety.
+export const CHAIN_SUBDAOS: Record<string, string[] | undefined> = {
+  [ChainId.JunoMainnet]: [
+    'juno1nmezpepv3lx45mndyctz2lzqxa6d9xzd2xumkxf7a6r4nxt0y95qypm6c0',
+    'juno1gyjl26rnqqyk6cuh6nqtvx8t885jgqagusvpqpvtgaygcjg2wjdqz0rzle',
+    'juno1n34v729jqgysm5w0unukpt4kvqu4wqyacsv4krmd40f7pz5ruzwqau7e6m',
+    'juno1mjsgk02jyn72jm2x7fgw72uu9wj7xy0v6pnuj2jd3aq7rgeqg5qq4dnhes',
+  ],
+}

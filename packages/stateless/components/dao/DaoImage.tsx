@@ -92,8 +92,7 @@ export const DaoImage = ({
       {parentDao && (
         <Tooltip
           title={t(
-            parentDao.registeredSubDao ||
-              parentDao.coreVersion === ContractVersion.Gov
+            parentDao.registeredSubDao
               ? 'info.subDaoRegistered'
               : 'info.subDaoNotYetRecognized',
             {
@@ -124,17 +123,16 @@ export const DaoImage = ({
             }}
           >
             {/* Show gray overlay with question mark if parent has not registered this SubDAO. */}
-            {!parentDao.registeredSubDao &&
-              parentDao.coreVersion !== ContractVersion.Gov && (
-                <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
-                  <QuestionMark
-                    className={clsx('text-text-secondary', {
-                      '!h-5 !w-5': size === 'sm',
-                      '!h-6 !w-6': size === 'lg',
-                    })}
-                  />
-                </div>
-              )}
+            {!parentDao.registeredSubDao && (
+              <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
+                <QuestionMark
+                  className={clsx('text-text-secondary', {
+                    '!h-5 !w-5': size === 'sm',
+                    '!h-6 !w-6': size === 'lg',
+                  })}
+                />
+              </div>
+            )}
           </LinkWrapper>
         </Tooltip>
       )}
