@@ -6,7 +6,6 @@ import {
   DaoWithDropdownVetoableProposalList,
   LinkWrapperProps,
 } from '@dao-dao/types'
-import { getScrollableAncestor } from '@dao-dao/utils'
 
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
@@ -121,11 +120,6 @@ export const ProposalList = <T extends { proposalId: string }>({
       return
     }
 
-    const scrollContainer = getScrollableAncestor(container)
-    if (!scrollContainer) {
-      return
-    }
-
     let executedLoadingMore = false
     const onScroll = () => {
       if (executedLoadingMore) {
@@ -145,8 +139,10 @@ export const ProposalList = <T extends { proposalId: string }>({
 
     onScroll()
 
-    scrollContainer.addEventListener('scroll', onScroll)
-    return () => scrollContainer.removeEventListener('scroll', onScroll)
+    // Set third argument to `true` to capture all scroll events instead of
+    // waiting for them to bubble up.
+    window.addEventListener('scroll', onScroll, true)
+    return () => window.removeEventListener('scroll', onScroll, true)
   }, [loadingMore, canLoadMore, container, infiniteScrollFactor])
 
   return proposalsExist ? (
