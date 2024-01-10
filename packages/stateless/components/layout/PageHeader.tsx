@@ -11,7 +11,7 @@ import { TopGradient } from '../TopGradient'
 import { useAppContext, useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
+export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 sm:h-20'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
@@ -23,6 +23,7 @@ export const PageHeader = ({
   centerNode,
   rightNode,
   gradient,
+  expandBorderToEdge = false,
 }: PageHeaderProps) => {
   const { toggle } = useAppContext().responsiveNavigation
 
@@ -54,7 +55,7 @@ export const PageHeader = ({
   }, [gradient])
 
   return (
-    <div className="relative">
+    <div className={clsx('relative', expandBorderToEdge && '-mx-6')}>
       {gradient && (
         <TopGradient
           style={{
@@ -64,7 +65,12 @@ export const PageHeader = ({
       )}
 
       <div
-        className={clsx('relative', PAGE_HEADER_HEIGHT_CLASS_NAMES, className)}
+        className={clsx(
+          'relative',
+          expandBorderToEdge && 'px-4',
+          PAGE_HEADER_HEIGHT_CLASS_NAMES,
+          className
+        )}
       >
         <div
           className={clsx(
@@ -74,7 +80,7 @@ export const PageHeader = ({
             // breakpoint is when the UI switches from responsive to desktop
             // mode.
             (title || breadcrumbs) && [
-              'px-12',
+              expandBorderToEdge ? 'px-8' : 'px-12',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
               !forceCenter && 'sm:pl-0',
@@ -91,7 +97,12 @@ export const PageHeader = ({
         </div>
 
         {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
-        <div className="absolute top-0 bottom-0 -left-2 flex flex-col justify-center">
+        <div
+          className={clsx(
+            'absolute top-0 bottom-0 flex flex-col justify-center',
+            expandBorderToEdge ? 'left-2' : '-left-2'
+          )}
+        >
           <IconButton
             Icon={Menu}
             className="!outline-none sm:hidden"

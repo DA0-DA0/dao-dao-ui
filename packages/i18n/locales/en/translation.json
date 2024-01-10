@@ -68,6 +68,8 @@
     "clear": "Clear",
     "clearAll": "Clear all",
     "clearNotification": "Clear notification",
+    "clearSelected": "Clear {{count}} selected",
+    "clickHereToProposeAdding": "Click here to propose adding it.",
     "clickHereToProposeRecognizingIt": "Click here to propose recognizing it.",
     "clickToCopyAddress": "Click to copy address",
     "clickToFollow": "Click to follow",
@@ -128,6 +130,7 @@
     "inboxWithNumNotifications_zero": "Inbox",
     "installKeplr": "Install Keplr",
     "instantiate": "Instantiate",
+    "keepNotification": "Keep notification",
     "loadDraft": "Load draft",
     "loadMessageTemplate": "Load message template",
     "loadMore": "Load more",
@@ -160,6 +163,7 @@
     "rateContributions": "Rate contributions",
     "readLess": "Read less",
     "readMore": "Read more",
+    "refresh": "Refresh",
     "refundAndCancel": "Refund and cancel",
     "register": "Register",
     "registerSlashes": "Register slashes",
@@ -185,6 +189,7 @@
     "setAsProfilePhoto": "Set as profile photo",
     "setDisplayName": "set display name",
     "setUpDiscordNotifier": "Set up Discord Notifier",
+    "settings": "Settings",
     "showInstantiateMessage": "Show Instantiate Message",
     "showQrCode": "Show QR code",
     "showRawData": "Show raw data",
@@ -771,6 +776,14 @@
       "description": "When you're added to a DAO.",
       "title": "Joined DAO"
     },
+    "pending_proposal_created": {
+      "description": "When a pending proposal that needs approval is created.",
+      "title": "Pending proposal created"
+    },
+    "pending_proposal_rejected": {
+      "description": "When a pending proposal is rejected.",
+      "title": "Pending proposal rejected"
+    },
     "proposal_closed": {
       "description": "When a proposal is rejected and closed.",
       "title": "Proposal closed"
@@ -799,8 +812,7 @@
     "activeThresholdDescription": "The amount of voting power that needs to be staked in order for the DAO to become active (i.e. proposal creation is allowed).",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
-    "addedToDaoFollowPrompt_withTimestamp": "You were added as a member to this DAO on {{timestamp}}. Follow it to receive updates.",
-    "addedToDaoFollowPrompt_withoutTimestamp": "You were added as a member to this DAO. Follow it to receive updates.",
+    "addedToDaoFollowPrompt": "You were added as a member to this DAO. Follow it to receive updates.",
     "advancedVotingConfigWarning": "These are advanced features. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "allAccountsCreated": "All accounts have been created.",
     "allChains": "All chains",
