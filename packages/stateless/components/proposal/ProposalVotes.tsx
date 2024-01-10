@@ -12,7 +12,11 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
-import { formatDateTimeTz, formatPercentOf100 } from '@dao-dao/utils'
+import {
+  formatDateTimeTz,
+  formatPercentOf100,
+  getScrollableAncestor,
+} from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../buttons'
@@ -74,14 +78,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
       return
     }
 
-    const getScrollParent = (node: HTMLElement): HTMLElement | null => {
-      if (node.scrollHeight > node.clientHeight) {
-        return node
-      }
-      return node.parentElement ? getScrollParent(node.parentElement) : null
-    }
-
-    const parent = getScrollParent(containerRef.current)
+    const parent = getScrollableAncestor(containerRef.current)
     if (!parent) {
       return
     }

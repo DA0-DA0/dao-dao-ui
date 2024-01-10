@@ -22,6 +22,7 @@ import {
   configSelector as configV1Selector,
   getVoteSelector as getVoteV1Selector,
   listVotesSelector as listVotesV1Selector,
+  proposalCountSelector as proposalCountV1Selector,
   proposalSelector as proposalV1Selector,
   reverseProposalsSelector as reverseProposalsV1Selector,
 } from './CwProposalSingle.v1'
@@ -29,6 +30,7 @@ import {
   configSelector as configV2Selector,
   getVoteSelector as getVoteV2Selector,
   listVotesSelector as listVotesV2Selector,
+  proposalCountSelector as proposalCountV2Selector,
   proposalSelector as proposalV2Selector,
   reverseProposalsSelector as reverseProposalsV2Selector,
 } from './DaoProposalSingle.v2'
@@ -187,6 +189,26 @@ export const configSelector = selectorFamily<
           : configV2Selector
 
       return get<ConfigV1Response | ConfigV2Response>(selector(params))
+    },
+})
+
+export const proposalCountSelector = selectorFamily<number, QueryClientParams>({
+  key: 'daoProposalSingleCommonProposalCount',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const proposalModuleVersion = get(
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
+      )
+      const selector =
+        proposalModuleVersion === ContractVersion.V1
+          ? proposalCountV1Selector
+          : proposalCountV2Selector
+
+      return get<number>(selector(params))
     },
 })
 

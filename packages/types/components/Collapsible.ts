@@ -18,5 +18,6 @@ export interface CollapsibleProps {
   children?: ReactNode | ReactNode[]
   containerClassName?: string
   headerClassName?: string
+  labelClassName?: string
   contentContainerClassName?: string
 }

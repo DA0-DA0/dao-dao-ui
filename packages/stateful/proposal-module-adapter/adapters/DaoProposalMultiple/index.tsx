@@ -11,6 +11,7 @@ import {
   makeDepositInfoSelector,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
+  proposalCountSelector,
   reverseProposalInfosSelector,
 } from './common'
 import {
@@ -73,6 +74,10 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
       // Selectors
       selectors: {
+        proposalCount: proposalCountSelector({
+          chainId: options.chain.chain_id,
+          proposalModuleAddress: options.proposalModule.address,
+        }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
             chainId: options.chain.chain_id,
