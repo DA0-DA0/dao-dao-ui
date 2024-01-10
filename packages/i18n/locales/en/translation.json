@@ -776,6 +776,14 @@
       "description": "When you're added to a DAO.",
       "title": "Joined DAO"
     },
+    "pending_proposal_created": {
+      "description": "When a pending proposal that needs approval is created.",
+      "title": "Pending proposal created"
+    },
+    "pending_proposal_rejected": {
+      "description": "When a pending proposal is rejected.",
+      "title": "Pending proposal rejected"
+    },
     "proposal_closed": {
       "description": "When a proposal is rejected and closed.",
       "title": "Proposal closed"
