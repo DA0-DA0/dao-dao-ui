@@ -29,6 +29,7 @@ import {
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { aminoTypes, typesRegistry } from './messages/protobuf'
+import { ModuleAccount } from './protobuf/codegen/cosmos/auth/v1beta1/auth'
 import {
   Validator as RpcValidator,
   bondStatusToJSON,
@@ -554,17 +555,29 @@ export const addressIsModule = async (
   client: Awaited<
     ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
   >['cosmos'],
-  address: string
+  address: string,
+  // If defined, check that the module is this module.
+  moduleName?: string
 ): Promise<boolean> => {
   try {
     const { account } = await client.auth.v1beta1.account({
       address,
     })
 
-    return (
-      (account?.typeUrl || account?.$typeUrl) ===
-      '/cosmos.auth.v1beta1.ModuleAccount'
-    )
+    if (!account) {
+      return false
+    }
+
+    if (account.typeUrl === ModuleAccount.typeUrl) {
+      const moduleAccount = ModuleAccount.decode(account.value)
+      return !moduleName || moduleAccount.name === moduleName
+
+      // If already decoded automatically.
+    } else if (account.$typeUrl === ModuleAccount.typeUrl) {
+      return (
+        !moduleName || (account as unknown as ModuleAccount).name === moduleName
+      )
+    }
   } catch (err) {
     if (
       err instanceof Error &&
@@ -577,4 +590,6 @@ export const addressIsModule = async (
     // Rethrow other errors.
     throw err
   }
+
+  return false
 }

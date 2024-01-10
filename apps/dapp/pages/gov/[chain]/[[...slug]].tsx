@@ -3,6 +3,7 @@
 
 import {
   AccountBalanceWalletOutlined,
+  FiberSmartRecordOutlined,
   HowToVoteOutlined,
 } from '@mui/icons-material'
 import type { GetStaticPaths, NextPage } from 'next'
@@ -20,6 +21,7 @@ import {
   GovPageWrapper,
   GovPageWrapperProps,
   GovProposalsTab,
+  GovSubDaosTab,
   LinkWrapper,
   ProfileDisconnectedCard,
   ProfileHomeCard,
@@ -38,6 +40,7 @@ import {
 } from '@dao-dao/stateless'
 import { ChainId, DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 import {
+  CHAIN_SUBDAOS,
   NEUTRON_GOVERNANCE_DAO,
   SITE_URL,
   getConfiguredChainConfig,
@@ -68,6 +71,17 @@ const InnerGovHome = () => {
       Component: GovCommunityPoolTab,
       Icon: AccountBalanceWalletOutlined,
     },
+    // If SubDAOs exist, show them.
+    ...(CHAIN_SUBDAOS[chainId]?.length
+      ? [
+          {
+            id: DaoTabId.SubDaos,
+            label: t('title.subDaos'),
+            Component: GovSubDaosTab,
+            Icon: FiberSmartRecordOutlined,
+          },
+        ]
+      : []),
   ]).current
   const firstTabId = tabs[0].id
 

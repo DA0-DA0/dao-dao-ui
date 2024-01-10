@@ -34,6 +34,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
@@ -304,6 +305,7 @@ export const daoInfoSelector: (param: {
             addressIsModuleSelector({
               chainId,
               address: admin,
+              moduleName: 'gov',
             })
           )
         ) {
@@ -318,6 +320,7 @@ export const daoInfoSelector: (param: {
             admin: '',
             registeredSubDao: false,
           }
+          parentSubDaos = CHAIN_SUBDAOS[chainId] ?? []
         }
       }
 
@@ -347,7 +350,7 @@ export const daoInfoSelector: (param: {
               imageUrl: parentDaoInfo.imageUrl || null,
               parentDao: parentDaoInfo.parentDao,
               admin: parentDaoInfo.admin,
-              registeredSubDao: parentSubDaos?.includes(coreAddress) ?? false,
+              registeredSubDao: !!parentSubDaos?.includes(coreAddress),
             }
           : null,
         admin,
