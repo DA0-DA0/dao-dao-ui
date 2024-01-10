@@ -5,6 +5,7 @@ export interface IconButtonifierProps {
   // Custom size requires manual setting of sizes.
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'
   circular?: boolean
+  noRounding?: boolean
   Icon: ComponentType<{ className: string }>
   disabled?: boolean
   loading?: boolean

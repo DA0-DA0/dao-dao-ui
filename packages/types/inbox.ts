@@ -104,7 +104,19 @@ export type InboxItemRendererProps<Data extends unknown> = {
 }
 
 export type InboxMainItemRendererProps = {
+  /**
+   * The loaded inbox item.
+   */
   item: InboxLoadedItemWithData
+  /**
+   * Whether or not this inbox item is checked. Checking refers to batch marking
+   * as cleared.
+   */
+  checked: boolean
+  /**
+   * Check handler. Called with the item ID.
+   */
+  onCheck: (id: string) => void
 }
 
 export type InboxUpdateConfig = {

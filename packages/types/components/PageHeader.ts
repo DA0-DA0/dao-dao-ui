@@ -13,4 +13,6 @@ export type PageHeaderProps = {
   centerNode?: ReactNode
   rightNode?: ReactNode
   gradient?: boolean
+  // Expands the border to the edge of the page.
+  expandBorderToEdge?: boolean
 }

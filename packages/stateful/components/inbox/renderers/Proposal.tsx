@@ -1,15 +1,21 @@
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
-import { ChainProvider, useDaoNavHelpers } from '@dao-dao/stateless'
+import {
+  ChainProvider,
+  Tooltip,
+  useDaoNavHelpers,
+  useTranslatedTimeDeltaFormatter,
+} from '@dao-dao/stateless'
 import {
   InboxItemRendererProps,
   InboxItemType,
   InboxItemTypeProposalCreatedData,
 } from '@dao-dao/types'
-import { formatDateTimeTz, formatLongDateTime } from '@dao-dao/utils'
+import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
+import { ButtonLink } from '../../ButtonLink'
 import { EntityDisplay } from '../../EntityDisplay'
-import { LinkWrapper } from '../../LinkWrapper'
 
 export const ProposalRenderer = ({
   item,
@@ -17,6 +23,10 @@ export const ProposalRenderer = ({
 }: InboxItemRendererProps<InboxItemTypeProposalCreatedData>) => {
   const { t } = useTranslation()
   const { getDaoProposalPath } = useDaoNavHelpers()
+
+  const timestampFormatter = useTranslatedTimeDeltaFormatter({
+    words: false,
+  })
 
   const timestamp = item.timestamp && new Date(item.timestamp)
 
@@ -35,46 +45,46 @@ export const ProposalRenderer = ({
       : undefined
 
   return (
-    <ChainProvider chainId={chainId}>
-      <LinkWrapper
-        className="block cursor-pointer rounded-md bg-background-secondary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
-        containerClassName="grow"
-        href={getDaoProposalPath(dao, proposalId)}
-      >
-        {/* Desktop */}
-        <div className="hidden flex-row items-end justify-between gap-6 p-4 md:flex">
-          <div className="flex flex-col gap-2">
-            <EntityDisplay address={dao} />
-
-            <p className="body-text ml-8 break-words">
-              {proposalId + ': ' + proposalTitle}
-            </p>
-          </div>
+    <ButtonLink
+      className="!p-0 !ring-0"
+      containerClassName="grow"
+      href={getDaoProposalPath(dao, proposalId)}
+      loadingVariant="pulse"
+      noRounding
+      variant="ghost"
+    >
+      <div className="flex grow flex-col gap-2 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-row items-start gap-1">
+          <ChainProvider chainId={chainId}>
+            <EntityDisplay
+              address={dao}
+              imageSize={32}
+              noCopy
+              noLink
+              noUnderline
+              textClassName="self-start"
+            />
+          </ChainProvider>
 
           {timestamp && (
-            <p className="secondary-text break-words text-right">
-              {status && `${status} @ `}
-              {formatLongDateTime(timestamp)}
-            </p>
+            <Tooltip title={formatDateTimeTz(timestamp)}>
+              <p className="legend-text mt-0.5 inline-block text-text-quaternary">
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                {'• '}
+                {timestamp < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) ? (
+                  formatDate(timestamp)
+                ) : (
+                  <TimeAgo date={timestamp} formatter={timestampFormatter} />
+                )}
+              </p>
+            </Tooltip>
           )}
         </div>
 
-        {/* Mobile */}
-        <div className="flex flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
-          <EntityDisplay address={dao} />
-
-          <p className="body-text ml-8 break-words">
-            {proposalId + ': ' + proposalTitle}
-          </p>
-
-          {timestamp && (
-            <p className="secondary-text ml-8 break-words">
-              {status && `${status} @ `}
-              {formatDateTimeTz(timestamp)}
-            </p>
-          )}
-        </div>
-      </LinkWrapper>
-    </ChainProvider>
+        <p className="secondary-text ml-10 -mt-4 break-words text-text-tertiary">
+          {(status ? status + ' ' : '') + proposalId + ': ' + proposalTitle}
+        </p>
+      </div>
+    </ButtonLink>
   )
 }

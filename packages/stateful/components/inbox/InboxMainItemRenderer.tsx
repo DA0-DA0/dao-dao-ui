@@ -1,4 +1,5 @@
-import { Done } from '@mui/icons-material'
+import { CloseSharp, RemoveSharp } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +13,11 @@ import {
 import { useInboxApi } from '../../hooks'
 import { JoinedDaoRenderer, ProposalRenderer } from './renderers'
 
-export const InboxMainItemRenderer = ({ item }: InboxMainItemRendererProps) => {
+export const InboxMainItemRenderer = ({
+  item,
+  checked,
+  onCheck,
+}: InboxMainItemRendererProps) => {
   const { t } = useTranslation()
   const { clear: _clear } = useInboxApi()
   const clear = useCallback(() => _clear(item.id), [_clear, item.id])
@@ -20,18 +25,29 @@ export const InboxMainItemRenderer = ({ item }: InboxMainItemRendererProps) => {
   const Renderer = ITEM_RENDERER_MAP[item.type]
 
   return Renderer ? (
-    <div className="flex flex-row items-stretch gap-1">
-      <div className="grow">
+    <div
+      className={clsx(
+        'flex flex-row items-stretch transition-opacity',
+        checked && 'opacity-30'
+      )}
+    >
+      <div className="flex grow flex-row items-stretch">
         <Renderer clear={clear} data={item.data} item={item} />
       </div>
 
-      <Tooltip title={t('button.clearNotification')}>
-        <div className="shrink-0">
+      <Tooltip
+        title={
+          checked ? t('button.keepNotification') : t('button.clearNotification')
+        }
+      >
+        <div className="shrink-0 border-l border-border-secondary">
           <IconButton
-            Icon={Done}
-            className="!h-full"
-            onClick={clear}
-            size="sm"
+            Icon={checked ? RemoveSharp : CloseSharp}
+            className="!h-full !w-10"
+            iconClassName="!h-5 !w-5"
+            noRounding
+            onClick={() => onCheck(item.id)}
+            size="custom"
             variant="ghost"
           />
         </div>
@@ -42,6 +58,7 @@ export const InboxMainItemRenderer = ({ item }: InboxMainItemRendererProps) => {
   )
 }
 
+// TODO: combine these into standard shape, with optional extra buttons
 const ITEM_RENDERER_MAP: Partial<
   Record<InboxItemType, ComponentType<InboxItemRendererProps<any>>>
 > = {
