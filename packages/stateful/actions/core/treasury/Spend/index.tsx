@@ -11,12 +11,18 @@ import {
   skipRouteMessageSelector,
   skipRouteSelector,
 } from '@dao-dao/state/recoil'
-import { MoneyEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
+import {
+  MoneyEmoji,
+  useCachedLoading,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import {
   AccountType,
   ChainId,
   CosmosMsgForEmpty,
   Entity,
+  GenericTokenBalanceWithOwner,
+  LoadingData,
   LoadingDataWithError,
   TokenType,
   UseDecodedCosmosMsg,
@@ -120,7 +126,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       ? getPfmChainPathFromMemo(fromChainId, _ibcData.sourceChannel, pfmMemo)
       : undefined
 
-  const loadingTokens = useTokenBalances({
+  const loadingAllTokenBalances = useTokenBalances({
     // Load selected token when not creating, in case it is no longer returned
     // in the list of all tokens for the given DAO/wallet.
     additionalTokens: props.isCreating
@@ -139,6 +145,55 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           },
         ],
   })
+
+  // Once already created, load selected token info (which should already be
+  // loaded in the decoder), so this data is available right away. This removes
+  // the need to wait for all the token balances to load just to show the
+  // selected token.
+  const loadingSelectedToken = useCachedLoading(
+    props.isCreating
+      ? undefined
+      : genericTokenSelector({
+          chainId: fromChainId,
+          // Cw20 denoms are contract addresses, native denoms are not.
+          type: isValidContractAddress(
+            denom,
+            getChainForChainId(fromChainId).bech32_prefix
+          )
+            ? TokenType.Cw20
+            : TokenType.Native,
+          denomOrAddress: denom,
+        }),
+    undefined
+  )
+
+  // If creating, use all token balances since they need to choose among them,
+  // but once already created, we only need to load the selected token.
+  const loadingTokens: LoadingData<GenericTokenBalanceWithOwner[]> =
+    props.isCreating
+      ? loadingAllTokenBalances
+      : loadingSelectedToken.loading
+      ? loadingSelectedToken
+      : {
+          loading: false,
+          updating: loadingSelectedToken.updating,
+          data: loadingSelectedToken.data
+            ? [
+                {
+                  token: loadingSelectedToken.data,
+                  // Not used once already created.
+                  balance: '0',
+                  // Only address is checked so the specific account type is not
+                  // a big deal.
+                  owner: {
+                    type: AccountType.Native,
+                    chainId: fromChainId,
+                    address: from,
+                  },
+                },
+              ]
+            : [],
+        }
 
   const selectedToken = loadingTokens.loading
     ? undefined
