@@ -145,8 +145,9 @@ export const ActionsRenderer = ({
               // thus re-render the entire component (and reset the form) when
               // the action changes. This is necessary because the component
               // expects to exist inside a FormProvider, and a FormProvider
-              // depends on a `useForm` hook return value.
-              `${index}-${props.action.key}`
+              // depends on a `useForm` hook return value. Also re-render when
+              // the number of action data in the action changes.
+              `${index}-${props.action.key}-${props.all.length}`
             }
             {...props}
             SuspenseLoader={SuspenseLoader}
