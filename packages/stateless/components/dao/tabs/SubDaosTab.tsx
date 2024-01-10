@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
+  ContractVersion,
   DaoCardInfo,
   Feature,
   LoadingData,
@@ -21,6 +22,7 @@ export interface SubDaosTabProps {
   isMember: boolean
   createSubDaoHref?: string
   upgradeToV2Href?: string
+  hideCreateButton?: boolean
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
@@ -30,46 +32,49 @@ export const SubDaosTab = ({
   isMember,
   createSubDaoHref,
   upgradeToV2Href,
+  hideCreateButton,
   ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
-  const { coreAddress, name, supportedFeatures } = useDaoInfoContext()
+  const { coreAddress, coreVersion, name, supportedFeatures } =
+    useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
 
-  const subDaosSupported = supportedFeatures[Feature.SubDaos]
+  const subDaosSupported =
+    coreVersion === ContractVersion.Gov || supportedFeatures[Feature.SubDaos]
 
   return (
     <>
       {/* header min-height of 3.5rem standardized across all tabs */}
       <div className="flex min-h-[3.5rem] flex-row items-center justify-between gap-8 pb-6">
         <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
-          <p className="title-text text-text-body">
-            {t('title.createASubDao')}
-          </p>
+          <p className="title-text text-text-body">{t('title.subDaos')}</p>
           <p className="secondary-text">{t('info.subDaoExplanation')}</p>
         </div>
 
-        <Tooltip
-          title={
-            !subDaosSupported
-              ? t('error.daoFeatureUnsupported', {
-                  name,
-                  feature: t('title.subDaos'),
-                })
-              : !isMember
-              ? t('error.mustBeMemberToCreateSubDao')
-              : undefined
-          }
-        >
-          <ButtonLink
-            className="shrink-0"
-            disabled={!isMember || !subDaosSupported}
-            href={getDaoPath(coreAddress, 'create')}
+        {!hideCreateButton && (
+          <Tooltip
+            title={
+              !subDaosSupported
+                ? t('error.daoFeatureUnsupported', {
+                    name,
+                    feature: t('title.subDaos'),
+                  })
+                : !isMember
+                ? t('error.mustBeMemberToCreateSubDao')
+                : undefined
+            }
           >
-            <Add className="!h-4 !w-4" />
-            {t('button.newSubDao')}
-          </ButtonLink>
-        </Tooltip>
+            <ButtonLink
+              className="shrink-0"
+              disabled={!isMember || !subDaosSupported}
+              href={getDaoPath(coreAddress, 'create')}
+            >
+              <Add className="!h-4 !w-4" />
+              {t('button.newSubDao')}
+            </ButtonLink>
+          </Tooltip>
+        )}
       </div>
 
       {!subDaosSupported ? (
