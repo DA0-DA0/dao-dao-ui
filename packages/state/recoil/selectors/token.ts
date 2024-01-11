@@ -32,6 +32,7 @@ import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
 import { osmosisUsdPriceSelector } from './osmosis'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
+import { whiteWhaleUsdPriceSelector } from './whale'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
@@ -166,7 +167,11 @@ export const usdPriceSelector = selectorFamily<
         return
       }
 
-      return get(osmosisUsdPriceSelector(params))
+      return (
+        get(osmosisUsdPriceSelector(params)) ||
+        // Try white whale DEX as backup.
+        get(whiteWhaleUsdPriceSelector(params))
+      )
     },
 })
 

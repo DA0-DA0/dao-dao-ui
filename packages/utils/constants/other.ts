@@ -58,6 +58,10 @@ export const POLYTONE_CW20_ITEM_KEY_PREFIX = 'polytone_cw20:'
 // Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 
+// White Whale API
+export const WHITE_WHALE_PRICES_API =
+  'https://www.api-white-whale.enigma-validator.com/summary/migaloo/all/current'
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 

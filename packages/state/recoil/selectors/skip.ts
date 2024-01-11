@@ -1,4 +1,5 @@
 import {
+  Asset,
   AssetRecommendation,
   MultiChainMsg,
   Asset as SkipAsset,
@@ -250,5 +251,46 @@ export const skipRouteMessageSelector = selectorFamily<
       }
 
       return msg.multiChainMsg
+    },
+})
+
+/**
+ * Get the recommended asset for a token on a given chain.
+ */
+export const skipRecommendedAssetForGenericTokenSelector = selectorFamily<
+  Asset | undefined,
+  Pick<GenericToken, 'type' | 'denomOrAddress'> & {
+    sourceChainId: string
+    targetChainId: string
+  }
+>({
+  key: 'chainSymbolForToken',
+  get:
+    ({ type, denomOrAddress, sourceChainId, targetChainId }) =>
+    ({ get }) => {
+      try {
+        return get(
+          skipRecommendedAssetSelector({
+            fromChainId: sourceChainId,
+            denom: (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress,
+            toChainId: targetChainId,
+          })
+        ).asset
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          ((err.message.includes('base token') &&
+            err.message.includes('not found')) ||
+            err.message.includes('no recommendation found') ||
+            err.message.includes('No asset recommendation found'))
+        ) {
+          return
+        }
+
+        // Throw other errors. This is also necessary to throw the promise
+        // returned by the `get` function when the data is still loading (recoil
+        // internal process).
+        throw err
+      }
     },
 })
