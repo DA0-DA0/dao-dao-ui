@@ -5,11 +5,10 @@ import {
   ChainId,
   GenericToken,
   GenericTokenWithUsdPrice,
-  TokenType,
 } from '@dao-dao/types'
 import { MAINNET, OSMOSIS_API_BASE } from '@dao-dao/utils'
 
-import { skipRecommendedAssetSelector } from './skip'
+import { skipRecommendedAssetForGenericTokenSelector } from './skip'
 import { genericTokenSelector } from './token'
 
 export const osmosisUsdPriceSelector = selectorFamily<
@@ -20,7 +19,15 @@ export const osmosisUsdPriceSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const symbol = get(osmosisSymbolForTokenSelector(params))
+      const asset = get(
+        skipRecommendedAssetForGenericTokenSelector({
+          type: params.type,
+          denomOrAddress: params.denomOrAddress,
+          sourceChainId: params.chainId,
+          targetChainId: ChainId.OsmosisMainnet,
+        })
+      )
+      const symbol = asset?.recommendedSymbol || asset?.symbol
       if (!symbol) {
         return
       }
@@ -39,53 +46,6 @@ export const osmosisUsdPriceSelector = selectorFamily<
         }
       } catch {
         return
-      }
-    },
-})
-
-export const osmosisSymbolForTokenSelector = selectorFamily<
-  string | undefined,
-  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
->({
-  key: 'osmosisSymbolForToken',
-  get:
-    ({ chainId, type, denomOrAddress }) =>
-    async ({ get }) => {
-      if (!MAINNET) {
-        return
-      }
-
-      try {
-        const skipRecommendedAsset = get(
-          skipRecommendedAssetSelector({
-            fromChainId: chainId,
-            denom: (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress,
-            toChainId: ChainId.OsmosisMainnet,
-          })
-        )
-
-        if (!skipRecommendedAsset) {
-          return
-        }
-
-        return (
-          skipRecommendedAsset.asset.recommendedSymbol ||
-          skipRecommendedAsset.asset.symbol
-        )
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          ((err.message.includes('base token') &&
-            err.message.includes('not found')) ||
-            err.message.includes('no recommendation found'))
-        ) {
-          return
-        }
-
-        // Throw other errors. This is also necessary to throw the promise
-        // returned by the `get` function when the data is still loading (recoil
-        // internal process).
-        throw err
       }
     },
 })
@@ -170,9 +130,16 @@ export const historicalUsdPriceSelector = selectorFamily<
       }
 
       // Try to resolve Osmosis denom.
-      const symbol = get(
-        osmosisSymbolForTokenSelector({ chainId, type, denomOrAddress })
+      const asset = get(
+        skipRecommendedAssetForGenericTokenSelector({
+          type,
+          denomOrAddress,
+          sourceChainId: chainId,
+          targetChainId: ChainId.OsmosisMainnet,
+        })
       )
+
+      const symbol = asset?.recommendedSymbol || asset?.symbol
 
       // If found a symbol, resolved Osmosis denom correctly.
       if (!symbol) {
