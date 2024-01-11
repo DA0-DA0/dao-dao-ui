@@ -19,25 +19,16 @@ export const osmosisUsdPriceSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const asset = get(
-        skipRecommendedAssetForGenericTokenSelector({
-          type: params.type,
-          denomOrAddress: params.denomOrAddress,
-          sourceChainId: params.chainId,
-          targetChainId: ChainId.OsmosisMainnet,
-        })
-      )
-      const symbol = asset?.recommendedSymbol || asset?.symbol
-      if (!symbol) {
-        return
-      }
-
       const token = get(genericTokenSelector(params))
 
       try {
         const { price } = await (
-          await fetch(OSMOSIS_API_BASE + '/tokens/v2/price/' + symbol)
+          await fetch(OSMOSIS_API_BASE + '/tokens/v2/price/' + token.symbol)
         ).json()
+
+        if (typeof price !== 'number') {
+          return
+        }
 
         return {
           token,

@@ -9,7 +9,6 @@ import {
 import { WHITE_WHALE_PRICES_API } from '@dao-dao/utils'
 
 import { osmosisUsdPriceSelector } from './osmosis'
-import { skipRecommendedAssetForGenericTokenSelector } from './skip'
 import { genericTokenSelector } from './token'
 
 type WhiteWhalePool = {
@@ -45,19 +44,6 @@ export const whiteWhaleUsdPriceSelector = selectorFamily<
         return
       }
 
-      const asset = get(
-        skipRecommendedAssetForGenericTokenSelector({
-          type: params.type,
-          denomOrAddress: params.denomOrAddress,
-          sourceChainId: params.chainId,
-          targetChainId: ChainId.MigalooMainnet,
-        })
-      )
-      const symbol = asset?.recommendedSymbol || asset?.symbol
-      if (!symbol) {
-        return
-      }
-
       const token = get(genericTokenSelector(params))
 
       try {
@@ -66,7 +52,9 @@ export const whiteWhaleUsdPriceSelector = selectorFamily<
         ).json()
 
         // Find SYMBOL-WHALE pool.
-        const pool = pools.find((pool) => pool.pool_id === `${symbol}-WHALE`)
+        const pool = pools.find(
+          (pool) => pool.pool_id === `${token.symbol}-WHALE`
+        )
         if (!pool) {
           return
         }
