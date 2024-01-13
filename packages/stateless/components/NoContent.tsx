@@ -15,6 +15,7 @@ export interface NoContentProps {
   className?: string
   small?: boolean
   error?: boolean
+  noBorder?: boolean
 }
 
 // This component displays a dashed outline and centers its content in a way
@@ -41,12 +42,14 @@ export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
       className,
       small,
       error,
+      noBorder,
     },
     ref
   ) {
     const hasAction = !!href || !!onClick
     const containerClassName = clsx(
-      'flex flex-col items-center rounded-md border-2 border-dashed border-border-primary',
+      'flex flex-col items-center rounded-md',
+      !noBorder && 'border-2 border-dashed border-border-primary',
       small ? 'gap-3 py-6 px-4' : 'gap-5 py-10 px-6',
       hasAction &&
         'cursor-pointer transition-all hover:border-solid hover:border-border-interactive-hover',

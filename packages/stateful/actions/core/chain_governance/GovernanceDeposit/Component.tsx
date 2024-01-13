@@ -98,19 +98,23 @@ export const GovernanceDepositComponent: ActionComponent<
       <div className="mb-4 space-y-1">
         <InputLabel name={t('form.deposit')} />
         <TokenInput
-          amountError={errors?.deposit?.[0]?.amount}
-          amountFieldName={
-            (fieldNamePrefix + 'deposit.0.amount') as 'deposit.0.amount'
-          }
-          amountMin={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedDepositToken?.decimals ?? 0
-          )}
-          amountStep={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedDepositToken?.decimals ?? 0
-          )}
-          convertMicroDenom
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: (fieldNamePrefix +
+              'deposit.0.amount') as 'deposit.0.amount',
+            error: errors?.deposit?.[0]?.amount,
+            min: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedDepositToken?.decimals ?? 0
+            ),
+            step: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedDepositToken?.decimals ?? 0
+            ),
+            convertMicroDenom: true,
+          }}
           onSelectToken={({ denomOrAddress }) =>
             setValue(
               (fieldNamePrefix + 'deposit.0.denom') as 'deposit.0.denom',
@@ -118,11 +122,8 @@ export const GovernanceDepositComponent: ActionComponent<
             )
           }
           readOnly={!isCreating}
-          register={register}
           selectedToken={selectedDepositToken}
-          setValue={setValue}
           tokens={depositTokens}
-          watch={watch}
         />
       </div>
 

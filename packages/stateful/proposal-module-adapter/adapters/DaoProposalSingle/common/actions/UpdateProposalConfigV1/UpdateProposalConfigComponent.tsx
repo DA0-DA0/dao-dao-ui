@@ -13,7 +13,13 @@ import {
   RecycleEmoji,
   SelectInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, GenericToken } from '@dao-dao/types'
+import {
+  ActionComponent,
+  DurationUnits,
+  DurationUnitsValues,
+  DurationWithUnits,
+  GenericToken,
+} from '@dao-dao/types'
 import {
   validatePercent,
   validatePositive,
@@ -22,7 +28,28 @@ import {
 
 import { Trans } from '../../../../../../components/Trans'
 
-export interface UpdateProposalConfigOptions {
+export type UpdateProposalConfigData = {
+  onlyMembersExecute: boolean
+
+  depositRequired: boolean
+  depositInfo?: {
+    deposit: number
+    refundFailedProposals: boolean
+  }
+
+  thresholdType: '%' | 'majority'
+  thresholdPercentage?: number
+
+  quorumEnabled: boolean
+  quorumType: '%' | 'majority'
+  quorumPercentage?: number
+
+  votingDuration: DurationWithUnits
+
+  allowRevoting: boolean
+}
+
+export type UpdateProposalConfigOptions = {
   commonGovernanceTokenInfo?: GenericToken
 }
 
@@ -35,14 +62,29 @@ export const UpdateProposalConfigComponent: ActionComponent<
   options: { commonGovernanceTokenInfo },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } = useFormContext()
+  const { register, setValue, watch } =
+    useFormContext<UpdateProposalConfigData>()
 
-  const depositRequired = watch(fieldNamePrefix + 'depositRequired')
-  const thresholdType = watch(fieldNamePrefix + 'thresholdType')
-  const quorumType = watch(fieldNamePrefix + 'quorumType')
-  const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
-  const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
-  const quorumEnabled = watch(fieldNamePrefix + 'quorumEnabled')
+  const onlyMembersExecute = watch(
+    (fieldNamePrefix + 'onlyMembersExecute') as 'onlyMembersExecute'
+  )
+  const allowRevoting = watch(
+    (fieldNamePrefix + 'allowRevoting') as 'allowRevoting'
+  )
+  const depositRequired = watch(
+    (fieldNamePrefix + 'depositRequired') as 'depositRequired'
+  )
+  const depositInfo = watch((fieldNamePrefix + 'depositInfo') as 'depositInfo')
+  const thresholdType = watch(
+    (fieldNamePrefix + 'thresholdType') as 'thresholdType'
+  )
+  const quorumType = watch((fieldNamePrefix + 'quorumType') as 'quorumType')
+  const votingDuration = watch(
+    (fieldNamePrefix + 'votingDuration') as 'votingDuration'
+  )
+  const quorumEnabled = watch(
+    (fieldNamePrefix + 'quorumEnabled') as 'quorumEnabled'
+  )
 
   const percentageThresholdSelected = thresholdType === '%'
   const percentageQuorumSelected = quorumType === '%'
@@ -71,32 +113,36 @@ export const UpdateProposalConfigComponent: ActionComponent<
         {commonGovernanceTokenInfo && (
           <FormSwitchCard
             containerClassName="grow"
-            fieldName={fieldNamePrefix + 'depositRequired'}
+            fieldName={
+              (fieldNamePrefix + 'depositRequired') as 'depositRequired'
+            }
             label={t('form.requireProposalDepositTitle')}
             readOnly={!isCreating}
             setValue={setValue}
             sizing="sm"
             tooltip={t('form.requireProposalDepositTooltip')}
             tooltipIconSize="sm"
-            value={watch(fieldNamePrefix + 'depositRequired')}
+            value={depositRequired}
           />
         )}
 
         <FormSwitchCard
           containerClassName="grow"
-          fieldName={fieldNamePrefix + 'onlyMembersExecute'}
+          fieldName={
+            (fieldNamePrefix + 'onlyMembersExecute') as 'onlyMembersExecute'
+          }
           label={t('form.onlyMembersExecuteTitle')}
           readOnly={!isCreating}
           setValue={setValue}
           sizing="sm"
           tooltip={t('form.onlyMembersExecuteTooltip')}
           tooltipIconSize="sm"
-          value={watch(fieldNamePrefix + 'onlyMembersExecute')}
+          value={onlyMembersExecute}
         />
       </div>
 
       {depositRequired && commonGovernanceTokenInfo && (
-        <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+        <div className="flex flex-col gap-4 rounded-lg bg-background-secondary p-3">
           <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
               <MoneyEmoji /> {t('form.proposalDepositTitle')}
@@ -110,7 +156,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={!isCreating}
                 error={errors?.depositInfo?.deposit}
-                fieldName={fieldNamePrefix + 'depositInfo.deposit'}
+                fieldName={
+                  (fieldNamePrefix +
+                    'depositInfo.deposit') as 'depositInfo.deposit'
+                }
                 min={1 / 10 ** commonGovernanceTokenInfo.decimals}
                 register={register}
                 step={1 / 10 ** commonGovernanceTokenInfo.decimals}
@@ -122,22 +171,23 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
             <FormSwitchCard
               containerClassName="grow"
-              fieldName={fieldNamePrefix + 'depositInfo.refundFailedProposals'}
+              fieldName={
+                (fieldNamePrefix +
+                  'depositInfo.refundFailedProposals') as 'depositInfo.refundFailedProposals'
+              }
               label={t('form.refundFailedProposalsTitle')}
               readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
               tooltip={t('form.refundFailedProposalsTooltip')}
               tooltipIconSize="sm"
-              value={watch(
-                fieldNamePrefix + 'depositInfo.refundFailedProposals'
-              )}
+              value={depositInfo?.refundFailedProposals}
             />
           </div>
         </div>
       )}
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ChartEmoji /> {t('form.passingThresholdTitle')}
@@ -152,7 +202,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={!isCreating}
                 error={errors?.thresholdPercentage}
-                fieldName={fieldNamePrefix + 'thresholdPercentage'}
+                fieldName={
+                  (fieldNamePrefix +
+                    'thresholdPercentage') as 'thresholdPercentage'
+                }
                 min={1}
                 register={register}
                 setValue={setValue}
@@ -165,8 +218,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
           )}
           <SelectInput
             disabled={!isCreating}
-            fieldName={fieldNamePrefix + 'thresholdType'}
+            error={errors?.thresholdType}
+            fieldName={(fieldNamePrefix + 'thresholdType') as 'thresholdType'}
             register={register}
+            validation={[validateRequired]}
           >
             <option value="majority">{t('info.majority')}</option>
             <option value="%">%</option>
@@ -174,7 +229,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
@@ -182,11 +237,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </h3>
 
             <FormSwitchCard
-              fieldName={fieldNamePrefix + 'quorumEnabled'}
+              fieldName={(fieldNamePrefix + 'quorumEnabled') as 'quorumEnabled'}
               readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
-              value={watch(fieldNamePrefix + 'quorumEnabled')}
+              value={quorumEnabled}
             />
           </div>
 
@@ -199,7 +254,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 <NumberInput
                   disabled={!isCreating}
                   error={errors?.quorumPercentage}
-                  fieldName={fieldNamePrefix + 'quorumPercentage'}
+                  fieldName={
+                    (fieldNamePrefix + 'quorumPercentage') as 'quorumPercentage'
+                  }
                   min={1}
                   register={register}
                   setValue={setValue}
@@ -212,7 +269,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
             )}
             <SelectInput
               disabled={!isCreating}
-              fieldName={fieldNamePrefix + 'quorumType'}
+              error={errors?.quorumType}
+              fieldName={(fieldNamePrefix + 'quorumType') as 'quorumType'}
               register={register}
             >
               <option value="majority">{t('info.majority')}</option>
@@ -222,7 +280,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         )}
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ClockEmoji /> {t('form.votingDurationTitle')}
@@ -236,7 +294,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
             <NumberInput
               disabled={!isCreating}
               error={errors?.proposalDuration}
-              fieldName={fieldNamePrefix + 'proposalDuration'}
+              fieldName={
+                (fieldNamePrefix +
+                  'votingDuration.value') as 'votingDuration.value'
+              }
               min={1}
               register={register}
               setValue={setValue}
@@ -245,12 +306,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
               validation={[
                 validatePositive,
                 validateRequired,
-                // Prevent < 60 second voting duration since DAOs will
-                // brick if the voting duration is shorter tahn 1 block.
+                // Prevent < 60 second voting duration since DAOs will brick if
+                // the voting duration is shorter than 1 block.
                 (value) =>
-                  proposalDurationUnits !== 'seconds' ||
+                  votingDuration?.units !== DurationUnits.Seconds ||
                   value >= 60 ||
-                  'Cannot be shorter than 60 seconds.',
+                  t('error.mustBeAtLeastSixtySeconds'),
               ]}
               watch={watch}
             />
@@ -258,33 +319,26 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
           <SelectInput
             disabled={!isCreating}
-            fieldName={fieldNamePrefix + 'proposalDurationUnits'}
+            error={errors?.votingDuration?.units}
+            fieldName={
+              (fieldNamePrefix +
+                'votingDuration.units') as 'votingDuration.units'
+            }
             register={register}
+            validation={[validateRequired]}
           >
-            <option value="weeks">
-              {t('unit.weeks', { count: proposalDuration }).toLocaleLowerCase()}
-            </option>
-            <option value="days">
-              {t('unit.days', { count: proposalDuration }).toLocaleLowerCase()}
-            </option>
-            <option value="hours">
-              {t('unit.hours', { count: proposalDuration }).toLocaleLowerCase()}
-            </option>
-            <option value="minutes">
-              {t('unit.minutes', {
-                count: proposalDuration,
-              }).toLocaleLowerCase()}
-            </option>
-            <option value="seconds">
-              {t('unit.seconds', {
-                count: proposalDuration,
-              }).toLocaleLowerCase()}
-            </option>
+            {DurationUnitsValues.map((type, idx) => (
+              <option key={idx} value={type}>
+                {t(`unit.${type}`, {
+                  count: votingDuration?.value,
+                }).toLocaleLowerCase()}
+              </option>
+            ))}
           </SelectInput>
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <RecycleEmoji /> {t('form.allowRevotingTitle')}
@@ -293,10 +347,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
         <div className="flex grow items-center justify-center">
           <FormSwitch
-            fieldName={fieldNamePrefix + 'allowRevoting'}
+            fieldName={(fieldNamePrefix + 'allowRevoting') as 'allowRevoting'}
             readOnly={!isCreating}
             setValue={setValue}
-            value={watch(fieldNamePrefix + 'allowRevoting')}
+            value={allowRevoting}
           />
         </div>
       </div>

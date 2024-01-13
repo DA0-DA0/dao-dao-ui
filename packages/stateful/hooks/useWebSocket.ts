@@ -214,12 +214,19 @@ export const useOnWebSocketMessage = (
 }
 
 export const useOnDaoWebSocketMessage = (
+  chainId: string,
+  coreAddress: string,
+  ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
+) =>
+  useOnWebSocketMessage(
+    [webSocketChannelNameForDao({ coreAddress, chainId })],
+    ...args
+  )
+
+export const useOnCurrentDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
 ) => {
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  return useOnWebSocketMessage(
-    [webSocketChannelNameForDao({ coreAddress, chainId })],
-    ...args
-  )
+  return useOnDaoWebSocketMessage(chainId, coreAddress, ...args)
 }

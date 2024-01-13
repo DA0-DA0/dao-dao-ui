@@ -10,11 +10,13 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  CopyToClipboard,
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { Account } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
@@ -28,31 +30,28 @@ import { ConnectWallet } from '../ConnectWallet'
 export type DaoTokenDepositModalProps = Pick<
   TokenDepositModalProps,
   'token' | 'onClose' | 'visible'
->
+> & {
+  owner: Account
+}
 
 export const DaoTokenDepositModal = ({
   token,
   onClose,
+  owner,
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const {
-    chainId: daoChainId,
-    name: daoName,
-    coreAddress,
-    polytoneProxies,
-  } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
   const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
     chainId: token.chainId,
+    // Only attempt connection when the modal is visible.
+    attemptConnection: props.visible,
   })
   const { refreshBalances: refreshWalletBalances } = useWalletInfo({
     chainId: token.chainId,
   })
 
-  // Deposit address depends on if the token is on the DAO's native chain or one
-  // of its polytone chains.
-  const depositAddress =
-    token.chainId === daoChainId ? coreAddress : polytoneProxies[token.chainId]
+  const depositAddress = owner.address
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(depositAddress)
@@ -94,6 +93,11 @@ export const DaoTokenDepositModal = ({
     async (amount: number) => {
       if (!address) {
         toast.error(t('error.logInToContinue'))
+        return
+      }
+
+      if (!depositAddress) {
+        toast.error(t('error.accountNotFound'))
         return
       }
 
@@ -162,6 +166,7 @@ export const DaoTokenDepositModal = ({
       ConnectWallet={ConnectWallet}
       amount={amount}
       connected={isWalletConnected}
+      disabled={!depositAddress}
       loading={loading}
       loadingBalance={
         loadingBalance.loading
@@ -180,6 +185,16 @@ export const DaoTokenDepositModal = ({
       onClose={onClose}
       onDeposit={onDeposit}
       setAmount={setAmount}
+      subtitle={
+        <CopyToClipboard
+          className="mt-1"
+          iconClassName="text-icon-secondary"
+          takeAll
+          textClassName="text-text-secondary"
+          tooltip={t('button.clickToCopyAddress')}
+          value={depositAddress || 'ERROR'}
+        />
+      }
       token={token}
       warning={t('info.depositTokenWarning')}
       {...props}

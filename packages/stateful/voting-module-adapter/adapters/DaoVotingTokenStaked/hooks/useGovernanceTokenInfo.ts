@@ -1,9 +1,8 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   DaoVotingTokenStakedSelectors,
   genericTokenSelector,
-  isContractSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   usdPriceSelector,
@@ -38,18 +37,27 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  const token = useRecoilValue(
-    genericTokenSelector({
-      chainId,
-      type: TokenType.Native,
-      denomOrAddress: denom,
-    })
-  )
-  const supply = useRecoilValue(
-    nativeSupplySelector({
-      chainId,
-      denom,
-    })
+  // Token factory issuer
+  const isFactory = denom.startsWith('factory/')
+
+  const [token, supply, tokenFactoryIssuerAddress] = useRecoilValue(
+    waitForAll([
+      genericTokenSelector({
+        chainId,
+        type: TokenType.Native,
+        denomOrAddress: denom,
+      }),
+      nativeSupplySelector({
+        chainId,
+        denom,
+      }),
+      DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector(
+        {
+          contractAddress: votingModuleAddress,
+          chainId,
+        }
+      ),
+    ])
   )
   const governanceTokenInfo: TokenInfoResponse = {
     decimals: token.decimals,
@@ -57,27 +65,6 @@ export const useGovernanceTokenInfo = ({
     symbol: token.symbol,
     total_supply: supply.toString(),
   }
-
-  // Token factory issuer
-  const isFactory = denom.startsWith('factory/')
-  const tfIssuer = useRecoilValue(
-    isFactory
-      ? DaoVotingTokenStakedSelectors.tokenContractSelector({
-          contractAddress: votingModuleAddress,
-          chainId,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-  const isTfIssuer = useRecoilValue(
-    tfIssuer
-      ? isContractSelector({
-          contractAddress: tfIssuer,
-          chainId,
-          name: 'cw-tokenfactory-issuer',
-        })
-      : constSelector(false)
-  )
 
   /// Optional
 
@@ -122,7 +109,7 @@ export const useGovernanceTokenInfo = ({
     governanceTokenAddress: denom,
     governanceTokenInfo,
     isFactory,
-    tokenFactoryIssuerAddress: tfIssuer && isTfIssuer ? tfIssuer : undefined,
+    tokenFactoryIssuerAddress,
     token,
     /// Optional
     // Wallet balance

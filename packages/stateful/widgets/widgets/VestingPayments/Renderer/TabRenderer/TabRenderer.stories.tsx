@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next'
 import { ButtonLink } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook'
 
-import { VestingPaymentCard } from '../../components/VestingPaymentCard'
+import { VestingPaymentCard } from '../../../../../components'
 import { TabRenderer } from './TabRenderer'
 
 export default {

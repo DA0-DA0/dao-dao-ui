@@ -1,15 +1,14 @@
 import { Check, Close } from '@mui/icons-material'
+import clsx from 'clsx'
 import JSON5 from 'json5'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import useDeepCompareEffect from 'use-deep-compare-effect'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   Button,
   CodeMirrorInput,
+  FormSwitch,
   GovernanceProposal,
   IconButton,
   InputErrorMessage,
@@ -20,10 +19,13 @@ import {
   TextAreaInput,
   TextInput,
   TokenInput,
-  useConfiguredChainContext,
+  useChainContext,
+  useDaoInfoContextIfAvailable,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
+  ChainId,
+  ContractVersion,
   GOVERNANCE_PROPOSAL_TYPES,
   GOVERNANCE_PROPOSAL_TYPE_CUSTOM,
   GenericToken,
@@ -33,34 +35,30 @@ import {
   LoadingData,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
-import {
-  ActionCategoryKey,
-  ActionComponent,
-  ActionKey,
-  PartialCategorizedActionKeyAndData,
-} from '@dao-dao/types/actions'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
-  getFundsUsedInCwMessage,
   govProposalActionDataToDecodedContent,
-  isCosmWasmStargateMsg,
   makeValidateAddress,
   processError,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
 import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
 import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
-import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/Component'
+import { useActionOptions } from '../../../react'
 
 export type GovernanceProposalOptions = {
-  govModuleAddress: string
-  minDeposits: LoadingData<GenericTokenBalance[]>
+  supportsV1GovProposals: boolean
+  minDeposits: LoadingData<
+    (GenericTokenBalance & {
+      min: string
+    })[]
+  >
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   AddressInput: ComponentType<AddressInputProps<GovernanceProposalActionData>>
   GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
@@ -75,7 +73,7 @@ export const GovernanceProposalComponent: ActionComponent<
     errors,
     isCreating,
     options: {
-      govModuleAddress,
+      supportsV1GovProposals,
       minDeposits,
       GovProposalActionDisplay,
       TokenAmountDisplay,
@@ -85,23 +83,41 @@ export const GovernanceProposalComponent: ActionComponent<
   } = props
 
   const { t } = useTranslation()
-  const { register, setValue, watch, control, clearErrors, setError } =
+  const { register, setValue, watch, control, setError, clearErrors } =
     useFormContext<GovernanceProposalActionData>()
+
+  const { context } = useActionOptions()
+  // Type-check, this action should not be used in a non-gov action context.
+  if (context.type !== ActionContextType.Gov) {
+    throw new Error('Invalid action context.')
+  }
+
+  const useV1LegacyContent = watch(
+    (fieldNamePrefix + 'useV1LegacyContent') as 'useV1LegacyContent'
+  )
+  const expedited = watch((fieldNamePrefix + 'expedited') as 'expedited')
+
+  // Whether or not this action is being used directly on a governance page (as
+  // opposed to in a DAO proposal).
+  const onGovernancePage =
+    useDaoInfoContextIfAvailable()?.coreVersion === ContractVersion.Gov
 
   const {
     chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: {
-      gov: { supportsV1GovProposals },
-    },
     nativeToken,
-  } = useConfiguredChainContext()
+  } = useChainContext()
 
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
     : minDeposits.data.find(
         ({ token }) => token.denomOrAddress === data.deposit[0].denom
       )
+  const depositMin =
+    convertMicroDenomToDenomWithDecimals(
+      selectedMinDepositToken?.min ?? 0,
+      selectedMinDepositToken?.token.decimals ?? 0
+    ) * context.params.minInitialDepositRatio
 
   const {
     fields: spendFields,
@@ -122,192 +138,14 @@ export const GovernanceProposalComponent: ActionComponent<
     ),
   ]
 
-  // V1 props need metadata uploaded to IPFS.
-  const [metadataUploaded, setMetadataUploaded] = useState(false)
-  const [uploadingMetadata, setUploadingMetadata] = useState(false)
+  // When any legacy fields change, encode and store it.
+  const legacy = watch((fieldNamePrefix + 'legacy') as 'legacy')
   const title = watch((fieldNamePrefix + 'title') as 'title')
   const description = watch((fieldNamePrefix + 'description') as 'description')
-  // If any of these fields change, we need to re-upload the metadata.
   useEffect(() => {
-    setMetadataUploaded(false)
-  }, [title, description])
-  const uploadMetadata = async () => {
-    setUploadingMetadata(true)
-    try {
-      let cid = ''
-      try {
-        // Next.js API route.
-        const response = await fetch('/api/uploadJson', {
-          method: 'POST',
-          body: JSON.stringify({
-            title,
-            description,
-            summary: description,
-            details: description,
-            // "proposal_forum_url": "http://urlform.com",
-            // "vote_option_context": "yes, no, no with veto, abstain"
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+    clearErrors((fieldNamePrefix + 'legacyContent') as 'legacyContent')
 
-        cid = (await response.json()).cid
-      } catch (err) {
-        console.error(err)
-        toast.error(processError(err, { forceCapture: false }))
-        return
-      }
-
-      if (!cid) {
-        toast.error(t('error.metadataUpload'))
-        return
-      }
-
-      setValue((fieldNamePrefix + 'metadataCid') as 'metadataCid', cid)
-      setMetadataUploaded(true)
-    } finally {
-      setUploadingMetadata(false)
-    }
-  }
-
-  // Set metadata error.
-  useEffect(() => {
-    if ((metadataUploaded || !supportsV1GovProposals) && errors?.metadataCid) {
-      clearErrors((fieldNamePrefix + 'metadataCid') as 'metadataCid')
-    } else if (
-      supportsV1GovProposals &&
-      !metadataUploaded &&
-      !errors?.metadataCid
-    ) {
-      setError((fieldNamePrefix + 'metadataCid') as 'metadataCid', {
-        type: 'manual',
-        message: t('error.metadataNeedsUploading'),
-      })
-    }
-  }, [
-    clearErrors,
-    errors?.metadataCid,
-    fieldNamePrefix,
-    setError,
-    supportsV1GovProposals,
-    t,
-    metadataUploaded,
-  ])
-
-  // Ensure community pool transfers are added before token usages.
-  const {
-    insert: insertAction,
-    update: updateAction,
-    remove: removeAction,
-  } = useFieldArray({
-    name: (fieldNamePrefix + '_actionData') as '_actionData',
-    control,
-  })
-  const msgs = watch((fieldNamePrefix + 'msgs') as 'msgs')
-  const actionData = watch((fieldNamePrefix + '_actionData') as '_actionData')
-  useDeepCompareEffect(() => {
-    if (
-      !supportsV1GovProposals ||
-      !isCreating ||
-      !actionData ||
-      msgs.length !== actionData.length ||
-      !msgs.length
-    ) {
-      return
-    }
-
-    const updates: {
-      type: 'insert' | 'update' | 'delete'
-      data: PartialCategorizedActionKeyAndData
-      index: number
-    }[] = []
-
-    msgs.forEach((msg, index) => {
-      // For all messages that involve sending tokens, we need to debit the
-      // community pool and send funds to x/gov.
-      const amount = getFundsUsedInCwMessage(msg)
-
-      // If has any funds, make sure there exists a Community Pool transfer
-      // before it that matches. This will either insert a new transfer action
-      // before this one, or update the fields to match the amount.
-      if (amount.length > 0 && amount.some(({ amount }) => amount !== '0')) {
-        const prevAction = actionData[index - 1]
-        if (
-          !prevAction ||
-          prevAction.actionKey !== ActionKey.CommunityPoolTransfer ||
-          prevAction.data.authority !== govModuleAddress ||
-          prevAction.data.recipient !== govModuleAddress ||
-          !Array.isArray(prevAction.data.funds) ||
-          prevAction.data.funds.length !== amount.length ||
-          amount.some(
-            (a, i) =>
-              a.amount !== prevAction.data.funds[i].amount ||
-              a.denom !== prevAction.data.funds[i].denom
-          )
-        ) {
-          const inserting =
-            !prevAction ||
-            prevAction.actionKey !== ActionKey.CommunityPoolTransfer
-          updates.push({
-            type: inserting ? 'insert' : 'update',
-            index: inserting ? index : index - 1,
-            data: {
-              // See `CategorizedActionKeyAndData` comment in
-              // `packages/types/actions.ts` for an explanation of why we need
-              // to append with a unique ID.
-              _id: prevAction?._id || uuidv4(),
-              categoryKey: ActionCategoryKey.Treasury,
-              actionKey: ActionKey.CommunityPoolTransfer,
-              data: {
-                authority: govModuleAddress,
-                recipient: govModuleAddress,
-                funds: amount,
-              } as CommunityPoolTransferData,
-            },
-          })
-        }
-      }
-
-      // If transfer action precedes another action that does not have funds,
-      // remove the transfer action as the user probably deleted the action this
-      // transfer was for.
-      if (
-        isCosmWasmStargateMsg(msg) &&
-        msg.stargate.type_url === MsgCommunityPoolSpend.typeUrl
-      ) {
-        const nextMsg = msgs[index + 1]
-        const amount = nextMsg && getFundsUsedInCwMessage(nextMsg)
-        if (
-          !nextMsg ||
-          !amount.length ||
-          !amount.some(({ amount }) => amount !== '0')
-        ) {
-          updates.push({
-            type: 'delete',
-            index,
-            data: { _id: '' },
-          })
-        }
-      }
-    })
-
-    // Update transfer actions in reverse so the indices remain correct.
-    updates
-      .reverse()
-      .forEach(({ type, index, data }) =>
-        (type === 'insert'
-          ? insertAction
-          : type === 'update'
-          ? updateAction
-          : removeAction)(index, data)
-      )
-  }, [actionData, govModuleAddress, insertAction, isCreating, msgs])
-
-  // When any legacy fields change, try encoding it.
-  const legacy = watch((fieldNamePrefix + 'legacy') as 'legacy')
-  useEffect(() => {
-    if (supportsV1GovProposals) {
+    if (supportsV1GovProposals && !useV1LegacyContent) {
       return
     }
 
@@ -362,7 +200,13 @@ export const GovernanceProposalComponent: ActionComponent<
         (fieldNamePrefix + 'legacyContent') as 'legacyContent',
         content as any
       )
-    } catch {}
+    } catch (err) {
+      console.error(err)
+      setError((fieldNamePrefix + 'legacyContent') as 'legacyContent', {
+        type: 'manual',
+        message: processError(err, { forceCapture: false }),
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     description,
@@ -373,62 +217,166 @@ export const GovernanceProposalComponent: ActionComponent<
     setValue,
     supportsV1GovProposals,
     title,
+    useV1LegacyContent,
   ])
 
   return (
     <>
       {isCreating ? (
         <>
-          {!data._onlyShowActions && (
-            <>
-              <div className="space-y-1">
-                <InputLabel name={t('form.title')} />
+          <div
+            className={clsx(
+              onGovernancePage
+                ? 'rounded-lg bg-background-tertiary'
+                : 'flex flex-col gap-4'
+            )}
+          >
+            <div
+              className={clsx(
+                onGovernancePage
+                  ? 'flex flex-col gap-2 py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6'
+                  : 'flex flex-col gap-1'
+              )}
+            >
+              <InputLabel name={t('form.title')} primary={onGovernancePage} />
+
+              <div className="flex grow flex-col">
                 <TextInput
                   disabled={!isCreating}
                   error={errors?.title}
                   fieldName={(fieldNamePrefix + 'title') as 'title'}
+                  placeholder={t('form.proposalsTitlePlaceholder')}
                   register={register}
                   validation={[validateRequired]}
                 />
                 <InputErrorMessage error={errors?.title} />
               </div>
+            </div>
 
-              <div className="space-y-1">
-                <InputLabel>
-                  {t('form.description')}
-                  <span className="text-text-tertiary">
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    {' – '}
-                    {t('info.supportsMarkdownFormat')}
-                  </span>
-                </InputLabel>
+            <div
+              className={clsx(
+                onGovernancePage
+                  ? 'flex flex-col gap-2 border-y border-border-secondary p-6 pt-5 sm:gap-4'
+                  : 'flex flex-col gap-1'
+              )}
+            >
+              <InputLabel
+                name={t('form.description')}
+                primary={onGovernancePage}
+              />
+
+              <div className="flex grow flex-col">
                 <TextAreaInput
                   disabled={!isCreating}
                   error={errors?.description}
                   fieldName={(fieldNamePrefix + 'description') as 'description'}
+                  placeholder={t('form.proposalsDescriptionPlaceholder')}
                   register={register}
                   rows={5}
                   validation={[validateRequired]}
                 />
                 <InputErrorMessage error={errors?.description} />
               </div>
+            </div>
 
-              <div className="space-y-1">
-                <InputLabel name={t('form.initialDeposit')} />
+            {
+              // Support expedited field on Osmosis.
+              (chainId === ChainId.OsmosisMainnet ||
+                chainId === ChainId.OsmosisTestnet) && (
+                <div
+                  className={clsx(
+                    'flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2',
+                    onGovernancePage
+                      ? 'border-b border-border-secondary py-5 px-6'
+                      : 'rounded-md bg-background-tertiary p-4'
+                  )}
+                >
+                  <div className="flex flex-col gap-1">
+                    <InputLabel
+                      name={t('form.expedited')}
+                      primary={onGovernancePage}
+                    />
+
+                    <p className="caption-text max-w-sm">
+                      {t('form.expeditedDescription')}
+                    </p>
+                  </div>
+
+                  <div className="flex grow flex-col items-end">
+                    <FormSwitch
+                      fieldName={(fieldNamePrefix + 'expedited') as 'expedited'}
+                      setValue={setValue}
+                      sizing="md"
+                      value={expedited}
+                    />
+                  </div>
+                </div>
+              )
+            }
+
+            <div
+              className={clsx(
+                'flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2',
+                onGovernancePage
+                  ? 'py-5 px-6'
+                  : '-mt-2 rounded-md bg-background-tertiary p-4'
+              )}
+            >
+              <div className="flex flex-col gap-1">
+                <InputLabel
+                  name={t('form.initialDeposit')}
+                  primary={onGovernancePage}
+                />
+
+                <p className="caption-text max-w-sm">
+                  {t('info.govDepositDescription', {
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      selectedMinDepositToken?.min ?? 0,
+                      selectedMinDepositToken?.token.decimals ?? 0
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits:
+                        selectedMinDepositToken?.token.decimals ?? 0,
+                    }),
+                    minAmount: depositMin.toLocaleString(undefined, {
+                      maximumFractionDigits:
+                        selectedMinDepositToken?.token.decimals ?? 0,
+                    }),
+                    symbol:
+                      selectedMinDepositToken?.token.symbol ?? t('info.tokens'),
+                  })}
+                </p>
+              </div>
+
+              <div className="flex grow flex-col items-end">
                 <TokenInput
-                  amountError={errors?.deposit?.[0]?.amount}
-                  amountFieldName={
-                    (fieldNamePrefix + 'deposit.0.amount') as 'deposit.0.amount'
-                  }
-                  amountMin={convertMicroDenomToDenomWithDecimals(
-                    1,
-                    selectedMinDepositToken?.token.decimals ?? 0
-                  )}
-                  amountStep={convertMicroDenomToDenomWithDecimals(
-                    1,
-                    selectedMinDepositToken?.token.decimals ?? 0
-                  )}
-                  convertMicroDenom
+                  amount={{
+                    watch,
+                    setValue,
+                    register,
+                    fieldName: (fieldNamePrefix +
+                      'deposit.0.amount') as 'deposit.0.amount',
+                    error: errors?.deposit?.[0]?.amount,
+                    min: depositMin,
+                    step: convertMicroDenomToDenomWithDecimals(
+                      1,
+                      selectedMinDepositToken?.token.decimals ?? 0
+                    ),
+                    convertMicroDenom: true,
+                    // Validate that balance is sufficient to pay the deposit.
+                    validations: [
+                      (value) =>
+                        isNaN(value) ||
+                        !selectedMinDepositToken ||
+                        Number(selectedMinDepositToken.balance) >= value ||
+                        t('error.insufficientBalance', {
+                          amount: convertMicroDenomToDenomWithDecimals(
+                            selectedMinDepositToken.balance,
+                            selectedMinDepositToken.token.decimals
+                          ),
+                          tokenSymbol: selectedMinDepositToken.token.symbol,
+                        }),
+                    ],
+                  }}
                   onSelectToken={({ denomOrAddress }) =>
                     setValue(
                       (fieldNamePrefix +
@@ -437,9 +385,7 @@ export const GovernanceProposalComponent: ActionComponent<
                     )
                   }
                   readOnly={!isCreating}
-                  register={register}
                   selectedToken={selectedMinDepositToken?.token}
-                  setValue={setValue}
                   tokens={
                     minDeposits.loading
                       ? { loading: true }
@@ -448,58 +394,91 @@ export const GovernanceProposalComponent: ActionComponent<
                           data: minDeposits.data.map(({ token }) => token),
                         }
                   }
-                  watch={watch}
                 />
+                <InputErrorMessage error={errors?.deposit?.[0]?.amount} />
               </div>
-            </>
-          )}
+            </div>
 
-          {supportsV1GovProposals ? (
+            {/* Allow using legacy proposal content for v1 gov proposals. */}
+            {supportsV1GovProposals && (
+              <div
+                className={clsx(
+                  'flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2',
+                  onGovernancePage
+                    ? 'border-t border-border-secondary py-5 px-6'
+                    : '-mt-2 rounded-md bg-background-tertiary p-4'
+                )}
+              >
+                <InputLabel
+                  name={t('form.useLegacyProposalType')}
+                  primary={onGovernancePage}
+                />
+
+                <div className="flex grow flex-col items-end">
+                  <FormSwitch
+                    fieldName={
+                      (fieldNamePrefix +
+                        'useV1LegacyContent') as 'useV1LegacyContent'
+                    }
+                    setValue={setValue}
+                    sizing="md"
+                    value={useV1LegacyContent}
+                  />
+                </div>
+              </div>
+            )}
+
+            {(!supportsV1GovProposals || useV1LegacyContent) && (
+              <div
+                className={clsx(
+                  'flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2',
+                  onGovernancePage
+                    ? 'border-t border-border-secondary py-5 px-6'
+                    : '-mt-2 rounded-md bg-background-tertiary p-4'
+                )}
+              >
+                <InputLabel
+                  name={t('form.proposalType')}
+                  primary={onGovernancePage}
+                />
+
+                <div className="flex grow flex-col items-end">
+                  <SelectInput
+                    error={errors?.legacy?.type}
+                    fieldName={
+                      (fieldNamePrefix + 'legacy.typeUrl') as 'legacy.typeUrl'
+                    }
+                    register={register}
+                  >
+                    {GOVERNANCE_PROPOSAL_TYPES.map(({ typeUrl }) => (
+                      <option key={typeUrl} value={typeUrl}>
+                        {t(`govProposalType.${typeUrl.split('.').pop()}`)}
+                      </option>
+                    ))}
+
+                    <option value={GOVERNANCE_PROPOSAL_TYPE_CUSTOM}>
+                      {t('title.custom')}
+                    </option>
+                  </SelectInput>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {supportsV1GovProposals && !useV1LegacyContent ? (
             <>
-              <NestedActionsEditor {...props} />
+              <InputLabel
+                name={t('title.actions')}
+                primary={onGovernancePage}
+              />
 
-              <div className="flex flex-col items-end gap-2 text-right">
-                <Button
-                  disabled={metadataUploaded}
-                  loading={uploadingMetadata}
-                  onClick={uploadMetadata}
-                  size="lg"
-                  variant="primary"
-                >
-                  {metadataUploaded
-                    ? t('button.metadataUploaded')
-                    : t('button.uploadMetadata')}
-                </Button>
-                <InputErrorMessage error={errors?.metadataCid} />
-              </div>
+              <NestedActionsEditor {...props} />
             </>
           ) : (
             <>
-              <div className="space-y-1">
-                <InputLabel name={t('form.proposalType')} />
-
-                <SelectInput
-                  error={errors?.legacy?.type}
-                  fieldName={
-                    (fieldNamePrefix + 'legacy.typeUrl') as 'legacy.typeUrl'
-                  }
-                  register={register}
-                >
-                  {GOVERNANCE_PROPOSAL_TYPES.map(({ typeUrl }) => (
-                    <option key={typeUrl} value={typeUrl}>
-                      {t(`govProposalType.${typeUrl.split('.').pop()}`)}
-                    </option>
-                  ))}
-
-                  <option value={GOVERNANCE_PROPOSAL_TYPE_CUSTOM}>
-                    {t('title.custom')}
-                  </option>
-                </SelectInput>
-              </div>
-
               {data.legacy.typeUrl === CommunityPoolSpendProposal.typeUrl && (
                 <>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex max-w-prose flex-col gap-1">
                     <InputLabel name={t('form.recipient')} />
                     <AddressInput
                       disabled={!isCreating}
@@ -541,22 +520,24 @@ export const GovernanceProposalComponent: ActionComponent<
                                 className="flex flex-row items-center gap-2"
                               >
                                 <TokenInput
-                                  amountError={
-                                    errors?.legacy?.spends?.[index]?.amount
-                                  }
-                                  amountFieldName={
-                                    (fieldNamePrefix +
-                                      `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`
-                                  }
-                                  amountMin={convertMicroDenomToDenomWithDecimals(
-                                    1,
-                                    selectedToken.decimals
-                                  )}
-                                  amountStep={convertMicroDenomToDenomWithDecimals(
-                                    1,
-                                    selectedToken.decimals
-                                  )}
-                                  convertMicroDenom
+                                  amount={{
+                                    watch,
+                                    setValue,
+                                    register,
+                                    fieldName: (fieldNamePrefix +
+                                      `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`,
+                                    error:
+                                      errors?.legacy?.spends?.[index]?.amount,
+                                    min: convertMicroDenomToDenomWithDecimals(
+                                      1,
+                                      selectedToken.decimals
+                                    ),
+                                    step: convertMicroDenomToDenomWithDecimals(
+                                      1,
+                                      selectedToken.decimals
+                                    ),
+                                    convertMicroDenom: true,
+                                  }}
                                   onSelectToken={({ denomOrAddress }) =>
                                     setValue(
                                       (fieldNamePrefix +
@@ -564,14 +545,11 @@ export const GovernanceProposalComponent: ActionComponent<
                                       denomOrAddress
                                     )
                                   }
-                                  register={register}
                                   selectedToken={selectedToken}
-                                  setValue={setValue}
                                   tokens={{
                                     loading: false,
                                     data: availableTokens,
                                   }}
-                                  watch={watch}
                                 />
 
                                 <IconButton
@@ -679,6 +657,8 @@ export const GovernanceProposalComponent: ActionComponent<
                   )}
                 </div>
               )}
+
+              <InputErrorMessage error={errors?.legacyContent} />
             </>
           )}
         </>

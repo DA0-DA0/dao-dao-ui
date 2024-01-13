@@ -36,9 +36,13 @@ import {
   aminoTypes,
   decodeMessages,
   decodedStargateMsgToCw,
+  getAccountAddress,
+  getAccountChainId,
+  getDisplayNameForChainId,
   getFallbackImage,
   maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
+  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
@@ -62,6 +66,7 @@ export const AppsTab = () => {
     coreAddress,
     polytoneProxies,
     proposalModules,
+    accounts,
   } = useDaoInfoContext()
 
   // Ensure we have a single choice proposal module to use for proposals.
@@ -75,13 +80,15 @@ export const AppsTab = () => {
   const [fullScreen, setFullScreen] = useState(false)
 
   const addressForChainId = (chainId: string) =>
-    (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
+    getAccountAddress({
+      accounts,
+      chainId,
+    }) || ''
   const chainIdForAddress = (address: string) =>
-    address === coreAddress
-      ? currentChainId
-      : Object.entries(polytoneProxies).find(
-          ([, chainAddress]) => chainAddress === address
-        )?.[0]
+    getAccountChainId({
+      accounts,
+      address,
+    })
 
   const decodeDirect = (sender: string, signDocBodyBytes: Uint8Array) => {
     const chainId = chainIdForAddress(sender)
@@ -124,13 +131,22 @@ export const AppsTab = () => {
         }
       : {
           type: 'error',
-          error: `Unsupported chains: ${[chainIds].flat().join(', ')}.`,
+          error: t('error.daoMissingAccountsOnChains', {
+            daoName: name,
+            chains: [chainIds]
+              .flat()
+              .map((chainId) => getDisplayNameForChainId(chainId))
+              .join(', '),
+            count: [chainIds].flat().length,
+          }),
         }
 
   const { wallet, iframeRef } = useIframe({
     walletInfo: {
       prettyName: name,
-      logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
+      logo: imageUrl
+        ? toAccessibleImageUrl(imageUrl)
+        : SITE_URL + getFallbackImage(coreAddress),
     },
     accountReplacement: async (chainId) => ({
       username: name,

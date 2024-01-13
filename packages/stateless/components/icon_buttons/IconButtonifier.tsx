@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { IconButtonifierProps } from '@dao-dao/types/stateless/IconButtonifier'
+import { IconButtonifierProps } from '@dao-dao/types/components/IconButtonifier'
 
 // Get props that should pass through the IconButtonifier, such as native props.
 // Disable button if disabled or loading.
@@ -8,6 +8,7 @@ export const getPassthroughProps = <P extends IconButtonifierProps>({
   variant: _variant,
   size: _size,
   circular: _circular,
+  noRounding: _noRounding,
   Icon: _Icon,
   focused: _focused,
   className: _className,
@@ -24,6 +25,7 @@ export const getIconButtonifiedClassNames = ({
   variant = 'primary',
   size = 'default',
   circular,
+  noRounding,
   disabled,
   loading,
   focused,
@@ -35,7 +37,10 @@ export const getIconButtonifiedClassNames = ({
     focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounding.
-    circular ? 'rounded-full' : 'rounded-md',
+    {
+      'rounded-full': circular,
+      'rounded-md': !circular && !noRounding,
+    },
 
     // No cursor pointer if disabled.
     disabled && 'cursor-default',

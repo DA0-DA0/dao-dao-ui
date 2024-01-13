@@ -16,7 +16,11 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
-import { POLYTONE_CONFIG_PER_CHAIN, isValidBech32Address } from '@dao-dao/utils'
+import {
+  POLYTONE_CONFIG_PER_CHAIN,
+  getAccountAddress,
+  isValidBech32Address,
+} from '@dao-dao/utils'
 
 import { entitySelector } from '../recoil'
 import { EntityDisplay } from './EntityDisplay'
@@ -101,14 +105,17 @@ export const AddressInput = <
   const entities = loadingEntities.loading
     ? []
     : // Only show entities that are on the current chain or are DAOs with
-      // polytone accounts on the current chain.
+      // accounts (polytone probably) on the current chain.
       loadingEntities.data
         .filter(
           (entity) =>
             entity.state === 'hasValue' &&
             (entity.contents.chainId === currentChain.chain_id ||
               (entity.contents.type === EntityType.Dao &&
-                entity.contents.daoInfo.polytoneProxies[currentChain.chain_id]))
+                getAccountAddress({
+                  accounts: entity.contents.daoInfo.accounts,
+                  chainId: currentChain.chain_id,
+                })))
         )
         .map((entity) => entity.contents as Entity)
 

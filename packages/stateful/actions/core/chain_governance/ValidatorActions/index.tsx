@@ -124,9 +124,9 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
           details: '<description of your validator>',
         },
         commission: {
-          rate: '50000000000000000',
-          maxRate: '200000000000000000',
-          maxChangeRate: '100000000000000000',
+          rate: '0.05',
+          maxRate: '0.2',
+          maxChangeRate: '0.1',
         },
         minSelfDelegation: '1',
         delegatorAddress: getChainAddressForActionOptions(
@@ -157,7 +157,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
           securityContact: '<optional security contact email>',
           details: '<description of your validator>',
         },
-        commissionRate: '50000000000000000',
+        commissionRate: '0.05',
         minSelfDelegation: '1',
         validatorAddress: getValidatorAddress(currentChainId),
       },
@@ -179,7 +179,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
     const thisAddress = getChainAddressForActionOptions(options, chainId)
     const validatorAddress = getValidatorAddress(chainId)
 
-    const data = useDefaults()
+    const data = useDefaults() as ValidatorActionsData
 
     if (
       !thisAddress ||

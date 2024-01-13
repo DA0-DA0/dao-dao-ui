@@ -9,9 +9,7 @@ import {
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useAppContext } from '@dao-dao/stateless'
 import {
-  DaoPageMode,
   DaoTabId,
   DaoTabWithComponent,
   LoadingData,
@@ -20,27 +18,17 @@ import {
 
 import {
   AppsTab,
-  DaoWidgets,
+  HomeTab,
   ProposalsTab,
-  SdaDaoHome,
   SubDaosTab,
   TreasuryAndNftsTab,
 } from '../components'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 import { useWidgets } from '../widgets'
 
-export type UseDaoTabsOptions = {
-  // If defined, will override the default suspendWhileLoading behavior of the
-  // DAO home widgets.
-  suspendWhileLoadingOverride?: boolean
-}
-
-export const useDaoTabs = ({
-  suspendWhileLoadingOverride,
-}: UseDaoTabsOptions = {}): LoadingData<DaoTabWithComponent[]> => {
+export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
   const { t } = useTranslation()
 
-  const { mode } = useAppContext()
   const {
     components: { extraTabs },
   } = useVotingModuleAdapter()
@@ -51,38 +39,14 @@ export const useDaoTabs = ({
     location: WidgetLocation.Tab,
   })
 
-  // Add home tab with widgets if any widgets exist.
-  const loadingDaoHomeWidgets = useWidgets({
-    // In dApp, load widgets before rendering to decide if home with widgets is
-    // shown so that we know to select home by default when present. In SDA, no
-    // need to load widgets before rendering since the home is always shown.
-    suspendWhileLoading:
-      suspendWhileLoadingOverride ?? mode === DaoPageMode.Dapp,
-    // Only load home widgets.
-    location: WidgetLocation.Home,
-  })
-  const hasHomeWidgets =
-    !loadingDaoHomeWidgets.loading && loadingDaoHomeWidgets.data.length > 0
-
-  const HomeTab =
-    mode === DaoPageMode.Sda
-      ? SdaDaoHome
-      : mode === DaoPageMode.Dapp && hasHomeWidgets
-      ? DaoWidgets
-      : undefined
-
   const tabs = useMemo(
     () => [
-      ...(HomeTab
-        ? [
-            {
-              id: DaoTabId.Home,
-              label: t('title.home'),
-              Component: HomeTab,
-              Icon: HomeOutlined,
-            },
-          ]
-        : []),
+      {
+        id: DaoTabId.Home,
+        label: t('title.home'),
+        Component: HomeTab,
+        Icon: HomeOutlined,
+      },
       {
         id: DaoTabId.Proposals,
         label: t('title.proposals'),
@@ -127,14 +91,10 @@ export const useDaoTabs = ({
             })
           )),
     ],
-    [HomeTab, extraTabs, t, loadingWidgets]
+    [extraTabs, t, loadingWidgets]
   )
 
-  const updating =
-    loadingWidgets.loading ||
-    loadingWidgets.updating ||
-    loadingDaoHomeWidgets.loading ||
-    loadingDaoHomeWidgets.updating
+  const updating = loadingWidgets.loading || loadingWidgets.updating
 
   return useMemo(
     () => ({

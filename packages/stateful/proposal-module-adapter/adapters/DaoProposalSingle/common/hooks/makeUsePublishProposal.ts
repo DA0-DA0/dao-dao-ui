@@ -2,7 +2,11 @@ import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -13,6 +17,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
+  ContractName,
   expirationExpired,
   findWasmAttributeValue,
   processError,
@@ -20,14 +25,14 @@ import {
 
 import {
   Cw20BaseHooks,
+  CwProposalSingleV1Hooks,
+  DaoPreProposeSingleHooks,
+  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
-import { usePropose as useProposeV1 } from '../../contracts/CwProposalSingle.v1.hooks'
-import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeSingle.hooks'
-import { usePropose as useProposeV2 } from '../../contracts/DaoProposalSingle.v2.hooks'
 import {
   MakeUsePublishProposalOptions,
   NewProposalData,
@@ -57,24 +62,29 @@ export const makeUsePublishProposal =
       coreAddress,
     })
 
-    const anyoneCanPropose = useRecoilValue(
+    const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({
         chainId: chainId,
-        preProposeAddress: proposalModule.preProposeAddress,
+        preProposeAddress: proposalModule.prePropose?.address ?? null,
       })
     )
 
-    const depositInfo = useRecoilValue(depositInfoSelector)
+    const depositInfo = useRecoilValueLoadable(depositInfoSelector)
     const depositInfoCw20TokenAddress =
-      depositInfo?.denom && 'cw20' in depositInfo.denom
-        ? depositInfo.denom.cw20
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'cw20' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.cw20
         : undefined
     const depositInfoNativeTokenDenom =
-      depositInfo?.denom && 'native' in depositInfo.denom
-        ? depositInfo.denom.native
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'native' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.native
         : undefined
-
-    const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
+    const requiredProposalDeposit = Number(
+      depositInfo.valueMaybe()?.amount ?? '0'
+    )
 
     // For checking allowance and increasing if necessary.
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
@@ -88,7 +98,7 @@ export const makeUsePublishProposal =
                 // If pre-propose address set, give that one deposit allowance
                 // instead of proposal module.
                 spender:
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               },
             ],
           })
@@ -153,16 +163,16 @@ export const makeUsePublishProposal =
       contractAddress: depositInfoCw20TokenAddress ?? '',
       sender: walletAddress ?? '',
     })
-    const doProposeV1 = useProposeV1({
+    const doProposeV1 = CwProposalSingleV1Hooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposeV2 = useProposeV2({
+    const doProposeV2 = DaoProposalSingleV2Hooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposePrePropose = useProposePrePropose({
-      contractAddress: proposalModule.preProposeAddress ?? '',
+    const doProposePrePropose = DaoPreProposeSingleHooks.usePropose({
+      contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })
 
@@ -211,7 +221,11 @@ export const makeUsePublishProposal =
         if (!isWalletConnected) {
           throw new Error(t('error.logInToContinue'))
         }
-        if (!anyoneCanPropose && !isMember) {
+        if (
+          anyoneCanPropose.state === 'hasValue' &&
+          !anyoneCanPropose.contents &&
+          !isMember
+        ) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
         if (depositUnsatisfied) {
@@ -273,7 +287,7 @@ export const makeUsePublishProposal =
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -308,6 +322,7 @@ export const makeUsePublishProposal =
         }
 
         let response
+        let isPreProposeApprovalProposal = false
         // V1 does not support pre-propose
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
@@ -318,7 +333,10 @@ export const makeUsePublishProposal =
           )
           // Every other version supports pre-propose.
         } else {
-          response = proposalModule.preProposeAddress
+          isPreProposeApprovalProposal =
+            proposalModule.prePropose?.contractName ===
+            ContractName.PreProposeApprovalSingle
+          response = proposalModule.prePropose
             ? await doProposePrePropose(
                 {
                   msg: {
@@ -342,20 +360,29 @@ export const makeUsePublishProposal =
         }
 
         const proposalNumber = Number(
-          findWasmAttributeValue(
-            response.logs,
-            proposalModule.address,
-            'proposal_id'
-          ) ?? -1
+          (isPreProposeApprovalProposal && proposalModule.prePropose
+            ? findWasmAttributeValue(
+                response.logs,
+                proposalModule.prePropose.address,
+                'id'
+              )
+            : findWasmAttributeValue(
+                response.logs,
+                proposalModule.address,
+                'proposal_id'
+              )) ?? -1
         )
         if (proposalNumber === -1) {
           throw new Error(t('error.proposalIdNotFound'))
         }
-        const proposalId = `${proposalModule.prefix}${proposalNumber}`
+        const proposalId = `${proposalModule.prefix}${
+          isPreProposeApprovalProposal ? '*' : ''
+        }${proposalNumber}`
 
         return {
           proposalNumber,
           proposalId,
+          isPreProposeApprovalProposal,
         }
       },
       [
@@ -383,7 +410,10 @@ export const makeUsePublishProposal =
     return {
       simulateProposal,
       publishProposal,
-      anyoneCanPropose,
+      // Default to true while loading. This is safe because the contract will
+      // reject anyone who is unauthorized. Defaulting to true here results in
+      // hiding the error until the real value is ready.
+      anyoneCanPropose: anyoneCanPropose.valueMaybe() ?? true,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

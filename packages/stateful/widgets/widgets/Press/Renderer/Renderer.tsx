@@ -17,10 +17,10 @@ import {
   ButtonLinkProps,
   IconButtonLinkProps,
   LoadingData,
+  WidgetId,
 } from '@dao-dao/types'
 
 import { PostMarkdown } from '../components/PostMarkdown'
-import { PRESS_WIDGET_ID } from '../constants'
 import { Post } from '../types'
 import { PostList } from './PostList'
 
@@ -50,14 +50,14 @@ export const Renderer = ({
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   const openPostId =
-    daoSubpathComponents[0] === PRESS_WIDGET_ID
+    daoSubpathComponents[0] === WidgetId.Press
       ? daoSubpathComponents[1]
       : undefined
   const setOpenPostId = useCallback(
     (postId?: string) =>
       goToDao(
         coreAddress,
-        PRESS_WIDGET_ID + (postId ? `/${postId}` : ''),
+        WidgetId.Press + (postId ? `/${postId}` : ''),
         undefined,
         {
           shallow: true,

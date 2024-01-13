@@ -4,20 +4,22 @@ import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
+  chainSupportsV1GovModuleSelector,
+  genericTokenBalanceSelector,
   genericTokenSelector,
   govParamsSelector,
-  moduleAddressSelector,
 } from '@dao-dao/state'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   Loader,
   RaisedHandEmoji,
   useCachedLoading,
-  useChain,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionComponentProps,
   ActionContextType,
   ActionKey,
   ActionMaker,
@@ -33,6 +35,7 @@ import {
   cwMsgToProtobuf,
   decodeGovProposalV1Messages,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -40,7 +43,10 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
+import {
+  MsgExecLegacyContent,
+  MsgSubmitProposal as MsgSubmitProposalV1,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
 import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
@@ -68,10 +74,10 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
   return (
     <>
       {options.context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -84,7 +90,12 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
           fallback={<Loader />}
         >
           <GovActionsProvider>
-            <InnerComponent {...props} />
+            <InnerComponent
+              {...props}
+              options={{
+                address: getChainAddressForActionOptions(options, chainId),
+              }}
+            />
           </GovActionsProvider>
         </SuspenseLoader>
       </ChainProvider>
@@ -92,50 +103,95 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
   )
 }
 
-const InnerComponent: ActionComponent<
-  undefined,
+const InnerComponent = ({
+  options: { address },
+  ...props
+}: ActionComponentProps<
+  { address: string | undefined },
   GovernanceProposalActionData
-> = (props) => {
-  const { chain_id: chainId } = useChain()
-  const { setValue } = useFormContext<GovernanceProposalActionData>()
+>) => {
+  const { watch, setValue } = useFormContext<GovernanceProposalActionData>()
+  const expedited = watch((props.fieldNamePrefix + 'expedited') as 'expedited')
 
-  const govModuleAddress = useRecoilValue(
-    moduleAddressSelector({
-      name: 'gov',
+  // `GovActionsProvier` wraps this, which sets these values.
+  const {
+    address: govModuleAddress,
+    chain: { chain_id: chainId },
+    context,
+  } = useActionOptions()
+
+  // Type-check.
+  if (context.type !== ActionContextType.Gov) {
+    throw new Error('Invalid action context.')
+  }
+
+  const supportsV1GovProposals = useRecoilValue(
+    chainSupportsV1GovModuleSelector({
       chainId,
     })
   )
-  const govParams = useCachedLoading(
-    govParamsSelector({
-      chainId,
-    }),
-    undefined
+
+  // Update version in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'version') as 'version',
+      supportsV1GovProposals
+        ? GovProposalVersion.V1
+        : GovProposalVersion.V1_BETA_1
+    )
+  }, [supportsV1GovProposals, setValue, props.fieldNamePrefix])
+
+  // Update gov module address in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'govModuleAddress') as 'govModuleAddress',
+      govModuleAddress
+    )
+  }, [govModuleAddress, setValue, props.fieldNamePrefix])
+
+  const minDepositParams =
+    expedited && context.params.expeditedMinDeposit?.length
+      ? context.params.expeditedMinDeposit
+      : context.params.minDeposit
+
+  // On chain or min deposit change, reset deposit.
+  useEffect(() => {
+    setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
+      {
+        denom: minDepositParams[0].denom,
+        amount: Number(minDepositParams[0].amount),
+      },
+    ])
+  }, [chainId, setValue, props.fieldNamePrefix, minDepositParams])
+
+  // Get token info for all deposit tokens.
+  const minDepositTokens = useCachedLoading(
+    waitForAll(
+      minDepositParams.map(({ denom }) =>
+        genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+          chainId,
+        })
+      )
+    ),
+    []
   )
 
-  // On chain change, reset deposit.
-  useEffect(() => {
-    if (!govParams.loading && !govParams.updating && govParams.data) {
-      setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
-        {
-          denom: govParams.data.minDeposit[0].denom,
-          amount: Number(govParams.data.minDeposit[0].amount),
-        },
-      ])
-    }
-  }, [chainId, setValue, props.fieldNamePrefix, govParams])
-
-  const minDeposits = useCachedLoading(
-    govParams.loading || !govParams.data
-      ? undefined
-      : waitForAll(
-          govParams.data.minDeposit.map(({ denom }) =>
-            genericTokenSelector({
+  // Get address balances for all deposit tokens when wallet connected.
+  const minDepositBalances = useCachedLoading(
+    address
+      ? waitForAll(
+          minDepositParams.map(({ denom }) =>
+            genericTokenBalanceSelector({
+              address,
               type: TokenType.Native,
               denomOrAddress: denom,
               chainId,
             })
           )
-        ),
+        )
+      : undefined,
     []
   )
 
@@ -147,17 +203,22 @@ const InnerComponent: ActionComponent<
     <StatelessGovernanceProposalComponent
       {...props}
       options={{
-        govModuleAddress,
-        minDeposits:
-          minDeposits.loading || govParams.loading || !govParams.data
-            ? { loading: true }
-            : {
-                loading: false,
-                data: minDeposits.data.map((token, index) => ({
-                  token,
-                  balance: govParams.data!.minDeposit[index].amount,
-                })),
-              },
+        supportsV1GovProposals,
+        minDeposits: minDepositTokens.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: minDepositTokens.data.map((token, index) => ({
+                token,
+                // Wallet's balance or 0 if not loaded.
+                balance:
+                  (!minDepositBalances.loading &&
+                    minDepositBalances.data[index]?.balance) ||
+                  '0',
+                // Min deposit required.
+                min: minDepositParams[index].amount,
+              })),
+            },
         categories,
         loadedActions,
         TokenAmountDisplay,
@@ -207,33 +268,41 @@ const defaultCustom = JSON.stringify(
 
 export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalActionData
-> = ({
-  t,
-  address,
-  context,
-  chain: { chain_id: currentChainId },
-  chainContext: {
-    config: {
-      gov: { supportsV1GovProposals },
-    },
-  },
-}) => {
+> = (options) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
-    const govParams = useCachedLoading(
+    const govParams = useCachedLoadingWithError(
       govParamsSelector({
         chainId: currentChainId,
-      }),
-      undefined
+      })
     )
 
-    const deposit =
-      govParams.loading || !govParams.data
-        ? undefined
-        : govParams.data.minDeposit[0]
+    const supportsV1GovProposals = useCachedLoadingWithError(
+      chainSupportsV1GovModuleSelector({
+        chainId: currentChainId,
+      })
+    )
+
+    if (govParams.loading || supportsV1GovProposals.loading) {
+      return
+    }
+    if (govParams.errored) {
+      return govParams.error
+    }
+    if (supportsV1GovProposals.errored) {
+      return supportsV1GovProposals.error
+    }
+
+    const deposit = govParams.data.minDeposit[0]
 
     return {
       chainId: currentChainId,
-      version: supportsV1GovProposals
+      version: supportsV1GovProposals.data
         ? GovProposalVersion.V1
         : GovProposalVersion.V1_BETA_1,
       title: '',
@@ -261,48 +330,27 @@ export const makeGovernanceProposalAction: ActionMaker<
       },
       legacyContent: Any.fromPartial({}) as any,
       msgs: [],
-      metadataCid: '',
+      expedited: false,
+      useV1LegacyContent: false,
     }
   }
 
   const useTransformToCosmos: UseTransformToCosmos<
     GovernanceProposalActionData
-  > = () => {
-    const chainIds = [
-      currentChainId,
-      ...(context.type === ActionContextType.Dao
-        ? Object.keys(context.info.polytoneProxies)
-        : []),
-    ]
-    // Map chain ID to module address.
-    const govModuleAddressPerChain = useRecoilValue(
-      waitForAll(
-        chainIds.map((chainId) =>
-          moduleAddressSelector({
-            name: 'gov',
-            chainId,
-          })
-        )
-      )
-    ).reduce(
-      (acc, moduleAddress, index) => ({
-        ...acc,
-        [chainIds[index]]: moduleAddress,
-      }),
-      {} as Record<string, string>
-    )
-
-    return ({
+  > =
+    () =>
+    ({
       chainId,
+      govModuleAddress,
       version,
       title,
       description,
       deposit,
       legacyContent,
       msgs,
-      metadataCid,
+      expedited,
+      useV1LegacyContent,
     }) => {
-      const govModuleAddress = govModuleAddressPerChain[chainId]
       if (!govModuleAddress) {
         throw new Error(
           `Could not find gov module address for chain ID ${chainId}.`
@@ -320,7 +368,7 @@ export const makeGovernanceProposalAction: ActionMaker<
                 amount: BigInt(amount).toString(),
                 denom,
               })),
-              proposer: address,
+              proposer: getChainAddressForActionOptions(options, chainId),
             } as MsgSubmitProposalV1Beta1,
           },
         })
@@ -329,18 +377,24 @@ export const makeGovernanceProposalAction: ActionMaker<
           stargate: {
             typeUrl: MsgSubmitProposalV1.typeUrl,
             value: {
-              messages: msgs.map((msg) =>
-                cwMsgToProtobuf(msg, govModuleAddress)
-              ),
+              messages: useV1LegacyContent
+                ? [
+                    MsgExecLegacyContent.toProtoMsg({
+                      authority: govModuleAddress,
+                      content: legacyContent,
+                    }),
+                  ]
+                : msgs.map((msg) => cwMsgToProtobuf(msg, govModuleAddress)),
               initialDeposit: deposit.map(({ amount, denom }) => ({
                 amount: BigInt(amount).toString(),
                 denom,
               })),
-              proposer: address,
-              metadata: `ipfs://${metadataCid}`,
+              proposer: getChainAddressForActionOptions(options, chainId),
               title,
               summary: description,
-              expedited: false,
+              // In case it's undefined, default to false.
+              expedited: expedited || false,
+              metadata: title,
             } as MsgSubmitProposalV1,
           },
         })
@@ -348,7 +402,6 @@ export const makeGovernanceProposalAction: ActionMaker<
 
       return maybeMakePolytoneExecuteMessage(currentChainId, chainId, msg)
     }
-  }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<
     GovernanceProposalActionData
@@ -361,13 +414,17 @@ export const makeGovernanceProposalAction: ActionMaker<
     }
 
     const defaults = useDefaults()
+    if (!defaults || defaults instanceof Error) {
+      return {
+        match: false,
+      }
+    }
 
     if (
       !isDecodedStargateMsg(msg) ||
       !objectMatchesStructure(msg.stargate.value, {
         proposer: {},
-      }) ||
-      msg.stargate.value.proposer !== address
+      })
     ) {
       return {
         match: false,
@@ -456,7 +513,7 @@ export const makeGovernanceProposalAction: ActionMaker<
             amount: Number(amount),
           })),
           msgs: decodedMessages,
-          metadataCid: proposal.metadata.replace('ipfs://', ''),
+          expedited: proposal.expedited || false,
         },
       }
     }

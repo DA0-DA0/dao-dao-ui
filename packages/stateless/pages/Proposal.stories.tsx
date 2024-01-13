@@ -13,13 +13,14 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
-  IconButtonLink,
   ProfileVoteCard,
   ProfileVoteCardProps,
+  ProposalContentDisplayProps,
   ProposalStatusAndInfo,
   ProposalStatusAndInfoProps,
 } from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
+import { Default as ProposalContentDisplayStory } from '../components/proposal/ProposalContentDisplay.stories'
 import { Vote as ProposalStatusAndInfoVoteStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
@@ -51,33 +52,20 @@ Default.args = {
     />
   ),
   id: 'B2',
-  title: 'Enable liquidity rewards for Junoswap LPs',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nAenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna.',
-  // Random date in the past 5 days.
-  createdAt: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
   voteTally: (
     <ProposalVoteTally
       {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}
     />
   ),
   votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
-  creator: {
-    name: { loading: false, data: 'Ben2x4' },
-    address: 'juno789def000ghi',
-  },
-  proposalInnerContentDisplay: (
-    <p className="rounded-md border border-border-primary p-4 text-center">
-      Action display placeholder
-    </p>
+  contentDisplay: (
+    <ProposalContentDisplayStory
+      {...(ProposalContentDisplayStory.args as ProposalContentDisplayProps)}
+    />
   ),
   rightSidebarContent: (
     <ProfileVoteCard {...(ProfileVoteCardStory.args as ProfileVoteCardProps)} />
   ),
-  onRefresh: () => alert('refresh'),
-  refreshing: false,
-  IconButtonLink,
-  duplicateUrl: '#',
 }
 Default.parameters = {
   design: {

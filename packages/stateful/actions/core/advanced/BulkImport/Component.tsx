@@ -10,6 +10,7 @@ import {
   Button,
   ButtonLink,
   FileDropInput,
+  Loader,
 } from '@dao-dao/stateless'
 import { SuspenseLoaderProps, TransProps } from '@dao-dao/types'
 import {
@@ -41,6 +42,11 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
 
   const [error, setError] = useState('')
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([])
+
+  // Show loader if any actions are still loading their defaults.
+  if (Object.values(loadedActions).some((a) => !a.defaults)) {
+    return <Loader />
+  }
 
   const onSelect = (file: File) => {
     setError('')
@@ -128,6 +134,23 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
         setError(
           t('error.invalidActionKeys', {
             keys: invalidActionKeys.join(', '),
+          })
+        )
+        return
+      }
+
+      // Error if any actions failed to load.
+      const erroredAction = actions.flatMap(({ key }) =>
+        loadedActions[key as keyof typeof loadedActions]!.defaults instanceof
+        Error
+          ? [loadedActions[key as keyof typeof loadedActions]!]
+          : []
+      )[0]
+      if (erroredAction) {
+        setError(
+          t('error.actionFailedToLoad', {
+            action: erroredAction.action.label,
+            error: erroredAction.defaults.message,
           })
         )
         return

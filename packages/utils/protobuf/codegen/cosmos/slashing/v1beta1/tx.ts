@@ -61,13 +61,13 @@ export interface MsgUpdateParamsProtoMsg {
  */
 export interface MsgUpdateParamsAmino {
   /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  authority?: string;
   /**
    * params defines the x/slashing parameters to update.
    * 
    * NOTE: All parameters must be supplied.
    */
-  params?: ParamsAmino | undefined;
+  params: ParamsAmino | undefined;
 }
 export interface MsgUpdateParamsAminoMsg {
   type: "cosmos-sdk/x/slashing/MsgUpdateParams";
@@ -147,13 +147,15 @@ export const MsgUnjail = {
     return message;
   },
   fromAmino(object: MsgUnjailAmino): MsgUnjail {
-    return {
-      validatorAddr: object.validator_addr
-    };
+    const message = createBaseMsgUnjail();
+    if (object.validator_addr !== undefined && object.validator_addr !== null) {
+      message.validatorAddr = object.validator_addr;
+    }
+    return message;
   },
   toAmino(message: MsgUnjail, useInterfaces: boolean = false): MsgUnjailAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr ?? "";
     return obj;
   },
   fromAminoMsg(object: MsgUnjailAminoMsg): MsgUnjail {
@@ -205,7 +207,8 @@ export const MsgUnjailResponse = {
     return message;
   },
   fromAmino(_: MsgUnjailResponseAmino): MsgUnjailResponse {
-    return {};
+    const message = createBaseMsgUnjailResponse();
+    return message;
   },
   toAmino(_: MsgUnjailResponse, useInterfaces: boolean = false): MsgUnjailResponseAmino {
     const obj: any = {};
@@ -277,15 +280,19 @@ export const MsgUpdateParams = {
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      authority: object.authority,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseMsgUpdateParams();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
     obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
@@ -337,7 +344,8 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
   },
   toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};

@@ -3,7 +3,11 @@ import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -21,13 +25,13 @@ import {
 
 import {
   Cw20BaseHooks,
+  DaoPreProposeMultipleHooks,
+  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
-import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeMultiple.hooks'
-import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import {
   MakeUsePublishProposalOptions,
   NewProposalData,
@@ -59,24 +63,29 @@ export const makeUsePublishProposal =
       coreAddress,
     })
 
-    const anyoneCanPropose = useRecoilValue(
+    const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({
         chainId,
-        preProposeAddress: proposalModule.preProposeAddress,
+        preProposeAddress: proposalModule.prePropose?.address ?? null,
       })
     )
 
-    const depositInfo = useRecoilValue(depositInfoSelector)
+    const depositInfo = useRecoilValueLoadable(depositInfoSelector)
     const depositInfoCw20TokenAddress =
-      depositInfo?.denom && 'cw20' in depositInfo.denom
-        ? depositInfo.denom.cw20
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'cw20' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.cw20
         : undefined
     const depositInfoNativeTokenDenom =
-      depositInfo?.denom && 'native' in depositInfo.denom
-        ? depositInfo.denom.native
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'native' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.native
         : undefined
-
-    const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
+    const requiredProposalDeposit = Number(
+      depositInfo.valueMaybe()?.amount ?? '0'
+    )
 
     // For checking allowance and increasing if necessary.
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
@@ -90,7 +99,7 @@ export const makeUsePublishProposal =
                 // If pre-propose address set, give that one deposit allowance
                 // instead of proposal module.
                 spender:
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               },
             ],
           })
@@ -156,12 +165,12 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
 
-    const doPropose = usePropose({
+    const doPropose = DaoProposalMultipleHooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposePrePropose = useProposePrePropose({
-      contractAddress: proposalModule.preProposeAddress ?? '',
+    const doProposePrePropose = DaoPreProposeMultipleHooks.usePropose({
+      contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })
 
@@ -219,7 +228,11 @@ export const makeUsePublishProposal =
         if (!isWalletConnected) {
           throw new Error(t('error.logInToContinue'))
         }
-        if (!anyoneCanPropose && !isMember) {
+        if (
+          anyoneCanPropose.state === 'hasValue' &&
+          !anyoneCanPropose.contents &&
+          !isMember
+        ) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
         if (depositUnsatisfied) {
@@ -300,7 +313,7 @@ export const makeUsePublishProposal =
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -334,7 +347,7 @@ export const makeUsePublishProposal =
           choices,
         }
 
-        let response: ExecuteResult = proposalModule.preProposeAddress
+        let response: ExecuteResult = proposalModule.prePropose
           ? await doProposePrePropose(
               {
                 msg: {
@@ -397,7 +410,10 @@ export const makeUsePublishProposal =
     return {
       simulateProposal,
       publishProposal,
-      anyoneCanPropose,
+      // Default to true while loading. This is safe because the contract will
+      // reject anyone who is unauthorized. Defaulting to true here results in
+      // hiding the error until the real value is ready.
+      anyoneCanPropose: anyoneCanPropose.valueMaybe() ?? true,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

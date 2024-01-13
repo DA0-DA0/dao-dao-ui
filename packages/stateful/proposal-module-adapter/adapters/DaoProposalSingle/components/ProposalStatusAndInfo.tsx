@@ -1,61 +1,58 @@
 import {
   AccountCircleOutlined,
   ArrowOutwardRounded,
-  CancelOutlined,
   HourglassTopRounded,
-  Key,
   Redo,
   RotateRightOutlined,
-  Send,
   Tag,
+  ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
+import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
-  ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-  ProposalStatus,
+  PreProposeModuleType,
+  ProposalStatusEnum,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { formatPercentOf100, processError } from '@dao-dao/utils'
+import {
+  formatDateTimeTz,
+  formatPercentOf100,
+  getProposalStatusKey,
+} from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
-import { ButtonLink } from '../../../../components/ButtonLink'
+import { ButtonLink, SuspenseLoader } from '../../../../components'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
+  CwProposalSingleV1Hooks,
+  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
-  useMembership,
   useProposalPolytoneState,
+  useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
+import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import {
-  useClose as useCloseV1,
-  useExecute as useExecuteV1,
-} from '../contracts/CwProposalSingle.v1.hooks'
-import { configSelector } from '../contracts/DaoProposalSingle.common.recoil'
-import {
-  useClose as useCloseV2,
-  useExecute as useExecuteV2,
-} from '../contracts/DaoProposalSingle.v2.hooks'
 import {
   useCastVote,
   useLoadingDepositInfo,
@@ -67,6 +64,7 @@ import {
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -77,7 +75,7 @@ export const ProposalStatusAndInfo = (
 
   return (
     <SuspenseLoader
-      fallback={<InnerProposalStatusAndInfoLoader {...props} />}
+      fallback={<ProposalStatusAndInfoLoader {...props} />}
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
@@ -99,7 +97,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, ...proposal },
+  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -110,6 +108,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo,
   onVoteSuccess,
   onExecuteSuccess,
+  onVetoSuccess,
   onCloseSuccess,
   openSelfRelayExecute,
   ...props
@@ -123,24 +122,133 @@ const InnerProposalStatusAndInfo = ({
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
+  const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
-    configSelector({
+    DaoProposalSingleCommonSelectors.configSelector({
       chainId,
       contractAddress: proposalModule.address,
     })
   )
 
+  const creatorAddress =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : proposal.proposer
+
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
+
+  const approver =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval
+      ? proposalModule.prePropose.config.approver
+      : undefined
+  const approverProposalPath =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval &&
+    !!proposalModule.prePropose.config.preProposeApproverContract &&
+    proposal.approverProposalId
+      ? getDaoProposalPath(
+          proposalModule.prePropose.config.approver,
+          proposal.approverProposalId
+        )
+      : undefined
+
+  const approvalDao =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : undefined
+  const approvedProposalPath =
+    approvalDao && proposal.approvedProposalId
+      ? getDaoProposalPath(approvalDao, proposal.approvedProposalId)
+      : undefined
+
+  const statusKey = getProposalStatusKey(proposal.status)
+
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+
+  const voteOptions = useLoadingVoteOptions()
+  const { castVote, castingVote } = useCastVote(onVoteSuccess)
+
+  const executeProposal = (
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useExecute
+      : DaoProposalSingleV2Hooks.useExecute
+  )({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+  const closeProposal = (
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useClose
+      : DaoProposalSingleV2Hooks.useClose
+  )({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+
+  const polytoneState = useProposalPolytoneState({
+    msgs: proposal.msgs,
+    status: proposal.status,
+    executedAt: proposal.executedAt,
+    proposalModuleAddress: proposalModule.address,
+    proposalNumber,
+    openSelfRelayExecute,
+    loadingTxHash: loadingExecutionTxHash,
+  })
+  const { action, footer } = useProposalActionState({
+    statusKey,
+    polytoneState,
+    loadingExecutionTxHash,
+    executeProposal,
+    closeProposal,
+    onExecuteSuccess,
+    onCloseSuccess,
+  })
+
+  const awaitNextBlock = useAwaitNextBlock()
+  // Refresh proposal and list of proposals (for list status) once voting ends.
+  useEffect(() => {
+    if (
+      statusKey !== ProposalStatusEnum.Open ||
+      !timestampInfo?.expirationDate
+    ) {
+      return
+    }
+
+    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
+    if (msRemaining < 0) {
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      // Refresh immediately so that the timestamp countdown re-renders and
+      // hides itself.
+      refreshProposal()
+      // Refresh again after a block to make sure the status has been updated,
+      // and refresh the list of all proposals so the status gets updated there
+      // as well.
+      awaitNextBlock().then(refreshProposalAndAll)
+    }, msRemaining)
+    return () => clearTimeout(timeout)
+  }, [
+    timestampInfo?.expirationDate,
+    statusKey,
+    refreshProposal,
+    refreshProposalAndAll,
+    awaitNextBlock,
+  ])
+
+  const { vetoEnabled, canBeVetoed, vetoOrEarlyExecute, vetoInfoItems } =
+    useProposalVetoState({
+      statusKey,
+      vetoConfig: 'veto' in config ? config.veto : undefined,
+      onVetoSuccess,
+      onExecuteSuccess,
+    })
 
   const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
@@ -149,27 +257,56 @@ const InnerProposalStatusAndInfo = ({
       ),
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
+        <EntityDisplay {...props} address={coreAddress} noCopy />
       ),
     },
     {
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
+        <EntityDisplay {...props} address={creatorAddress} noCopy />
       ),
     },
+    ...(approverProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approval'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={approver && <EntityDisplay address={approver} noCopy />}
+              >
+                <ButtonLink
+                  href={approverProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approverProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : approver
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approver'),
+            Value: (props) => (
+              <EntityDisplay {...props} address={approver} noCopy />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+    ...vetoInfoItems,
     {
       Icon: RotateRightOutlined,
       label: t('title.status'),
       Value: (props) => (
-        <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
+        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
       ),
     },
     ...(proposal.allow_revoting
@@ -189,6 +326,24 @@ const InnerProposalStatusAndInfo = ({
             Value: (props) => (
               <Tooltip title={timestampInfo.display!.tooltip}>
                 <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(vetoTimelockExpiration
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: t('title.vetoTimeLeft'),
+            Value: (props) => (
+              <Tooltip title={formatDateTimeTz(vetoTimelockExpiration)}>
+                <p {...props}>
+                  <TimeAgo
+                    date={vetoTimelockExpiration}
+                    formatter={timeAgoFormatter}
+                  />
+                </p>
               </Tooltip>
             ),
           },
@@ -224,190 +379,105 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
+    ...(approvedProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approved'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={
+                  approvalDao && <EntityDisplay address={approvalDao} noCopy />
+                }
+              >
+                <ButtonLink
+                  href={approvedProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approvedProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
   ]
 
-  const status =
-    proposal.status === ProposalStatus.Open
-      ? thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willPass')
-        : !thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willFailBadThreshold')
-        : thresholdReached && quorum && !quorumReached
-        ? t('info.proposalStatus.willFailBadQuorum')
-        : t('info.proposalStatus.willFail')
-      : votingOpen
-      ? t('info.proposalStatus.completedAndOpen')
-      : t('info.proposalStatus.notOpen', {
-          turnoutPercent: formatPercentOf100(turnoutPercent),
-          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
-          extra:
-            // Add sentence about closing to receive deposit back if it needs to
-            // be closed and will refund.
-            proposal.status === ProposalStatus.Rejected &&
-            depositInfo?.refund_policy === DepositRefundPolicy.Always
-              ? ` ${t('info.proposalDepositWillBeRefunded')}`
-              : '',
+  let status: string
+  if (statusKey === ProposalStatusEnum.Open) {
+    if (!quorum || quorumReached) {
+      if (thresholdReached) {
+        status = t('info.proposalStatus.willPass', {
+          context: vetoEnabled ? 'vetoEnabled' : undefined,
         })
+      } else {
+        status = t('info.proposalStatus.willFailBadThreshold')
+      }
 
-  const voteOptions = useLoadingVoteOptions()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
-
-  const executeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
-  )({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-  const closeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useCloseV1 : useCloseV2
-  )({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-
-  const [actionLoading, setActionLoading] = useState(false)
-  // On proposal status update, stop loading. This ensures the action button
-  // doesn't stop loading too early, before the status has refreshed.
-  useEffect(() => {
-    setActionLoading(false)
-  }, [proposal.status])
-
-  const polytoneState = useProposalPolytoneState({
-    msgs: proposal.msgs,
-    status: proposal.status,
-    executedAt: proposal.executedAt,
-    proposalModuleAddress: proposalModule.address,
-    proposalNumber,
-    openSelfRelayExecute,
-    loadingTxHash: loadingExecutionTxHash,
-  })
-
-  const onExecute = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
+      // quorum && !quorumReached
+    } else if (thresholdReached) {
+      status = t('info.proposalStatus.willFailBadQuorum')
+    } else {
+      status = t('info.proposalStatus.willFail')
     }
 
-    setActionLoading(true)
-    try {
-      await executeProposal({ proposalId: proposalNumber })
-
-      await onExecuteSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
-
-  const onClose = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId: proposalNumber,
+    // not open
+  } else {
+    if (votingOpen) {
+      // Proposal status is determined but voting is still open
+      status = t('info.proposalStatus.completedAndOpen', {
+        context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
       })
-
-      await onCloseSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
+    } else {
+      status = t('info.proposalStatus.notOpenSingleChoice', {
+        context:
+          statusKey === ProposalStatusEnum.Passed
+            ? 'passed'
+            : statusKey === ProposalStatusEnum.Executed
+            ? 'executed'
+            : statusKey === ProposalStatusEnum.ExecutionFailed
+            ? 'executionFailed'
+            : statusKey === ProposalStatusEnum.Rejected
+            ? 'rejected'
+            : statusKey === ProposalStatusEnum.Closed
+            ? 'closed'
+            : statusKey === ProposalStatusEnum.Vetoed
+            ? thresholdReached && (!quorum || quorumReached)
+              ? 'vetoedPassed'
+              : 'vetoedNotPassed'
+            : undefined,
+        turnoutPercent: formatPercentOf100(turnoutPercent),
+        turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
+      })
     }
 
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
-
-  const awaitNextBlock = useAwaitNextBlock()
-  // Refresh proposal and list of proposals (for list status) once voting ends.
-  useEffect(() => {
+    // Add sentence about closing to receive deposit back if it needs to be
+    // closed and will refund.
     if (
-      proposal.status !== ProposalStatus.Open ||
-      !timestampInfo?.expirationDate
+      statusKey === ProposalStatusEnum.Rejected &&
+      depositInfo?.refund_policy === DepositRefundPolicy.Always
     ) {
-      return
+      status += ' ' + t('info.proposalDepositWillBeRefunded')
     }
 
-    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
-    if (msRemaining < 0) {
-      return
+    // Add sentence about veto status.
+    if (canBeVetoed) {
+      status += ' ' + t('info.proposalStatus.canStillBeVetoed')
     }
-
-    const timeout = setTimeout(() => {
-      // Refresh immediately so that the timestamp countdown re-renders and
-      // hides itself.
-      refreshProposal()
-      // Refresh again after a block to make sure the status has been updated,
-      // and refresh the list of all proposals so the status gets updated there
-      // as well.
-      awaitNextBlock().then(refreshProposalAndAll)
-    }, msRemaining)
-    return () => clearTimeout(timeout)
-  }, [
-    timestampInfo?.expirationDate,
-    proposal.status,
-    refreshProposal,
-    refreshProposalAndAll,
-    awaitNextBlock,
-  ])
+  }
 
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      action={
-        proposal.status === ProposalStatus.Passed &&
-        // Show if anyone can execute OR if the wallet is a member, once
-        // polytone messages that need relaying are done loading.
-        (!config.only_members_execute || isMember) &&
-        !polytoneState.loading
-          ? {
-              label: t('button.execute'),
-              Icon: Key,
-              loading: actionLoading,
-              doAction: polytoneState.data.needsSelfRelay
-                ? polytoneState.data.openPolytoneRelay
-                : onExecute,
-            }
-          : proposal.status === ProposalStatus.Rejected
-          ? {
-              label: t('button.close'),
-              Icon: CancelOutlined,
-              loading: actionLoading,
-              doAction: onClose,
-            }
-          : // If executed and has polytone messages that need relaying...
-          proposal.status === ProposalStatus.Executed &&
-            !polytoneState.loading &&
-            polytoneState.data.needsSelfRelay &&
-            !loadingExecutionTxHash.loading &&
-            loadingExecutionTxHash.data
-          ? {
-              label: t('button.relay'),
-              Icon: Send,
-              loading: actionLoading,
-              doAction: polytoneState.data.openPolytoneRelay,
-              description: t('error.polytoneExecutedNoRelay'),
-            }
-          : undefined
-      }
-      footer={
-        !polytoneState.loading &&
-        proposal.status === ProposalStatus.Executed &&
-        polytoneState.data.hasPolytoneMessages && (
-          <ProposalCrossChainRelayStatus state={polytoneState.data} />
-        )
-      }
+      action={action}
+      footer={footer}
       info={info}
       status={status}
+      vetoOrEarlyExecute={vetoOrEarlyExecute}
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&
@@ -418,62 +488,10 @@ const InnerProposalStatusAndInfo = ({
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions.data,
-              proposalOpen: proposal.status === ProposalStatus.Open,
+              proposalOpen: statusKey === ProposalStatusEnum.Open,
             }
           : undefined
       }
-    />
-  )
-}
-
-const InnerProposalStatusAndInfoLoader = (
-  props: BaseProposalStatusAndInfoProps
-) => {
-  const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
-
-  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
-    <p className={clsx('animate-pulse', className)}>...</p>
-  )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
-    {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
-      label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
-      ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: LoaderP,
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: LoaderP,
-    },
-    {
-      Icon: HourglassTopRounded,
-      label: t('title.date'),
-      Value: LoaderP,
-    },
-  ]
-
-  return (
-    <StatelessProposalStatusAndInfo
-      {...props}
-      info={info}
-      status={t('info.loading')}
     />
   )
 }

@@ -33,17 +33,17 @@ export interface FeeShareAmino {
    * contract_address is the bech32 address of a registered contract in string
    * form
    */
-  contract_address: string;
+  contract_address?: string;
   /**
    * deployer_address is the bech32 address of message sender. It must be the
    * same as the contracts admin address.
    */
-  deployer_address: string;
+  deployer_address?: string;
   /**
    * withdrawer_address is the bech32 address of account receiving the
    * transaction fees.
    */
-  withdrawer_address: string;
+  withdrawer_address?: string;
 }
 export interface FeeShareAminoMsg {
   type: "/juno.feeshare.v1.FeeShare";
@@ -110,11 +110,17 @@ export const FeeShare = {
     return message;
   },
   fromAmino(object: FeeShareAmino): FeeShare {
-    return {
-      contractAddress: object.contract_address,
-      deployerAddress: object.deployer_address,
-      withdrawerAddress: object.withdrawer_address
-    };
+    const message = createBaseFeeShare();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.deployer_address !== undefined && object.deployer_address !== null) {
+      message.deployerAddress = object.deployer_address;
+    }
+    if (object.withdrawer_address !== undefined && object.withdrawer_address !== null) {
+      message.withdrawerAddress = object.withdrawer_address;
+    }
+    return message;
   },
   toAmino(message: FeeShare, useInterfaces: boolean = false): FeeShareAmino {
     const obj: any = {};

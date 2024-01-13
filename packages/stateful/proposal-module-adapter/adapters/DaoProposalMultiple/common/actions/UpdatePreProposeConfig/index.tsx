@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector, isContractSelector } from '@dao-dao/state'
-import { GearEmoji } from '@dao-dao/stateless'
+import {
+  DaoPreProposeMultipleSelectors,
+  genericTokenSelector,
+} from '@dao-dao/state'
+import { GearEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -22,18 +25,19 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
+  DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   isValidContractAddress,
   makeWasmMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../../actions'
+import {
+  useActionOptions,
+  useMsgExecutesContract,
+} from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
-import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/DaoPreProposeMultiple.recoil'
 import {
   UpdatePreProposeConfigComponent,
   UpdatePreProposeConfigData,
@@ -117,29 +121,24 @@ export const Component: ActionComponent = (props) => {
 }
 
 export const makeUpdatePreProposeConfigActionMaker =
-  ({
-    preProposeAddress,
-  }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
+  ({ prePropose }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
     // Only when pre propose address present.
-    if (!preProposeAddress) {
+    if (!prePropose) {
       return null
     }
 
-    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
+    const preProposeAddress = prePropose.address
 
+    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
       const {
         hooks: { useCommonGovernanceTokenInfo },
       } = useVotingModuleAdapter()
       const { denomOrAddress: governanceTokenDenomOrAddress } =
         useCommonGovernanceTokenInfo?.() ?? {}
 
-      const config = useRecoilValue(
-        configSelector({
+      const configLoading = useCachedLoadingWithError(
+        DaoPreProposeMultipleSelectors.configSelector({
           chainId,
           contractAddress: preProposeAddress,
           params: [],
@@ -149,22 +148,36 @@ export const makeUpdatePreProposeConfigActionMaker =
       // The config response only contains `native` or `cw20`, as
       // `voting_module_token` is only passed in an execution. The contract
       // converts it to `cw20`.
-      const token = useRecoilValue(
-        config.deposit_info
+      const tokenLoading = useCachedLoadingWithError(
+        configLoading.loading || configLoading.errored
+          ? undefined
+          : configLoading.data.deposit_info
           ? genericTokenSelector({
               chainId,
               type:
-                'native' in config.deposit_info.denom
+                'native' in configLoading.data.deposit_info.denom
                   ? TokenType.Native
                   : TokenType.Cw20,
               denomOrAddress:
-                'native' in config.deposit_info.denom
-                  ? config.deposit_info.denom.native
-                  : config.deposit_info.denom.cw20,
+                'native' in configLoading.data.deposit_info.denom
+                  ? configLoading.data.deposit_info.denom.native
+                  : configLoading.data.deposit_info.denom.cw20,
             })
           : constSelector(undefined)
       )
-      const decimals = token?.decimals ?? 0
+
+      if (configLoading.loading || tokenLoading.loading) {
+        return
+      }
+      if (configLoading.errored) {
+        return configLoading.error
+      }
+      if (tokenLoading.errored) {
+        return tokenLoading.error
+      }
+
+      const token = tokenLoading.data
+      const config = configLoading.data
 
       const isVotingModuleToken =
         governanceTokenDenomOrAddress &&
@@ -177,7 +190,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           ? {
               amount: convertMicroDenomToDenomWithDecimals(
                 config.deposit_info.amount,
-                decimals
+                token?.decimals ?? 0
               ),
               type: isVotingModuleToken
                 ? 'voting_module_token'
@@ -209,18 +222,21 @@ export const makeUpdatePreProposeConfigActionMaker =
 
     const useTransformToCosmos: UseTransformToCosmos<
       UpdatePreProposeConfigData
-    > = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
-
-      return useCallback(
+    > = () =>
+      useCallback(
         ({
           depositRequired,
           depositInfo,
           anyoneCanPropose,
         }: UpdatePreProposeConfigData) => {
+          const votingModuleTokenType =
+            depositRequired && depositInfo.type === 'voting_module_token'
+              ? depositInfo.token?.type
+              : false
+          if (votingModuleTokenType === undefined) {
+            throw new Error(t('error.loadingData'))
+          }
+
           const updateConfigMessage: ExecuteMsg = {
             update_config: {
               deposit_info: depositRequired
@@ -232,7 +248,15 @@ export const makeUpdatePreProposeConfigActionMaker =
                     denom:
                       depositInfo.type === 'voting_module_token'
                         ? {
-                            voting_module_token: {},
+                            voting_module_token: {
+                              token_type:
+                                votingModuleTokenType === TokenType.Native
+                                  ? 'native'
+                                  : votingModuleTokenType === TokenType.Cw20
+                                  ? 'cw20'
+                                  : // Cause a chain error. Should never happen.
+                                    ('invalid' as never),
+                            },
                           }
                         : {
                             token: {
@@ -266,34 +290,27 @@ export const makeUpdatePreProposeConfigActionMaker =
         },
         []
       )
-    }
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<
       UpdatePreProposeConfigData
     > = (msg: Record<string, any>) => {
-      const isUpdatePreProposeConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                deposit_info: {},
-                open_proposal_submission: {},
+      const isUpdatePreProposeConfig = useMsgExecutesContract(
+        msg,
+        DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
+        {
+          wasm: {
+            execute: {
+              contract_addr: {},
+              funds: {},
+              msg: {
+                update_config: {
+                  deposit_info: {},
+                  open_proposal_submission: {},
+                },
               },
             },
           },
-        },
-      })
-
-      const isContract = useRecoilValue(
-        isUpdatePreProposeConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: PRE_PROPOSE_CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
       const configDepositInfo = msg.wasm?.execute?.msg?.update_config
@@ -304,8 +321,10 @@ export const makeUpdatePreProposeConfigActionMaker =
       } = useVotingModuleAdapter()
       const governanceToken = useCommonGovernanceTokenInfo?.()
 
-      const token = useRecoilValue(
-        isContract && configDepositInfo && isUpdatePreProposeConfig
+      const token = useCachedLoadingWithError(
+        isUpdatePreProposeConfig &&
+          configDepositInfo &&
+          isUpdatePreProposeConfig
           ? 'voting_module_token' in configDepositInfo.denom
             ? constSelector(governanceToken)
             : genericTokenSelector({
@@ -322,14 +341,14 @@ export const makeUpdatePreProposeConfigActionMaker =
           : constSelector(undefined)
       )
 
-      if (!isUpdatePreProposeConfig || !isContract) {
+      if (!isUpdatePreProposeConfig || token.loading || token.errored) {
         return { match: false }
       }
 
       const anyoneCanPropose =
         !!msg.wasm.execute.msg.update_config.open_proposal_submission
 
-      if (!configDepositInfo || !token) {
+      if (!configDepositInfo || !token.data) {
         return {
           data: {
             depositRequired: false,
@@ -355,11 +374,11 @@ export const makeUpdatePreProposeConfigActionMaker =
       const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
         amount: convertMicroDenomToDenomWithDecimals(
           configDepositInfo.amount,
-          token.decimals
+          token.data.decimals
         ),
         type,
-        denomOrAddress: token.denomOrAddress,
-        token,
+        denomOrAddress: token.data.denomOrAddress,
+        token: token.data,
         refundPolicy: configDepositInfo.refund_policy,
       }
 

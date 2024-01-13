@@ -1,10 +1,6 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import {
-  govProposalSelector,
-  refreshGovProposalsAtom,
-} from '@dao-dao/state/recoil'
+import { govProposalSelector } from '@dao-dao/state/recoil'
 import {
   PageLoader,
   Proposal,
@@ -12,21 +8,14 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import {
-  GovProposalVersion,
-  GovProposalWithDecodedContent,
-} from '@dao-dao/types'
-import { govProposalToDecodedContent } from '@dao-dao/utils'
+import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
-import { useLoadingGovProposal, useWallet } from '../../hooks'
-import { walletProfileDataSelector } from '../../recoil'
-import { EntityDisplay } from '../EntityDisplay'
-import { IconButtonLink } from '../IconButtonLink'
+import { useWallet } from '../../hooks'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { GovProposalPageWrapperProps } from './GovPageWrapper'
-import { GovProposalActionDisplay } from './GovProposalActionDisplay'
+import { GovProposalContentDisplay } from './GovProposalContentDisplay'
 import {
   GovProposalStatusAndInfo,
   GovProposalStatusAndInfoProps,
@@ -40,16 +29,6 @@ type InnerGovProposalProps = {
 
 const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { isWalletConnected } = useWallet()
-  const { chain_id: chainId } = useChain()
-
-  const loadingCreatorProfile = useRecoilValue(
-    proposal.version === GovProposalVersion.V1 && proposal.proposal.proposer
-      ? walletProfileDataSelector({
-          address: proposal.proposal.proposer,
-          chainId,
-        })
-      : constSelector(undefined)
-  )
 
   const proposalId = proposal.id.toString()
   const ProposalStatusAndInfo = useCallback(
@@ -59,36 +38,11 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
     [proposalId]
   )
 
-  const loadingProposal = useLoadingGovProposal(proposalId)
-  const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))
-
   return (
     <Proposal
-      EntityDisplay={EntityDisplay}
-      IconButtonLink={IconButtonLink}
       ProposalStatusAndInfo={ProposalStatusAndInfo}
-      createdAt={proposal.proposal.submitTime}
-      creator={
-        loadingCreatorProfile && {
-          name: loadingCreatorProfile.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: loadingCreatorProfile.profile.name,
-              },
-          address: loadingCreatorProfile.address,
-        }
-      }
-      description={proposal.description.replace(/\\n/g, '\n')}
-      duplicateUrl={undefined}
+      contentDisplay={<GovProposalContentDisplay proposal={proposal} />}
       id={proposalId}
-      onRefresh={() => setRefreshProposal((id) => id + 1)}
-      proposalInnerContentDisplay={
-        <GovProposalActionDisplay
-          content={govProposalToDecodedContent(proposal)}
-        />
-      }
-      refreshing={loadingProposal.loading || !!loadingProposal.updating}
       rightSidebarContent={
         isWalletConnected ? (
           <SuspenseLoader
@@ -100,7 +54,6 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
           <ProfileDisconnectedCard />
         )
       }
-      title={proposal.title}
       voteTally={<GovProposalVoteTally proposalId={proposalId} />}
       votesCast={
         (proposal.proposal.status ===

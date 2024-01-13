@@ -25,7 +25,12 @@ export const processError = (
 ): string => {
   // Convert to error type.
   if (!(error instanceof Error)) {
-    error = new Error(`${error}`)
+    error = new Error(
+      `${
+        // Some errors are not Error classes but have a message property.
+        typeof error === 'object' && 'message' in error ? error.message : error
+      }`
+    )
   }
 
   const { message } = error as Error
@@ -106,6 +111,8 @@ export enum CommonError {
   IbcClientExpired = 'IBC client expired. Reach out to us for help.',
   IndexerDisabled = 'Indexer disabled.',
   DaoInactive = 'This DAO is inactive, which means insufficient voting power has been staked. You cannot create a proposal at this time.',
+  ReconnectWallet = 'Please disconnect and reconnect your wallet.',
+  ProposalTooLarge = 'Proposal is too large. Please remove actions or shorten the description.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -123,8 +130,6 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.InsufficientFees]: ['insufficient fees'],
   [CommonError.InsufficientFunds]: [
     'insufficient funds',
-    // Try to send money with no balance.
-    'does not exist on chain.',
     ['fee payer address', 'does not exist'],
   ],
   [CommonError.GetClientFailed]: [
@@ -177,6 +182,8 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.DaoInactive]: [
     'the DAO is currently inactive, you cannot create proposals',
   ],
+  [CommonError.ReconnectWallet]: [['Session', 'not established yet']],
+  [CommonError.ProposalTooLarge]: [['proposal is', 'bytes, must be <=']],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

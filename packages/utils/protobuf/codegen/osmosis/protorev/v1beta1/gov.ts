@@ -19,9 +19,9 @@ export interface SetProtoRevEnabledProposalProtoMsg {
  * protorev module is enabled
  */
 export interface SetProtoRevEnabledProposalAmino {
-  title: string;
-  description: string;
-  enabled: boolean;
+  title?: string;
+  description?: string;
+  enabled?: boolean;
 }
 export interface SetProtoRevEnabledProposalAminoMsg {
   type: "osmosis/SetProtoRevEnabledProposal";
@@ -58,9 +58,9 @@ export interface SetProtoRevAdminAccountProposalProtoMsg {
  * developer address that will be receiving a share of profits from the module
  */
 export interface SetProtoRevAdminAccountProposalAmino {
-  title: string;
-  description: string;
-  account: string;
+  title?: string;
+  description?: string;
+  account?: string;
 }
 export interface SetProtoRevAdminAccountProposalAminoMsg {
   type: "osmosis/SetProtoRevAdminAccountProposal";
@@ -130,11 +130,17 @@ export const SetProtoRevEnabledProposal = {
     return message;
   },
   fromAmino(object: SetProtoRevEnabledProposalAmino): SetProtoRevEnabledProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      enabled: object.enabled
-    };
+    const message = createBaseSetProtoRevEnabledProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.enabled !== undefined && object.enabled !== null) {
+      message.enabled = object.enabled;
+    }
+    return message;
   },
   toAmino(message: SetProtoRevEnabledProposal, useInterfaces: boolean = false): SetProtoRevEnabledProposalAmino {
     const obj: any = {};
@@ -218,11 +224,17 @@ export const SetProtoRevAdminAccountProposal = {
     return message;
   },
   fromAmino(object: SetProtoRevAdminAccountProposalAmino): SetProtoRevAdminAccountProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      account: object.account
-    };
+    const message = createBaseSetProtoRevAdminAccountProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.account !== undefined && object.account !== null) {
+      message.account = object.account;
+    }
+    return message;
   },
   toAmino(message: SetProtoRevAdminAccountProposal, useInterfaces: boolean = false): SetProtoRevAdminAccountProposalAmino {
     const obj: any = {};

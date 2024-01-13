@@ -1,15 +1,22 @@
-import { AccountBalanceOutlined, LockOpenOutlined } from '@mui/icons-material'
-import { useTranslation } from 'react-i18next'
-
-import { daoTvlSelector } from '@dao-dao/state'
 import {
-  DaoInfoBarLoader,
+  AccountBalanceOutlined,
+  LockOpenOutlined,
+  ThumbDownOutlined,
+  ThumbsUpDownOutlined,
+} from '@mui/icons-material'
+import uniq from 'lodash.uniq'
+import { useTranslation } from 'react-i18next'
+import { useRecoilValueLoadable, waitForAll } from 'recoil'
+
+import { Cw1WhitelistSelectors, daoTvlSelector } from '@dao-dao/state'
+import {
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
   useCachedLoading,
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { PreProposeModuleType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -19,13 +26,20 @@ import {
   useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
+import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoInfoBar = () => (
-  <SuspenseLoader fallback={<DaoInfoBarLoader />}>
-    <InnerDaoInfoBar />
-  </SuspenseLoader>
-)
+export const DaoInfoBar = () => {
+  const {
+    components: { DaoInfoBarLoader },
+  } = useVotingModuleAdapter()
+
+  return (
+    <SuspenseLoader fallback={<DaoInfoBarLoader />}>
+      <InnerDaoInfoBar />
+    </SuspenseLoader>
+  )
+}
 
 const InnerDaoInfoBar = () => {
   const { t } = useTranslation()
@@ -34,7 +48,7 @@ const InnerDaoInfoBar = () => {
     hooks: { useDaoInfoBarItems, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { coreAddress, activeThreshold } = useDaoInfoContext()
+  const { coreAddress, activeThreshold, proposalModules } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -50,6 +64,46 @@ const InnerDaoInfoBar = () => {
       amount: -1,
       timestamp: new Date(),
     }
+  )
+
+  // Get unique approvers from all proposal modules.
+  const allApprovers = uniq(
+    proposalModules.flatMap(({ prePropose }) =>
+      prePropose?.type === PreProposeModuleType.Approval
+        ? prePropose.config.approver
+        : []
+    )
+  )
+
+  // Get unique vetoers from all proposal modules.
+  const allVetoers = uniq(
+    proposalModules.flatMap(({ config }) =>
+      config?.veto ? [config.veto.vetoer] : []
+    )
+  )
+
+  // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
+  // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
+  // undefined.
+  const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
+    waitForAll(
+      allVetoers.map((vetoer) =>
+        Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+          chainId,
+          contractAddress: vetoer,
+        })
+      )
+    )
+  )
+
+  // If a vetoer is a cw1-whitelist contract, replace it with its admins.
+  const flattenedVetoers = uniq(
+    allVetoers.flatMap((vetoer, index) =>
+      cw1WhitelistAdminsLoadable.state === 'hasValue' &&
+      cw1WhitelistAdminsLoadable.contents[index]?.length
+        ? (cw1WhitelistAdminsLoadable.contents[index] as string[])
+        : [vetoer]
+    )
   )
 
   return (
@@ -104,6 +158,18 @@ const InnerDaoInfoBar = () => {
               },
             ]
           : []),
+        ...allApprovers.map((approver) => ({
+          Icon: ThumbsUpDownOutlined,
+          label: t('title.approver'),
+          tooltip: t('info.daoApproverExplanation'),
+          value: <EntityDisplay address={approver} hideImage noCopy />,
+        })),
+        ...flattenedVetoers.map((vetoer) => ({
+          Icon: ThumbDownOutlined,
+          label: t('title.vetoer'),
+          tooltip: t('info.daoVetoerExplanation'),
+          value: <EntityDisplay address={vetoer} hideImage noCopy />,
+        })),
         // Voting module-specific items.
         ...votingModuleItems,
       ]}

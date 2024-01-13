@@ -17,11 +17,11 @@ import {
   NumberInput,
   TextInput,
   TooltipInfoIcon,
-  VOTING_POWER_DISTRIBUTION_COLORS,
   useChain,
 } from '@dao-dao/stateless'
 import { NewDao } from '@dao-dao/types'
 import {
+  DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
   formatPercentOf100,
   makeValidateAddress,
@@ -76,10 +76,7 @@ export const TierCard = ({
     name: `creator.data.tiers.${tierIndex}.members`,
   })
 
-  const tierColor =
-    VOTING_POWER_DISTRIBUTION_COLORS[
-      tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-    ]
+  const tierColor = DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length]
   const tierVotingWeight = data.tiers?.[tierIndex]?.weight ?? 0
 
   return (
@@ -181,9 +178,8 @@ export const TierCard = ({
                       className="h-2 w-2 shrink-0 rounded-full"
                       style={{
                         backgroundColor:
-                          VOTING_POWER_DISTRIBUTION_COLORS[
-                            memberIndex %
-                              VOTING_POWER_DISTRIBUTION_COLORS.length
+                          DISTRIBUTION_COLORS[
+                            memberIndex % DISTRIBUTION_COLORS.length
                           ],
                       }}
                     ></div>

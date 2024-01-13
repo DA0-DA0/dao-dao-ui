@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoPageMode, DaoTabId } from '@dao-dao/types'
-import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
+import { SdaNavigationProps } from '@dao-dao/types/components/SdaNavigation'
 import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useDaoNavHelpers } from '../../hooks'

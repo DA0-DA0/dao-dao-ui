@@ -15,6 +15,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
+  "chainId": "<CHAIN ID>",
   "contract": "<SMART CONTRACT ADDRESS>",
   "codeId": <NEW SMART CONTRACT CODE ID>,
   "msg": "<SMART CONTRACT MIGRATION MESSAGE>",

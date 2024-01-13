@@ -7,7 +7,6 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 - [MintNft](./widgets/MintNft)
 - [RetroactiveCompensation](./widgets/RetroactiveCompensation)
 - [VestingPayments](./widgets/VestingPayments)
-- [WyndDeposit](./widgets/WyndDeposit)
 
 ## Layout
 

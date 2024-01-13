@@ -10,6 +10,7 @@ import {
   SegmentedControls,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionKey,
   ActionMaker,
@@ -18,6 +19,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  ContractName,
   convertDenomToMicroDenomStringWithDecimals,
   encodeMessageAsBase64,
   makeWasmMessage,
@@ -186,14 +188,17 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
   msg: Record<string, any>
 ) => {
-  const isTokenSwapExecute = useMsgExecutesContract(msg, 'cw-token-swap')
+  const isTokenSwapExecute = useMsgExecutesContract(
+    msg,
+    ContractName.CwTokenSwap,
+    {
+      fund: {},
+    }
+  )
 
   // Native
   if (
     isTokenSwapExecute &&
-    objectMatchesStructure(msg.wasm.execute.msg, {
-      fund: {},
-    }) &&
     Array.isArray(msg.wasm.execute.funds) &&
     msg.wasm.execute.funds.length === 1
   ) {
@@ -247,13 +252,21 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
 
 export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
   t,
-}) => ({
-  key: ActionKey.PerformTokenSwap,
-  Icon: HandshakeEmoji,
-  label: t('title.tokenSwap'),
-  description: t('info.tokenSwapDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+  chainContext,
+}) => {
+  // Check we're on a supported chain. Code IDs needed to instantiate a swap.
+  if (chainContext.type !== ActionChainContextType.Supported) {
+    return null
+  }
+
+  return {
+    key: ActionKey.PerformTokenSwap,
+    Icon: HandshakeEmoji,
+    label: t('title.tokenSwap'),
+    description: t('info.tokenSwapDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}

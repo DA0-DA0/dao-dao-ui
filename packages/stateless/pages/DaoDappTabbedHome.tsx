@@ -1,5 +1,4 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
-import clsx from 'clsx'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -30,11 +29,13 @@ export const DaoDappTabbedHome = ({
   DaoInfoBar,
   rightSidebarContent,
   SuspenseLoader,
+  ButtonLink,
   LinkWrapper,
   tabs,
   selectedTabId,
   onSelectTabId,
   breadcrumbsOverride,
+  parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
   const { config: chainConfig } = useChainContext()
@@ -51,6 +52,8 @@ export const DaoDappTabbedHome = ({
   )
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
+
+  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
     <>
@@ -88,10 +91,12 @@ export const DaoDappTabbedHome = ({
 
       <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
         <DaoSplashHeader
+          ButtonLink={ButtonLink}
           DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
           follow={follow}
+          parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         />
 
         <div className="h-[1px] bg-border-base" />
@@ -151,13 +156,12 @@ export const DaoDappTabbedHome = ({
         </div>
 
         <div className="mt-2 border-t border-border-secondary py-6">
-          {tabs.map(({ id, Component }) => (
-            <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
-              <SuspenseLoader fallback={<Loader />}>
-                <Component />
-              </SuspenseLoader>
-            </div>
-          ))}
+          {/* Don't render a tab unless it is visible. */}
+          {selectedTab && (
+            <SuspenseLoader fallback={<Loader />}>
+              <selectedTab.Component />
+            </SuspenseLoader>
+          )}
         </div>
       </div>
     </>

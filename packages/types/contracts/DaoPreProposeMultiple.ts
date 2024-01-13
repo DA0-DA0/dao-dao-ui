@@ -19,8 +19,11 @@ export type DepositToken =
       }
     }
   | {
-      voting_module_token: {}
+      voting_module_token: {
+        token_type: VotingModuleTokenType
+      }
     }
+export type VotingModuleTokenType = 'native' | 'cw20'
 export type UncheckedDenom =
   | {
       native: string

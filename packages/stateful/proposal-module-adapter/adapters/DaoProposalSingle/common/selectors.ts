@@ -5,24 +5,44 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
+import {
+  CwProposalSingleV1Selectors,
+  DaoPreProposeApprovalSingleSelectors,
+  DaoPreProposeSingleSelectors,
+  DaoProposalSingleCommonSelectors,
+  blockHeightTimestampSafeSelector,
+} from '@dao-dao/state'
 import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
   Feature,
-  ProposalStatus,
+  ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
+import { Proposal as PreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
 } from '@dao-dao/types/proposal-module-adapter'
 import { isFeatureSupportedByVersion } from '@dao-dao/utils'
 
-import { configSelector as configV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
-import { configSelector as configPreProposeSelector } from '../contracts/DaoPreProposeSingle.recoil'
-import { reverseProposalsSelector } from '../contracts/DaoProposalSingle.common.recoil'
+export const proposalCountSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+  }>
+) => RecoilValueReadOnly<number> = selectorFamily({
+  key: 'daoProposalSingleProposalCount',
+  get:
+    ({ chainId, proposalModuleAddress }) =>
+    ({ get }) =>
+      get(
+        DaoProposalSingleCommonSelectors.proposalCountSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+        })
+      ),
+})
 
 export const reverseProposalInfosSelector: (
   info: WithChainId<{
@@ -43,7 +63,7 @@ export const reverseProposalInfosSelector: (
     }) =>
     async ({ get }) => {
       const proposalResponses = get(
-        reverseProposalsSelector({
+        DaoProposalSingleCommonSelectors.reverseProposalsSelector({
           contractAddress: proposalModuleAddress,
           chainId,
           params: [
@@ -75,7 +95,107 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === ProposalStatus.Open,
+          isOpen: status === ProposalStatusEnum.Open,
+        })
+      )
+
+      return proposalInfos
+    },
+})
+
+export const reversePreProposePendingProposalInfosSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    proposalModulePrefix: string
+    startBefore: number | undefined
+    limit: number | undefined
+  }>
+) => RecoilValueReadOnly<CommonProposalListInfo[]> = selectorFamily({
+  key: 'daoProposalSingleReversePreProposePendingProposalInfos',
+  get:
+    ({
+      chainId,
+      proposalModuleAddress,
+      proposalModulePrefix,
+      startBefore,
+      limit,
+    }) =>
+    async ({ get }) => {
+      const pendingProposals = get(
+        DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+          params: [
+            {
+              msg: {
+                reverse_pending_proposals: {
+                  start_before: startBefore,
+                  limit,
+                },
+              },
+            },
+          ],
+        })
+      ) as PreProposeApprovalSingleProposal[]
+
+      const proposalInfos: CommonProposalListInfo[] = pendingProposals.map(
+        ({ approval_id: id, createdAt }) => ({
+          id: `${proposalModulePrefix}*${id}`,
+          proposalNumber: id,
+          timestamp: createdAt ? new Date(createdAt) : undefined,
+          isOpen: true,
+        })
+      )
+
+      return proposalInfos
+    },
+})
+
+export const reversePreProposeCompletedProposalInfosSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    proposalModulePrefix: string
+    startBefore: number | undefined
+    limit: number | undefined
+  }>
+) => RecoilValueReadOnly<CommonProposalListInfo[]> = selectorFamily({
+  key: 'daoProposalSingleReversePreProposeCompletedProposalInfos',
+  get:
+    ({
+      chainId,
+      proposalModuleAddress,
+      proposalModulePrefix,
+      startBefore,
+      limit,
+    }) =>
+    async ({ get }) => {
+      const completedProposals = get(
+        DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+          params: [
+            {
+              msg: {
+                reverse_completed_proposals: {
+                  start_before: startBefore,
+                  limit,
+                },
+              },
+            },
+          ],
+        })
+      ) as PreProposeApprovalSingleProposal[]
+
+      const proposalInfos: CommonProposalListInfo[] = completedProposals.map(
+        ({ approval_id: id, status, createdAt }) => ({
+          id: `${proposalModulePrefix}*${id}`,
+          proposalNumber: id,
+          timestamp: createdAt ? new Date(createdAt) : undefined,
+          isOpen: false,
+          // Hide approved proposals from the list since they show up as normal
+          // proposals. No need to show duplicates. But we still want to show
+          // rejected pre-propose proposals.
+          hideFromList: 'approved' in status,
         })
       )
 
@@ -100,7 +220,7 @@ export const makeDepositInfoSelector: (
         !isFeatureSupportedByVersion(Feature.PrePropose, version)
       ) {
         const config = get(
-          configV1Selector({
+          CwProposalSingleV1Selectors.configSelector({
             contractAddress: proposalModuleAddress,
             chainId,
           })
@@ -119,7 +239,7 @@ export const makeDepositInfoSelector: (
         }
       } else if (preProposeAddress) {
         const config = get(
-          configPreProposeSelector({
+          DaoPreProposeSingleSelectors.configSelector({
             contractAddress: preProposeAddress,
             chainId,
             params: [],
@@ -147,7 +267,7 @@ export const anyoneCanProposeSelector = selectorFamily<
     ({ get }) => {
       if (preProposeAddress) {
         const config = get(
-          configPreProposeSelector({
+          DaoPreProposeSingleSelectors.configSelector({
             contractAddress: preProposeAddress,
             chainId,
             params: [],

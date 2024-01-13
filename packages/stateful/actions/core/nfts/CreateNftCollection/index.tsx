@@ -1,8 +1,12 @@
 import { useCallback } from 'react'
 
-import { ArtistPaletteEmoji, ChainPickerInput } from '@dao-dao/stateless'
+import {
+  ArtistPaletteEmoji,
+  DaoSupportedChainPickerInput,
+} from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -32,10 +36,11 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           excludeChainIds={[ChainId.StargazeMainnet, ChainId.StargazeTestnet]}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -51,7 +56,13 @@ export const makeCreateNftCollectionAction: ActionMaker<
     t,
     chain: { chain_id: currentChainId },
     context,
+    chainContext,
   } = options
+
+  // Need to be on a supported chain to create an NFT collection.
+  if (chainContext.type !== ActionChainContextType.Supported) {
+    return null
+  }
 
   const useDefaults: UseDefaults<InstantiateNftCollectionData> = () => ({
     chainId: currentChainId,

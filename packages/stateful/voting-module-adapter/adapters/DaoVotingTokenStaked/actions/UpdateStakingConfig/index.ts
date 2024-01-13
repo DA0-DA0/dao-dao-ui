@@ -10,8 +10,8 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertSecondsToDurationWithUnits,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -27,13 +27,12 @@ const useDefaults: UseDefaults<UpdateStakingConfigData> = () => {
 
   return {
     unstakingDurationEnabled: !!unstakingDuration,
-    unstakingDuration:
-      unstakingDuration && 'time' in unstakingDuration
-        ? convertSecondsToDurationWithUnits(unstakingDuration.time)
-        : {
-            value: 2,
-            units: DurationUnits.Weeks,
-          },
+    unstakingDuration: unstakingDuration
+      ? convertDurationToDurationWithUnits(unstakingDuration)
+      : {
+          value: 2,
+          units: DurationUnits.Weeks,
+        },
   }
 }
 
@@ -78,18 +77,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateStakingConfigData> = (
         },
       },
     },
-  }) &&
-    msg.wasm.execute.contract_addr === stakingContractAddress &&
-    (!msg.wasm.execute.msg.update_config.duration ||
-      'time' in msg.wasm.execute.msg.update_config.duration)
+  }) && msg.wasm.execute.contract_addr === stakingContractAddress
     ? {
         match: true,
         data: {
           unstakingDurationEnabled:
             !!msg.wasm.execute.msg.update_config.duration,
           unstakingDuration: msg.wasm.execute.msg.update_config.duration
-            ? convertSecondsToDurationWithUnits(
-                msg.wasm.execute.msg.update_config.duration.time
+            ? convertDurationToDurationWithUnits(
+                msg.wasm.execute.msg.update_config.duration
               )
             : {
                 value: 2,

@@ -23,6 +23,8 @@ export enum ContractVersion {
   V210 = '2.1.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.3.0
   V230 = '2.3.0',
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.4.0
+  V240 = '2.4.0',
 }
 
 /**
@@ -45,7 +47,9 @@ export enum Feature {
    * SubDAOs were added.
    */
   SubDaos,
-  /** Pre-propose was added. */
+  /**
+   * Pre-propose was added.
+   */
   PrePropose,
   /**
    * Proposal modules were changed to have statically-assigned prefixes, as
@@ -63,10 +67,19 @@ export enum Feature {
    */
   ModuleInstantiateFunds,
   /**
-   * The cosmwasm-std package was upgraded to v1.2.0 in the contracts which
-   * added support for Instantiate2 wasm messages.
+   * The VotingModuleToken type used during config and instantiation to specify
+   * the proposal deposit denom should be the governance token was fixed to
+   * support both native and cw20 tokens.
    */
-  Instantiate2,
+  VotingModuleTokenTypeFix,
+  /**
+   * Approval was added.
+   */
+  Approval,
+  /**
+   * Veto was added.
+   */
+  Veto,
 }
 
 /**

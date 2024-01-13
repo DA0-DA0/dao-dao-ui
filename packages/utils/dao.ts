@@ -1,4 +1,6 @@
 import {
+  Account,
+  AccountType,
   BreadcrumbCrumb,
   ContractVersion,
   DaoParentInfo,
@@ -58,8 +60,54 @@ export const getFundsFromDaoInstantiateMsg = ({
   voting_module_instantiate_info,
   proposal_modules_instantiate_info,
 }: DaoCoreV2InstantiateMsg) => [
-  // TODO(neutron-2.3.0): remove once non-optional
   ...(voting_module_instantiate_info.funds || []),
-  // TODO(neutron-2.3.0): remove once non-optional
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
+
+// Gets the account on the specified chain or undefined if nonexistent.
+export const getAccount = ({
+  accounts,
+  chainId,
+  types = [AccountType.Native, AccountType.Polytone],
+}: {
+  accounts: Account[]
+  chainId: string
+  types?: AccountType[]
+}): Account | undefined =>
+  accounts.find(
+    (account) => types.includes(account.type) && account.chainId === chainId
+  )
+
+// Gets the account address on the specified chain or undefined if nonexistent.
+export const getAccountAddress = (
+  ...params: Parameters<typeof getAccount>
+): string | undefined => getAccount(...params)?.address
+
+// Gets the chain ID for an address or undefined if nonexistent.
+export const getAccountChainId = ({
+  accounts,
+  address,
+  types = [AccountType.Native, AccountType.Polytone],
+}: {
+  accounts: Account[]
+  address: string
+  types?: AccountType[]
+}): string | undefined =>
+  accounts.find(
+    (account) => types.includes(account.type) && account.address === address
+  )?.chainId
+
+/**
+ * Filter DAO items by prefix and remove the prefix from the key.
+ *
+ * @param items A DAO items object.
+ * @param prefix The prefix to filter by.
+ * @returns An array of filtered items in the form of [key, value].
+ */
+export const getFilteredDaoItemsByPrefix = (
+  items: Record<string, string>,
+  prefix: string
+): [string, string][] =>
+  Object.entries(items).flatMap(([key, value]) =>
+    key.startsWith(prefix) ? [[key.substring(prefix.length), value]] : []
+  )

@@ -42,6 +42,11 @@ Default.args = {
             symbol: 'ATOM',
             imageUrl:
               'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Native,
+              denomOrAddress: 'uatom',
+            },
           },
           balance: '984129741',
         },
@@ -53,6 +58,11 @@ Default.args = {
             decimals: 6,
             symbol: 'DAO',
             imageUrl: '/daodao.png',
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Cw20,
+              denomOrAddress: 'junoCw20DaoAddress',
+            },
           },
           balance: '87345102989851',
         },
@@ -64,6 +74,11 @@ Default.args = {
             decimals: 6,
             symbol: 'SOME-CW20',
             imageUrl: getFallbackImage(),
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Cw20,
+              denomOrAddress: 'junoAnotherCw20',
+            },
           },
           balance: '87345102989851',
         },

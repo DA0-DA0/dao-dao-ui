@@ -18,8 +18,8 @@ import {
 
 import { NestedActionsEditorFormData } from './actions'
 import { Coin, CosmosMsgFor_Empty } from './contracts'
-import { LoadingData } from './stateless'
-import { ProcessedTQ } from './utils'
+import { LoadingData } from './misc'
+import { ProcessedTQ } from './proposal'
 
 export { ProposalV1Beta1, ProposalV1 }
 
@@ -141,7 +141,7 @@ export type AllGovParams = Pick<
   threshold: number
   vetoThreshold: number
   minInitialDepositRatio: number
-}
+} & Partial<Pick<GovParamsV1, 'expeditedMinDeposit'>>
 
 export const GOVERNANCE_PROPOSAL_TYPES = [
   TextProposal,
@@ -155,8 +155,8 @@ export const GOVERNANCE_PROPOSAL_TYPE_CUSTOM = 'CUSTOM'
 
 export type GovernanceProposalActionData = {
   chainId: string
-  // If true, will hide title, description, and deposit.
-  _onlyShowActions?: boolean
+  // The address of the chain's gov module. Loaded in the background.
+  govModuleAddress?: string
   version: GovProposalVersion
   title: string
   description: string
@@ -184,6 +184,8 @@ export type GovernanceProposalActionData = {
   // without causing infinite loops.
   // GovProposalV1Beta1DecodedContent
   legacyContent: any
-  // V1 proposals require a metadata.json file to be uploaded to IPFS.
-  metadataCid: string
+  // V1 proposals have an expedited flag.
+  expedited: boolean
+  // V1 proposals support wrapping legacy content.
+  useV1LegacyContent: boolean
 } & NestedActionsEditorFormData

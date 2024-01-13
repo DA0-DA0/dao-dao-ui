@@ -1,6 +1,9 @@
 import { ProposalModuleAdapter } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { DaoProposalMultipleAdapterId } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  DaoProposalMultipleAdapterId,
+} from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -8,6 +11,7 @@ import {
   makeDepositInfoSelector,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
+  proposalCountSelector,
   reverseProposalInfosSelector,
 } from './common'
 import {
@@ -18,12 +22,16 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import { CONTRACT_NAMES } from './constants'
 import { getInstantiateInfo } from './daoCreation'
-import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
+  useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
@@ -36,7 +44,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalMultipleAdapterId,
-  contractNames: CONTRACT_NAMES,
+  contractNames: DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
@@ -44,7 +52,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       chainId: options.chain.chain_id,
       proposalModuleAddress: options.proposalModule.address,
       version: options.proposalModule.version,
-      preProposeAddress: options.proposalModule.preProposeAddress,
+      preProposeAddress: options.proposalModule.prePropose?.address ?? null,
     })
 
     const usePublishProposal = makeUsePublishProposal({
@@ -66,6 +74,10 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
       // Selectors
       selectors: {
+        proposalCount: proposalCountSelector({
+          chainId: options.chain.chain_id,
+          proposalModuleAddress: options.proposalModule.address,
+        }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
             chainId: options.chain.chain_id,
@@ -109,8 +121,15 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
+      useLoadingProposalStatus,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
+
+      // No multiple choice approval flow yet.
+      useLoadingPreProposeApprovalProposal: () => ({
+        loading: false,
+        data: undefined,
+      }),
     },
 
     // Components
@@ -134,7 +153,8 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   },
 
   functions: {
-    fetchPreProposeAddress,
+    fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

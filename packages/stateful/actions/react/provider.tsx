@@ -1,10 +1,13 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
 import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
+  ErrorPage,
   Loader,
+  PageLoader,
+  useCachedLoadingWithError,
   useChain,
   useChainContext,
   useDaoInfoContext,
@@ -54,7 +57,6 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     chainContext: {
       type: ActionChainContextType.Supported,
       ...chainContext,
-      ...chainContext.config,
     },
     address: info.coreAddress,
     context: {
@@ -92,9 +94,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     [chainContext.chain, info.coreAddress, info.proposalModules]
   )
 
-  const loadingWidgets = useWidgets({
-    suspendWhileLoading: true,
-  })
+  const loadingWidgets = useWidgets()
   const loadedWidgets = loadingWidgets.loading ? undefined : loadingWidgets.data
   // Memoize this so we don't reconstruct the action makers on every render. The
   // React components often need to access data from the widget values object so
@@ -144,22 +144,23 @@ export const BaseActionsProvider = ({
   const { t } = useTranslation()
 
   const chainContext = useChainContext()
-  const actionChainContext: ActionChainContext | undefined = chainContext.base
-    ? {
-        type: ActionChainContextType.Base,
-        ...chainContext,
-        config: chainContext.base,
-      }
-    : chainContext.config
+  const actionChainContext: ActionChainContext = chainContext.config
     ? {
         type: ActionChainContextType.Supported,
         ...chainContext,
+        // Type-check.
         config: chainContext.config,
       }
-    : undefined
-  if (!actionChainContext) {
-    throw new Error('Invalid chain context')
-  }
+    : chainContext.base
+    ? {
+        type: ActionChainContextType.Configured,
+        ...chainContext,
+        config: chainContext.base,
+      }
+    : {
+        type: ActionChainContextType.Any,
+        ...chainContext,
+      }
 
   const options: ActionOptions = {
     t,
@@ -211,8 +212,9 @@ export const WalletActionsProvider = ({
 }
 
 export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
+  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const [govAddress, params] = useRecoilValue(
+  const govDataLoading = useCachedLoadingWithError(
     waitForAll([
       moduleAddressSelector({
         name: 'gov',
@@ -224,12 +226,20 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
     ])
   )
 
-  return (
+  return govDataLoading.loading ? (
+    <PageLoader />
+  ) : govDataLoading.errored ? (
+    <ErrorPage title={t('error.unexpectedError')}>
+      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+        {govDataLoading.error.message}
+      </pre>
+    </ErrorPage>
+  ) : (
     <BaseActionsProvider
-      address={govAddress}
+      address={govDataLoading.data[0]}
       context={{
         type: ActionContextType.Gov,
-        params,
+        params: govDataLoading.data[1],
       }}
     >
       {children}

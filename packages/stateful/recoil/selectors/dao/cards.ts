@@ -7,7 +7,7 @@ import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
-  isContractSelector,
+  isDaoSelector,
 } from '@dao-dao/state'
 import {
   ContractVersion,
@@ -28,6 +28,7 @@ import {
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  CHAIN_SUBDAOS,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -130,16 +131,9 @@ export const daoCardInfoSelector = selectorFamily<
             }
           } else if (
             get(
-              isContractSelector({
-                contractAddress: admin,
+              isDaoSelector({
+                address: admin,
                 chainId,
-                names: [
-                  // V1
-                  'cw-core',
-                  // V2
-                  'cwd-core',
-                  'dao-core',
-                ],
               })
             )
           ) {
@@ -202,6 +196,7 @@ export const daoCardInfoSelector = selectorFamily<
             addressIsModuleSelector({
               chainId,
               address: admin,
+              moduleName: 'gov',
             })
           )
         ) {
@@ -214,7 +209,7 @@ export const daoCardInfoSelector = selectorFamily<
             name: getDisplayNameForChainId(chainId),
             imageUrl: getImageUrlForChainId(chainId),
             admin: '',
-            registeredSubDao: false,
+            registeredSubDao: !!CHAIN_SUBDAOS[chainId]?.includes(coreAddress),
           }
         }
       }

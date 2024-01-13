@@ -2,11 +2,11 @@ import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { Duration } from '@dao-dao/types/contracts/common'
 import {
   StakingModalProps,
   StakingMode,
-} from '@dao-dao/types/stateless/StakingModal'
+} from '@dao-dao/types/components/StakingModal'
+import { Duration } from '@dao-dao/types/contracts/common'
 import { durationIsNonZero, humanReadableDuration } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
@@ -21,7 +21,7 @@ import { Tooltip } from '../tooltip/Tooltip'
 import { ValidatorPicker } from '../ValidatorPicker'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 
-export * from '@dao-dao/types/stateless/StakingModal'
+export * from '@dao-dao/types/components/StakingModal'
 
 export const StakingModal = ({
   initialMode,

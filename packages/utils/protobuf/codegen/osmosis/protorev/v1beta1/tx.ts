@@ -15,9 +15,9 @@ export interface MsgSetHotRoutesProtoMsg {
 /** MsgSetHotRoutes defines the Msg/SetHotRoutes request type. */
 export interface MsgSetHotRoutesAmino {
   /** admin is the account that is authorized to set the hot routes. */
-  admin: string;
+  admin?: string;
   /** hot_routes is the list of hot routes to set. */
-  hot_routes: TokenPairArbRoutesAmino[];
+  hot_routes?: TokenPairArbRoutesAmino[];
 }
 export interface MsgSetHotRoutesAminoMsg {
   type: "osmosis/MsgSetHotRoutes";
@@ -59,12 +59,12 @@ export interface MsgSetDeveloperAccountProtoMsg {
 /** MsgSetDeveloperAccount defines the Msg/SetDeveloperAccount request type. */
 export interface MsgSetDeveloperAccountAmino {
   /** admin is the account that is authorized to set the developer account. */
-  admin: string;
+  admin?: string;
   /**
    * developer_account is the account that will receive a portion of the profits
    * from the protorev module.
    */
-  developer_account: string;
+  developer_account?: string;
 }
 export interface MsgSetDeveloperAccountAminoMsg {
   type: "osmosis/MsgSetDeveloperAccount";
@@ -112,7 +112,7 @@ export interface MsgSetInfoByPoolTypeProtoMsg {
 /** MsgSetInfoByPoolType defines the Msg/SetInfoByPoolType request type. */
 export interface MsgSetInfoByPoolTypeAmino {
   /** admin is the account that is authorized to set the pool weights. */
-  admin: string;
+  admin?: string;
   /** info_by_pool_type contains information about the pool types. */
   info_by_pool_type?: InfoByPoolTypeAmino | undefined;
 }
@@ -156,12 +156,12 @@ export interface MsgSetMaxPoolPointsPerTxProtoMsg {
 /** MsgSetMaxPoolPointsPerTx defines the Msg/SetMaxPoolPointsPerTx request type. */
 export interface MsgSetMaxPoolPointsPerTxAmino {
   /** admin is the account that is authorized to set the max pool points per tx. */
-  admin: string;
+  admin?: string;
   /**
    * max_pool_points_per_tx is the maximum number of pool points that can be
    * consumed per transaction.
    */
-  max_pool_points_per_tx: string;
+  max_pool_points_per_tx?: string;
 }
 export interface MsgSetMaxPoolPointsPerTxAminoMsg {
   type: "osmosis/MsgSetMaxPoolPointsPerTx";
@@ -224,12 +224,12 @@ export interface MsgSetMaxPoolPointsPerBlockAmino {
    * admin is the account that is authorized to set the max pool points per
    * block.
    */
-  admin: string;
+  admin?: string;
   /**
    * max_pool_points_per_block is the maximum number of pool points that can be
    * consumed per block.
    */
-  max_pool_points_per_block: string;
+  max_pool_points_per_block?: string;
 }
 export interface MsgSetMaxPoolPointsPerBlockAminoMsg {
   type: "osmosis/MsgSetPoolWeights";
@@ -280,9 +280,9 @@ export interface MsgSetBaseDenomsProtoMsg {
 /** MsgSetBaseDenoms defines the Msg/SetBaseDenoms request type. */
 export interface MsgSetBaseDenomsAmino {
   /** admin is the account that is authorized to set the base denoms. */
-  admin: string;
+  admin?: string;
   /** base_denoms is the list of base denoms to set. */
-  base_denoms: BaseDenomAmino[];
+  base_denoms?: BaseDenomAmino[];
 }
 export interface MsgSetBaseDenomsAminoMsg {
   type: "osmosis/MsgSetBaseDenoms";
@@ -351,10 +351,12 @@ export const MsgSetHotRoutes = {
     return message;
   },
   fromAmino(object: MsgSetHotRoutesAmino): MsgSetHotRoutes {
-    return {
-      admin: object.admin,
-      hotRoutes: Array.isArray(object?.hot_routes) ? object.hot_routes.map((e: any) => TokenPairArbRoutes.fromAmino(e)) : []
-    };
+    const message = createBaseMsgSetHotRoutes();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    message.hotRoutes = object.hot_routes?.map(e => TokenPairArbRoutes.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgSetHotRoutes, useInterfaces: boolean = false): MsgSetHotRoutesAmino {
     const obj: any = {};
@@ -415,7 +417,8 @@ export const MsgSetHotRoutesResponse = {
     return message;
   },
   fromAmino(_: MsgSetHotRoutesResponseAmino): MsgSetHotRoutesResponse {
-    return {};
+    const message = createBaseMsgSetHotRoutesResponse();
+    return message;
   },
   toAmino(_: MsgSetHotRoutesResponse, useInterfaces: boolean = false): MsgSetHotRoutesResponseAmino {
     const obj: any = {};
@@ -487,10 +490,14 @@ export const MsgSetDeveloperAccount = {
     return message;
   },
   fromAmino(object: MsgSetDeveloperAccountAmino): MsgSetDeveloperAccount {
-    return {
-      admin: object.admin,
-      developerAccount: object.developer_account
-    };
+    const message = createBaseMsgSetDeveloperAccount();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.developer_account !== undefined && object.developer_account !== null) {
+      message.developerAccount = object.developer_account;
+    }
+    return message;
   },
   toAmino(message: MsgSetDeveloperAccount, useInterfaces: boolean = false): MsgSetDeveloperAccountAmino {
     const obj: any = {};
@@ -547,7 +554,8 @@ export const MsgSetDeveloperAccountResponse = {
     return message;
   },
   fromAmino(_: MsgSetDeveloperAccountResponseAmino): MsgSetDeveloperAccountResponse {
-    return {};
+    const message = createBaseMsgSetDeveloperAccountResponse();
+    return message;
   },
   toAmino(_: MsgSetDeveloperAccountResponse, useInterfaces: boolean = false): MsgSetDeveloperAccountResponseAmino {
     const obj: any = {};
@@ -619,10 +627,14 @@ export const MsgSetInfoByPoolType = {
     return message;
   },
   fromAmino(object: MsgSetInfoByPoolTypeAmino): MsgSetInfoByPoolType {
-    return {
-      admin: object.admin,
-      infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
-    };
+    const message = createBaseMsgSetInfoByPoolType();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.info_by_pool_type !== undefined && object.info_by_pool_type !== null) {
+      message.infoByPoolType = InfoByPoolType.fromAmino(object.info_by_pool_type);
+    }
+    return message;
   },
   toAmino(message: MsgSetInfoByPoolType, useInterfaces: boolean = false): MsgSetInfoByPoolTypeAmino {
     const obj: any = {};
@@ -679,7 +691,8 @@ export const MsgSetInfoByPoolTypeResponse = {
     return message;
   },
   fromAmino(_: MsgSetInfoByPoolTypeResponseAmino): MsgSetInfoByPoolTypeResponse {
-    return {};
+    const message = createBaseMsgSetInfoByPoolTypeResponse();
+    return message;
   },
   toAmino(_: MsgSetInfoByPoolTypeResponse, useInterfaces: boolean = false): MsgSetInfoByPoolTypeResponseAmino {
     const obj: any = {};
@@ -751,10 +764,14 @@ export const MsgSetMaxPoolPointsPerTx = {
     return message;
   },
   fromAmino(object: MsgSetMaxPoolPointsPerTxAmino): MsgSetMaxPoolPointsPerTx {
-    return {
-      admin: object.admin,
-      maxPoolPointsPerTx: BigInt(object.max_pool_points_per_tx)
-    };
+    const message = createBaseMsgSetMaxPoolPointsPerTx();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.max_pool_points_per_tx !== undefined && object.max_pool_points_per_tx !== null) {
+      message.maxPoolPointsPerTx = BigInt(object.max_pool_points_per_tx);
+    }
+    return message;
   },
   toAmino(message: MsgSetMaxPoolPointsPerTx, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxAmino {
     const obj: any = {};
@@ -811,7 +828,8 @@ export const MsgSetMaxPoolPointsPerTxResponse = {
     return message;
   },
   fromAmino(_: MsgSetMaxPoolPointsPerTxResponseAmino): MsgSetMaxPoolPointsPerTxResponse {
-    return {};
+    const message = createBaseMsgSetMaxPoolPointsPerTxResponse();
+    return message;
   },
   toAmino(_: MsgSetMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxResponseAmino {
     const obj: any = {};
@@ -883,10 +901,14 @@ export const MsgSetMaxPoolPointsPerBlock = {
     return message;
   },
   fromAmino(object: MsgSetMaxPoolPointsPerBlockAmino): MsgSetMaxPoolPointsPerBlock {
-    return {
-      admin: object.admin,
-      maxPoolPointsPerBlock: BigInt(object.max_pool_points_per_block)
-    };
+    const message = createBaseMsgSetMaxPoolPointsPerBlock();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.max_pool_points_per_block !== undefined && object.max_pool_points_per_block !== null) {
+      message.maxPoolPointsPerBlock = BigInt(object.max_pool_points_per_block);
+    }
+    return message;
   },
   toAmino(message: MsgSetMaxPoolPointsPerBlock, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockAmino {
     const obj: any = {};
@@ -943,7 +965,8 @@ export const MsgSetMaxPoolPointsPerBlockResponse = {
     return message;
   },
   fromAmino(_: MsgSetMaxPoolPointsPerBlockResponseAmino): MsgSetMaxPoolPointsPerBlockResponse {
-    return {};
+    const message = createBaseMsgSetMaxPoolPointsPerBlockResponse();
+    return message;
   },
   toAmino(_: MsgSetMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockResponseAmino {
     const obj: any = {};
@@ -1015,10 +1038,12 @@ export const MsgSetBaseDenoms = {
     return message;
   },
   fromAmino(object: MsgSetBaseDenomsAmino): MsgSetBaseDenoms {
-    return {
-      admin: object.admin,
-      baseDenoms: Array.isArray(object?.base_denoms) ? object.base_denoms.map((e: any) => BaseDenom.fromAmino(e)) : []
-    };
+    const message = createBaseMsgSetBaseDenoms();
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    message.baseDenoms = object.base_denoms?.map(e => BaseDenom.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgSetBaseDenoms, useInterfaces: boolean = false): MsgSetBaseDenomsAmino {
     const obj: any = {};
@@ -1079,7 +1104,8 @@ export const MsgSetBaseDenomsResponse = {
     return message;
   },
   fromAmino(_: MsgSetBaseDenomsResponseAmino): MsgSetBaseDenomsResponse {
-    return {};
+    const message = createBaseMsgSetBaseDenomsResponse();
+    return message;
   },
   toAmino(_: MsgSetBaseDenomsResponse, useInterfaces: boolean = false): MsgSetBaseDenomsResponseAmino {
     const obj: any = {};

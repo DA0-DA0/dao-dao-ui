@@ -240,3 +240,31 @@ export const FilmSlateEmoji = () => (
 export const PrinterEmoji = () => (
   <EmojiWrapper emoji="🖨️" labelI18nKey="emoji.printer" />
 )
+
+export const BalanceEmoji = () => (
+  <EmojiWrapper emoji="⚖️" labelI18nKey="emoji.balance" />
+)
+
+export const RocketShipEmoji = () => (
+  <EmojiWrapper emoji="🚀" labelI18nKey="emoji.rocketShip" />
+)
+
+export const AtomEmoji = () => (
+  <EmojiWrapper emoji="⚛️" labelI18nKey="emoji.atom" />
+)
+
+export const PersonRaisingHandEmoji = () => (
+  <EmojiWrapper emoji="🙋" labelI18nKey="emoji.personRaisingHand" />
+)
+
+export const ControlKnobsEmoji = () => (
+  <EmojiWrapper emoji="🎛️" labelI18nKey="emoji.controlKnobs" />
+)
+
+export const ThumbDownEmoji = () => (
+  <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" />
+)
+
+export const ComputerDiskEmoji = () => (
+  <EmojiWrapper emoji="💽" labelI18nKey="emoji.computerDisk" />
+)

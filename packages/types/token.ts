@@ -1,20 +1,26 @@
 import { ComponentType } from 'react'
 
-import { Validator } from './chain'
-import { AmountWithTimestamp } from './state'
+import { Account } from './account'
+import { ChainId, Validator } from './chain'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
   ButtonPopupSectionButton,
-  LoadingData,
   StatefulEntityDisplayProps,
-} from './stateless'
+} from './components'
+import { TokenInfoResponse } from './contracts/Cw20Base'
+import { LoadingData, LoadingDataWithError } from './misc'
 
 export enum TokenType {
   Native = 'native',
   Cw20 = 'cw20',
   Cw721 = 'cw721',
 }
+
+export type GenericTokenSource = Pick<
+  GenericToken,
+  'chainId' | 'type' | 'denomOrAddress'
+>
 
 // A native or CW20 token.
 export type GenericToken = {
@@ -25,6 +31,9 @@ export type GenericToken = {
   symbol: string
   decimals: number
   imageUrl: string | undefined
+  // The source chain and base denom. For IBC assets, this should differ from
+  // the main fields.
+  source: GenericTokenSource
 }
 
 export type GenericTokenWithUsdPrice = {
@@ -36,7 +45,14 @@ export type GenericTokenWithUsdPrice = {
 export type GenericTokenBalance = {
   token: GenericToken
   balance: string
+  // Whether or not this is the governance token in the related context.
   isGovernanceToken?: boolean
+  // Whether or not this is staked.
+  staked?: boolean
+}
+
+export type GenericTokenBalanceWithOwner = GenericTokenBalance & {
+  owner: Account
 }
 
 export type LooseGenericToken = Pick<
@@ -69,7 +85,7 @@ export type TokenStake = {
 }
 
 export type TokenCardLazyInfo = {
-  usdUnitPrice: AmountWithTimestamp | undefined
+  usdUnitPrice: GenericTokenWithUsdPrice | undefined
   stakingInfo:
     | {
         unstakingTasks: UnstakingTask[]
@@ -93,7 +109,7 @@ export type TokenCardLazyInfo = {
 }
 
 export type TokenCardInfo = {
-  owner: string
+  owner: Account
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string
@@ -101,6 +117,8 @@ export type TokenCardInfo = {
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
+  // If defined, adds a color indicator.
+  color?: string
 }
 
 export type TokenCardProps = TokenCardInfo & {
@@ -121,4 +139,41 @@ export type TokenCardProps = TokenCardInfo & {
 export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
   transparentBackground?: boolean
   TokenCard: ComponentType<T>
+}
+
+// Map chain ID to loading tokens on that chain.
+export type LoadingTokens<T extends TokenCardInfo = TokenCardInfo> = Partial<
+  Record<ChainId | string, LoadingDataWithError<T[]>>
+>
+
+export type DaoTokenCardProps = TokenCardInfo & {
+  // Hide extra actions, like stake, unstake, and claim.
+  noExtraActions?: boolean
+}
+
+/**
+ * Packet-forward-middleware memo field for transfer messages.
+ * (https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware#intermediate-receivers)
+ */
+export type PfmMemo = {
+  forward: {
+    receiver: string
+    port: string
+    channel: string
+    timeout?: string
+    retries?: number
+    // Parsed from JSON-stringified PfmMemo if needed (field can be a JSON
+    // string or an object).
+    next?: PfmMemo
+  }
+}
+
+export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
+  address: string
+  logoUrl?: string
+}
+
+export type AmountWithTimestamp = {
+  amount: number
+  timestamp: Date
 }

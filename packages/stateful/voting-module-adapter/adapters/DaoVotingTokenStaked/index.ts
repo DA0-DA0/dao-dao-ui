@@ -1,11 +1,15 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 
+import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DaoVotingTokenStakedAdapterId } from '@dao-dao/utils'
+import {
+  DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
+  DaoVotingTokenStakedAdapterId,
+} from '@dao-dao/utils'
 
 import {
   makeMintAction,
@@ -17,10 +21,7 @@ import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
-  contractNames: [
-    // V2.3.0
-    'dao-voting-token-staked',
-  ],
+  contractNames: DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks
@@ -32,6 +33,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
 
     // Components
     components: {
+      DaoInfoBarLoader: DaoInfoBarTokenLoader,
       ProfileCardMemberInfo,
       StakingModal,
 

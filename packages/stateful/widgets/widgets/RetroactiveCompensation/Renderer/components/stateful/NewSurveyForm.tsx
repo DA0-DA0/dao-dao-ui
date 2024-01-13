@@ -41,9 +41,16 @@ export const NewSurveyForm = () => {
   // the first time when the initial data is still loading.
   const availableTokensLoading = useCachedLoading(
     genericTokenBalancesSelector({
-      address: coreAddress,
       chainId,
+      address: coreAddress,
       cw20GovernanceTokenAddress: governanceTokenAddress,
+      // Only load tokens in native account.
+      filter: {
+        account: {
+          chainId,
+          address: coreAddress,
+        },
+      },
     }),
     []
   )

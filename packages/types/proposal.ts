@@ -1,6 +1,8 @@
-import { CosmosMsgFor_Empty } from './contracts'
-import { ProposalCardProps } from './stateless/ProposalCard'
-import { PolytoneConnection } from './utils'
+import { PolytoneConnection } from './chain'
+import { ProposalCardProps } from './components/ProposalCard'
+import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
+import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
+import { DurationWithUnits } from './units'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,
@@ -44,3 +46,86 @@ export type DecodedPolytoneMsgNoMatch = {
 export type DecodedPolytoneMsg =
   | DecodedPolytoneMsgNoMatch
   | DecodedPolytoneMsgMatch
+
+export type DecodedIcaMsgMatch = {
+  match: true
+  chainId: string
+  // The first message, or undefined if none.
+  msgWithSender:
+    | {
+        sender: string
+        msg: Record<string, any>
+      }
+    | undefined
+  // The first message, or undefined if none.
+  cosmosMsgWithSender:
+    | {
+        sender: string
+        msg: CosmosMsgFor_Empty
+      }
+    | undefined
+  // All messages.
+  msgsWithSenders: {
+    sender: string
+    msg: Record<string, any>
+  }[]
+  cosmosMsgsWithSenders: {
+    sender: string
+    msg: CosmosMsgFor_Empty
+  }[]
+}
+
+export type DecodedIcaMsgNoMatch = {
+  match: false
+}
+
+export type DecodedIcaMsg = DecodedIcaMsgNoMatch | DecodedIcaMsgMatch
+
+export enum ProcessedTQType {
+  Majority,
+  Absolute,
+  Percent,
+}
+
+export type ProcessedTQ = { display: string } & (
+  | { type: ProcessedTQType.Majority }
+  | { type: ProcessedTQType.Absolute | ProcessedTQType.Percent; value: number }
+)
+
+export type ProcessedThresholdQuorum = {
+  threshold: ProcessedTQ
+  quorum?: ProcessedTQ
+}
+
+export type ProcessedQuorum = {
+  quorum: ProcessedTQ
+}
+
+export enum ApprovalProposalContextType {
+  Approval = 'approval',
+  Approver = 'approver',
+}
+
+export type ApprovalProposalContext =
+  | {
+      type: ApprovalProposalContextType.Approval
+      status: PreProposeApprovalProposalStatus
+    }
+  | {
+      type: ApprovalProposalContextType.Approver
+      status: ProposalStatus
+    }
+
+export type ProposalVetoConfig = {
+  enabled: boolean
+  addresses: {
+    address: string
+  }[]
+  // If there are multiple addresses, this must be set to the cw1-whitelist
+  // contract from the list of addresses. If there is only one address, then
+  // this should be undefined.
+  cw1WhitelistAddress: string | undefined
+  timelockDuration: DurationWithUnits
+  earlyExecute: boolean
+  vetoBeforePassed: boolean
+}

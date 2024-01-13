@@ -19,7 +19,6 @@ import {
   NumberInput,
   SegmentedControls,
   TextInput,
-  VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
   useCachedLoading,
@@ -32,12 +31,12 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
+  DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
-  isValidTokenFactoryDenom,
-  makeValidateNativeOrFactoryTokenDenom,
-  nativeTokenExists,
+  isValidNativeTokenDenom,
+  validateNativeTokenDenom,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -195,10 +194,8 @@ export const GovernanceConfigurationInput = ({
 
   //! Validate existing governance token.
   const governanceTokenIsValid =
-    // Native token.
-    nativeTokenExists(chainId, data.existingTokenDenom) ||
-    // Factory token.
-    isValidTokenFactoryDenom(data.existingTokenDenom, bech32Prefix)
+    !!data.existingTokenDenom &&
+    isValidNativeTokenDenom(data.existingTokenDenom)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
     governanceTokenIsValid
       ? genericTokenSelector({
@@ -211,7 +208,8 @@ export const GovernanceConfigurationInput = ({
   const existingGovernanceTokenSupply = useRecoilValueLoadable<
     TokenInfoResponse | number | undefined
   >(
-    governanceTokenIsValid
+    existingGovernanceTokenLoadable.state === 'hasValue' &&
+      existingGovernanceTokenLoadable.contents
       ? nativeSupplySelector({
           chainId,
           denom: data.existingTokenDenom,
@@ -273,20 +271,14 @@ export const GovernanceConfigurationInput = ({
           // Governance token-based DAO tier weights are split amongst members.
           votingPowerPercent:
             data.tiers[0].weight / data.tiers[0].members.length,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length],
         }))
       : // Displaying entire tier as one pie wedge.
         data.tiers.map(({ name, weight }, tierIndex) => ({
           label: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
           // Governance token-based DAO tier weights are split amongst members.
           votingPowerPercent: weight,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
         }))),
     {
       label: t('title.treasury'),
@@ -532,12 +524,9 @@ export const GovernanceConfigurationInput = ({
                 error={errors.creator?.data?.existingTokenDenom}
                 fieldName="creator.data.existingTokenDenom"
                 ghost
-                placeholder={`"denom" OR "factory/${bech32Prefix}.../denom"`}
+                placeholder={`"denom" OR "ibc/HASH" OR "factory/${bech32Prefix}.../denom"`}
                 register={register}
-                validation={[
-                  validateRequired,
-                  makeValidateNativeOrFactoryTokenDenom(chainId),
-                ]}
+                validation={[validateRequired, validateNativeTokenDenom]}
               />
               <InputErrorMessage
                 error={

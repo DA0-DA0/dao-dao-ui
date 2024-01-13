@@ -1,48 +1,56 @@
 import {
-  ArrowDropDown,
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { ibc } from 'chain-registry'
+import { MultiChainMsg } from '@skip-router/core'
 import clsx from 'clsx'
-import {
-  ComponentType,
-  RefAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react'
+import { ComponentType, RefAttributes, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
+  ChainLogo,
   ChainProvider,
-  FilterableItemPopup,
+  FormSwitchCard,
+  IbcDestinationChainPicker,
   InputErrorMessage,
+  InputLabel,
+  Loader,
   TokenAmountDisplay,
   TokenInput,
+  WarningCard,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
   Entity,
   EntityType,
-  GenericTokenBalance,
+  GenericToken,
+  GenericTokenBalanceWithOwner,
   LoadingData,
+  LoadingDataWithError,
+  TokenType,
 } from '@dao-dao/types'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import {
+  ActionComponent,
+  ActionContextType,
+  ActionKey,
+} from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
+  getAccountAddress,
   getChainForChainId,
-  getChainForChainName,
-  getImageUrlForChainId,
+  getDisplayNameForChainId,
+  getSupportedChainConfig,
   makeValidateAddress,
-  maybeGetChainForChainName,
-  toAccessibleImageUrl,
+  processError,
   transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
+import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import { useActionOptions } from '../../../react'
 
@@ -51,16 +59,43 @@ export interface SpendData {
   // If same as chainId, then normal spend or CW20 transfer. Otherwise, IBC
   // transfer.
   toChainId: string
+  // Address with the tokens. This is needed since there may be multiple
+  // accounts controlled by the DAO on the same chain.
+  from: string
   to: string
   amount: number
   denom: string
 
+  // If true, will not use the PFM optimized path from Skip.
+  useDirectIbcPath?: boolean
+
   _error?: string
+
+  // Defined once loaded for IBC transfers. Needed for transforming.
+  _skipIbcTransferMsg?: LoadingDataWithError<MultiChainMsg>
+
+  // Loaded from IBC transfer message on decode.
+  _ibcData?: {
+    sourceChannel: string
+    // Loaded for packet-forwarding-middleware detection after creation (likely
+    // created using Skip's router API).
+    pfmMemo?: string
+  }
 }
 
 export interface SpendOptions {
-  tokens: LoadingData<GenericTokenBalance[]>
+  tokens: LoadingData<GenericTokenBalanceWithOwner[]>
   currentEntity: Entity | undefined
+  // If this is an IBC transfer, this is the path of chains.
+  ibcPath: LoadingDataWithError<string[]>
+  // If this is an IBC transfer and a multi-TX route exists that unwinds the
+  // tokens correctly but doesn't use PFM, this is the better path.
+  betterNonPfmIbcPath: LoadingData<string[] | undefined>
+  // If this is an IBC transfer, these are the chains with missing accounts.
+  missingAccountChainIds?: string[]
+  // If this spend is Noble USDC and leaves Noble at some point, these are the
+  // fee settings.
+  nobleTariff: LoadingDataWithError<NobleTariffParams | undefined>
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -71,10 +106,23 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { tokens, currentEntity, AddressInput },
+  options: {
+    tokens,
+    currentEntity,
+    ibcPath,
+    betterNonPfmIbcPath,
+    missingAccountChainIds,
+    nobleTariff,
+    AddressInput,
+  },
+  addAction,
+  remove,
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const {
+    context,
+    chain: { chain_id: mainChainId },
+  } = useActionOptions()
 
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
@@ -82,10 +130,21 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
+  const from = watch((fieldNamePrefix + 'from') as 'from')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
+  const useDirectIbcPath = watch(
+    (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+  )
 
-  const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
+  // Cannot send to a different chain from the gov module.
+  const toChainId =
+    context.type === ActionContextType.Gov
+      ? spendChainId
+      : watch((fieldNamePrefix + 'toChainId') as 'toChainId')
   const toChain = getChainForChainId(toChainId)
+
+  // IBC transfer if destination chain ID is different from source chain ID.
+  const isIbc = spendChainId !== toChainId
 
   // On destination chain ID change, update address intelligently.
   useEffect(() => {
@@ -97,8 +156,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       !recipient ||
       // Do nothing for module accounts as they only exist on the current chain.
       currentEntity.type === EntityType.Module ||
-      // Wallet on current chain
-      (currentEntity.type === EntityType.Wallet ||
+      // Non-DAO on current chain.
+      (currentEntity.type !== EntityType.Dao ||
       // DAO on native chain (core contract address).
       !currentEntity.polytoneProxy
         ? recipient !== currentEntity.address
@@ -108,7 +167,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       return
     }
 
-    let newRecipient: string
+    let newRecipient: string | undefined
 
     // Convert wallet address to destination chain's format.
     if (currentEntity.type === EntityType.Wallet) {
@@ -119,53 +178,26 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
     // account on the destination chain.
-    else {
+    else if (currentEntity.type === EntityType.Dao) {
       newRecipient =
-        toChain.chain_id === currentEntity.chainId
-          ? currentEntity.address
-          : toChain.chain_id in currentEntity.daoInfo.polytoneProxies
-          ? currentEntity.daoInfo.polytoneProxies[toChain.chain_id]
-          : ''
+        getAccountAddress({
+          accounts: currentEntity.daoInfo.accounts,
+          chainId: toChain.chain_id,
+        }) || ''
     }
 
-    if (newRecipient !== recipient) {
+    if (newRecipient && newRecipient !== recipient) {
       setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
     }
   }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])
 
-  const possibleDestinationChains = useMemo(() => {
-    const spendChain = getChainForChainId(spendChainId)
-    return [
-      spendChain,
-      ...ibc
-        .filter(
-          ({ chain_1, chain_2, channels }) =>
-            // Either chain is the source spend chain.
-            (chain_1.chain_name === spendChain.chain_name ||
-              chain_2.chain_name === spendChain.chain_name) &&
-            // Both chains exist in the registry.
-            maybeGetChainForChainName(chain_1.chain_name) &&
-            maybeGetChainForChainName(chain_2.chain_name) &&
-            // An ics20 transfer channel exists.
-            channels.some(
-              ({ chain_1, chain_2, version }) =>
-                version === 'ics20-1' &&
-                chain_1.port_id === 'transfer' &&
-                chain_2.port_id === 'transfer'
-            )
-        )
-        .map(({ chain_1, chain_2 }) => {
-          const otherChain =
-            chain_1.chain_name === spendChain.chain_name ? chain_2 : chain_1
-          return getChainForChainName(otherChain.chain_name)
-        })
-        // Remove nonexistent osmosis testnet chain.
-        .filter((chain) => chain.chain_id !== 'osmo-test-4'),
-    ]
-  }, [spendChainId])
-
   const validatePossibleSpend = useCallback(
-    (chainId: string, denom: string, amount: number): string | boolean => {
+    (
+      from: string,
+      chainId: string,
+      denom: string,
+      amount: number
+    ): string | boolean => {
       if (tokens.loading) {
         return true
       }
@@ -176,8 +208,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           : 'error.cantSpendMoreThanTreasury'
 
       const tokenBalance = tokens.data.find(
-        ({ token }) =>
-          token.chainId === chainId && token.denomOrAddress === denom
+        ({ owner, token }) =>
+          owner.address === from &&
+          token.chainId === chainId &&
+          token.denomOrAddress === denom
       )
       if (tokenBalance) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -204,11 +238,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     [context.type, t, tokens]
   )
 
-  // Update amount+denom combo error each time either field is updated
-  // instead of setting errors individually on each field. Since we only
-  // show one or the other and can't detect which error is newer, this
-  // would lead to the error not updating if amount set an error and then
-  // denom was changed.
+  // Update amount+denom combo error each time either field is updated instead
+  // of setting errors individually on each field. Since we only show one or the
+  // other and can't detect which error is newer, this would lead to the error
+  // not updating if amount set an error and then denom was changed.
   useEffect(() => {
     // Prevent infinite loops by not setting errors if already set, and only
     // clearing errors unless already set.
@@ -222,6 +255,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     }
 
     const validation = validatePossibleSpend(
+      from,
       spendChainId,
       spendDenom,
       spendAmount
@@ -247,13 +281,16 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     fieldNamePrefix,
     errors?._error,
     spendChainId,
+    from,
   ])
 
   const selectedToken = tokens.loading
     ? undefined
     : tokens.data.find(
-        ({ token }) =>
-          token.chainId === spendChainId && token.denomOrAddress === spendDenom
+        ({ owner, token }) =>
+          owner.address === from &&
+          token.chainId === spendChainId &&
+          token.denomOrAddress === spendDenom
       )
   const balance = convertMicroDenomToDenomWithDecimals(
     selectedToken?.balance ?? 0,
@@ -276,18 +313,23 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         ref={containerRef}
       >
         <TokenInput
-          amountError={errors?.amount}
-          amountFieldName={(fieldNamePrefix + 'amount') as 'amount'}
-          amountMax={balance}
-          amountMin={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
-          amountStep={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
-          onSelectToken={({ chainId, denomOrAddress }) => {
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: (fieldNamePrefix + 'amount') as 'amount',
+            error: errors?.amount,
+            min: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+            max: balance,
+            step: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+          }}
+          onSelectToken={({ type, owner, chainId, denomOrAddress }) => {
             // If chain changes and the dest chain is the same, switch it.
             if (spendChainId === toChainId && chainId !== spendChainId) {
               setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
@@ -298,19 +340,24 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               chainId
             )
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
+            setValue((fieldNamePrefix + 'from') as 'from', owner.address)
+
+            // If token is cw20, set destination chain to same as source.
+            if (type === TokenType.Cw20) {
+              setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
+            }
           }}
           readOnly={!isCreating}
-          register={register}
           selectedToken={selectedToken?.token}
-          setValue={setValue}
           showChainImage
           tokens={
             tokens.loading
               ? { loading: true }
               : {
                   loading: false,
-                  data: tokens.data.map(({ balance, token }) => ({
+                  data: tokens.data.map(({ owner, balance, token }) => ({
                     ...token,
+                    owner,
                     description:
                       t('title.balance') +
                       ': ' +
@@ -323,7 +370,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   })),
                 }
           }
-          watch={watch}
         />
 
         <div
@@ -331,7 +377,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           ref={childRef}
         >
           <div
-            className={clsx('flex flex-row items-center', wrapped && 'pl-1')}
+            className={clsx(
+              'flex flex-row items-center',
+              wrapped ? 'pl-1' : '-mr-2'
+            )}
           >
             <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
@@ -340,49 +389,26 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             className="flex grow flex-row flex-wrap items-stretch gap-1"
             ref={toContainerRef}
           >
-            {(isCreating || spendChainId !== toChainId) && (
-              <FilterableItemPopup
-                filterableItemKeys={FILTERABLE_KEYS}
-                items={possibleDestinationChains.map((chain) => ({
-                  key: chain.chain_id,
-                  label: chain.pretty_name,
-                  iconUrl: getImageUrlForChainId(chain.chain_id),
-                  iconClassName: '!h-8 !w-8',
-                  contentContainerClassName: '!gap-3',
-                }))}
-                onSelect={({ key }) =>
-                  setValue((fieldNamePrefix + 'toChainId') as 'toChainId', key)
-                }
-                searchPlaceholder={t('info.searchForChain')}
-                trigger={{
-                  type: 'button',
-                  props: {
-                    className: toWrapped ? 'grow' : undefined,
-                    contentContainerClassName:
-                      'justify-between text-icon-primary !gap-4',
-                    disabled: !isCreating,
-                    size: 'lg',
-                    variant: 'ghost_outline',
-                    children: (
-                      <>
-                        <div className="flex flex-row items-center gap-2">
-                          <div
-                            className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                            style={{
-                              backgroundImage: `url(${toAccessibleImageUrl(
-                                getImageUrlForChainId(toChainId)
-                              )})`,
-                            }}
-                          />
+            {/* Cannot send over IBC from the gov module. */}
+            {isCreating && context.type !== ActionContextType.Gov && (
+              <IbcDestinationChainPicker
+                buttonClassName={toWrapped ? 'grow' : undefined}
+                disabled={selectedToken?.token.type === TokenType.Cw20}
+                includeSourceChain
+                onSelect={(chainId) => {
+                  // Type-check. None option is disabled so should not be
+                  // possible.
+                  if (!chainId) {
+                    return
+                  }
 
-                          <p>{toChain.pretty_name}</p>
-                        </div>
-
-                        {isCreating && <ArrowDropDown className="!h-6 !w-6" />}
-                      </>
-                    ),
-                  },
+                  setValue(
+                    (fieldNamePrefix + 'toChainId') as 'toChainId',
+                    chainId
+                  )
                 }}
+                selectedChainId={toChainId}
+                sourceChainId={spendChainId}
               />
             )}
 
@@ -431,8 +457,219 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           />
         </div>
       )}
+
+      {isIbc && (
+        <div className="flex flex-col gap-4 rounded-md border-2 border-dashed border-border-primary p-4">
+          <div className="flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-2">
+            <InputLabel
+              name={t('title.ibcTransferPath')}
+              tooltip={t('info.ibcTransferPathTooltip', {
+                context:
+                  ibcPath.loading ||
+                  ibcPath.errored ||
+                  ibcPath.data.length === 2
+                    ? undefined
+                    : // If more than one hop in the path, this uses packet-forward-middleware.
+                      'pfm',
+              })}
+            />
+
+            {isCreating &&
+              ((!ibcPath.loading &&
+                !ibcPath.errored &&
+                ibcPath.data.length > 2) ||
+                useDirectIbcPath) && (
+                <FormSwitchCard
+                  fieldName={
+                    (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+                  }
+                  label={t('form.useDirectIbcPath')}
+                  setValue={setValue}
+                  sizing="sm"
+                  tooltip={t('form.useDirectIbcPathTooltip')}
+                  tooltipIconSize="sm"
+                  value={useDirectIbcPath}
+                />
+              )}
+          </div>
+
+          {ibcPath.loading ? (
+            <Loader className="!justify-start" fill={false} size={26} />
+          ) : ibcPath.errored ? (
+            <p className="body-text text-text-interactive-error">
+              {processError(ibcPath.error, {
+                forceCapture: false,
+              })}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row items-center gap-3">
+                {ibcPath.data.map((chainId, index) => (
+                  <>
+                    <div className="flex flex-row items-center gap-2">
+                      <ChainLogo chainId={chainId} />
+
+                      <p className="primary-text">
+                        {getDisplayNameForChainId(chainId)}
+                      </p>
+                    </div>
+
+                    {index !== ibcPath.data.length - 1 && (
+                      <ArrowRightAltRounded className="!h-5 !w-5 text-text-secondary" />
+                    )}
+                  </>
+                ))}
+              </div>
+
+              {isCreating &&
+                selectedToken &&
+                !nobleTariff.loading &&
+                !nobleTariff.errored &&
+                nobleTariff.data &&
+                nobleTariff.data.transferFeeDenom ===
+                  selectedToken.token.source.denomOrAddress && (
+                  <NobleTariff
+                    amount={spendAmount}
+                    params={nobleTariff.data}
+                    token={selectedToken.token}
+                  />
+                )}
+
+              {isCreating &&
+                !betterNonPfmIbcPath.loading &&
+                betterNonPfmIbcPath.data && (
+                  <WarningCard
+                    className="max-w-xl"
+                    content={
+                      <div className="flex flex-col gap-3">
+                        <p className="primary-text text-text-interactive-warning-body">
+                          {t('info.betterNonPfmIbcPathAvailable')}
+                        </p>
+
+                        <div className="flex flex-row items-center gap-3">
+                          {betterNonPfmIbcPath.data.map((chainId, index) => (
+                            <>
+                              <div className="flex flex-row items-center gap-2">
+                                <ChainLogo chainId={chainId} />
+
+                                <p className="primary-text">
+                                  {getDisplayNameForChainId(chainId)}
+                                </p>
+                              </div>
+
+                              {index !==
+                                betterNonPfmIbcPath.data!.length - 1 && (
+                                <ArrowRightAltRounded className="!h-5 !w-5 text-text-secondary" />
+                              )}
+                            </>
+                          ))}
+                        </div>
+                      </div>
+                    }
+                  />
+                )}
+
+              {isCreating && !!missingAccountChainIds?.length && (
+                <WarningCard
+                  className="max-w-xl"
+                  content={
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="primary-text text-text-interactive-warning-body">
+                        {t('info.betterPfmIbcPathAvailable', {
+                          chains: missingAccountChainIds
+                            .map((chainId) => getDisplayNameForChainId(chainId))
+                            .join(', '),
+                          count: missingAccountChainIds.length,
+                        })}
+                      </p>
+
+                      {addAction && (
+                        <Button
+                          onClick={() => {
+                            // Remove the current action.
+                            remove()
+                            // Add missing chains. Use polytone if possible, or
+                            // ICA otherwise.
+                            missingAccountChainIds.forEach((chainId) => {
+                              const hasPolytoneConnection =
+                                !!getSupportedChainConfig(mainChainId)
+                                  ?.polytone?.[chainId]
+
+                              if (hasPolytoneConnection) {
+                                addAction({
+                                  actionKey: ActionKey.CreateCrossChainAccount,
+                                  data: {
+                                    chainId,
+                                  },
+                                })
+                              } else {
+                                addAction({
+                                  actionKey: ActionKey.CreateIca,
+                                  data: {
+                                    chainId,
+                                  },
+                                })
+                                addAction({
+                                  actionKey: ActionKey.ManageIcas,
+                                  data: {
+                                    chainId,
+                                    register: true,
+                                  },
+                                })
+                              }
+                            })
+                          }}
+                        >
+                          {t('button.addAccountCreationActions')}
+                        </Button>
+                      )}
+                    </div>
+                  }
+                />
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
 
-const FILTERABLE_KEYS = ['key', 'label']
+type NobleTariffProps = {
+  token: GenericToken
+  amount: number
+  params: NobleTariffParams
+}
+
+const NobleTariff = ({
+  token: { symbol, decimals },
+  amount,
+  params: { transferFeeBps, transferFeeMax },
+}: NobleTariffProps) => {
+  const { t } = useTranslation()
+
+  const feeDecimal = Number(transferFeeBps) / 1e4
+  const maxFee = convertMicroDenomToDenomWithDecimals(transferFeeMax, decimals)
+  const fee =
+    amount && !isNaN(amount)
+      ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)
+      : 0
+
+  return (
+    <p className="secondary-text max-w-prose text-text-interactive-warning-body">
+      {t('info.nobleTariffApplied', {
+        feePercent: formatPercentOf100(feeDecimal * 100),
+        tokenSymbol: symbol,
+        maxFee: maxFee.toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+        fee: fee.toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+        output: (amount - fee).toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+      })}
+    </p>
+  )
+}

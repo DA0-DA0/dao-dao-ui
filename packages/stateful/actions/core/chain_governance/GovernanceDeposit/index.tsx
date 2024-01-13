@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/state'
 import {
   BankEmoji,
-  ChainPickerInput,
+  DaoSupportedChainPickerInput,
   Loader,
   useCachedLoading,
   useChain,
@@ -28,6 +28,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   isDecodedStargateMsg,
   makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
@@ -54,8 +55,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={() => {
@@ -63,6 +63,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
             setValue((props.fieldNamePrefix + 'proposalId') as 'proposalId', '')
             setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [])
           }}
+          onlyDaoChainIds
         />
       )}
 
@@ -191,9 +192,14 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   )
 }
 
-export const makeGovernanceDepositAction: ActionMaker<
-  GovernanceDepositData
-> = ({ t, address, chain: { chain_id: currentChainId } }) => {
+export const makeGovernanceDepositAction: ActionMaker<GovernanceDepositData> = (
+  options
+) => {
+  const {
+    t,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<GovernanceDepositData> = () => ({
     chainId: currentChainId,
     proposalId: '',
@@ -213,7 +219,7 @@ export const makeGovernanceDepositAction: ActionMaker<
               typeUrl: MsgDeposit.typeUrl,
               value: {
                 proposalId: BigInt(proposalId || '0'),
-                depositor: address,
+                depositor: getChainAddressForActionOptions(options, chainId),
                 amount: deposit.map(({ denom, amount }) => ({
                   denom,
                   amount: BigInt(amount).toString(),
@@ -242,8 +248,7 @@ export const makeGovernanceDepositAction: ActionMaker<
         amount: {},
       }) &&
       // Make sure this is a deposit message.
-      msg.stargate.typeUrl === MsgDeposit.typeUrl &&
-      msg.stargate.value.depositor === address
+      msg.stargate.typeUrl === MsgDeposit.typeUrl
       ? {
           match: true,
           data: {

@@ -7,7 +7,7 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { TokenType } from '@dao-dao/types'
+import { AccountType, TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Component'
@@ -19,6 +19,7 @@ export default {
     makeReactHookFormDecorator<SpendData>({
       fromChainId: CHAIN_ID,
       toChainId: CHAIN_ID,
+      from: '',
       to: '',
       amount: 1,
       denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
@@ -41,10 +42,20 @@ Default.args = {
       loading: false,
       data: [
         {
+          owner: {
+            type: AccountType.Native,
+            chainId: CHAIN_ID,
+            address: 'first',
+          },
           token: getNativeTokenForChainId(CHAIN_ID),
           balance: '46252349169321',
         },
         {
+          owner: {
+            type: AccountType.Native,
+            chainId: CHAIN_ID,
+            address: 'first',
+          },
           token: {
             chainId: CHAIN_ID,
             type: TokenType.Cw20,
@@ -52,10 +63,20 @@ Default.args = {
             decimals: 6,
             symbol: 'ATKN',
             imageUrl: '',
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Cw20,
+              denomOrAddress: 'cw20_1',
+            },
           },
           balance: '1284135723893',
         },
         {
+          owner: {
+            type: AccountType.Native,
+            chainId: CHAIN_ID,
+            address: 'second',
+          },
           token: {
             chainId: CHAIN_ID,
             type: TokenType.Cw20,
@@ -63,12 +84,21 @@ Default.args = {
             decimals: 6,
             symbol: 'DIFF',
             imageUrl: '',
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Cw20,
+              denomOrAddress: 'cw20_2',
+            },
           },
           balance: '102948124125',
         },
       ],
     },
     currentEntity: undefined,
+    ibcPath: { loading: true, errored: false },
+    betterNonPfmIbcPath: { loading: true },
+    missingAccountChainIds: [],
+    nobleTariff: { loading: false, errored: false, data: undefined },
     AddressInput,
   },
   isCreating: true,

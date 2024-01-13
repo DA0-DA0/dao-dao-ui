@@ -13,8 +13,8 @@ export interface SetCodeAuthorizationProposalProtoMsg {
 }
 /** @deprecated */
 export interface SetCodeAuthorizationProposalAmino {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   code_authorization?: CodeAuthorizationAmino | undefined;
 }
 export interface SetCodeAuthorizationProposalAminoMsg {
@@ -41,9 +41,9 @@ export interface RemoveCodeAuthorizationProposalProtoMsg {
 }
 /** @deprecated */
 export interface RemoveCodeAuthorizationProposalAmino {
-  title: string;
-  description: string;
-  code_id: string;
+  title?: string;
+  description?: string;
+  code_id?: string;
 }
 export interface RemoveCodeAuthorizationProposalAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal";
@@ -69,8 +69,8 @@ export interface SetContractAuthorizationProposalProtoMsg {
 }
 /** @deprecated */
 export interface SetContractAuthorizationProposalAmino {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   contract_authorization?: ContractAuthorizationAmino | undefined;
 }
 export interface SetContractAuthorizationProposalAminoMsg {
@@ -97,9 +97,9 @@ export interface RemoveContractAuthorizationProposalProtoMsg {
 }
 /** @deprecated */
 export interface RemoveContractAuthorizationProposalAmino {
-  title: string;
-  description: string;
-  contract_address: string;
+  title?: string;
+  description?: string;
+  contract_address?: string;
 }
 export interface RemoveContractAuthorizationProposalAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal";
@@ -165,11 +165,17 @@ export const SetCodeAuthorizationProposal = {
     return message;
   },
   fromAmino(object: SetCodeAuthorizationProposalAmino): SetCodeAuthorizationProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      codeAuthorization: object?.code_authorization ? CodeAuthorization.fromAmino(object.code_authorization) : undefined
-    };
+    const message = createBaseSetCodeAuthorizationProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.code_authorization !== undefined && object.code_authorization !== null) {
+      message.codeAuthorization = CodeAuthorization.fromAmino(object.code_authorization);
+    }
+    return message;
   },
   toAmino(message: SetCodeAuthorizationProposal, useInterfaces: boolean = false): SetCodeAuthorizationProposalAmino {
     const obj: any = {};
@@ -247,11 +253,17 @@ export const RemoveCodeAuthorizationProposal = {
     return message;
   },
   fromAmino(object: RemoveCodeAuthorizationProposalAmino): RemoveCodeAuthorizationProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      codeId: BigInt(object.code_id)
-    };
+    const message = createBaseRemoveCodeAuthorizationProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    return message;
   },
   toAmino(message: RemoveCodeAuthorizationProposal, useInterfaces: boolean = false): RemoveCodeAuthorizationProposalAmino {
     const obj: any = {};
@@ -329,11 +341,17 @@ export const SetContractAuthorizationProposal = {
     return message;
   },
   fromAmino(object: SetContractAuthorizationProposalAmino): SetContractAuthorizationProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      contractAuthorization: object?.contract_authorization ? ContractAuthorization.fromAmino(object.contract_authorization) : undefined
-    };
+    const message = createBaseSetContractAuthorizationProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.contract_authorization !== undefined && object.contract_authorization !== null) {
+      message.contractAuthorization = ContractAuthorization.fromAmino(object.contract_authorization);
+    }
+    return message;
   },
   toAmino(message: SetContractAuthorizationProposal, useInterfaces: boolean = false): SetContractAuthorizationProposalAmino {
     const obj: any = {};
@@ -411,11 +429,17 @@ export const RemoveContractAuthorizationProposal = {
     return message;
   },
   fromAmino(object: RemoveContractAuthorizationProposalAmino): RemoveContractAuthorizationProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      contractAddress: object.contract_address
-    };
+    const message = createBaseRemoveContractAuthorizationProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    return message;
   },
   toAmino(message: RemoveContractAuthorizationProposal, useInterfaces: boolean = false): RemoveContractAuthorizationProposalAmino {
     const obj: any = {};

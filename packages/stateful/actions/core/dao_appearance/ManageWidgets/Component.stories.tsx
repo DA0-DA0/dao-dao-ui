@@ -4,7 +4,7 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
 import { SuspenseLoader } from '../../../../components'
-import { WyndDepositWidget, getWidgets } from '../../../../widgets'
+import { PressWidget, getWidgets } from '../../../../widgets'
 import { ManageWidgetsComponent } from './Component'
 
 export default {
@@ -30,8 +30,8 @@ Default.args = {
     availableWidgets: getWidgets(CHAIN_ID),
     existingWidgets: [
       {
-        id: WyndDepositWidget.id,
-        values: WyndDepositWidget.defaultValues,
+        id: PressWidget.id,
+        values: PressWidget.defaultValues,
       },
     ],
     SuspenseLoader,

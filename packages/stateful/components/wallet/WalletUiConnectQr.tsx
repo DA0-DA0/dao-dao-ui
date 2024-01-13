@@ -1,17 +1,10 @@
 import { WalletModalProps } from '@cosmos-kit/core'
 import QRCode from 'qrcode.react'
 
-import { useWallet } from '../../hooks'
-
 export const WalletUiConnectQr = ({
   walletRepo,
 }: Pick<WalletModalProps, 'walletRepo'>) => {
-  const { isWalletConnecting } = useWallet()
-  if (
-    !walletRepo?.current ||
-    !isWalletConnecting ||
-    !walletRepo.current.qrUrl.data
-  ) {
+  if (!walletRepo?.current?.qrUrl?.data) {
     return null
   }
 

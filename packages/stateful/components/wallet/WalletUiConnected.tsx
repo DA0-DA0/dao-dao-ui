@@ -17,7 +17,7 @@ import {
   WarningCard,
 } from '@dao-dao/stateless'
 
-import { useWallet, useWalletInfo } from '../../hooks'
+import { useWalletInfo } from '../../hooks'
 
 const keplrExtensionWallet = keplrExtensionWallets[0]
 
@@ -26,18 +26,16 @@ export const WalletUiConnected = ({
 }: Pick<WalletModalProps, 'walletRepo'>) => {
   const { t } = useTranslation()
 
-  const { isWalletConnected } = useWallet()
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
 
-  if (!walletRepo?.current || !isWalletConnected) {
+  if (!walletRepo?.current?.isWalletConnected) {
     return null
   }
 
-  const isWeb3Auth =
-    isWalletConnected && walletRepo?.current?.walletName.startsWith('web3auth_')
+  const isWeb3Auth = walletRepo.current.walletName.startsWith('web3auth_')
 
   return (
     <div className="flex flex-col items-stretch gap-6">
@@ -93,7 +91,7 @@ export const WalletUiConnected = ({
         <Button
           center
           className="w-full"
-          onClick={() => walletRepo?.disconnect?.()}
+          onClick={() => walletRepo?.current?.disconnect(true)}
           size="lg"
           variant="secondary"
         >

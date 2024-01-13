@@ -1,6 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { queryIndexer } from '@dao-dao/state/indexer'
+import { DaoProposalMultipleQueryClient, queryIndexer } from '@dao-dao/state'
 import {
   CommonProposalInfo,
   ContractVersionInfo,
@@ -10,15 +10,19 @@ import {
 import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
 
-import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple.client'
-
 export const makeGetProposalInfo =
   ({
     chain: { chain_id: chainId },
     proposalModule,
     proposalNumber,
+    isPreProposeApprovalProposal,
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
+    // Multiple choice does not support pre-propose-approval right now.
+    if (isPreProposeApprovalProposal) {
+      return
+    }
+
     // Lazily connect if necessary.
     let _cosmWasmClient: CosmWasmClient
     const getCosmWasmClient = async () => {

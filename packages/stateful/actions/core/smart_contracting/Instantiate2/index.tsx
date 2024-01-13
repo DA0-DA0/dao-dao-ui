@@ -1,5 +1,5 @@
 import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { fromHex, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
@@ -10,10 +10,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
   BabyAngelEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
-import { Feature, TokenType } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -24,14 +24,19 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getAccountAddress,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makeWasmMessage,
+  isDecodedStargateMsg,
+  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
+  parseEncodedMessage,
 } from '@dao-dao/utils'
+import { MsgInstantiateContract2 } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
@@ -51,7 +56,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId, bech32_prefix: bech32Prefix },
+    chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { watch, setValue } = useFormContext<Instantiate2Data>()
@@ -82,7 +87,6 @@ const Component: ActionComponent = (props) => {
           type: TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   const instantiatedAddress =
@@ -98,8 +102,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
@@ -107,9 +110,10 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              chainId === currentChainId
-                ? address
-                : context.info.polytoneProxies[chainId] ?? ''
+              getAccountAddress({
+                accounts: context.info.accounts,
+                chainId,
+              }) || ''
             )
           }}
         />
@@ -128,16 +132,17 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
-  if (
-    context.type === ActionContextType.Dao &&
-    !context.info.supportedFeatures[Feature.Instantiate2]
-  ) {
+export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
+  options
+) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+    context,
+  } = options
+
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 
@@ -173,23 +178,25 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
-          makeWasmMessage({
-            wasm: {
-              instantiate2: {
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgInstantiateContract2.typeUrl,
+              value: {
+                sender: getChainAddressForActionOptions(options, chainId),
                 admin: admin || null,
-                code_id: codeId,
+                codeId: codeId ? BigInt(codeId) : 0n,
+                label,
+                msg: toUtf8(JSON.stringify(msg)),
                 funds: funds.map(({ denom, amount }) => ({
                   denom,
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     amount,
                     getNativeTokenForChainId(chainId).decimals
-                  ).toString(),
+                  ),
                 })),
-                label,
-                msg,
-                salt,
-                fix_msg: false,
-              },
+                salt: toUtf8(salt),
+                fixMsg: false,
+              } as MsgInstantiateContract2,
             },
           })
         )
@@ -205,6 +212,26 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
     if (decodedPolytone.match) {
       chainId = decodedPolytone.chainId
       msg = decodedPolytone.msg
+    }
+
+    // Convert to CW msg format to use same matching logic below.
+    if (
+      isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === MsgInstantiateContract2.typeUrl
+    ) {
+      msg = {
+        wasm: {
+          instantiate2: {
+            admin: msg.stargate.value.admin,
+            code_id: Number(msg.stargate.value.codeId),
+            label: msg.stargate.value.label,
+            msg: parseEncodedMessage(toBase64(msg.stargate.value.msg)),
+            funds: msg.stargate.value.funds,
+            fix_msg: msg.stargate.value.fixMsg,
+            salt: fromUtf8(msg.stargate.value.salt),
+          },
+        },
+      }
     }
 
     return objectMatchesStructure(msg, {
@@ -223,12 +250,12 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
           match: true,
           data: {
             chainId,
-            admin: msg.wasm.instantiate.admin ?? '',
-            codeId: msg.wasm.instantiate.code_id,
-            label: msg.wasm.instantiate.label,
-            message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
-            salt: msg.wasm.instantiate.salt,
-            funds: (msg.wasm.instantiate.funds as Coin[]).map(
+            admin: msg.wasm.instantiate2.admin ?? '',
+            codeId: msg.wasm.instantiate2.code_id,
+            label: msg.wasm.instantiate2.label,
+            message: JSON.stringify(msg.wasm.instantiate2.msg, undefined, 2),
+            salt: msg.wasm.instantiate2.salt,
+            funds: (msg.wasm.instantiate2.funds as Coin[]).map(
               ({ denom, amount }) => ({
                 denom,
                 amount: Number(

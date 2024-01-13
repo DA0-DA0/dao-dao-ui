@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import {
   RecoilValueReadOnly,
   selectorFamily,
@@ -9,25 +10,37 @@ import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
   PolytoneProxySelectors,
+  accountsSelector,
   addressIsModuleSelector,
   contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
-  isContractSelector,
+  isDaoSelector,
   queryContractIndexerSelector,
+  queryWalletIndexerSelector,
+  refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  DaoPageMode,
+  DaoWithDropdownVetoableProposalList,
+  DaoWithVetoableProposals,
   Feature,
+  IndexerDaoWithVetoableProposals,
   ProposalModule,
+  StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
 import {
+  CHAIN_SUBDAOS,
+  DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
+  VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainForChainId,
+  getDaoProposalPath,
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getSupportedChainConfig,
@@ -37,6 +50,7 @@ import {
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
+import { daoDropdownInfoSelector } from './cards'
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -139,13 +153,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
         .filter(
           ({ contractAddress, info }) =>
             contractAddress !== coreAddress &&
-            [
-              // V1
-              'cw-core',
-              // V2
-              'cwd-core',
-              'dao-core',
-            ].some((name) => info.contract.includes(name))
+            DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
         )
         .map(({ contractAddress }) => contractAddress)
     },
@@ -180,6 +188,7 @@ export const daoInfoSelector: (param: {
           created,
           _items,
           polytoneProxies,
+          accounts,
         ],
         // Loadables
         [isActiveResponse, activeThresholdResponse],
@@ -209,6 +218,10 @@ export const daoInfoSelector: (param: {
             }),
             DaoCoreV2Selectors.polytoneProxiesSelector({
               contractAddress: coreAddress,
+              chainId,
+            }),
+            accountsSelector({
+              address: coreAddress,
               chainId,
             }),
           ]),
@@ -264,16 +277,9 @@ export const daoInfoSelector: (param: {
             getChainForChainId(chainId).bech32_prefix
           ) &&
           get(
-            isContractSelector({
-              contractAddress: admin,
+            isDaoSelector({
+              address: admin,
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
             })
           ) &&
           !ignoreAdmins?.includes(admin)
@@ -299,6 +305,7 @@ export const daoInfoSelector: (param: {
             addressIsModuleSelector({
               chainId,
               address: admin,
+              moduleName: 'gov',
             })
           )
         ) {
@@ -313,6 +320,7 @@ export const daoInfoSelector: (param: {
             admin: '',
             registeredSubDao: false,
           }
+          parentSubDaos = CHAIN_SUBDAOS[chainId] ?? []
         }
       }
 
@@ -332,6 +340,7 @@ export const daoInfoSelector: (param: {
         activeThreshold,
         items,
         polytoneProxies,
+        accounts,
         parentDao: parentDaoInfo
           ? {
               chainId: parentDaoInfo.chainId,
@@ -341,7 +350,7 @@ export const daoInfoSelector: (param: {
               imageUrl: parentDaoInfo.imageUrl || null,
               parentDao: parentDaoInfo.parentDao,
               admin: parentDaoInfo.admin,
-              registeredSubDao: parentSubDaos?.includes(coreAddress) ?? false,
+              registeredSubDao: !!parentSubDaos?.includes(coreAddress),
             }
           : null,
         admin,
@@ -378,7 +387,7 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
 
       // Get source DAO core address for this voice.
       const coreAddress = get(
-        DaoCoreV2Selectors.coreAddressForPolytoneProxy({
+        DaoCoreV2Selectors.coreAddressForPolytoneProxySelector({
           chainId,
           voice,
           proxy,
@@ -412,5 +421,225 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
         coreAddress,
         info,
       }
+    },
+})
+
+/**
+ * DAOs this DAO has enabled vetoable proposal listing for.
+ */
+export const daoVetoableDaosSelector = selectorFamily<
+  { chainId: string; coreAddress: string }[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoVetoableDaos',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) =>
+      get(
+        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+          chainId,
+          contractAddress: coreAddress,
+          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => {
+        const [chainId, coreAdress] = key.split(':')
+
+        return {
+          chainId,
+          coreAddress: coreAdress,
+        }
+      }),
+})
+
+/**
+ * Proposals which this DAO can currently veto.
+ */
+export const daosWithVetoableProposalsSelector = selectorFamily<
+  DaoWithVetoableProposals[],
+  WithChainId<{
+    coreAddress: string
+    /**
+     * Include even DAOs not added to the vetoable DAOs list. By default, this
+     * will filter out DAOs not explicitly registered in the list.
+     */
+    includeAll?: boolean
+  }>
+>({
+  key: 'daosWithVetoableProposals',
+  get:
+    ({ chainId, coreAddress, includeAll = false }) =>
+    ({ get }) => {
+      // Refresh this when all proposals refresh.
+      const id = get(refreshProposalsIdAtom)
+
+      const accounts = get(
+        accountsSelector({
+          chainId,
+          address: coreAddress,
+        })
+      )
+
+      // Load DAOs this DAO has enabled vetoable proposal listing for.
+      const vetoableDaos = get(
+        isDaoSelector({
+          chainId,
+          address: coreAddress,
+        })
+      )
+        ? get(
+            waitForAllSettled([
+              daoVetoableDaosSelector({
+                chainId,
+                coreAddress,
+              }),
+            ])
+          )[0].valueMaybe() || []
+        : []
+
+      const daoVetoableProposalsPerChain = (
+        get(
+          waitForAll(
+            accounts.map(({ chainId, address }) =>
+              queryWalletIndexerSelector({
+                chainId,
+                walletAddress: address,
+                formula: 'veto/vetoableProposals',
+                required: true,
+                id,
+              })
+            )
+          )
+        ) as (IndexerDaoWithVetoableProposals[] | undefined)[]
+      )
+        .flatMap((data, index) =>
+          (data || []).map((d) => ({
+            chainId: accounts[index].chainId,
+            ...d,
+          }))
+        )
+        .filter(
+          ({ chainId, dao }) =>
+            includeAll ||
+            vetoableDaos.some(
+              (vetoable) =>
+                vetoable.chainId === chainId && vetoable.coreAddress === dao
+            )
+        )
+
+      const uniqueChainsAndDaos = uniq(
+        daoVetoableProposalsPerChain.map(
+          ({ chainId, dao }) => `${chainId}:${dao}`
+        )
+      )
+
+      const daoConfigAndProposalModules = get(
+        waitForAllSettled(
+          uniqueChainsAndDaos.map((chainAndDao) => {
+            const [chainId, coreAddress] = chainAndDao.split(':')
+            return waitForAll([
+              DaoCoreV2Selectors.configSelector({
+                chainId,
+                contractAddress: coreAddress,
+                params: [],
+              }),
+              daoCoreProposalModulesSelector({
+                chainId,
+                coreAddress,
+              }),
+            ])
+          })
+        )
+      )
+
+      return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
+        const daoData = daoConfigAndProposalModules[index]
+
+        return daoData.state === 'hasValue'
+          ? {
+              chainId: chainAndDao.split(':')[0],
+              dao: chainAndDao.split(':')[1],
+              name: daoData.contents[0].name,
+              proposalModules: daoData.contents[1],
+              proposalsWithModule: daoVetoableProposalsPerChain.find(
+                (vetoable) =>
+                  `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
+              )!.proposalsWithModule,
+            }
+          : []
+      })
+    },
+})
+
+/**
+ * Proposals which this DAO can currently veto grouped by DAO with dropdown
+ * info.
+ */
+export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
+  DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>[],
+  WithChainId<{ coreAddress: string; daoPageMode: DaoPageMode }>
+>({
+  key: 'daosWithDropdownVetoableProposalList',
+  get:
+    ({ daoPageMode, ...params }) =>
+    ({ get }) => {
+      const daosWithVetoableProposals = get(
+        daosWithVetoableProposalsSelector(params)
+      )
+
+      const daoDropdownInfos = get(
+        waitForAllSettled(
+          daosWithVetoableProposals.map(({ chainId, dao }) =>
+            daoDropdownInfoSelector({
+              chainId,
+              coreAddress: dao,
+            })
+          )
+        )
+      )
+
+      return daosWithVetoableProposals.flatMap(
+        ({
+          chainId,
+          dao,
+          proposalModules,
+          proposalsWithModule,
+        }):
+          | DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>
+          | [] => {
+          const dropdownInfo = daoDropdownInfos
+            .find(
+              (info) =>
+                info.state === 'hasValue' &&
+                info.contents.chainId === chainId &&
+                info.contents.coreAddress === dao
+            )
+            ?.valueMaybe()
+
+          if (!dropdownInfo) {
+            return []
+          }
+
+          return {
+            dao: dropdownInfo,
+            proposals: proposalsWithModule.flatMap(
+              ({ proposalModule: { prefix }, proposals }) =>
+                proposals.map(
+                  ({ id }): StatefulProposalLineProps => ({
+                    chainId,
+                    coreAddress: dao,
+                    proposalModules,
+                    proposalId: `${prefix}${id}`,
+                    proposalViewUrl: getDaoProposalPath(
+                      daoPageMode,
+                      dao,
+                      `${prefix}${id}`
+                    ),
+                    isPreProposeProposal: false,
+                  })
+                )
+            ),
+          }
+        }
+      )
     },
 })

@@ -3,8 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   LockWithKeyEmoji,
   useChain,
 } from '@dao-dao/stateless'
@@ -21,6 +21,7 @@ import {
 import {
   cwMsgToProtobuf,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   isDecodedStargateMsg,
   isValidContractAddress,
   isValidWalletAddress,
@@ -145,8 +146,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onlyDaoChainIds
@@ -181,12 +181,12 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
-  t,
-  address: mainAddress,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
+export const makeAuthzExecAction: ActionMaker<AuthzExecData> = (options) => {
+  const {
+    t,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<AuthzExecData> = () => ({
     chainId: currentChainId,
     address: '',
@@ -262,11 +262,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
             stargate: {
               typeUrl: MsgExec.typeUrl,
               value: {
-                grantee:
-                  chainId === currentChainId ||
-                  context.type !== ActionContextType.Dao
-                    ? mainAddress
-                    : context.info.polytoneProxies[chainId],
+                grantee: getChainAddressForActionOptions(options, chainId),
                 msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
               } as MsgExec,
             },

@@ -3,6 +3,7 @@
 
 import {
   AccountBalanceWalletOutlined,
+  FiberSmartRecordOutlined,
   HowToVoteOutlined,
 } from '@mui/icons-material'
 import type { GetStaticPaths, NextPage } from 'next'
@@ -13,13 +14,14 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
-  ChainSwitcher,
+  ButtonLink,
   DaoCard,
   GovCommunityPoolTab,
   GovInfoBar,
   GovPageWrapper,
   GovPageWrapperProps,
   GovProposalsTab,
+  GovSubDaosTab,
   LinkWrapper,
   ProfileDisconnectedCard,
   ProfileHomeCard,
@@ -29,6 +31,7 @@ import {
 } from '@dao-dao/stateful'
 import { makeGetGovStaticProps } from '@dao-dao/stateful/server'
 import {
+  ChainPickerPopup,
   DaoDappTabbedHome,
   GovernanceHome,
   useChain,
@@ -37,6 +40,7 @@ import {
 } from '@dao-dao/stateless'
 import { ChainId, DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 import {
+  CHAIN_SUBDAOS,
   NEUTRON_GOVERNANCE_DAO,
   SITE_URL,
   getConfiguredChainConfig,
@@ -67,6 +71,17 @@ const InnerGovHome = () => {
       Component: GovCommunityPoolTab,
       Icon: AccountBalanceWalletOutlined,
     },
+    // If SubDAOs exist, show them.
+    ...(CHAIN_SUBDAOS[chainId]?.length
+      ? [
+          {
+            id: DaoTabId.SubDaos,
+            label: t('title.subDaos'),
+            Component: GovSubDaosTab,
+            Icon: FiberSmartRecordOutlined,
+          },
+        ]
+      : []),
   ]).current
   const firstTabId = tabs[0].id
 
@@ -78,7 +93,14 @@ const InnerGovHome = () => {
   }, [name, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
+  const checkedSlug = useRef(false)
   useEffect(() => {
+    // Only check one time, in case they load the page with no slug.
+    if (checkedSlug.current) {
+      return
+    }
+    checkedSlug.current = true
+
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
       router.push(getGovPath(name, firstTabId), undefined, {
@@ -108,19 +130,27 @@ const InnerGovHome = () => {
 
   return (
     <DaoDappTabbedHome
+      ButtonLink={ButtonLink}
       DaoInfoBar={GovInfoBar}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
-        <ChainSwitcher
+        <ChainPickerPopup
+          chains={{ type: 'configured' }}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
-            router.push(
-              getGovPath(getConfiguredChainConfig(chainId)?.name || name, tabId)
-            )
-            setGoingToChainId(chainId)
+            // Type-check. None option is not enabled so this shouldn't happen.
+            if (!chainId) {
+              return
+            }
+
+            const chainConfig = getConfiguredChainConfig(chainId)
+            if (chainConfig) {
+              router.push(getGovPath(chainConfig.name, tabId))
+              setGoingToChainId(chainId)
+            }
           }}
-          type="configured"
+          selectedChainId={chainId}
         />
       }
       daoInfo={daoInfo}
@@ -173,16 +203,22 @@ const NeutronGovHome: NextPage = () => {
     <GovernanceHome
       DaoCard={DaoCard}
       breadcrumbsOverride={
-        <ChainSwitcher
+        <ChainPickerPopup
+          chains={{ type: 'configured' }}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
+            // Type-check. None option is not enabled so this shouldn't happen.
+            if (!chainId) {
+              return
+            }
+
             const chainConfig = getConfiguredChainConfig(chainId)
             if (chainConfig) {
               router.push(getGovPath(chainConfig.name))
               setGoingToChainId(chainId)
             }
           }}
-          type="configured"
+          selectedChainId={chainId}
         />
       }
       daos={daosLoading}

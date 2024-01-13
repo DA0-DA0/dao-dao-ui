@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook'
 
 import { useDaoInfoContext } from '../../hooks'
+import { ButtonLink } from '../buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoInfoBar, DaoInfoBarProps } from './DaoInfoBar'
 import { Default as DaoInfoBarStory } from './DaoInfoBar.DaoInfoBar.stories'
@@ -28,5 +29,6 @@ Default.args = {
   DaoInfoBar: () => (
     <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />
   ),
+  ButtonLink,
   LinkWrapper,
 }

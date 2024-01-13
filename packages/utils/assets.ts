@@ -2,7 +2,7 @@ import { asset_lists } from '@chain-registry/assets'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
-import { getChainForChainId, getNativeTokenForChainId } from './chain'
+import { getChainForChainId } from './chain'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
@@ -47,6 +47,12 @@ export const getChainAssets = (chainId: string) => {
               0,
             imageUrl: svg || png || jpeg || getFallbackImage(base),
             description: symbol === name ? undefined : name,
+            // This will be wrong when this is an IBC asset.
+            source: {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: base,
+            },
           })
         )
         .sort((a, b) => a.symbol.localeCompare(b.symbol)) ?? []
@@ -55,10 +61,14 @@ export const getChainAssets = (chainId: string) => {
   return chainAssetsMap[chainId]!
 }
 
-// Native token exists if it is the native denom or any of the IBC assets.
-export const nativeTokenExists = (chainId: string, denom: string) =>
-  denom === getNativeTokenForChainId(chainId).denomOrAddress ||
-  getChainAssets(chainId).some(({ denomOrAddress }) => denomOrAddress === denom)
+/**
+ * Valid native denom if it follows cosmos SDK validation logic. Specifically,
+ * the regex string `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`.
+ *
+ * <https://github.com/cosmos/cosmos-sdk/blob/7728516abfab950dc7a9120caad4870f1f962df5/types/coin.go#L865-L867>
+ */
+export const isValidNativeTokenDenom = (denom: string) =>
+  /^[a-zA-Z][a-zA-Z0-9/:._-]{2,127}$/.test(denom)
 
 export const getNativeIbcUsdc = (chainId: string) =>
   getChainAssets(chainId).find(

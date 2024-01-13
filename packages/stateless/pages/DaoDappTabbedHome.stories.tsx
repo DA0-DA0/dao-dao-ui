@@ -15,6 +15,7 @@ import {
 import { DaoTabId, TokenCardProps } from '@dao-dao/types'
 
 import {
+  ButtonLink,
   DaoInfoBar,
   DaoInfoBarProps,
   LinkWrapper,
@@ -113,6 +114,7 @@ Default.args = {
     />
   ),
   SuspenseLoader,
+  ButtonLink,
   LinkWrapper,
   follow: {
     following: false,

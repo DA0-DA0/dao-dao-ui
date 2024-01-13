@@ -1,14 +1,12 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { NumbersEmoji } from '@dao-dao/stateless'
 import {
-  DepositRefundPolicy,
-  DurationUnits,
-  Feature,
-  TokenType,
-} from '@dao-dao/types'
+  DaoProposalSingleCommonSelectors,
+  genericTokenSelector,
+} from '@dao-dao/state/recoil'
+import { NumbersEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
+import { DepositRefundPolicy, Feature, TokenType } from '@dao-dao/types'
 import {
   ActionChainContextType,
   ActionContextType,
@@ -20,7 +18,10 @@ import {
 } from '@dao-dao/types/actions'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  ContractName,
   DaoProposalMultipleAdapterId,
+  convertCosmosVetoConfigToVeto,
+  convertDurationToDurationWithUnits,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   makeWasmMessage,
@@ -35,7 +36,6 @@ import {
   anyoneCanProposeSelector,
   makeDepositInfoSelector,
 } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/common'
-import { configSelector } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/contracts/DaoProposalSingle.common.recoil'
 import { makeDefaultNewDao } from '../../../../recoil'
 import { EnableMultipleChoiceComponent as Component } from './Component'
 
@@ -83,10 +83,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
 > = ({ t, address, context, chain: { chain_id: chainId }, chainContext }) => {
-  // Disallows creation if multiple choice proposal module already exists, down
-  // at the bottom of this function, instead of returning null here. This
-  // ensures this action can be rendered correctly in past proposals after
-  // multiple choice is enabled.
+  // Disallow usage if:
+  // - not a DAO
+  // - DAO doesn't support multiple choice proposals
+  // - chain is not supported (type-check, implied by DAO check)
+  //
+  // Disallows creation at the bottom of this function if:
+  // - multiple choice proposal module already exists
+  // - single-choice approval flow is enabled, since multiple choice doesn't
+  //   support approval flow right now and that would be confusing.
   if (
     context.type !== ActionContextType.Dao ||
     !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
@@ -108,118 +113,146 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
       throw new Error('No single choice proposal module found')
     }
 
-    const config = useRecoilValue(
-      configSelector({
+    const config = useCachedLoadingWithError(
+      DaoProposalSingleCommonSelectors.configSelector({
         contractAddress: singleChoiceProposal.address,
         chainId,
       })
     )
-
-    const depositInfo = useRecoilValue(
+    const depositInfo = useCachedLoadingWithError(
       makeDepositInfoSelector({
         chainId,
         proposalModuleAddress: singleChoiceProposal.address,
         version: singleChoiceProposal.version,
-        preProposeAddress: singleChoiceProposal.preProposeAddress,
+        preProposeAddress: singleChoiceProposal.prePropose?.address ?? null,
       })
     )
-    const depositInfoToken = useRecoilValue(
-      depositInfo
-        ? genericTokenSelector({
+    const depositInfoToken = useCachedLoadingWithError(
+      depositInfo.loading
+        ? undefined
+        : depositInfo.errored || !depositInfo.data
+        ? constSelector(undefined)
+        : genericTokenSelector({
             chainId,
             type:
-              'cw20' in depositInfo.denom ? TokenType.Cw20 : TokenType.Native,
+              'cw20' in depositInfo.data.denom
+                ? TokenType.Cw20
+                : TokenType.Native,
             denomOrAddress:
-              'cw20' in depositInfo.denom
-                ? depositInfo.denom.cw20
-                : depositInfo.denom.native,
+              'cw20' in depositInfo.data.denom
+                ? depositInfo.data.denom.cw20
+                : depositInfo.data.denom.native,
           })
-        : constSelector(undefined)
     )
-
-    const anyoneCanPropose = useRecoilValue(
+    const anyoneCanPropose = useCachedLoadingWithError(
       anyoneCanProposeSelector({
         chainId,
-        preProposeAddress: singleChoiceProposal.preProposeAddress,
+        preProposeAddress: singleChoiceProposal.prePropose?.address ?? null,
       })
     )
 
-    const quorum: PercentageThreshold =
-      'threshold_quorum' in config.threshold
-        ? config.threshold.threshold_quorum.quorum
-        : {
-            percent: '0.2',
-          }
+    return useCallback(() => {
+      if (
+        config.loading ||
+        config.errored ||
+        depositInfo.loading ||
+        depositInfo.errored ||
+        depositInfoToken.loading ||
+        depositInfoToken.errored ||
+        anyoneCanPropose.loading ||
+        anyoneCanPropose.errored
+      ) {
+        return
+      }
 
-    const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
-      chainContext.config,
-      {
-        ...makeDefaultNewDao(chainId),
-        // Only the name is used in this function to pick the contract label.
-        name: context.info.name,
-      },
-      {
-        enableMultipleChoice: true,
-        moduleInstantiateFundsUnsupported:
-          !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
-        quorum: {
-          majority: 'majority' in quorum,
-          value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
-        },
-        votingDuration:
-          'time' in config.max_voting_period
-            ? {
-                value: config.max_voting_period.time,
-                units: DurationUnits.Seconds,
-              }
-            : {
-                value: 1,
-                units: DurationUnits.Weeks,
-              },
-        proposalDeposit: {
-          enabled: !!depositInfo && !!depositInfoToken,
-          amount:
-            depositInfo && depositInfoToken
-              ? convertMicroDenomToDenomWithDecimals(
-                  depositInfo.amount,
-                  depositInfoToken.decimals
-                )
-              : 10,
-          type: depositInfo && 'cw20' in depositInfo.denom ? 'cw20' : 'native',
-          denomOrAddress: depositInfo
-            ? 'cw20' in depositInfo.denom
-              ? depositInfo.denom.cw20
-              : depositInfo.denom.native
-            : getNativeTokenForChainId(chainId).denomOrAddress,
-          token: depositInfoToken,
-          refundPolicy:
-            depositInfo?.refund_policy ?? DepositRefundPolicy.OnlyPassed,
-        },
-        anyoneCanPropose,
-        allowRevoting: config.allow_revoting,
-      },
-      t
-    )
+      const quorum: PercentageThreshold =
+        'threshold_quorum' in config.data.threshold
+          ? config.data.threshold.threshold_quorum.quorum
+          : {
+              percent: '0.2',
+            }
 
-    return useCallback(
-      () =>
-        makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: address,
-              funds: [],
-              msg: {
-                update_proposal_modules: {
-                  to_add: [info],
-                  to_disable: [],
-                },
+      const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
+        chainContext.config,
+        {
+          ...makeDefaultNewDao(chainId),
+          // Only the name is used in this function to pick the contract label.
+          name: context.info.name,
+        },
+        {
+          ...makeDefaultNewDao(chainId).votingConfig,
+          enableMultipleChoice: true,
+          moduleInstantiateFundsUnsupported:
+            !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
+          quorum: {
+            majority: 'majority' in quorum,
+            value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
+          },
+          votingDuration: convertDurationToDurationWithUnits(
+            config.data.max_voting_period
+          ),
+          proposalDeposit: {
+            enabled: !!depositInfo.data && !!depositInfoToken.data,
+            amount:
+              depositInfo.data && depositInfoToken.data
+                ? convertMicroDenomToDenomWithDecimals(
+                    depositInfo.data.amount,
+                    depositInfoToken.data.decimals
+                  )
+                : 10,
+            type:
+              depositInfo.data && 'cw20' in depositInfo.data.denom
+                ? 'cw20'
+                : 'native',
+            denomOrAddress: depositInfo.data
+              ? 'cw20' in depositInfo.data.denom
+                ? depositInfo.data.denom.cw20
+                : depositInfo.data.denom.native
+              : getNativeTokenForChainId(chainId).denomOrAddress,
+            token: depositInfoToken.data,
+            refundPolicy:
+              depositInfo.data?.refund_policy ?? DepositRefundPolicy.OnlyPassed,
+          },
+          anyoneCanPropose: anyoneCanPropose.data,
+          allowRevoting: config.data.allow_revoting,
+          approver: {
+            enabled: false,
+            address: '',
+          },
+          veto: convertCosmosVetoConfigToVeto(
+            'veto' in config.data ? config.data.veto : null
+          ),
+        },
+        t
+      )
+
+      return makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: address,
+            funds: [],
+            msg: {
+              update_proposal_modules: {
+                to_add: [info],
+                to_disable: [],
               },
             },
           },
-        }),
-      [info]
-    )
+        },
+      })
+    }, [anyoneCanPropose, config, depositInfo, depositInfoToken])
   }
+
+  // Disallow creation if:
+  // - multiple choice proposal module already exists
+  // - single-choice approval flow is enabled, since multiple choice doesn't
+  //   support approval flow right now and that would be confusing.
+  const hideFromPicker = context.info.proposalModules.some(
+    ({ contractName, prePropose }) =>
+      DaoProposalMultipleAdapter.contractNames.some((name) =>
+        contractName.includes(name)
+      ) || prePropose?.contractName === ContractName.PreProposeApprovalSingle
+  )
 
   return {
     key: ActionKey.EnableMultipleChoice,
@@ -231,12 +264,6 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow using this action if the DAO already has a multiple choice
-    // proposal module setup.
-    hideFromPicker: context.info.proposalModules.some(({ contractName }) =>
-      DaoProposalMultipleAdapter.contractNames.some((name) =>
-        contractName.includes(name)
-      )
-    ),
+    hideFromPicker,
   }
 }

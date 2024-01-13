@@ -24,11 +24,16 @@ const Template: ComponentStory<typeof TokenInput> = (args) => {
     <div className="max-w-sm">
       <TokenInput
         {...args}
+        amount={{
+          watch,
+          setValue,
+          register,
+          fieldName: 'amount',
+          min: 0.00001,
+          step: 0.00001,
+        }}
         onSelectToken={(token) => setValue('token', token)}
-        register={register}
         selectedToken={watch('token')}
-        setValue={setValue}
-        watch={watch}
       />
     </div>
   )
@@ -36,9 +41,6 @@ const Template: ComponentStory<typeof TokenInput> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  amountFieldName: 'amount',
-  amountMin: 0.000001,
-  amountStep: 0.000001,
   tokens: {
     loading: false,
     data: [getNativeTokenForChainId(CHAIN_ID), ...getChainAssets(CHAIN_ID)],

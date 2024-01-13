@@ -19,9 +19,9 @@ export interface GenesisStateAmino {
   /** Module params */
   params?: ParamsAmino | undefined;
   /** Authorizations configured by code id */
-  code_authorizations: CodeAuthorizationAmino[];
+  code_authorizations?: CodeAuthorizationAmino[];
   /** Authorizations configured by contract addresses */
-  contract_authorizations: ContractAuthorizationAmino[];
+  contract_authorizations?: ContractAuthorizationAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.GenesisState";
@@ -85,11 +85,13 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      codeAuthorizations: Array.isArray(object?.code_authorizations) ? object.code_authorizations.map((e: any) => CodeAuthorization.fromAmino(e)) : [],
-      contractAuthorizations: Array.isArray(object?.contract_authorizations) ? object.contract_authorizations.map((e: any) => ContractAuthorization.fromAmino(e)) : []
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.codeAuthorizations = object.code_authorizations?.map(e => CodeAuthorization.fromAmino(e)) || [];
+    message.contractAuthorizations = object.contract_authorizations?.map(e => ContractAuthorization.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};

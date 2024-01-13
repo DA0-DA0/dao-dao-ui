@@ -27,12 +27,9 @@ import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
-  waitForAll,
 } from 'recoil'
 
 import {
-  genericTokenBalanceSelector,
-  genericTokenSelector,
   govParamsSelector,
   govProposalCreatedCardPropsAtom,
   govProposalSelector,
@@ -42,30 +39,26 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   Button,
+  ErrorPage,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
-  InputErrorMessage,
   Loader,
-  NumberInput,
+  PageLoader,
   ProposalContentDisplay,
-  TextAreaInput,
-  TextInput,
   Tooltip,
-  useCachedLoading,
   useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
+  Action,
   ActionChainContextType,
   ActionContextType,
   GovProposalVersion,
   GovernanceProposalActionData,
   ProposalDraft,
-  TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertMicroDenomToDenomWithDecimals,
   dateToWdhms,
   formatDateTime,
   formatPercentOf100,
@@ -75,8 +68,6 @@ import {
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
-  validatePositive,
-  validateRequired,
 } from '@dao-dao/utils'
 import { BinaryReader } from '@dao-dao/utils/protobuf'
 import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
@@ -84,8 +75,9 @@ import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1bet
 import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
-import { GovActionsProvider } from '../../actions'
+import { WalletActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
+import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { EntityDisplay } from '../EntityDisplay'
@@ -99,6 +91,50 @@ enum ProposeSubmitValue {
 
 export const NewGovProposal = () => {
   const { t } = useTranslation()
+  const chainContext = useConfiguredChainContext()
+
+  const { walletAddress = '' } = useWalletInfo()
+
+  const governanceProposalAction = makeGovernanceProposalAction({
+    t,
+    chain: chainContext.chain,
+    chainContext: {
+      type: ActionChainContextType.Configured,
+      ...chainContext,
+    },
+    address: walletAddress,
+    context: {
+      type: ActionContextType.Wallet,
+    },
+  })!
+  const defaults = governanceProposalAction.useDefaults()
+
+  return !defaults ? (
+    <PageLoader />
+  ) : defaults instanceof Error ? (
+    <ErrorPage title={t('error.unexpectedError')}>
+      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+        {defaults.message}
+      </pre>
+    </ErrorPage>
+  ) : (
+    <InnerNewGovProposal
+      action={governanceProposalAction}
+      defaults={defaults}
+    />
+  )
+}
+
+type InnerNewGovProposalProps = {
+  defaults: GovernanceProposalActionData
+  action: Action<GovernanceProposalActionData>
+}
+
+const InnerNewGovProposal = ({
+  defaults,
+  action,
+}: InnerNewGovProposalProps) => {
+  const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useConfiguredChainContext()
   const { isWalletConnected, getSigningStargateClient, chain, chainWallet } =
@@ -110,7 +146,8 @@ export const NewGovProposal = () => {
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
@@ -120,77 +157,27 @@ export const NewGovProposal = () => {
     latestProposalSaveAtom(localStorageKey)
   )
 
-  const govParams = useRecoilValue(
-    govParamsSelector({
-      chainId: chainContext.chainId,
-    })
-  )
-  const depositTokenInfos = useRecoilValue(
-    waitForAll(
-      govParams.minDeposit.map(({ denom }) =>
-        genericTokenSelector({
-          chainId: chainContext.chainId,
-          type: TokenType.Native,
-          denomOrAddress: denom,
-        })
-      )
-    )
-  )
-  // Selected deposit token.
-  const depositToken = govParams.minDeposit[0]
-  const depositTokenInfo = depositTokenInfos[0]
-  // Wallet balance of selected deposit token.
-  const walletDepositBalance = useCachedLoading(
-    walletAddress
-      ? genericTokenBalanceSelector({
-          chainId: chainContext.chainId,
-          walletAddress,
-          type: TokenType.Native,
-          denomOrAddress: depositToken.denom,
-        })
-      : undefined,
-    undefined
-  )
-
-  const governanceProposalAction = makeGovernanceProposalAction({
-    t,
-    chain: chainContext.chain,
-    chainContext: {
-      type: ActionChainContextType.Base,
-      ...chainContext,
-      ...chainContext.config,
-    },
-    address: walletAddress,
-    context: {
-      type: ActionContextType.Wallet,
-    },
-  })!
   const transformGovernanceProposalActionDataToCosmos =
-    governanceProposalAction.useTransformToCosmos()
-  const defaults = governanceProposalAction.useDefaults()
+    action.useTransformToCosmos()
   const formMethods = useForm<GovernanceProposalActionData>({
     mode: 'onChange',
     defaultValues: {
       ...defaults,
       ...cloneDeep(latestProposalSave),
-      _onlyShowActions: true,
     },
   })
   const {
-    register,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
-    setValue,
   } = formMethods
 
-  const depositAmount = watch('deposit.0.amount')
-  const depositUnsatisfied =
-    !walletDepositBalance.loading &&
-    !!walletDepositBalance.data &&
-    !!depositAmount &&
-    Number(walletDepositBalance.data.balance) < depositAmount
+  const govParams = useRecoilValue(
+    govParamsSelector({
+      chainId: chainContext.chainId,
+    })
+  )
 
   const onSubmitError: SubmitErrorHandler<GovernanceProposalActionData> =
     useCallback(() => {
@@ -517,109 +504,17 @@ export const NewGovProposal = () => {
         className="flex flex-col gap-6"
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
-        <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-row items-center justify-between gap-6 py-4 px-6">
-            <p className="primary-text text-text-body">
-              {t('form.proposalsName')}
-            </p>
-
-            <div className="flex grow flex-col">
-              <TextInput
-                error={errors.title}
-                fieldName="title"
-                placeholder={t('form.proposalsNamePlaceholder')}
-                register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.title} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 border-y border-border-secondary p-6 pt-5">
-            <p className="primary-text text-text-body">
-              {t('form.description')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdownFormat')}
-              </span>
-            </p>
-
-            <div className="flex flex-col">
-              <TextAreaInput
-                error={errors.description}
-                fieldName="description"
-                placeholder={t('form.proposalsDescriptionPlaceholder')}
-                register={register}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-          </div>
-
-          <div className="flex flex-row items-center justify-between gap-6 py-5 px-6">
-            <div className="flex flex-col gap-1">
-              <p className="primary-text text-text-body">{t('form.deposit')}</p>
-              <p className="caption-text max-w-sm">
-                {t('info.govDepositDescription', {
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    depositToken.amount,
-                    depositTokenInfo.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: depositTokenInfo.decimals,
-                  }),
-                  minAmount: (
-                    convertMicroDenomToDenomWithDecimals(
-                      depositToken.amount,
-                      depositTokenInfo.decimals
-                    ) * govParams.minInitialDepositRatio
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: depositTokenInfo.decimals,
-                  }),
-                  symbol: depositTokenInfo.symbol,
-                })}
-              </p>
-            </div>
-
-            <div className="flex grow flex-col items-end">
-              <NumberInput
-                containerClassName="grow"
-                error={errors?.deposit?.[0]?.amount}
-                fieldName="deposit.0.amount"
-                ghost
-                hidePlusMinus
-                min={
-                  convertMicroDenomToDenomWithDecimals(
-                    depositToken.amount,
-                    depositTokenInfo.decimals
-                  ) * govParams.minInitialDepositRatio
-                }
-                register={register}
-                setValue={setValue}
-                step={convertMicroDenomToDenomWithDecimals(
-                  1,
-                  depositTokenInfo.decimals
-                )}
-                textClassName="text-lg font-mono"
-                transformDecimals={depositTokenInfo.decimals}
-                unit={'$' + depositTokenInfo.symbol}
-                validation={[validateRequired, validatePositive]}
-                watch={watch}
-              />
-              <InputErrorMessage error={errors.deposit?.[0]?.amount} />
-            </div>
-          </div>
-        </div>
-
-        <p className="title-text -mb-2 text-text-body">
-          {t('title.configuration')}
-        </p>
-
         <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
-            <GovActionsProvider>
-              <governanceProposalAction.Component
+            <WalletActionsProvider
+              address={
+                // If no wallet address, use a space so that the page still
+                // loads even if there is no wallet connected. An empty string
+                // is falsy which triggers the loader, so use a space instead.
+                walletAddress || ' '
+              }
+            >
+              <action.Component
                 addAction={() => {}}
                 allActionsWithData={[]}
                 data={proposalData}
@@ -629,7 +524,7 @@ export const NewGovProposal = () => {
                 isCreating
                 remove={() => {}}
               />
-            </GovActionsProvider>
+            </WalletActionsProvider>
           </SuspenseLoader>
         </div>
 
@@ -662,15 +557,11 @@ export const NewGovProposal = () => {
 
               <Tooltip
                 title={
-                  !isWalletConnected
-                    ? t('error.logInToContinue')
-                    : depositUnsatisfied
-                    ? t('error.notEnoughForDeposit')
-                    : undefined
+                  !isWalletConnected ? t('error.logInToContinue') : undefined
                 }
               >
                 <Button
-                  disabled={!isWalletConnected || depositUnsatisfied}
+                  disabled={!isWalletConnected}
                   loading={loading}
                   type="submit"
                   value={ProposeSubmitValue.Submit}
@@ -701,9 +592,7 @@ export const NewGovProposal = () => {
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
-                  name: walletProfileData.loading
-                    ? { loading: true }
-                    : { loading: false, data: walletProfileData.profile.name },
+                  entity,
                 }}
                 description={proposalData.description}
                 innerContentDisplay={

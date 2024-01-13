@@ -255,14 +255,12 @@ export type Admin =
     }
 
 // Added in V2
-export interface ModuleInstantiateInfo {
+export type ModuleInstantiateInfo = {
   admin?: Admin | null
   code_id: number
   label: string
   msg: Binary
-  // Added in V2.3
-  // TODO(neutron-2.3.0): make not optional once upgraded and add back into
-  // instantiate schemas.
+  // Added in V2.3. Make optional for backwards compatibility.
   funds?: Coin[]
 }
 
@@ -300,15 +298,41 @@ export interface MintMsg {
   }
 }
 
-// Used by both DaoProposalSingle and DaoProposalMultiple.
-export enum ProposalStatus {
+/**
+ * The proposal status enum variants that can be represented as strings. This
+ * excludes enums containing values since they are objects.
+ */
+export enum ProposalStatusEnum {
   Open = 'open',
   Rejected = 'rejected',
   Passed = 'passed',
   Executed = 'executed',
   ExecutionFailed = 'execution_failed',
   Closed = 'closed',
+  Vetoed = 'vetoed',
 }
+/**
+ * The `VetoTimelock` proposal status enum variant that is represented as an
+ * object since it contains values.
+ */
+export type ProposalStatusVetoTimelock = {
+  veto_timelock: {
+    expiration: Expiration
+  }
+}
+/**
+ * The full proposal status type with all enum variants.
+ *
+ * Used by both DaoProposalSingle and DaoProposalMultiple.
+ */
+export type ProposalStatus = ProposalStatusEnum | ProposalStatusVetoTimelock
+/**
+ * The flattened set of proposal status keys that can be represented as strings.
+ * This uses the strings as-is and the key of the object enum variants.
+ */
+export type ProposalStatusKey =
+  | ProposalStatusEnum
+  | keyof ProposalStatusVetoTimelock
 
 export type ActiveThreshold =
   | {

@@ -1,4 +1,5 @@
 import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { bytesFromBase64, base64FromBytes } from "../../../../helpers";
 export interface CosmWasmPool {
   $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contractAddress: string;
@@ -11,10 +12,10 @@ export interface CosmWasmPoolProtoMsg {
   value: Uint8Array;
 }
 export interface CosmWasmPoolAmino {
-  contract_address: string;
-  pool_id: string;
-  code_id: string;
-  instantiate_msg: Uint8Array;
+  contract_address?: string;
+  pool_id?: string;
+  code_id?: string;
+  instantiate_msg?: string;
 }
 export interface CosmWasmPoolAminoMsg {
   type: "osmosis/cosmwasmpool/cosm-wasm-pool";
@@ -88,19 +89,27 @@ export const CosmWasmPool = {
     return message;
   },
   fromAmino(object: CosmWasmPoolAmino): CosmWasmPool {
-    return {
-      contractAddress: object.contract_address,
-      poolId: BigInt(object.pool_id),
-      codeId: BigInt(object.code_id),
-      instantiateMsg: object.instantiate_msg
-    };
+    const message = createBaseCosmWasmPool();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.instantiate_msg !== undefined && object.instantiate_msg !== null) {
+      message.instantiateMsg = bytesFromBase64(object.instantiate_msg);
+    }
+    return message;
   },
   toAmino(message: CosmWasmPool, useInterfaces: boolean = false): CosmWasmPoolAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.instantiate_msg = message.instantiateMsg;
+    obj.instantiate_msg = message.instantiateMsg ? base64FromBytes(message.instantiateMsg) : undefined;
     return obj;
   },
   fromAminoMsg(object: CosmWasmPoolAminoMsg): CosmWasmPool {

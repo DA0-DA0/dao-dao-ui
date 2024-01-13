@@ -1,10 +1,9 @@
 import { coins } from '@cosmjs/stargate'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { DownArrowEmoji } from '@dao-dao/stateless'
+import { DownArrowEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -40,7 +39,6 @@ const Component: ActionComponent<undefined, CommunityPoolDepositData> = (
 
   const tokens = useTokenBalances({
     filter: TokenType.Native,
-    allChains: true,
     // Load selected token when not creating, in case it is no longer returned
     // in the list of all tokens for the given account.
     additionalTokens: props.isCreating
@@ -83,7 +81,6 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   > = () => {
     const tokens = useTokenBalances({
       filter: TokenType.Native,
-      allChains: true,
     })
 
     return useCallback(
@@ -150,35 +147,31 @@ export const makeCommunityPoolDepositAction: ActionMaker<
       Array.isArray(msg.stargate.value.amount) &&
       msg.stargate.value.amount.length === 1
 
-    const token = useRecoilValue(
+    const token = useCachedLoadingWithError(
       isFundMsg
         ? genericTokenSelector({
             chainId,
             type: TokenType.Native,
             denomOrAddress: msg.stargate.value.amount[0].denom,
           })
-        : constSelector(undefined)
+        : undefined
     )
 
-    if (!token) {
+    if (!isFundMsg || token.loading || token.errored) {
       return { match: false }
     }
 
-    return isFundMsg
-      ? {
-          match: true,
-          data: {
-            chainId,
-            amount: convertMicroDenomToDenomWithDecimals(
-              msg.stargate.value.amount[0].amount,
-              token.decimals
-            ),
-            denom: msg.stargate.value.amount[0].denom,
-          },
-        }
-      : {
-          match: false,
-        }
+    return {
+      match: true,
+      data: {
+        chainId,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.stargate.value.amount[0].amount,
+          token.data.decimals
+        ),
+        denom: msg.stargate.value.amount[0].denom,
+      },
+    }
   }
 
   return {

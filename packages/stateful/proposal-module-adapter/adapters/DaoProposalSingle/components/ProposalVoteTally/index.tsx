@@ -1,6 +1,7 @@
-import { ProposalStatus } from '@dao-dao/types'
+import { PreProposeModuleType, ProposalStatusEnum } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../../components'
+import { useProposalModuleAdapterOptions } from '../../../../react'
 import { useLoadingProposal, useLoadingVotesInfo } from '../../hooks'
 import {
   ProposalVoteTallyLoader,
@@ -11,14 +12,25 @@ export const ProposalVoteTally = () => {
   const loadingProposal = useLoadingProposal()
   const loadingVotesInfo = useLoadingVotesInfo()
 
+  const {
+    proposalModule: { prePropose },
+  } = useProposalModuleAdapterOptions()
+  const isPreProposeApproverProposal =
+    prePropose?.type === PreProposeModuleType.Approver
+
   return (
     <SuspenseLoader
-      fallback={<ProposalVoteTallyLoader />}
+      fallback={
+        <ProposalVoteTallyLoader
+          isPreProposeApproverProposal={isPreProposeApproverProposal}
+        />
+      }
       forceFallback={loadingProposal.loading || loadingVotesInfo.loading}
     >
       {!loadingProposal.loading && !loadingVotesInfo.loading && (
         <StatelessProposalVoteTally
-          open={loadingProposal.data.status === ProposalStatus.Open}
+          isPreProposeApproverProposal={isPreProposeApproverProposal}
+          open={loadingProposal.data.status === ProposalStatusEnum.Open}
           votesInfo={loadingVotesInfo.data}
         />
       )}

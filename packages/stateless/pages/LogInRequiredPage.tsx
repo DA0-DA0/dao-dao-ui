@@ -26,7 +26,9 @@ export const LogInRequiredPage = ({
     {connecting ? (
       <PageLoader />
     ) : (
-      <div className="mx-auto max-w-5xl">{connectWalletButton}</div>
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-start pt-10">
+        {connectWalletButton}
+      </div>
     )}
   </>
 )

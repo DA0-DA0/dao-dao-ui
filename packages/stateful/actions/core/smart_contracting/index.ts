@@ -6,6 +6,7 @@ import { makeInstantiateAction } from './Instantiate'
 import { makeInstantiate2Action } from './Instantiate2'
 import { makeMigrateAction } from './Migrate'
 import { makeUpdateAdminAction } from './UpdateAdmin'
+import { makeUploadCodeAction } from './UploadCode'
 
 export const makeSmartContractingActionCategory: ActionCategoryMaker = ({
   t,
@@ -19,6 +20,7 @@ export const makeSmartContractingActionCategory: ActionCategoryMaker = ({
     makeExecuteAction,
     makeMigrateAction,
     makeUpdateAdminAction,
+    makeUploadCodeAction,
     makeFeeShareAction,
   ],
 })

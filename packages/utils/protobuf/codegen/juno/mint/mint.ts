@@ -17,12 +17,12 @@ export interface MinterProtoMsg {
 /** Minter represents the minting state. */
 export interface MinterAmino {
   /** current annual inflation rate */
-  inflation: string;
-  phase: string;
-  start_phase_block: string;
+  inflation?: string;
+  phase?: string;
+  start_phase_block?: string;
   /** current annual expected provisions */
-  annual_provisions: string;
-  target_supply: string;
+  annual_provisions?: string;
+  target_supply?: string;
 }
 export interface MinterAminoMsg {
   type: "/juno.mint.Minter";
@@ -50,9 +50,9 @@ export interface ParamsProtoMsg {
 /** Params holds parameters for the mint module. */
 export interface ParamsAmino {
   /** type of coin to mint */
-  mint_denom: string;
+  mint_denom?: string;
   /** expected blocks per year */
-  blocks_per_year: string;
+  blocks_per_year?: string;
 }
 export interface ParamsAminoMsg {
   type: "/juno.mint.Params";
@@ -131,13 +131,23 @@ export const Minter = {
     return message;
   },
   fromAmino(object: MinterAmino): Minter {
-    return {
-      inflation: object.inflation,
-      phase: BigInt(object.phase),
-      startPhaseBlock: BigInt(object.start_phase_block),
-      annualProvisions: object.annual_provisions,
-      targetSupply: object.target_supply
-    };
+    const message = createBaseMinter();
+    if (object.inflation !== undefined && object.inflation !== null) {
+      message.inflation = object.inflation;
+    }
+    if (object.phase !== undefined && object.phase !== null) {
+      message.phase = BigInt(object.phase);
+    }
+    if (object.start_phase_block !== undefined && object.start_phase_block !== null) {
+      message.startPhaseBlock = BigInt(object.start_phase_block);
+    }
+    if (object.annual_provisions !== undefined && object.annual_provisions !== null) {
+      message.annualProvisions = object.annual_provisions;
+    }
+    if (object.target_supply !== undefined && object.target_supply !== null) {
+      message.targetSupply = object.target_supply;
+    }
+    return message;
   },
   toAmino(message: Minter, useInterfaces: boolean = false): MinterAmino {
     const obj: any = {};
@@ -208,10 +218,14 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      mintDenom: object.mint_denom,
-      blocksPerYear: BigInt(object.blocks_per_year)
-    };
+    const message = createBaseParams();
+    if (object.mint_denom !== undefined && object.mint_denom !== null) {
+      message.mintDenom = object.mint_denom;
+    }
+    if (object.blocks_per_year !== undefined && object.blocks_per_year !== null) {
+      message.blocksPerYear = BigInt(object.blocks_per_year);
+    }
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};

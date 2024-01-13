@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { forwardRef } from 'react'
 
-import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
+import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
 
 import { LinkWrapper } from '../LinkWrapper'
 import {

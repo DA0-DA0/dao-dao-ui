@@ -1,10 +1,9 @@
-import { Buffer } from 'buffer'
-
 import { DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   NftBasedCreatorId,
   convertDurationWithUnitsToDuration,
+  encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -41,10 +40,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingCw721Staked,
     label: `DAO_${daoName.trim()}_${NftBasedCreatorId}`,
-    msg: Buffer.from(
-      JSON.stringify(votingModuleAdapterInstantiateMsg),
-      'utf8'
-    ).toString('base64'),
+    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
     funds: [],
   }
 

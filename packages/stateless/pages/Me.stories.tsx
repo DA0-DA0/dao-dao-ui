@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ChainSwitcher } from '@dao-dao/stateful'
+import { WalletChainSwitcher } from '@dao-dao/stateful'
 import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   WalletActionsProviderDecorator,
@@ -8,9 +8,9 @@ import {
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import {
-  MeBalancesProps,
   MeTransactionBuilderProps,
   TokenCardProps,
+  WalletBalancesProps,
 } from '@dao-dao/types'
 
 import {
@@ -19,8 +19,8 @@ import {
   ProfileHomeCardProps,
 } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
+import { Default as WalletBalancesStory } from '../components/wallet/WalletBalances.stories'
 import { Me } from './Me'
-import { Default as MeBalancesStory } from './MeBalances.stories'
 import { Default as MeTransactionBuilderStory } from './MeTransactionBuilder.stories'
 
 export default {
@@ -41,8 +41,8 @@ Default.args = {
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
   MeBalances: () => (
-    <MeBalancesStory
-      {...(MeBalancesStory.args as MeBalancesProps<
+    <WalletBalancesStory
+      {...(WalletBalancesStory.args as WalletBalancesProps<
         TokenCardProps,
         NftCardProps
       >)}
@@ -55,5 +55,5 @@ Default.args = {
   ),
   MeDaos: () => <div />,
   profileData: WALLET_PROFILE_DATA,
-  ChainSwitcher,
+  ChainSwitcher: WalletChainSwitcher,
 }

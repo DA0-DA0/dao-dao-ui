@@ -100,15 +100,27 @@ export const convertDurationWithUnitsToSeconds = ({
     case DurationUnits.Years:
       return value * 60 * 60 * 24 * 365
     default:
-      throw new Error(`Unsupported duration unit: ${units}`)
+      throw new Error(`Unsupported time duration unit: ${units}`)
   }
 }
 
 export const convertDurationWithUnitsToDuration = (
   durationWithUnits: DurationWithUnits
-): { time: number } => ({
-  time: convertDurationWithUnitsToSeconds(durationWithUnits),
-})
+): Duration =>
+  durationWithUnits.units === DurationUnits.Blocks
+    ? {
+        height: durationWithUnits.value,
+      }
+    : {
+        time: convertDurationWithUnitsToSeconds(durationWithUnits),
+      }
+
+export const convertDurationToDurationWithUnits = (
+  duration: Duration
+): DurationWithUnits =>
+  'height' in duration
+    ? { units: DurationUnits.Blocks, value: duration.height }
+    : convertSecondsToDurationWithUnits(duration.time)
 
 // Use largest whole-number unit possible.
 export const convertSecondsToDurationWithUnits = (
@@ -213,9 +225,8 @@ export const combineLoadingDataWithErrors = <T>(
     ? {
         loading: false,
         errored: true,
-        error: loadables
-          .map((l) => (l.errored ? l.error : undefined))
-          .find((err): err is unknown => !!err),
+        // First error.
+        error: loadables.flatMap((l) => (l.errored ? l.error : []))[0],
       }
     : {
         loading: false,
@@ -239,7 +250,15 @@ export const loadableToLoadingDataWithError = <T>(
         updating: 'updating' in loadable ? loadable.updating : undefined,
         data: loadable.contents,
       }
-    : { loading: false, errored: true, error: loadable.contents }
+    : {
+        loading: false,
+        errored: true,
+        error: !loadable.contents
+          ? new Error('Unknown error')
+          : loadable.contents instanceof Error
+          ? loadable.contents
+          : new Error(`${loadable.contents}`),
+      }
 }
 
 export const convertExpirationToDate = (

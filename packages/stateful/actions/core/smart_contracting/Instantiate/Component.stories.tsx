@@ -42,6 +42,11 @@ Default.args = {
             symbol: 'ATOM',
             imageUrl:
               'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
+            source: {
+              chainId: CHAIN_ID,
+              type: TokenType.Native,
+              denomOrAddress: 'uatom',
+            },
           },
           balance: '984129741',
         },

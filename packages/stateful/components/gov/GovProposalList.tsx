@@ -1,48 +1,62 @@
-import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { govProposalsSelector } from '@dao-dao/state/recoil'
 import {
-  Pagination,
   ProposalList as StatelessProposalList,
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
 
-const PROPSALS_PER_PAGE = 10
+const PROPSALS_PER_PAGE = 20
 
 export const GovProposalList = () => {
   const { t } = useTranslation()
   const chain = useChain()
   const { asPath } = useRouter()
 
-  const openGovProposalsDepositPeriod = useCachedLoading(
-    govProposalsSelector({
-      chainId: chain.chain_id,
-      status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-      all: true,
-    }),
-    {
-      proposals: [],
-      total: 0,
-    }
-  )
   const openGovProposalsVotingPeriod = useCachedLoading(
     govProposalsSelector({
       chainId: chain.chain_id,
       status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
-      all: true,
     }),
     {
       proposals: [],
       total: 0,
     }
   )
+
+  const govProposalsDepositPeriod = useCachedLoading(
+    govProposalsSelector({
+      chainId: chain.chain_id,
+      status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+    }),
+    {
+      proposals: [],
+      total: 0,
+    }
+  )
+
+  // Get max page by loading a single item and then getting the total.
+  const loadingMaxPage = useCachedLoading(
+    govProposalsSelector({
+      chainId: chain.chain_id,
+      limit: 1,
+    }),
+    {
+      proposals: [],
+      total: 0,
+    }
+  )
+  const maxPage =
+    loadingMaxPage.loading || loadingMaxPage.updating
+      ? 1
+      : Math.ceil(loadingMaxPage.data.total / PROPSALS_PER_PAGE)
 
   const [page, setPage] = useState(1)
   const loadingAllGovProposals = useCachedLoading(
@@ -60,95 +74,113 @@ export const GovProposalList = () => {
       throw new Error(t('error.loadingData'))
     }
   )
+  // Only allow incrementing the page once the current page has loaded and if
+  // we're below the max.
+  const goToNextPage = useCallback(() => {
+    if (loadingAllGovProposals.loading || loadingAllGovProposals.updating) {
+      return
+    }
 
-  const openProposals =
-    openGovProposalsDepositPeriod.loading ||
-    openGovProposalsVotingPeriod.loading
-      ? []
-      : [
-          ...openGovProposalsDepositPeriod.data.proposals,
-          ...openGovProposalsVotingPeriod.data.proposals,
-        ]
-          .map(
-            (proposal): GovProposalLineProps => ({
-              proposalId: proposal.id.toString(),
-              proposal,
-            })
-          )
-          .sort(
-            (a, b) =>
-              (
-                (b.proposal.proposal.votingEndTime ||
-                  b.proposal.proposal.depositEndTime) ??
-                new Date(0)
-              ).getTime() -
-              (
-                (a.proposal.proposal.votingEndTime ||
-                  a.proposal.proposal.depositEndTime) ??
-                new Date(0)
-              ).getTime()
-          )
+    setPage((page) => Math.min(page + 1, maxPage))
+  }, [loadingAllGovProposals, maxPage])
 
-  const historyProposals = loadingAllGovProposals.loading
+  const [historyProposals, setHistoryProposals] = useState<
+    GovProposalLineProps[]
+  >([])
+
+  useEffect(() => {
+    if (loadingAllGovProposals.loading || loadingAllGovProposals.updating) {
+      return
+    }
+
+    const newHistoryProposals = loadingAllGovProposals.data.proposals
+      .filter(
+        (prop) =>
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED ||
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_REJECTED ||
+          prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_FAILED
+      )
+      .map(
+        (proposal): GovProposalLineProps => ({
+          proposalId: proposal.id.toString(),
+          proposal,
+        })
+      )
+
+    // Add new proposals to history that aren't already there.
+    setHistoryProposals((prev) =>
+      [
+        ...prev,
+        ...newHistoryProposals.filter(
+          ({ proposalId }) => !prev.some((p) => p.proposalId === proposalId)
+        ),
+      ].sort((a, b) => Number(b.proposalId) - Number(a.proposalId))
+    )
+  }, [loadingAllGovProposals])
+
+  const openProposals = openGovProposalsVotingPeriod.loading
     ? []
-    : loadingAllGovProposals.data.proposals
-        .filter(
-          (prop) =>
-            prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_PASSED ||
-            prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_REJECTED
-        )
+    : openGovProposalsVotingPeriod.data.proposals
         .map(
           (proposal): GovProposalLineProps => ({
             proposalId: proposal.id.toString(),
             proposal,
           })
         )
+        .sort(
+          (a, b) =>
+            (b.proposal.proposal.votingEndTime ?? new Date(0)).getTime() -
+            (a.proposal.proposal.votingEndTime ?? new Date(0)).getTime()
+        )
 
-  // Initial loading if any are loading for the first time. Since they're all
-  // cached, loading is only true on initial load.
-  const initialLoad =
-    openGovProposalsDepositPeriod.loading ||
-    openGovProposalsVotingPeriod.loading ||
-    loadingAllGovProposals.loading
+  const depositPeriodProposals = govProposalsDepositPeriod.loading
+    ? []
+    : govProposalsDepositPeriod.data.proposals
+        .map(
+          (proposal): GovProposalLineProps => ({
+            proposalId: proposal.id.toString(),
+            proposal,
+          })
+        )
+        .sort(
+          (a, b) =>
+            (b.proposal.proposal.depositEndTime ?? new Date(0)).getTime() -
+            (a.proposal.proposal.depositEndTime ?? new Date(0)).getTime()
+        )
 
   const historyCount = loadingAllGovProposals.loading
     ? 0
     : loadingAllGovProposals.data.total - openProposals.length
 
   return (
-    <>
-      <div
-        className={clsx(
-          !initialLoad &&
-            (loadingAllGovProposals.loading ||
-              !!loadingAllGovProposals.updating) &&
-            'animate-pulse'
-        )}
-      >
-        <StatelessProposalList
-          DiscordNotifierConfigureModal={undefined}
-          ProposalLine={GovProposalLine}
-          canLoadMore={false}
-          createNewProposalHref={asPath + '/create'}
-          historyCount={historyCount}
-          historyProposals={historyProposals}
-          isMember={true}
-          loadMore={() => {}}
-          loadingMore={initialLoad}
-          openProposals={openProposals}
-        />
-      </div>
-
-      {!loadingAllGovProposals.loading &&
-        loadingAllGovProposals.data.total > PROPSALS_PER_PAGE && (
-          <Pagination
-            className="mx-auto mt-4"
-            page={page}
-            pageSize={PROPSALS_PER_PAGE}
-            setPage={setPage}
-            total={historyCount}
-          />
-        )}
-    </>
+    <StatelessProposalList
+      DiscordNotifierConfigureModal={undefined}
+      LinkWrapper={LinkWrapper}
+      ProposalLine={GovProposalLine}
+      canLoadMore={page < maxPage}
+      createNewProposalHref={asPath + '/create'}
+      daosWithVetoableProposals={[]}
+      isMember={true}
+      loadMore={goToNextPage}
+      loadingMore={
+        openGovProposalsVotingPeriod.loading ||
+        govProposalsDepositPeriod.loading ||
+        loadingAllGovProposals.loading ||
+        !!loadingAllGovProposals.updating
+      }
+      openProposals={openProposals}
+      sections={[
+        {
+          title: t('title.depositPeriod'),
+          proposals: depositPeriodProposals,
+          defaultCollapsed: true,
+        },
+        {
+          title: t('title.history'),
+          proposals: historyProposals,
+          total: historyCount,
+        },
+      ]}
+    />
   )
 }

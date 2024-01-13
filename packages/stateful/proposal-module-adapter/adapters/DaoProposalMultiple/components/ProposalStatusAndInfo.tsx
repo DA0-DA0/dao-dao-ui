@@ -1,53 +1,48 @@
 import {
   AccountCircleOutlined,
   ArrowOutward,
-  CancelOutlined,
   HourglassTopRounded,
-  Key,
   PollOutlined,
   Redo,
   RotateRightOutlined,
-  Send,
   Tag,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { DaoProposalMultipleSelectors } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
-  ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   TooltipTruncatedText,
   useConfiguredChainContext,
   useDaoInfoContext,
-  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
-  ProposalStatus,
+  ProposalStatusEnum,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { formatPercentOf100, processError } from '@dao-dao/utils'
+import { formatPercentOf100, getProposalStatusKey } from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import {
+  DaoProposalMultipleHooks,
   useAwaitNextBlock,
-  useMembership,
   useProposalPolytoneState,
+  useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
+import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useClose, useExecute } from '../contracts/DaoProposalMultiple.hooks'
-import { configSelector } from '../contracts/DaoProposalMultiple.recoil'
 import {
   useCastVote,
   useLoadingDepositInfo,
@@ -97,6 +92,7 @@ const InnerProposalStatusAndInfo = ({
   onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
+  onVetoSuccess,
   openSelfRelayExecute,
   ...props
 }: BaseProposalStatusAndInfoProps & {
@@ -109,16 +105,12 @@ const InnerProposalStatusAndInfo = ({
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
+  const { coreAddress } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
-    configSelector({
+    DaoProposalMultipleSelectors.configSelector({
       chainId,
       contractAddress: proposalModule.address,
     })
@@ -128,6 +120,80 @@ const InnerProposalStatusAndInfo = ({
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
+  const statusKey = getProposalStatusKey(proposal.status)
+
+  const voteOptions = useLoadingVoteOptions()
+  const { castVote, castingVote } = useCastVote(onVoteSuccess)
+
+  const executeProposal = DaoProposalMultipleHooks.useExecute({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+  const closeProposal = DaoProposalMultipleHooks.useClose({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+
+  const polytoneState = useProposalPolytoneState({
+    msgs: winningChoice?.msgs || [],
+    status: proposal.status,
+    executedAt: proposal.executedAt,
+    proposalModuleAddress: proposalModule.address,
+    proposalNumber,
+    openSelfRelayExecute,
+    loadingTxHash: loadingExecutionTxHash,
+  })
+  const { action, footer } = useProposalActionState({
+    statusKey,
+    polytoneState,
+    loadingExecutionTxHash,
+    executeProposal,
+    closeProposal,
+    onExecuteSuccess,
+    onCloseSuccess,
+  })
+
+  const awaitNextBlock = useAwaitNextBlock()
+  // Refresh proposal and list of proposals (for list status) once voting ends.
+  useEffect(() => {
+    if (
+      statusKey !== ProposalStatusEnum.Open ||
+      !timestampInfo?.expirationDate
+    ) {
+      return
+    }
+
+    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
+    if (msRemaining < 0) {
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      // Refresh immediately so that the timestamp countdown re-renders and
+      // hides itself.
+      refreshProposal()
+      // Refresh again after a block to make sure the status has been updated,
+      // and refresh the list of all proposals so the status gets updated there
+      // as well.
+      awaitNextBlock().then(refreshProposalAndAll)
+    }, msRemaining)
+    return () => clearTimeout(timeout)
+  }, [
+    timestampInfo?.expirationDate,
+    statusKey,
+    refreshProposal,
+    refreshProposalAndAll,
+    awaitNextBlock,
+  ])
+
+  const { vetoEnabled, canBeVetoed, vetoOrEarlyExecute, vetoInfoItems } =
+    useProposalVetoState({
+      statusKey,
+      vetoConfig: 'veto' in config ? config.veto : undefined,
+      onVetoSuccess,
+      onExecuteSuccess,
+    })
+
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
       Icon: ({ className }) => (
@@ -135,27 +201,22 @@ const InnerProposalStatusAndInfo = ({
       ),
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
+        <EntityDisplay {...props} address={coreAddress} noCopy />
       ),
     },
     {
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
+        <EntityDisplay {...props} address={proposal.proposer} noCopy />
       ),
     },
+    ...vetoInfoItems,
     {
       Icon: RotateRightOutlined,
       label: t('title.status'),
       Value: (props) => (
-        <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
+        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
       ),
     },
     ...(proposal.allow_revoting
@@ -209,9 +270,10 @@ const InnerProposalStatusAndInfo = ({
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
     ...(winningChoice &&
-    (proposal.status === ProposalStatus.Passed ||
-      proposal.status === ProposalStatus.Executed ||
-      proposal.status === ProposalStatus.ExecutionFailed)
+    (statusKey === ProposalStatusEnum.Passed ||
+      statusKey === ProposalStatusEnum.Executed ||
+      statusKey === ProposalStatusEnum.ExecutionFailed ||
+      statusKey === 'veto_timelock')
       ? ([
           {
             Icon: PollOutlined,
@@ -225,191 +287,79 @@ const InnerProposalStatusAndInfo = ({
   ]
 
   let status: string
-  if (proposal.status === ProposalStatus.Open) {
+  if (statusKey === ProposalStatusEnum.Open) {
     if (quorumReached) {
       if (isTie) {
         status = t('info.proposalStatus.willFailTiedVote')
       } else {
         // Will pass
-        status = t('info.proposalStatus.willPass')
+        status = t('info.proposalStatus.willPass', {
+          context: vetoEnabled ? 'vetoEnabled' : undefined,
+        })
       }
     } else {
       // Quorum not reached
       status = t('info.proposalStatus.willFailBadQuorum')
     }
+
+    // not open
   } else {
     if (votingOpen) {
       // Proposal status is determined but voting is still open
-      status = t('info.proposalStatus.completedAndOpen')
-    } else {
-      status = t('info.proposalStatus.notOpenMultipleChoice', {
-        turnoutPercent: formatPercentOf100(turnoutPercent),
-        extra:
-          // Add sentence about closing to receive deposit back if it needs to
-          // be closed and will refund.
-          proposal.status === ProposalStatus.Rejected &&
-          depositInfo?.refund_policy === DepositRefundPolicy.Always
-            ? ` ${t('info.proposalDepositWillBeRefunded')}`
-            : '',
+      status = t('info.proposalStatus.completedAndOpen', {
+        context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
       })
+    } else {
+      const hasWinner = quorumReached && !isTie && winningChoice
+
+      status = t('info.proposalStatus.notOpenMultipleChoice', {
+        context:
+          statusKey === ProposalStatusEnum.Passed
+            ? 'passed'
+            : statusKey === ProposalStatusEnum.Executed
+            ? 'executed'
+            : statusKey === ProposalStatusEnum.ExecutionFailed
+            ? 'executionFailed'
+            : statusKey === ProposalStatusEnum.Rejected
+            ? 'rejected'
+            : statusKey === ProposalStatusEnum.Closed
+            ? 'closed'
+            : statusKey === ProposalStatusEnum.Vetoed
+            ? hasWinner
+              ? 'vetoedWinner'
+              : 'vetoedNoWinner'
+            : undefined,
+        turnoutPercent: formatPercentOf100(turnoutPercent),
+        turnoutWinningPercent: hasWinner
+          ? formatPercentOf100(winningChoice.turnoutVotePercentage)
+          : undefined,
+        turnoutWinner: hasWinner ? winningChoice.title : undefined,
+      })
+    }
+
+    // Add sentence about closing to receive deposit back if it needs to be
+    // closed and will refund.
+    if (
+      statusKey === ProposalStatusEnum.Rejected &&
+      depositInfo?.refund_policy === DepositRefundPolicy.Always
+    ) {
+      status += ' ' + t('info.proposalDepositWillBeRefunded')
+    }
+
+    // Add sentence about veto status.
+    if (canBeVetoed) {
+      status += ' ' + t('info.proposalStatus.canStillBeVetoed')
     }
   }
-
-  const voteOptions = useLoadingVoteOptions()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
-
-  const executeProposal = useExecute({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-  const closeProposal = useClose({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-
-  const [actionLoading, setActionLoading] = useState(false)
-  // On proposal status update, stop loading. This ensures the action button
-  // doesn't stop loading too early, before the status has refreshed.
-  useEffect(() => {
-    setActionLoading(false)
-  }, [proposal.status])
-
-  const polytoneState = useProposalPolytoneState({
-    msgs: winningChoice?.msgs || [],
-    status: proposal.status,
-    executedAt: proposal.executedAt,
-    proposalModuleAddress: proposalModule.address,
-    proposalNumber,
-    openSelfRelayExecute,
-    loadingTxHash: loadingExecutionTxHash,
-  })
-
-  const onExecute = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-    try {
-      await executeProposal({ proposalId: proposalNumber })
-
-      await onExecuteSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
-
-  const onClose = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId: proposalNumber,
-      })
-
-      await onCloseSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
-
-  const awaitNextBlock = useAwaitNextBlock()
-  // Refresh proposal and list of proposals (for list status) once voting ends.
-  useEffect(() => {
-    if (
-      proposal.status !== ProposalStatus.Open ||
-      !timestampInfo?.expirationDate
-    ) {
-      return
-    }
-
-    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
-    if (msRemaining < 0) {
-      return
-    }
-
-    const timeout = setTimeout(() => {
-      // Refresh immediately so that the timestamp countdown re-renders and
-      // hides itself.
-      refreshProposal()
-      // Refresh again after a block to make sure the status has been updated,
-      // and refresh the list of all proposals so the status gets updated there
-      // as well.
-      awaitNextBlock().then(refreshProposalAndAll)
-    }, msRemaining)
-    return () => clearTimeout(timeout)
-  }, [
-    timestampInfo?.expirationDate,
-    proposal.status,
-    refreshProposal,
-    refreshProposalAndAll,
-    awaitNextBlock,
-  ])
 
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      action={
-        proposal.status === ProposalStatus.Passed &&
-        // Show if anyone can execute OR if the wallet is a member, once
-        // polytone messages that need relaying are done loading.
-        (!config.only_members_execute || isMember) &&
-        !polytoneState.loading
-          ? {
-              label: t('button.execute'),
-              Icon: Key,
-              loading: actionLoading,
-              doAction: polytoneState.data.needsSelfRelay
-                ? polytoneState.data.openPolytoneRelay
-                : onExecute,
-            }
-          : proposal.status === ProposalStatus.Rejected
-          ? {
-              label: t('button.close'),
-              Icon: CancelOutlined,
-              loading: actionLoading,
-              doAction: onClose,
-            }
-          : // If executed and has polytone messages that need relaying...
-          proposal.status === ProposalStatus.Executed &&
-            !polytoneState.loading &&
-            polytoneState.data.needsSelfRelay &&
-            !loadingExecutionTxHash.loading &&
-            loadingExecutionTxHash.data
-          ? {
-              label: t('button.relay'),
-              Icon: Send,
-              loading: actionLoading,
-              doAction: polytoneState.data.openPolytoneRelay,
-              description: t('error.polytoneExecutedNoRelay'),
-            }
-          : undefined
-      }
-      footer={
-        !polytoneState.loading &&
-        proposal.status === ProposalStatus.Executed &&
-        polytoneState.data.hasPolytoneMessages && (
-          <ProposalCrossChainRelayStatus state={polytoneState.data} />
-        )
-      }
+      action={action}
+      footer={footer}
       info={info}
       status={status}
+      vetoOrEarlyExecute={vetoOrEarlyExecute}
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&
@@ -420,7 +370,7 @@ const InnerProposalStatusAndInfo = ({
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions.data,
-              proposalOpen: proposal.status === ProposalStatus.Open,
+              proposalOpen: statusKey === ProposalStatusEnum.Open,
             }
           : undefined
       }

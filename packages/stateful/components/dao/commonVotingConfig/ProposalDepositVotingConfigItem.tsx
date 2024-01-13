@@ -69,6 +69,11 @@ const ProposalDepositInput = ({
             symbol: tokenBasedCreatorData.newInfo.symbol,
             decimals: NEW_DAO_TOKEN_DECIMALS,
             imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
+            source: {
+              chainId,
+              type: TokenType.Cw20,
+              denomOrAddress: 'NEW_CW20',
+            },
           })
         : genericTokenSelector({
             chainId,
@@ -133,9 +138,6 @@ const ProposalDepositInput = ({
     type,
   ])
 
-  const decimals = tokenLoaded?.decimals ?? 0
-  const minimum = convertMicroDenomToDenomWithDecimals(1, decimals)
-
   const availableTokens: TokenInputOption[] = [
     // Governance token first.
     ...(isTokenBasedCreator &&
@@ -168,6 +170,11 @@ const ProposalDepositInput = ({
       symbol:
         (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
+      source: {
+        chainId,
+        type: TokenType.Cw20,
+        denomOrAddress: 'other_cw20',
+      },
     },
     // Then the chain assets.
     ...getChainAssets(chainId).filter(
@@ -195,9 +202,18 @@ const ProposalDepositInput = ({
         <>
           <div className="space-y-1">
             <TokenInput
-              amountError={errors?.proposalDeposit?.amount}
-              amountFieldName="proposalDeposit.amount"
-              amountStep={minimum}
+              amount={{
+                watch:
+                  watch as UseFormWatch<DaoCreationVotingConfigWithProposalDeposit>,
+                setValue,
+                register,
+                fieldName: 'proposalDeposit.amount',
+                error: errors?.proposalDeposit?.amount,
+                step: convertMicroDenomToDenomWithDecimals(
+                  1,
+                  tokenLoaded?.decimals ?? 0
+                ),
+              }}
               onSelectToken={({ type, denomOrAddress }) => {
                 // Type-check, should never happen.
                 if (
@@ -218,10 +234,8 @@ const ProposalDepositInput = ({
                   setValue('proposalDeposit.denomOrAddress', '')
                 }
               }}
-              register={register}
               required={false}
               selectedToken={selectedToken}
-              setValue={setValue}
               tokenFallback={
                 type === 'cw20'
                   ? !isValidContractAddress(denomOrAddress, bech32Prefix)
@@ -230,9 +244,6 @@ const ProposalDepositInput = ({
                   : undefined
               }
               tokens={{ loading: false, data: availableTokens }}
-              watch={
-                watch as UseFormWatch<DaoCreationVotingConfigWithProposalDeposit>
-              }
             />
 
             <InputErrorMessage error={errors?.proposalDeposit?.amount} />

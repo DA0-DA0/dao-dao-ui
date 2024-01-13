@@ -9,16 +9,19 @@ import {
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { WidgetEditorProps } from '@dao-dao/types'
+import {
+  LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
+  VestingPaymentsWidgetData,
+  WidgetEditorProps,
+} from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
-import { VestingPaymentsData } from './types'
 
 export const VestingPaymentsEditor = ({
   fieldNamePrefix,
-}: WidgetEditorProps<VestingPaymentsData>) => {
+}: WidgetEditorProps<VestingPaymentsWidgetData>) => {
   const { t } = useTranslation()
 
   const { name, coreAddress } = useDaoInfoContext()
@@ -28,8 +31,12 @@ export const VestingPaymentsEditor = ({
   const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
   const { setValue, setError, clearErrors, watch } =
-    useFormContext<VestingPaymentsData>()
+    useFormContext<VestingPaymentsWidgetData>()
+  const oldFactories = watch(
+    (fieldNamePrefix + 'oldFactories') as 'oldFactories'
+  )
   const factory = watch((fieldNamePrefix + 'factory') as 'factory')
+  const version = watch((fieldNamePrefix + 'version') as 'version')
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiateVestingFactory = async () => {
@@ -51,7 +58,22 @@ export const VestingPaymentsEditor = ({
         } as VestingFactoryInstantiateMsg
       )
 
+      // If factory already set, move to list of old factories.
+      if (factory) {
+        setValue((fieldNamePrefix + 'oldFactories') as 'oldFactories', [
+          ...(oldFactories ?? []),
+          {
+            address: factory,
+            version,
+          },
+        ])
+      }
+
       setValue((fieldNamePrefix + 'factory') as 'factory', contractAddress)
+      setValue(
+        (fieldNamePrefix + 'version') as 'version',
+        LATEST_VESTING_PAYMENTS_WIDGET_VERSION
+      )
 
       toast.success(t('success.created'))
     } catch (err) {
@@ -75,24 +97,46 @@ export const VestingPaymentsEditor = ({
   }, [setError, clearErrors, t, factory, fieldNamePrefix])
 
   return (
-    <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
-      <p className="body-text break-words">
-        {factory
-          ? t('info.createdVestingContractManager')
-          : t('info.createVestingContractManager')}
-      </p>
+    <div className="mt-2 flex flex-col items-start gap-4">
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <p className="body-text break-words">
+          {factory
+            ? t('info.createdVestingContractManager')
+            : t('info.createVestingContractManager')}
+        </p>
 
-      {factory ? (
-        <Check className="!h-6 !w-6" />
-      ) : (
-        <Button
-          loading={instantiating}
-          onClick={instantiateVestingFactory}
-          variant="primary"
-        >
-          {t('button.create')}
-        </Button>
+        {factory ? (
+          <Check className="!h-6 !w-6" />
+        ) : (
+          <Button
+            loading={instantiating}
+            onClick={instantiateVestingFactory}
+            variant="primary"
+          >
+            {t('button.create')}
+          </Button>
+        )}
+      </div>
+
+      {!!factory && version !== LATEST_VESTING_PAYMENTS_WIDGET_VERSION && (
+        <>
+          <p className="body-text">{t('info.updateVestingWidget')}</p>
+
+          <Button
+            loading={instantiating}
+            onClick={instantiateVestingFactory}
+            variant="primary"
+          >
+            {t('button.prepareUpdate')}
+          </Button>
+        </>
       )}
+
+      {!!factory &&
+        !!oldFactories?.length &&
+        version === LATEST_VESTING_PAYMENTS_WIDGET_VERSION && (
+          <p className="primary-text">{t('info.updatedVestingWidget')}</p>
+        )}
     </div>
   )
 }

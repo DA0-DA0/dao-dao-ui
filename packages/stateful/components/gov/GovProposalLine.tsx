@@ -1,83 +1,68 @@
 import {
-  ErrorBoundary,
   GovProposalStatus,
   GovProposalWalletVote,
-  ProposalLineLoader,
   ProposalLine as StatelessProposalLine,
   useConfiguredChainContext,
+  useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { getGovProposalPath } from '@dao-dao/utils'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
-import { useLoadingGovProposal } from '../../hooks'
+import { useLoadingGovProposalWalletVoteInfo } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
-import { SuspenseLoader } from '../SuspenseLoader'
 
 export type GovProposalLineProps = {
   proposalId: string
   proposal: GovProposalWithDecodedContent
 }
 
-export const GovProposalLine = (props: GovProposalLineProps) => (
-  <ErrorBoundary>
-    <InnerGovProposalLine {...props} />
-  </ErrorBoundary>
-)
-
-const InnerGovProposalLine = ({
-  proposalId,
-  proposal,
-}: GovProposalLineProps) => {
+export const GovProposalLine = (props: GovProposalLineProps) => {
+  const { proposalId, proposal } = props
   const {
     config: { name },
   } = useConfiguredChainContext()
-  const loadingGovProp = useLoadingGovProposal(proposalId)
+
+  const loadingTimestampInfo = useLoadingGovProposalTimestampInfo(
+    proposal.proposal
+  )
+  const loadingWalletVoteInfo = useLoadingGovProposalWalletVoteInfo(proposalId)
 
   return (
-    <SuspenseLoader
-      fallback={<ProposalLineLoader />}
-      forceFallback={loadingGovProp.loading}
-    >
-      <StatelessProposalLine
-        LinkWrapper={LinkWrapper}
-        Status={({ dimmed }) => (
-          <GovProposalStatus
-            dimmed={dimmed}
-            status={proposal.proposal.status}
+    <StatelessProposalLine
+      LinkWrapper={LinkWrapper}
+      Status={({ dimmed }) => (
+        <GovProposalStatus dimmed={dimmed} status={proposal.proposal.status} />
+      )}
+      href={getGovProposalPath(name, proposalId)}
+      proposalNumber={Number(proposalId)}
+      proposalPrefix=""
+      timestampDisplay={
+        loadingTimestampInfo.loading
+          ? undefined
+          : loadingTimestampInfo.data.display
+      }
+      title={proposal.title}
+      vote={
+        // If loading, show nothing until loaded.
+        loadingWalletVoteInfo.loading ? undefined : (
+          <GovProposalWalletVote
+            fallback={
+              // If no vote, display pending or none based on if they are
+              // currently able to vote.
+              proposal.proposal.status ===
+              ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+                ? 'pending'
+                : 'hasNoVote'
+            }
+            vote={loadingWalletVoteInfo.data.vote?.[0].option}
           />
-        )}
-        href={getGovProposalPath(name, proposalId)}
-        proposalNumber={Number(proposalId)}
-        proposalPrefix=""
-        timestampDisplay={
-          loadingGovProp.loading
-            ? undefined
-            : loadingGovProp.data.timestampInfo.display
-        }
-        title={proposal.title}
-        vote={
-          // If loading, show nothing until loaded.
-          loadingGovProp.loading ||
-          loadingGovProp.data.walletVoteInfo.loading ? undefined : (
-            <GovProposalWalletVote
-              fallback={
-                // If no vote, display pending or none based on if they are
-                // currently able to vote.
-                loadingGovProp.data.proposal.status ===
-                ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-                  ? 'pending'
-                  : 'hasNoVote'
-              }
-              vote={loadingGovProp.data.walletVoteInfo.data.vote?.[0].option}
-            />
-          )
-        }
-        votingOpen={
-          proposal.proposal.status ===
-          ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-        }
-      />
-    </SuspenseLoader>
+        )
+      }
+      votingOpen={
+        proposal.proposal.status ===
+        ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+      }
+    />
   )
 }

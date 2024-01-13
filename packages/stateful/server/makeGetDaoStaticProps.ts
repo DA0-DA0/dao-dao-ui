@@ -11,6 +11,8 @@ import {
   queryIndexer,
 } from '@dao-dao/state'
 import {
+  Account,
+  AccountType,
   ActiveThreshold,
   CommonProposalInfo,
   ContractVersion,
@@ -31,9 +33,12 @@ import {
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  CHAIN_SUBDAOS,
   CI,
+  ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
+  LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   addressIsModule,
@@ -154,7 +159,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         formula: 'info',
         required: true,
       })
-      if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+      if (addressInfo && addressInfo.contract === ContractName.PolytoneProxy) {
         // Get voice for this proxy on destination chain.
         const voice = await queryIndexer({
           type: 'contract',
@@ -230,6 +235,26 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         {} as Record<string, string>
       )
 
+      const accounts: Account[] = [
+        // Current chain.
+        {
+          chainId,
+          address: coreAddress,
+          type: AccountType.Native,
+        },
+        // Polytone.
+        ...Object.entries(polytoneProxies).map(
+          ([chainId, address]): Account => ({
+            chainId,
+            address,
+            type: AccountType.Polytone,
+          })
+        ),
+        // The above accounts are the ones we already have. The rest of the
+        // accounts are loaded once the page loads (in `DaoPageWrapper`) since
+        // they are more complex and will probably expand over time.
+      ]
+
       // Must be called after server side translations has been awaited, because
       // props may use the `t` function, and it won't be available until after.
       const {
@@ -277,6 +302,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           activeThreshold,
           items,
           polytoneProxies,
+          accounts,
           parentDao,
           admin: admin ?? null,
         },
@@ -481,8 +507,8 @@ const loadParentDaoInfo = async (
         rpcEndpoint: getRpcForChainId(chainId),
       })
     ).cosmos
-    // If chain module account...
-    if (await addressIsModule(cosmosClient, potentialParentAddress)) {
+    // If chain module gov account...
+    if (await addressIsModule(cosmosClient, potentialParentAddress, 'gov')) {
       const chainConfig = getSupportedChainConfig(chainId)
       return chainConfig
         ? {
@@ -540,7 +566,6 @@ const loadParentDaoInfo = async (
   }
 }
 
-const LEGACY_DAO_CONTRACT_NAMES = ['crates.io:sg_dao', 'crates.io:cw3_dao']
 const ITEM_LIST_LIMIT = 30
 
 interface DaoCoreDumpState {
@@ -654,9 +679,13 @@ const daoCoreDumpState = async (
         parentDao: parentDaoInfo
           ? {
               ...parentDaoInfo,
-              // Whether or not this parent has registered its child as a SubDAO.
+              // Whether or not this parent has registered its child as a
+              // SubDAO.
               registeredSubDao:
-                indexerDumpedState.adminInfo?.registeredSubDao ?? false,
+                indexerDumpedState.adminInfo?.registeredSubDao ??
+                (parentDaoInfo.coreVersion === ContractVersion.Gov &&
+                  CHAIN_SUBDAOS[chainId]?.includes(coreAddress)) ??
+                false,
             }
           : null,
         polytoneProxies,
@@ -741,30 +770,34 @@ const daoCoreDumpState = async (
   )
   let registeredSubDao = false
   // If parent DAO exists, check if this DAO is a SubDAO of the parent.
-  if (
-    parentDao &&
-    isFeatureSupportedByVersion(Feature.SubDaos, parentDao.coreVersion)
-  ) {
-    const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
+  if (parentDao) {
+    if (
+      parentDao.coreVersion !== ContractVersion.Gov &&
+      isFeatureSupportedByVersion(Feature.SubDaos, parentDao.coreVersion)
+    ) {
+      const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
 
-    // Get all SubDAOs.
-    const subdaoAddrs: string[] = []
-    while (true) {
-      const response = await parentDaoCoreClient.listSubDaos({
-        startAfter: subdaoAddrs[subdaoAddrs.length - 1],
-        limit: SUBDAO_LIST_LIMIT,
-      })
-      if (!response?.length) break
+      // Get all SubDAOs.
+      const subdaoAddrs: string[] = []
+      while (true) {
+        const response = await parentDaoCoreClient.listSubDaos({
+          startAfter: subdaoAddrs[subdaoAddrs.length - 1],
+          limit: SUBDAO_LIST_LIMIT,
+        })
+        if (!response?.length) break
 
-      subdaoAddrs.push(...response.map(({ addr }) => addr))
+        subdaoAddrs.push(...response.map(({ addr }) => addr))
 
-      // If we have less than the limit of items, we've exhausted them.
-      if (response.length < SUBDAO_LIST_LIMIT) {
-        break
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < SUBDAO_LIST_LIMIT) {
+          break
+        }
       }
-    }
 
-    registeredSubDao = subdaoAddrs.includes(coreAddress)
+      registeredSubDao = subdaoAddrs.includes(coreAddress)
+    } else if (parentDao.coreVersion === ContractVersion.Gov) {
+      registeredSubDao = !!CHAIN_SUBDAOS[chainId]?.includes(coreAddress)
+    }
   }
 
   // Get DAO polytone proxies.

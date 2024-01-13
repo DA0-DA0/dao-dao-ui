@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
-import { CollapsibleProps } from '@dao-dao/types/stateless/Collapsible'
+import { CollapsibleProps } from '@dao-dao/types/components/Collapsible'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { DropdownIconButton } from './icon_buttons/DropdownIconButton'
@@ -22,6 +22,7 @@ export const Collapsible = ({
   children,
   containerClassName,
   headerClassName,
+  labelClassName,
   contentContainerClassName,
 }: CollapsibleProps) => {
   const [expanded, setExpanded] = useState(!defaultCollapsed)
@@ -42,7 +43,7 @@ export const Collapsible = ({
         />
       )}
 
-      <p className="link-text truncate text-text-body">{label}</p>
+      <p className={clsx('link-text truncate', labelClassName)}>{label}</p>
 
       {tooltip && <TooltipInfoIcon size="sm" title={tooltip} />}
     </>
@@ -90,6 +91,7 @@ export const Collapsible = ({
       {children && (
         <div
           className={clsx(
+            'animate-fade-in',
             !expanded && 'hidden',
             !noContentIndent && 'ml-10',
             contentContainerClassName

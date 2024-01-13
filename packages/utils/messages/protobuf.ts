@@ -46,6 +46,7 @@ import {
 import { MsgExecLegacyContent } from '../protobuf/codegen/cosmos/gov/v1/tx'
 import { TextProposal } from '../protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { MsgVote } from '../protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { ParameterChangeProposal } from '../protobuf/codegen/cosmos/params/v1beta1/params'
 import {
   MsgBeginRedelegate,
   MsgDelegate,
@@ -294,7 +295,11 @@ export const cwMsgToEncodeObject = (
   throw new Error('Unsupported cosmos message.')
 }
 
-// This should mirror the encoder function above.
+// This should mirror the encoder function above. Do not use this function to
+// convert messages that were decoded with `recursive = true`, like in the
+// `useDecodedCosmosMsg` hook in actions. That's because the default case with
+// `makeStargateMessage` needs a non-recursively encoded message due to
+// technicalities with nested protobufs.
 export const decodedStargateMsgToCw = ({
   typeUrl,
   value,
@@ -355,6 +360,16 @@ export const decodedStargateMsgToCw = ({
         distribution: {
           withdraw_delegator_reward: {
             validator: value.validatorAddress,
+          },
+        },
+      }
+      sender = value.delegatorAddress
+      break
+    case MsgSetWithdrawAddress.typeUrl:
+      msg = {
+        distribution: {
+          set_withdraw_address: {
+            address: value.withdrawAddress,
           },
         },
       }
@@ -462,6 +477,60 @@ export const decodedStargateMsgToCw = ({
   }
 }
 
+// Convert staking-related stargate msg to CosmWasm format. Returns undefined if
+// not a staking-related message.
+export const decodedStakingStargateMsgToCw = ({
+  typeUrl,
+  value,
+}: DecodedStargateMsg['stargate']): CosmosMsgFor_Empty | undefined => {
+  switch (typeUrl) {
+    case MsgDelegate.typeUrl:
+      return {
+        staking: {
+          delegate: {
+            amount: value.amount,
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgUndelegate.typeUrl:
+      return {
+        staking: {
+          undelegate: {
+            amount: value.amount,
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgBeginRedelegate.typeUrl:
+      return {
+        staking: {
+          redelegate: {
+            amount: value.amount,
+            src_validator: value.validatorSrcAddress,
+            dst_validator: value.validatorDstAddress,
+          },
+        },
+      }
+    case MsgWithdrawDelegatorReward.typeUrl:
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgSetWithdrawAddress.typeUrl:
+      return {
+        distribution: {
+          set_withdraw_address: {
+            address: value.withdrawAddress,
+          },
+        },
+      }
+  }
+}
+
 export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...cosmosProtoRegistry,
   ...cosmwasmProtoRegistry,
@@ -471,6 +540,13 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...ibcProtoRegistry,
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
+  // Not a query or TX so it isn't included in any of the registries. But we
+  // want to decode this because it appears in gov props. We need to find a
+  // better way to collect all generated types in a single registry...
+  [
+    '/cosmos.params.v1beta1.ParameterChangeProposal',
+    ParameterChangeProposal as GeneratedType,
+  ],
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
 
@@ -626,7 +702,9 @@ export const decodeGovProposal = (
   )
   const legacyContent = govProposal.proposal.messages
     .filter(({ typeUrl }) => typeUrl === MsgExecLegacyContent.typeUrl)
-    .map((msg) => MsgExecLegacyContent.decode(msg.value).content)
+    .map(
+      (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
+    )
 
   return {
     ...govProposal,

@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   InputErrorMessage,
-  VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
 } from '@dao-dao/stateless'
@@ -15,6 +14,7 @@ import {
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
 } from '@dao-dao/types'
+import { DISTRIBUTION_COLORS } from '@dao-dao/utils'
 
 import { MembershipBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
@@ -145,20 +145,14 @@ export const GovernanceConfigurationInput = ({
           label: t('form.membersAddress'),
           // Membership-based DAO tier weights are for each member.
           votingPowerPercent: (data.tiers[0].weight / totalVotingPower) * 100,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length],
         }))
       : data.tiers.map(({ name, weight, members }, tierIndex) => ({
           label: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
           // Membership-based DAO tier weights are for each member.
           votingPowerPercent:
             ((weight * members.length) / totalVotingPower) * 100,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
         }))
 
   return (

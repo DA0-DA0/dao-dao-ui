@@ -21,7 +21,7 @@ export interface QueryFeeTokensResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryFeeTokensResponseAmino {
-  fee_tokens: FeeTokenAmino[];
+  fee_tokens?: FeeTokenAmino[];
 }
 export interface QueryFeeTokensResponseAminoMsg {
   type: "osmosis/txfees/query-fee-tokens-response";
@@ -46,7 +46,7 @@ export interface QueryDenomSpotPriceRequestProtoMsg {
  * price for the specified tx fee denom
  */
 export interface QueryDenomSpotPriceRequestAmino {
-  denom: string;
+  denom?: string;
 }
 export interface QueryDenomSpotPriceRequestAminoMsg {
   type: "osmosis/txfees/query-denom-spot-price-request";
@@ -76,8 +76,8 @@ export interface QueryDenomSpotPriceResponseProtoMsg {
  * price for the specified tx fee denom
  */
 export interface QueryDenomSpotPriceResponseAmino {
-  poolID: string;
-  spot_price: string;
+  poolID?: string;
+  spot_price?: string;
 }
 export interface QueryDenomSpotPriceResponseAminoMsg {
   type: "osmosis/txfees/query-denom-spot-price-response";
@@ -99,7 +99,7 @@ export interface QueryDenomPoolIdRequestProtoMsg {
   value: Uint8Array;
 }
 export interface QueryDenomPoolIdRequestAmino {
-  denom: string;
+  denom?: string;
 }
 export interface QueryDenomPoolIdRequestAminoMsg {
   type: "osmosis/txfees/query-denom-pool-id-request";
@@ -116,7 +116,7 @@ export interface QueryDenomPoolIdResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryDenomPoolIdResponseAmino {
-  poolID: string;
+  poolID?: string;
 }
 export interface QueryDenomPoolIdResponseAminoMsg {
   type: "osmosis/txfees/query-denom-pool-id-response";
@@ -144,7 +144,7 @@ export interface QueryBaseDenomResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryBaseDenomResponseAmino {
-  base_denom: string;
+  base_denom?: string;
 }
 export interface QueryBaseDenomResponseAminoMsg {
   type: "osmosis/txfees/query-base-denom-response";
@@ -180,7 +180,8 @@ export const QueryFeeTokensRequest = {
     return message;
   },
   fromAmino(_: QueryFeeTokensRequestAmino): QueryFeeTokensRequest {
-    return {};
+    const message = createBaseQueryFeeTokensRequest();
+    return message;
   },
   toAmino(_: QueryFeeTokensRequest, useInterfaces: boolean = false): QueryFeeTokensRequestAmino {
     const obj: any = {};
@@ -244,9 +245,9 @@ export const QueryFeeTokensResponse = {
     return message;
   },
   fromAmino(object: QueryFeeTokensResponseAmino): QueryFeeTokensResponse {
-    return {
-      feeTokens: Array.isArray(object?.fee_tokens) ? object.fee_tokens.map((e: any) => FeeToken.fromAmino(e)) : []
-    };
+    const message = createBaseQueryFeeTokensResponse();
+    message.feeTokens = object.fee_tokens?.map(e => FeeToken.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: QueryFeeTokensResponse, useInterfaces: boolean = false): QueryFeeTokensResponseAmino {
     const obj: any = {};
@@ -315,9 +316,11 @@ export const QueryDenomSpotPriceRequest = {
     return message;
   },
   fromAmino(object: QueryDenomSpotPriceRequestAmino): QueryDenomSpotPriceRequest {
-    return {
-      denom: object.denom
-    };
+    const message = createBaseQueryDenomSpotPriceRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
   },
   toAmino(message: QueryDenomSpotPriceRequest, useInterfaces: boolean = false): QueryDenomSpotPriceRequestAmino {
     const obj: any = {};
@@ -390,10 +393,14 @@ export const QueryDenomSpotPriceResponse = {
     return message;
   },
   fromAmino(object: QueryDenomSpotPriceResponseAmino): QueryDenomSpotPriceResponse {
-    return {
-      poolID: BigInt(object.poolID),
-      spotPrice: object.spot_price
-    };
+    const message = createBaseQueryDenomSpotPriceResponse();
+    if (object.poolID !== undefined && object.poolID !== null) {
+      message.poolID = BigInt(object.poolID);
+    }
+    if (object.spot_price !== undefined && object.spot_price !== null) {
+      message.spotPrice = object.spot_price;
+    }
+    return message;
   },
   toAmino(message: QueryDenomSpotPriceResponse, useInterfaces: boolean = false): QueryDenomSpotPriceResponseAmino {
     const obj: any = {};
@@ -459,9 +466,11 @@ export const QueryDenomPoolIdRequest = {
     return message;
   },
   fromAmino(object: QueryDenomPoolIdRequestAmino): QueryDenomPoolIdRequest {
-    return {
-      denom: object.denom
-    };
+    const message = createBaseQueryDenomPoolIdRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
   },
   toAmino(message: QueryDenomPoolIdRequest, useInterfaces: boolean = false): QueryDenomPoolIdRequestAmino {
     const obj: any = {};
@@ -526,9 +535,11 @@ export const QueryDenomPoolIdResponse = {
     return message;
   },
   fromAmino(object: QueryDenomPoolIdResponseAmino): QueryDenomPoolIdResponse {
-    return {
-      poolID: BigInt(object.poolID)
-    };
+    const message = createBaseQueryDenomPoolIdResponse();
+    if (object.poolID !== undefined && object.poolID !== null) {
+      message.poolID = BigInt(object.poolID);
+    }
+    return message;
   },
   toAmino(message: QueryDenomPoolIdResponse, useInterfaces: boolean = false): QueryDenomPoolIdResponseAmino {
     const obj: any = {};
@@ -584,7 +595,8 @@ export const QueryBaseDenomRequest = {
     return message;
   },
   fromAmino(_: QueryBaseDenomRequestAmino): QueryBaseDenomRequest {
-    return {};
+    const message = createBaseQueryBaseDenomRequest();
+    return message;
   },
   toAmino(_: QueryBaseDenomRequest, useInterfaces: boolean = false): QueryBaseDenomRequestAmino {
     const obj: any = {};
@@ -648,9 +660,11 @@ export const QueryBaseDenomResponse = {
     return message;
   },
   fromAmino(object: QueryBaseDenomResponseAmino): QueryBaseDenomResponse {
-    return {
-      baseDenom: object.base_denom
-    };
+    const message = createBaseQueryBaseDenomResponse();
+    if (object.base_denom !== undefined && object.base_denom !== null) {
+      message.baseDenom = object.base_denom;
+    }
+    return message;
   },
   toAmino(message: QueryBaseDenomResponse, useInterfaces: boolean = false): QueryBaseDenomResponseAmino {
     const obj: any = {};

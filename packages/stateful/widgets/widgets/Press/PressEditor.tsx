@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  ChainPickerInput,
   CopyableAddress,
+  DaoSupportedChainPickerInput,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
@@ -169,7 +169,7 @@ export const PressEditor = ({
             {t('info.selectPressChain')}
           </p>
 
-          <ChainPickerInput
+          <DaoSupportedChainPickerInput
             disabled={!isCreating || !!contract}
             excludeChainIds={
               // NFTs on Stargaze work differently, so we can't create Presses
@@ -178,6 +178,7 @@ export const PressEditor = ({
               [ChainId.StargazeMainnet, ChainId.StargazeTestnet]
             }
             fieldName={fieldNamePrefix + 'chainId'}
+            hideFormLabel
             onlyDaoChainIds
           />
 

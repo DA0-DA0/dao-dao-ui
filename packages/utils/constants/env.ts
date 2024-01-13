@@ -1,7 +1,5 @@
 // Constants derived from environment variables.
 
-import { ChainId } from '@dao-dao/types'
-
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -16,9 +14,6 @@ export const LEGACY_URL_PREFIX = process.env
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
-export const DEFAULT_CHAIN_ID = MAINNET
-  ? ChainId.JunoMainnet
-  : ChainId.JunoTestnet
 
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
@@ -81,14 +76,6 @@ export const SINGLE_DAO_MODE =
 
 // Kado API (https://docs.kado.money)
 export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string
-
-// WYND
-export const WYND_MULTI_HOP_CONTRACT = process.env
-  .NEXT_PUBLIC_WYND_MULTI_HOP_CONTRACT as string
-export const WYND_API_BASE = process.env.NEXT_PUBLIC_WYND_API_BASE as string
-export const WYND_REFERRAL_COMMISSION = Number(
-  process.env.NEXT_PUBLIC_WYND_REFERRAL_COMMISSION || '0.01'
-)
 
 // WebSockets API
 export const WEB_SOCKET_PUSHER_APP_KEY = process.env

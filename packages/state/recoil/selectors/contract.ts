@@ -3,7 +3,12 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
 import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
-import { parseContractVersion } from '@dao-dao/utils'
+import {
+  DAO_CORE_CONTRACT_NAMES,
+  getChainForChainId,
+  isValidContractAddress,
+  parseContractVersion,
+} from '@dao-dao/utils'
 
 import {
   blockHeightTimestampSafeSelector,
@@ -185,9 +190,17 @@ export const isContractSelector = selectorFamily<
         // If contract does not exist, not the desired contract.
         if (
           err instanceof Error &&
-          err.message.includes('contract: not found: invalid request')
+          err.message.includes('not found: invalid request')
         ) {
           console.error(err)
+          return false
+        }
+
+        // If CosmWasm unsupported, not the desired contract.
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
           return false
         }
 
@@ -195,4 +208,46 @@ export const isContractSelector = selectorFamily<
         throw err
       }
     },
+})
+
+export const isDaoSelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isDao',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          names: DAO_CORE_CONTRACT_NAMES,
+        })
+      ),
+})
+
+export const isPolytoneProxySelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isPolytoneProxy',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          name: 'polytone-proxy',
+        })
+      ),
 })

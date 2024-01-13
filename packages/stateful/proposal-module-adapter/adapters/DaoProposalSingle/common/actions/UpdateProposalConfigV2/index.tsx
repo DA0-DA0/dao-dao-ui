@@ -1,13 +1,24 @@
-import { useCallback } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
+import { useCallback, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { isContractSelector } from '@dao-dao/state/recoil'
-import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
+  Cw1WhitelistSelectors,
+  DaoProposalSingleV2Selectors,
+} from '@dao-dao/state/recoil'
+import {
+  BallotDepositEmoji,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
+import {
+  ActionChainContextType,
+  ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMaker,
   ContractVersion,
+  Feature,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -16,30 +27,27 @@ import {
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  ContractName,
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+  convertCosmosVetoConfigToVeto,
+  convertDurationToDurationWithUnits,
+  convertDurationWithUnitsToDuration,
+  convertVetoConfigToCosmos,
+  isFeatureSupportedByVersion,
   makeWasmMessage,
-  objectMatchesStructure,
   versionGte,
 } from '@dao-dao/utils'
 
-import { CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/DaoProposalSingle.v2.recoil'
-import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
-
-export interface UpdateProposalConfigData {
-  onlyMembersExecute: boolean
-
-  thresholdType: '%' | 'majority'
-  thresholdPercentage?: number
-
-  quorumEnabled: boolean
-  quorumType: '%' | 'majority'
-  quorumPercentage?: number
-
-  proposalDuration: number
-  proposalDurationUnits: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds'
-
-  allowRevoting: boolean
-}
+import {
+  useActionOptions,
+  useMsgExecutesContract,
+} from '../../../../../../actions'
+import { AddressInput, Trans } from '../../../../../../components'
+import { useCreateCw1Whitelist } from '../../../../../../hooks'
+import {
+  UpdateProposalConfigComponent,
+  UpdateProposalConfigData,
+} from './UpdateProposalConfigComponent'
 
 const thresholdToTQData = (
   source: Threshold
@@ -107,64 +115,147 @@ const typePercentageToPercentageThreshold = (
   }
 }
 
-const maxVotingInfoToCosmos = (
-  t: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds',
-  v: number
-) => {
-  const converter = {
-    weeks: 604800,
-    days: 86400,
-    hours: 3600,
-    minutes: 60,
-    seconds: 1,
+export const makeUpdateProposalConfigV2ActionMaker = ({
+  version,
+  address: proposalModuleAddress,
+  prePropose,
+}: ProposalModule): ActionMaker<UpdateProposalConfigData> => {
+  const Component: ActionComponent = (props) => {
+    const { t } = useTranslation()
+    const { setError, clearErrors, watch, trigger } =
+      useFormContext<UpdateProposalConfigData>()
+
+    const vetoAddressesLength = watch(
+      (props.fieldNamePrefix + 'veto.addresses') as 'veto.addresses'
+    ).length
+    const vetoCw1WhitelistAddress = watch(
+      (props.fieldNamePrefix +
+        'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress'
+    )
+
+    const { chainContext } = useActionOptions()
+    if (chainContext.type !== ActionChainContextType.Supported) {
+      throw new Error('Unsupported chain context')
+    }
+
+    const {
+      creatingCw1Whitelist: creatingCw1WhitelistVetoers,
+      createCw1Whitelist: createCw1WhitelistVetoers,
+    } = useCreateCw1Whitelist({
+      // Trigger veto address field validations.
+      validation: async () => {
+        await trigger(
+          (props.fieldNamePrefix + 'veto.addresses') as 'veto.addresses',
+          {
+            shouldFocus: true,
+          }
+        )
+      },
+      contractLabel: 'Multi-Vetoer cw1-whitelist',
+    })
+
+    // Prevent action from being submitted if the cw1-whitelist contract has not
+    // yet been created and it needs to be.
+    useEffect(() => {
+      if (vetoAddressesLength > 1 && !vetoCw1WhitelistAddress) {
+        setError(
+          (props.fieldNamePrefix +
+            'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress',
+          {
+            type: 'manual',
+            message: t('error.accountListNeedsSaving'),
+          }
+        )
+      } else {
+        clearErrors(
+          (props.fieldNamePrefix +
+            'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress'
+        )
+      }
+    }, [
+      setError,
+      clearErrors,
+      t,
+      props.fieldNamePrefix,
+      vetoAddressesLength,
+      vetoCw1WhitelistAddress,
+    ])
+
+    return (
+      <UpdateProposalConfigComponent
+        {...props}
+        options={{
+          version,
+          createCw1WhitelistVetoers,
+          creatingCw1WhitelistVetoers,
+          AddressInput,
+          Trans,
+        }}
+      />
+    )
   }
 
-  return {
-    time: converter[t] * v,
-  }
-}
-
-export const makeUpdateProposalConfigV2ActionMaker =
-  ({
-    version,
-    address: proposalModuleAddress,
-  }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+  return ({ t, context, chain: { chain_id: chainId } }) => {
     if (!version || !versionGte(version, ContractVersion.V2Alpha)) {
       return null
     }
 
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
-      const proposalModuleConfig = useRecoilValue(
-        configSelector({
+      const proposalModuleConfig = useCachedLoadingWithError(
+        DaoProposalSingleV2Selectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
       )
 
-      const onlyMembersExecute = proposalModuleConfig.only_members_execute
-      const proposalDuration =
-        'time' in proposalModuleConfig.max_voting_period
-          ? proposalModuleConfig.max_voting_period.time
-          : 604800
-      const proposalDurationUnits = 'seconds'
+      // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
+      // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
+      // undefined.
+      const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
+        !proposalModuleConfig.loading &&
+          !proposalModuleConfig.errored &&
+          proposalModuleConfig.data.veto
+          ? Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+              chainId,
+              contractAddress: proposalModuleConfig.data.veto.vetoer,
+            })
+          : constSelector(undefined)
+      )
 
-      const allowRevoting = proposalModuleConfig.allow_revoting
+      if (
+        proposalModuleConfig.loading ||
+        cw1WhitelistAdminsLoadable.state === 'loading'
+      ) {
+        return
+      } else if (proposalModuleConfig.errored) {
+        return proposalModuleConfig.error
+      } else if (cw1WhitelistAdminsLoadable.state === 'hasError') {
+        return cw1WhitelistAdminsLoadable.contents
+      }
+
+      const onlyMembersExecute = proposalModuleConfig.data.only_members_execute
+
+      const allowRevoting = proposalModuleConfig.data.allow_revoting
 
       return {
         onlyMembersExecute,
-        proposalDuration,
-        proposalDurationUnits,
+        votingDuration: convertDurationToDurationWithUnits(
+          proposalModuleConfig.data.max_voting_period
+        ),
         allowRevoting,
-        ...thresholdToTQData(proposalModuleConfig.threshold),
+        veto: convertCosmosVetoConfigToVeto(
+          proposalModuleConfig.data.veto,
+          cw1WhitelistAdminsLoadable.valueMaybe()
+        ),
+        ...thresholdToTQData(proposalModuleConfig.data.threshold),
       }
     }
 
     const useTransformToCosmos: UseTransformToCosmos<
       UpdateProposalConfigData
     > = () => {
-      const proposalModuleConfig = useRecoilValue(
-        configSelector({
+      const proposalModuleConfig = useCachedLoadingWithError(
+        DaoProposalSingleV2Selectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -172,6 +263,12 @@ export const makeUpdateProposalConfigV2ActionMaker =
 
       return useCallback(
         (data: UpdateProposalConfigData) => {
+          if (proposalModuleConfig.loading) {
+            return
+          } else if (proposalModuleConfig.errored) {
+            throw proposalModuleConfig.error
+          }
+
           const updateConfigMessage: ExecuteMsg = {
             update_config: {
               threshold: data.quorumEnabled
@@ -195,17 +292,21 @@ export const makeUpdateProposalConfigV2ActionMaker =
                       ),
                     },
                   },
-              max_voting_period: maxVotingInfoToCosmos(
-                data.proposalDurationUnits,
-                data.proposalDuration
+              max_voting_period: convertDurationWithUnitsToDuration(
+                data.votingDuration
               ),
               only_members_execute: data.onlyMembersExecute,
               allow_revoting: data.allowRevoting,
+              // If veto is supported...
+              ...(version &&
+                isFeatureSupportedByVersion(Feature.Veto, version) && {
+                  veto: convertVetoConfigToCosmos(data.veto),
+                }),
               // Pass through because we don't support changing them yet.
-              dao: proposalModuleConfig.dao,
+              dao: proposalModuleConfig.data.dao,
               close_proposal_on_execution_failure:
-                proposalModuleConfig.close_proposal_on_execution_failure,
-              min_voting_period: proposalModuleConfig.min_voting_period,
+                proposalModuleConfig.data.close_proposal_on_execution_failure,
+              min_voting_period: proposalModuleConfig.data.min_voting_period,
             },
           }
 
@@ -219,56 +320,45 @@ export const makeUpdateProposalConfigV2ActionMaker =
             },
           })
         },
-        [
-          proposalModuleConfig.dao,
-          proposalModuleConfig.close_proposal_on_execution_failure,
-          proposalModuleConfig.min_voting_period,
-        ]
+        [proposalModuleConfig]
       )
     }
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       msg: Record<string, any>
     ) => {
-      const isUpdateConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                threshold: {},
-                max_voting_period: {
-                  time: {},
-                },
-                only_members_execute: {},
-                allow_revoting: {},
-                dao: {},
-              },
-            },
+      const isUpdateConfig = useMsgExecutesContract(
+        msg,
+        DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+        {
+          update_config: {
+            threshold: {},
+            max_voting_period: {},
+            only_members_execute: {},
+            allow_revoting: {},
+            dao: {},
           },
-        },
-      })
-
-      const isContract = useRecoilValue(
-        isUpdateConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
-      if (!isUpdateConfig || !isContract) {
+      // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
+      // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
+      // undefined.
+      const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
+        isUpdateConfig && msg.wasm.execute.msg.update_config.veto
+          ? Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+              chainId,
+              contractAddress: msg.wasm.execute.msg.update_config.veto.vetoer,
+            })
+          : constSelector(undefined)
+      )
+
+      if (!isUpdateConfig || cw1WhitelistAdminsLoadable.state !== 'hasValue') {
         return { match: false }
       }
 
       const config = msg.wasm.execute.msg.update_config
       const onlyMembersExecute = config.only_members_execute
-
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
 
       const allowRevoting = !!config.allow_revoting
 
@@ -276,9 +366,14 @@ export const makeUpdateProposalConfigV2ActionMaker =
         match: true,
         data: {
           onlyMembersExecute,
-          proposalDuration,
-          proposalDurationUnits,
+          votingDuration: convertDurationToDurationWithUnits(
+            config.max_voting_period
+          ),
           allowRevoting,
+          veto: convertCosmosVetoConfigToVeto(
+            config.veto,
+            cw1WhitelistAdminsLoadable.valueMaybe()
+          ),
           ...thresholdToTQData(config.threshold),
         },
       }
@@ -289,9 +384,13 @@ export const makeUpdateProposalConfigV2ActionMaker =
       Icon: BallotDepositEmoji,
       label: t('form.updateVotingConfigTitle', {
         context:
-          // If more than one proposal module, specify which one this is.
-          context.type === ActionContextType.Dao &&
-          context.info.proposalModules.length > 1
+          // If this is an approver proposal module that approves proposals in
+          // another DAO, specify it.
+          prePropose?.contractName === ContractName.PreProposeApprover
+            ? 'singleChoiceApproval'
+            : // If more than one proposal module, specify which one this is.
+            context.type === ActionContextType.Dao &&
+              context.info.proposalModules.length > 1
             ? 'singleChoice'
             : undefined,
       }),
@@ -303,3 +402,4 @@ export const makeUpdateProposalConfigV2ActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}

@@ -1,6 +1,9 @@
 import { ProposalModuleAdapter } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+  DaoProposalSingleAdapterId,
+} from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -8,9 +11,15 @@ import {
   makeDepositInfoSelector,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
+  proposalCountSelector,
+  reversePreProposeCompletedProposalInfosSelector,
+  reversePreProposePendingProposalInfosSelector,
   reverseProposalInfosSelector,
 } from './common'
 import {
+  PreProposeApprovalInnerContentDisplay,
+  PreProposeApprovalProposalLine,
+  PreProposeApprovalProposalStatusAndInfo,
   ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -18,12 +27,17 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import { CONTRACT_NAMES } from './constants'
 import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
-import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
+  useLoadingPreProposeApprovalProposal,
   useLoadingProposalExecutionTxHash,
+  useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
@@ -36,7 +50,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalSingleAdapterId,
-  contractNames: CONTRACT_NAMES,
+  contractNames: DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
@@ -44,7 +58,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       chainId: options.chain.chain_id,
       proposalModuleAddress: options.proposalModule.address,
       version: options.proposalModule.version,
-      preProposeAddress: options.proposalModule.preProposeAddress,
+      preProposeAddress: options.proposalModule.prePropose?.address ?? null,
     })
 
     const usePublishProposal = makeUsePublishProposal({
@@ -66,6 +80,10 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
 
       // Selectors
       selectors: {
+        proposalCount: proposalCountSelector({
+          chainId: options.chain.chain_id,
+          proposalModuleAddress: options.proposalModule.address,
+        }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
             chainId: options.chain.chain_id,
@@ -74,6 +92,26 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             ...props,
           }),
         depositInfo: depositInfoSelector,
+        ...(options.proposalModule.prePropose
+          ? {
+              reversePreProposePendingProposalInfos: (props) =>
+                reversePreProposePendingProposalInfosSelector({
+                  chainId: options.chain.chain_id,
+                  proposalModuleAddress:
+                    options.proposalModule.prePropose!.address,
+                  proposalModulePrefix: options.proposalModule.prefix,
+                  ...props,
+                }),
+              reversePreProposeCompletedProposalInfos: (props) =>
+                reversePreProposeCompletedProposalInfosSelector({
+                  chainId: options.chain.chain_id,
+                  proposalModuleAddress:
+                    options.proposalModule.prePropose!.address,
+                  proposalModulePrefix: options.proposalModule.prefix,
+                  ...props,
+                }),
+            }
+          : {}),
       },
 
       // Hooks
@@ -109,8 +147,11 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
+      useLoadingProposalStatus,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
+
+      useLoadingPreProposeApprovalProposal,
     },
 
     // Components
@@ -121,6 +162,10 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       ProposalVotes,
       ProposalVoteTally,
       ProposalLine,
+
+      PreProposeApprovalProposalStatusAndInfo,
+      PreProposeApprovalInnerContentDisplay,
+      PreProposeApprovalProposalLine,
     },
   }),
 
@@ -134,7 +179,8 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   },
 
   functions: {
-    fetchPreProposeAddress,
+    fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

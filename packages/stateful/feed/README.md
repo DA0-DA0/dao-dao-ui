@@ -4,9 +4,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 ## Sources
 
-| Adapter                                  | Summary                          |
-| ---------------------------------------- | -------------------------------- |
-| [OpenProposals](./sources/OpenProposals) | Open proposals in following DAOs |
+| Adapter                                          | Summary                              |
+| ------------------------------------------------ | ------------------------------------ |
+| [OpenProposals](./sources/OpenProposals)         | Open proposals in following DAOs     |
+| [VetoableProposals](./sources/VetoableProposals) | Vetoable proposals in following DAOs |
 
 ## Layout
 

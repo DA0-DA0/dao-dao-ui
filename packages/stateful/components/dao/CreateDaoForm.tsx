@@ -1,18 +1,16 @@
-import { Buffer } from 'buffer'
-
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { useEffect, useMemo, useState } from 'react'
-import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  FormProvider,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -49,6 +47,7 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
+  encodeMessageAsBase64,
   findWasmAttributeValue,
   getFallbackImage,
   getFundsFromDaoInstantiateMsg,
@@ -68,6 +67,7 @@ import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
+  useQuerySyncedRecoilState,
   useWallet,
   useWalletInfo,
 } from '../../hooks'
@@ -77,11 +77,11 @@ import {
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
-import { ChainSwitcher } from '../ChainSwitcher'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
+import { WalletChainSwitcher } from '../wallet'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
 // i18n keys
@@ -101,10 +101,16 @@ export interface CreateDaoFormProps {
 }
 
 export const CreateDaoForm = (props: CreateDaoFormProps) => {
-  const setWalletChainId = useSetRecoilState(walletChainIdAtom)
+  // Sync chain ID in query param.
+  const [, setWalletChainId] = useQuerySyncedRecoilState({
+    // If parent DAO exists, we use the parent DAO's chain, so no need to sync
+    // this in state as it won't be used.
+    param: props.parentDao ? undefined : 'chain',
+    atom: walletChainIdAtom,
+  })
+
+  // If parent DAO exists, we're making a SubDAO, so use the parent DAO's chain.
   const chainId = useRecoilValue(
-    // If parent DAO exists, we're making a SubDAO, so use the parent DAO's
-    // chain ID.
     props.parentDao ? constSelector(props.parentDao.chainId) : walletChainIdAtom
   )
 
@@ -402,10 +408,7 @@ export const InnerCreateDaoForm = ({
     const { logs } = await instantiateWithFactory(
       {
         codeId: codeIds.DaoCore,
-        instantiateMsg: Buffer.from(
-          JSON.stringify(instantiateMsg),
-          'utf8'
-        ).toString('base64'),
+        instantiateMsg: encodeMessageAsBase64(instantiateMsg),
         label: instantiateMsg.name,
       },
       CHAIN_GAS_MULTIPLIER,
@@ -650,21 +653,32 @@ export const InnerCreateDaoForm = ({
             name.trim() ||
             (makingSubDao ? t('title.newSubDao') : t('title.newDao')),
         }}
-        className="mx-auto max-w-4xl"
+        className="mx-auto max-w-5xl"
         gradient
-        rightNode={!makingSubDao && <ChainSwitcher />}
+        rightNode={
+          !makingSubDao && (
+            <div className="hidden sm:block">
+              <WalletChainSwitcher />
+            </div>
+          )
+        }
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
-        className="relative z-[1] mx-auto flex max-w-4xl flex-col items-stretch"
+        className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch"
         onSubmit={formOnSubmit}
       >
         {/* Show image selector or DAO header depending on page. */}
         {pageIndex === 0 ? (
-          <div className="flex flex-col items-center py-10">
+          <div className="flex flex-col items-center pb-10">
+            <div className="sm:hidden">
+              <WalletChainSwitcher />
+            </div>
+
             <ImageSelector
               Trans={Trans}
+              className="mt-10"
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
@@ -693,7 +707,9 @@ export const InnerCreateDaoForm = ({
         )}
 
         <div className="mb-14">
-          <Page {...createDaoContext} />
+          <FormProvider {...form}>
+            <Page {...createDaoContext} />
+          </FormProvider>
 
           {/* If funds are required, display on last page. */}
           {pageIndex === CreateDaoPages.length - 1 &&

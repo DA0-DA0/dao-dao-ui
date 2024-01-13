@@ -18,9 +18,9 @@ export interface TickInfoProtoMsg {
   value: Uint8Array;
 }
 export interface TickInfoAmino {
-  liquidity_gross: string;
-  liquidity_net: string;
-  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinAmino[];
+  liquidity_gross?: string;
+  liquidity_net?: string;
+  spread_reward_growth_opposite_direction_of_last_traversal?: DecCoinAmino[];
   /**
    * uptime_trackers is a container encapsulating the uptime trackers.
    * We use a container instead of a "repeated UptimeTracker" directly
@@ -47,7 +47,7 @@ export interface UptimeTrackersProtoMsg {
   value: Uint8Array;
 }
 export interface UptimeTrackersAmino {
-  list: UptimeTrackerAmino[];
+  list?: UptimeTrackerAmino[];
 }
 export interface UptimeTrackersAminoMsg {
   type: "osmosis/concentratedliquidity/uptime-trackers";
@@ -64,7 +64,7 @@ export interface UptimeTrackerProtoMsg {
   value: Uint8Array;
 }
 export interface UptimeTrackerAmino {
-  uptime_growth_outside: DecCoinAmino[];
+  uptime_growth_outside?: DecCoinAmino[];
 }
 export interface UptimeTrackerAminoMsg {
   type: "osmosis/concentratedliquidity/uptime-tracker";
@@ -133,12 +133,18 @@ export const TickInfo = {
     return message;
   },
   fromAmino(object: TickInfoAmino): TickInfo {
-    return {
-      liquidityGross: object.liquidity_gross,
-      liquidityNet: object.liquidity_net,
-      spreadRewardGrowthOppositeDirectionOfLastTraversal: Array.isArray(object?.spread_reward_growth_opposite_direction_of_last_traversal) ? object.spread_reward_growth_opposite_direction_of_last_traversal.map((e: any) => DecCoin.fromAmino(e)) : [],
-      uptimeTrackers: object?.uptime_trackers ? UptimeTrackers.fromAmino(object.uptime_trackers) : undefined
-    };
+    const message = createBaseTickInfo();
+    if (object.liquidity_gross !== undefined && object.liquidity_gross !== null) {
+      message.liquidityGross = object.liquidity_gross;
+    }
+    if (object.liquidity_net !== undefined && object.liquidity_net !== null) {
+      message.liquidityNet = object.liquidity_net;
+    }
+    message.spreadRewardGrowthOppositeDirectionOfLastTraversal = object.spread_reward_growth_opposite_direction_of_last_traversal?.map(e => DecCoin.fromAmino(e)) || [];
+    if (object.uptime_trackers !== undefined && object.uptime_trackers !== null) {
+      message.uptimeTrackers = UptimeTrackers.fromAmino(object.uptime_trackers);
+    }
+    return message;
   },
   toAmino(message: TickInfo, useInterfaces: boolean = false): TickInfoAmino {
     const obj: any = {};
@@ -210,9 +216,9 @@ export const UptimeTrackers = {
     return message;
   },
   fromAmino(object: UptimeTrackersAmino): UptimeTrackers {
-    return {
-      list: Array.isArray(object?.list) ? object.list.map((e: any) => UptimeTracker.fromAmino(e)) : []
-    };
+    const message = createBaseUptimeTrackers();
+    message.list = object.list?.map(e => UptimeTracker.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: UptimeTrackers, useInterfaces: boolean = false): UptimeTrackersAmino {
     const obj: any = {};
@@ -281,9 +287,9 @@ export const UptimeTracker = {
     return message;
   },
   fromAmino(object: UptimeTrackerAmino): UptimeTracker {
-    return {
-      uptimeGrowthOutside: Array.isArray(object?.uptime_growth_outside) ? object.uptime_growth_outside.map((e: any) => DecCoin.fromAmino(e)) : []
-    };
+    const message = createBaseUptimeTracker();
+    message.uptimeGrowthOutside = object.uptime_growth_outside?.map(e => DecCoin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: UptimeTracker, useInterfaces: boolean = false): UptimeTrackerAmino {
     const obj: any = {};

@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 
 import { Button } from './buttons'
 import { IconButton } from './icon_buttons'
+import { Loader } from './logo'
 
 export const PAGINATION_MIN_PAGE = 1
 
@@ -17,6 +18,10 @@ export type PaginationProps = {
   setPage: (page: number) => void
   pageSize: number
   className?: string
+  /**
+   * Show loading indicator over current page.
+   */
+  loading?: boolean
 }
 
 export const Pagination = ({
@@ -25,6 +30,7 @@ export const Pagination = ({
   setPage,
   pageSize,
   className,
+  loading,
 }: PaginationProps) => {
   const maxPage = Math.ceil(total / pageSize)
   const page = Math.min(Math.max(PAGINATION_MIN_PAGE, _page), maxPage)
@@ -68,14 +74,24 @@ export const Pagination = ({
         {PAGINATION_MIN_PAGE}
       </Button>
 
-      {/* Show current page if not first or last. */}
-      {page > PAGINATION_MIN_PAGE && page < maxPage ? (
-        <Button className="text-lg" disabled pressed size="sm" variant="ghost">
-          {page}
-        </Button>
-      ) : (
-        <Remove className="!h-5 !w-5" />
-      )}
+      <div className="flex h-6 w-6 items-center justify-center">
+        {loading ? (
+          <Loader fill={false} size={22} />
+        ) : // Show current page if not first or last.
+        page > PAGINATION_MIN_PAGE && page < maxPage ? (
+          <Button
+            className="text-lg"
+            disabled
+            pressed
+            size="sm"
+            variant="ghost"
+          >
+            {page}
+          </Button>
+        ) : (
+          <Remove className="!h-5 !w-5" />
+        )}
+      </div>
 
       <Button
         circular

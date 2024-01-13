@@ -30,8 +30,8 @@ export interface UserPositionsRequestProtoMsg {
 }
 /** =============================== UserPositions */
 export interface UserPositionsRequestAmino {
-  address: string;
-  pool_id: string;
+  address?: string;
+  pool_id?: string;
   pagination?: PageRequestAmino | undefined;
 }
 export interface UserPositionsRequestAminoMsg {
@@ -53,7 +53,7 @@ export interface UserPositionsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface UserPositionsResponseAmino {
-  positions: FullPositionBreakdownAmino[];
+  positions?: FullPositionBreakdownAmino[];
   pagination?: PageResponseAmino | undefined;
 }
 export interface UserPositionsResponseAminoMsg {
@@ -74,7 +74,7 @@ export interface PositionByIdRequestProtoMsg {
 }
 /** =============================== PositionById */
 export interface PositionByIdRequestAmino {
-  position_id: string;
+  position_id?: string;
 }
 export interface PositionByIdRequestAminoMsg {
   type: "osmosis/concentratedliquidity/position-by-id-request";
@@ -136,7 +136,7 @@ export type PoolsResponseEncoded = Omit<PoolsResponse, "pools"> & {
   pools: (Pool1ProtoMsg | CosmWasmPoolProtoMsg | Pool2ProtoMsg | Pool3ProtoMsg | AnyProtoMsg)[];
 };
 export interface PoolsResponseAmino {
-  pools: AnyAmino[];
+  pools?: AnyAmino[];
   /** pagination defines the pagination in the response. */
   pagination?: PageResponseAmino | undefined;
 }
@@ -188,8 +188,8 @@ export interface TickLiquidityNetProtoMsg {
   value: Uint8Array;
 }
 export interface TickLiquidityNetAmino {
-  liquidity_net: string;
-  tick_index: string;
+  liquidity_net?: string;
+  tick_index?: string;
 }
 export interface TickLiquidityNetAminoMsg {
   type: "osmosis/concentratedliquidity/tick-liquidity-net";
@@ -209,9 +209,9 @@ export interface LiquidityDepthWithRangeProtoMsg {
   value: Uint8Array;
 }
 export interface LiquidityDepthWithRangeAmino {
-  liquidity_amount: string;
-  lower_tick: string;
-  upper_tick: string;
+  liquidity_amount?: string;
+  lower_tick?: string;
+  upper_tick?: string;
 }
 export interface LiquidityDepthWithRangeAminoMsg {
   type: "osmosis/concentratedliquidity/liquidity-depth-with-range";
@@ -237,12 +237,12 @@ export interface LiquidityNetInDirectionRequestProtoMsg {
 }
 /** =============================== LiquidityNetInDirection */
 export interface LiquidityNetInDirectionRequestAmino {
-  pool_id: string;
-  token_in: string;
-  start_tick: string;
-  use_cur_tick: boolean;
-  bound_tick: string;
-  use_no_bound: boolean;
+  pool_id?: string;
+  token_in?: string;
+  start_tick?: string;
+  use_cur_tick?: boolean;
+  bound_tick?: string;
+  use_no_bound?: boolean;
 }
 export interface LiquidityNetInDirectionRequestAminoMsg {
   type: "osmosis/concentratedliquidity/liquidity-net-in-direction-request";
@@ -267,9 +267,9 @@ export interface LiquidityNetInDirectionResponseProtoMsg {
   value: Uint8Array;
 }
 export interface LiquidityNetInDirectionResponseAmino {
-  liquidity_depths: TickLiquidityNetAmino[];
-  current_tick: string;
-  current_liquidity: string;
+  liquidity_depths?: TickLiquidityNetAmino[];
+  current_tick?: string;
+  current_liquidity?: string;
 }
 export interface LiquidityNetInDirectionResponseAminoMsg {
   type: "osmosis/concentratedliquidity/liquidity-net-in-direction-response";
@@ -290,7 +290,7 @@ export interface LiquidityPerTickRangeRequestProtoMsg {
 }
 /** =============================== LiquidityPerTickRange */
 export interface LiquidityPerTickRangeRequestAmino {
-  pool_id: string;
+  pool_id?: string;
 }
 export interface LiquidityPerTickRangeRequestAminoMsg {
   type: "osmosis/concentratedliquidity/liquidity-per-tick-range-request";
@@ -308,7 +308,7 @@ export interface LiquidityPerTickRangeResponseProtoMsg {
   value: Uint8Array;
 }
 export interface LiquidityPerTickRangeResponseAmino {
-  liquidity: LiquidityDepthWithRangeAmino[];
+  liquidity?: LiquidityDepthWithRangeAmino[];
 }
 export interface LiquidityPerTickRangeResponseAminoMsg {
   type: "osmosis/concentratedliquidity/liquidity-per-tick-range-response";
@@ -327,7 +327,7 @@ export interface ClaimableSpreadRewardsRequestProtoMsg {
 }
 /** ===================== QueryClaimableSpreadRewards */
 export interface ClaimableSpreadRewardsRequestAmino {
-  position_id: string;
+  position_id?: string;
 }
 export interface ClaimableSpreadRewardsRequestAminoMsg {
   type: "osmosis/concentratedliquidity/claimable-spread-rewards-request";
@@ -345,7 +345,7 @@ export interface ClaimableSpreadRewardsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface ClaimableSpreadRewardsResponseAmino {
-  claimable_spread_rewards: CoinAmino[];
+  claimable_spread_rewards?: CoinAmino[];
 }
 export interface ClaimableSpreadRewardsResponseAminoMsg {
   type: "osmosis/concentratedliquidity/claimable-spread-rewards-response";
@@ -364,7 +364,7 @@ export interface ClaimableIncentivesRequestProtoMsg {
 }
 /** ===================== QueryClaimableIncentives */
 export interface ClaimableIncentivesRequestAmino {
-  position_id: string;
+  position_id?: string;
 }
 export interface ClaimableIncentivesRequestAminoMsg {
   type: "osmosis/concentratedliquidity/claimable-incentives-request";
@@ -383,8 +383,8 @@ export interface ClaimableIncentivesResponseProtoMsg {
   value: Uint8Array;
 }
 export interface ClaimableIncentivesResponseAmino {
-  claimable_incentives: CoinAmino[];
-  forfeited_incentives: CoinAmino[];
+  claimable_incentives?: CoinAmino[];
+  forfeited_incentives?: CoinAmino[];
 }
 export interface ClaimableIncentivesResponseAminoMsg {
   type: "osmosis/concentratedliquidity/claimable-incentives-response";
@@ -404,7 +404,7 @@ export interface PoolAccumulatorRewardsRequestProtoMsg {
 }
 /** ===================== QueryPoolAccumulatorRewards */
 export interface PoolAccumulatorRewardsRequestAmino {
-  pool_id: string;
+  pool_id?: string;
 }
 export interface PoolAccumulatorRewardsRequestAminoMsg {
   type: "osmosis/concentratedliquidity/pool-accumulator-rewards-request";
@@ -423,8 +423,8 @@ export interface PoolAccumulatorRewardsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface PoolAccumulatorRewardsResponseAmino {
-  spread_reward_growth_global: DecCoinAmino[];
-  uptime_growth_global: UptimeTrackerAmino[];
+  spread_reward_growth_global?: DecCoinAmino[];
+  uptime_growth_global?: UptimeTrackerAmino[];
 }
 export interface PoolAccumulatorRewardsResponseAminoMsg {
   type: "osmosis/concentratedliquidity/pool-accumulator-rewards-response";
@@ -445,8 +445,8 @@ export interface TickAccumulatorTrackersRequestProtoMsg {
 }
 /** ===================== QueryTickAccumulatorTrackers */
 export interface TickAccumulatorTrackersRequestAmino {
-  pool_id: string;
-  tick_index: string;
+  pool_id?: string;
+  tick_index?: string;
 }
 export interface TickAccumulatorTrackersRequestAminoMsg {
   type: "osmosis/concentratedliquidity/tick-accumulator-trackers-request";
@@ -466,8 +466,8 @@ export interface TickAccumulatorTrackersResponseProtoMsg {
   value: Uint8Array;
 }
 export interface TickAccumulatorTrackersResponseAmino {
-  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinAmino[];
-  uptime_trackers: UptimeTrackerAmino[];
+  spread_reward_growth_opposite_direction_of_last_traversal?: DecCoinAmino[];
+  uptime_trackers?: UptimeTrackerAmino[];
 }
 export interface TickAccumulatorTrackersResponseAminoMsg {
   type: "osmosis/concentratedliquidity/tick-accumulator-trackers-response";
@@ -488,7 +488,7 @@ export interface IncentiveRecordsRequestProtoMsg {
 }
 /** ===================== QueryIncentiveRecords */
 export interface IncentiveRecordsRequestAmino {
-  pool_id: string;
+  pool_id?: string;
   pagination?: PageRequestAmino | undefined;
 }
 export interface IncentiveRecordsRequestAminoMsg {
@@ -510,7 +510,7 @@ export interface IncentiveRecordsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface IncentiveRecordsResponseAmino {
-  incentive_records: IncentiveRecordAmino[];
+  incentive_records?: IncentiveRecordAmino[];
   /** pagination defines the pagination in the response. */
   pagination?: PageResponseAmino | undefined;
 }
@@ -532,7 +532,7 @@ export interface CFMMPoolIdLinkFromConcentratedPoolIdRequestProtoMsg {
 }
 /** =============================== CFMMPoolIdLinkFromConcentratedPoolId */
 export interface CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino {
-  concentrated_pool_id: string;
+  concentrated_pool_id?: string;
 }
 export interface CFMMPoolIdLinkFromConcentratedPoolIdRequestAminoMsg {
   type: "osmosis/concentratedliquidity/cfmmpool-id-link-from-concentrated-pool-id-request";
@@ -550,7 +550,7 @@ export interface CFMMPoolIdLinkFromConcentratedPoolIdResponseProtoMsg {
   value: Uint8Array;
 }
 export interface CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino {
-  cfmm_pool_id: string;
+  cfmm_pool_id?: string;
 }
 export interface CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg {
   type: "osmosis/concentratedliquidity/cfmmpool-id-link-from-concentrated-pool-id-response";
@@ -569,7 +569,7 @@ export interface UserUnbondingPositionsRequestProtoMsg {
 }
 /** =============================== UserUnbondingPositions */
 export interface UserUnbondingPositionsRequestAmino {
-  address: string;
+  address?: string;
 }
 export interface UserUnbondingPositionsRequestAminoMsg {
   type: "osmosis/concentratedliquidity/user-unbonding-positions-request";
@@ -587,7 +587,7 @@ export interface UserUnbondingPositionsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface UserUnbondingPositionsResponseAmino {
-  positions_with_period_lock: PositionWithPeriodLockAmino[];
+  positions_with_period_lock?: PositionWithPeriodLockAmino[];
 }
 export interface UserUnbondingPositionsResponseAminoMsg {
   type: "osmosis/concentratedliquidity/user-unbonding-positions-response";
@@ -618,7 +618,7 @@ export interface GetTotalLiquidityResponseProtoMsg {
   value: Uint8Array;
 }
 export interface GetTotalLiquidityResponseAmino {
-  total_liquidity: CoinAmino[];
+  total_liquidity?: CoinAmino[];
 }
 export interface GetTotalLiquidityResponseAminoMsg {
   type: "osmosis/concentratedliquidity/get-total-liquidity-response";
@@ -639,9 +639,9 @@ export interface NumNextInitializedTicksRequestProtoMsg {
 }
 /** =============================== NumNextInitializedTicks */
 export interface NumNextInitializedTicksRequestAmino {
-  pool_id: string;
-  token_in_denom: string;
-  num_next_initialized_ticks: string;
+  pool_id?: string;
+  token_in_denom?: string;
+  num_next_initialized_ticks?: string;
 }
 export interface NumNextInitializedTicksRequestAminoMsg {
   type: "osmosis/concentratedliquidity/num-next-initialized-ticks-request";
@@ -663,9 +663,9 @@ export interface NumNextInitializedTicksResponseProtoMsg {
   value: Uint8Array;
 }
 export interface NumNextInitializedTicksResponseAmino {
-  liquidity_depths: TickLiquidityNetAmino[];
-  current_tick: string;
-  current_liquidity: string;
+  liquidity_depths?: TickLiquidityNetAmino[];
+  current_tick?: string;
+  current_liquidity?: string;
 }
 export interface NumNextInitializedTicksResponseAminoMsg {
   type: "osmosis/concentratedliquidity/num-next-initialized-ticks-response";
@@ -728,11 +728,17 @@ export const UserPositionsRequest = {
     return message;
   },
   fromAmino(object: UserPositionsRequestAmino): UserPositionsRequest {
-    return {
-      address: object.address,
-      poolId: BigInt(object.pool_id),
-      pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
-    };
+    const message = createBaseUserPositionsRequest();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: UserPositionsRequest, useInterfaces: boolean = false): UserPositionsRequestAmino {
     const obj: any = {};
@@ -807,10 +813,12 @@ export const UserPositionsResponse = {
     return message;
   },
   fromAmino(object: UserPositionsResponseAmino): UserPositionsResponse {
-    return {
-      positions: Array.isArray(object?.positions) ? object.positions.map((e: any) => FullPositionBreakdown.fromAmino(e)) : [],
-      pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
-    };
+    const message = createBaseUserPositionsResponse();
+    message.positions = object.positions?.map(e => FullPositionBreakdown.fromAmino(e)) || [];
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: UserPositionsResponse, useInterfaces: boolean = false): UserPositionsResponseAmino {
     const obj: any = {};
@@ -880,9 +888,11 @@ export const PositionByIdRequest = {
     return message;
   },
   fromAmino(object: PositionByIdRequestAmino): PositionByIdRequest {
-    return {
-      positionId: BigInt(object.position_id)
-    };
+    const message = createBasePositionByIdRequest();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    return message;
   },
   toAmino(message: PositionByIdRequest, useInterfaces: boolean = false): PositionByIdRequestAmino {
     const obj: any = {};
@@ -947,9 +957,11 @@ export const PositionByIdResponse = {
     return message;
   },
   fromAmino(object: PositionByIdResponseAmino): PositionByIdResponse {
-    return {
-      position: object?.position ? FullPositionBreakdown.fromAmino(object.position) : undefined
-    };
+    const message = createBasePositionByIdResponse();
+    if (object.position !== undefined && object.position !== null) {
+      message.position = FullPositionBreakdown.fromAmino(object.position);
+    }
+    return message;
   },
   toAmino(message: PositionByIdResponse, useInterfaces: boolean = false): PositionByIdResponseAmino {
     const obj: any = {};
@@ -1014,9 +1026,11 @@ export const PoolsRequest = {
     return message;
   },
   fromAmino(object: PoolsRequestAmino): PoolsRequest {
-    return {
-      pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
-    };
+    const message = createBasePoolsRequest();
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAmino {
     const obj: any = {};
@@ -1089,10 +1103,12 @@ export const PoolsResponse = {
     return message;
   },
   fromAmino(object: PoolsResponseAmino): PoolsResponse {
-    return {
-      pools: Array.isArray(object?.pools) ? object.pools.map((e: any) => PoolI_FromAmino(e)) : [],
-      pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
-    };
+    const message = createBasePoolsResponse();
+    message.pools = object.pools?.map(e => PoolI_FromAmino(e)) || [];
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAmino {
     const obj: any = {};
@@ -1153,7 +1169,8 @@ export const ParamsRequest = {
     return message;
   },
   fromAmino(_: ParamsRequestAmino): ParamsRequest {
-    return {};
+    const message = createBaseParamsRequest();
+    return message;
   },
   toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
     const obj: any = {};
@@ -1217,9 +1234,11 @@ export const ParamsResponse = {
     return message;
   },
   fromAmino(object: ParamsResponseAmino): ParamsResponse {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseParamsResponse();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
     const obj: any = {};
@@ -1292,10 +1311,14 @@ export const TickLiquidityNet = {
     return message;
   },
   fromAmino(object: TickLiquidityNetAmino): TickLiquidityNet {
-    return {
-      liquidityNet: object.liquidity_net,
-      tickIndex: BigInt(object.tick_index)
-    };
+    const message = createBaseTickLiquidityNet();
+    if (object.liquidity_net !== undefined && object.liquidity_net !== null) {
+      message.liquidityNet = object.liquidity_net;
+    }
+    if (object.tick_index !== undefined && object.tick_index !== null) {
+      message.tickIndex = BigInt(object.tick_index);
+    }
+    return message;
   },
   toAmino(message: TickLiquidityNet, useInterfaces: boolean = false): TickLiquidityNetAmino {
     const obj: any = {};
@@ -1377,11 +1400,17 @@ export const LiquidityDepthWithRange = {
     return message;
   },
   fromAmino(object: LiquidityDepthWithRangeAmino): LiquidityDepthWithRange {
-    return {
-      liquidityAmount: object.liquidity_amount,
-      lowerTick: BigInt(object.lower_tick),
-      upperTick: BigInt(object.upper_tick)
-    };
+    const message = createBaseLiquidityDepthWithRange();
+    if (object.liquidity_amount !== undefined && object.liquidity_amount !== null) {
+      message.liquidityAmount = object.liquidity_amount;
+    }
+    if (object.lower_tick !== undefined && object.lower_tick !== null) {
+      message.lowerTick = BigInt(object.lower_tick);
+    }
+    if (object.upper_tick !== undefined && object.upper_tick !== null) {
+      message.upperTick = BigInt(object.upper_tick);
+    }
+    return message;
   },
   toAmino(message: LiquidityDepthWithRange, useInterfaces: boolean = false): LiquidityDepthWithRangeAmino {
     const obj: any = {};
@@ -1488,14 +1517,26 @@ export const LiquidityNetInDirectionRequest = {
     return message;
   },
   fromAmino(object: LiquidityNetInDirectionRequestAmino): LiquidityNetInDirectionRequest {
-    return {
-      poolId: BigInt(object.pool_id),
-      tokenIn: object.token_in,
-      startTick: BigInt(object.start_tick),
-      useCurTick: object.use_cur_tick,
-      boundTick: BigInt(object.bound_tick),
-      useNoBound: object.use_no_bound
-    };
+    const message = createBaseLiquidityNetInDirectionRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = object.token_in;
+    }
+    if (object.start_tick !== undefined && object.start_tick !== null) {
+      message.startTick = BigInt(object.start_tick);
+    }
+    if (object.use_cur_tick !== undefined && object.use_cur_tick !== null) {
+      message.useCurTick = object.use_cur_tick;
+    }
+    if (object.bound_tick !== undefined && object.bound_tick !== null) {
+      message.boundTick = BigInt(object.bound_tick);
+    }
+    if (object.use_no_bound !== undefined && object.use_no_bound !== null) {
+      message.useNoBound = object.use_no_bound;
+    }
+    return message;
   },
   toAmino(message: LiquidityNetInDirectionRequest, useInterfaces: boolean = false): LiquidityNetInDirectionRequestAmino {
     const obj: any = {};
@@ -1581,11 +1622,15 @@ export const LiquidityNetInDirectionResponse = {
     return message;
   },
   fromAmino(object: LiquidityNetInDirectionResponseAmino): LiquidityNetInDirectionResponse {
-    return {
-      liquidityDepths: Array.isArray(object?.liquidity_depths) ? object.liquidity_depths.map((e: any) => TickLiquidityNet.fromAmino(e)) : [],
-      currentTick: BigInt(object.current_tick),
-      currentLiquidity: object.current_liquidity
-    };
+    const message = createBaseLiquidityNetInDirectionResponse();
+    message.liquidityDepths = object.liquidity_depths?.map(e => TickLiquidityNet.fromAmino(e)) || [];
+    if (object.current_tick !== undefined && object.current_tick !== null) {
+      message.currentTick = BigInt(object.current_tick);
+    }
+    if (object.current_liquidity !== undefined && object.current_liquidity !== null) {
+      message.currentLiquidity = object.current_liquidity;
+    }
+    return message;
   },
   toAmino(message: LiquidityNetInDirectionResponse, useInterfaces: boolean = false): LiquidityNetInDirectionResponseAmino {
     const obj: any = {};
@@ -1656,9 +1701,11 @@ export const LiquidityPerTickRangeRequest = {
     return message;
   },
   fromAmino(object: LiquidityPerTickRangeRequestAmino): LiquidityPerTickRangeRequest {
-    return {
-      poolId: BigInt(object.pool_id)
-    };
+    const message = createBaseLiquidityPerTickRangeRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: LiquidityPerTickRangeRequest, useInterfaces: boolean = false): LiquidityPerTickRangeRequestAmino {
     const obj: any = {};
@@ -1723,9 +1770,9 @@ export const LiquidityPerTickRangeResponse = {
     return message;
   },
   fromAmino(object: LiquidityPerTickRangeResponseAmino): LiquidityPerTickRangeResponse {
-    return {
-      liquidity: Array.isArray(object?.liquidity) ? object.liquidity.map((e: any) => LiquidityDepthWithRange.fromAmino(e)) : []
-    };
+    const message = createBaseLiquidityPerTickRangeResponse();
+    message.liquidity = object.liquidity?.map(e => LiquidityDepthWithRange.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: LiquidityPerTickRangeResponse, useInterfaces: boolean = false): LiquidityPerTickRangeResponseAmino {
     const obj: any = {};
@@ -1794,9 +1841,11 @@ export const ClaimableSpreadRewardsRequest = {
     return message;
   },
   fromAmino(object: ClaimableSpreadRewardsRequestAmino): ClaimableSpreadRewardsRequest {
-    return {
-      positionId: BigInt(object.position_id)
-    };
+    const message = createBaseClaimableSpreadRewardsRequest();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    return message;
   },
   toAmino(message: ClaimableSpreadRewardsRequest, useInterfaces: boolean = false): ClaimableSpreadRewardsRequestAmino {
     const obj: any = {};
@@ -1861,9 +1910,9 @@ export const ClaimableSpreadRewardsResponse = {
     return message;
   },
   fromAmino(object: ClaimableSpreadRewardsResponseAmino): ClaimableSpreadRewardsResponse {
-    return {
-      claimableSpreadRewards: Array.isArray(object?.claimable_spread_rewards) ? object.claimable_spread_rewards.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseClaimableSpreadRewardsResponse();
+    message.claimableSpreadRewards = object.claimable_spread_rewards?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: ClaimableSpreadRewardsResponse, useInterfaces: boolean = false): ClaimableSpreadRewardsResponseAmino {
     const obj: any = {};
@@ -1932,9 +1981,11 @@ export const ClaimableIncentivesRequest = {
     return message;
   },
   fromAmino(object: ClaimableIncentivesRequestAmino): ClaimableIncentivesRequest {
-    return {
-      positionId: BigInt(object.position_id)
-    };
+    const message = createBaseClaimableIncentivesRequest();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    return message;
   },
   toAmino(message: ClaimableIncentivesRequest, useInterfaces: boolean = false): ClaimableIncentivesRequestAmino {
     const obj: any = {};
@@ -2007,10 +2058,10 @@ export const ClaimableIncentivesResponse = {
     return message;
   },
   fromAmino(object: ClaimableIncentivesResponseAmino): ClaimableIncentivesResponse {
-    return {
-      claimableIncentives: Array.isArray(object?.claimable_incentives) ? object.claimable_incentives.map((e: any) => Coin.fromAmino(e)) : [],
-      forfeitedIncentives: Array.isArray(object?.forfeited_incentives) ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseClaimableIncentivesResponse();
+    message.claimableIncentives = object.claimable_incentives?.map(e => Coin.fromAmino(e)) || [];
+    message.forfeitedIncentives = object.forfeited_incentives?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: ClaimableIncentivesResponse, useInterfaces: boolean = false): ClaimableIncentivesResponseAmino {
     const obj: any = {};
@@ -2084,9 +2135,11 @@ export const PoolAccumulatorRewardsRequest = {
     return message;
   },
   fromAmino(object: PoolAccumulatorRewardsRequestAmino): PoolAccumulatorRewardsRequest {
-    return {
-      poolId: BigInt(object.pool_id)
-    };
+    const message = createBasePoolAccumulatorRewardsRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: PoolAccumulatorRewardsRequest, useInterfaces: boolean = false): PoolAccumulatorRewardsRequestAmino {
     const obj: any = {};
@@ -2159,10 +2212,10 @@ export const PoolAccumulatorRewardsResponse = {
     return message;
   },
   fromAmino(object: PoolAccumulatorRewardsResponseAmino): PoolAccumulatorRewardsResponse {
-    return {
-      spreadRewardGrowthGlobal: Array.isArray(object?.spread_reward_growth_global) ? object.spread_reward_growth_global.map((e: any) => DecCoin.fromAmino(e)) : [],
-      uptimeGrowthGlobal: Array.isArray(object?.uptime_growth_global) ? object.uptime_growth_global.map((e: any) => UptimeTracker.fromAmino(e)) : []
-    };
+    const message = createBasePoolAccumulatorRewardsResponse();
+    message.spreadRewardGrowthGlobal = object.spread_reward_growth_global?.map(e => DecCoin.fromAmino(e)) || [];
+    message.uptimeGrowthGlobal = object.uptime_growth_global?.map(e => UptimeTracker.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: PoolAccumulatorRewardsResponse, useInterfaces: boolean = false): PoolAccumulatorRewardsResponseAmino {
     const obj: any = {};
@@ -2244,10 +2297,14 @@ export const TickAccumulatorTrackersRequest = {
     return message;
   },
   fromAmino(object: TickAccumulatorTrackersRequestAmino): TickAccumulatorTrackersRequest {
-    return {
-      poolId: BigInt(object.pool_id),
-      tickIndex: BigInt(object.tick_index)
-    };
+    const message = createBaseTickAccumulatorTrackersRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.tick_index !== undefined && object.tick_index !== null) {
+      message.tickIndex = BigInt(object.tick_index);
+    }
+    return message;
   },
   toAmino(message: TickAccumulatorTrackersRequest, useInterfaces: boolean = false): TickAccumulatorTrackersRequestAmino {
     const obj: any = {};
@@ -2321,10 +2378,10 @@ export const TickAccumulatorTrackersResponse = {
     return message;
   },
   fromAmino(object: TickAccumulatorTrackersResponseAmino): TickAccumulatorTrackersResponse {
-    return {
-      spreadRewardGrowthOppositeDirectionOfLastTraversal: Array.isArray(object?.spread_reward_growth_opposite_direction_of_last_traversal) ? object.spread_reward_growth_opposite_direction_of_last_traversal.map((e: any) => DecCoin.fromAmino(e)) : [],
-      uptimeTrackers: Array.isArray(object?.uptime_trackers) ? object.uptime_trackers.map((e: any) => UptimeTracker.fromAmino(e)) : []
-    };
+    const message = createBaseTickAccumulatorTrackersResponse();
+    message.spreadRewardGrowthOppositeDirectionOfLastTraversal = object.spread_reward_growth_opposite_direction_of_last_traversal?.map(e => DecCoin.fromAmino(e)) || [];
+    message.uptimeTrackers = object.uptime_trackers?.map(e => UptimeTracker.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: TickAccumulatorTrackersResponse, useInterfaces: boolean = false): TickAccumulatorTrackersResponseAmino {
     const obj: any = {};
@@ -2406,10 +2463,14 @@ export const IncentiveRecordsRequest = {
     return message;
   },
   fromAmino(object: IncentiveRecordsRequestAmino): IncentiveRecordsRequest {
-    return {
-      poolId: BigInt(object.pool_id),
-      pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
-    };
+    const message = createBaseIncentiveRecordsRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: IncentiveRecordsRequest, useInterfaces: boolean = false): IncentiveRecordsRequestAmino {
     const obj: any = {};
@@ -2483,10 +2544,12 @@ export const IncentiveRecordsResponse = {
     return message;
   },
   fromAmino(object: IncentiveRecordsResponseAmino): IncentiveRecordsResponse {
-    return {
-      incentiveRecords: Array.isArray(object?.incentive_records) ? object.incentive_records.map((e: any) => IncentiveRecord.fromAmino(e)) : [],
-      pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
-    };
+    const message = createBaseIncentiveRecordsResponse();
+    message.incentiveRecords = object.incentive_records?.map(e => IncentiveRecord.fromAmino(e)) || [];
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromAmino(object.pagination);
+    }
+    return message;
   },
   toAmino(message: IncentiveRecordsResponse, useInterfaces: boolean = false): IncentiveRecordsResponseAmino {
     const obj: any = {};
@@ -2556,9 +2619,11 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdRequest = {
     return message;
   },
   fromAmino(object: CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
-    return {
-      concentratedPoolId: BigInt(object.concentrated_pool_id)
-    };
+    const message = createBaseCFMMPoolIdLinkFromConcentratedPoolIdRequest();
+    if (object.concentrated_pool_id !== undefined && object.concentrated_pool_id !== null) {
+      message.concentratedPoolId = BigInt(object.concentrated_pool_id);
+    }
+    return message;
   },
   toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino {
     const obj: any = {};
@@ -2623,9 +2688,11 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
     return message;
   },
   fromAmino(object: CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
-    return {
-      cfmmPoolId: BigInt(object.cfmm_pool_id)
-    };
+    const message = createBaseCFMMPoolIdLinkFromConcentratedPoolIdResponse();
+    if (object.cfmm_pool_id !== undefined && object.cfmm_pool_id !== null) {
+      message.cfmmPoolId = BigInt(object.cfmm_pool_id);
+    }
+    return message;
   },
   toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino {
     const obj: any = {};
@@ -2690,9 +2757,11 @@ export const UserUnbondingPositionsRequest = {
     return message;
   },
   fromAmino(object: UserUnbondingPositionsRequestAmino): UserUnbondingPositionsRequest {
-    return {
-      address: object.address
-    };
+    const message = createBaseUserUnbondingPositionsRequest();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    return message;
   },
   toAmino(message: UserUnbondingPositionsRequest, useInterfaces: boolean = false): UserUnbondingPositionsRequestAmino {
     const obj: any = {};
@@ -2757,9 +2826,9 @@ export const UserUnbondingPositionsResponse = {
     return message;
   },
   fromAmino(object: UserUnbondingPositionsResponseAmino): UserUnbondingPositionsResponse {
-    return {
-      positionsWithPeriodLock: Array.isArray(object?.positions_with_period_lock) ? object.positions_with_period_lock.map((e: any) => PositionWithPeriodLock.fromAmino(e)) : []
-    };
+    const message = createBaseUserUnbondingPositionsResponse();
+    message.positionsWithPeriodLock = object.positions_with_period_lock?.map(e => PositionWithPeriodLock.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: UserUnbondingPositionsResponse, useInterfaces: boolean = false): UserUnbondingPositionsResponseAmino {
     const obj: any = {};
@@ -2819,7 +2888,8 @@ export const GetTotalLiquidityRequest = {
     return message;
   },
   fromAmino(_: GetTotalLiquidityRequestAmino): GetTotalLiquidityRequest {
-    return {};
+    const message = createBaseGetTotalLiquidityRequest();
+    return message;
   },
   toAmino(_: GetTotalLiquidityRequest, useInterfaces: boolean = false): GetTotalLiquidityRequestAmino {
     const obj: any = {};
@@ -2883,9 +2953,9 @@ export const GetTotalLiquidityResponse = {
     return message;
   },
   fromAmino(object: GetTotalLiquidityResponseAmino): GetTotalLiquidityResponse {
-    return {
-      totalLiquidity: Array.isArray(object?.total_liquidity) ? object.total_liquidity.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseGetTotalLiquidityResponse();
+    message.totalLiquidity = object.total_liquidity?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GetTotalLiquidityResponse, useInterfaces: boolean = false): GetTotalLiquidityResponseAmino {
     const obj: any = {};
@@ -2970,11 +3040,17 @@ export const NumNextInitializedTicksRequest = {
     return message;
   },
   fromAmino(object: NumNextInitializedTicksRequestAmino): NumNextInitializedTicksRequest {
-    return {
-      poolId: BigInt(object.pool_id),
-      tokenInDenom: object.token_in_denom,
-      numNextInitializedTicks: BigInt(object.num_next_initialized_ticks)
-    };
+    const message = createBaseNumNextInitializedTicksRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.token_in_denom !== undefined && object.token_in_denom !== null) {
+      message.tokenInDenom = object.token_in_denom;
+    }
+    if (object.num_next_initialized_ticks !== undefined && object.num_next_initialized_ticks !== null) {
+      message.numNextInitializedTicks = BigInt(object.num_next_initialized_ticks);
+    }
+    return message;
   },
   toAmino(message: NumNextInitializedTicksRequest, useInterfaces: boolean = false): NumNextInitializedTicksRequestAmino {
     const obj: any = {};
@@ -3057,11 +3133,15 @@ export const NumNextInitializedTicksResponse = {
     return message;
   },
   fromAmino(object: NumNextInitializedTicksResponseAmino): NumNextInitializedTicksResponse {
-    return {
-      liquidityDepths: Array.isArray(object?.liquidity_depths) ? object.liquidity_depths.map((e: any) => TickLiquidityNet.fromAmino(e)) : [],
-      currentTick: BigInt(object.current_tick),
-      currentLiquidity: object.current_liquidity
-    };
+    const message = createBaseNumNextInitializedTicksResponse();
+    message.liquidityDepths = object.liquidity_depths?.map(e => TickLiquidityNet.fromAmino(e)) || [];
+    if (object.current_tick !== undefined && object.current_tick !== null) {
+      message.currentTick = BigInt(object.current_tick);
+    }
+    if (object.current_liquidity !== undefined && object.current_liquidity !== null) {
+      message.currentLiquidity = object.current_liquidity;
+    }
+    return message;
   },
   toAmino(message: NumNextInitializedTicksResponse, useInterfaces: boolean = false): NumNextInitializedTicksResponseAmino {
     const obj: any = {};
