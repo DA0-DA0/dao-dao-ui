@@ -151,24 +151,31 @@ export const InnerPfpkNftSelectionModal = ({
 
   const [uploadingImage, setUploadingImage] = useState(false)
 
-  // Upload profile photos to Juno mainnet.
-  const junoWallet = useWallet({
-    chainId: ChainId.JunoMainnet,
-    // Attempt connection to Juno when image selector is visible.
+  // Upload profile photos to Juno mainnet when on a chain without the cw721
+  // code ID (like Stargaze). Otherwise, just use the currently connected chain.
+  // Stargaze uses sg721 instead of cw721 NFTs, and sg721 costs STARS to mint.
+  // We don't want to list user's profile photos on the Stargaze marketplace nor
+  // charge them for uploading a profile photo.
+  const uploadWallet = useWallet({
+    chainId: getSupportedChainConfig(chain.chain_id)?.codeIds?.Cw721Base
+      ? chain.chain_id
+      : ChainId.JunoMainnet,
+    // Attempt connection to upload wallet chain when image selector is visible.
     attemptConnection: showImageSelector,
   })
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
-      junoWallet.chain.chain_id,
-      getSupportedChainConfig(junoWallet.chain.chain_id)?.codeIds.Cw721Base ||
+      uploadWallet.chain.chain_id,
+      // Should be defined since we chose a chain ID above with this set.
+      getSupportedChainConfig(uploadWallet.chain.chain_id)?.codeIds.Cw721Base ||
         -1
     )
 
   const uploadImage = useCallback(async () => {
     setUploadingImage(true)
     try {
-      if (!junoWallet.isWalletConnected) {
-        await junoWallet.connect()
+      if (!uploadWallet.isWalletConnected) {
+        await uploadWallet.connect()
         return
       }
 
@@ -195,11 +202,11 @@ export const InnerPfpkNftSelectionModal = ({
       // Instantiate and execute cw721 mint.
       const { contractAddress } = await instantiateAndExecute({
         instantiate: {
-          admin: walletAddress,
+          admin: uploadWallet.address,
           funds: [],
           label: 'DAO DAO Profile Picture',
           msg: {
-            minter: walletAddress,
+            minter: uploadWallet.address,
             name: 'DAO DAO Profile Picture',
             symbol: 'PIC',
           } as InstantiateMsg,
@@ -209,7 +216,7 @@ export const InnerPfpkNftSelectionModal = ({
             funds: [],
             msg: {
               mint: {
-                owner: walletAddress,
+                owner: uploadWallet.address,
                 token_id: cid,
                 token_uri: metadataUrl,
               } as MintMsgForNullable_Empty,
@@ -238,10 +245,9 @@ export const InnerPfpkNftSelectionModal = ({
     image,
     instantiateAndExecute,
     instantiateAndExecuteReady,
-    junoWallet,
     refreshBalances,
     t,
-    walletAddress,
+    uploadWallet,
   ])
 
   const nftCardInfosForKey = useRecoilValue(nftCardInfosForKeyAtom)
@@ -323,11 +329,11 @@ export const InnerPfpkNftSelectionModal = ({
         <ImageSelectorModal
           Trans={Trans}
           buttonLabel={
-            junoWallet.isWalletConnected
+            uploadWallet.isWalletConnected
               ? t('button.save')
               : t('button.connectToChain', {
                   chainName: getDisplayNameForChainId(
-                    junoWallet.chain.chain_id
+                    uploadWallet.chain.chain_id
                   ),
                 })
           }

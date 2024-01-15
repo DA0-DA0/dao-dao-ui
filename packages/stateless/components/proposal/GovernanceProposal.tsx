@@ -59,7 +59,7 @@ export const GovernanceProposal = ({
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
   const { config } = useChainContext()
 
-  const title = content.title || t('title.noTitle')
+  const title = content.title || undefined
   const description = content.description || undefined
 
   const info = [
