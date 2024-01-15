@@ -52,7 +52,9 @@ export const ProposalModuleSelector = ({
         .filter(
           ({ value: { prePropose } }) =>
             prePropose?.contractName !== ContractName.PreProposeApprover
-        ),
+        )
+        // Sort proposal modules by prefix.
+        .sort((a, b) => a.value.prefix.localeCompare(b.value.prefix)),
     [matchAdapter, proposalModules, t]
   )
 

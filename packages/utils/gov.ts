@@ -22,8 +22,11 @@ export const govProposalToDecodedContent = (
       }
     : {
         version: proposal.version,
-        title: proposal.title,
-        description: proposal.description,
+        title: proposal.title || proposal.legacyContent?.[0]?.title || '',
+        description:
+          proposal.description ||
+          proposal.legacyContent?.[0]?.description ||
+          '',
         decodedMessages: proposal.decodedMessages,
         legacyContent: proposal.legacyContent,
       }
