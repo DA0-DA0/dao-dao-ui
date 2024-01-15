@@ -1,7 +1,12 @@
 import Pusher from 'pusher-js'
 import { atom, selector, selectorFamily } from 'recoil'
 
-import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
+import {
+  Expiration,
+  IndexerFormulaType,
+  IndexerUpStatus,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   CommonError,
   NUM_FEATURED_DAOS,
@@ -17,9 +22,11 @@ import {
   SearchDaosOptions,
   loadMeilisearchClient,
   queryIndexer,
+  queryIndexerUpStatus,
   searchDaos,
 } from '../../indexer'
 import {
+  refreshIndexerUpStatusAtom,
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
 } from '../atoms'
@@ -35,10 +42,11 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
     try {
       return await queryIndexer(options)
     } catch (err) {
-      // If the indexer fails, return null.
+      // If the indexer fails, return null since many indexer queries fallback
+      // to the chain. If an error other than no indexer for chain, log it.
       if (
         !(err instanceof Error) ||
-        err.message !== CommonError.IndexerDisabled
+        err.message !== CommonError.NoIndexerForChain
       ) {
         console.error(err)
       }
@@ -46,6 +54,20 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
       return null
     }
   },
+})
+
+export const indexerUpStatusSelector = selectorFamily<
+  IndexerUpStatus,
+  WithChainId<{}>
+>({
+  key: 'indexerUpStatus',
+  get:
+    (params) =>
+    async ({ get }) => {
+      get(refreshIndexerUpStatusAtom)
+
+      return await queryIndexerUpStatus(params)
+    },
 })
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -151,7 +173,6 @@ export const openProposalsSelector = selectorFamily<
           chainId,
           id,
           args: { address },
-          required: true,
         })
       )
       return openProposals ?? []
@@ -176,7 +197,6 @@ export const walletProposalStatsSelector = selectorFamily<
           formula: 'proposals/stats',
           chainId,
           id,
-          required: true,
         })
       )
 
@@ -202,7 +222,6 @@ export const walletAdminOfDaosSelector = selectorFamily<
           chainId,
           walletAddress,
           formula: 'daos/adminOf',
-          required: true,
         })
       )
 
@@ -263,7 +282,6 @@ export const indexerFeaturedDaosSelector = selectorFamily<
           queryGenericIndexerSelector({
             chainId,
             formula: 'priorityFeaturedDaos',
-            required: true,
           })
         ) || []
 

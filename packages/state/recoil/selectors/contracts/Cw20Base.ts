@@ -364,7 +364,6 @@ export const topAccountBalancesSelector = selectorFamily<
           args: {
             limit,
           },
-          required: true,
         })
       ) ?? undefined,
 })
@@ -379,7 +378,6 @@ export const daosSelector = selectorFamily<string[], QueryClientParams>({
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'cw20/daos',
-          required: true,
         })
       ) ?? [],
 })

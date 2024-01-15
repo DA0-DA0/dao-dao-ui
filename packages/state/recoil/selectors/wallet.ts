@@ -29,7 +29,6 @@ export const walletCw20BalancesSelector = selectorFamily<
             walletAddress,
             formula: 'tokens/list',
             id,
-            required: true,
           })
         ) ?? []
 

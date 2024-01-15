@@ -130,3 +130,9 @@ export const refreshUnreceivedIbcDataAtom = atomFamily<number, string>({
   key: 'refreshUnreceivedIbcData',
   default: 0,
 })
+
+// Change this to refresh the indexer up status.
+export const refreshIndexerUpStatusAtom = atom({
+  key: 'refreshIndexerUpStatus',
+  default: 0,
+})

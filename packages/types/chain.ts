@@ -92,19 +92,50 @@ export type ConfiguredChain = BaseChainConfig & {
 }
 
 export type SupportedChainConfig = BaseChainConfig & {
+  /**
+   * The `cw-admin-factory` contract address that instantiates contracts with
+   * themselves set as their admin.
+   * https://github.com/DA0-DA0/dao-contracts/tree/development/contracts/external/cw-admin-factory
+   */
   factoryContractAddress: string
-  // If defined, it means Kado supports fiat deposit on this chain.
+  /**
+   * If defined, it means Kado supports fiat deposit on this chain.
+   */
   kado?: {
+    /**
+     * The Kado network identifier.
+     */
     network: string
   }
+  /**
+   * MeiliSearch index identifiers.
+   */
   indexes: {
+    /**
+     * DAO search index
+     */
     search: string
+    /**
+     * Featured DAO inde
+     */
     featured: string
   }
+  /**
+   * Code IDs stored on this chain that are used throughout the UI.
+   */
   codeIds: CodeIdConfig
-  // Store code IDs for past versions of contracts, in case DAOs need a
-  // particular version of a contract.
+  /**
+   * Whether or not this chain has an indexer.
+   */
+  noIndexer?: boolean
+  /**
+   * Past versions of contracts, in case DAOs need a particular version of a
+   * contract.
+   */
   historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
+  /**
+   * Polytone connections to other chains from this chain.
+   */
   polytone?: PolytoneConfig
 }
 

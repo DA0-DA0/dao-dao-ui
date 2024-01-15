@@ -109,7 +109,7 @@ export enum CommonError {
   AuthorizationNotFound = 'Authorization does not exist.',
   SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to some unsupported symbols, such as "&", "<", or ">". Remove these symbols from the proposal title or description and try again.',
   IbcClientExpired = 'IBC client expired. Reach out to us for help.',
-  IndexerDisabled = 'Indexer disabled.',
+  NoIndexerForChain = 'No indexer for chain.',
   DaoInactive = 'This DAO is inactive, which means insufficient voting power has been staked. You cannot create a proposal at this time.',
   ReconnectWallet = 'Please disconnect and reconnect your wallet.',
   ProposalTooLarge = 'Proposal is too large. Please remove actions or shorten the description.',
@@ -178,7 +178,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
       'Expired: client is not active',
     ],
   ],
-  [CommonError.IndexerDisabled]: ['Indexer disabled.'],
+  [CommonError.NoIndexerForChain]: ['No indexer for chain'],
   [CommonError.DaoInactive]: [
     'the DAO is currently inactive, you cannot create proposals',
   ],

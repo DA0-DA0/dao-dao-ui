@@ -247,7 +247,6 @@ export const topStakersSelector = selectorFamily<
           args: {
             limit,
           },
-          required: true,
         })
       ) ?? undefined,
 })

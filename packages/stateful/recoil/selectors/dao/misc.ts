@@ -143,7 +143,6 @@ export const daoPotentialSubDaosSelector = selectorFamily<
           chainId,
           contractAddress: coreAddress,
           formula: 'daoCore/potentialSubDaos',
-          required: true,
         })
       )
 
@@ -504,7 +503,6 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
                 chainId,
                 walletAddress: address,
                 formula: 'veto/vetoableProposals',
-                required: true,
                 id,
               })
             )

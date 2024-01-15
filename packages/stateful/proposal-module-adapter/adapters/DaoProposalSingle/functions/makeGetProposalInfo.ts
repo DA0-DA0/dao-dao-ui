@@ -54,7 +54,6 @@ export const makeGetProposalInfo =
             id: proposalNumber,
           },
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.
@@ -103,7 +102,6 @@ export const makeGetProposalInfo =
           address: proposalModule.address,
           formula: 'info',
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.
@@ -130,7 +128,6 @@ export const makeGetProposalInfo =
             id: proposalNumber,
           },
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.
@@ -185,7 +182,6 @@ export const makeGetProposalInfo =
           id,
         },
         chainId,
-        required: true,
       })
       // If indexer returned a value, assume it's a date.
       if (createdAt) {

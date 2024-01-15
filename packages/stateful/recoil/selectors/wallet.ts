@@ -215,7 +215,6 @@ export const walletTokenCardInfosSelector = selectorFamily<
               walletAddress,
               formula: 'tokens/list',
               id,
-              required: true,
             })
           )
         )

@@ -24,7 +24,6 @@ export const fetchVetoConfig: FetchVetoConfig = async (
       address: proposalModuleAddress,
       formula: 'daoProposalMultiple/config',
       chainId,
-      required: true,
     })
   } catch (err) {
     // Ignore error.

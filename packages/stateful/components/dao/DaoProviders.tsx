@@ -66,13 +66,7 @@ export const DaoProvidersWithoutInfo = ({
     <SuspenseLoader fallback={<Loader />} forceFallback={infoLoading.loading}>
       {!infoLoading.loading &&
         (infoLoading.errored ? (
-          <ErrorPage title={t('error.unexpectedError')}>
-            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-              {infoLoading.error instanceof Error
-                ? infoLoading.error.message
-                : `${infoLoading.error}`}
-            </pre>
-          </ErrorPage>
+          <ErrorPage error={infoLoading.error} />
         ) : (
           <DaoProviders info={infoLoading.data}>{children}</DaoProviders>
         ))}
