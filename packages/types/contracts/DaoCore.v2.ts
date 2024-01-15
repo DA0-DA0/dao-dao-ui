@@ -54,6 +54,13 @@ export type PauseInfoResponse =
         expiration: Expiration
       }
     }
+  // Neutron SubDAOs:
+  // https://github.com/neutron-org/neutron-dao/blob/v0.5.0/packages/exec-control/src/pause.rs#L56-L62
+  | {
+      Paused: {
+        until_height: number
+      }
+    }
   | {
       Unpaused: {}
     }

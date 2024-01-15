@@ -7,7 +7,12 @@ export enum ContractName {
   PreProposeSingle = 'crates.io:dao-pre-propose-single',
   PreProposeApprovalSingle = 'crates.io:dao-pre-propose-approval-single',
   PreProposeApprover = 'crates.io:dao-pre-propose-approver',
+  NeutronCwdSubdaoCore = 'crates.io:cwd-subdao-core',
 }
+
+export const NEUTRON_SUBDAO_CORE_CONTRACT_NAMES = [
+  ContractName.NeutronCwdSubdaoCore,
+]
 
 export const DAO_CORE_CONTRACT_NAMES = [
   // V1
@@ -17,7 +22,7 @@ export const DAO_CORE_CONTRACT_NAMES = [
   'crates.io:dao-core',
   'crates.io:dao-dao-core',
   // Neutron
-  'crates.io:cwd-subdao-core',
+  ...NEUTRON_SUBDAO_CORE_CONTRACT_NAMES,
 ]
 
 export const LEGACY_DAO_CONTRACT_NAMES = [
