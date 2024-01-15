@@ -204,7 +204,7 @@ const VoteFooter = ({
       {isCreating &&
         existingVotesLoading &&
         !existingVotesLoading.loading &&
-        existingVotesLoading.data && (
+        !!existingVotesLoading.data?.length && (
           <div className="mt-4 space-y-2">
             <div className="flex flex-row items-center gap-2">
               <p className="primary-text text-text-secondary">
