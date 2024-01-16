@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
+import uniq from 'lodash.uniq'
 import {
   selector,
   selectorFamily,
@@ -44,6 +45,7 @@ import {
   cosmwasm,
   ibc,
   juno,
+  neutron,
   noble,
   osmosis,
 } from '@dao-dao/utils/protobuf'
@@ -59,6 +61,7 @@ import {
   Pool,
   Validator as RpcValidator,
 } from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/staking'
+import { Fee as NeutronFee } from '@dao-dao/utils/protobuf/codegen/neutron/feerefunder/fee'
 import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import {
@@ -177,6 +180,21 @@ export const nobleRpcClientSelector = selector({
             rpcEndpoint: getRpcForChainId(ChainId.NobleMainnet, attempt - 1),
           })
         ).noble
+    ),
+  dangerouslyAllowMutability: true,
+})
+
+export const neutronRpcClientSelector = selector({
+  key: 'neutronRpcClient',
+  get: async () =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await neutron.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(ChainId.NeutronMainnet, attempt - 1),
+          })
+        ).neutron
     ),
   dangerouslyAllowMutability: true,
 })
@@ -411,6 +429,52 @@ export const nobleTariffTransferFeeSelector = selector<
     try {
       const { params } = await nobleClient.tariff.params()
       return params
+    } catch (err) {
+      console.error(err)
+    }
+  },
+})
+
+export const neutronIbcTransferFeeSelector = selector<
+  | {
+      fee: NeutronFee
+      // Total fees summed together.
+      sum: GenericTokenBalance[]
+    }
+  | undefined
+>({
+  key: 'neutronIbcTransferFee',
+  get: async ({ get }) => {
+    const neutronClient = get(neutronRpcClientSelector)
+    try {
+      const { params } = await neutronClient.feerefunder.params()
+      const fee = params?.minFee
+      if (fee) {
+        const fees = [...fee.ackFee, ...fee.recvFee, ...fee.timeoutFee]
+        const uniqueDenoms = uniq(fees.map((fee) => fee.denom))
+        const tokens = get(
+          waitForAll(
+            uniqueDenoms.map((denom) =>
+              genericTokenSelector({
+                type: TokenType.Native,
+                chainId: ChainId.NeutronMainnet,
+                denomOrAddress: denom,
+              })
+            )
+          )
+        )
+
+        return {
+          fee,
+          sum: uniqueDenoms.map((denom) => ({
+            token: tokens.find((token) => token.denomOrAddress === denom)!,
+            balance: fees
+              .filter(({ denom: feeDenom }) => feeDenom === denom)
+              .reduce((acc, { amount }) => acc + BigInt(amount), 0n)
+              .toString(),
+          })),
+        }
+      }
     } catch (err) {
       console.error(err)
     }
