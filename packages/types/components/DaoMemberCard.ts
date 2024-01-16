@@ -1,5 +1,8 @@
+import { ComponentType } from 'react'
+
 import { LoadingData } from '../misc'
-import { WalletProfileData } from '../profile'
+import { ButtonLinkProps } from './Buttonifier'
+import { Entity } from './EntityDisplay'
 
 export type DaoMemberCardProps = {
   address: string
@@ -9,7 +12,11 @@ export type DaoMemberCardProps = {
     value: LoadingData<string>
   }
   votingPowerPercent: LoadingData<number>
-  profileData: WalletProfileData
+  loadingEntity: LoadingData<Entity>
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
-export type StatefulDaoMemberCardProps = Omit<DaoMemberCardProps, 'profileData'>
+export type StatefulDaoMemberCardProps = Omit<
+  DaoMemberCardProps,
+  'loadingEntity' | 'ButtonLink'
+>
