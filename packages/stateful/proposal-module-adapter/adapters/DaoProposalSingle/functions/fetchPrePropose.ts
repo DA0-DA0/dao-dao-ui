@@ -27,7 +27,6 @@ export const fetchPrePropose: FetchPreProposeFunction = async (
       address: proposalModuleAddress,
       formula: 'daoProposalSingle/creationPolicy',
       chainId,
-      required: true,
     })
   } catch (err) {
     // Ignore error.

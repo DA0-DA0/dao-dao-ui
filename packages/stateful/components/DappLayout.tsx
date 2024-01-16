@@ -2,12 +2,7 @@ import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-  waitForAll,
-} from 'recoil'
+import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
@@ -16,8 +11,6 @@ import {
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
-  refreshBlockHeightAtom,
-  refreshTokenUsdcPriceAtom,
   walletChainIdAtom,
 } from '@dao-dao/state'
 import {
@@ -33,7 +26,7 @@ import {
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
-import { useWallet, useWalletInfo } from '../hooks'
+import { useAutoRefreshData, useWallet, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -131,17 +124,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     setLastInboxCount(inbox.items.length)
   }, [inbox.items.length, lastInboxCount, t])
 
-  //! Refresh every minute. Block height, USDC conversions, and wallet balances.
-  const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
-  const setRefreshUsdcPrices = useSetRecoilState(refreshTokenUsdcPriceAtom(''))
-  // Refresh block height and wallet balances every minute.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshBlockHeight((id) => id + 1)
-      setRefreshUsdcPrices((id) => id + 1)
-    }, 60 * 1000)
-    return () => clearInterval(interval)
-  }, [setRefreshBlockHeight, setRefreshUsdcPrices])
+  //! Auto refresh various data used across the UI
+  useAutoRefreshData()
 
   //! Following DAOs
   const followingDaoDropdownInfos = useCachedLoading(

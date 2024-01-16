@@ -112,11 +112,7 @@ export const NewGovProposal = () => {
   return !defaults ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
-    <ErrorPage title={t('error.unexpectedError')}>
-      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-        {defaults.message}
-      </pre>
-    </ErrorPage>
+    <ErrorPage error={defaults} />
   ) : (
     <InnerNewGovProposal
       action={governanceProposalAction}

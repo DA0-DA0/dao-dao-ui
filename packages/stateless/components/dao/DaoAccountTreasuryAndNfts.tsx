@@ -114,13 +114,7 @@ export const DaoAccountTreasuryAndNfts = <
         (!tokens.errored && tokens.updating && tokens.data.length === 0) ? (
           <Loader className="my-14" size={48} />
         ) : tokens.errored ? (
-          <ErrorPage title={t('error.unexpectedError')}>
-            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-              {tokens.error instanceof Error
-                ? tokens.error.message
-                : `${tokens.error}`}
-            </pre>
-          </ErrorPage>
+          <ErrorPage error={tokens.error} />
         ) : (
           tokens.data.length > 0 && (
             <GridCardContainer cardType="wide">
@@ -139,13 +133,7 @@ export const DaoAccountTreasuryAndNfts = <
         (!nfts.errored && nfts.updating && nfts.data.length === 0) ? (
           <Loader className="mt-6" />
         ) : nfts.errored ? (
-          <ErrorPage title={t('error.unexpectedError')}>
-            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-              {nfts.error instanceof Error
-                ? nfts.error.message
-                : `${nfts.error}`}
-            </pre>
-          </ErrorPage>
+          <ErrorPage error={nfts.error} />
         ) : nfts.data.length > 0 ? (
           <>
             <p className="title-text mt-4">

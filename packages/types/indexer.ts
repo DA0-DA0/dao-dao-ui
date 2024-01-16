@@ -28,3 +28,15 @@ export interface IndexerDumpState
   // Map polytone note address to remote address.
   polytoneProxies?: Record<string, string>
 }
+
+export type IndexerUpBlock = {
+  height: number
+  timeUnixMs: number
+  timestamp: string
+}
+
+export type IndexerUpStatus = {
+  chainBlock: IndexerUpBlock
+  indexerBlock: IndexerUpBlock
+  caughtUp: boolean
+}

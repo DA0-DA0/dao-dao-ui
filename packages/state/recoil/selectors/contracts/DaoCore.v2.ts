@@ -245,7 +245,6 @@ export const dumpStateSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/dumpState',
-          required: true,
         })
       )
       if (state) {
@@ -1349,7 +1348,6 @@ export const coreAddressForPolytoneProxySelector = selectorFamily<
           args: {
             address: proxy,
           },
-          required: true,
         })
       ),
 })
@@ -1370,7 +1368,6 @@ export const approvalDaosSelector = selectorFamily<
           chainId,
           contractAddress,
           formula: 'daoCore/approvalDaos',
-          required: true,
         })
       ),
 })
