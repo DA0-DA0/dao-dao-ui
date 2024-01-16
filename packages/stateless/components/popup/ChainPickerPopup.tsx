@@ -160,7 +160,11 @@ export const ChainPickerPopup = ({
       onSelect={({ key }) =>
         onSelect(key === NONE_KEY ? undefined : (key as string))
       }
-      searchPlaceholder={t('info.searchForChain')}
+      searchPlaceholder={
+        labelMode === 'chain'
+          ? t('info.searchForChain')
+          : t('info.searchForToken')
+      }
       trigger={{
         type: 'button',
         props: {
