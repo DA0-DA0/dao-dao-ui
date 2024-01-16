@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   ChainProvider,
@@ -54,7 +53,6 @@ export const DaoProvidersWithoutInfo = ({
   coreAddress,
   children,
 }: DaoProvidersWithoutInfoProps) => {
-  const { t } = useTranslation()
   const infoLoading = useCachedLoadingWithError(
     daoInfoSelector({
       chainId,
