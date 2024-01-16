@@ -57,6 +57,11 @@ export {
   DaoVotingTokenStakedClient,
   DaoVotingTokenStakedQueryClient,
 } from './DaoVotingTokenStaked'
+export { NeutronVaultClient, NeutronVaultQueryClient } from './NeutronVault'
+export {
+  NeutronVotingRegistryClient,
+  NeutronVotingRegistryQueryClient,
+} from './NeutronVotingRegistry'
 export {
   PolytoneListenerClient,
   PolytoneListenerQueryClient,

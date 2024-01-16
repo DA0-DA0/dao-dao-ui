@@ -391,6 +391,7 @@ export enum DaoTabId {
   Staked = 'staked',
   Collection = 'collection',
   Apps = 'apps',
+  Vaults = 'vaults',
 }
 
 export type DaoTab = {

@@ -26,6 +26,7 @@ export interface ProfileCardMemberInfoTokensProps
   loadingVotingPower: LoadingData<number>
   loadingStakedTokens: LoadingData<number>
   loadingUnstakedTokens: LoadingData<number>
+  hideUnstaking?: boolean
 }
 
 export const ProfileCardMemberInfoTokens = ({
@@ -43,6 +44,7 @@ export const ProfileCardMemberInfoTokens = ({
   loadingVotingPower,
   loadingStakedTokens,
   loadingUnstakedTokens,
+  hideUnstaking,
 }: ProfileCardMemberInfoTokensProps) => {
   const { t } = useTranslation()
 
@@ -155,26 +157,27 @@ export const ProfileCardMemberInfoTokens = ({
         )}
 
         {/* Show unstaking balance if any are unstaking or claimable or if they are a member. */}
-        {(isMember || unstakingBalance > 0 || claimableBalance > 0) && (
-          <div className="flex flex-row items-center justify-between">
-            <p>{t('title.unstakingTokens')}</p>
+        {!hideUnstaking &&
+          (isMember || unstakingBalance > 0 || claimableBalance > 0) && (
+            <div className="flex flex-row items-center justify-between">
+              <p>{t('title.unstakingTokens')}</p>
 
-            <Button
-              className={clsx(
-                'text-right font-mono underline-offset-2',
-                unstakingBalance === 0 && 'text-text-tertiary'
-              )}
-              onClick={() => setShowUnstakingTokens(true)}
-              variant={unstakingBalance > 0 ? 'underline' : 'none'}
-            >
-              <TokenAmountDisplay
-                amount={unstakingBalance}
-                decimals={tokenDecimals}
-                symbol={tokenSymbol}
-              />
-            </Button>
-          </div>
-        )}
+              <Button
+                className={clsx(
+                  'text-right font-mono underline-offset-2',
+                  unstakingBalance === 0 && 'text-text-tertiary'
+                )}
+                onClick={() => setShowUnstakingTokens(true)}
+                variant={unstakingBalance > 0 ? 'underline' : 'none'}
+              >
+                <TokenAmountDisplay
+                  amount={unstakingBalance}
+                  decimals={tokenDecimals}
+                  symbol={tokenSymbol}
+                />
+              </Button>
+            </div>
+          )}
       </div>
 
       <div className="mt-6 flex flex-col gap-2">
@@ -218,18 +221,20 @@ export const ProfileCardMemberInfoTokens = ({
         </Button>
       </div>
 
-      <UnstakingModal
-        onClaim={onClaim}
-        onClose={() => setShowUnstakingTokens(false)}
-        refresh={refreshUnstakingTasks}
-        tasks={unstakingTasks}
-        unstakingDuration={
-          unstakingDurationSeconds
-            ? secondsToWdhms(unstakingDurationSeconds)
-            : undefined
-        }
-        visible={showUnstakingTokens}
-      />
+      {!hideUnstaking && (
+        <UnstakingModal
+          onClaim={onClaim}
+          onClose={() => setShowUnstakingTokens(false)}
+          refresh={refreshUnstakingTasks}
+          tasks={unstakingTasks}
+          unstakingDuration={
+            unstakingDurationSeconds
+              ? secondsToWdhms(unstakingDurationSeconds)
+              : undefined
+          }
+          visible={showUnstakingTokens}
+        />
+      )}
     </>
   )
 }

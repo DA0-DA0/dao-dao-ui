@@ -44,7 +44,7 @@ export const StakingModal = ({
   actionPrefix,
   validatorPicker,
   visible = true,
-  enableRestaking: restakingEnabled,
+  enableRestaking,
 }: StakingModalProps) => {
   const { t } = useTranslation()
 
@@ -143,7 +143,7 @@ export const StakingModal = ({
                     label: t('button.stakingMode.unstake'),
                     value: StakingMode.Unstake,
                   },
-                  ...(restakingEnabled && validatorPicker
+                  ...(enableRestaking && validatorPicker
                     ? [
                         {
                           label: t('button.stakingMode.restake'),

@@ -1247,6 +1247,8 @@
     "uploadSmartContractCodeActionDescription": "Upload smart contract code to the chain for future instantiation.",
     "useNativeCrossChainAccountInstead": "This chain is supported by DAO DAO's native cross-chain accounts. We recommend avoiding ICA when possible. Click the button below to switch to our native cross-chain account action.",
     "validatorActionsDescription": "Make transactions related to running a validator.",
+    "vaultVotingPower": "Vault's voting power",
+    "vaultVotingPowerTooltip": "The total voting power in the DAO derived from this voting vault.",
     "verificationPendingResend": "Verification pending. Click to resend email.",
     "verifyAddressMatches": "Verify that the following address matches the 'Send To' address in the widget below.",
     "verifyingGovernanceToken": "Verifying governance token...",
@@ -1272,6 +1274,7 @@
     "votingModuleAdapterCreationDiscord": "Want to help us support this voting module? Join the <2><0>DAO DAO Discord</0><1/></2> and post in #dao-help.",
     "votingModuleNotYetSupported": "This DAO uses a voting module that our UI does not yet support. Functionality may be limited.",
     "votingPowerAtCreationTooltip": "This was your voting power at the time of proposal creation.",
+    "votingVaultsExplanation": "Voting power in this DAO derives from multiple sources.",
     "waitingForRateAndPropose": "Waiting for DAO members to rate and propose...",
     "whatAreYouLookingForPrompt": "What are you looking for?",
     "whatDoTheyWantToBeRated": "What do they want to be rated?",
@@ -1287,7 +1290,9 @@
     "you": "you",
     "youAreMember": "You are a member",
     "your": "Your",
-    "yourBalance": "Your balance"
+    "yourBalance": "Your balance",
+    "yourVaultVotingPower": "Your voting power",
+    "yourVaultVotingPowerTooltip": "The voting power within this voting vault owned by you."
   },
   "meta": {
     "description": "DAOs for everyone.",
@@ -1728,6 +1733,7 @@
     "votingPower": "Voting power",
     "votingProgress": "Voting Progress",
     "votingTimeLeft": "Voting time left",
+    "votingVaults": "Voting Vaults",
     "votingWeight": "Voting weight",
     "walletConnect": "WalletConnect",
     "watchOut": "Watch out!",
