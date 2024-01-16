@@ -6,6 +6,7 @@ import { constSelector } from 'recoil'
 import {
   accountsSelector,
   genericTokenSelector,
+  neutronIbcTransferFeeSelector,
   nobleTariffTransferFeeSelector,
   skipAllChainsPfmEnabledSelector,
   skipRouteMessageSelector,
@@ -64,6 +65,7 @@ import {
 } from '@dao-dao/utils'
 import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
+import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/utils/protobuf/codegen/neutron/transfer/v1/tx'
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'
@@ -343,8 +345,36 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         loading: true,
         errored: false,
       }
+  // Get the amount out from an IBC path.
+  const ibcAmountOut: LoadingDataWithError<number | undefined> = isIbc
+    ? skipRoute.loading || !selectedToken
+      ? {
+          loading: true,
+          errored: false,
+        }
+      : skipRoute.errored
+      ? {
+          loading: false,
+          errored: true,
+          error: skipRoute.error,
+        }
+      : {
+          loading: false,
+          errored: false,
+          updating: skipRoute.updating,
+          data: convertMicroDenomToDenomWithDecimals(
+            skipRoute.data.amountOut,
+            selectedToken.token.decimals
+          ),
+        }
+    : {
+        loading: false,
+        errored: false,
+        updating: false,
+        data: undefined,
+      }
 
-  // Compute Noble tariffs.
+  // Compute chain fees.
   const nobleTariff = useCachedLoadingWithError(
     ibcPath.loading || ibcPath.errored
       ? undefined
@@ -356,6 +386,16 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         // transferred out of Noble at some point.
         ibcPath.data.slice(0, -1).includes(ChainId.NobleMainnet)
       ? nobleTariffTransferFeeSelector
+      : constSelector(undefined)
+  )
+  const neutronTransferFee = useCachedLoadingWithError(
+    ibcPath.loading || ibcPath.errored
+      ? undefined
+      : MAINNET &&
+        // If Neutron is one of the non-destination chains, meaning it will be
+        // transferred out of Neutron at some point.
+        ibcPath.data.slice(0, -1).includes(ChainId.NeutronMainnet)
+      ? neutronIbcTransferFeeSelector
       : constSelector(undefined)
   )
 
@@ -411,6 +451,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         tokens: loadingTokens,
         currentEntity,
         ibcPath,
+        ibcAmountOut,
         betterNonPfmIbcPath:
           skipRoute.loading || skipRoute.errored
             ? { loading: true }
@@ -423,6 +464,15 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
               },
         missingAccountChainIds,
         nobleTariff,
+        neutronTransferFee:
+          neutronTransferFee.loading || neutronTransferFee.errored
+            ? neutronTransferFee
+            : {
+                loading: false,
+                errored: false,
+                updating: neutronTransferFee.updating,
+                data: neutronTransferFee.data?.sum,
+              },
         AddressInput,
       }}
     />
@@ -433,6 +483,12 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
   const options = useActionOptions()
 
   const loadingTokenBalances = useTokenBalances()
+
+  const neutronTransferFee = useCachedLoading(
+    neutronIbcTransferFeeSelector,
+    undefined
+  )
+  console.log(neutronTransferFee)
 
   return useCallback(
     ({
@@ -503,7 +559,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           )
           msg = makeStargateMessage({
             stargate: {
-              typeUrl: MsgTransfer.typeUrl,
+              typeUrl:
+                fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer.typeUrl
+                  : MsgTransfer.typeUrl,
               value: {
                 sourcePort: 'transfer',
                 sourceChannel,
@@ -512,11 +571,20 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 receiver: to,
                 timeoutTimestamp,
                 memo: '',
-              } as MsgTransfer,
+                // Add Neutron IBC transfer fee if sending from Neutron.
+                ...(fromChainId === ChainId.NeutronMainnet && {
+                  fee: neutronTransferFee.loading
+                    ? undefined
+                    : neutronTransferFee.data?.fee,
+                }),
+              } as NeutronMsgTransfer,
             },
           })
         } else {
-          if (_skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl) {
+          if (
+            _skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl &&
+            _skipIbcTransferMsg.data.msgTypeURL !== NeutronMsgTransfer.typeUrl
+          ) {
             throw new Error(
               `Unexpected Skip transfer message type: ${_skipIbcTransferMsg.data.msgTypeURL}`
             )
@@ -525,17 +593,31 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           const skipTransferMsgValue = JSON.parse(_skipIbcTransferMsg.data.msg)
           msg = makeStargateMessage({
             stargate: {
-              typeUrl: MsgTransfer.typeUrl,
-              value: MsgTransfer.fromAmino({
-                ...skipTransferMsgValue,
-                // If no memo, use empty string. This will be undefined if PFM
-                // is not used and it's only a single hop.
-                memo: skipTransferMsgValue.memo || '',
-                // Timeout after 1 year. Needs to survive voting period and
-                // execution delay.
-                timeout_timestamp: timeoutTimestamp,
-                timeout_height: undefined,
-              }),
+              typeUrl:
+                fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer.typeUrl
+                  : MsgTransfer.typeUrl,
+              value: {
+                ...(fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer
+                  : MsgTransfer
+                ).fromAmino({
+                  ...skipTransferMsgValue,
+                  // If no memo, use empty string. This will be undefined if PFM
+                  // is not used and it's only a single hop.
+                  memo: skipTransferMsgValue.memo || '',
+                  // Timeout after 1 year. Needs to survive voting period and
+                  // execution delay.
+                  timeout_timestamp: timeoutTimestamp,
+                  timeout_height: undefined,
+                }),
+                // Add Neutron IBC transfer fee if sending from Neutron.
+                ...(fromChainId === ChainId.NeutronMainnet && {
+                  fee: neutronTransferFee.loading
+                    ? undefined
+                    : neutronTransferFee.data?.fee,
+                }),
+              },
             },
           })
         }
@@ -578,7 +660,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             msg
           )
     },
-    [loadingTokenBalances, options]
+    [loadingTokenBalances, options, neutronTransferFee]
   )
 }
 
@@ -635,7 +717,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 
   const isIbcTransfer =
     isDecodedStargateMsg(msg) &&
-    msg.stargate.typeUrl === MsgTransfer.typeUrl &&
+    (msg.stargate.typeUrl === MsgTransfer.typeUrl ||
+      msg.stargate.typeUrl === NeutronMsgTransfer.typeUrl) &&
     objectMatchesStructure(msg.stargate.value, {
       sourcePort: {},
       sourceChannel: {},
