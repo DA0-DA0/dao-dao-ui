@@ -66,39 +66,21 @@ const InnerProposalInnerContentDisplay = ({
     const decoded = decodeMessages(proposal.msgs)
 
     // Unwrap `timelock_proposal` execute in Neutron SubDAOs.
-    if (
-      chainId === ChainId.NeutronMainnet &&
-      coreVersion === ContractVersion.V2AlphaNeutron
-    ) {
+    try {
       if (
-        decoded.length === 1 &&
-        objectMatchesStructure(decoded[0], {
-          wasm: {
-            execute: {
-              contract_addr: {},
-              funds: {},
-              msg: {
-                timelock_proposal: {
-                  proposal_id: {},
-                  msgs: {},
-                },
-              },
-            },
-          },
-        })
+        chainId === ChainId.NeutronMainnet &&
+        coreVersion === ContractVersion.V2AlphaNeutron
       ) {
-        const innerDecoded = decodeMessages(
-          decoded[0].wasm.execute.msg.timelock_proposal.msgs
-        )
         if (
-          innerDecoded.length === 1 &&
-          objectMatchesStructure(innerDecoded[0], {
+          decoded.length === 1 &&
+          objectMatchesStructure(decoded[0], {
             wasm: {
               execute: {
                 contract_addr: {},
                 funds: {},
                 msg: {
-                  execute_timelocked_msgs: {
+                  timelock_proposal: {
+                    proposal_id: {},
                     msgs: {},
                   },
                 },
@@ -106,11 +88,33 @@ const InnerProposalInnerContentDisplay = ({
             },
           })
         ) {
-          return decodeMessages(
-            innerDecoded[0].wasm.execute.msg.execute_timelocked_msgs.msgs
+          const innerDecoded = decodeMessages(
+            decoded[0].wasm.execute.msg.timelock_proposal.msgs
           )
+          if (
+            innerDecoded.length === 1 &&
+            objectMatchesStructure(innerDecoded[0], {
+              wasm: {
+                execute: {
+                  contract_addr: {},
+                  funds: {},
+                  msg: {
+                    execute_timelocked_msgs: {
+                      msgs: {},
+                    },
+                  },
+                },
+              },
+            })
+          ) {
+            return decodeMessages(
+              innerDecoded[0].wasm.execute.msg.execute_timelocked_msgs.msgs
+            )
+          }
         }
       }
+    } catch (error) {
+      console.error('Neutron timelock_proposal unwrap error', error)
     }
 
     return decoded
