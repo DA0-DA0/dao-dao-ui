@@ -119,6 +119,8 @@ const Component: ActionComponent = (props) => {
       ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: address,
           chainId,
+          // We only care about the SubDAOs this DAO has admin powers over.
+          onlyAdmin: true,
         })
       : undefined
   )
