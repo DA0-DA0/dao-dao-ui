@@ -70,7 +70,6 @@ export const makeGetProposalInfo =
           args: {
             id: proposalNumber,
           },
-          required: true,
         })
       } catch (err) {
         // Ignore error.

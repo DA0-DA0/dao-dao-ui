@@ -156,13 +156,7 @@ export const TabRenderer = ({
         {vestingPaymentsLoading.loading ? (
           <Loader fill={false} />
         ) : vestingPaymentsLoading.errored ? (
-          <ErrorPage title={t('error.unexpectedError')}>
-            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-              {vestingPaymentsLoading.error instanceof Error
-                ? vestingPaymentsLoading.error.message
-                : `${vestingPaymentsLoading.error}`}
-            </pre>
-          </ErrorPage>
+          <ErrorPage error={vestingPaymentsLoading.error} />
         ) : vestingPaymentsLoading.data.length ? (
           <div className="space-y-6 border-t border-border-secondary pt-6">
             {vestingPaymentsNeedingSlashRegistration.length > 0 && (

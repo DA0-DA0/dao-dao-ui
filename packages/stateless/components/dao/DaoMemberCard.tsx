@@ -1,49 +1,64 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { ChainId } from '@dao-dao/types'
+import { EntityType } from '@dao-dao/types'
 import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { ChainLogo } from '../ChainLogo'
+import { useDaoNavHelpers } from '../../hooks'
+import { ButtonLink } from '../buttons'
 import { CopyableAddress } from '../CopyableAddress'
 import { ProfileImage } from '../profile'
-import { Tooltip } from '../tooltip'
 
 export const DaoMemberCard = ({
   address,
   balance,
   votingPowerPercent,
-  profileData: { profile, loading: profileLoading },
+  loadingEntity,
 }: DaoMemberCardProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useDaoNavHelpers()
+
+  const title = (
+    <p
+      className={clsx(
+        'title-text text-text-body',
+        (loadingEntity.loading || loadingEntity.updating) && 'animate-pulse'
+      )}
+    >
+      {loadingEntity.loading ||
+      (loadingEntity.updating && !loadingEntity.data.name)
+        ? '...'
+        : loadingEntity.data.name}
+    </p>
+  )
 
   return (
     <div className="flex flex-col justify-between rounded-md border border-border-primary">
       <div className="flex flex-col items-center px-6 pt-10 pb-8">
         {/* Image */}
         <ProfileImage
-          imageUrl={profile.imageUrl}
-          loading={profileLoading}
+          imageUrl={
+            loadingEntity.loading ? undefined : loadingEntity.data.imageUrl
+          }
+          loading={loadingEntity.loading || loadingEntity.updating}
+          rounded={
+            !loadingEntity.loading &&
+            loadingEntity.data.type !== EntityType.Wallet
+          }
           size="lg"
         />
 
         {/* Name */}
         <div className="mt-4 mb-2 flex flex-row items-center gap-2">
-          {!profileLoading && profile.nameSource === 'stargaze' && (
-            <Tooltip title={t('title.stargazeNames')}>
-              <ChainLogo chainId={ChainId.StargazeMainnet} />
-            </Tooltip>
+          {!loadingEntity.loading &&
+          loadingEntity.data.type === EntityType.Dao ? (
+            <ButtonLink href={getDaoPath(address)} size="none" variant="none">
+              {title}
+            </ButtonLink>
+          ) : (
+            title
           )}
-
-          <p
-            className={clsx(
-              'title-text text-text-body',
-              profileLoading && 'animate-pulse'
-            )}
-          >
-            {profileLoading ? '...' : profile.name}
-          </p>
         </div>
 
         {/* Address */}

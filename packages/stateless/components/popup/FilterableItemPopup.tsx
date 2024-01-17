@@ -65,6 +65,8 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 }: FilterableItemPopupProps<T>) => {
   const { t } = useTranslation()
 
+  searchPlaceholder ??= t('info.searchPlaceholder')
+
   const [_open, _setOpen] = useState(false)
   const open = trigger.type === 'manual' ? trigger.open : _open
   const setOpen = trigger.type === 'manual' ? trigger.setOpen : _setOpen

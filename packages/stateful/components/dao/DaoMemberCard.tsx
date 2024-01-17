@@ -1,21 +1,17 @@
-import { useRecoilValue } from 'recoil'
-
-import {
-  DaoMemberCard as StatelessDaoMemberCard,
-  useChain,
-} from '@dao-dao/stateless'
+import { DaoMemberCard as StatelessDaoMemberCard } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 
-import { walletProfileDataSelector } from '../../recoil'
+import { useEntity } from '../../hooks'
+import { ButtonLink } from '../ButtonLink'
 
 export const DaoMemberCard = (props: StatefulDaoMemberCardProps) => {
-  const { chain_id: chainId } = useChain()
-  const profileData = useRecoilValue(
-    walletProfileDataSelector({
-      address: props.address,
-      chainId,
-    })
-  )
+  const loadingEntity = useEntity(props.address)
 
-  return <StatelessDaoMemberCard {...props} profileData={profileData} />
+  return (
+    <StatelessDaoMemberCard
+      {...props}
+      ButtonLink={ButtonLink}
+      loadingEntity={loadingEntity}
+    />
+  )
 }

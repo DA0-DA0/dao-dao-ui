@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
+import { EntityType } from '@dao-dao/types'
 import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 
+import { ButtonLink } from '../buttons'
 import { DaoMemberCard } from './DaoMemberCard'
 
 export default {
@@ -36,18 +39,17 @@ export const makeProps = (): DaoMemberCardProps => ({
     loading: false,
     data: Math.floor(Math.random() * (30 * 1e2) + 1e2) / 1e2,
   },
-  profileData: {
+  loadingEntity: {
     loading: false,
-    address: 'juno1abczhsdyechxcjz90y',
-    profile: {
-      name: 'Modern-Edamame',
-      nameSource: 'pfpk',
-      imageUrl: '/noah.jpg',
-      nft: null,
-      nonce: 0,
+    data: {
+      type: EntityType.Wallet,
+      chainId: CHAIN_ID,
+      address: 'walletPerson',
+      name: 'wallet Person!',
+      imageUrl: '/placeholders/1.svg',
     },
-    backupImageUrl: '/noah.jpg',
   },
+  ButtonLink,
 })
 
 export const Default = Template.bind({})
@@ -63,16 +65,14 @@ export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
   votingPowerPercent: { loading: true },
-  profileData: {
-    loading: true,
-    address: Default.args.address!,
-    profile: {
-      name: '',
-      nameSource: 'pfpk',
-      imageUrl: '',
-      nft: null,
-      nonce: 0,
+  loadingEntity: {
+    loading: false,
+    data: {
+      type: EntityType.Wallet,
+      chainId: CHAIN_ID,
+      address: 'walletPerson',
+      name: 'wallet Person!',
+      imageUrl: '/placeholders/1.svg',
     },
-    backupImageUrl: '/noah.jpg',
   },
 }

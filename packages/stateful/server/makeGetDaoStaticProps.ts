@@ -157,7 +157,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         chainId,
         address: coreAddress,
         formula: 'info',
-        required: true,
       })
       if (addressInfo && addressInfo.contract === ContractName.PolytoneProxy) {
         // Get voice for this proxy on destination chain.
@@ -167,7 +166,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           // proxy
           address: coreAddress,
           formula: 'polytone/proxy/instantiator',
-          required: true,
         })
 
         const dao = await queryIndexer({
@@ -179,7 +177,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             // proxy
             address: coreAddress,
           },
-          required: true,
         })
 
         return {
@@ -600,7 +597,6 @@ const daoCoreDumpState = async (
       address: coreAddress,
       formula: 'daoCore/dumpState',
       chainId,
-      required: true,
     })
 
     // Use data from indexer if present.
@@ -624,7 +620,6 @@ const daoCoreDumpState = async (
           address: coreAddress,
           formula: 'daoCore/listItems',
           chainId,
-          required: true,
         })) ?? []
 
       const { admin } = indexerDumpedState

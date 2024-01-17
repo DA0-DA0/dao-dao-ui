@@ -268,3 +268,7 @@ export const ThumbDownEmoji = () => (
 export const ComputerDiskEmoji = () => (
   <EmojiWrapper emoji="💽" labelI18nKey="emoji.computerDisk" />
 )
+
+export const PlayPauseEmoji = () => (
+  <EmojiWrapper emoji="⏯️" labelI18nKey="emoji.playPause" />
+)

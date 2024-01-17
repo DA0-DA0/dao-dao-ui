@@ -4,6 +4,7 @@ import { makeCreateCrossChainAccountAction } from './CreateCrossChainAccount'
 import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
+import { makeManageSubDaoPauseAction } from './ManageSubDaoPause'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeManageVetoableDaosAction } from './ManageVetoableDaos'
 import { makeSetUpApproverAction } from './SetUpApprover'
@@ -29,5 +30,6 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     makeSetUpApproverAction,
     makeVetoOrEarlyExecuteDaoProposalAction,
     makeManageVetoableDaosAction,
+    makeManageSubDaoPauseAction,
   ],
 })

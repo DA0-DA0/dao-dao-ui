@@ -29,7 +29,6 @@ export const contractInstantiateTimeSelector = selectorFamily<
           contractAddress: address,
           chainId,
           formula: 'instantiatedAt',
-          required: true,
         })
       )
       // Null when indexer fails.
@@ -128,7 +127,6 @@ export const contractInfoSelector = selectorFamily<
           contractAddress,
           chainId,
           formula: 'info',
-          required: true,
         })
       )
       if (info) {

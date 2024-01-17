@@ -242,7 +242,6 @@ export const unbondingDurationSecondsSelector = selectorFamily<
           contractAddress,
           formula: 'cwVesting/unbondingDurationSeconds',
           chainId,
-          required: true,
         })
       ),
 })

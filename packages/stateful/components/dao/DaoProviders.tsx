@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   ChainProvider,
@@ -54,7 +53,6 @@ export const DaoProvidersWithoutInfo = ({
   coreAddress,
   children,
 }: DaoProvidersWithoutInfoProps) => {
-  const { t } = useTranslation()
   const infoLoading = useCachedLoadingWithError(
     daoInfoSelector({
       chainId,
@@ -66,13 +64,7 @@ export const DaoProvidersWithoutInfo = ({
     <SuspenseLoader fallback={<Loader />} forceFallback={infoLoading.loading}>
       {!infoLoading.loading &&
         (infoLoading.errored ? (
-          <ErrorPage title={t('error.unexpectedError')}>
-            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-              {infoLoading.error instanceof Error
-                ? infoLoading.error.message
-                : `${infoLoading.error}`}
-            </pre>
-          </ErrorPage>
+          <ErrorPage error={infoLoading.error} />
         ) : (
           <DaoProviders info={infoLoading.data}>{children}</DaoProviders>
         ))}

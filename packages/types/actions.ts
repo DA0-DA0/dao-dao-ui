@@ -76,6 +76,7 @@ export enum ActionKey {
   VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
   ManageVetoableDaos = 'manageVetoableDaos',
   UploadCode = 'uploadCode',
+  ManageSubDaoPause = 'manageSubDaoPause',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

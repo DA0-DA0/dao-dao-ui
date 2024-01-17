@@ -27,6 +27,7 @@ import {
   Entity,
   EntityType,
   GenericToken,
+  GenericTokenBalance,
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
@@ -88,6 +89,8 @@ export interface SpendOptions {
   currentEntity: Entity | undefined
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
+  // If this is an IBC transfer, show the expected receive amount.
+  ibcAmountOut: LoadingDataWithError<number | undefined>
   // If this is an IBC transfer and a multi-TX route exists that unwinds the
   // tokens correctly but doesn't use PFM, this is the better path.
   betterNonPfmIbcPath: LoadingData<string[] | undefined>
@@ -96,6 +99,8 @@ export interface SpendOptions {
   // If this spend is Noble USDC and leaves Noble at some point, these are the
   // fee settings.
   nobleTariff: LoadingDataWithError<NobleTariffParams | undefined>
+  // If this spend incurs an IBC transfer fee on Neutron, show it.
+  neutronTransferFee: LoadingDataWithError<GenericTokenBalance[] | undefined>
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -110,9 +115,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     tokens,
     currentEntity,
     ibcPath,
+    ibcAmountOut,
     betterNonPfmIbcPath,
     missingAccountChainIds,
     nobleTariff,
+    neutronTransferFee,
     AddressInput,
   },
   addAction,
@@ -445,8 +452,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       )}
 
       {selectedToken && isCreating && (
-        <div className="-mt-2 flex flex-row items-center gap-2">
-          <p className="secondary-text">{t('title.balance')}:</p>
+        <div className="flex flex-row items-center gap-2">
+          <p className="secondary-text">{t('info.yourBalance')}:</p>
 
           <TokenAmountDisplay
             amount={balance}
@@ -457,6 +464,23 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           />
         </div>
       )}
+
+      {selectedToken &&
+        !ibcAmountOut.loading &&
+        !ibcAmountOut.errored &&
+        ibcAmountOut.data && (
+          <div className="flex flex-row items-center gap-2">
+            <p className="secondary-text">{t('info.amountWillBeReceived')}:</p>
+
+            <TokenAmountDisplay
+              amount={ibcAmountOut.data}
+              decimals={selectedToken.token.decimals}
+              iconUrl={selectedToken.token.imageUrl}
+              showFullAmount
+              symbol={selectedToken.token.symbol}
+            />
+          </div>
+        )}
 
       {isIbc && (
         <div className="flex flex-col gap-4 rounded-md border-2 border-dashed border-border-primary p-4">
@@ -521,8 +545,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ))}
               </div>
 
-              {isCreating &&
-                selectedToken &&
+              {selectedToken &&
                 !nobleTariff.loading &&
                 !nobleTariff.errored &&
                 nobleTariff.data &&
@@ -533,6 +556,28 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                     params={nobleTariff.data}
                     token={selectedToken.token}
                   />
+                )}
+
+              {!neutronTransferFee.loading &&
+                !neutronTransferFee.errored &&
+                neutronTransferFee.data && (
+                  <p className="secondary-text max-w-prose text-text-interactive-warning-body">
+                    {t('info.neutronTransferFeeApplied', {
+                      fee: neutronTransferFee.data
+                        .map(({ token, balance }) =>
+                          t('format.token', {
+                            amount: convertMicroDenomToDenomWithDecimals(
+                              balance,
+                              token.decimals
+                            ).toLocaleString(undefined, {
+                              maximumFractionDigits: token.decimals,
+                            }),
+                            symbol: token.symbol,
+                          })
+                        )
+                        .join(', '),
+                    })}
+                  </p>
                 )}
 
               {isCreating &&

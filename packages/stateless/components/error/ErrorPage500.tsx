@@ -21,16 +21,10 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
     <>
       <PageHeaderContent forceCenter title={t('title.500')} />
 
-      <ErrorPage>
-        <p className="title-text">{t('error.errorOccurredOnPage')}</p>
-
+      <ErrorPage error={error} title={t('error.errorOccurredOnPage')}>
         <ButtonLink href="/" variant="secondary">
           {t('button.returnHome')}
         </ButtonLink>
-
-        <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-          {error}
-        </pre>
       </ErrorPage>
     </>
   )

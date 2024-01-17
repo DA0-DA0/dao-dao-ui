@@ -18,6 +18,8 @@ export * from "./ibc/bundle";
 export * from "./ibc/client";
 export * from "./juno/bundle";
 export * from "./juno/client";
+export * from "./neutron/bundle";
+export * from "./neutron/client";
 export * from "./osmosis/bundle";
 export * from "./osmosis/client";
 export * from "./publicawesome/bundle";

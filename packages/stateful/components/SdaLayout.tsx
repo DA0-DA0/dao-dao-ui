@@ -1,13 +1,11 @@
-import { ReactNode, useEffect } from 'react'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { ReactNode } from 'react'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
-  refreshBlockHeightAtom,
-  refreshTokenUsdcPriceAtom,
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
@@ -17,7 +15,12 @@ import {
   SdaLayout as StatelessSdaLayout,
 } from '@dao-dao/stateless'
 
-import { useDaoTabs, useWallet, useWalletInfo } from '../hooks'
+import {
+  useAutoRefreshData,
+  useDaoTabs,
+  useWallet,
+  useWalletInfo,
+} from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
@@ -36,19 +39,10 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     useRecoilState(proposalCreatedCardPropsAtom)
 
   const { connect, isWalletConnected } = useWallet()
-  const { walletAddress, walletProfileData } = useWalletInfo()
+  const { walletProfileData } = useWalletInfo()
 
-  //! Refresh every minute. Block height, USDC conversions, and wallet balances.
-  const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
-  const setRefreshUsdcPrices = useSetRecoilState(refreshTokenUsdcPriceAtom(''))
-  // Refresh block height and wallet balances every minute.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshBlockHeight((id) => id + 1)
-      setRefreshUsdcPrices((id) => id + 1)
-    }, 60 * 1000)
-    return () => clearInterval(interval)
-  }, [setRefreshBlockHeight, setRefreshUsdcPrices, walletAddress])
+  //! Auto refresh various data used across the UI
+  useAutoRefreshData()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom

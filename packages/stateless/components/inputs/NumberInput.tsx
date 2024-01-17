@@ -59,7 +59,7 @@ export interface NumberInputProps<
   // the input, and the unit.
   containerClassName?: string
   // Size of the container.
-  sizing?: 'sm' | 'md' | 'auto' | 'fill' | 'none'
+  sizing?: 'sm' | 'md' | 'lg' | 'auto' | 'fill' | 'none'
   // Remove padding, rounded corners, and outline.
   ghost?: boolean
   // A unit to display to the right of the number.
@@ -127,6 +127,7 @@ export const NumberInput = <
         {
           'w-28': sizing === 'sm',
           'w-40': sizing === 'md',
+          'w-56': sizing === 'lg',
           'w-28 md:w-32 lg:w-40': sizing === 'auto',
           'w-full': sizing === 'fill',
         },

@@ -212,7 +212,6 @@ export const WalletActionsProvider = ({
 }
 
 export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
-  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const govDataLoading = useCachedLoadingWithError(
     waitForAll([
@@ -229,11 +228,7 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
   return govDataLoading.loading ? (
     <PageLoader />
   ) : govDataLoading.errored ? (
-    <ErrorPage title={t('error.unexpectedError')}>
-      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-        {govDataLoading.error.message}
-      </pre>
-    </ErrorPage>
+    <ErrorPage error={govDataLoading.error} />
   ) : (
     <BaseActionsProvider
       address={govDataLoading.data[0]}
