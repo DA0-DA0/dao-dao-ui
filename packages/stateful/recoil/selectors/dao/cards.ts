@@ -314,8 +314,11 @@ export const subDaoCardInfosSelector = selectorFamily<
 
       return get(
         waitForAll(
-          subdaos.map(({ addr }) =>
-            daoCardInfoSelector({ coreAddress: addr, chainId })
+          subdaos.map(({ chainId, addr }) =>
+            daoCardInfoSelector({
+              chainId,
+              coreAddress: addr,
+            })
           )
         )
       ).filter(Boolean) as DaoCardInfo[]
@@ -339,8 +342,11 @@ export const subDaoInfosSelector = selectorFamily<
 
       return get(
         waitForAll(
-          subdaos.map(({ addr }) =>
-            daoInfoSelector({ coreAddress: addr, chainId })
+          subdaos.map(({ chainId, addr }) =>
+            daoInfoSelector({
+              chainId,
+              coreAddress: addr,
+            })
           )
         )
       )
@@ -373,16 +379,13 @@ export const daoDropdownInfoSelector: (
         })
       )
 
-      const subDaoAddresses: string[] = isFeatureSupportedByVersion(
-        Feature.SubDaos,
-        version
-      )
+      const subDaos = isFeatureSupportedByVersion(Feature.SubDaos, version)
         ? get(
             DaoCoreV2Selectors.listAllSubDaosSelector({
               contractAddress: coreAddress,
               chainId,
             })
-          ).map(({ addr }) => addr)
+          )
         : []
 
       return {
@@ -394,10 +397,10 @@ export const daoDropdownInfoSelector: (
           ? []
           : get(
               waitForAll(
-                subDaoAddresses.map((subDaoAddress) =>
+                subDaos.map(({ chainId, addr: subDaoAddress }) =>
                   daoDropdownInfoSelector({
-                    coreAddress: subDaoAddress,
                     chainId,
+                    coreAddress: subDaoAddress,
                     parents: [...(parents ?? []), coreAddress],
                     // Prevents cycles. If one of our children is also our
                     // ancestor, don't let it load any children, but still load

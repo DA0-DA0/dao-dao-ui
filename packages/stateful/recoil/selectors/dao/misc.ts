@@ -9,7 +9,6 @@ import {
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
-  PolytoneProxySelectors,
   accountsSelector,
   addressIsModuleSelector,
   contractInfoSelector,
@@ -19,6 +18,7 @@ import {
   queryContractIndexerSelector,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
+  reverseLookupPolytoneProxySelector,
 } from '@dao-dao/state'
 import {
   ContractVersion,
@@ -37,7 +37,6 @@ import {
   CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
-  POLYTONE_CONFIG_PER_CHAIN,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainForChainId,
   getDaoProposalPath,
@@ -370,54 +369,25 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
 >({
   key: 'daoInfoFromPolytoneProxy',
   get:
-    ({ proxy, chainId }) =>
+    (params) =>
     ({ get }) => {
-      // Get voice for this proxy on destination chain.
-      const voice = get(
-        PolytoneProxySelectors.instantiatorSelector({
-          chainId,
-          contractAddress: proxy,
-          params: [],
-        })
-      )
-      if (!voice) {
-        return
-      }
-
-      // Get source DAO core address for this voice.
-      const coreAddress = get(
-        DaoCoreV2Selectors.coreAddressForPolytoneProxySelector({
-          chainId,
-          voice,
-          proxy,
-        })
-      )
-      if (!coreAddress) {
-        return
-      }
-
-      // Get source chain ID, where the note lives for this voice.
-      const srcChainId = POLYTONE_CONFIG_PER_CHAIN.find(([, config]) =>
-        Object.entries(config).some(
-          ([destChainId, connection]) =>
-            destChainId === chainId && connection.voice === voice
-        )
-      )?.[0]
-      if (!srcChainId) {
+      const { chainId, address } =
+        get(reverseLookupPolytoneProxySelector(params)) ?? {}
+      if (!chainId || !address) {
         return
       }
 
       // Get DAO info on source chain.
       const info = get(
         daoInfoSelector({
-          chainId: srcChainId,
-          coreAddress,
+          chainId,
+          coreAddress: address,
         })
       )
 
       return {
-        chainId: srcChainId,
-        coreAddress,
+        chainId,
+        coreAddress: address,
         info,
       }
     },

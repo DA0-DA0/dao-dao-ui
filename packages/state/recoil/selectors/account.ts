@@ -14,10 +14,14 @@ import {
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { ICA_CHAINS_TX_PREFIX, tokensEqual } from '@dao-dao/utils'
+import {
+  ICA_CHAINS_TX_PREFIX,
+  POLYTONE_CONFIG_PER_CHAIN,
+  tokensEqual,
+} from '@dao-dao/utils'
 
 import { isDaoSelector, isPolytoneProxySelector } from './contract'
-import { DaoCoreV2Selectors } from './contracts'
+import { DaoCoreV2Selectors, PolytoneProxySelectors } from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalanceSelector,
@@ -255,5 +259,64 @@ export const allBalancesSelector = selectorFamily<
           })
         )
       })
+    },
+})
+
+/**
+ * Given a polytone proxy, get the source chain, address, and polytone note.
+ */
+export const reverseLookupPolytoneProxySelector = selectorFamily<
+  | {
+      chainId: string
+      address: string
+      note: string
+    }
+  | undefined,
+  WithChainId<{ proxy: string }>
+>({
+  key: 'reverseLookupPolytoneProxy',
+  get:
+    ({ proxy, chainId }) =>
+    ({ get }) => {
+      // Get voice for this proxy on destination chain.
+      const voice = get(
+        PolytoneProxySelectors.instantiatorSelector({
+          chainId,
+          contractAddress: proxy,
+          params: [],
+        })
+      )
+      if (!voice) {
+        return
+      }
+
+      // Get source address for this voice.
+      const address = get(
+        PolytoneProxySelectors.remoteControllerForPolytoneProxySelector({
+          chainId,
+          voice,
+          proxy,
+        })
+      )
+      if (!address) {
+        return
+      }
+
+      // Get source polytone connection, where the note lives for this voice.
+      const srcPolytoneInfo = POLYTONE_CONFIG_PER_CHAIN.find(([, config]) =>
+        Object.entries(config).some(
+          ([destChainId, connection]) =>
+            destChainId === chainId && connection.voice === voice
+        )
+      )
+      if (!srcPolytoneInfo) {
+        return
+      }
+
+      return {
+        chainId: srcPolytoneInfo[0],
+        address,
+        note: srcPolytoneInfo[1][chainId].note,
+      }
     },
 })

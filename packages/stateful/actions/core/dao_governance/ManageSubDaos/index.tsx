@@ -37,8 +37,8 @@ const Component: ActionComponent = (props) => {
     chain: { chain_id: chainId },
   } = useActionOptions()
 
-  const subDaos = useRecoilValue(
-    DaoCoreV2Selectors.allSubDaoConfigsSelector({
+  const currentSubDaos = useRecoilValue(
+    DaoCoreV2Selectors.allAdministratedSubDaoConfigsSelector({
       chainId,
       contractAddress: address,
     })
@@ -48,10 +48,7 @@ const Component: ActionComponent = (props) => {
     <StatelessManageSubDaosComponent
       {...props}
       options={{
-        currentSubDaos: subDaos.map(({ address, name }) => ({
-          address,
-          name,
-        })),
+        currentSubDaos,
         AddressInput,
       }}
     />
