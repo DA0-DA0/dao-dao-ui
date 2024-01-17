@@ -225,8 +225,6 @@ export const SelfRelayExecuteModal = ({
             (RELAYER_FUNDS_NEEDED[relayers[index].chain.chain_id] ?? 0)
         )
       : undefined
-  // If wallet has enough funds to fund all relayers.
-  const walletCanAffordAllRelayers = !!walletFundsSufficient?.every(Boolean)
 
   const relayerFunds = useCachedLoadingWithError(
     relayers
@@ -252,7 +250,7 @@ export const SelfRelayExecuteModal = ({
       .every(
         ({ amount }, index) =>
           Number(amount) >=
-          (RELAYER_FUNDS_NEEDED[relayers[index].chain.chain_id] ?? 0)
+          (RELAYER_FUNDS_NEEDED[relayers[index + 1].chain.chain_id] ?? 0)
       )
 
   const setupRelayer = async () => {
@@ -357,13 +355,8 @@ export const SelfRelayExecuteModal = ({
 
   // Send fee tokens to relayer wallet.
   const fundRelayer = async (chainId: string, withExecuteRelay = false) => {
-    if (!walletCanAffordAllRelayers) {
-      toast.error(t('error.insufficientFunds'))
-      return
-    }
-
     const relayer = relayers?.find(({ chain }) => chainId === chain.chain_id)
-    if (!relayer) {
+    if (!relayers || !relayer) {
       toast.error(t('error.relayerNotSetUp'))
       return
     }
