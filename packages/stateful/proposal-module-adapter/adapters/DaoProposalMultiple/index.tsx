@@ -8,9 +8,10 @@ import {
 import {
   NewProposal,
   makeActionCategoryMakers,
-  makeDepositInfoSelector,
+  depositInfoSelector as makeDepositInfoSelector,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
+  maxVotingPeriodSelector,
   proposalCountSelector,
   reverseProposalInfosSelector,
 } from './common'
@@ -86,6 +87,10 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
             ...props,
           }),
         depositInfo: depositInfoSelector,
+        maxVotingPeriod: maxVotingPeriodSelector({
+          chainId: options.chain.chain_id,
+          proposalModuleAddress: options.proposalModule.address,
+        }),
       },
 
       // Hooks
