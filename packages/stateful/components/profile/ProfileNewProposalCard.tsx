@@ -8,20 +8,21 @@ import {
 } from '@dao-dao/stateless'
 
 import { useMembership, useWalletInfo } from '../../hooks'
-import { matchAndLoadCommon } from '../../proposal-module-adapter'
+import {
+  useProposalModuleAdapterCommon,
+  useProposalModuleAdapterCommonContext,
+} from '../../proposal-module-adapter/react/context'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export interface ProfileNewProposalCardProps {
-  proposalModuleAdapterCommon: ReturnType<typeof matchAndLoadCommon>
-}
-
-export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
+export const ProfileNewProposalCard = () => {
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
+  const { id: proposalModuleAdapterCommonId } =
+    useProposalModuleAdapterCommonContext()
 
   return (
     <SuspenseLoader
@@ -38,24 +39,24 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
     >
       {/* Use `key` prop to fully re-instantiate this card when the proposalModule changes since we use hooks from the proposal module, and different proposal modules have different internal hooks. */}
       <InnerProfileNewProposalCard
-        key={`${coreAddress}:${props.proposalModuleAdapterCommon.id}`}
-        {...props}
+        key={`${coreAddress}:${proposalModuleAdapterCommonId}`}
       />
     </SuspenseLoader>
   )
 }
 
-export const InnerProfileNewProposalCard = ({
-  proposalModuleAdapterCommon: {
-    hooks: { useProfileNewProposalCardInfoLines },
-  },
-}: ProfileNewProposalCardProps) => {
+export const InnerProfileNewProposalCard = () => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
+
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
+
+  const {
+    hooks: { useProfileNewProposalCardInfoLines },
+  } = useProposalModuleAdapterCommon()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()

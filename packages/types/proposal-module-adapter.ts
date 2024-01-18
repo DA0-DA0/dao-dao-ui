@@ -162,10 +162,25 @@ export type IProposalModuleAdapterInitialOptions = Omit<
   | 'isPreProposeApprovalProposal'
 >
 
+/**
+ * Proposal module adapter context. This is specific to a single proposal in a
+ * single proposal module.
+ */
 export type IProposalModuleContext = {
   id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
+  common: IProposalModuleAdapterCommon
+}
+
+/**
+ * Common proposal module adapter context. This is not specific to any single
+ * proposal, but is specific to a single proposal module. This could be used to
+ * retrieve the current proposal module's config for example.
+ */
+export type IProposalModuleCommonContext = {
+  id: string
+  options: IProposalModuleAdapterCommonOptions
   common: IProposalModuleAdapterCommon
 }
 

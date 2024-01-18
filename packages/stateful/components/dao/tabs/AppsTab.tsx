@@ -20,7 +20,6 @@ import {
   Modal,
   AppsTab as StatelessAppsTab,
   WarningCard,
-  useChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -49,10 +48,11 @@ import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import { useActionsForMatching } from '../../../actions'
 import { useWallet } from '../../../hooks/useWallet'
 import {
-  matchAndLoadCommon,
+  ProposalModuleAdapterCommonProvider,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../../proposal-module-adapter'
 import { NewProposalForm as NewSingleChoiceProposalForm } from '../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
+import { useProposalModuleAdapterCommonContext } from '../../../proposal-module-adapter/react/context'
 import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
 import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
@@ -69,8 +69,8 @@ export const AppsTab = () => {
     accounts,
   } = useDaoInfoContext()
 
-  // Ensure we have a single choice proposal module to use for proposals.
-  const singleChoiceProposalModuleExists = proposalModules.some(
+  // Select the single choice proposal module to use for proposals.
+  const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
       matchProposalModuleAdapter(contractName)?.id ===
       DaoProposalSingleAdapterId
@@ -295,7 +295,7 @@ export const AppsTab = () => {
     }
   }, [wallet])
 
-  return singleChoiceProposalModuleExists ? (
+  return singleChoiceProposalModule ? (
     <>
       <StatelessAppsTab
         fullScreen={fullScreen}
@@ -304,11 +304,18 @@ export const AppsTab = () => {
       />
 
       {msgs && (
-        <ActionMatcherAndProposer
-          key={JSON.stringify(msgs)}
-          msgs={msgs}
-          setMsgs={setMsgs}
-        />
+        <ProposalModuleAdapterCommonProvider
+          initialOptions={{
+            coreAddress: coreAddress,
+          }}
+          proposalModule={singleChoiceProposalModule}
+        >
+          <ActionMatcherAndProposer
+            key={JSON.stringify(msgs)}
+            msgs={msgs}
+            setMsgs={setMsgs}
+          />
+        </ProposalModuleAdapterCommonProvider>
       )}
     </>
   ) : (
@@ -328,33 +335,16 @@ const ActionMatcherAndProposer = ({
   setMsgs,
 }: ActionMatcherAndProposerProps) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModules } = useDaoInfoContext()
-  const { chain } = useChainContext()
+  const { coreAddress } = useDaoInfoContext()
   const { isWalletConnected } = useWallet()
 
-  const singleChoiceProposalModule = proposalModules.find(
-    ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.id ===
-      DaoProposalSingleAdapterId
-  )
-  const proposalModuleAdapterCommon = useMemo(
-    () =>
-      singleChoiceProposalModule &&
-      matchAndLoadCommon(singleChoiceProposalModule, {
-        chain,
-        coreAddress,
-      }),
-    [chain, coreAddress, singleChoiceProposalModule]
-  )
-
-  if (!proposalModuleAdapterCommon) {
-    throw new Error(t('error.noSingleChoiceProposalModule'))
-  }
-
   const {
-    fields: { newProposalFormTitleKey },
-    components: { NewProposal },
-  } = proposalModuleAdapterCommon
+    id: proposalModuleAdapterCommonId,
+    common: {
+      fields: { newProposalFormTitleKey },
+      components: { NewProposal },
+    },
+  } = useProposalModuleAdapterCommonContext()
 
   const actionsForMatching = useActionsForMatching()
 
@@ -450,7 +440,7 @@ const ActionMatcherAndProposer = ({
       createdAt: Date.now(),
       lastUpdatedAt: Date.now(),
       proposal: {
-        id: proposalModuleAdapterCommon.id,
+        id: proposalModuleAdapterCommonId,
         data: proposalData,
       },
     }
@@ -461,7 +451,7 @@ const ActionMatcherAndProposer = ({
     draft,
     drafts,
     proposalData,
-    proposalModuleAdapterCommon.id,
+    proposalModuleAdapterCommonId,
     setDrafts,
     proposalName,
   ])
@@ -484,7 +474,7 @@ const ActionMatcherAndProposer = ({
                 name: proposalName,
                 lastUpdatedAt: Date.now(),
                 proposal: {
-                  id: proposalModuleAdapterCommon.id,
+                  id: proposalModuleAdapterCommonId,
                   // Deep clone to prevent values from becoming readOnly.
                   data: cloneDeep(proposalData),
                 },
@@ -504,7 +494,7 @@ const ActionMatcherAndProposer = ({
     draftIndex,
     setDrafts,
     proposalName,
-    proposalModuleAdapterCommon.id,
+    proposalModuleAdapterCommonId,
   ])
 
   const onCreateSuccess: BaseNewProposalProps['onCreateSuccess'] = useCallback(
