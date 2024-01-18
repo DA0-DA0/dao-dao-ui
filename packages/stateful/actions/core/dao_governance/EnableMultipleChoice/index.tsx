@@ -34,7 +34,7 @@ import {
 } from '../../../../proposal-module-adapter'
 import {
   anyoneCanProposeSelector,
-  makeDepositInfoSelector,
+  depositInfoSelector,
 } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/common'
 import { makeDefaultNewDao } from '../../../../recoil'
 import { EnableMultipleChoiceComponent as Component } from './Component'
@@ -120,7 +120,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
       })
     )
     const depositInfo = useCachedLoadingWithError(
-      makeDepositInfoSelector({
+      depositInfoSelector({
         chainId,
         proposalModuleAddress: singleChoiceProposal.address,
         version: singleChoiceProposal.version,

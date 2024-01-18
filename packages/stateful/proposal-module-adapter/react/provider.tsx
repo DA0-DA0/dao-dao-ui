@@ -1,25 +1,29 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import { useChain } from '@dao-dao/stateless'
 import {
+  IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
-  IProposalModuleContext,
   ProposalModule,
 } from '@dao-dao/types'
 
-import { matchAndLoadAdapter } from '../core'
-import { ProposalModuleAdapterContext } from './context'
+import {
+  commonContextFromAdapterContext,
+  matchAndLoadAdapter,
+  matchAndLoadCommonContext,
+} from '../core'
+import {
+  ProposalModuleAdapterCommonContext,
+  ProposalModuleAdapterContext,
+} from './context'
 
-export interface ProposalModuleAdapterProviderProps {
+export type ProposalModuleAdapterProviderProps = {
   proposalModules: ProposalModule[]
   proposalId: string
   children: ReactNode | ReactNode[]
   initialOptions: Omit<IProposalModuleAdapterInitialOptions, 'chain'>
 }
 
-// Ensure this re-renders when the voting module contract name or options
-// addresses change. You can do this by setting a `key` on this component or one
-// of its ancestors. See DaoPageWrapper.tsx where this component is used.
 export const ProposalModuleAdapterProvider = ({
   proposalModules,
   proposalId,
@@ -27,16 +31,51 @@ export const ProposalModuleAdapterProvider = ({
   initialOptions,
 }: ProposalModuleAdapterProviderProps) => {
   const chain = useChain()
-  const [context] = useState<IProposalModuleContext>(() =>
-    matchAndLoadAdapter(proposalModules, proposalId, {
+  const { context, commonContext } = useMemo(() => {
+    const context = matchAndLoadAdapter(proposalModules, proposalId, {
       ...initialOptions,
       chain,
     })
+    const commonContext = commonContextFromAdapterContext(context)
+    return {
+      context,
+      commonContext,
+    }
+  }, [chain, initialOptions, proposalId, proposalModules])
+
+  return (
+    <ProposalModuleAdapterCommonContext.Provider value={commonContext}>
+      <ProposalModuleAdapterContext.Provider value={context}>
+        {children}
+      </ProposalModuleAdapterContext.Provider>
+    </ProposalModuleAdapterCommonContext.Provider>
+  )
+}
+
+export interface ProposalModuleAdapterCommonProviderProps {
+  proposalModule: ProposalModule
+  children: ReactNode | ReactNode[]
+  initialOptions: Omit<IProposalModuleAdapterCommonInitialOptions, 'chain'>
+}
+
+export const ProposalModuleAdapterCommonProvider = ({
+  proposalModule,
+  children,
+  initialOptions,
+}: ProposalModuleAdapterCommonProviderProps) => {
+  const chain = useChain()
+  const context = useMemo(
+    () =>
+      matchAndLoadCommonContext(proposalModule, {
+        ...initialOptions,
+        chain,
+      }),
+    [chain, initialOptions, proposalModule]
   )
 
   return (
-    <ProposalModuleAdapterContext.Provider value={context}>
+    <ProposalModuleAdapterCommonContext.Provider value={context}>
       {children}
-    </ProposalModuleAdapterContext.Provider>
+    </ProposalModuleAdapterCommonContext.Provider>
   )
 }

@@ -16,6 +16,7 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  Duration,
   Feature,
   ProposalStatusEnum,
   WithChainId,
@@ -27,11 +28,12 @@ import {
 } from '@dao-dao/types/proposal-module-adapter'
 import { isFeatureSupportedByVersion } from '@dao-dao/utils'
 
-export const proposalCountSelector: (
-  info: WithChainId<{
+export const proposalCountSelector = selectorFamily<
+  number,
+  WithChainId<{
     proposalModuleAddress: string
   }>
-) => RecoilValueReadOnly<number> = selectorFamily({
+>({
   key: 'daoProposalSingleProposalCount',
   get:
     ({ chainId, proposalModuleAddress }) =>
@@ -42,6 +44,27 @@ export const proposalCountSelector: (
           chainId,
         })
       ),
+})
+
+export const maxVotingPeriodSelector = selectorFamily<
+  Duration,
+  WithChainId<{
+    proposalModuleAddress: string
+  }>
+>({
+  key: 'daoProposalSingleMaxVotingPeriod',
+  get:
+    ({ chainId, proposalModuleAddress }) =>
+    ({ get }) => {
+      const config = get(
+        DaoProposalSingleCommonSelectors.configSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+        })
+      )
+
+      return config.max_voting_period
+    },
 })
 
 export const reverseProposalInfosSelector: (
@@ -203,7 +226,7 @@ export const reversePreProposeCompletedProposalInfosSelector: (
     },
 })
 
-export const makeDepositInfoSelector: (
+export const depositInfoSelector: (
   info: WithChainId<{
     proposalModuleAddress: string
     version: ContractVersion | null
