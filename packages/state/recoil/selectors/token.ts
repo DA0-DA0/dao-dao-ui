@@ -20,6 +20,7 @@ import {
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
+import { astroportUsdPriceSelector } from './astroport'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
@@ -170,7 +171,9 @@ export const usdPriceSelector = selectorFamily<
       return (
         get(osmosisUsdPriceSelector(params)) ||
         // Try white whale DEX as backup.
-        get(whiteWhaleUsdPriceSelector(params))
+        get(whiteWhaleUsdPriceSelector(params)) ||
+        // Try Astroport DEX as backup.
+        get(astroportUsdPriceSelector(params))
       )
     },
 })

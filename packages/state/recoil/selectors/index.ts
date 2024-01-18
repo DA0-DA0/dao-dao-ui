@@ -1,6 +1,7 @@
 export * from './contracts'
 
 export * from './account'
+export * from './astroport'
 export * from './chain'
 export * from './contract'
 export * from './discord'
