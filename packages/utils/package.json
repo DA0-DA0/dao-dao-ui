@@ -9,7 +9,7 @@
     "protobuf": "node protobuf/scripts/codegen.js && git apply protobuf/patches.diff"
   },
   "dependencies": {
-    "@chain-registry/assets": "^1.26.0",
+    "@chain-registry/assets": "^1.26.1",
     "@cosmjs/amino": "^0.31.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
@@ -17,7 +17,7 @@
     "@cosmjs/tendermint-rpc": "^0.31.0",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
-    "chain-registry": "^1.25.0",
+    "chain-registry": "^1.25.1",
     "json5": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
     "long": "^5.2.1",
