@@ -62,6 +62,10 @@ export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 export const WHITE_WHALE_PRICES_API =
   'https://www.api-white-whale.enigma-validator.com/summary/migaloo/all/current'
 
+// Astroport API
+export const ASTROPORT_PRICES_API =
+  'https://api.astroport.fi/api/tokens?chainId=neutron-1'
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
