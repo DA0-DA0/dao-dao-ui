@@ -12,6 +12,8 @@ import {
   loadableToLoadingDataWithError,
 } from '@dao-dao/utils'
 
+const constSelectorRegex = /^__constant__selectorFamily\/(.+)\/\d+$/
+
 // Keep cache of previously loaded data until next data is ready. Essentially,
 // memoize a loadable to prevent UI flickering. If recoilValue is undefined,
 // pretend like we are loading until we get a selector to load. This may happen
@@ -46,14 +48,23 @@ export const useCachedLoadable = <T extends unknown>(
     // If the loadable is ready on first render, just set it right away.
     loadable.state === 'hasValue' ? loadable.contents : undefined
   )
+  // Store the cached recoil value key for comparison.
+  const [cachedKey, setCachedKey] = useState<string | undefined>(
+    recoilValue?.key
+  )
   const [initialLoading, setInitialLoading] = useState(
     loadableLoadingOrNotReady
   )
   const [updating, setUpdating] = useState(loadableLoadingOrNotReady)
 
+  // Store the last cached key for use in the effect below.
+  const lastCachedKey = useRef(cachedKey)
+  lastCachedKey.current = cachedKey
+
   useEffect(() => {
     if (loadableLoadingOrNotReady) {
       setUpdating(true)
+      setCachedKey(recoilValue?.key)
       // Reset state if recoilValue becomes undefined. This may happen if a
       // query depends on form input state, like an address, that may toggle
       // between valid and invalid. This ensures that old data is not shown for
@@ -64,13 +75,33 @@ export const useCachedLoadable = <T extends unknown>(
         setContentsHasValue(false)
       }
     } else if (loadable.state === 'hasValue') {
+      // Special handling for `constSelector` to prevent infinite loops.
+      // `constSelector`s change on every re-render with an incrementing ID, so
+      // if we are using the same constant object, we don't want to cause
+      // another re-render by updating state above. If it re-renders here, the
+      // selector will change again, causing infinite loops. To prevent infinite
+      // loops, no need to update state if the constant selector is for the same
+      // value as the currently cached value.
+      if (
+        lastCachedKey.current &&
+        constSelectorRegex.test(recoilValue.key) &&
+        constSelectorRegex.test(lastCachedKey.current) &&
+        // Ensure that constant selectors are for the same data.
+        recoilValue.key.match(constSelectorRegex)?.[1] ===
+          lastCachedKey.current.match(constSelectorRegex)?.[1]
+      ) {
+        return
+      }
+
       setInitialLoading(false)
       setUpdating(false)
       setContents(loadable.contents)
       setContentsHasValue(true)
+      setCachedKey(recoilValue.key)
     } else if (loadable.state === 'hasError') {
       setInitialLoading(false)
       setUpdating(false)
+      setCachedKey(recoilValue?.key)
     }
   }, [loadable, loadableLoadingOrNotReady, recoilValue])
 
