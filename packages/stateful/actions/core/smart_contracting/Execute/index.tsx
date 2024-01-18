@@ -3,6 +3,7 @@ import JSON5 from 'json5'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { waitForAll } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
@@ -22,11 +23,11 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
-  getTokenForChainIdAndDenom,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -69,32 +70,43 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         return
       }
 
+      const fundsTokens = funds.map(({ denom }) =>
+        tokenBalances.loading
+          ? undefined
+          : tokenBalances.data.find(
+              ({ token }) =>
+                token.chainId === chainId && token.denomOrAddress === denom
+            )?.token
+      )
+      const nonexistentFundsDenom = funds.find(
+        (_, index) => !fundsTokens[index]
+      )?.denom
+      if (nonexistentFundsDenom) {
+        throw new Error(
+          t('error.unknownDenom', {
+            denom: nonexistentFundsDenom,
+          })
+        )
+      }
+
       let executeMsg: CosmosMsgForEmpty | undefined
       if (cw20) {
-        const tokenBalance =
-          tokenBalances.loading || funds.length !== 1
-            ? undefined
-            : tokenBalances.data.find(
-                ({ token }) =>
-                  token.chainId === chainId &&
-                  token.denomOrAddress === funds[0].denom
-              )
-        if (!tokenBalance) {
-          throw new Error(t('error.unknownDenom', { denom: funds[0].denom }))
+        if (funds.length !== 1 || fundsTokens.length !== 1) {
+          throw new Error(t('error.loadingData'))
         }
 
         // Execute CW20 send message.
         executeMsg = makeWasmMessage({
           wasm: {
             execute: {
-              contract_addr: tokenBalance.token.denomOrAddress,
+              contract_addr: fundsTokens[0]!.denomOrAddress,
               funds: [],
               msg: {
                 send: {
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     funds[0].amount,
-                    tokenBalance.token.decimals
-                  ).toString(),
+                    fundsTokens[0]!.decimals
+                  ),
                   contract: address,
                   msg: encodeMessageAsBase64(msg),
                 },
@@ -107,11 +119,11 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
           wasm: {
             execute: {
               contract_addr: address,
-              funds: funds.map(({ denom, amount }) => ({
+              funds: funds.map(({ denom, amount }, index) => ({
                 denom,
                 amount: convertDenomToMicroDenomWithDecimals(
                   amount,
-                  getTokenForChainIdAndDenom(chainId, denom).decimals
+                  fundsTokens[index]!.decimals
                 ).toString(),
               })),
               msg,
@@ -177,8 +189,25 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
       : undefined
   )
 
-  // Can't match until we have the CW20 token info.
-  if (isCw20 && (cw20Token.loading || cw20Token.errored)) {
+  const fundsTokens = useCachedLoadingWithError(
+    isExecute && !isCw20
+      ? waitForAll(
+          (msg.wasm.execute.funds as Coin[]).map(({ denom }) =>
+            genericTokenSelector({
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+            })
+          )
+        )
+      : undefined
+  )
+
+  // Can't match until we have the token info.
+  if (
+    (isCw20 && (cw20Token.loading || cw20Token.errored)) ||
+    (!isCw20 && (fundsTokens.loading || fundsTokens.errored))
+  ) {
     return { match: false }
   }
 
@@ -209,13 +238,17 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
                   ),
                 },
               ]
-            : (msg.wasm.execute.funds as Coin[]).map(({ denom, amount }) => ({
-                denom,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  amount,
-                  getTokenForChainIdAndDenom(chainId, denom).decimals
-                ),
-              })),
+            : !fundsTokens.loading && !fundsTokens.errored
+            ? (msg.wasm.execute.funds as Coin[]).map(
+                ({ denom, amount }, index) => ({
+                  denom,
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    amount,
+                    fundsTokens.data[index].decimals
+                  ),
+                })
+              )
+            : [],
           cw20: isCw20,
         },
       }
