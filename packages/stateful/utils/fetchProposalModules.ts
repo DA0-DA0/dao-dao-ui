@@ -4,6 +4,7 @@ import {
 } from '@dao-dao/state/contracts'
 import { queryIndexer } from '@dao-dao/state/indexer'
 import {
+  ChainId,
   ContractVersion,
   Feature,
   ProposalModule,
@@ -14,6 +15,7 @@ import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
+  NEUTRON_GOVERNANCE_DAO,
   cosmWasmClientRouter,
   getRpcForChainId,
   indexToProposalModulePrefix,
@@ -77,12 +79,18 @@ export const fetchProposalModules = async (
 
       return {
         address,
-        prefix: isFeatureSupportedByVersion(
-          Feature.StaticProposalModulePrefixes,
-          coreVersion
-        )
-          ? prefix
-          : indexToProposalModulePrefix(index),
+        prefix:
+          // Follow Neutron's naming convention.
+          chainId === ChainId.NeutronMainnet &&
+          coreAddress === NEUTRON_GOVERNANCE_DAO &&
+          prefix === 'A'
+            ? 'N'
+            : isFeatureSupportedByVersion(
+                Feature.StaticProposalModulePrefixes,
+                coreVersion
+              )
+            ? prefix
+            : indexToProposalModulePrefix(index),
         contractName: info?.contract || '',
         version,
         prePropose:
