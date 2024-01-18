@@ -13,6 +13,7 @@ import {
 import {
   CheckedDepositInfo,
   ContractVersion,
+  Duration,
   ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
@@ -36,6 +37,27 @@ export const proposalCountSelector: (
           chainId,
         })
       ),
+})
+
+export const maxVotingPeriodSelector = selectorFamily<
+  Duration,
+  WithChainId<{
+    proposalModuleAddress: string
+  }>
+>({
+  key: 'daoProposalMultipleMaxVotingPeriod',
+  get:
+    ({ chainId, proposalModuleAddress }) =>
+    ({ get }) => {
+      const config = get(
+        DaoProposalMultipleSelectors.configSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+        })
+      )
+
+      return config.max_voting_period
+    },
 })
 
 export const reverseProposalInfosSelector: (
@@ -97,7 +119,7 @@ export const reverseProposalInfosSelector: (
     },
 })
 
-export const makeDepositInfoSelector: (
+export const depositInfoSelector: (
   info: WithChainId<{
     proposalModuleAddress: string
     version: ContractVersion | null

@@ -101,6 +101,7 @@ Default.args = {
     missingAccountChainIds: [],
     nobleTariff: { loading: false, errored: false, data: undefined },
     neutronTransferFee: { loading: false, errored: false, data: undefined },
+    proposalModuleMaxVotingPeriodInBlocks: false,
     AddressInput,
   },
   isCreating: true,

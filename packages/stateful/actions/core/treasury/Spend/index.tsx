@@ -1,7 +1,7 @@
 import { coin, coins } from '@cosmjs/amino'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   accountsSelector,
@@ -21,6 +21,7 @@ import {
   AccountType,
   ChainId,
   CosmosMsgForEmpty,
+  DurationUnits,
   Entity,
   GenericTokenBalanceWithOwner,
   LoadingData,
@@ -39,6 +40,7 @@ import {
 import {
   MAINNET,
   convertDenomToMicroDenomStringWithDecimals,
+  convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   decodeIcaExecuteMsg,
   decodePolytoneExecuteMsg,
@@ -69,6 +71,7 @@ import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/utils/protobuf/codeg
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'
+import { useProposalModuleAdapterCommon } from '../../../../proposal-module-adapter'
 import { entitySelector } from '../../../../recoil'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
@@ -84,6 +87,18 @@ const useDefaults: UseDefaults<SpendData> = () => {
   } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
+  const {
+    selectors: { maxVotingPeriod },
+  } = useProposalModuleAdapterCommon()
+  const proposalModuleMaxVotingPeriod =
+    useCachedLoadingWithError(maxVotingPeriod)
+
+  if (proposalModuleMaxVotingPeriod.loading) {
+    return
+  } else if (proposalModuleMaxVotingPeriod.errored) {
+    return proposalModuleMaxVotingPeriod.error
+  }
+
   return {
     fromChainId: chainId,
     toChainId: chainId,
@@ -91,6 +106,18 @@ const useDefaults: UseDefaults<SpendData> = () => {
     to: walletAddress,
     amount: 1,
     denom: maybeGetNativeTokenForChainId(chainId)?.denomOrAddress || '',
+    ibcTimeout:
+      'time' in proposalModuleMaxVotingPeriod.data
+        ? // 1 week if voting period is a time since we can append it after.
+          {
+            value: 1,
+            units: DurationUnits.Weeks,
+          }
+        : // 30 days if max voting period is in blocks since we can't append time and need to choose a conservative value.
+          {
+            value: 30,
+            units: DurationUnits.Days,
+          },
   }
 }
 
@@ -147,6 +174,11 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           },
         ],
   })
+
+  const {
+    selectors: { maxVotingPeriod },
+  } = useProposalModuleAdapterCommon()
+  const proposalModuleMaxVotingPeriod = useRecoilValue(maxVotingPeriod)
 
   // Once already created, load selected token info (which should already be
   // loaded in the decoder), so this data is available right away. This removes
@@ -473,6 +505,8 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
                 updating: neutronTransferFee.updating,
                 data: neutronTransferFee.data?.sum,
               },
+        proposalModuleMaxVotingPeriodInBlocks:
+          'blocks' in proposalModuleMaxVotingPeriod,
         AddressInput,
       }}
     />
@@ -488,7 +522,12 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     neutronIbcTransferFeeSelector,
     undefined
   )
-  console.log(neutronTransferFee)
+
+  const {
+    selectors: { maxVotingPeriod },
+  } = useProposalModuleAdapterCommon()
+  const proposalModuleMaxVotingPeriod =
+    useCachedLoadingWithError(maxVotingPeriod)
 
   return useCallback(
     ({
@@ -498,6 +537,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       to,
       amount: _amount,
       denom,
+      ibcTimeout,
       useDirectIbcPath,
       _skipIbcTransferMsg,
     }: SpendData) => {
@@ -538,11 +578,28 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       let msg: CosmosMsgForEmpty | undefined
       // IBC transfer.
       if (token.type === TokenType.Native && toChainId !== fromChainId) {
-        // Timeout after 1 year. Needs to survive voting period and execution
-        // delay.
+        // Require that this loads before using IBC.
+        if (
+          proposalModuleMaxVotingPeriod.loading ||
+          proposalModuleMaxVotingPeriod.errored
+        ) {
+          throw new Error('Failed to load proposal module max voting period')
+        }
+
+        // Default to conservative 30 days if no IBC timeout is set for some
+        // reason. This should never happen.
+        const timeoutSeconds = ibcTimeout
+          ? convertDurationWithUnitsToSeconds(ibcTimeout)
+          : 30 * 24 * 60 * 60
+        // Convert seconds to nanoseconds.
         const timeoutTimestamp = BigInt(
-          // Nanoseconds.
-          (Date.now() + 1000 * 60 * 60 * 24 * 365) * 1e6
+          Date.now() * 1e6 +
+            // Add timeout to voting period if it's a time duration.
+            ((!('time' in proposalModuleMaxVotingPeriod.data)
+              ? 0
+              : proposalModuleMaxVotingPeriod.data.time) +
+              timeoutSeconds) *
+              1e9
         )
 
         // If no Skip IBC msg or it errored or disabled, use single-hop IBC
@@ -606,8 +663,6 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                   // If no memo, use empty string. This will be undefined if PFM
                   // is not used and it's only a single hop.
                   memo: skipTransferMsgValue.memo || '',
-                  // Timeout after 1 year. Needs to survive voting period and
-                  // execution delay.
                   timeout_timestamp: timeoutTimestamp,
                   timeout_height: undefined,
                 }),
@@ -660,7 +715,12 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             msg
           )
     },
-    [loadingTokenBalances, options, neutronTransferFee]
+    [
+      loadingTokenBalances,
+      options,
+      neutronTransferFee,
+      proposalModuleMaxVotingPeriod,
+    ]
   )
 }
 
@@ -668,6 +728,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   const options = useActionOptions()
+  const defaults = useDefaults()
 
   let chainId = options.chain.chain_id
   let from = options.address
@@ -795,6 +856,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId,
         from,
@@ -804,6 +867,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
           token.data.decimals
         ),
         denom: token.data.denomOrAddress,
+
+        // Nanoseconds to milliseconds.
+        _absoluteIbcTimeout: Number(
+          msg.stargate.value.timeoutTimestamp / BigInt(1e6)
+        ),
 
         _ibcData: {
           sourceChannel: msg.stargate.value.sourceChannel,
@@ -815,6 +883,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,
@@ -830,6 +900,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,
