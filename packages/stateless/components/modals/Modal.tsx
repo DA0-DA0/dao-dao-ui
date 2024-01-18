@@ -169,7 +169,10 @@ export const Modal = ({
     : null
 }
 
-export const ModalLoader = (props: Pick<ModalProps, 'onClose'>) => (
+export const ModalLoader = (
+  // Allow overriding visible.
+  props: Pick<ModalProps, 'onClose'> & Partial<Pick<ModalProps, 'visible'>>
+) => (
   <Modal contentContainerClassName="!p-40" visible {...props}>
     <Loader />
   </Modal>

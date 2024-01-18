@@ -67,6 +67,7 @@
     "claim": "Claim",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
     "claimStakingRewards": "Claim staking rewards",
+    "claimYourTokens": "Claim your tokens",
     "clear": "Clear",
     "clearAll": "Clear all",
     "clearNotification": "Clear notification",
@@ -143,6 +144,7 @@
     "manage": "Manage",
     "manageStake": "Manage your ${{tokenSymbol}} stake",
     "manageStaking": "Manage staking",
+    "manageYourStake": "Manage your stake",
     "metadataUploaded": "Metadata uploaded",
     "migrate": "Migrate",
     "more": "More",
@@ -203,6 +205,7 @@
     "stakeAllButProposalDeposit": "Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit",
     "stakeOrUnstake": "Stake or unstake",
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
+    "stakeTokens": "Stake tokens",
     "stakingMode": {
       "claim": "Claim",
       "restake": "Restake",

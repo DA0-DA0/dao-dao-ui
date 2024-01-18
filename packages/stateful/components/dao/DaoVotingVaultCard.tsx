@@ -35,19 +35,12 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
       : constSelector(undefined)
   )
 
-  // Check if virtual vault by testing if bonding is disabled.
-  const loadingBondersSelector = useCachedLoadingWithError(
-    NeutronVaultSelectors.listBondersSelector({
+  const loadingVirtualSelector = useCachedLoadingWithError(
+    NeutronVaultSelectors.isVirtualSelector({
       contractAddress: props.vault.address,
       chainId,
-      params: [{}],
     })
   )
-  const virtual =
-    loadingBondersSelector.errored &&
-    loadingBondersSelector.error.message.includes(
-      'Bonding is not available for this contract'
-    )
 
   return (
     <StatelessDaoVotingVaultCard
@@ -68,7 +61,11 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
                     100,
             }
       }
-      virtual={virtual}
+      virtual={
+        !loadingVirtualSelector.loading &&
+        !loadingVirtualSelector.errored &&
+        loadingVirtualSelector.data
+      }
       walletVotingPowerPercent={
         loadingVaultVotingPower.loading ||
         loadingVaultVotingPower.errored ||

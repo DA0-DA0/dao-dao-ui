@@ -71,14 +71,6 @@ export const ProfileCardMemberInfo = ({
     fetchTotalStakedValue: true,
   })
 
-  if (
-    loadingUnstakedBalance === undefined ||
-    loadingWalletStakedValue === undefined ||
-    loadingTotalStakedValue === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
-
   const doClaim = DaoVotingCw721StakedHooks.useClaimNfts({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
@@ -167,34 +159,33 @@ export const ProfileCardMemberInfo = ({
 
   return (
     <>
-      {showStakingModal && (
-        <StakingModal
-          maxDeposit={maxGovernanceTokenDeposit}
-          onClose={() => setShowStakingModal(false)}
-        />
-      )}
-
       <ProfileCardMemberInfoTokens
         claimingLoading={claimingLoading}
         daoName={daoName}
-        loadingStakedTokens={
-          loadingWalletStakedValue.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: loadingWalletStakedValue.data,
-              }
-        }
-        loadingUnstakedTokens={
+        loadingTokens={
+          !loadingWalletStakedValue ||
+          loadingWalletStakedValue.loading ||
+          !loadingUnstakedBalance ||
           loadingUnstakedBalance.loading
-            ? { loading: true }
+            ? {
+                loading: true,
+              }
             : {
                 loading: false,
-                data: loadingUnstakedBalance.data,
+                data: [
+                  {
+                    token,
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
+                  },
+                ],
               }
         }
         loadingVotingPower={
-          loadingWalletStakedValue.loading || loadingTotalStakedValue.loading
+          !loadingWalletStakedValue ||
+          loadingWalletStakedValue.loading ||
+          !loadingTotalStakedValue ||
+          loadingTotalStakedValue.loading
             ? { loading: true }
             : {
                 loading: false,
@@ -208,8 +199,6 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
-        tokenDecimals={0}
-        tokenSymbol={collectionInfo.symbol}
         unstakingDurationSeconds={
           (unstakingDuration &&
             durationToSeconds(blocksPerYear, unstakingDuration)) ||
@@ -217,6 +206,12 @@ export const ProfileCardMemberInfo = ({
         }
         unstakingTasks={unstakingTasks}
         {...props}
+      />
+
+      <StakingModal
+        maxDeposit={maxGovernanceTokenDeposit}
+        onClose={() => setShowStakingModal(false)}
+        visible={showStakingModal}
       />
     </>
   )

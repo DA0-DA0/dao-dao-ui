@@ -4,9 +4,9 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAllSettled } from 'recoil'
 
-import { Addr, WithChainId } from '@dao-dao/types'
+import { Addr, GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 import {
   ArrayOfTupleOfAddrAndUint128,
   BondingStatusResponse,
@@ -19,9 +19,14 @@ import {
   NeutronVaultClient,
   NeutronVaultQueryClient,
 } from '../../../contracts/NeutronVault'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import {
+  refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { contractInfoSelector } from '../contract'
+import { genericTokenSelector } from '../token'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -86,6 +91,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
       const client = get(queryClient(queryClientParams))
       return await client.votingPowerAtHeight(...params)
     },
@@ -100,6 +107,10 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+
       const client = get(queryClient(queryClientParams))
       return await client.totalPowerAtHeight(...params)
     },
@@ -114,6 +125,8 @@ export const bondingStatusSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
       const client = get(queryClient(queryClientParams))
       return await client.bondingStatus(...params)
     },
@@ -175,3 +188,100 @@ export const listBondersSelector = selectorFamily<
     },
 })
 export const infoSelector = contractInfoSelector
+
+/**
+ * Test whether or not this is a virtual vault.
+ */
+export const isVirtualSelector = selectorFamily<boolean, QueryClientParams>({
+  key: 'neutronVaultIsVirtual',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const listBonders = get(
+        waitForAllSettled([
+          listBondersSelector({
+            ...queryClientParams,
+            params: [{}],
+          }),
+        ])
+      )[0]
+
+      return (
+        listBonders.state === 'hasError' &&
+        listBonders.contents instanceof Error &&
+        listBonders.contents.message.includes(
+          'Bonding is not available for this contract'
+        )
+      )
+    },
+})
+
+/**
+ * Determine if this vault is real or virtual, and retrieve the bond token if
+ * it's real.
+ */
+export const vaultInfoSelector = selectorFamily<
+  // Real vaults have bond tokens.
+  | {
+      real: true
+      bondToken: GenericToken
+    }
+  // Virtual vaults do not have bond tokens.
+  | {
+      real: false
+    },
+  QueryClientParams
+>({
+  key: 'neutronVaultVaultInfo',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const [listBonders, _config] = get(
+        waitForAllSettled([
+          listBondersSelector({
+            ...queryClientParams,
+            params: [
+              {
+                limit: 1,
+              },
+            ],
+          }),
+          configSelector({
+            ...queryClientParams,
+            params: [],
+          }),
+        ])
+      )
+
+      const virtual =
+        listBonders.state === 'hasError' &&
+        listBonders.contents instanceof Error &&
+        listBonders.contents.message.includes(
+          'Bonding is not available for this contract'
+        )
+
+      if (virtual) {
+        return {
+          real: false,
+        }
+      }
+
+      const config = _config.state === 'hasValue' ? _config.contents : undefined
+      if (!config || !('denom' in config)) {
+        throw new Error('No config or denom for real vault')
+      }
+
+      const bondToken = get(
+        genericTokenSelector({
+          chainId: queryClientParams.chainId,
+          type: TokenType.Native,
+          denomOrAddress: config.denom,
+        })
+      )
+
+      return {
+        real: true,
+        bondToken,
+      }
+    },
+})

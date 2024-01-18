@@ -15,6 +15,7 @@ import {
   NumberInput,
   PercentButton,
   SegmentedControls,
+  TokenInput,
 } from '../inputs'
 import { Modal } from '../modals/Modal'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -45,6 +46,7 @@ export const StakingModal = ({
   validatorPicker,
   visible = true,
   enableRestaking,
+  tokenPicker,
 }: StakingModalProps) => {
   const { t } = useTranslation()
 
@@ -206,6 +208,8 @@ export const StakingModal = ({
                 </div>
               </>
             )}
+
+            {tokenPicker && <TokenInput {...tokenPicker} />}
           </div>
         ) : undefined
       }

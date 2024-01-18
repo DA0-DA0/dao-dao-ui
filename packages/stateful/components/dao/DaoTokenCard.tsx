@@ -234,8 +234,11 @@ export const DaoTokenCard = ({
         subtitle={getDisplayNameForChainId(token.chainId)}
       />
 
-      {isGovernanceToken && showGovernanceStakingModal && StakingModal && (
-        <StakingModal onClose={() => setShowGovernanceStakingModal(false)} />
+      {isGovernanceToken && StakingModal && (
+        <StakingModal
+          onClose={() => setShowGovernanceStakingModal(false)}
+          visible={showGovernanceStakingModal}
+        />
       )}
 
       {!isGovernanceToken && (

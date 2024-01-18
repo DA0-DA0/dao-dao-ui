@@ -18,7 +18,11 @@ import {
   NeutronVotingRegistryClient,
   NeutronVotingRegistryQueryClient,
 } from '../../../contracts/NeutronVotingRegistry'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import {
+  refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { contractInfoSelector } from '../contract'
 
@@ -113,6 +117,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
       const client = get(queryClient(queryClientParams))
       return await client.votingPowerAtHeight(...params)
     },
@@ -127,6 +132,10 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+
       const client = get(queryClient(queryClientParams))
       return await client.totalPowerAtHeight(...params)
     },

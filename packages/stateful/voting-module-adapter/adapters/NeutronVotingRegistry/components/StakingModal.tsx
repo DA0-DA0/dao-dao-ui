@@ -2,7 +2,7 @@ import { coins } from '@cosmjs/stargate'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
   NeutronVaultSelectors,
@@ -25,6 +25,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
+  tokensEqual,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
@@ -38,43 +39,54 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
-  <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>
+  <SuspenseLoader
+    fallback={<ModalLoader onClose={props.onClose} visible={props.visible} />}
+  >
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
 
 const InnerStakingModal = ({
-  initialMode = StakingMode.Stake,
+  visible,
   onClose,
+  initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { address: walletAddress, isWalletConnected } = useWallet()
+  const { address = '', isWalletConnected } = useWallet()
   const { refreshBalances } = useWalletInfo()
   const { coreAddress, chainId } = useVotingModuleAdapterOptions()
 
-  const { neutronToken, loadingVaults } = useVotingModule()
-  const loadingNeutronBalance = useCachedLoadingWithError(
-    !walletAddress
+  const { loadingVaults } = useVotingModule()
+  const loadingStakedTokens = useCachedLoadingWithError(
+    loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
-      : genericTokenBalanceSelector({
-          chainId: neutronToken.chainId,
-          type: neutronToken.type,
-          denomOrAddress: neutronToken.denomOrAddress,
-          address: walletAddress,
-        })
+      : waitForAll(
+          loadingVaults.data.realVaults.map(({ vault }) =>
+            NeutronVaultSelectors.bondingStatusSelector({
+              contractAddress: vault.address,
+              chainId,
+              params: [
+                {
+                  address,
+                },
+              ],
+            })
+          )
+        )
   )
-  const loadingWalletVotingBondedTokens = useCachedLoadingWithError(
-    loadingVaults.loading || loadingVaults.errored || !walletAddress
+  const loadingUnstakedTokens = useCachedLoadingWithError(
+    loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
-      : NeutronVaultSelectors.votingPowerAtHeightSelector({
-          contractAddress: loadingVaults.data.neutronVault.address,
-          chainId,
-          params: [
-            {
-              address: walletAddress,
-            },
-          ],
-        })
+      : waitForAll(
+          loadingVaults.data.realVaults.map(({ bondToken }) =>
+            genericTokenBalanceSelector({
+              chainId: bondToken.chainId,
+              type: bondToken.type,
+              denomOrAddress: bondToken.denomOrAddress,
+              address: address,
+            })
+          )
+        )
   )
 
   const setRefreshTotalBalancesId = useSetRecoilState(
@@ -87,22 +99,30 @@ const InnerStakingModal = ({
   )
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
-
+  const [selectedVaultIndex, setSelectedVaultIndex] = useState(0)
   const [amount, setAmount] = useState(0)
 
+  const selectedVault =
+    loadingVaults.loading || loadingVaults.errored
+      ? undefined
+      : loadingVaults.data.realVaults[selectedVaultIndex] ||
+        loadingVaults.data.realVaults[0]
+  const selectedVaultStakedTokens =
+    loadingStakedTokens.loading || loadingStakedTokens.errored
+      ? undefined
+      : loadingStakedTokens.data[selectedVaultIndex]?.unbondable_abount
+  const selectedVaultUnstakedTokens =
+    loadingUnstakedTokens.loading || loadingUnstakedTokens.errored
+      ? undefined
+      : loadingUnstakedTokens.data[selectedVaultIndex]?.balance
+
   const doStake = NeutronVaultHooks.useBond({
-    contractAddress:
-      !loadingVaults.loading && !loadingVaults.errored
-        ? loadingVaults.data.neutronVault.address
-        : ' ',
-    sender: walletAddress ?? '',
+    contractAddress: selectedVault?.vault.address ?? '',
+    sender: address,
   })
   const doUnstake = NeutronVaultHooks.useUnbond({
-    contractAddress:
-      !loadingVaults.loading && !loadingVaults.errored
-        ? loadingVaults.data.neutronVault.address
-        : ' ',
-    sender: walletAddress ?? '',
+    contractAddress: selectedVault?.vault.address ?? '',
+    sender: address,
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
@@ -116,6 +136,10 @@ const InnerStakingModal = ({
 
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {
+    if (!selectedVault) {
+      toast.error(t('error.loadingData'))
+      return
+    }
     if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
@@ -134,9 +158,9 @@ const InnerStakingModal = ({
             coins(
               convertDenomToMicroDenomStringWithDecimals(
                 amount,
-                neutronToken.decimals
+                selectedVault.bondToken.decimals
               ),
-              neutronToken.denomOrAddress
+              selectedVault.bondToken.denomOrAddress
             )
           )
 
@@ -150,8 +174,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: neutronToken.decimals,
-            })} $${neutronToken.symbol}`
+              maximumFractionDigits: selectedVault.bondToken.decimals,
+            })} $${selectedVault.bondToken.symbol}`
           )
 
           // Close once done.
@@ -172,7 +196,7 @@ const InnerStakingModal = ({
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
-              neutronToken.decimals
+              selectedVault.bondToken.decimals
             ).toString(),
           })
 
@@ -186,8 +210,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: neutronToken.decimals,
-            })} $${neutronToken.symbol}`
+              maximumFractionDigits: selectedVault.bondToken.decimals,
+            })} $${selectedVault.bondToken.symbol}`
           )
 
           // Close once done.
@@ -209,6 +233,10 @@ const InnerStakingModal = ({
     }
   }
 
+  if (!selectedVault) {
+    return <ModalLoader onClose={onClose} visible={visible} />
+  }
+
   return (
     <StatelessStakingModal
       amount={amount}
@@ -217,36 +245,74 @@ const InnerStakingModal = ({
       initialMode={initialMode}
       loading={stakingLoading}
       loadingStakableTokens={
-        loadingNeutronBalance.loading || loadingNeutronBalance.errored
+        loadingUnstakedTokens.loading ||
+        loadingUnstakedTokens.errored ||
+        !selectedVaultUnstakedTokens
           ? { loading: true }
           : {
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
-                loadingNeutronBalance.data.balance,
-                neutronToken.decimals
+                selectedVaultUnstakedTokens,
+                selectedVault.bondToken.decimals
               ),
             }
       }
       loadingUnstakableTokens={
-        loadingWalletVotingBondedTokens.loading ||
-        loadingWalletVotingBondedTokens.errored
+        loadingStakedTokens.loading ||
+        loadingStakedTokens.errored ||
+        !selectedVaultStakedTokens
           ? { loading: true }
           : {
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
-                loadingWalletVotingBondedTokens.data.power,
-                neutronToken.decimals
+                selectedVaultStakedTokens,
+                selectedVault.bondToken.decimals
               ),
             }
       }
       onAction={onAction}
       onClose={onClose}
       setAmount={(newAmount) => setAmount(newAmount)}
-      token={neutronToken}
+      token={selectedVault?.bondToken}
+      tokenPicker={
+        loadingVaults.loading ||
+        loadingVaults.errored ||
+        loadingVaults.data.realVaults.length === 1
+          ? undefined
+          : {
+              tokens:
+                loadingVaults.loading || loadingVaults.errored
+                  ? {
+                      loading: true,
+                    }
+                  : {
+                      loading: false,
+                      data: loadingVaults.data.realVaults.map(
+                        ({ bondToken }) => bondToken
+                      ),
+                    },
+              onSelectToken: (token) => {
+                const index =
+                  loadingVaults.loading || loadingVaults.errored
+                    ? -1
+                    : loadingVaults.data.realVaults.findIndex(({ bondToken }) =>
+                        tokensEqual(token, bondToken)
+                      )
+
+                setSelectedVaultIndex(index === -1 ? 0 : index)
+              },
+              selectedToken:
+                loadingVaults.loading || loadingVaults.errored
+                  ? undefined
+                  : loadingVaults.data.realVaults[selectedVaultIndex]
+                      ?.bondToken,
+            }
+      }
       unstakingDuration={
         // No unstaking duration for neutron vault.
         null
       }
+      visible={visible}
     />
   )
 }

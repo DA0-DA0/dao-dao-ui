@@ -17,7 +17,6 @@ import {
   MoneyEmoji,
   SelectInput,
   TokenInput,
-  TokenInputOption,
   useCachedLoadable,
   useChainContext,
 } from '@dao-dao/stateless'
@@ -27,6 +26,7 @@ import {
   DaoCreationVotingConfigItemReviewProps,
   DaoCreationVotingConfigWithProposalDeposit,
   DepositRefundPolicy,
+  TokenInputOption,
   TokenType,
 } from '@dao-dao/types'
 import {

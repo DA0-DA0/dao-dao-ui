@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   NeutronVaultSelectors,
@@ -29,8 +29,7 @@ export const ProfileCardMemberInfo = ({
   const [showStakingModal, setShowStakingModal] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  const { votingRegistryAddress, neutronToken, loadingVaults } =
-    useVotingModule()
+  const { votingRegistryAddress, loadingVaults } = useVotingModule()
   const loadingWalletVotingPower = useCachedLoadingWithError(
     !address
       ? undefined
@@ -51,63 +50,68 @@ export const ProfileCardMemberInfo = ({
       params: [{}],
     })
   )
-  const loadingWalletVotingBondedTokens = useCachedLoadingWithError(
+  const loadingStakedTokens = useCachedLoadingWithError(
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
-      : NeutronVaultSelectors.votingPowerAtHeightSelector({
-          contractAddress: loadingVaults.data.neutronVault.address,
-          chainId,
-          params: [
-            {
-              address,
-            },
-          ],
-        })
+      : waitForAll(
+          loadingVaults.data.realVaults.map(({ vault }) =>
+            NeutronVaultSelectors.bondingStatusSelector({
+              contractAddress: vault.address,
+              chainId,
+              params: [
+                {
+                  address,
+                },
+              ],
+            })
+          )
+        )
   )
-  const loadingNeutronBalance = useCachedLoadingWithError(
-    !address
+  const loadingUnstakedTokens = useCachedLoadingWithError(
+    loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
-      : genericTokenBalanceSelector({
-          chainId: neutronToken.chainId,
-          type: neutronToken.type,
-          denomOrAddress: neutronToken.denomOrAddress,
-          address: address,
-        })
+      : waitForAll(
+          loadingVaults.data.realVaults.map(({ bondToken }) =>
+            genericTokenBalanceSelector({
+              chainId: bondToken.chainId,
+              type: bondToken.type,
+              denomOrAddress: bondToken.denomOrAddress,
+              address: address,
+            })
+          )
+        )
   )
 
   return (
     <>
-      {showStakingModal && (
-        <StakingModal
-          maxDeposit={maxGovernanceTokenDeposit}
-          onClose={() => setShowStakingModal(false)}
-        />
-      )}
-
       <ProfileCardMemberInfoTokens
         claimingLoading={false}
         daoName={daoName}
         hideUnstaking
-        loadingStakedTokens={
-          loadingWalletVotingBondedTokens.loading ||
-          loadingWalletVotingBondedTokens.errored
-            ? { loading: true }
-            : {
-                loading: false,
-                data: convertMicroDenomToDenomWithDecimals(
-                  loadingWalletVotingBondedTokens.data.power,
-                  neutronToken.decimals
-                ),
+        loadingTokens={
+          loadingVaults.loading ||
+          loadingVaults.errored ||
+          loadingStakedTokens.loading ||
+          loadingStakedTokens.errored ||
+          loadingUnstakedTokens.loading ||
+          loadingUnstakedTokens.errored
+            ? {
+                loading: true,
               }
-        }
-        loadingUnstakedTokens={
-          loadingNeutronBalance.loading || loadingNeutronBalance.errored
-            ? { loading: true }
             : {
                 loading: false,
-                data: convertMicroDenomToDenomWithDecimals(
-                  loadingNeutronBalance.data.balance,
-                  neutronToken.decimals
+                data: loadingVaults.data.realVaults.map(
+                  ({ bondToken }, index) => ({
+                    token: bondToken,
+                    staked: convertMicroDenomToDenomWithDecimals(
+                      loadingStakedTokens.data[index].unbondable_abount,
+                      bondToken.decimals
+                    ),
+                    unstaked: convertMicroDenomToDenomWithDecimals(
+                      loadingUnstakedTokens.data[index].balance,
+                      bondToken.decimals
+                    ),
+                  })
                 ),
               }
         }
@@ -129,11 +133,15 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => {}}
         stakingLoading={stakingLoading}
-        tokenDecimals={neutronToken.decimals}
-        tokenSymbol={neutronToken.symbol}
         unstakingDurationSeconds={undefined}
         unstakingTasks={[]}
         {...props}
+      />
+
+      <StakingModal
+        maxDeposit={maxGovernanceTokenDeposit}
+        onClose={() => setShowStakingModal(false)}
+        visible={showStakingModal}
       />
     </>
   )

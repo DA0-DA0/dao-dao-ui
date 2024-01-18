@@ -13,8 +13,9 @@ export interface BaseProfileCardMemberInfoProps {
 }
 
 export interface BaseStakingModalProps {
-  initialMode?: StakingMode
+  visible: boolean
   onClose: () => void
+  initialMode?: StakingMode
   maxDeposit?: string
 }
 
