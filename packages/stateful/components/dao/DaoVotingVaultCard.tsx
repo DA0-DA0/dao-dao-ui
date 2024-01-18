@@ -1,3 +1,5 @@
+import { constSelector } from 'recoil'
+
 import { NeutronVaultSelectors } from '@dao-dao/state'
 import {
   DaoVotingVaultCard as StatelessDaoVotingVaultCard,
@@ -30,8 +32,22 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
             },
           ],
         })
-      : undefined
+      : constSelector(undefined)
   )
+
+  // Check if virtual vault by testing if bonding is disabled.
+  const loadingBondersSelector = useCachedLoadingWithError(
+    NeutronVaultSelectors.listBondersSelector({
+      contractAddress: props.vault.address,
+      chainId,
+      params: [{}],
+    })
+  )
+  const virtual =
+    loadingBondersSelector.errored &&
+    loadingBondersSelector.error.message.includes(
+      'Bonding is not available for this contract'
+    )
 
   return (
     <StatelessDaoVotingVaultCard
@@ -52,6 +68,7 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
                     100,
             }
       }
+      virtual={virtual}
       walletVotingPowerPercent={
         loadingVaultVotingPower.loading ||
         loadingVaultVotingPower.errored ||
@@ -63,7 +80,9 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
           : {
               loading: false,
               data:
-                loadingVaultVotingPower.data.power === '0'
+                loadingWalletVotingPower.data === undefined
+                  ? undefined
+                  : loadingVaultVotingPower.data.power === '0'
                   ? 0
                   : (Number(loadingWalletVotingPower.data.power) /
                       Number(loadingVaultVotingPower.data.power)) *

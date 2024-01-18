@@ -10,16 +10,34 @@ export const DaoVotingVaultCard = ({
   vault: { name, description },
   vaultVotingPowerPercent,
   walletVotingPowerPercent,
+  virtual,
 }: DaoVotingVaultCardProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col justify-between rounded-md border border-border-primary">
+    <div
+      className={clsx(
+        'relative flex flex-col justify-between overflow-hidden rounded-md border border-border-primary',
+        virtual && 'border-dashed'
+      )}
+    >
+      {virtual && (
+        <div className="absolute top-[1rem] left-[-6.5rem] flex w-60 -rotate-45 flex-row items-center justify-center gap-1 bg-background-primary py-1.5 px-36">
+          <p className="primary-text grow text-center text-xs font-bold text-text-primary">
+            {t('title.virtual')}
+          </p>
+          <TooltipInfoIcon
+            size="xs"
+            title={t('info.virtualVotingVaultTooltip')}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-4 p-6 sm:p-10">
         {/* Name */}
-        <p className="title-text text-center">{name}</p>
+        <p className="title-text px-4 text-center">{name}</p>
 
-        <p className="body-text text-center text-text-secondary">
+        <p className="body-text px-4 text-center text-text-secondary">
           {DESCRIPTION_OVERRIDES[name] || description}
         </p>
       </div>
@@ -47,27 +65,30 @@ export const DaoVotingVaultCard = ({
           </p>
         </div>
 
-        {/* Wallet's voting power */}
-        <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1">
-          <div className="flex flex-row items-center gap-1">
-            <p className="secondary-text">{t('info.yourVaultVotingPower')}</p>
-            <TooltipInfoIcon
-              size="xs"
-              title={t('info.yourVaultVotingPowerTooltip')}
-            />
-          </div>
+        {/* Wallet's voting power. Hide if undefined because no wallet. */}
+        {(walletVotingPowerPercent.loading ||
+          walletVotingPowerPercent.data !== undefined) && (
+          <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <div className="flex flex-row items-center gap-1">
+              <p className="secondary-text">{t('info.yourVaultVotingPower')}</p>
+              <TooltipInfoIcon
+                size="xs"
+                title={t('info.yourVaultVotingPowerTooltip')}
+              />
+            </div>
 
-          <p
-            className={clsx(
-              'body-text font-mono',
-              walletVotingPowerPercent.loading && 'animate-pulse'
-            )}
-          >
-            {walletVotingPowerPercent.loading
-              ? '...'
-              : formatPercentOf100(walletVotingPowerPercent.data)}
-          </p>
-        </div>
+            <p
+              className={clsx(
+                'body-text font-mono',
+                walletVotingPowerPercent.loading && 'animate-pulse'
+              )}
+            >
+              {walletVotingPowerPercent.loading
+                ? '...'
+                : formatPercentOf100(walletVotingPowerPercent.data || 0)}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
