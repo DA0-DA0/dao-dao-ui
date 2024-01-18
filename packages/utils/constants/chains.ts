@@ -682,6 +682,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // stargaze
         // remoteClient: '07-tendermint-352',
       },
+      [ChainId.TerraMainnet]: {
+        // migaloo
+        note: 'migaloo1en6cw3qs9stft3dmdh2x3mtmq679wr7d2yvdg20f94m7t5f0ug7qah9pf8',
+        // migaloo
+        listener:
+          'migaloo1mep7v7auyjc5wmzf6rgthxwdh3t89d0vzxdu6l9f8k7yhex3rpqsckwz3w',
+        // terra
+        voice:
+          'terra16yy3unw92e8qae9495yt480kqmqstapek6uhs42g5020vqhcgx3stukklk',
+        // migaloo
+        localConnection: 'connection-0',
+        // terra
+        remoteConnection: 'connection-93',
+        // migaloo
+        localChannel: 'channel-93',
+        // terra
+        remoteChannel: 'channel-367',
+        // migaloo
+        // localClient: '07-tendermint-0',
+        // terra
+        // remoteClient: '07-tendermint-105',
+      },
     },
   },
   {
