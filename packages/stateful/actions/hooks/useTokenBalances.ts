@@ -56,7 +56,8 @@ export const useTokenBalances = ({
           // balances are not desired.
           ignoreStaked: true,
         }),
-    []
+    [],
+    (error) => console.error(error)
   )
 
   return balances
