@@ -12,12 +12,18 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
-import { ActionComponent, ActionKey } from '@dao-dao/types/actions'
+import {
+  ActionComponent,
+  ActionContextType,
+  ActionKey,
+} from '@dao-dao/types/actions'
 import {
   getDisplayNameForChainId,
   getImageUrlForChainId,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export type CreateIcaData = {
   chainId: string
@@ -39,6 +45,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
   const { t } = useTranslation()
   const { watch, setValue } = useFormContext<CreateIcaData>()
   const { chain_id: sourceChainId } = useChain()
+  const { context } = useActionOptions()
 
   const destinationChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const imageUrl =
@@ -98,7 +105,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
                       <Check className="!h-5 !w-5" />
                     </div>
 
-                    {addAction && (
+                    {addAction && context.type === ActionContextType.Dao && (
                       <div className="flex flex-col items-start gap-2">
                         <p className="body-text max-w-prose">
                           {t('info.createIcaRegister')}

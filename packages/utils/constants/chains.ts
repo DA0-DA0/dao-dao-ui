@@ -151,6 +151,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // migaloo
         // remoteClient: '07-tendermint-1',
       },
+      [ChainId.KujiraMainnet]: {
+        // juno
+        note: 'juno1z0fepsfeeew78uwespyneswt5q9aqntj55xdwdasefxpu7zjed2qa6t582',
+        // juno
+        listener:
+          'juno15mf52u00eeepjtxwr7hgy52la7enymwx55285tsvcfwera8lq6ls7sfss5',
+        // kujira
+        voice:
+          'kujira13nqh8m3394cpm62h8wm0uagqux37zaxs30e6e2zgg3acdx5yr5aq08ezlr',
+        // juno
+        localConnection: 'connection-140',
+        // kujira
+        remoteConnection: 'connection-1',
+        // juno
+        localChannel: 'channel-474',
+        // kujira
+        remoteChannel: 'channel-129',
+      },
     },
   },
   {
@@ -315,6 +333,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // neutron
         // remoteClient: '07-tendermint-19',
       },
+      [ChainId.KujiraMainnet]: {
+        // osmosis
+        note: 'osmo174mke7nylzwylaerfk6j8epzy5yxnvnfvrlx6gy2j0sq8sjf80lsw6skfn',
+        // osmosis
+        listener:
+          'osmo1hcfg9qv9k6dhkw6us3nca2tuyqqwa7rdfyjf2e667s5hnywnl07qkr69zw',
+        // kujira
+        voice:
+          'kujira18zwe6dyezfla7p6zevm4wkatrajr4dn9lzf4l07ssdjz39s2322sw6ppuz',
+        // osmosis
+        localConnection: 'connection-1559',
+        // kujira
+        remoteConnection: 'connection-2',
+        // osmosis
+        localChannel: 'channel-16722',
+        // kujira
+        remoteChannel: 'channel-146',
+      },
     },
   },
   {
@@ -433,6 +469,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-12',
         // terra
         // remoteClient: '07-tendermint-274',
+      },
+      [ChainId.KujiraMainnet]: {
+        // neutron
+        note: 'neutron1gkrrj668pf84sefae7yqgseeugnfeygrat8tnu06q8vtqfvc6mhqk7sysy',
+        // neutron
+        listener:
+          'neutron1qytmw70y6vaqfa08mzec5m0g8d66e43h5t773xfme0r828chsg9slh6jxc',
+        // kujira
+        voice:
+          'kujira1uexv52ffftauns6v2vlgvahc42k92nn0j0qa94u8re6dgp8zgfgqpw8uef',
+        // neutron
+        localConnection: 'connection-2',
+        // kujira
+        remoteConnection: 'connection-82',
+        // neutron
+        localChannel: 'channel-68',
+        // kujira
+        remoteChannel: 'channel-138',
       },
     },
   },
@@ -570,6 +624,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // migaloo
         // remoteClient: '07-tendermint-118',
       },
+      [ChainId.KujiraMainnet]: {
+        // stargaze
+        note: 'stars1hp26cl5crsuyt9srmc9qjjmsf2fxv0sykxgvlcwk8qz59plm5xlqzk2n5g',
+        // stargaze
+        listener:
+          'stars1rxaapnn7nyqtqd6fuyyva3rmdrpfv6kefpl07t7dvtlsv4q26hlqhc3fet',
+        // kujira
+        voice:
+          'kujira1rd4l7q3c8737g3zjejlwkch3nht4hg00565k9dqezyrtsdn7xhns4thzes',
+        // stargaze
+        localConnection: 'connection-111',
+        // kujira
+        remoteConnection: 'connection-5',
+        // stargaze
+        localChannel: 'channel-276',
+        // kujira
+        remoteChannel: 'channel-135',
+      },
     },
   },
   {
@@ -615,6 +687,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     // There are no IBC connections with:
     // - Neutron
+    // TODO(polytone): Polytone does not yet exist with:
+    // - Kujira
     polytone: {
       [ChainId.JunoMainnet]: {
         // migaloo
@@ -681,6 +755,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-118',
         // stargaze
         // remoteClient: '07-tendermint-352',
+      },
+      [ChainId.TerraMainnet]: {
+        // migaloo
+        note: 'migaloo1en6cw3qs9stft3dmdh2x3mtmq679wr7d2yvdg20f94m7t5f0ug7qah9pf8',
+        // migaloo
+        listener:
+          'migaloo1mep7v7auyjc5wmzf6rgthxwdh3t89d0vzxdu6l9f8k7yhex3rpqsckwz3w',
+        // terra
+        voice:
+          'terra16yy3unw92e8qae9495yt480kqmqstapek6uhs42g5020vqhcgx3stukklk',
+        // migaloo
+        localConnection: 'connection-0',
+        // terra
+        remoteConnection: 'connection-93',
+        // migaloo
+        localChannel: 'channel-93',
+        // terra
+        remoteChannel: 'channel-367',
+        // migaloo
+        // localClient: '07-tendermint-0',
+        // terra
+        // remoteClient: '07-tendermint-105',
       },
     },
   },
@@ -888,6 +984,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.MigalooMainnet]: {
     rpc: 'https://migaloo-rpc.polkachu.com',
     rest: 'https://migaloo-api.polkachu.com',
+  },
+  [ChainId.KujiraMainnet]: {
+    rpc: 'https://kujira-rpc.polkachu.com',
+    rest: 'https://kujira-api.polkachu.com',
   },
 }
 

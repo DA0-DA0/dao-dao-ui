@@ -67,6 +67,7 @@ export enum ChainId {
   TerraMainnet = 'phoenix-1',
   MigalooMainnet = 'migaloo-1',
   NobleMainnet = 'noble-1',
+  KujiraMainnet = 'kaiyo-1',
 }
 
 export type BaseChainConfig = {
