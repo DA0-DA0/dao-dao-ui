@@ -55,7 +55,7 @@ export const StatusPage = () => {
         title={t('title.status')}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2">
         <p className="primary-text mb-4">{t('info.statusPageDescription')}</p>
 
         {chains.map(({ chainId }) => (
