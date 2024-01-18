@@ -71,7 +71,7 @@ import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/utils/protobuf/codeg
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useProposalModuleAdapterCommon } from '../../../../proposal-module-adapter'
+import { useProposalModuleAdapterCommonContextIfAvailable } from '../../../../proposal-module-adapter/react/context'
 import { entitySelector } from '../../../../recoil'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
@@ -84,14 +84,33 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
     address,
+    context,
   } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
-  const {
-    selectors: { maxVotingPeriod },
-  } = useProposalModuleAdapterCommon()
-  const proposalModuleMaxVotingPeriod =
-    useCachedLoadingWithError(maxVotingPeriod)
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
+    context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector
+      : context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: context.params.votingPeriod
+            ? Number(context.params.votingPeriod.seconds) +
+              context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : undefined
+  )
 
   if (proposalModuleMaxVotingPeriod.loading) {
     return
@@ -175,10 +194,29 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         ],
   })
 
-  const {
-    selectors: { maxVotingPeriod },
-  } = useProposalModuleAdapterCommon()
-  const proposalModuleMaxVotingPeriod = useRecoilValue(maxVotingPeriod)
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useRecoilValue(
+    context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector || constSelector(undefined)
+      : context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: context.params.votingPeriod
+            ? Number(context.params.votingPeriod.seconds) +
+              context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : constSelector(undefined)
+  )
 
   // Once already created, load selected token info (which should already be
   // loaded in the decoder), so this data is available right away. This removes
@@ -506,6 +544,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
                 data: neutronTransferFee.data?.sum,
               },
         proposalModuleMaxVotingPeriodInBlocks:
+          !!proposalModuleMaxVotingPeriod &&
           'blocks' in proposalModuleMaxVotingPeriod,
         AddressInput,
       }}
@@ -523,11 +562,29 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     undefined
   )
 
-  const {
-    selectors: { maxVotingPeriod },
-  } = useProposalModuleAdapterCommon()
-  const proposalModuleMaxVotingPeriod =
-    useCachedLoadingWithError(maxVotingPeriod)
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
+    options.context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector
+      : options.context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : options.context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: options.context.params.votingPeriod
+            ? Number(options.context.params.votingPeriod.seconds) +
+              options.context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : undefined
+  )
 
   return useCallback(
     ({
