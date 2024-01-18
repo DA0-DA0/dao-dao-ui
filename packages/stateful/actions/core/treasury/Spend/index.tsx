@@ -728,6 +728,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   const options = useActionOptions()
+  const defaults = useDefaults()
 
   let chainId = options.chain.chain_id
   let from = options.address
@@ -855,6 +856,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId,
         from,
@@ -880,6 +883,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,
@@ -895,6 +900,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,
