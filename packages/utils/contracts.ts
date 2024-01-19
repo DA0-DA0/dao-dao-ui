@@ -22,7 +22,7 @@ export const indexToProposalModulePrefix = (index: number) => {
   while (index > 0) {
     const letterIndex = (index - 1) % 26
     // capital A = 65, Z = 90
-    prefix = String.fromCharCode(65 + letterIndex) + prefix
+    prefix = String.fromCharCode('A'.charCodeAt(0) + letterIndex) + prefix
     index = ((index - letterIndex) / 26) | 0
   }
 

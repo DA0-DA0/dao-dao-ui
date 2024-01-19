@@ -80,11 +80,13 @@ export const fetchProposalModules = async (
       return {
         address,
         prefix:
-          // Follow Neutron's naming convention.
+          // Follow Neutron's naming convention. Shift prefix alphabet starting
+          // point from A to N.
           chainId === ChainId.NeutronMainnet &&
-          coreAddress === NEUTRON_GOVERNANCE_DAO &&
-          prefix === 'A'
-            ? 'N'
+          coreAddress === NEUTRON_GOVERNANCE_DAO
+            ? String.fromCharCode(
+                prefix.charCodeAt(0) + ('N'.charCodeAt(0) - 'A'.charCodeAt(0))
+              )
             : isFeatureSupportedByVersion(
                 Feature.StaticProposalModulePrefixes,
                 coreVersion
