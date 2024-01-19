@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAllSettled } from 'recoil'
+import { selectorFamily, waitForAllSettled, waitForAny } from 'recoil'
 
 import {
   Account,
@@ -156,6 +156,12 @@ export const genericTokenSelector = selectorFamily<
     },
 })
 
+const priceSelectors = [
+  osmosisUsdPriceSelector,
+  astroportUsdPriceSelector,
+  whiteWhaleUsdPriceSelector,
+]
+
 export const usdPriceSelector = selectorFamily<
   GenericTokenWithUsdPrice | undefined,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
@@ -168,13 +174,24 @@ export const usdPriceSelector = selectorFamily<
         return
       }
 
-      return (
-        get(osmosisUsdPriceSelector(params)) ||
-        // Try white whale DEX as backup.
-        get(whiteWhaleUsdPriceSelector(params)) ||
-        // Try Astroport DEX as backup.
-        get(astroportUsdPriceSelector(params))
-      )
+      const selectors = priceSelectors.map((selector) => selector(params))
+
+      // Load in parallel.
+      const priceLoadables = get(waitForAny(selectors))
+      // Get first loaded price.
+      const anyPrice = priceLoadables
+        .find((loadable) => loadable.valueMaybe())
+        ?.valueMaybe()
+
+      // If any price is loaded right away, use it.
+      if (anyPrice) {
+        return anyPrice
+      }
+
+      // If no price is loaded yet, wait for all to finish before returning
+      // undefined from this selector. This forces the above to load which will
+      // return the first one that is available.
+      get(waitForAllSettled(selectors))
     },
 })
 
