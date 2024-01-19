@@ -107,4 +107,16 @@ export const ProposalStatusMap: Record<
     iconClassName: 'text-icon-primary',
     textClassName: 'text-text-body',
   },
+  // Same as Vetoed.
+  [ProposalStatusEnum.NeutronOverruled]: {
+    Icon: ThumbDownOutlined,
+    iconClassName: '!text-icon-interactive-error',
+    textClassName: '!text-text-interactive-error',
+  },
+  // Same as veto_timelock.
+  [ProposalStatusEnum.NeutronTimelocked]: {
+    Icon: AvTimer,
+    iconClassName: 'text-icon-primary',
+    textClassName: 'text-text-body',
+  },
 }

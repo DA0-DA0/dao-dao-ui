@@ -8,6 +8,7 @@ import { waitForAll } from 'recoil'
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   ProposalStatusAndInfoProps,
+  Tooltip,
   useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
@@ -16,6 +17,7 @@ import {
 import {
   ActionKey,
   EntityType,
+  NeutronTimelockOverrule,
   ProposalStatusEnum,
   ProposalStatusKey,
 } from '@dao-dao/types'
@@ -29,7 +31,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../components'
+import { ButtonLink, EntityDisplay } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useEntity } from './useEntity'
 import { useWallet } from './useWallet'
@@ -37,6 +39,7 @@ import { useWallet } from './useWallet'
 export type UseProposalVetoStateOptions = {
   statusKey: ProposalStatusKey
   vetoConfig: VetoConfig | null | undefined
+  neutronTimelockOverrule?: NeutronTimelockOverrule
   onVetoSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
 }
@@ -56,6 +59,7 @@ export type UseProposalVetoStateReturn = {
 export const useProposalVetoState = ({
   statusKey,
   vetoConfig,
+  neutronTimelockOverrule,
   onVetoSuccess,
   onExecuteSuccess,
 }: UseProposalVetoStateOptions): UseProposalVetoStateReturn => {
@@ -69,11 +73,13 @@ export const useProposalVetoState = ({
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
-  const vetoEnabled = !!vetoConfig
+  const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
   const [vetoLoading, setVetoLoading] = useState<
     'veto' | 'earlyExecute' | false
   >(false)
-  const vetoerEntity = useEntity(vetoConfig?.vetoer || '')
+  const vetoerEntity = useEntity(
+    vetoConfig?.vetoer || neutronTimelockOverrule?.dao || ''
+  )
   // Flatten vetoer entities in case a cw1-whitelist is the vetoer.
   const vetoerEntities = !vetoerEntity.loading
     ? vetoerEntity.data.type === EntityType.Cw1Whitelist
@@ -101,7 +107,9 @@ export const useProposalVetoState = ({
   const canBeVetoed =
     vetoEnabled &&
     (statusKey === 'veto_timelock' ||
-      (statusKey === ProposalStatusEnum.Open && vetoConfig.veto_before_passed))
+      (statusKey === ProposalStatusEnum.Open &&
+        !!vetoConfig?.veto_before_passed) ||
+      statusKey === ProposalStatusEnum.NeutronTimelocked)
   // Find matching vetoer for this wallet, which is either the wallet itself or
   // a DAO this wallet is a member of. If a matching vetoer is found, this
   // wallet can veto.
@@ -130,7 +138,17 @@ export const useProposalVetoState = ({
 
     setVetoLoading('veto')
     try {
-      if (
+      // For Neutron timelocked proposals, just navigate to the overrule
+      // proposal.
+      if (neutronTimelockOverrule) {
+        router.push(
+          getDaoProposalPath(
+            neutronTimelockOverrule.dao,
+            neutronTimelockOverrule.proposalModulePrefix +
+              neutronTimelockOverrule.proposal.id.toString()
+          )
+        )
+      } else if (
         vetoerEntity.data.type === EntityType.Wallet ||
         (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
           matchingWalletVetoer.type === EntityType.Wallet)
@@ -202,13 +220,14 @@ export const useProposalVetoState = ({
   }, [
     vetoerEntity,
     matchingWalletVetoer,
-    onVetoSuccess,
-    proposalNumber,
-    getSigningCosmWasmClient,
-    walletAddress,
-    proposalModule.address,
+    neutronTimelockOverrule,
     router,
     getDaoProposalPath,
+    getSigningCosmWasmClient,
+    proposalModule.address,
+    proposalNumber,
+    onVetoSuccess,
+    walletAddress,
     chainId,
     coreAddress,
   ])
@@ -313,17 +332,52 @@ export const useProposalVetoState = ({
             ? onVetoEarlyExecute
             : undefined,
           isVetoerDaoMember: matchingWalletVetoer.type === EntityType.Dao,
+          isNeutronOverrule: !!neutronTimelockOverrule,
         }
       : undefined,
     vetoInfoItems:
-      vetoConfig && (canBeVetoed || statusKey === ProposalStatusEnum.Vetoed)
-        ? (vetoerEntities.map((entity) => ({
-            Icon: ThumbDownOutlined,
-            label: t('title.vetoer'),
-            Value: (props) => (
-              <EntityDisplay {...props} address={entity.address} noCopy />
-            ),
-          })) as ProposalStatusAndInfoProps<any>['info'])
+      canBeVetoed ||
+      statusKey === ProposalStatusEnum.Vetoed ||
+      statusKey === ProposalStatusEnum.NeutronOverruled
+        ? neutronTimelockOverrule
+          ? ([
+              {
+                Icon: ThumbDownOutlined,
+                label: t('title.overrule'),
+                Value: (props) => (
+                  <Tooltip
+                    morePadding
+                    title={
+                      <EntityDisplay
+                        address={neutronTimelockOverrule.dao}
+                        noCopy
+                      />
+                    }
+                  >
+                    <ButtonLink
+                      href={getDaoProposalPath(
+                        neutronTimelockOverrule.dao,
+                        neutronTimelockOverrule.proposalModulePrefix +
+                          neutronTimelockOverrule.proposal.id.toString()
+                      )}
+                      variant="underline"
+                      {...props}
+                    >
+                      {t('title.proposalId', {
+                        id: neutronTimelockOverrule.proposal.id,
+                      })}
+                    </ButtonLink>
+                  </Tooltip>
+                ),
+              },
+            ] as ProposalStatusAndInfoProps<any>['info'])
+          : (vetoerEntities.map((entity) => ({
+              Icon: ThumbDownOutlined,
+              label: t('title.vetoer'),
+              Value: (props) => (
+                <EntityDisplay {...props} address={entity.address} noCopy />
+              ),
+            })) as ProposalStatusAndInfoProps<any>['info'])
         : [],
   }
 }

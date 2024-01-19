@@ -9,6 +9,7 @@ export enum ContractName {
   PreProposeApprover = 'crates.io:dao-pre-propose-approver',
   NeutronCwdSubdaoCore = 'crates.io:cwd-subdao-core',
   NeutronCwdSubdaoPreProposeSingle = 'crates.io:cwd-subdao-pre-propose-single',
+  NeutronCwdSubdaoTimelockSingle = 'crates.io:cwd-subdao-timelock-single',
 }
 
 export const NEUTRON_SUBDAO_CORE_CONTRACT_NAMES = [

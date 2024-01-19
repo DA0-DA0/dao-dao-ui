@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
+import { constSelector, waitForAll } from 'recoil'
 
 import {
   DaoPreProposeApprovalSingleSelectors,
   DaoPreProposeApproverSelectors,
   DaoProposalSingleCommonSelectors,
+  NeutronCwdSubdaoTimelockSingleSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
 } from '@dao-dao/state'
@@ -14,6 +16,7 @@ import {
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   Feature,
   LoadingData,
   PreProposeModuleType,
@@ -28,7 +31,10 @@ import {
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
-import { daoCoreProposalModulesSelector } from '../../../../recoil'
+import {
+  daoCoreProposalModulesSelector,
+  neutronOverruleProposalForTimelockedProposalSelector,
+} from '../../../../recoil'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { ProposalWithMetadata } from '../types'
 
@@ -55,6 +61,61 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     undefined,
     (err) => console.error(err)
   )
+
+  let proposalStatus = loadingProposalResponse.loading
+    ? undefined
+    : loadingProposalResponse.data?.proposal.status
+  // Update status to take into account Neutron pre-propose timelock/overrule
+  // system.
+  const usesNeutronPreProposeTimelockOverruleSystem =
+    chainId === ChainId.NeutronMainnet &&
+    prePropose?.type === PreProposeModuleType.NeutronSubdaoSingle &&
+    proposalStatus === ProposalStatusEnum.Executed
+  const loadingNeutronTimelockInfo = useCachedLoading(
+    usesNeutronPreProposeTimelockOverruleSystem
+      ? waitForAll([
+          // Proposal timelock state.
+          NeutronCwdSubdaoTimelockSingleSelectors.proposalSelector({
+            chainId,
+            contractAddress: prePropose.config.timelockAddress,
+            params: [
+              {
+                proposalId: proposalNumber,
+              },
+            ],
+          }),
+          // Overrule proposal created in main DAO that controls the timelock
+          // state.
+          neutronOverruleProposalForTimelockedProposalSelector({
+            chainId,
+            preProposeOverruleAddress:
+              prePropose.config.timelockConfig.overrule_pre_propose,
+            timelockAddress: prePropose.config.timelockAddress,
+            subdaoProposalId: proposalNumber,
+          }),
+        ])
+      : constSelector(undefined),
+    undefined,
+    (err) => console.error(err)
+  )
+  if (
+    usesNeutronPreProposeTimelockOverruleSystem &&
+    !loadingNeutronTimelockInfo.loading &&
+    loadingNeutronTimelockInfo.data
+  ) {
+    const timelockProposalStatus = loadingNeutronTimelockInfo.data[0].status
+    proposalStatus =
+      timelockProposalStatus === 'timelocked'
+        ? ProposalStatusEnum.NeutronTimelocked
+        : timelockProposalStatus === 'overruled'
+        ? ProposalStatusEnum.NeutronOverruled
+        : timelockProposalStatus === 'executed'
+        ? ProposalStatusEnum.Executed
+        : timelockProposalStatus === 'execution_failed'
+        ? ProposalStatusEnum.ExecutionFailed
+        : // Should never happen.
+          proposalStatus
+  }
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
@@ -149,9 +210,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   //! If this is an approver proposal that approved another proposal.
   const approvedAnotherProposal =
     prePropose?.type === PreProposeModuleType.Approver &&
-    !loadingProposalResponse.loading &&
-    loadingProposalResponse.data?.proposal.status ===
-      ProposalStatusEnum.Executed
+    proposalStatus === ProposalStatusEnum.Executed
   const approvalDaoProposalModules = useCachedLoading(
     approvedAnotherProposal
       ? daoCoreProposalModulesSelector({
@@ -228,7 +287,8 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blocksPerYearLoadable.state !== 'hasValue' ||
     blockHeightLoadable.state !== 'hasValue' ||
     (usesApprover && !approverProposalId) ||
-    (approvedAnotherProposal && !approvedProposalId)
+    (approvedAnotherProposal && !approvedProposalId) ||
+    loadingNeutronTimelockInfo.loading
   ) {
     return { loading: true }
   }
@@ -244,16 +304,23 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   )
 
   const vetoTimelockExpiration =
-    typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
+    typeof proposalStatus === 'object' && 'veto_timelock' in proposalStatus
       ? convertExpirationToDate(
           blocksPerYearLoadable.contents,
-          proposal.status.veto_timelock.expiration,
+          proposalStatus.veto_timelock.expiration,
+          blockHeightLoadable.contents
+        )
+      : proposalStatus === ProposalStatusEnum.NeutronTimelocked &&
+        loadingNeutronTimelockInfo.data
+      ? convertExpirationToDate(
+          blocksPerYearLoadable.contents,
+          loadingNeutronTimelockInfo.data[1].proposal.proposal.expiration,
           blockHeightLoadable.contents
         )
       : undefined
 
   const votingOpen =
-    proposal.status === ProposalStatusEnum.Open ||
+    proposalStatus === ProposalStatusEnum.Open ||
     (!!version &&
       // Voting up until expiration on finished proposals may be supported.
       isFeatureSupportedByVersion(Feature.VoteUntilExpiration, version) &&
@@ -328,6 +395,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       approverProposalId,
       approvedProposalId,
       vetoTimelockExpiration,
+      neutronTimelockOverrule: loadingNeutronTimelockInfo.data?.[1],
     },
   }
 }
