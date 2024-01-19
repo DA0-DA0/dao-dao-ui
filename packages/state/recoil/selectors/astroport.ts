@@ -44,17 +44,19 @@ export const astroportUsdPriceSelector = selectorFamily<
       const token = get(genericTokenSelector(params))
 
       try {
-        const tokens: AstroportToken[] = await (
-          await fetch(ASTROPORT_PRICES_API)
-        ).json()
-
-        const astroportToken = tokens.find(
-          (t) =>
-            objectMatchesStructure(t, {
-              denom: {},
-            }) && t.denom === denom
+        const response = await fetch(
+          ASTROPORT_PRICES_API.replace('DENOM', denom)
         )
-        if (!astroportToken) {
+        if (response.status !== 200) {
+          return
+        }
+
+        const astroportToken: AstroportToken = await response.json()
+        if (
+          !objectMatchesStructure(astroportToken, {
+            priceUSD: {},
+          })
+        ) {
           return
         }
 
