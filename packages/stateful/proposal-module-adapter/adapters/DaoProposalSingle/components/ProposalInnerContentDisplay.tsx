@@ -69,7 +69,7 @@ const InnerProposalInnerContentDisplay = ({
     try {
       if (
         chainId === ChainId.NeutronMainnet &&
-        coreVersion === ContractVersion.V2AlphaNeutron
+        coreVersion === ContractVersion.V2AlphaNeutronFork
       ) {
         if (
           decoded.length === 1 &&

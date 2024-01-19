@@ -10,7 +10,7 @@ export enum ContractVersion {
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-alpha
   V2Alpha = '0.2.0',
   // https://github.com/neutron-org/neutron-dao/releases/tag/v0.5.0
-  V2AlphaNeutron = '0.2.1',
+  V2AlphaNeutronFork = '0.2.1',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
   V2Beta = '2.0.0-beta',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.1
