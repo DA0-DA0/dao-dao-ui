@@ -28,6 +28,7 @@ import { useRecoilCallback, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
+  genericTokenBalanceSelector,
   nativeDenomBalanceSelector,
   refreshPolytoneListenerResultsAtom,
   refreshUnreceivedIbcDataAtom,
@@ -48,6 +49,7 @@ import {
   ChainId,
   PolytoneConnection,
   SelfRelayExecuteModalProps,
+  TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -83,9 +85,10 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.JunoMainnet]: 100000,
   [ChainId.OsmosisMainnet]: 100000,
   [ChainId.StargazeMainnet]: 2000000,
-  [ChainId.NeutronMainnet]: 100000,
+  [ChainId.NeutronMainnet]: 500000,
   [ChainId.TerraMainnet]: 100000,
   [ChainId.MigalooMainnet]: 2000000,
+  [ChainId.KujiraMainnet]: 100000,
 }
 
 type Relayer = {
@@ -204,14 +207,26 @@ export const SelfRelayExecuteModal = ({
       },
     []
   )
+  // Refresh balances every 10 seconds.
+  useEffect(() => {
+    if (!relayers) {
+      return
+    }
+    const interval = setInterval(() => {
+      relayers?.forEach(refreshBalances)
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [relayers, refreshBalances])
+
   const walletFunds = useCachedLoadingWithError(
     relayers
       ? waitForAll(
           relayers.map(({ chain: { chain_id: chainId }, feeToken, wallet }) =>
-            nativeDenomBalanceSelector({
-              walletAddress: wallet.address,
-              denom: feeToken.denom,
+            genericTokenBalanceSelector({
+              type: TokenType.Native,
               chainId,
+              denomOrAddress: feeToken.denom,
+              address: wallet.address,
             })
           )
         )
@@ -220,8 +235,8 @@ export const SelfRelayExecuteModal = ({
   const walletFundsSufficient =
     !walletFunds.loading && !walletFunds.errored && relayers
       ? walletFunds.data.map(
-          ({ amount }, index) =>
-            Number(amount) >=
+          ({ balance }, index) =>
+            Number(balance) >=
             (RELAYER_FUNDS_NEEDED[relayers[index].chain.chain_id] ?? 0)
         )
       : undefined
@@ -624,6 +639,17 @@ export const SelfRelayExecuteModal = ({
 
             break
           } catch (err) {
+            // If relayer wallet out of funds, throw immediately since they need
+            // to top up.
+            if (
+              err instanceof Error &&
+              err.message.includes('insufficient funds')
+            ) {
+              // Refresh all balances.
+              relayers.map(refreshBalances)
+              throw new Error(t('error.relayerWalletNeedsFunds'))
+            }
+
             tries -= 1
 
             console.error(
@@ -700,6 +726,17 @@ export const SelfRelayExecuteModal = ({
 
             break
           } catch (err) {
+            // If relayer wallet out of funds, throw immediately since they need
+            // to top up.
+            if (
+              err instanceof Error &&
+              err.message.includes('insufficient funds')
+            ) {
+              // Refresh all balances.
+              relayers.map(refreshBalances)
+              throw new Error(t('error.relayerWalletNeedsFunds'))
+            }
+
             tries -= 1
 
             console.error(
@@ -950,118 +987,129 @@ export const SelfRelayExecuteModal = ({
                     ...(relayers?.slice(1) ?? []),
                     // Current chain last. This includes the execute.
                     ...(relayers ? [relayers[0]] : []),
-                  ].map(
-                    (
-                      {
-                        chain: { chain_id },
-                        chainImageUrl,
-                        feeToken: { denom },
-                      },
-                      index
-                    ) => {
-                      // Adjust the index to reflect the reordering above.
-                      index = (index + 1) % relayers!.length
+                  ].map(({ chain: { chain_id }, chainImageUrl }, index) => {
+                    // Adjust the index to reflect the reordering above.
+                    index = (index + 1) % relayers!.length
 
-                      const walletCannotAfford =
-                        !walletFunds.loading &&
-                        !(walletFundsSufficient?.[index] ?? false)
+                    const fundTokenWithBalance =
+                      walletFunds.loading || walletFunds.errored
+                        ? undefined
+                        : walletFunds.data[index]
 
-                      const funds =
-                        !relayerFunds.loading && !relayerFunds.errored
-                          ? Number(relayerFunds.data[index].amount)
-                          : // Use the previously funded amount if the step is past.
-                            fundedAmount[chain_id] ?? 0
-                      const empty = funds === 0
+                    const walletCannotAfford =
+                      !walletFunds.loading &&
+                      !(walletFundsSufficient?.[index] ?? false)
 
-                      const funded =
-                        funds >= (RELAYER_FUNDS_NEEDED[chain_id] ?? 0)
-                      const feeToken = getTokenForChainIdAndDenom(
-                        chain_id,
-                        denom
-                      )
+                    const funds =
+                      !relayerFunds.loading && !relayerFunds.errored
+                        ? Number(relayerFunds.data[index].amount)
+                        : // Use the previously funded amount if the step is past.
+                          fundedAmount[chain_id] ?? 0
+                    const empty = funds === 0
 
-                      const isExecute = index === 0
-                      // If this is the execute, we need to make sure all
-                      // receiving relayers are funded first.
-                      const cannotExecuteUntilFunded =
-                        isExecute && !allReceivingRelayersFunded
+                    const funded =
+                      funds >= (RELAYER_FUNDS_NEEDED[chain_id] ?? 0)
 
-                      const showFundOrExecuteButton =
-                        stepStatus === 'current' && (!funded || isExecute)
+                    const isExecute = index === 0
+                    // If this is the execute, we need to make sure all
+                    // receiving relayers are funded first.
+                    const cannotExecuteUntilFunded =
+                      isExecute && !allReceivingRelayersFunded
 
-                      return (
-                        <Fragment key={chain_id}>
-                          <div className="flex flex-row items-center gap-2">
-                            <div
-                              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                              style={{
-                                backgroundImage: `url(${chainImageUrl})`,
-                              }}
-                            ></div>
+                    const showFundOrExecuteButton =
+                      stepStatus === 'current' && (!funded || isExecute)
 
-                            <p className="primary-text shrink-0">
-                              {getDisplayNameForChainId(chain_id)}
-                            </p>
-                          </div>
+                    return (
+                      <Fragment key={chain_id}>
+                        <div className="flex flex-row items-center gap-2">
+                          <div
+                            className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${chainImageUrl})`,
+                            }}
+                          ></div>
 
-                          {showFundOrExecuteButton ? (
-                            <Tooltip
-                              title={
-                                cannotExecuteUntilFunded
-                                  ? `Fund the other relayer${
-                                      chains.length > 2 ? 's' : ''
-                                    } before executing.`
-                                  : undefined
+                          <p className="primary-text shrink-0">
+                            {getDisplayNameForChainId(chain_id)}
+                          </p>
+                        </div>
+
+                        {showFundOrExecuteButton ? (
+                          <Tooltip
+                            title={
+                              walletCannotAfford && fundTokenWithBalance
+                                ? t('error.insufficientWalletBalance', {
+                                    amount:
+                                      convertMicroDenomToDenomWithDecimals(
+                                        fundTokenWithBalance.balance,
+                                        fundTokenWithBalance.token.decimals
+                                      ),
+                                    tokenSymbol:
+                                      fundTokenWithBalance.token.symbol,
+                                  })
+                                : cannotExecuteUntilFunded
+                                ? `Fund the other relayer${
+                                    chains.length > 2 ? 's' : ''
+                                  } before executing.`
+                                : undefined
+                            }
+                          >
+                            <Button
+                              center
+                              className="w-36 justify-self-end"
+                              disabled={
+                                walletCannotAfford || cannotExecuteUntilFunded
                               }
+                              loading={
+                                !!fundingRelayer[chain_id] ||
+                                walletFunds.loading ||
+                                walletFunds.errored
+                              }
+                              onClick={() => fundRelayer(chain_id, isExecute)}
                             >
-                              <Button
-                                center
-                                className="w-36 justify-self-end"
-                                disabled={
-                                  walletCannotAfford || cannotExecuteUntilFunded
-                                }
-                                loading={
-                                  !!fundingRelayer[chain_id] ||
-                                  walletFunds.loading ||
-                                  walletFunds.errored
-                                }
-                                onClick={() => fundRelayer(chain_id, isExecute)}
-                              >
-                                {walletCannotAfford
-                                  ? t('error.insufficientFunds')
-                                  : isExecute
-                                  ? funded
-                                    ? transaction.type === 'execute'
-                                      ? t('button.execute')
-                                      : t('button.relay')
-                                    : transaction.type === 'execute'
-                                    ? t('button.fundAndExecute')
-                                    : t('button.fundAndRelay')
-                                  : empty
-                                  ? t('button.fund')
-                                  : t('button.topUp')}
-                              </Button>
-                            </Tooltip>
-                          ) : (
-                            <div className="flex items-center justify-end gap-2">
-                              <TokenAmountDisplay
-                                amount={convertMicroDenomToDenomWithDecimals(
-                                  funds,
-                                  feeToken.decimals
-                                )}
-                                decimals={feeToken.decimals}
-                                symbol={feeToken.symbol}
-                              />
+                              {isExecute
+                                ? funded
+                                  ? transaction.type === 'execute'
+                                    ? t('button.execute')
+                                    : t('button.relay')
+                                  : transaction.type === 'execute'
+                                  ? t('button.fundAndExecute')
+                                  : t('button.fundAndRelay')
+                                : empty
+                                ? t('button.fund')
+                                : t('button.topUp')}
+                            </Button>
+                          </Tooltip>
+                        ) : (
+                          <div className="flex items-center justify-end gap-2">
+                            <TokenAmountDisplay
+                              amount={
+                                walletFunds.loading || walletFunds.errored
+                                  ? { loading: true }
+                                  : {
+                                      loading: false,
+                                      data: convertMicroDenomToDenomWithDecimals(
+                                        funds,
+                                        walletFunds.data[index].token.decimals
+                                      ),
+                                    }
+                              }
+                              decimals={
+                                fundTokenWithBalance?.token.decimals ?? 0
+                              }
+                              symbol={
+                                fundTokenWithBalance?.token.symbol ?? '...'
+                              }
+                            />
 
-                              <Tooltip title={t('info.funded')}>
-                                <Check className="!h-4 !w-4 text-icon-interactive-valid" />
-                              </Tooltip>
-                            </div>
-                          )}
-                        </Fragment>
-                      )
-                    }
-                  )}
+                            <Tooltip title={t('info.funded')}>
+                              <Check className="!h-4 !w-4 text-icon-interactive-valid" />
+                            </Tooltip>
+                          </div>
+                        )}
+                      </Fragment>
+                    )
+                  })}
                 </div>
               </div>
             ),
