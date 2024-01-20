@@ -1,5 +1,6 @@
 import { ibc } from 'chain-registry'
 import { useMemo } from 'react'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   getChainForChainId,
@@ -18,6 +19,10 @@ export type IbcDestinationChainPickerProps = {
    * Whether or not to include the source chain in the list.
    */
   includeSourceChain: boolean
+  /**
+   * Optional chain IDs to exclude.
+   */
+  excludeChainIds?: string[]
 } & Omit<ChainPickerPopupProps, 'chains' | 'labelMode'>
 
 // This component shows a picker for all destination chains that a source chain
@@ -29,6 +34,7 @@ export type IbcDestinationChainPickerProps = {
 export const IbcDestinationChainPicker = ({
   sourceChainId,
   includeSourceChain,
+  excludeChainIds,
   ...pickerProps
 }: IbcDestinationChainPickerProps) => {
   const chainIds = useMemo(() => {
@@ -62,8 +68,9 @@ export const IbcDestinationChainPicker = ({
         })
         // Remove nonexistent osmosis testnet chain.
         .filter((chainId) => chainId !== 'osmo-test-4'),
-    ]
-  }, [includeSourceChain, sourceChainId])
+    ].filter((chainId) => !excludeChainIds?.includes(chainId))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, useDeepCompareMemoize([excludeChainIds, includeSourceChain, sourceChainId]))
 
   return (
     <ChainPickerPopup

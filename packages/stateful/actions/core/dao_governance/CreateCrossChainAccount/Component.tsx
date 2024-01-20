@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { CopyToClipboard, RadioInput } from '@dao-dao/stateless'
+import { ChainPickerPopup, CopyToClipboard } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
   ActionComponent,
@@ -49,14 +49,22 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
 
       {isCreating ? (
         missingChainIds.length > 0 ? (
-          <RadioInput
-            fieldName={(fieldNamePrefix + 'chainId') as 'chainId'}
-            options={missingChainIds.map((chainId) => ({
-              label: getDisplayNameForChainId(chainId),
-              value: chainId,
-            }))}
-            setValue={setValue}
-            watch={watch}
+          <ChainPickerPopup
+            buttonClassName="self-start"
+            chains={{
+              type: 'custom',
+              chainIds: missingChainIds,
+            }}
+            labelMode="chain"
+            onSelect={(chainId) => {
+              // Type-check. None option is disabled so should not be possible.
+              if (!chainId) {
+                return
+              }
+
+              setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+            }}
+            selectedChainId={chainId}
           />
         ) : (
           <p className="text-text-interactive-error">
