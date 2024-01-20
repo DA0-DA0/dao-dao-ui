@@ -4,18 +4,22 @@ import { ReactNode } from 'react'
 
 export type WarningCardProps = {
   content: ReactNode
+  children?: ReactNode
   className?: string
   iconClassName?: string
   textClassName?: string
   size?: 'sm' | 'default'
+  contentContainerClassName?: string
 }
 
 export const WarningCard = ({
   content,
+  children,
   className,
   iconClassName,
   textClassName,
   size = 'default',
+  contentContainerClassName,
 }: WarningCardProps) => (
   <div
     className={clsx(
@@ -32,18 +36,27 @@ export const WarningCard = ({
       )}
     />
 
-    {typeof content === 'string' ? (
-      <p
-        className={clsx(
-          'primary-text text-text-interactive-warning-body',
-          size === 'sm' && 'text-xs',
-          textClassName
-        )}
-      >
-        {content}
-      </p>
-    ) : (
-      content
-    )}
+    <div
+      className={clsx(
+        'flex flex-col items-start gap-2',
+        contentContainerClassName
+      )}
+    >
+      {typeof content === 'string' ? (
+        <p
+          className={clsx(
+            'primary-text text-text-interactive-warning-body',
+            size === 'sm' && 'text-xs',
+            textClassName
+          )}
+        >
+          {content}
+        </p>
+      ) : (
+        content
+      )}
+
+      {children}
+    </div>
   </div>
 )
