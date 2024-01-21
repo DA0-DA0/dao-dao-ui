@@ -78,7 +78,7 @@ export const useQuerySyncedRecoilState = <T = string | number>({
 
     router.query[param] = newValue
 
-    router.push(
+    router.replace(
       {
         query: router.query,
       },

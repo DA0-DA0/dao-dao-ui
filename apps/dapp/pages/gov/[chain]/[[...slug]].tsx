@@ -103,7 +103,7 @@ const InnerGovHome = () => {
 
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getGovPath(name, firstTabId), undefined, {
+      router.replace(getGovPath(name, firstTabId), undefined, {
         shallow: true,
       })
     }
@@ -115,18 +115,11 @@ const InnerGovHome = () => {
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.push(getGovPath(name, tabId), undefined, {
+    router.replace(getGovPath(name, tabId), undefined, {
       shallow: true,
     })
 
   const [goingToChainId, setGoingToChainId] = useState<string>()
-  // Pre-fetch other chains.
-  useEffect(() => {
-    getConfiguredChains().forEach(({ name }) => {
-      router.prefetch(getGovPath(name))
-      tabs.map((tab) => router.prefetch(getGovPath(name, tab.id)))
-    })
-  }, [router, tabs])
 
   return (
     <DaoDappTabbedHome

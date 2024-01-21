@@ -64,7 +64,7 @@ export const Me = ({
     <div className="flex flex-row items-center justify-center">
       <SegmentedControls
         onSelect={(tab) =>
-          router.push(`/me/${tab}`, undefined, { shallow: true })
+          router.replace(`/me/${tab}`, undefined, { shallow: true })
         }
         selected={selectedTabId}
         tabs={tabs.map(({ id, label }) => ({

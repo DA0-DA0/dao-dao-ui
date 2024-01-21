@@ -24,7 +24,7 @@ export const Inbox: NextPage = () => {
     asPath,
     query: { code },
     isReady,
-    push,
+    replace,
   } = useRouter()
   const { isWalletConnected, isWalletConnecting } = useWallet()
 
@@ -46,9 +46,9 @@ export const Inbox: NextPage = () => {
         toast.error(t('error.invalidCode'))
       }
 
-      push('/inbox/settings', undefined, { shallow: true })
+      replace('/inbox/settings', undefined, { shallow: true })
     }
-  }, [code, isReady, push, ready, t, doVerify])
+  }, [code, isReady, replace, ready, t, doVerify])
 
   return (
     <>
