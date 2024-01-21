@@ -40,14 +40,16 @@ export const MeTransactionBuilder = () => {
     address: walletAddress = '',
     hexPublicKey,
     getSigningCosmWasmClient,
+    chain,
   } = useWallet({
     loadAccount: true,
   })
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
-  const [_meTransactionAtom, setWalletTransactionAtom] =
-    useRecoilState(meTransactionAtom)
+  const [_meTransactionAtom, setWalletTransactionAtom] = useRecoilState(
+    meTransactionAtom(chain.chain_id)
+  )
 
   const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
@@ -76,12 +78,12 @@ export const MeTransactionBuilder = () => {
   }, [formMethods, router.query])
 
   const meTransaction = formMethods.watch()
-  // Debounce saving latest data to atom and thus localStorage every 10 seconds.
+  // Debounce saving latest data to atom and thus localStorage every second.
   useEffect(() => {
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(
       () => setWalletTransactionAtom(cloneDeep(meTransaction)),
-      10000
+      1000
     )
     return () => clearTimeout(timeout)
   }, [setWalletTransactionAtom, meTransaction])

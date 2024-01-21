@@ -11,6 +11,7 @@ import {
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
+import { GovActionsProvider } from '../../actions'
 import { GovTokenCard } from './GovTokenCard'
 
 export const GovCommunityPoolTab = () => {
@@ -74,12 +75,12 @@ export const GovCommunityPoolTab = () => {
   return tokenCardInfos.length === 0 ? (
     <Loader className="mt-6" fill={false} />
   ) : (
-    <>
+    <GovActionsProvider>
       <GridCardContainer cardType="wide">
         {tokenCardInfos.map((props, index) => (
           <GovTokenCard {...props} key={index} />
         ))}
       </GridCardContainer>
-    </>
+    </GovActionsProvider>
   )
 }

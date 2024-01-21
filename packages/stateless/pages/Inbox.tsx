@@ -56,7 +56,7 @@ export const Inbox = ({
   const {
     query: { slug: _slug },
     isReady,
-    push,
+    replace,
   } = useRouter()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
@@ -130,7 +130,7 @@ export const Inbox = ({
                   loading={settingsModalVisible && api.updating}
                   noRounding
                   onClick={() =>
-                    push('/inbox/settings', undefined, { shallow: true })
+                    replace('/inbox/settings', undefined, { shallow: true })
                   }
                   size="custom"
                   variant="ghost"
@@ -234,7 +234,7 @@ export const Inbox = ({
 
       <InboxSettingsModal
         api={api}
-        onClose={() => push('/inbox', undefined, { shallow: true })}
+        onClose={() => replace('/inbox', undefined, { shallow: true })}
         verify={slug === InboxPageSlug.Verify ? verify : undefined}
         visible={settingsModalVisible && connected && ready}
       />

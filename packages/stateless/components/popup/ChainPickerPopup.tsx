@@ -40,6 +40,11 @@ export type ChainPickerPopupProps = {
          * Chain IDs to exclude.
          */
         excludeChainIds?: string[]
+        /**
+         * Only include chains with a governance module. This uses the `noGov`
+         * flag in chain config.
+         */
+        onlyGov?: boolean
       }
     | {
         /**
@@ -86,6 +91,10 @@ export type ChainPickerPopupProps = {
    * If defined, this will be the icon of the none button.
    */
   noneIcon?: ComponentType<{ className?: string }>
+  /**
+   * If true, will make the button more like a text header instead.
+   */
+  headerMode?: boolean
 }
 
 /**
@@ -104,18 +113,23 @@ export const ChainPickerPopup = ({
   showNone,
   noneLabel,
   noneIcon,
+  headerMode,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
   const chainIds =
     chains.type === 'supported'
       ? getSupportedChains()
+          .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.type === 'configured'
       ? getConfiguredChains()
+          .filter(
+            ({ chainId, noGov }) =>
+              !chains.excludeChainIds?.includes(chainId) &&
+              (!chains.onlyGov || !noGov)
+          )
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.chainIds
 
   const chainOptions = chainIds.map(
@@ -169,11 +183,14 @@ export const ChainPickerPopup = ({
         type: 'button',
         props: {
           className: buttonClassName,
-          contentContainerClassName: 'justify-between text-icon-primary !gap-4',
+          contentContainerClassName: clsx(
+            'justify-between text-icon-primary',
+            !headerMode && '!gap-4'
+          ),
           loading,
           disabled,
           size: 'lg',
-          variant: 'ghost_outline',
+          variant: headerMode ? 'none' : 'ghost_outline',
           children: (
             <>
               <div className="flex flex-row items-center gap-2">

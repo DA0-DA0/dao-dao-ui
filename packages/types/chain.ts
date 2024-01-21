@@ -80,11 +80,14 @@ export type BaseChainConfig = {
   // Set to true if the chain does not support CosmWasm. If undefined, assumed
   // to be false.
   noCosmWasm?: boolean
-  explorerUrlTemplates: {
-    tx: string
-    gov: string
-    govProp: string
-    wallet: string
+  // Set to true if the chain does not have a gov module so that it doesn't
+  // appear in the gov UI. If undefined, assumed to be false.
+  noGov?: boolean
+  explorerUrlTemplates?: {
+    tx?: string
+    gov?: string
+    govProp?: string
+    wallet?: string
   }
 }
 

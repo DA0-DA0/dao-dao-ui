@@ -151,7 +151,7 @@ export const Account: NextPage = () => {
     <div className="flex flex-row items-center justify-center">
       <SegmentedControls
         onSelect={(tab) =>
-          router.push(getAccountPath(walletAddress, tab), undefined, {
+          router.replace(getAccountPath(walletAddress, tab), undefined, {
             shallow: true,
           })
         }

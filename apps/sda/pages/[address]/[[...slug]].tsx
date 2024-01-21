@@ -52,7 +52,7 @@ const DaoHomePage: NextPage = () => {
 
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getDaoPath(coreAddress, firstTabId), undefined, {
+      router.replace(getDaoPath(coreAddress, firstTabId), undefined, {
         shallow: true,
       })
     }
