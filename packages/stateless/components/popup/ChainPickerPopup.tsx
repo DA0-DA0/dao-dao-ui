@@ -40,6 +40,11 @@ export type ChainPickerPopupProps = {
          * Chain IDs to exclude.
          */
         excludeChainIds?: string[]
+        /**
+         * Only include chains with a governance module. This uses the `noGov`
+         * flag in chain config.
+         */
+        onlyGov?: boolean
       }
     | {
         /**
@@ -110,12 +115,16 @@ export const ChainPickerPopup = ({
   const chainIds =
     chains.type === 'supported'
       ? getSupportedChains()
+          .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.type === 'configured'
       ? getConfiguredChains()
+          .filter(
+            ({ chainId, noGov }) =>
+              !chains.excludeChainIds?.includes(chainId) &&
+              (!chains.onlyGov || !noGov)
+          )
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.chainIds
 
   const chainOptions = chainIds.map(

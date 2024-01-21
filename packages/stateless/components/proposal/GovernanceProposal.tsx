@@ -124,7 +124,7 @@ export const GovernanceProposal = ({
           {title}
         </p>
 
-        {id && config && (
+        {!!id && !!config?.explorerUrlTemplates?.govProp && (
           <IconButtonLink
             Icon={ArrowOutwardRounded}
             href={config.explorerUrlTemplates.govProp.replace('REPLACE', id)}

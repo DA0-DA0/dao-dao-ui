@@ -68,7 +68,7 @@ export const DaoDappTabbedHome = ({
         gradient
         rightNode={
           daoInfo.coreVersion === ContractVersion.Gov ? (
-            chainConfig ? (
+            chainConfig?.explorerUrlTemplates?.gov ? (
               // Go to governance page of chain explorer.
               <IconButtonLink
                 Icon={ArrowOutwardRounded}

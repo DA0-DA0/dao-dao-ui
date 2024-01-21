@@ -129,7 +129,10 @@ const InnerGovHome = () => {
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
         <ChainPickerPopup
-          chains={{ type: 'configured' }}
+          chains={{
+            type: 'configured',
+            onlyGov: true,
+          }}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             // Type-check. None option is not enabled so this shouldn't happen.

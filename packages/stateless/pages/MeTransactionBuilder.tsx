@@ -248,7 +248,7 @@ export const MeTransactionBuilder = ({
             <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
               <CopyToClipboard takeAll value={txHash} />
 
-              {config && (
+              {!!config?.explorerUrlTemplates?.tx && (
                 <ButtonLink
                   href={config.explorerUrlTemplates.tx.replace(
                     'REPLACE',

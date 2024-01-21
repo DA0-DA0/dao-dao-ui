@@ -74,7 +74,9 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
     )
 
     const chainConfig = context.params?.chain
-      ? getConfiguredChains().find(({ name }) => name === context.params?.chain)
+      ? getConfiguredChains().find(
+          ({ name, noGov }) => name === context.params?.chain && !noGov
+        )
       : undefined
 
     if (!chainConfig) {

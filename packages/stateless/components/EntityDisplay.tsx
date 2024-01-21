@@ -50,7 +50,7 @@ export const EntityDisplay = ({
     : loadingEntity.data.type === EntityType.Dao
     ? getDaoPath(loadingEntity.data.address)
     : loadingEntity.data.type === EntityType.Wallet
-    ? config?.explorerUrlTemplates.wallet.replace(
+    ? config?.explorerUrlTemplates?.wallet?.replace(
         'REPLACE',
         loadingEntity.data.address
       )
