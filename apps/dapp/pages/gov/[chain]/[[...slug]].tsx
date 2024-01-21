@@ -120,6 +120,12 @@ const InnerGovHome = () => {
     })
 
   const [goingToChainId, setGoingToChainId] = useState<string>()
+  // Pre-fetch other chains.
+  useEffect(() => {
+    getConfiguredChains().forEach(({ name }) => {
+      router.prefetch(getGovPath(name, tabId))
+    })
+  }, [router, tabId])
 
   return (
     <DaoDappTabbedHome
@@ -192,7 +198,7 @@ const NeutronGovHome: NextPage = () => {
   // Pre-fetch other chains.
   useEffect(() => {
     getConfiguredChains().forEach(({ name }) => {
-      router.prefetch('/' + name)
+      router.prefetch(getGovPath(name))
     })
   }, [router])
 
