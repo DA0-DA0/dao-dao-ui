@@ -186,53 +186,47 @@ const tokenSortOptions: TypedOption<
   {
     label: 'Highest USD value',
     value: (a, b) => {
-      const aPrice = a.lazyInfo.loading
-        ? // If loading, show at top.
-          Infinity
-        : // If no price, show at bottom.
-        !a.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? -Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice = b.lazyInfo.loading
-        ? // If loading, show at top.
-          Infinity
-        : // If no price, show at bottom.
-        !b.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? -Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
+      // If loading or no price, show at bottom.
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice
         ? a.token.symbol
             .toLocaleLowerCase()
             .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : bPrice - aPrice
+        : aPrice > bPrice
+        ? -1
+        : 1
     },
   },
   {
     label: 'Lowest USD value',
     value: (a, b) => {
-      const aPrice = a.lazyInfo.loading
-        ? // If loading, show at top.
-          -Infinity
-        : !a.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? // If no price, show at bottom.
-          Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice = b.lazyInfo.loading
-        ? // If loading, show at top.
-          -Infinity
-        : !b.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? // If no price, show at bottom.
-          Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
+      // If loading or no price, show at bottom.
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice
         ? a.token.symbol
             .toLocaleLowerCase()
             .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : aPrice - bPrice
+        : aPrice > bPrice
+        ? 1
+        : -1
     },
   },
   {

@@ -65,9 +65,7 @@ export const WalletBalances = ({
   )
 
   const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading ||
-    tokenLazyInfos.loading ||
-    flattenedTokensWithoutLazyInfo.length !== tokenLazyInfos.data.length
+    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
       ? {
           loading: true,
         }
@@ -75,11 +73,16 @@ export const WalletBalances = ({
           loading: false,
           data: flattenedTokensWithoutLazyInfo.map((token, i) => ({
             ...token,
-            lazyInfo: loadableToLoadingData(tokenLazyInfos.data[i], {
-              usdUnitPrice: undefined,
-              stakingInfo: undefined,
-              totalBalance: token.unstakedBalance,
-            }),
+            lazyInfo:
+              tokenLazyInfos.loading ||
+              flattenedTokensWithoutLazyInfo.length !==
+                tokenLazyInfos.data.length
+                ? { loading: true }
+                : loadableToLoadingData(tokenLazyInfos.data[i], {
+                    usdUnitPrice: undefined,
+                    stakingInfo: undefined,
+                    totalBalance: token.unstakedBalance,
+                  }),
           })),
         }
 
