@@ -8,7 +8,6 @@ import { useChain } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   cwMsgToEncodeObject,
-  decodeIcaExecuteMsg,
   decodeMessages,
   decodePolytoneExecuteMsg,
   isValidContractAddress,
@@ -96,55 +95,8 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
           )
         }
 
-        // Also simulate ICA messages on receiving chains.
-        const decodedIcaMessages = decodeMessages(msgs).flatMap((msg) => {
-          const decoded = decodeIcaExecuteMsg(chainId, msg, 'any')
-          return decoded.match && decoded.cosmosMsgWithSender ? decoded : []
-        })
-
-        if (decodedIcaMessages.length) {
-          const icaGroupedByChainId = decodedIcaMessages.reduce(
-            (acc, decoded) => ({
-              ...acc,
-              [decoded.chainId]: [
-                ...(acc[decoded.chainId] ?? []),
-                ...decoded.cosmosMsgsWithSenders,
-              ],
-            }),
-            {} as Record<
-              string,
-              { sender: string; msg: CosmosMsgFor_Empty }[] | undefined
-            >
-          )
-
-          await Promise.all(
-            Object.entries(icaGroupedByChainId).map(
-              async ([chainId, msgsWithSenders]) => {
-                const cosmosRpcClient = await snapshot.getPromise(
-                  cosmosRpcClientForChainSelector(chainId)
-                )
-                if (!msgsWithSenders?.length) {
-                  return
-                }
-
-                // Group by sender.
-                const groupedBySender = msgsWithSenders.reduce(
-                  (acc, { sender, msg }) => ({
-                    ...acc,
-                    [sender]: [...(acc[sender] ?? []), msg],
-                  }),
-                  {} as Record<string, CosmosMsgFor_Empty[]>
-                )
-
-                await Promise.all(
-                  Object.entries(groupedBySender).map(async ([sender, msgs]) =>
-                    doSimulation(cosmosRpcClient, msgs, sender)
-                  )
-                )
-              }
-            )
-          )
-        }
+        // Unfortunately we can't simulate messages from an ICA for weird
+        // cosmos-sdk reasons... YOLO
       },
     [chainId, polytoneProxies, senderAddress]
   )
