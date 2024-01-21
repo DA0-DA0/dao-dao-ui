@@ -4,23 +4,20 @@ import {
 } from '@dao-dao/stateless'
 import { StatefulWalletDaosProps } from '@dao-dao/types'
 
-import { allWalletDaosSelector, walletDaosSelector } from '../../recoil'
+import { allWalletDaosSelector } from '../../recoil'
 import { LazyDaoCard } from '../dao'
 
-export const WalletDaos = ({
-  walletAddress,
-  chainId,
-}: StatefulWalletDaosProps) => {
+export const WalletDaos = ({ chainWallets }: StatefulWalletDaosProps) => {
   const walletDaos = useCachedLoadingWithError(
-    chainId
-      ? walletDaosSelector({
-          walletAddress,
-          chainId,
-        })
-      : allWalletDaosSelector({
-          walletAddress,
-        })
+    chainWallets.loading || chainWallets.errored
+      ? undefined
+      : allWalletDaosSelector(chainWallets.data)
   )
 
-  return <StatelessWalletDaos LazyDaoCard={LazyDaoCard} daos={walletDaos} />
+  return (
+    <StatelessWalletDaos
+      LazyDaoCard={LazyDaoCard}
+      daos={chainWallets.errored ? chainWallets : walletDaos}
+    />
+  )
 }

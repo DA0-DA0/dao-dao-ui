@@ -1,5 +1,10 @@
+import { LoadingDataWithError } from '../misc'
+
 export type StatefulWalletDaosProps = {
-  walletAddress: string
-  // If defined, filter by this chain.
-  chainId?: string
+  chainWallets: LoadingDataWithError<
+    {
+      chainId: string
+      walletAddress: string
+    }[]
+  >
 }

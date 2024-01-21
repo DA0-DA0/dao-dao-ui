@@ -8,6 +8,7 @@ import { PopupProps, PopupTrigger, PopupTriggerOptions } from '@dao-dao/types'
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
+import { Tooltip } from '../tooltip'
 
 export const Popup = ({
   trigger,
@@ -188,21 +189,25 @@ export type TriggerRendererProps = {
 export const TriggerRenderer = ({ trigger, options }: TriggerRendererProps) => (
   <>
     {trigger.type === 'button' ? (
-      <Button
-        {...(typeof trigger.props === 'function'
-          ? trigger.props(options)
-          : trigger.props)}
-        onClick={options.onClick}
-        pressed={options.open}
-      />
+      <Tooltip title={trigger.tooltip}>
+        <Button
+          {...(typeof trigger.props === 'function'
+            ? trigger.props(options)
+            : trigger.props)}
+          onClick={options.onClick}
+          pressed={options.open}
+        />
+      </Tooltip>
     ) : trigger.type === 'icon_button' ? (
-      <IconButton
-        {...(typeof trigger.props === 'function'
-          ? trigger.props(options)
-          : trigger.props)}
-        focused={options.open}
-        onClick={options.onClick}
-      />
+      <Tooltip title={trigger.tooltip}>
+        <IconButton
+          {...(typeof trigger.props === 'function'
+            ? trigger.props(options)
+            : trigger.props)}
+          focused={options.open}
+          onClick={options.onClick}
+        />
+      </Tooltip>
     ) : trigger.type === 'custom' ? (
       <trigger.Renderer {...options} />
     ) : null}

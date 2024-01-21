@@ -19,7 +19,6 @@ import {
   STARGAZE_URL_BASE,
   getNftKey,
   nftCardInfoFromStargazeIndexerNft,
-  transformBech32Address,
 } from '@dao-dao/utils'
 
 const STARGAZE_INDEXER_TOKENS_LIMIT = 100
@@ -35,12 +34,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
         ? ChainId.StargazeMainnet
         : ChainId.StargazeTestnet
 
-      const stargazeWalletAddress = transformBech32Address(
-        walletAddress,
-        chainId
-      )
-
-      get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
+      get(refreshWalletStargazeNftsAtom(walletAddress))
 
       const nftCardInfos: NftCardInfo[] = []
 
@@ -48,7 +42,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
         const { error, data } = await stargazeIndexerClient.query({
           query: stargazeTokensForOwnerQuery,
           variables: {
-            ownerAddrOrName: stargazeWalletAddress,
+            ownerAddrOrName: walletAddress,
             limit: STARGAZE_INDEXER_TOKENS_LIMIT,
             offset: nftCardInfos.length,
           },

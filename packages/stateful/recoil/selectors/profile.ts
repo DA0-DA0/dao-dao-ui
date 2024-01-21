@@ -74,20 +74,17 @@ export const stargazeNameSelector = selectorFamily<string | undefined, string>({
         return
       }
 
-      const chainId = MAINNET
-        ? ChainId.StargazeMainnet
-        : ChainId.StargazeTestnet
-      const stargazeWalletAddress = transformBech32Address(
-        walletAddress,
-        chainId
-      )
-      get(refreshWalletProfileAtom(stargazeWalletAddress))
+      get(refreshWalletProfileAtom(walletAddress))
 
-      const client = get(cosmWasmClientForChainSelector(chainId))
+      const client = get(
+        cosmWasmClientForChainSelector(
+          MAINNET ? ChainId.StargazeMainnet : ChainId.StargazeTestnet
+        )
+      )
 
       try {
         return await client.queryContractSmart(STARGAZE_NAMES_CONTRACT, {
-          name: { address: stargazeWalletAddress },
+          name: { address: walletAddress },
         })
       } catch {}
     },
@@ -187,7 +184,13 @@ export const walletProfileDataSelector = selectorFamily<
 
       // Load Stargaze name as backup if no PFPK set.
       if (!profile.name) {
-        const stargazeNameLoadable = get(noWait(stargazeNameSelector(address)))
+        const stargazeNameLoadable = get(
+          noWait(
+            stargazeNameSelector(
+              transformBech32Address(address, ChainId.StargazeMainnet)
+            )
+          )
+        )
         if (
           stargazeNameLoadable.state === 'hasValue' &&
           stargazeNameLoadable.contents
@@ -229,7 +232,11 @@ export const walletProfileDataSelector = selectorFamily<
         // Load Stargaze name image if no PFPK.
       } else if (profile.nameSource === 'stargaze') {
         const stargazeNameImageLoadable = get(
-          noWait(stargazeNameImageForAddressSelector(address))
+          noWait(
+            stargazeNameImageForAddressSelector(
+              transformBech32Address(address, ChainId.StargazeMainnet)
+            )
+          )
         )
         if (
           stargazeNameImageLoadable.state === 'hasValue' &&

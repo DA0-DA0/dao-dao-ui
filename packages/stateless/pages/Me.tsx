@@ -94,7 +94,8 @@ export const Me = ({
             <p className="header-text hidden sm:block">{selectedTab?.label}</p>
           </div>
 
-          {selectedTabId === MeTabId.TransactionBuilder && <ChainSwitcher />}
+          {(selectedTabId === MeTabId.Balances ||
+            selectedTabId === MeTabId.TransactionBuilder) && <ChainSwitcher />}
         </div>
 
         {/* Don't render a tab unless it is visible. */}
