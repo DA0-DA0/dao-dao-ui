@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -41,11 +42,13 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
   options: { createdAddressLoading, icaHostSupported },
   addAction,
   allActionsWithData,
+  remove,
+  index,
 }) => {
   const { t } = useTranslation()
   const { watch, setValue } = useFormContext<CreateIcaData>()
   const { chain_id: sourceChainId } = useChain()
-  const { context } = useActionOptions()
+  const { context, chainContext } = useActionOptions()
 
   const destinationChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const imageUrl =
@@ -64,6 +67,12 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
         data.chainId === destinationChainId &&
         data.register
     )
+
+  // Exclude polytone chain IDs and encourage them to use polytone instead.
+  const polytoneChainIds =
+    chainContext.type === ActionChainContextType.Supported
+      ? Object.keys(chainContext.config.polytone || {})
+      : []
 
   return (
     <>
@@ -84,7 +93,32 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
             sourceChainId={sourceChainId}
           />
 
-          {isCreating &&
+          {polytoneChainIds.includes(destinationChainId) &&
+          context.type === ActionContextType.Dao &&
+          remove ? (
+            <WarningCard
+              className="max-w-xl"
+              content={t('info.useNativeCrossChainAccountInstead')}
+            >
+              <Button
+                onClick={() => {
+                  remove()
+                  addAction(
+                    {
+                      actionKey: ActionKey.CreateCrossChainAccount,
+                      data: {
+                        chainId: destinationChainId,
+                      },
+                    },
+                    index
+                  )
+                }}
+              >
+                {t('button.switchAction')}
+              </Button>
+            </WarningCard>
+          ) : (
+            isCreating &&
             !!destinationChainId &&
             (icaHostSupported.loading ||
             icaHostSupported.updating ||
@@ -132,7 +166,8 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
                   </>
                 )}
               </>
-            ))}
+            ))
+          )}
         </>
       ) : (
         <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-background-secondary px-4 py-3">
@@ -174,10 +209,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
         </div>
       )}
 
-      <WarningCard
-        className="mt-6 max-w-xl"
-        content={t('info.icaExperimental')}
-      />
+      <WarningCard className="max-w-xl" content={t('info.icaExperimental')} />
     </>
   )
 }
