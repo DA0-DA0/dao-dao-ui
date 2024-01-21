@@ -1,3 +1,5 @@
+import { chains } from 'chain-registry'
+
 import {
   BaseChainConfig,
   ChainId,
@@ -1020,3 +1022,40 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
   },
   ...SUPPORTED_CHAINS,
 ]
+
+// Add other chains from chain registry.
+chains
+  .filter(
+    (chain) =>
+      !CONFIGURED_CHAINS.some((c) => c.chainId === chain.chain_id) &&
+      (chain.network_type === 'mainnet' || chain.network_type === 'testnet')
+  )
+  .forEach((chain) => {
+    const explorerUrl = (
+      chain.explorers?.find(
+        (explorer) =>
+          explorer.kind === 'ping.pub' &&
+          // Some explorers have kind = 'ping.pub' but the wrong URL.
+          explorer.url?.includes('ping.pub')
+      ) ||
+      chain.explorers?.find(
+        (explorer) =>
+          explorer.kind === 'mintscan' && explorer.url?.includes('mintscan.io')
+      )
+    )?.url
+
+    if (explorerUrl) {
+      CONFIGURED_CHAINS.push({
+        chainId: chain.chain_id,
+        name: chain.chain_name,
+        mainnet: chain.network_type === 'mainnet',
+        accentColor: '#',
+        explorerUrlTemplates: {
+          tx: explorerUrl + '/tx/REPLACE',
+          gov: explorerUrl + '/gov',
+          govProp: explorerUrl + '/gov/REPLACE',
+          wallet: explorerUrl + '/account/REPLACE',
+        },
+      })
+    }
+  })

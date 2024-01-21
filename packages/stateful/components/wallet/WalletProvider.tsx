@@ -173,8 +173,6 @@ export const WalletProvider = ({
       assetLists={assets}
       chains={chains}
       endpointOptions={{
-        // Disable endpoint validation.
-        isLazy: true,
         // Load all custom chain endpoints into wallet provider.
         endpoints: Object.entries(CHAIN_ENDPOINTS).reduce(
           (acc, [chainId, { rpc, rest }]) => ({
