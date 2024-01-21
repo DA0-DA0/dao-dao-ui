@@ -6,7 +6,11 @@ import { RecoilValueReadOnly } from 'recoil'
 import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo, ProposalStatus } from './contracts/common'
+import {
+  CheckedDepositInfo,
+  Duration,
+  ProposalStatus,
+} from './contracts/common'
 import { Proposal as DaoPreProposeApprovalProposal } from './contracts/DaoPreProposeApprovalSingle'
 import { VetoConfig } from './contracts/DaoProposalSingle.v2'
 import {
@@ -38,6 +42,7 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
     reversePreProposePendingProposalInfos?: ReversePreProposePendingProposalInfosSelector
     reversePreProposeCompletedProposalInfos?: ReversePreProposeCompletedProposalInfosSelector
     depositInfo: DepositInfoSelector
+    maxVotingPeriod: MaxVotingPeriodSelector
   }
 
   // Hooks
@@ -162,10 +167,25 @@ export type IProposalModuleAdapterInitialOptions = Omit<
   | 'isPreProposeApprovalProposal'
 >
 
+/**
+ * Proposal module adapter context. This is specific to a single proposal in a
+ * single proposal module.
+ */
 export type IProposalModuleContext = {
   id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
+  common: IProposalModuleAdapterCommon
+}
+
+/**
+ * Common proposal module adapter context. This is not specific to any single
+ * proposal, but is specific to a single proposal module. This could be used to
+ * retrieve the current proposal module's config for example.
+ */
+export type IProposalModuleCommonContext = {
+  id: string
+  options: IProposalModuleAdapterCommonOptions
   common: IProposalModuleAdapterCommon
 }
 
@@ -203,6 +223,8 @@ export type ReversePreProposeCompletedProposalInfosSelector = (data: {
 export type DepositInfoSelector = RecoilValueReadOnly<
   CheckedDepositInfo | undefined
 >
+
+export type MaxVotingPeriodSelector = RecoilValueReadOnly<Duration>
 
 export type CommonProposalListInfo = {
   id: string

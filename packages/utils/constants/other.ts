@@ -62,6 +62,10 @@ export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 export const WHITE_WHALE_PRICES_API =
   'https://www.api-white-whale.enigma-validator.com/summary/migaloo/all/current'
 
+// Astroport API
+export const ASTROPORT_PRICES_API =
+  'https://api.astroport.fi/api/tokens/DENOM?chainId=neutron-1'
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
@@ -72,9 +76,11 @@ export const CHAIN_GAS_MULTIPLIER = 2
 
 export const NUM_FEATURED_DAOS = 10
 
-// Neutron governance DAO.
+// Neutron DAOs.
 export const NEUTRON_GOVERNANCE_DAO =
   'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'
+export const NEUTRON_SECURITY_SUBDAO =
+  'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']

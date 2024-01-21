@@ -3,6 +3,7 @@ import {
   IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
+  IProposalModuleCommonContext,
   IProposalModuleContext,
   ProposalModule,
   ProposalModuleAdapter,
@@ -129,6 +130,33 @@ export const matchAndLoadAdapter = (
       ...initialOptions,
       proposalModule,
     }),
+  }
+}
+
+export const commonContextFromAdapterContext = (
+  adapterContext: IProposalModuleContext
+): IProposalModuleCommonContext => ({
+  id: adapterContext.id,
+  common: adapterContext.common,
+  options: {
+    chain: adapterContext.options.chain,
+    coreAddress: adapterContext.options.coreAddress,
+    proposalModule: adapterContext.options.proposalModule,
+  },
+})
+
+export const matchAndLoadCommonContext = (
+  ...params: Parameters<typeof matchAndLoadCommon>
+): IProposalModuleCommonContext => {
+  const { id, ...common } = matchAndLoadCommon(...params)
+
+  return {
+    id,
+    common,
+    options: {
+      ...params[1],
+      proposalModule: params[0],
+    },
   }
 }
 

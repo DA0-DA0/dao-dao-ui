@@ -201,7 +201,6 @@ export const daosWithNativeVotingContractSelector = selectorFamily<
             args: {
               denom,
             },
-            required: true,
           })
         ) ?? []
       const votingModuleAddresses = get(

@@ -9,15 +9,22 @@ import {
   Button,
   CosmosMessageDisplay,
   Loader,
+  useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
   BaseProposalInnerContentDisplayProps,
   CategorizedActionAndData,
   CategorizedActionKeyAndData,
+  ChainId,
+  ContractVersion,
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
+import {
+  decodeMessages,
+  decodeRawDataForDisplay,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
@@ -53,11 +60,65 @@ const InnerProposalInnerContentDisplay = ({
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
+  const { chainId, coreVersion } = useDaoInfoContext()
 
-  const decodedMessages = useMemo(
-    () => decodeMessages(proposal.msgs),
-    [proposal.msgs]
-  )
+  const decodedMessages = useMemo(() => {
+    const decoded = decodeMessages(proposal.msgs)
+
+    // Unwrap `timelock_proposal` execute in Neutron SubDAOs.
+    try {
+      if (
+        chainId === ChainId.NeutronMainnet &&
+        coreVersion === ContractVersion.V2AlphaNeutron
+      ) {
+        if (
+          decoded.length === 1 &&
+          objectMatchesStructure(decoded[0], {
+            wasm: {
+              execute: {
+                contract_addr: {},
+                funds: {},
+                msg: {
+                  timelock_proposal: {
+                    proposal_id: {},
+                    msgs: {},
+                  },
+                },
+              },
+            },
+          })
+        ) {
+          const innerDecoded = decodeMessages(
+            decoded[0].wasm.execute.msg.timelock_proposal.msgs
+          )
+          if (
+            innerDecoded.length === 1 &&
+            objectMatchesStructure(innerDecoded[0], {
+              wasm: {
+                execute: {
+                  contract_addr: {},
+                  funds: {},
+                  msg: {
+                    execute_timelocked_msgs: {
+                      msgs: {},
+                    },
+                  },
+                },
+              },
+            })
+          ) {
+            return decodeMessages(
+              innerDecoded[0].wasm.execute.msg.execute_timelocked_msgs.msgs
+            )
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Neutron timelock_proposal unwrap error', error)
+    }
+
+    return decoded
+  }, [chainId, coreVersion, proposal.msgs])
   const rawDecodedMessages = useMemo(
     () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
     [decodedMessages]

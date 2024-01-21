@@ -110,7 +110,6 @@ export const proposalSelector = selectorFamily<
             id: params[0].proposalId,
           },
           id,
-          required: true,
         })
       )
       if (proposalResponse) {

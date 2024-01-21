@@ -13,6 +13,7 @@ import {
   ChainProvider,
   DaoSupportedChainPickerInput,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { PolytoneConnection, TokenType } from '@dao-dao/types'
 import {
@@ -25,7 +26,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
@@ -247,6 +248,25 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
           return
         }
 
+        const fundsTokens = funds.map(({ denom }) =>
+          nativeBalances.loading
+            ? undefined
+            : nativeBalances.data.find(
+                ({ token }) =>
+                  token.chainId === chainId && token.denomOrAddress === denom
+              )?.token
+        )
+        const nonexistentFundsDenom = funds.find(
+          (_, index) => !fundsTokens[index]
+        )?.denom
+        if (nonexistentFundsDenom) {
+          throw new Error(
+            t('error.unknownDenom', {
+              denom: nonexistentFundsDenom,
+            })
+          )
+        }
+
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
@@ -255,20 +275,12 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
               instantiate: {
                 admin: admin || null,
                 code_id: codeId,
-                funds: funds.map(({ denom, amount }) => ({
+                funds: funds.map(({ denom, amount }, index) => ({
                   denom,
-                  amount: BigInt(
-                    convertDenomToMicroDenomWithDecimals(
-                      amount,
-                      (!nativeBalances.loading &&
-                        nativeBalances.data.find(
-                          ({ token }) =>
-                            token.chainId === chainId &&
-                            token.denomOrAddress === denom
-                        )?.token.decimals) ||
-                        0
-                    )
-                  ).toString(),
+                  amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount,
+                    fundsTokens[index]!.decimals
+                  ),
                 })),
                 label,
                 msg,
@@ -302,7 +314,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       },
     })
 
-    const fundTokens = useCachedLoading(
+    const fundTokens = useCachedLoadingWithError(
       isInstantiateMsg
         ? waitForAll(
             (msg.wasm.instantiate.funds as Coin[]).map(({ denom }) =>
@@ -313,9 +325,13 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
               })
             )
           )
-        : undefined,
-      []
+        : undefined
     )
+
+    // Can't match until we have the token info.
+    if (fundTokens.loading || fundTokens.errored) {
+      return { match: false }
+    }
 
     return isInstantiateMsg
       ? {
@@ -327,17 +343,11 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
             label: msg.wasm.instantiate.label,
             message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
             funds: (msg.wasm.instantiate.funds as Coin[]).map(
-              ({ denom, amount }) => ({
+              ({ denom, amount }, index) => ({
                 denom,
                 amount: convertMicroDenomToDenomWithDecimals(
                   amount,
-                  (!fundTokens.loading &&
-                    fundTokens.data.find(
-                      (token) =>
-                        token.chainId === chainId &&
-                        token.denomOrAddress === denom
-                    )?.decimals) ||
-                    0
+                  fundTokens.data[index].decimals
                 ),
               })
             ),

@@ -1,9 +1,13 @@
-import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
+import {
+  IndexerFormulaType,
+  IndexerUpStatus,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   BatchClient,
   CommonError,
-  INDEXER_DISABLED,
   INDEXER_URL,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<
@@ -20,10 +24,6 @@ export type QueryIndexerOptions = WithChainId<
       endUnixMs?: number
       stepMs?: number
     }
-    // If true, ignores indexer disabled setting. This should be used by
-    // features that require the indexer. Most indexer queries are not required
-    // as they can fallback to the RPC.
-    required?: boolean
   } & (
     | {
         type: `${IndexerFormulaType.Generic}`
@@ -46,10 +46,11 @@ export const queryIndexer = async <T = any>({
   block,
   times,
   chainId,
-  required = false,
 }: QueryIndexerOptions): Promise<T | undefined> => {
-  if (!required && INDEXER_DISABLED) {
-    throw new Error(CommonError.IndexerDisabled)
+  // Only supported chains have an indexer.
+  const chainConfig = getSupportedChainConfig(chainId)
+  if (!chainConfig || chainConfig.noIndexer) {
+    throw new Error(CommonError.NoIndexerForChain)
   }
 
   // Filter out undefined args.
@@ -95,4 +96,25 @@ export const queryIndexer = async <T = any>({
   }
 
   return JSON.parse(body)
+}
+
+export const queryIndexerUpStatus = async ({
+  chainId,
+}: WithChainId<{}>): Promise<IndexerUpStatus> => {
+  // Only supported chains have an indexer.
+  const chainConfig = getSupportedChainConfig(chainId)
+  if (!chainConfig || chainConfig.noIndexer) {
+    throw new Error(CommonError.NoIndexerForChain)
+  }
+
+  const upResponse = await fetch([INDEXER_URL, chainId, 'up'].join('/'))
+
+  let upStatus: IndexerUpStatus
+  if (upResponse.status === 200 || upResponse.status === 412) {
+    upStatus = await upResponse.json()
+  } else {
+    throw new Error(`Error querying indexer up status: ${upResponse.status}`)
+  }
+
+  return upStatus
 }

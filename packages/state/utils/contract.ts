@@ -34,7 +34,6 @@ export const fetchContractInfo = async (
       address: contractAddress,
       formula: 'info',
       chainId,
-      required: true,
     })
   } catch (err) {
     // Ignore error.
@@ -84,7 +83,6 @@ export const fetchPreProposeModule = async (
           address: preProposeAddress,
           formula: 'daoPreProposeApprovalSingle/approver',
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.
@@ -126,7 +124,6 @@ export const fetchPreProposeModule = async (
               address: preProposeApproverContract,
               formula: 'daoPreProposeApprover/dao',
               chainId,
-              required: true,
             })
           } catch (err) {
             // Ignore error.
@@ -162,7 +159,6 @@ export const fetchPreProposeModule = async (
           address: preProposeAddress,
           formula: 'daoPreProposeApprover/preProposeApprovalContract',
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.
@@ -190,7 +186,6 @@ export const fetchPreProposeModule = async (
           address: preProposeApprovalContract,
           formula: 'daoPreProposeApprovalSingle/dao',
           chainId,
-          required: true,
         })
       } catch (err) {
         // Ignore error.

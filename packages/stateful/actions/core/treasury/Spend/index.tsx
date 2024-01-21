@@ -1,11 +1,12 @@
 import { coin, coins } from '@cosmjs/amino'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   accountsSelector,
   genericTokenSelector,
+  neutronIbcTransferFeeSelector,
   nobleTariffTransferFeeSelector,
   skipAllChainsPfmEnabledSelector,
   skipRouteMessageSelector,
@@ -20,6 +21,7 @@ import {
   AccountType,
   ChainId,
   CosmosMsgForEmpty,
+  DurationUnits,
   Entity,
   GenericTokenBalanceWithOwner,
   LoadingData,
@@ -38,6 +40,7 @@ import {
 import {
   MAINNET,
   convertDenomToMicroDenomStringWithDecimals,
+  convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   decodeIcaExecuteMsg,
   decodePolytoneExecuteMsg,
@@ -64,9 +67,11 @@ import {
 } from '@dao-dao/utils'
 import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
+import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/utils/protobuf/codegen/neutron/transfer/v1/tx'
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'
+import { useProposalModuleAdapterCommonContextIfAvailable } from '../../../../proposal-module-adapter/react/context'
 import { entitySelector } from '../../../../recoil'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
@@ -79,8 +84,39 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
     address,
+    context,
   } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
+
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
+    context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector
+      : context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: context.params.votingPeriod
+            ? Number(context.params.votingPeriod.seconds) +
+              context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : undefined
+  )
+
+  if (proposalModuleMaxVotingPeriod.loading) {
+    return
+  } else if (proposalModuleMaxVotingPeriod.errored) {
+    return proposalModuleMaxVotingPeriod.error
+  }
 
   return {
     fromChainId: chainId,
@@ -89,6 +125,18 @@ const useDefaults: UseDefaults<SpendData> = () => {
     to: walletAddress,
     amount: 1,
     denom: maybeGetNativeTokenForChainId(chainId)?.denomOrAddress || '',
+    ibcTimeout:
+      'time' in proposalModuleMaxVotingPeriod.data
+        ? // 1 week if voting period is a time since we can append it after.
+          {
+            value: 1,
+            units: DurationUnits.Weeks,
+          }
+        : // 30 days if max voting period is in blocks since we can't append time and need to choose a conservative value.
+          {
+            value: 30,
+            units: DurationUnits.Days,
+          },
   }
 }
 
@@ -145,6 +193,30 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           },
         ],
   })
+
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useRecoilValue(
+    context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector || constSelector(undefined)
+      : context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: context.params.votingPeriod
+            ? Number(context.params.votingPeriod.seconds) +
+              context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : constSelector(undefined)
+  )
 
   // Once already created, load selected token info (which should already be
   // loaded in the decoder), so this data is available right away. This removes
@@ -343,8 +415,36 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         loading: true,
         errored: false,
       }
+  // Get the amount out from an IBC path.
+  const ibcAmountOut: LoadingDataWithError<number | undefined> = isIbc
+    ? skipRoute.loading || !selectedToken
+      ? {
+          loading: true,
+          errored: false,
+        }
+      : skipRoute.errored
+      ? {
+          loading: false,
+          errored: true,
+          error: skipRoute.error,
+        }
+      : {
+          loading: false,
+          errored: false,
+          updating: skipRoute.updating,
+          data: convertMicroDenomToDenomWithDecimals(
+            skipRoute.data.amountOut,
+            selectedToken.token.decimals
+          ),
+        }
+    : {
+        loading: false,
+        errored: false,
+        updating: false,
+        data: undefined,
+      }
 
-  // Compute Noble tariffs.
+  // Compute chain fees.
   const nobleTariff = useCachedLoadingWithError(
     ibcPath.loading || ibcPath.errored
       ? undefined
@@ -356,6 +456,16 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         // transferred out of Noble at some point.
         ibcPath.data.slice(0, -1).includes(ChainId.NobleMainnet)
       ? nobleTariffTransferFeeSelector
+      : constSelector(undefined)
+  )
+  const neutronTransferFee = useCachedLoadingWithError(
+    ibcPath.loading || ibcPath.errored
+      ? undefined
+      : MAINNET &&
+        // If Neutron is one of the non-destination chains, meaning it will be
+        // transferred out of Neutron at some point.
+        ibcPath.data.slice(0, -1).includes(ChainId.NeutronMainnet)
+      ? neutronIbcTransferFeeSelector
       : constSelector(undefined)
   )
 
@@ -411,6 +521,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         tokens: loadingTokens,
         currentEntity,
         ibcPath,
+        ibcAmountOut,
         betterNonPfmIbcPath:
           skipRoute.loading || skipRoute.errored
             ? { loading: true }
@@ -423,6 +534,18 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
               },
         missingAccountChainIds,
         nobleTariff,
+        neutronTransferFee:
+          neutronTransferFee.loading || neutronTransferFee.errored
+            ? neutronTransferFee
+            : {
+                loading: false,
+                errored: false,
+                updating: neutronTransferFee.updating,
+                data: neutronTransferFee.data?.sum,
+              },
+        proposalModuleMaxVotingPeriodInBlocks:
+          !!proposalModuleMaxVotingPeriod &&
+          'blocks' in proposalModuleMaxVotingPeriod,
         AddressInput,
       }}
     />
@@ -434,6 +557,35 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
 
   const loadingTokenBalances = useTokenBalances()
 
+  const neutronTransferFee = useCachedLoading(
+    neutronIbcTransferFeeSelector,
+    undefined
+  )
+
+  // Should always be defined if in a DAO.
+  const maxVotingPeriodSelector =
+    useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
+      ?.maxVotingPeriod
+  const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
+    options.context.type === ActionContextType.Dao
+      ? maxVotingPeriodSelector
+      : options.context.type === ActionContextType.Wallet
+      ? // Wallets execute transactions right away, so there's no voting delay.
+        constSelector({
+          time: 0,
+        })
+      : options.context.type === ActionContextType.Gov
+      ? constSelector({
+          // Seconds
+          time: options.context.params.votingPeriod
+            ? Number(options.context.params.votingPeriod.seconds) +
+              options.context.params.votingPeriod.nanos / 1e9
+            : // If no voting period loaded, default to 30 days.
+              30 * 24 * 60 * 60,
+        })
+      : undefined
+  )
+
   return useCallback(
     ({
       fromChainId,
@@ -442,6 +594,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       to,
       amount: _amount,
       denom,
+      ibcTimeout,
       useDirectIbcPath,
       _skipIbcTransferMsg,
     }: SpendData) => {
@@ -482,11 +635,28 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       let msg: CosmosMsgForEmpty | undefined
       // IBC transfer.
       if (token.type === TokenType.Native && toChainId !== fromChainId) {
-        // Timeout after 1 year. Needs to survive voting period and execution
-        // delay.
+        // Require that this loads before using IBC.
+        if (
+          proposalModuleMaxVotingPeriod.loading ||
+          proposalModuleMaxVotingPeriod.errored
+        ) {
+          throw new Error('Failed to load proposal module max voting period')
+        }
+
+        // Default to conservative 30 days if no IBC timeout is set for some
+        // reason. This should never happen.
+        const timeoutSeconds = ibcTimeout
+          ? convertDurationWithUnitsToSeconds(ibcTimeout)
+          : 30 * 24 * 60 * 60
+        // Convert seconds to nanoseconds.
         const timeoutTimestamp = BigInt(
-          // Nanoseconds.
-          (Date.now() + 1000 * 60 * 60 * 24 * 365) * 1e6
+          Date.now() * 1e6 +
+            // Add timeout to voting period if it's a time duration.
+            ((!('time' in proposalModuleMaxVotingPeriod.data)
+              ? 0
+              : proposalModuleMaxVotingPeriod.data.time) +
+              timeoutSeconds) *
+              1e9
         )
 
         // If no Skip IBC msg or it errored or disabled, use single-hop IBC
@@ -503,7 +673,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           )
           msg = makeStargateMessage({
             stargate: {
-              typeUrl: MsgTransfer.typeUrl,
+              typeUrl:
+                fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer.typeUrl
+                  : MsgTransfer.typeUrl,
               value: {
                 sourcePort: 'transfer',
                 sourceChannel,
@@ -512,11 +685,20 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 receiver: to,
                 timeoutTimestamp,
                 memo: '',
-              } as MsgTransfer,
+                // Add Neutron IBC transfer fee if sending from Neutron.
+                ...(fromChainId === ChainId.NeutronMainnet && {
+                  fee: neutronTransferFee.loading
+                    ? undefined
+                    : neutronTransferFee.data?.fee,
+                }),
+              } as NeutronMsgTransfer,
             },
           })
         } else {
-          if (_skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl) {
+          if (
+            _skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl &&
+            _skipIbcTransferMsg.data.msgTypeURL !== NeutronMsgTransfer.typeUrl
+          ) {
             throw new Error(
               `Unexpected Skip transfer message type: ${_skipIbcTransferMsg.data.msgTypeURL}`
             )
@@ -525,17 +707,29 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           const skipTransferMsgValue = JSON.parse(_skipIbcTransferMsg.data.msg)
           msg = makeStargateMessage({
             stargate: {
-              typeUrl: MsgTransfer.typeUrl,
-              value: MsgTransfer.fromAmino({
-                ...skipTransferMsgValue,
-                // If no memo, use empty string. This will be undefined if PFM
-                // is not used and it's only a single hop.
-                memo: skipTransferMsgValue.memo || '',
-                // Timeout after 1 year. Needs to survive voting period and
-                // execution delay.
-                timeout_timestamp: timeoutTimestamp,
-                timeout_height: undefined,
-              }),
+              typeUrl:
+                fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer.typeUrl
+                  : MsgTransfer.typeUrl,
+              value: {
+                ...(fromChainId === ChainId.NeutronMainnet
+                  ? NeutronMsgTransfer
+                  : MsgTransfer
+                ).fromAmino({
+                  ...skipTransferMsgValue,
+                  // If no memo, use empty string. This will be undefined if PFM
+                  // is not used and it's only a single hop.
+                  memo: skipTransferMsgValue.memo || '',
+                  timeout_timestamp: timeoutTimestamp,
+                  timeout_height: undefined,
+                }),
+                // Add Neutron IBC transfer fee if sending from Neutron.
+                ...(fromChainId === ChainId.NeutronMainnet && {
+                  fee: neutronTransferFee.loading
+                    ? undefined
+                    : neutronTransferFee.data?.fee,
+                }),
+              },
             },
           })
         }
@@ -578,7 +772,12 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             msg
           )
     },
-    [loadingTokenBalances, options]
+    [
+      loadingTokenBalances,
+      options,
+      neutronTransferFee,
+      proposalModuleMaxVotingPeriod,
+    ]
   )
 }
 
@@ -586,6 +785,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   const options = useActionOptions()
+  const defaults = useDefaults()
 
   let chainId = options.chain.chain_id
   let from = options.address
@@ -635,7 +835,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 
   const isIbcTransfer =
     isDecodedStargateMsg(msg) &&
-    msg.stargate.typeUrl === MsgTransfer.typeUrl &&
+    (msg.stargate.typeUrl === MsgTransfer.typeUrl ||
+      msg.stargate.typeUrl === NeutronMsgTransfer.typeUrl) &&
     objectMatchesStructure(msg.stargate.value, {
       sourcePort: {},
       sourceChannel: {},
@@ -712,6 +913,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId,
         from,
@@ -721,6 +924,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
           token.data.decimals
         ),
         denom: token.data.denomOrAddress,
+
+        // Nanoseconds to milliseconds.
+        _absoluteIbcTimeout: Number(
+          msg.stargate.value.timeoutTimestamp / BigInt(1e6)
+        ),
 
         _ibcData: {
           sourceChannel: msg.stargate.value.sourceChannel,
@@ -732,6 +940,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,
@@ -747,6 +957,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        ...(defaults instanceof Error ? {} : defaults),
+
         fromChainId: chainId,
         toChainId: chainId,
         from,

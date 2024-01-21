@@ -49,3 +49,23 @@ export const instantiatorSelector = selectorFamily<
       return await client.instantiator(...params)
     },
 })
+
+export const remoteControllerForPolytoneProxySelector = selectorFamily<
+  string | undefined,
+  { chainId: string; voice: string; proxy: string }
+>({
+  key: 'remoteControllerForPolytoneProxy',
+  get:
+    ({ chainId, voice, proxy }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress: voice,
+          formula: 'polytone/voice/remoteController',
+          args: {
+            address: proxy,
+          },
+        })
+      ),
+})

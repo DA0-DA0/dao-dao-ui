@@ -16,7 +16,10 @@ import {
   IbcDestinationChainPicker,
   InputErrorMessage,
   InputLabel,
+  InputThemedText,
   Loader,
+  NumberInput,
+  SelectInput,
   TokenAmountDisplay,
   TokenInput,
   WarningCard,
@@ -24,9 +27,12 @@ import {
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
+  DurationUnitsValuesTimeOnly,
+  DurationWithUnits,
   Entity,
   EntityType,
   GenericToken,
+  GenericTokenBalance,
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
@@ -40,6 +46,7 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  formatDateTimeTz,
   formatPercentOf100,
   getAccountAddress,
   getChainForChainId,
@@ -48,6 +55,7 @@ import {
   makeValidateAddress,
   processError,
   transformBech32Address,
+  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
@@ -65,6 +73,11 @@ export interface SpendData {
   to: string
   amount: number
   denom: string
+
+  // Relative IBC transfer timeout after max voting period.
+  ibcTimeout?: DurationWithUnits
+  // Once created, this is loaded from the message.
+  _absoluteIbcTimeout?: number
 
   // If true, will not use the PFM optimized path from Skip.
   useDirectIbcPath?: boolean
@@ -88,6 +101,8 @@ export interface SpendOptions {
   currentEntity: Entity | undefined
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
+  // If this is an IBC transfer, show the expected receive amount.
+  ibcAmountOut: LoadingDataWithError<number | undefined>
   // If this is an IBC transfer and a multi-TX route exists that unwinds the
   // tokens correctly but doesn't use PFM, this is the better path.
   betterNonPfmIbcPath: LoadingData<string[] | undefined>
@@ -96,6 +111,10 @@ export interface SpendOptions {
   // If this spend is Noble USDC and leaves Noble at some point, these are the
   // fee settings.
   nobleTariff: LoadingDataWithError<NobleTariffParams | undefined>
+  // If this spend incurs an IBC transfer fee on Neutron, show it.
+  neutronTransferFee: LoadingDataWithError<GenericTokenBalance[] | undefined>
+  // Whether or not the proposal max voting period is in blocks.
+  proposalModuleMaxVotingPeriodInBlocks: boolean
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -110,9 +129,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     tokens,
     currentEntity,
     ibcPath,
+    ibcAmountOut,
     betterNonPfmIbcPath,
     missingAccountChainIds,
     nobleTariff,
+    neutronTransferFee,
+    proposalModuleMaxVotingPeriodInBlocks,
     AddressInput,
   },
   addAction,
@@ -134,6 +156,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
   const useDirectIbcPath = watch(
     (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+  )
+  const ibcTimeout = watch((fieldNamePrefix + 'ibcTimeout') as 'ibcTimeout')
+  const _absoluteIbcTimeout = watch(
+    (fieldNamePrefix + '_absoluteIbcTimeout') as '_absoluteIbcTimeout'
   )
 
   // Cannot send to a different chain from the gov module.
@@ -445,8 +471,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       )}
 
       {selectedToken && isCreating && (
-        <div className="-mt-2 flex flex-row items-center gap-2">
-          <p className="secondary-text">{t('title.balance')}:</p>
+        <div className="flex flex-row items-center gap-2">
+          <p className="secondary-text">{t('info.yourBalance')}:</p>
 
           <TokenAmountDisplay
             amount={balance}
@@ -457,6 +483,23 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           />
         </div>
       )}
+
+      {selectedToken &&
+        !ibcAmountOut.loading &&
+        !ibcAmountOut.errored &&
+        ibcAmountOut.data && (
+          <div className="flex flex-row items-center gap-2">
+            <p className="secondary-text">{t('info.amountWillBeReceived')}:</p>
+
+            <TokenAmountDisplay
+              amount={ibcAmountOut.data}
+              decimals={selectedToken.token.decimals}
+              iconUrl={selectedToken.token.imageUrl}
+              showFullAmount
+              symbol={selectedToken.token.symbol}
+            />
+          </div>
+        )}
 
       {isIbc && (
         <div className="flex flex-col gap-4 rounded-md border-2 border-dashed border-border-primary p-4">
@@ -521,8 +564,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ))}
               </div>
 
-              {isCreating &&
-                selectedToken &&
+              {selectedToken &&
                 !nobleTariff.loading &&
                 !nobleTariff.errored &&
                 nobleTariff.data &&
@@ -533,6 +575,28 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                     params={nobleTariff.data}
                     token={selectedToken.token}
                   />
+                )}
+
+              {!neutronTransferFee.loading &&
+                !neutronTransferFee.errored &&
+                neutronTransferFee.data && (
+                  <p className="secondary-text max-w-prose text-text-interactive-warning-body">
+                    {t('info.neutronTransferFeeApplied', {
+                      fee: neutronTransferFee.data
+                        .map(({ token, balance }) =>
+                          t('format.token', {
+                            amount: convertMicroDenomToDenomWithDecimals(
+                              balance,
+                              token.decimals
+                            ).toLocaleString(undefined, {
+                              maximumFractionDigits: token.decimals,
+                            }),
+                            symbol: token.symbol,
+                          })
+                        )
+                        .join(', '),
+                    })}
+                  </p>
                 )}
 
               {isCreating &&
@@ -629,6 +693,81 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               )}
             </div>
           )}
+
+          <div className="mt-2 flex flex-col gap-2">
+            <InputLabel
+              name={t('form.ibcTimeout')}
+              tooltip={t('form.ibcTimeoutTooltip', {
+                context: !isCreating
+                  ? 'created'
+                  : proposalModuleMaxVotingPeriodInBlocks
+                  ? 'blocks'
+                  : undefined,
+              })}
+            />
+
+            {isCreating ? (
+              <>
+                <div className="flex flex-row gap-1">
+                  <NumberInput
+                    disabled={!isCreating}
+                    error={errors?.ibcTimeout?.value}
+                    fieldName={
+                      (fieldNamePrefix +
+                        'ibcTimeout.value') as 'ibcTimeout.value'
+                    }
+                    min={1}
+                    register={register}
+                    setValue={setValue}
+                    sizing="md"
+                    step={1}
+                    unit={
+                      isCreating
+                        ? undefined
+                        : t(`unit.${ibcTimeout?.units}`, {
+                            count: ibcTimeout?.value,
+                          }).toLocaleLowerCase()
+                    }
+                    validation={[validatePositive, validateRequired]}
+                    watch={watch}
+                  />
+
+                  {isCreating && (
+                    <SelectInput
+                      disabled={!isCreating}
+                      error={errors?.ibcTimeout?.units}
+                      fieldName={
+                        (fieldNamePrefix +
+                          'ibcTimeout.units') as 'ibcTimeout.units'
+                      }
+                      register={register}
+                      validation={[validateRequired]}
+                    >
+                      {DurationUnitsValuesTimeOnly.map((type, idx) => (
+                        <option key={idx} value={type}>
+                          {t(`unit.${type}`, {
+                            count: ibcTimeout?.value,
+                          }).toLocaleLowerCase()}
+                        </option>
+                      ))}
+                    </SelectInput>
+                  )}
+                </div>
+
+                <InputErrorMessage
+                  error={errors?.ibcTimeout?.value || errors?.ibcTimeout?.units}
+                />
+              </>
+            ) : _absoluteIbcTimeout ? (
+              <InputThemedText className="!p-0 font-mono !ring-0">
+                {formatDateTimeTz(new Date(_absoluteIbcTimeout))}
+              </InputThemedText>
+            ) : (
+              <p className="italic text-text-interactive-error">
+                {t('error.loadingData')}
+              </p>
+            )}
+          </div>
         </div>
       )}
     </>

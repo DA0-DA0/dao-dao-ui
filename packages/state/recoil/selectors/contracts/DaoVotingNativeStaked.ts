@@ -258,7 +258,6 @@ export const topStakersSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoVotingNativeStaked/topStakers',
-          required: true,
         })
       ) ?? undefined,
 })

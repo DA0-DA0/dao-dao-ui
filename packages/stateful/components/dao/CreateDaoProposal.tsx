@@ -1,5 +1,12 @@
 import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -22,25 +29,23 @@ import {
 import {
   BaseNewProposalProps,
   ProposalDraft,
+  ProposalModule,
   ProposalPrefill,
 } from '@dao-dao/types'
 import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import { useWallet } from '../../hooks/useWallet'
 import {
+  ProposalModuleAdapterCommonProvider,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
+import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
 import { ProfileDisconnectedCard, ProfileNewProposalCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const CreateDaoProposal = () => {
-  const { t } = useTranslation()
-  const { goToDaoProposal, router } = useDaoNavHelpers()
-  const chain = useChain()
   const daoInfo = useDaoInfoContext()
-  const { isWalletConnected } = useWallet()
-
   const [selectedProposalModule, setSelectedProposalModule] = useState(() => {
     // Ignore proposals with an approver pre-propose since those are
     // automatically managed by a pre-propose-approval contract in another DAO.
@@ -59,22 +64,46 @@ export const CreateDaoProposal = () => {
       ) ?? validProposalModules[0]
     )
   })
+
+  return (
+    <ProposalModuleAdapterCommonProvider
+      initialOptions={{
+        coreAddress: daoInfo.coreAddress,
+      }}
+      proposalModule={selectedProposalModule}
+    >
+      <InnerCreateDaoProposal
+        selectedProposalModule={selectedProposalModule}
+        setSelectedProposalModule={setSelectedProposalModule}
+      />
+    </ProposalModuleAdapterCommonProvider>
+  )
+}
+
+type InnerCreateDaoProposalProps = {
+  selectedProposalModule: ProposalModule
+  setSelectedProposalModule: Dispatch<SetStateAction<ProposalModule>>
+}
+
+const InnerCreateDaoProposal = ({
+  selectedProposalModule,
+  setSelectedProposalModule,
+}: InnerCreateDaoProposalProps) => {
+  const { t } = useTranslation()
+  const { goToDaoProposal, router } = useDaoNavHelpers()
+  const daoInfo = useDaoInfoContext()
+  const { isWalletConnected } = useWallet()
+
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
 
-  const proposalModuleAdapterCommon = useMemo(
-    () =>
-      matchAndLoadCommon(selectedProposalModule, {
-        chain,
-        coreAddress: daoInfo.coreAddress,
-      }),
-    [chain, daoInfo.coreAddress, selectedProposalModule]
-  )
-
   const {
-    fields: { makeDefaultNewProposalForm, newProposalFormTitleKey },
-    components: { NewProposal },
-  } = proposalModuleAdapterCommon
+    id: proposalModuleAdapterCommonId,
+    common: {
+      fields: { makeDefaultNewProposalForm, newProposalFormTitleKey },
+      components: { NewProposal },
+    },
+  } = useProposalModuleAdapterCommonContext()
 
   const [latestProposalSave, setLatestProposalSave] = useRecoilState(
     latestProposalSaveAtom(daoInfo.coreAddress)
@@ -129,7 +158,7 @@ export const CreateDaoProposal = () => {
         formMethods.reset(data)
       }
     },
-    [daoInfo.proposalModules, formMethods]
+    [daoInfo.proposalModules, formMethods, setSelectedProposalModule]
   )
 
   // Prefill form with data from parameter once ready.
@@ -213,7 +242,7 @@ export const CreateDaoProposal = () => {
       createdAt: Date.now(),
       lastUpdatedAt: Date.now(),
       proposal: {
-        id: proposalModuleAdapterCommon.id,
+        id: proposalModuleAdapterCommonId,
         data: proposalData,
       },
     }
@@ -224,7 +253,7 @@ export const CreateDaoProposal = () => {
     draft,
     drafts,
     proposalData,
-    proposalModuleAdapterCommon.id,
+    proposalModuleAdapterCommonId,
     setDrafts,
     proposalName,
   ])
@@ -247,7 +276,7 @@ export const CreateDaoProposal = () => {
                 name: proposalName,
                 lastUpdatedAt: Date.now(),
                 proposal: {
-                  id: proposalModuleAdapterCommon.id,
+                  id: proposalModuleAdapterCommonId,
                   // Deep clone to prevent values from becoming readOnly.
                   data: cloneDeep(proposalData),
                 },
@@ -267,7 +296,7 @@ export const CreateDaoProposal = () => {
     draftIndex,
     setDrafts,
     proposalName,
-    proposalModuleAdapterCommon.id,
+    proposalModuleAdapterCommonId,
   ])
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
@@ -339,9 +368,7 @@ export const CreateDaoProposal = () => {
         }
         rightSidebarContent={
           isWalletConnected ? (
-            <ProfileNewProposalCard
-              proposalModuleAdapterCommon={proposalModuleAdapterCommon}
-            />
+            <ProfileNewProposalCard />
           ) : (
             <ProfileDisconnectedCard />
           )

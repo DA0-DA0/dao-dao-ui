@@ -45,24 +45,33 @@ let output = (chainIdA: string, chainIdB: string) => {
     ?.polytone?.[chainIdB]
   const chainB = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdB)
     ?.polytone?.[chainIdA]
-  if (!chainA || !chainB) {
+  if (!chainA && !chainB) {
     throw new Error('Invalid chain pair')
   }
-  console.log(`
-  ${chainIdA}:
 
+  console.log(chainIdA + ':')
+  if (chainA) {
+    console.log(`
   # polytone to ${chainIdB} (note)
-  ["wasm.${chainA.note}", "${chainA.localChannel}"],
+  ["wasm.${chainA.note}", "${chainA.localChannel}"],`)
+  }
+  if (chainB) {
+    console.log(`
   # polytone from ${chainIdB} (voice)
-  ["wasm.${chainB.voice}", "${chainB.remoteChannel}"],
+  ["wasm.${chainB.voice}", "${chainB.remoteChannel}"],`)
+  }
 
-  ${chainIdB}:
-
+  console.log('\n\n' + chainIdB + ':')
+  if (chainB) {
+    console.log(`
   # polytone to ${chainIdA} (note)
-  ["wasm.${chainB.note}", "${chainB.localChannel}"],
+  ["wasm.${chainB.note}", "${chainB.localChannel}"],`)
+  }
+  if (chainA) {
+    console.log(`
   # polytone from ${chainIdA} (voice)
-  ["wasm.${chainA.voice}", "${chainA.remoteChannel}"],
-  `)
+  ["wasm.${chainA.voice}", "${chainA.remoteChannel}"],`)
+  }
 }
 
 output('chain-id-A', 'chain-id-B')

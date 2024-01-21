@@ -1,4 +1,5 @@
 import {
+  constSelector,
   selectorFamily,
   waitForAll,
   waitForAllSettled,
@@ -29,6 +30,7 @@ import {
   ListSubDaosResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
+  SubDao,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
@@ -56,9 +58,16 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import { accountsSelector } from '../account'
+import {
+  accountsSelector,
+  reverseLookupPolytoneProxySelector,
+} from '../account'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { contractInfoSelector } from '../contract'
+import {
+  contractInfoSelector,
+  isDaoSelector,
+  isPolytoneProxySelector,
+} from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
@@ -245,7 +254,6 @@ export const dumpStateSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/dumpState',
-          required: true,
         })
       )
       if (state) {
@@ -1110,69 +1118,157 @@ export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
 
 const SUBDAO_LIST_LIMIT = 30
 export const listAllSubDaosSelector = selectorFamily<
-  ListSubDaosResponse,
-  QueryClientParams
+  WithChainId<SubDao>[],
+  QueryClientParams & {
+    /**
+     * Only include SubDAOs that this DAO is the admin of, meaning this DAO can
+     * execute on behalf of the SubDAO.
+     */
+    onlyAdmin?: boolean
+  }
 >({
   key: 'daoCoreV2ListAllSubDaos',
   get:
-    (queryClientParams) =>
+    ({ onlyAdmin, ...queryClientParams }) =>
     async ({ get }) => {
-      const list = get(
+      let subDaos: ListSubDaosResponse = []
+
+      const indexerSubDaos = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/listSubDaos',
         })
       )
-      if (list) {
-        return list
-      }
+      if (indexerSubDaos) {
+        subDaos = indexerSubDaos
+      } else {
+        // If indexer query fails, fallback to contract query.
+        while (true) {
+          const response = await get(
+            _listSubDaosSelector({
+              ...queryClientParams,
+              params: [
+                {
+                  startAfter: subDaos[subDaos.length - 1]?.addr,
+                  limit: SUBDAO_LIST_LIMIT,
+                },
+              ],
+            })
+          )
+          if (!response?.length) break
 
-      // If indexer query fails, fallback to contract query.
+          subDaos.push(...response)
 
-      const subdaos: ListSubDaosResponse = []
-
-      while (true) {
-        const response = await get(
-          _listSubDaosSelector({
-            ...queryClientParams,
-            params: [
-              {
-                startAfter: subdaos[subdaos.length - 1]?.addr,
-                limit: SUBDAO_LIST_LIMIT,
-              },
-            ],
-          })
-        )
-        if (!response?.length) break
-
-        subdaos.push(...response)
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < SUBDAO_LIST_LIMIT) {
-          break
+          // If we have less than the limit of items, we've exhausted them.
+          if (response.length < SUBDAO_LIST_LIMIT) {
+            break
+          }
         }
       }
 
-      return subdaos
+      const subDaosWithTypes = get(
+        waitForAll(
+          subDaos.map((subDao) =>
+            waitForAll([
+              constSelector({
+                ...subDao,
+              }),
+              isDaoSelector({
+                chainId: queryClientParams.chainId,
+                address: subDao.addr,
+              }),
+              isPolytoneProxySelector({
+                chainId: queryClientParams.chainId,
+                address: subDao.addr,
+              }),
+            ])
+          )
+        )
+      )
+
+      // Reverse lookup only polytone proxies.
+      const reverseLookups = get(
+        waitForAllSettled(
+          subDaosWithTypes.map(([{ addr }, , isPolytoneProxy]) =>
+            // No need to look these up if we only care about the admin DAOs,
+            // since SubDAO proxies live on another chain.
+            isPolytoneProxy && !onlyAdmin
+              ? reverseLookupPolytoneProxySelector({
+                  chainId: queryClientParams.chainId,
+                  proxy: addr,
+                })
+              : constSelector(undefined)
+          )
+        )
+      )
+
+      const subDaoAdmins = get(
+        waitForAllSettled(
+          subDaosWithTypes.map(([{ addr }, isDao]) =>
+            // Only look up the admin if we're filtering SubDAOs by admin.
+            isDao && onlyAdmin
+              ? adminSelector({
+                  chainId: queryClientParams.chainId,
+                  contractAddress: addr,
+                  params: [],
+                })
+              : constSelector(undefined)
+          )
+        )
+      )
+
+      const validSubDaos = subDaosWithTypes.flatMap(
+        ([subDao, isDao, isPolytoneProxy], index): WithChainId<SubDao> | [] =>
+          isDao &&
+          // If filtering by only admin, check that SubDAO admin is set to the
+          // current DAO.
+          (!onlyAdmin ||
+            (subDaoAdmins[index].state === 'hasValue' &&
+              subDaoAdmins[index].contents ===
+                queryClientParams.contractAddress))
+            ? {
+                ...subDao,
+                chainId: queryClientParams.chainId,
+              }
+            : isPolytoneProxy &&
+              reverseLookups[index].state === 'hasValue' &&
+              reverseLookups[index].contents
+            ? {
+                addr: reverseLookups[index].contents.address,
+                charter: subDao.charter,
+                chainId: reverseLookups[index].contents.chainId,
+              }
+            : []
+      )
+
+      return validSubDaos
     },
 })
 
-export const allSubDaoConfigsSelector = selectorFamily<
-  ({ address: string } & ConfigResponse)[],
+/**
+ * Get the configs for all this DAO's recognized SubDAOs that this DAO has admin
+ * power over. These will only be SubDAOs on the same chain.
+ */
+export const allAdministratedSubDaoConfigsSelector = selectorFamily<
+  (WithChainId<{ address: string }> & ConfigResponse)[],
   QueryClientParams
 >({
   key: 'daoCoreV2AllSubDaoConfigs',
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const subDaos = get(listAllSubDaosSelector(queryClientParams))
+      const subDaos = get(
+        listAllSubDaosSelector({
+          ...queryClientParams,
+          // Only get SubDAOs this DAO is the admin of.
+          onlyAdmin: true,
+        })
+      )
       const subDaoConfigs = get(
         waitForAll(
-          subDaos.map(({ addr }) =>
+          subDaos.map(({ chainId, addr }) =>
             configSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
+              chainId,
               contractAddress: addr,
               params: [],
             })
@@ -1180,7 +1276,8 @@ export const allSubDaoConfigsSelector = selectorFamily<
         )
       )
 
-      return subDaos.map(({ addr }, index) => ({
+      return subDaos.map(({ chainId, addr }, index) => ({
+        chainId,
         address: addr,
         ...subDaoConfigs[index],
       }))
@@ -1333,27 +1430,6 @@ export const polytoneProxiesSelector = selectorFamily<
     },
 })
 
-export const coreAddressForPolytoneProxySelector = selectorFamily<
-  string | undefined,
-  { chainId: string; voice: string; proxy: string }
->({
-  key: 'daoCoreV2CoreAddressForPolytoneProxy',
-  get:
-    ({ chainId, voice, proxy }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          chainId,
-          contractAddress: voice,
-          formula: 'polytone/voice/remoteController',
-          args: {
-            address: proxy,
-          },
-          required: true,
-        })
-      ),
-})
-
 export const approvalDaosSelector = selectorFamily<
   {
     dao: string
@@ -1370,7 +1446,6 @@ export const approvalDaosSelector = selectorFamily<
           chainId,
           contractAddress,
           formula: 'daoCore/approvalDaos',
-          required: true,
         })
       ),
 })

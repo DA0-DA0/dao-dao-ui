@@ -328,7 +328,6 @@ export const historicalBalancesSelector = selectorFamily<
                   endUnixMs: endTimeUnixMs,
                   stepMs: intervalMs,
                 },
-                required: true,
               })
             : constSelector([]),
           !filter || filter === TokenType.Cw20
@@ -342,7 +341,6 @@ export const historicalBalancesSelector = selectorFamily<
                   endUnixMs: endTimeUnixMs,
                   stepMs: intervalMs,
                 },
-                required: true,
               })
             : constSelector([]),
         ])

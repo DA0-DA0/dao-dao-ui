@@ -29,7 +29,6 @@ export const contractInstantiateTimeSelector = selectorFamily<
           contractAddress: address,
           chainId,
           formula: 'instantiatedAt',
-          required: true,
         })
       )
       // Null when indexer fails.
@@ -128,7 +127,6 @@ export const contractInfoSelector = selectorFamily<
           contractAddress,
           chainId,
           formula: 'info',
-          required: true,
         })
       )
       if (info) {
@@ -182,25 +180,12 @@ export const isContractSelector = selectorFamily<
         // Invalid query enum info variant, different contract.
         if (
           err instanceof Error &&
-          err.message.includes('Error parsing into type')
-        ) {
-          return false
-        }
-
-        // If contract does not exist, not the desired contract.
-        if (
-          err instanceof Error &&
-          err.message.includes('not found: invalid request')
+          (err.message.includes('Error parsing into type') ||
+            err.message.includes('no such contract') ||
+            err.message.includes('not found: invalid request') ||
+            err.message.includes('unknown query path'))
         ) {
           console.error(err)
-          return false
-        }
-
-        // If CosmWasm unsupported, not the desired contract.
-        if (
-          err instanceof Error &&
-          err.message.includes('unknown query path')
-        ) {
           return false
         }
 

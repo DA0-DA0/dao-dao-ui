@@ -47,11 +47,7 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
   return daos.loading ? (
     <Loader />
   ) : daos.errored ? (
-    <ErrorPage title={t('error.unexpectedError')}>
-      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
-        {daos.error instanceof Error ? daos.error.message : `${daos.error}`}
-      </pre>
-    </ErrorPage>
+    <ErrorPage error={daos.error} />
   ) : (
     <div className="flex flex-col gap-5">
       <div className="flex flex-row items-stretch gap-2">
