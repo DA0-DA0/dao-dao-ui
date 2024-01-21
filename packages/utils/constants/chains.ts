@@ -1034,6 +1034,11 @@ chains
       (chain.network_type === 'mainnet' || chain.network_type === 'testnet')
   )
   .forEach((chain) => {
+    // Skip if chain already exists in configured chains.
+    if (CONFIGURED_CHAINS.some((c) => c.chainId === chain.chain_id)) {
+      return
+    }
+
     let explorerUrlTemplates: BaseChainConfig['explorerUrlTemplates'] =
       undefined
     if (chain.explorers) {

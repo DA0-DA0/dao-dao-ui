@@ -133,6 +133,7 @@ const InnerGovHome = () => {
             type: 'configured',
             onlyGov: true,
           }}
+          headerMode
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             // Type-check. None option is not enabled so this shouldn't happen.
@@ -201,6 +202,7 @@ const NeutronGovHome: NextPage = () => {
       breadcrumbsOverride={
         <ChainPickerPopup
           chains={{ type: 'configured' }}
+          headerMode
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             // Type-check. None option is not enabled so this shouldn't happen.

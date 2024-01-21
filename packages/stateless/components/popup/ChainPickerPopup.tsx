@@ -91,6 +91,10 @@ export type ChainPickerPopupProps = {
    * If defined, this will be the icon of the none button.
    */
   noneIcon?: ComponentType<{ className?: string }>
+  /**
+   * If true, will make the button more like a text header instead.
+   */
+  headerMode?: boolean
 }
 
 /**
@@ -109,6 +113,7 @@ export const ChainPickerPopup = ({
   showNone,
   noneLabel,
   noneIcon,
+  headerMode,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
@@ -178,11 +183,14 @@ export const ChainPickerPopup = ({
         type: 'button',
         props: {
           className: buttonClassName,
-          contentContainerClassName: 'justify-between text-icon-primary !gap-4',
+          contentContainerClassName: clsx(
+            'justify-between text-icon-primary',
+            !headerMode && '!gap-4'
+          ),
           loading,
           disabled,
           size: 'lg',
-          variant: 'ghost_outline',
+          variant: headerMode ? 'none' : 'ghost_outline',
           children: (
             <>
               <div className="flex flex-row items-center gap-2">

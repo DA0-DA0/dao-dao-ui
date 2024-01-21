@@ -11,6 +11,7 @@ import {
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
+import { GovActionsProvider } from '../../actions'
 import { useWallet } from '../../hooks'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -41,7 +42,11 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   return (
     <Proposal
       ProposalStatusAndInfo={ProposalStatusAndInfo}
-      contentDisplay={<GovProposalContentDisplay proposal={proposal} />}
+      contentDisplay={
+        <GovActionsProvider>
+          <GovProposalContentDisplay proposal={proposal} />
+        </GovActionsProvider>
+      }
       id={proposalId}
       rightSidebarContent={
         isWalletConnected ? (

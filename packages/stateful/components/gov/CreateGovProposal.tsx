@@ -1,5 +1,6 @@
 import { CreateProposal, PageLoader } from '@dao-dao/stateless'
 
+import { GovActionsProvider } from '../../actions'
 import { useWallet } from '../../hooks/useWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -11,9 +12,11 @@ export const CreateGovProposal = () => {
   return (
     <CreateProposal
       newProposal={
-        <SuspenseLoader fallback={<PageLoader />}>
-          <NewGovProposal />
-        </SuspenseLoader>
+        <GovActionsProvider>
+          <SuspenseLoader fallback={<PageLoader />}>
+            <NewGovProposal />
+          </SuspenseLoader>
+        </GovActionsProvider>
       }
       rightSidebarContent={
         isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
