@@ -6,6 +6,8 @@ import toast from 'react-hot-toast'
 
 import { getSupportedChains, processError } from '@dao-dao/utils'
 
+import { useWallet } from './useWallet'
+
 export type UseSupportedChainWalletsOptions = {
   /**
    * If true, attempt connection if wallet is connected to a different chain but
@@ -22,29 +24,19 @@ export type UseSupportedChainWalletsReturn = {
 }[]
 
 export const useSupportedChainWallets = ({
-  attemptConnection,
+  attemptConnection = false,
 }: UseSupportedChainWalletsOptions = {}): UseSupportedChainWalletsReturn => {
+  const mainWallet = useWallet({
+    attemptConnection,
+  })
   const chainWallets = Object.values(
-    useChains(getSupportedChains().map(({ chain }) => chain.chain_name))
+    useChains(
+      getSupportedChains().map(({ chain }) => chain.chain_name),
+      false
+    )
   )
   const chainWalletsRef = useRef(chainWallets)
   chainWalletsRef.current = chainWallets
-
-  const connected = chainWallets.every((w) => w.isWalletConnected)
-
-  // Connect to chains if not connected. Connecting one connects all.
-  useEffect(() => {
-    if (attemptConnection && !connected) {
-      chainWalletsRef.current[0].connect().catch((err) => {
-        console.error(err)
-        toast.error(
-          processError(err, {
-            forceCapture: false,
-          })
-        )
-      })
-    }
-  }, [attemptConnection, connected])
 
   const [accounts, setAccounts] = useState<
     Record<
@@ -55,6 +47,36 @@ export const useSupportedChainWallets = ({
       }
     >
   >({})
+
+  const connected = chainWallets.every((w) => w.isWalletConnected)
+
+  // Connect to chains if not connected. Connecting one connects all.
+  const attemptedConnection = useRef(false)
+  useEffect(() => {
+    if (mainWallet.isWalletConnected && !connected) {
+      Promise.all(
+        chainWalletsRef.current.map((w) =>
+          w.walletRepo.wallets.some((w) => w.isWalletConnected)
+            ? Promise.resolve()
+            : w.walletRepo.connect(mainWallet.wallet?.name)
+        )
+      ).catch((err) => {
+        console.error(err)
+        toast.error(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+      })
+      attemptedConnection.current = true
+    }
+  }, [
+    attemptConnection,
+    connected,
+    mainWallet.isWalletConnected,
+    mainWallet.wallet?.name,
+  ])
+
   useEffect(() => {
     if (!connected) {
       setAccounts({})
