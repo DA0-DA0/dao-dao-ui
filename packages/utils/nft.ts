@@ -3,6 +3,7 @@
 import { NftCardInfo, StargazeNft } from '@dao-dao/types'
 
 import { STARGAZE_URL_BASE } from './constants'
+import { convertMicroDenomToDenomWithDecimals } from './conversion'
 
 // if name does not exist.
 export const getNftName = (
@@ -70,7 +71,8 @@ export const getNftKey = (
 
 export const nftCardInfoFromStargazeIndexerNft = (
   chainId: string,
-  token: StargazeNft
+  token: StargazeNft,
+  timestamp: Date = new Date()
 ): NftCardInfo => ({
   key: getNftKey(
     chainId,
@@ -88,4 +90,18 @@ export const nftCardInfoFromStargazeIndexerNft = (
   imageUrl: token.media?.visualAssets?.lg?.url || token.media?.url || undefined,
   name: token.name || token.tokenId || 'Unknown NFT',
   description: token.description || undefined,
+  highestOffer:
+    token.highestOffer && token.highestOffer.offerPrice
+      ? {
+          amount:
+            token.highestOffer.offerPrice.amount &&
+            convertMicroDenomToDenomWithDecimals(
+              token.highestOffer.offerPrice.amount,
+              6
+            ),
+          amountUsd: token.highestOffer.offerPrice.amountUsd,
+          denom: 'STARS',
+        }
+      : undefined,
+  fetchedTimestamp: timestamp,
 })

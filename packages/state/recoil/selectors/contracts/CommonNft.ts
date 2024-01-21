@@ -23,6 +23,8 @@ import {
   stargazeIndexerClient,
 } from '../../../graphql'
 import { refreshWalletBalancesIdAtom } from '../../atoms'
+import { accountsSelector } from '../account'
+import { stargazeWalletUsdValueSelector } from '../stargaze'
 import { queryClient as commonNftQueryClient } from './Cw721Base'
 import { queryClient as sg721BaseQueryClient } from './Sg721Base'
 
@@ -43,6 +45,38 @@ export const queryClient = selectorFamily<
         ? get(sg721BaseQueryClient(params))
         : get(commonNftQueryClient(params)),
   dangerouslyAllowMutability: true,
+})
+
+export const allNftUsdValueSelector = selectorFamily<
+  number,
+  WithChainId<{ address: string }>
+>({
+  key: 'commonNftAllNftUsdValue',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const accounts = get(accountsSelector({ chainId, address }))
+      let sum = 0
+
+      accounts.forEach((x) => {
+        switch (x.chainId) {
+          case ChainId.StargazeMainnet:
+          case ChainId.StargazeTestnet:
+            sum += get(
+              stargazeWalletUsdValueSelector({
+                chainId: x.chainId,
+                address: x.address,
+              })
+            )
+            break
+
+          default:
+            break
+        }
+      })
+
+      return sum
+    },
 })
 
 export const ownerOfSelector = selectorFamily<

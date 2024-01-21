@@ -8,6 +8,12 @@ export const stargazeTokenQuery = gql(`
         contractAddress
         name
       }
+      highestOffer {
+        offerPrice {
+          amount
+          amountUsd
+        }
+      }
       media {
         url
         visualAssets {
@@ -43,6 +49,12 @@ export const stargazeTokensForOwnerQuery = gql(`
         collection {
           contractAddress
           name
+        }
+        highestOffer {
+          offerPrice {
+            amount
+            amountUsd
+          }
         }
         media {
           url

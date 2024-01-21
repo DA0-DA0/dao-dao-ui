@@ -57,6 +57,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           // have changed ownership.
           fetchPolicy: 'no-cache',
         })
+        const timestamp = new Date()
 
         if (error) {
           throw error
@@ -68,7 +69,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
 
         nftCardInfos.push(
           ...data.tokens.tokens.map((token) =>
-            nftCardInfoFromStargazeIndexerNft(chainId, token)
+            nftCardInfoFromStargazeIndexerNft(chainId, token, timestamp)
           )
         )
 

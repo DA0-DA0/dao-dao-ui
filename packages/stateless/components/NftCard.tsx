@@ -24,6 +24,7 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
+import { TokenAmountDisplay, TooltipInfoIcon } from '..'
 import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
@@ -63,7 +64,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       checkbox,
       imageUrl,
       metadata,
-      floorPrice,
+      highestOffer,
+      fetchedTimestamp,
       name,
       description,
       tokenId,
@@ -225,7 +227,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           />
         )}
 
-        {(!hideCollection || (owner && EntityDisplay) || floorPrice) && (
+        {(!hideCollection || (owner && EntityDisplay) || highestOffer) && (
           <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
             {/* Collection */}
             {!hideCollection && (
@@ -262,16 +264,29 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               </div>
             )}
 
-            {/* Floor price */}
-            {floorPrice && (
+            {/* Highest offer */}
+            {highestOffer && (
               <div className="space-y-2">
-                <p className="secondary-text">{t('title.floorPrice')}</p>
-
+                <p className="secondary-text">{t('title.highestOffer')}</p>
                 <p className="body-text font-mono">
-                  {floorPrice.amount.toLocaleString(undefined, {
+                  {highestOffer.amount?.toLocaleString(undefined, {
                     maximumSignificantDigits: 3,
                   })}{' '}
-                  ${floorPrice.denom}
+                  ${highestOffer.denom}
+                  {highestOffer.amountUsd && (
+                    <div className="caption-text flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={highestOffer.amountUsd}
+                        dateFetched={fetchedTimestamp}
+                        estimatedUsdValue
+                      />
+
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedStargazeUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
                 </p>
               </div>
             )}
