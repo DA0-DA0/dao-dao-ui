@@ -90,7 +90,7 @@ export type ChainPickerPopupProps = {
   /**
    * If defined, this will be the icon of the none button.
    */
-  noneIcon?: ComponentType<{ className?: string }>
+  NoneIcon?: ComponentType<{ className?: string }>
   /**
    * If true, will make the button more like a text header instead.
    */
@@ -112,7 +112,7 @@ export const ChainPickerPopup = ({
   buttonClassName,
   showNone,
   noneLabel,
-  noneIcon,
+  NoneIcon,
   headerMode,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
@@ -154,7 +154,7 @@ export const ChainPickerPopup = ({
     chainOptions.splice(0, 0, {
       key: NONE_KEY,
       label: noneLabel || t('info.none'),
-      Icon: noneIcon,
+      Icon: NoneIcon,
       ...commonOptionClassFields,
     })
   }
@@ -181,6 +181,7 @@ export const ChainPickerPopup = ({
       }
       trigger={{
         type: 'button',
+        tooltip: t('button.switchChain'),
         props: {
           className: buttonClassName,
           contentContainerClassName: clsx(
@@ -194,17 +195,20 @@ export const ChainPickerPopup = ({
           children: (
             <>
               <div className="flex flex-row items-center gap-2">
-                {!!selectedChain?.iconUrl && (
-                  <div
-                    className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${selectedChain.iconUrl})`,
-                    }}
-                  />
-                )}
+                {selectedChain
+                  ? !!selectedChain.iconUrl && (
+                      <div
+                        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${selectedChain.iconUrl})`,
+                        }}
+                      />
+                    )
+                  : showNone && NoneIcon && <NoneIcon />}
 
                 <p className={clsx(!selectedChain && 'text-text-tertiary')}>
                   {selectedChain?.label ||
+                    (showNone && noneLabel) ||
                     (labelMode === 'chain'
                       ? t('button.selectChain')
                       : t('button.selectToken'))}

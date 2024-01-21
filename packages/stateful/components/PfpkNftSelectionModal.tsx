@@ -32,7 +32,12 @@ import {
   uploadNft,
 } from '@dao-dao/utils'
 
-import { useInstantiateAndExecute, useWallet, useWalletInfo } from '../hooks'
+import {
+  useInstantiateAndExecute,
+  useSupportedChainWallets,
+  useWallet,
+  useWalletInfo,
+} from '../hooks'
 import { allWalletNftsSelector } from '../recoil'
 import { NftSelectionModal } from './nft'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -49,7 +54,6 @@ export const InnerPfpkNftSelectionModal = ({
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
   const {
-    address: walletAddress,
     isWalletError,
     message: walletErrorMessage,
     chain,
@@ -57,12 +61,24 @@ export const InnerPfpkNftSelectionModal = ({
     attemptConnection: visible,
   })
 
+  const chainWallets = useSupportedChainWallets({
+    attemptConnection: visible,
+  })
+
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
-    walletAddress && visible
-      ? allWalletNftsSelector({
-          walletAddress,
-        })
+    visible && chainWallets.every(({ chainWallet: { address } }) => address)
+      ? // Load NFTs for all DAO DAO-supported chains.
+        allWalletNftsSelector(
+          chainWallets.flatMap(({ chainWallet: { chain, address } }) =>
+            address
+              ? {
+                  chainId: chain.chain_id,
+                  walletAddress: address,
+                }
+              : []
+          )
+        )
       : undefined
   )
 

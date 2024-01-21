@@ -23,7 +23,7 @@ export type WalletChainSwitcherProps = {
   | 'labelMode'
   | 'showNone'
   | 'noneLabel'
-  | 'noneIcon'
+  | 'NoneIcon'
 > &
   Partial<Pick<ChainPickerPopupProps, 'onSelect'>>
 
@@ -72,4 +72,4 @@ export const WalletChainSwitcher = ({
 
 export const WalletAllConfiguredChainSwitcher = (
   props: Omit<WalletChainSwitcherProps, 'type'>
-) => <WalletChainSwitcher {...props} type="configured" />
+) => <WalletChainSwitcher {...props} headerMode type="configured" />

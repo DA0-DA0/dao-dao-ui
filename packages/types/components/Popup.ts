@@ -40,6 +40,7 @@ export type PopupTriggerCustomComponent = ComponentType<{
 export type PopupTrigger =
   | {
       type: 'button'
+      tooltip?: string
       props:
         | Omit<ButtonProps, 'onClick' | 'pressed'>
         | ((
@@ -48,6 +49,7 @@ export type PopupTrigger =
     }
   | {
       type: 'icon_button'
+      tooltip?: string
       props:
         | Omit<IconButtonProps, 'onClick' | 'focused'>
         | ((

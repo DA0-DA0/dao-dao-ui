@@ -85,7 +85,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateStakingConfigData> = (
             !!msg.wasm.execute.msg.update_config.duration,
           unstakingDuration: msg.wasm.execute.msg.update_config.duration
             ? convertDurationToDurationWithUnits(
-                msg.wasm.execute.msg.update_config.duration.time
+                msg.wasm.execute.msg.update_config.duration
               )
             : {
                 value: 2,
