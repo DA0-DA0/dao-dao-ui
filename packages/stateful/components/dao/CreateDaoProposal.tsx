@@ -130,7 +130,7 @@ const InnerCreateDaoProposal = ({
     useRecoilState(proposalCreatedCardPropsAtom)
 
   const proposalData = formMethods.watch()
-  // Save latest data to atom and thus localStorage every 10 seconds.
+  // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
     // If created proposal, don't save.
     if (proposalCreatedCardProps) {
@@ -140,7 +140,7 @@ const InnerCreateDaoProposal = ({
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(
       () => setLatestProposalSave(cloneDeep(proposalData)),
-      10000
+      1000
     )
     return () => clearTimeout(timeout)
   }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
