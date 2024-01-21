@@ -1,5 +1,5 @@
 import { HowToVoteRounded } from '@mui/icons-material'
-import { ComponentType, useEffect, useRef, useState } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -7,7 +7,7 @@ import {
   LinkWrapperProps,
 } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../hooks'
+import { useDaoInfoContext, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { Loader } from '../logo/Loader'
@@ -67,16 +67,6 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Whether or not the current wallet is a member of the DAO.
    */
   isMember: boolean
-  /**
-   * The infinite scroll factor is how close to the bottom the user has to be to
-   * load more proposals. 0 triggers loading when scrolled all the way to the
-   * bottom, and 0.5 triggers loading when the user has half the screen
-   * remaining before the bottom. 1 will ensure there is at least a screen's
-   * height worth of proposals loaded.
-   *
-   * Defaults to 0.5. Set to -1 to disable.
-   */
-  infiniteScrollFactor?: number
 
   ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
@@ -92,7 +82,6 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadMore,
   loadingMore,
   isMember,
-  infiniteScrollFactor = 0.5,
   ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
@@ -106,49 +95,15 @@ export const ProposalList = <T extends { proposalId: string }>({
     sections.some((section) => section.proposals.length > 0)
 
   // Infinite scroll by loading more when scrolled near bottom.
-  const [container, setContainer] = useState<HTMLElement | null>(null)
-  const loadMoreRef = useRef(loadMore)
-  loadMoreRef.current = loadMore
-  useEffect(() => {
-    if (
-      loadingMore ||
-      !canLoadMore ||
-      !container ||
-      infiniteScrollFactor < 0 ||
-      typeof window === 'undefined'
-    ) {
-      return
-    }
-
-    let executedLoadingMore = false
-    const onScroll = () => {
-      if (executedLoadingMore) {
-        return
-      }
-
-      // Check if container is near the bottom.
-      const { bottom } = container.getBoundingClientRect()
-      if (
-        bottom - window.innerHeight * infiniteScrollFactor <=
-        window.innerHeight
-      ) {
-        executedLoadingMore = true
-        loadMoreRef.current()
-      }
-    }
-
-    onScroll()
-
-    // Set third argument to `true` to capture all scroll events instead of
-    // waiting for them to bubble up.
-    window.addEventListener('scroll', onScroll, true)
-    return () => window.removeEventListener('scroll', onScroll, true)
-  }, [loadingMore, canLoadMore, container, infiniteScrollFactor])
+  const { infiniteScrollRef } = useInfiniteScroll({
+    loadMore,
+    disabled: !canLoadMore || loadingMore,
+  })
 
   return proposalsExist ? (
     <div
       className="border-t border-border-secondary py-6"
-      ref={(ref) => setContainer(ref)}
+      ref={infiniteScrollRef}
     >
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>

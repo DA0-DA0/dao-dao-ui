@@ -366,14 +366,16 @@ const InnerProposalStatusAndInfo = ({
                     {...props}
                   />
 
-                  <IconButtonLink
-                    Icon={ArrowOutwardRounded}
-                    href={explorerUrlTemplates.tx.replace(
-                      'REPLACE',
-                      loadingExecutionTxHash.data
-                    )}
-                    variant="ghost"
-                  />
+                  {!!explorerUrlTemplates?.tx && (
+                    <IconButtonLink
+                      Icon={ArrowOutwardRounded}
+                      href={explorerUrlTemplates.tx.replace(
+                        'REPLACE',
+                        loadingExecutionTxHash.data
+                      )}
+                      variant="ghost"
+                    />
+                  )}
                 </div>
               ) : null,
           },

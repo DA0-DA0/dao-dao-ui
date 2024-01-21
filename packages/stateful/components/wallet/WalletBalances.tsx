@@ -4,13 +4,10 @@ import { waitForAllSettled } from 'recoil'
 import {
   WalletBalances as StatelessWalletBalances,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 import { LazyNftCardInfo, LoadingData, TokenCardInfo } from '@dao-dao/types'
-import {
-  getConfiguredChains,
-  loadableToLoadingData,
-  transformBech32Address,
-} from '@dao-dao/utils'
+import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
   allWalletNftsSelector,
@@ -27,53 +24,29 @@ export type WalletBalancesProps = {
   NftCard: ComponentType<LazyNftCardInfo>
   // If true, use token card that has edit actions.
   editable: boolean
-} & (
-  | {
-      chainId: string
-      chainMode: 'current'
-    }
-  | {
-      chainId?: never
-      chainMode: 'all'
-    }
-)
+}
 
 export const WalletBalances = ({
   address,
   hexPublicKey,
   NftCard,
   editable,
-  ...chainModeAndId
 }: WalletBalancesProps) => {
+  const { chain_id: chainId } = useChain()
+
   const tokensWithoutLazyInfo = useCachedLoading(
     address
-      ? waitForAllSettled(
-          chainModeAndId.chainMode === 'current'
-            ? [
-                walletTokenCardInfosSelector({
-                  chainId: chainModeAndId.chainId,
-                  walletAddress: address,
-                }),
-              ]
-            : getConfiguredChains().map(({ chain }) =>
-                walletTokenCardInfosSelector({
-                  chainId: chain.chain_id,
-                  walletAddress: transformBech32Address(
-                    address,
-                    chain.chain_id
-                  ),
-                })
-              )
-        )
+      ? walletTokenCardInfosSelector({
+          chainId,
+          walletAddress: address,
+        })
       : undefined,
     []
   )
 
   const flattenedTokensWithoutLazyInfo = tokensWithoutLazyInfo.loading
     ? []
-    : tokensWithoutLazyInfo.data.flatMap((loadable) =>
-        loadable.state === 'hasValue' ? loadable.contents : []
-      )
+    : tokensWithoutLazyInfo.data
 
   // Load separately so they cache separately.
   const tokenLazyInfos = useCachedLoading(
@@ -81,7 +54,7 @@ export const WalletBalances = ({
       ? waitForAllSettled(
           flattenedTokensWithoutLazyInfo.map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              owner: transformBech32Address(address, token.chainId),
+              owner: address,
               token,
               unstakedBalance,
             })
@@ -92,9 +65,7 @@ export const WalletBalances = ({
   )
 
   const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading ||
-    tokenLazyInfos.loading ||
-    flattenedTokensWithoutLazyInfo.length !== tokenLazyInfos.data.length
+    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
       ? {
           loading: true,
         }
@@ -102,23 +73,27 @@ export const WalletBalances = ({
           loading: false,
           data: flattenedTokensWithoutLazyInfo.map((token, i) => ({
             ...token,
-            lazyInfo: loadableToLoadingData(tokenLazyInfos.data[i], {
-              usdUnitPrice: undefined,
-              stakingInfo: undefined,
-              totalBalance: token.unstakedBalance,
-            }),
+            lazyInfo:
+              tokenLazyInfos.loading ||
+              flattenedTokensWithoutLazyInfo.length !==
+                tokenLazyInfos.data.length
+                ? { loading: true }
+                : loadableToLoadingData(tokenLazyInfos.data[i], {
+                    usdUnitPrice: undefined,
+                    stakingInfo: undefined,
+                    totalBalance: token.unstakedBalance,
+                  }),
           })),
         }
 
   const nfts = useCachedLoading(
     address
-      ? allWalletNftsSelector({
-          walletAddress: address,
-          chainId:
-            chainModeAndId.chainMode === 'current'
-              ? chainModeAndId.chainId
-              : undefined,
-        })
+      ? allWalletNftsSelector([
+          {
+            chainId,
+            walletAddress: address,
+          },
+        ])
       : undefined,
     []
   )

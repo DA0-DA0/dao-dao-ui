@@ -8,8 +8,8 @@ import {
 } from '@dao-dao/state/recoil'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { InboxState } from '@dao-dao/types'
-import { getSupportedChains, transformBech32Address } from '@dao-dao/utils'
 
+import { useSupportedChainWallets } from './useSupportedChainWallets'
 import { useWallet } from './useWallet'
 import { useOnWebSocketMessage } from './useWebSocket'
 
@@ -29,14 +29,17 @@ export const useInbox = (): InboxState => {
     return () => clearInterval(interval)
   }, [refresh])
 
+  const supportedChainWallets = useSupportedChainWallets()
   const itemsLoading = useCachedLoading(
-    address
+    supportedChainWallets.every(({ chainWallet: { address } }) => address)
       ? waitForAll(
-          getSupportedChains().map(({ chain }) =>
-            inboxItemsSelector({
-              walletAddress: transformBech32Address(address, chain.chain_id),
-              chainId: chain.chain_id,
-            })
+          supportedChainWallets.flatMap(({ chainWallet: { chain, address } }) =>
+            address
+              ? inboxItemsSelector({
+                  walletAddress: address,
+                  chainId: chain.chain_id,
+                })
+              : []
           )
         )
       : undefined,

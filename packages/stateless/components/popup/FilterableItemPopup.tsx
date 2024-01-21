@@ -230,7 +230,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           {filteredData.length > 0 ? (
             filteredData.map(({ item, originalIndex }, index) => (
               <Button
-                key={item.key}
+                key={item.key + originalIndex.toString()}
                 className={clsx(
                   'w-full',
                   selectedIndex === index &&

@@ -1,12 +1,10 @@
 import { useRouter } from 'next/router'
 
-import { useChain } from '@dao-dao/stateless'
-import { transformBech32Address } from '@dao-dao/utils'
+import { getSupportedChains, transformBech32Address } from '@dao-dao/utils'
 
 import { WalletDaos } from '../wallet'
 
 export const AccountDaos = () => {
-  const { chain_id: chainId } = useChain()
   const { query: { address } = {} } = useRouter()
 
   // Type-check. This should already be validated in the Wallet component.
@@ -14,7 +12,20 @@ export const AccountDaos = () => {
     throw new Error('Invalid address.')
   }
 
-  const walletAddress = transformBech32Address(address, chainId)
+  // Get wallets on all DAO DAO-supported chains. Once we support chains with
+  // other HD paths (coin types), we need to re-think this.
+  const chainWallets = getSupportedChains().map(({ chain }) => ({
+    chainId: chain.chain_id,
+    walletAddress: transformBech32Address(address, chain.chain_id),
+  }))
 
-  return walletAddress ? <WalletDaos walletAddress={walletAddress} /> : null
+  return (
+    <WalletDaos
+      chainWallets={{
+        loading: false,
+        errored: false,
+        data: chainWallets,
+      }}
+    />
+  )
 }

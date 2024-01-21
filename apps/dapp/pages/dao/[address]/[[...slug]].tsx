@@ -109,7 +109,7 @@ const InnerDaoHome = () => {
 
     // If no slug and on current DAO, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
+      router.replace(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
         shallow: true,
       })
     }
@@ -121,7 +121,7 @@ const InnerDaoHome = () => {
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.push(getDaoPath(daoInfo.coreAddress, tabId), undefined, {
+    router.replace(getDaoPath(daoInfo.coreAddress, tabId), undefined, {
       shallow: true,
     })
 

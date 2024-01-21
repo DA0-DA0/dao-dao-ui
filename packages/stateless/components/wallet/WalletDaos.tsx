@@ -58,8 +58,8 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
         />
 
         <ChainPickerPopup
+          NoneIcon={BlurOn}
           chains={{ type: 'supported' }}
-          noneIcon={BlurOn}
           noneLabel={t('info.allChains')}
           onSelect={setChainId}
           selectedChainId={chainId}

@@ -1,6 +1,7 @@
 import { AssetList } from '@chain-registry/types'
 import { State, WalletModalProps, convertChain } from '@cosmos-kit/core'
 import { useManager } from '@cosmos-kit/react-lite'
+import uniq from 'lodash.uniq'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +10,8 @@ import { useRecoilValue } from 'recoil'
 import { walletChainIdAtom } from '@dao-dao/state'
 import { Modal, WarningCard } from '@dao-dao/stateless'
 import {
-  getConfiguredChains,
+  getChainForChainId,
+  getSupportedChains,
   maybeGetAssetListForChainId,
   maybeGetChainForChainId,
   processError,
@@ -122,17 +124,21 @@ export const WalletUi = (props: WalletModalProps) => {
             // Connect to wallet.
             try {
               // Ensure supported chains are added before connecting.
-              const configuredChains = getConfiguredChains().map(({ chain }) =>
+              const chainRecords = uniq([
+                ...getSupportedChains().map(({ chainId }) => chainId),
+                wallet.chainId,
+                mainWalletChainId,
+              ]).map((chainId) =>
                 convertChain(
-                  chain,
-                  [maybeGetAssetListForChainId(chain.chain_id)].filter(
+                  getChainForChainId(chainId),
+                  [maybeGetAssetListForChainId(chainId)].filter(
                     (al): al is AssetList => !!al
                   )
                 )
               )
 
               await Promise.allSettled(
-                configuredChains.map(
+                chainRecords.map(
                   async (chainRecord) =>
                     await wallet?.mainWallet?.client
                       ?.addChain?.(chainRecord)

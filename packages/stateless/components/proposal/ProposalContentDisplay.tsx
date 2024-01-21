@@ -172,7 +172,7 @@ export const ProposalContentDisplay = ({
         <MarkdownRenderer
           EntityDisplay={EntityDisplay}
           addAnchors
-          className="max-w-full"
+          className="max-w-full !overflow-hidden"
           markdown={description}
         />
 

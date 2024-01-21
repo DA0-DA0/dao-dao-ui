@@ -9,17 +9,12 @@ import {
   useAppContext,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import {
-  getNativeTokenForChainId,
-  getSupportedChains,
-  transformBech32Address,
-} from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { useWalletInfo } from '../../hooks'
+import { useSupportedChainWallets, useWalletInfo } from '../../hooks'
 
 export const ProfileHomeCard = () => {
   const {
-    walletAddress = '',
     walletProfileData,
     walletBalance,
     walletStakedBalance,
@@ -29,17 +24,21 @@ export const ProfileHomeCard = () => {
   } = useWalletInfo()
   const { inbox } = useAppContext()
 
+  const supportedChainWallets = useSupportedChainWallets()
+
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
   const walletProposalStatsLoadable = useCachedLoadable(
-    walletAddress
+    supportedChainWallets.every(({ chainWallet }) => chainWallet.address)
       ? waitForAll(
-          getSupportedChains().map(({ chain }) =>
-            walletProposalStatsSelector({
-              chainId: chain.chain_id,
-              address: transformBech32Address(walletAddress, chain.chain_id),
-            })
+          supportedChainWallets.flatMap(({ chainWallet: { chain, address } }) =>
+            address
+              ? walletProposalStatsSelector({
+                  chainId: chain.chain_id,
+                  address,
+                })
+              : []
           )
         )
       : undefined

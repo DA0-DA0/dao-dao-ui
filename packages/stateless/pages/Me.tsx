@@ -64,7 +64,7 @@ export const Me = ({
     <div className="flex flex-row items-center justify-center">
       <SegmentedControls
         onSelect={(tab) =>
-          router.push(`/me/${tab}`, undefined, { shallow: true })
+          router.replace(`/me/${tab}`, undefined, { shallow: true })
         }
         selected={selectedTabId}
         tabs={tabs.map(({ id, label }) => ({
@@ -94,7 +94,8 @@ export const Me = ({
             <p className="header-text hidden sm:block">{selectedTab?.label}</p>
           </div>
 
-          {selectedTabId === MeTabId.TransactionBuilder && <ChainSwitcher />}
+          {(selectedTabId === MeTabId.Balances ||
+            selectedTabId === MeTabId.TransactionBuilder) && <ChainSwitcher />}
         </div>
 
         {/* Don't render a tab unless it is visible. */}

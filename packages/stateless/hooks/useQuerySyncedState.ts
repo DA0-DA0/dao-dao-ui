@@ -82,7 +82,7 @@ export const useQuerySyncedState = <T = string | number>({
       router.query[param] = newValue
     }
 
-    router.push(
+    router.replace(
       {
         query: router.query,
       },

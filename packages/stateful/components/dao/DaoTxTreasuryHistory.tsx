@@ -280,13 +280,15 @@ const TransactionRenderer = ({
       <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
         {timestamp?.toLocaleString() ?? `${height} block`}
 
-        <IconButtonLink
-          Icon={ArrowOutwardRounded}
-          className="text-text-tertiary"
-          href={config.explorerUrlTemplates.tx.replace('REPLACE', hash)}
-          openInNewTab
-          variant="ghost"
-        />
+        {!!config.explorerUrlTemplates?.tx && (
+          <IconButtonLink
+            Icon={ArrowOutwardRounded}
+            className="text-text-tertiary"
+            href={config.explorerUrlTemplates?.tx?.replace('REPLACE', hash)}
+            openInNewTab
+            variant="ghost"
+          />
+        )}
       </p>
     </div>
   )

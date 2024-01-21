@@ -1,26 +1,24 @@
 import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
-  FilterFn,
   LazyNftCardInfo,
   SortFn,
   TokenCardInfo,
   TypedOption,
   WalletBalancesProps,
 } from '@dao-dao/types'
-import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
-import { useButtonPopupFilter, useButtonPopupSorter } from '../../hooks'
+import { useButtonPopupSorter, useChain, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { GridCardContainer } from '../GridCardContainer'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
-import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
+import { PAGINATION_MIN_PAGE } from '../Pagination'
 import { ButtonPopup } from '../popup'
 import { TooltipInfoIcon } from '../tooltip'
 
@@ -37,33 +35,7 @@ export const WalletBalances = <
   NftCard,
 }: WalletBalancesProps<T, N>) => {
   const { t } = useTranslation()
-
-  const uniqueChainIds = Array.from(
-    new Set(nfts.loading ? [] : nfts.data.map(({ chainId }) => chainId))
-  )
-  const nftChains = uniqueChainIds.map(getChainForChainId)
-  const nftFilterOptions = useMemo(
-    () => [
-      {
-        id: 'all',
-        label: t('title.all'),
-        value: () => true,
-      },
-      ...nftChains.map(
-        (
-          chain
-        ): TypedOption<FilterFn<{ chainId: string }>> & {
-          id: string
-        } => ({
-          id: chain.chain_id,
-          label: chain.pretty_name,
-          value: (nft) => nft.chainId === chain.chain_id,
-        })
-      ),
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize([nftChains])
-  )
+  const { chain_id: chainId } = useChain()
 
   const {
     sortedData: sortedTokens,
@@ -71,15 +43,6 @@ export const WalletBalances = <
   } = useButtonPopupSorter({
     data: tokens.loading ? [] : tokens.data,
     options: tokenSortOptions,
-  })
-
-  const {
-    filteredData: filteredNfts,
-    buttonPopupProps: filterNftButtonPopupProps,
-    selectedOption: { id: selectedNftChainFilter },
-  } = useButtonPopupFilter({
-    data: nfts.loading ? [] : nfts.data,
-    options: nftFilterOptions,
   })
 
   const visibleBalances = hiddenTokens.loading
@@ -96,10 +59,15 @@ export const WalletBalances = <
   const [showingHidden, setShowingHidden] = useState(false)
 
   const [_nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
-  const nftPage = Math.min(
-    _nftPage,
-    Math.ceil(filteredNfts.length / NFTS_PER_PAGE)
+  const maxNftPage = Math.ceil(
+    nfts.loading ? 0 : nfts.data.length / NFTS_PER_PAGE
   )
+  const nftPage = Math.min(_nftPage, maxNftPage)
+
+  const { infiniteScrollRef } = useInfiniteScroll({
+    loadMore: () => setNftPage((p) => p + 1),
+    disabled: nfts.loading || _nftPage >= maxNftPage,
+  })
 
   return (
     <div className="flex flex-col gap-8">
@@ -175,57 +143,32 @@ export const WalletBalances = <
       {!tokens.loading &&
         (nfts.loading || nfts.data.length > 0 ? (
           <div className="flex flex-col gap-2">
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
-              <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
-                <p className="title-text">
-                  {nfts.loading
-                    ? t('title.nfts')
-                    : t('title.numNfts', {
-                        count: filteredNfts.length,
-                      })}
-                </p>
+            <div className="mb-6 flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
+              <p className="title-text">
+                {nfts.loading
+                  ? t('title.nfts')
+                  : t('title.numNfts', {
+                      count: nfts.data.length,
+                    })}
+              </p>
 
-                <p className="secondary-text break-words">
-                  {t('info.meBalancesNftsDescription', {
-                    context: selectedNftChainFilter === 'all' ? 'all' : 'chain',
-                    chainName:
-                      selectedNftChainFilter === 'all'
-                        ? ''
-                        : getDisplayNameForChainId(selectedNftChainFilter),
-                  })}
-                </p>
-              </div>
-
-              {!nfts.loading && nfts.data.length > 0 && (
-                <div className="flex flex-row items-center justify-end">
-                  <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-                </div>
-              )}
+              <p className="secondary-text break-words">
+                {t('info.meBalancesNftsDescription', {
+                  chainName: getDisplayNameForChainId(chainId),
+                })}
+              </p>
             </div>
 
             {nfts.loading ? (
               <Loader fill={false} />
-            ) : filteredNfts.length > 0 ? (
-              <>
-                <GridCardContainer className="pb-6">
-                  {filteredNfts
-                    .slice(
-                      (nftPage - 1) * NFTS_PER_PAGE,
-                      nftPage * NFTS_PER_PAGE
-                    )
-                    .map((props, index) => (
-                      <NftCard {...(props as N)} key={index} />
-                    ))}
-                </GridCardContainer>
-
-                <Pagination
-                  className="mx-auto"
-                  page={nftPage}
-                  pageSize={NFTS_PER_PAGE}
-                  setPage={setNftPage}
-                  total={filteredNfts.length}
-                />
-              </>
+            ) : nfts.data.length > 0 ? (
+              <GridCardContainer className="pb-6" ref={infiniteScrollRef}>
+                {nfts.data
+                  .slice(0, nftPage * NFTS_PER_PAGE)
+                  .map((props, index) => (
+                    <NftCard {...(props as N)} key={index} />
+                  ))}
+              </GridCardContainer>
             ) : (
               <NoContent Icon={Image} body={t('info.noNftsFound')} />
             )}
@@ -243,53 +186,47 @@ const tokenSortOptions: TypedOption<
   {
     label: 'Highest USD value',
     value: (a, b) => {
-      const aPrice = a.lazyInfo.loading
-        ? // If loading, show at top.
-          Infinity
-        : // If no price, show at bottom.
-        !a.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? -Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice = b.lazyInfo.loading
-        ? // If loading, show at top.
-          Infinity
-        : // If no price, show at bottom.
-        !b.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? -Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
+      // If loading or no price, show at bottom.
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice
         ? a.token.symbol
             .toLocaleLowerCase()
             .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : bPrice - aPrice
+        : aPrice > bPrice
+        ? -1
+        : 1
     },
   },
   {
     label: 'Lowest USD value',
     value: (a, b) => {
-      const aPrice = a.lazyInfo.loading
-        ? // If loading, show at top.
-          -Infinity
-        : !a.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? // If no price, show at bottom.
-          Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice = b.lazyInfo.loading
-        ? // If loading, show at top.
-          -Infinity
-        : !b.lazyInfo.data.usdUnitPrice?.usdPrice
-        ? // If no price, show at bottom.
-          Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
+      // If loading or no price, show at bottom.
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
+          ? -Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice
         ? a.token.symbol
             .toLocaleLowerCase()
             .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : aPrice - bPrice
+        : aPrice > bPrice
+        ? 1
+        : -1
     },
   },
   {

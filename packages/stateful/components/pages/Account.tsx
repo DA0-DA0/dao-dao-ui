@@ -1,3 +1,4 @@
+import { fromBech32 } from '@cosmjs/encoding'
 import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -54,7 +55,11 @@ export const Account: NextPage = () => {
     throw new Error('Invalid address.')
   }
 
-  const configuredChain = getConfiguredChains()[0]
+  const { prefix } = fromBech32(address as string)
+  // Choose first chain matching bech32 prefix.
+  const configuredChain =
+    getConfiguredChains().find(({ chain }) => chain.bech32_prefix === prefix) ||
+    getConfiguredChains()[0]
   const walletAddress = transformBech32Address(
     address as string,
     configuredChain.chainId
@@ -151,7 +156,7 @@ export const Account: NextPage = () => {
     <div className="flex flex-row items-center justify-center">
       <SegmentedControls
         onSelect={(tab) =>
-          router.push(getAccountPath(walletAddress, tab), undefined, {
+          router.replace(getAccountPath(walletAddress, tab), undefined, {
             shallow: true,
           })
         }

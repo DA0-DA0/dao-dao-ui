@@ -383,6 +383,19 @@ export const concatAddressStartEnd = (
 export const concatAddressBoth = (address: string, takeN = 7): string =>
   address && concatAddressStartEnd(address, takeN, takeN)
 
+/**
+ * Transform an address from one chain to another sharing the same bech32 data.
+ *
+ * WARNING: This should be used very sparingly if at all. Different chains may
+ * use different derivation paths
+ * (https://help.myetherwallet.com/en/articles/5867305-hd-wallets-and-derivation-paths),
+ * which lead to addresses that do not share the same bech32 data. Thus, it is
+ * unreliable to transform addresses and should not be done to find a user's
+ * other wallet. While they do technically control all bech32 addresses that can
+ * be derived from their private key, they may not be using the same bech32
+ * address on a given chain, so we should just request the correct address for a
+ * chain directly from their connected wallet whenever possible.
+ */
 export const transformBech32Address = (address: string, toChainId: string) =>
   toBech32(
     getChainForChainId(toChainId).bech32_prefix,

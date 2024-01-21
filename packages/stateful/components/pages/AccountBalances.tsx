@@ -35,7 +35,6 @@ export const AccountBalances = () => {
     <WalletBalances
       NftCard={LazyNftCard}
       address={walletAddress}
-      chainMode="all"
       editable={false}
       hexPublicKey={{
         loading: false,

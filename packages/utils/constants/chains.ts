@@ -1,3 +1,5 @@
+import { chains } from 'chain-registry'
+
 import {
   BaseChainConfig,
   ChainId,
@@ -1020,3 +1022,118 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
   },
   ...SUPPORTED_CHAINS,
 ]
+
+// The chains not to show in the governance UI.
+const NO_GOV_CHAIN_IDS = ['noble-1']
+
+// Add other chains from chain registry.
+chains
+  .filter(
+    (chain) =>
+      !CONFIGURED_CHAINS.some((c) => c.chainId === chain.chain_id) &&
+      (chain.network_type === 'mainnet' || chain.network_type === 'testnet')
+  )
+  .forEach((chain) => {
+    // Skip if chain already exists in configured chains.
+    if (CONFIGURED_CHAINS.some((c) => c.chainId === chain.chain_id)) {
+      return
+    }
+
+    let explorerUrlTemplates: BaseChainConfig['explorerUrlTemplates'] =
+      undefined
+    if (chain.explorers) {
+      const pingPubOrMintscanExplorer =
+        chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'ping.pub' &&
+            // Some explorers have kind = 'ping.pub' but the wrong URL.
+            explorer.url?.includes('ping.pub')
+        ) ||
+        chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'mintscan' &&
+            explorer.url?.includes('mintscan.io')
+        )
+      if (pingPubOrMintscanExplorer) {
+        explorerUrlTemplates = {
+          tx: pingPubOrMintscanExplorer.url + '/tx/REPLACE',
+          gov: pingPubOrMintscanExplorer.url + '/gov',
+          govProp: pingPubOrMintscanExplorer.url + '/gov/REPLACE',
+          wallet: pingPubOrMintscanExplorer.url + '/account/REPLACE',
+        }
+      }
+
+      if (!explorerUrlTemplates) {
+        const atomScanExplorer = chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'atomscan' &&
+            explorer.url?.includes('atomscan.com')
+        )
+        if (atomScanExplorer) {
+          explorerUrlTemplates = {
+            tx: atomScanExplorer.url + '/transactions/REPLACE',
+            gov: atomScanExplorer.url + '/votes',
+            govProp: atomScanExplorer.url + '/votes/REPLACE',
+            wallet: atomScanExplorer.url + '/accounts/REPLACE',
+          }
+        }
+      }
+
+      if (!explorerUrlTemplates) {
+        const bigDipperExplorer = chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'bigdipper' &&
+            explorer.url?.includes('bigdipper.live')
+        )
+        if (bigDipperExplorer) {
+          explorerUrlTemplates = {
+            tx: bigDipperExplorer.url + '/transactions/REPLACE',
+            gov: bigDipperExplorer.url + '/proposals',
+            govProp: bigDipperExplorer.url + '/proposals/REPLACE',
+            wallet: bigDipperExplorer.url + '/accounts/REPLACE',
+          }
+        }
+      }
+
+      if (!explorerUrlTemplates) {
+        const explorersGuruExplorer = chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'explorers.guru' &&
+            explorer.url?.includes('explorers.guru')
+        )
+        if (explorersGuruExplorer) {
+          explorerUrlTemplates = {
+            tx: explorersGuruExplorer.url + '/transaction/REPLACE',
+            gov: explorersGuruExplorer.url + '/proposals',
+            govProp: explorersGuruExplorer.url + '/proposals/REPLACE',
+            wallet: explorersGuruExplorer.url + '/account/REPLACE',
+          }
+        }
+      }
+
+      if (!explorerUrlTemplates) {
+        const stakeflowExplorer = chain.explorers?.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'stakeflow' &&
+            explorer.url?.includes('stakeflow.io')
+        )
+        if (stakeflowExplorer) {
+          explorerUrlTemplates = {
+            tx: stakeflowExplorer.url + '/transactions/REPLACE',
+            gov: stakeflowExplorer.url + '/proposals',
+            govProp: stakeflowExplorer.url + '/proposals/REPLACE',
+            wallet: stakeflowExplorer.url + '/accounts/REPLACE',
+          }
+        }
+      }
+    }
+
+    CONFIGURED_CHAINS.push({
+      chainId: chain.chain_id,
+      name: chain.chain_name,
+      mainnet: chain.network_type === 'mainnet',
+      accentColor: '',
+      noGov: NO_GOV_CHAIN_IDS.includes(chain.chain_id),
+      explorerUrlTemplates,
+    })
+  })

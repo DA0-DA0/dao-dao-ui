@@ -32,12 +32,8 @@ import {
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
-  getChainForChainId,
-  getConfiguredChains,
   getFallbackImage,
   getNativeTokenForChainId,
-  getSupportedChains,
-  transformBech32Address,
 } from '@dao-dao/utils'
 
 import {
@@ -298,32 +294,24 @@ export const walletTokenCardInfosSelector = selectorFamily<
     },
 })
 
-// Get NFTs across all DAO DAO-supported chains.
+// Get NFTs for a wallet on many chains.
 export const allWalletNftsSelector = selectorFamily<
   LazyNftCardInfo[],
-  // Can be any wallet address.
   {
+    chainId: string
     walletAddress: string
-    // Only retrieve NFTs for this chain if defined.
-    chainId?: string
-  }
+  }[]
 >({
   key: 'allWalletNfts',
   get:
-    ({ walletAddress, chainId }) =>
+    (chainWallets) =>
     ({ get }) => {
-      const chains = chainId
-        ? [getChainForChainId(chainId)]
-        : getConfiguredChains()
-            .filter(({ noCosmWasm }) => !noCosmWasm)
-            .map(({ chain }) => chain)
-
       const nativeNfts = get(
         waitForAll(
-          chains.map(({ chain_id: chainId }) =>
+          chainWallets.map(({ chainId, walletAddress }) =>
             walletLazyNftCardInfosSelector({
               chainId,
-              walletAddress: transformBech32Address(walletAddress, chainId),
+              walletAddress,
             })
           )
         )
@@ -339,10 +327,10 @@ export const allWalletNftsSelector = selectorFamily<
 
       const nativeStakedNfts = get(
         waitForAll(
-          chains.map(({ chain_id: chainId }) =>
+          chainWallets.map(({ chainId, walletAddress }) =>
             walletStakedLazyNftCardInfosSelector({
               chainId,
-              walletAddress: transformBech32Address(walletAddress, chainId),
+              walletAddress,
             })
           )
         )
@@ -395,25 +383,24 @@ export const walletDaosSelector = selectorFamily<
     },
 })
 
-// Get DAOs across all DAO DAO-supported chains.
+// Get DAOs for a wallet on many chains.
 export const allWalletDaosSelector = selectorFamily<
   LazyDaoCardProps[],
-  // Can be any wallet address.
-  { walletAddress: string }
+  {
+    chainId: string
+    walletAddress: string
+  }[]
 >({
   key: 'allWalletDaos',
   get:
-    ({ walletAddress }) =>
+    (chainWallets) =>
     ({ get }) => {
       const allLazyDaoCards = get(
         waitForAll(
-          getSupportedChains().map(({ chain }) =>
+          chainWallets.map(({ chainId, walletAddress }) =>
             walletDaosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(
-                walletAddress,
-                chain.chain_id
-              ),
+              chainId,
+              walletAddress,
             })
           )
         )

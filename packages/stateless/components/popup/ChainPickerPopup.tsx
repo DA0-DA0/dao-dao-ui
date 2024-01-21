@@ -40,6 +40,11 @@ export type ChainPickerPopupProps = {
          * Chain IDs to exclude.
          */
         excludeChainIds?: string[]
+        /**
+         * Only include chains with a governance module. This uses the `noGov`
+         * flag in chain config.
+         */
+        onlyGov?: boolean
       }
     | {
         /**
@@ -85,7 +90,11 @@ export type ChainPickerPopupProps = {
   /**
    * If defined, this will be the icon of the none button.
    */
-  noneIcon?: ComponentType<{ className?: string }>
+  NoneIcon?: ComponentType<{ className?: string }>
+  /**
+   * If true, will make the button more like a text header instead.
+   */
+  headerMode?: boolean
 }
 
 /**
@@ -103,19 +112,24 @@ export const ChainPickerPopup = ({
   buttonClassName,
   showNone,
   noneLabel,
-  noneIcon,
+  NoneIcon,
+  headerMode,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
   const chainIds =
     chains.type === 'supported'
       ? getSupportedChains()
+          .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.type === 'configured'
       ? getConfiguredChains()
+          .filter(
+            ({ chainId, noGov }) =>
+              !chains.excludeChainIds?.includes(chainId) &&
+              (!chains.onlyGov || !noGov)
+          )
           .map(({ chain: { chain_id } }) => chain_id)
-          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
       : chains.chainIds
 
   const chainOptions = chainIds.map(
@@ -140,7 +154,7 @@ export const ChainPickerPopup = ({
     chainOptions.splice(0, 0, {
       key: NONE_KEY,
       label: noneLabel || t('info.none'),
-      Icon: noneIcon,
+      Icon: NoneIcon,
       ...commonOptionClassFields,
     })
   }
@@ -167,27 +181,34 @@ export const ChainPickerPopup = ({
       }
       trigger={{
         type: 'button',
+        tooltip: t('button.switchChain'),
         props: {
           className: buttonClassName,
-          contentContainerClassName: 'justify-between text-icon-primary !gap-4',
+          contentContainerClassName: clsx(
+            'justify-between text-icon-primary',
+            !headerMode && '!gap-4'
+          ),
           loading,
           disabled,
           size: 'lg',
-          variant: 'ghost_outline',
+          variant: headerMode ? 'none' : 'ghost_outline',
           children: (
             <>
               <div className="flex flex-row items-center gap-2">
-                {!!selectedChain?.iconUrl && (
-                  <div
-                    className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${selectedChain.iconUrl})`,
-                    }}
-                  />
-                )}
+                {selectedChain
+                  ? !!selectedChain.iconUrl && (
+                      <div
+                        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${selectedChain.iconUrl})`,
+                        }}
+                      />
+                    )
+                  : showNone && NoneIcon && <NoneIcon />}
 
                 <p className={clsx(!selectedChain && 'text-text-tertiary')}>
                   {selectedChain?.label ||
+                    (showNone && noneLabel) ||
                     (labelMode === 'chain'
                       ? t('button.selectChain')
                       : t('button.selectToken'))}

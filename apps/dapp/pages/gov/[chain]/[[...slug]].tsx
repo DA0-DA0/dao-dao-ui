@@ -103,7 +103,7 @@ const InnerGovHome = () => {
 
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getGovPath(name, firstTabId), undefined, {
+      router.replace(getGovPath(name, firstTabId), undefined, {
         shallow: true,
       })
     }
@@ -115,7 +115,7 @@ const InnerGovHome = () => {
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.push(getGovPath(name, tabId), undefined, {
+    router.replace(getGovPath(name, tabId), undefined, {
       shallow: true,
     })
 
@@ -123,10 +123,9 @@ const InnerGovHome = () => {
   // Pre-fetch other chains.
   useEffect(() => {
     getConfiguredChains().forEach(({ name }) => {
-      router.prefetch(getGovPath(name))
-      tabs.map((tab) => router.prefetch(getGovPath(name, tab.id)))
+      router.prefetch(getGovPath(name, tabId))
     })
-  }, [router, tabs])
+  }, [router, tabId])
 
   return (
     <DaoDappTabbedHome
@@ -136,7 +135,11 @@ const InnerGovHome = () => {
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
         <ChainPickerPopup
-          chains={{ type: 'configured' }}
+          chains={{
+            type: 'configured',
+            onlyGov: true,
+          }}
+          headerMode
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             // Type-check. None option is not enabled so this shouldn't happen.
@@ -195,7 +198,7 @@ const NeutronGovHome: NextPage = () => {
   // Pre-fetch other chains.
   useEffect(() => {
     getConfiguredChains().forEach(({ name }) => {
-      router.prefetch('/' + name)
+      router.prefetch(getGovPath(name))
     })
   }, [router])
 
@@ -205,6 +208,7 @@ const NeutronGovHome: NextPage = () => {
       breadcrumbsOverride={
         <ChainPickerPopup
           chains={{ type: 'configured' }}
+          headerMode
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             // Type-check. None option is not enabled so this shouldn't happen.
