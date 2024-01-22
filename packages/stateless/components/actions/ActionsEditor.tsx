@@ -180,15 +180,15 @@ export const ActionsEditor = ({
           />
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          <div className="-mx-4 flex min-w-0 shrink-0 flex-row gap-y-0 overflow-x-auto px-4 pb-3 sm:flex-col sm:pb-0">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start">
+          <div className="-mx-4 flex min-w-0 shrink-0 flex-row gap-y-0 overflow-x-auto px-4 pb-3 md:flex-col md:pb-0">
             {categories.map((category) => (
               <Button
                 key={category.key}
                 className={clsx(
-                  'shrink-0 rounded-b-none !py-1 !px-2 sm:w-full sm:rounded-b-md sm:!py-2 sm:!px-3',
+                  'shrink-0 rounded-b-none !py-1 !px-2 md:w-full md:rounded-b-md md:!py-2 md:!px-3',
                   categoryKeySelected === category.key &&
-                    'border-b border-icon-primary sm:border-b-0 sm:bg-background-interactive-selected'
+                    'border-b border-icon-primary md:border-b-0 md:bg-background-interactive-selected'
                 )}
                 onClick={() => setCategoryKeySelected(category.key)}
                 variant="none"
@@ -202,7 +202,7 @@ export const ActionsEditor = ({
             ))}
           </div>
 
-          <div className="hidden w-[1px] min-w-0 shrink-0 self-stretch bg-border-primary sm:block"></div>
+          <div className="hidden w-[1px] min-w-0 shrink-0 self-stretch bg-border-primary md:block"></div>
 
           <div className="flex min-w-0 grow flex-col gap-2">
             {selectedCategory?.actions

@@ -28,7 +28,6 @@ import {
 } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../actions'
 import { MultipleChoiceOptionFormData, NewProposalForm } from '../types'
 
 export interface MultipleChoiceOptionEditorProps<
