@@ -7,7 +7,6 @@ import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
   Action,
-  ActionCategoryWithLabel,
   CategorizedActionAndData,
   CategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
@@ -58,7 +57,7 @@ export const ActionsRenderer = ({
   // Group action data by adjacent action, preserving order.
   const groupedActionData = useMemo(
     () =>
-      actionData.reduce((acc, { category, action, data }, index) => {
+      actionData.reduce((acc, { action, data }, index) => {
         // If most recent action is the same as the current action, add the
         // current action's data to the most recent action's data.
         const lastAction = acc[acc.length - 1]
@@ -71,7 +70,6 @@ export const ActionsRenderer = ({
         } else {
           // Otherwise, add a new action to the list.
           acc.push({
-            category,
             action,
             all: [
               {
@@ -189,7 +187,6 @@ export const ActionsRenderer = ({
 }
 
 export type ActionRendererProps = {
-  category: ActionCategoryWithLabel
   action: Action
   all: {
     // Index of data in `allActionsWithData` list.
@@ -205,7 +202,6 @@ export type ActionRendererProps = {
 
 // Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
-  category,
   action,
   all,
   allActionsWithData,
@@ -253,7 +249,6 @@ export const ActionRenderer = ({
       <ActionCard
         action={action}
         actionCount={all.length}
-        category={category}
         childrenContainerClassName="!px-0"
       >
         {all.map(
