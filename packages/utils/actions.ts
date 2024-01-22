@@ -1,9 +1,9 @@
 import {
   ActionContextType,
+  ActionKeyAndData,
   ActionOptions,
   CosmosMsgForEmpty,
   LoadedActions,
-  PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types'
 
 import { transformBech32Address } from './conversion'
@@ -12,7 +12,7 @@ import { getAccountAddress } from './dao'
 // Convert action data to a Cosmos message given all loaded actions.
 export const convertActionsToMessages = (
   loadedActions: LoadedActions,
-  actions: PartialCategorizedActionKeyAndData[],
+  actions: ActionKeyAndData[],
   {
     // Whether or not to throw the error if a transform fails. If false, the
     // error will be logged to the console, and the message will be skipped.
@@ -22,14 +22,14 @@ export const convertActionsToMessages = (
   } = {}
 ): CosmosMsgForEmpty[] =>
   actions
-    .map(({ categoryKey, actionKey, data }) => {
-      // If no category or action, skip it.
-      if (!categoryKey && !actionKey) {
+    .map(({ actionKey, data }) => {
+      // If no action, skip it.
+      if (!actionKey) {
         return
       }
 
-      // If no action or data, throw error because this is an unselected action.
-      if (!actionKey || !data) {
+      // If no data, throw error because this is invalidly selected.
+      if (!data) {
         if (throwErrors) {
           throw new Error('No action selected.')
         }

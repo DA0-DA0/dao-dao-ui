@@ -35,9 +35,9 @@ export const Renderer = ({
   )
 
   const createPostAction = useActionForKey(ActionKey.CreatePost)
-  const createPostActionDefaults = createPostAction?.action.useDefaults()
+  const createPostActionDefaults = createPostAction?.useDefaults()
   const updatePostAction = useActionForKey(ActionKey.UpdatePost)
-  const updatePostActionDefaults = updatePostAction?.action.useDefaults()
+  const updatePostActionDefaults = updatePostAction?.useDefaults()
   const deletePostAction = useActionForKey(ActionKey.DeletePost)
 
   return (
@@ -50,7 +50,7 @@ export const Renderer = ({
               prefill: getDaoProposalSinglePrefill({
                 actions: [
                   {
-                    actionKey: createPostAction.action.key,
+                    actionKey: createPostAction.key,
                     data: createPostActionDefaults,
                   },
                 ],
@@ -64,7 +64,7 @@ export const Renderer = ({
               prefill: getDaoProposalSinglePrefill({
                 actions: [
                   {
-                    actionKey: deletePostAction.action.key,
+                    actionKey: deletePostAction.key,
                     data: {
                       id: 'IDTODELETE',
                     },
@@ -82,7 +82,7 @@ export const Renderer = ({
               prefill: getDaoProposalSinglePrefill({
                 actions: [
                   {
-                    actionKey: updatePostAction.action.key,
+                    actionKey: updatePostAction.key,
                     data: {
                       ...updatePostActionDefaults,
                       updateId: 'IDTOUPDATE',

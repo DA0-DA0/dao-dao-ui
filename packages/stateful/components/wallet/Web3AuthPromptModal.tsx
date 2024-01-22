@@ -10,7 +10,7 @@ import {
   CosmosMessageDisplay,
   Modal,
 } from '@dao-dao/stateless'
-import { CategorizedActionAndData } from '@dao-dao/types'
+import { ActionAndData } from '@dao-dao/types'
 import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
 import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
@@ -133,10 +133,9 @@ const makeWalletActionsRenderer = (messages: Record<string, any>[]) =>
     const actionsForMatching = useActionsForMatching()
 
     // Call relevant action hooks in the same order every time.
-    const actionData: CategorizedActionAndData[] = messages.map((message) => {
+    const actionData: ActionAndData[] = messages.map((message) => {
       const actionMatch = actionsForMatching
-        .map(({ category, action }) => ({
-          category,
+        .map((action) => ({
           action,
           ...action.useDecodedCosmosMsg(message),
         }))
@@ -149,7 +148,6 @@ const makeWalletActionsRenderer = (messages: Record<string, any>[]) =>
       }
 
       return {
-        category: actionMatch.category,
         action: actionMatch.action,
         data: actionMatch.data,
       }

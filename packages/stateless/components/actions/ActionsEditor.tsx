@@ -1,4 +1,4 @@
-import { Add, Remove } from '@mui/icons-material'
+import { Add, Remove, Star } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import {
@@ -12,26 +12,24 @@ import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useActionOptions } from '@dao-dao/stateful/actions'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
+  ActionAndData,
+  ActionCategoryKey,
   ActionCategoryWithLabel,
   ActionKey,
+  ActionKeyAndData,
+  ActionKeyAndDataNoId,
   LoadedActions,
-  PartialCategorizedActionAndData,
-  PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
 
+import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
-import { FilterableItemPopup } from '../popup/FilterableItemPopup'
-import { Tooltip } from '../tooltip'
+import { Tooltip, TooltipInfoIcon } from '../tooltip'
 import { ActionCard } from './ActionCard'
-import {
-  ActionCategoryActionPickerCard,
-  ActionCategoryActionPickerCardProps,
-} from './ActionCategoryActionPickerCard'
-import { ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS } from './ActionCategorySelector'
 import { ACTIONS_PER_PAGE } from './ActionsRenderer'
 
 // The props needed to render an action from a message.
@@ -39,18 +37,12 @@ export type ActionsEditorProps = {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   actionDataFieldName: string
-  actionDataErrors:
-    | FieldErrors<PartialCategorizedActionKeyAndData[]>
-    | undefined
+  actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
   className?: string
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-type GroupedActionData = Omit<
-  PartialCategorizedActionAndData,
-  'data' | 'category'
-> & {
-  category: ActionCategoryWithLabel
+type GroupedActionData = Omit<ActionAndData, 'data' | 'category'> & {
   actionDefaults: any
   all: {
     _id: string
@@ -69,56 +61,32 @@ export const ActionsEditor = ({
   className,
   SuspenseLoader,
 }: ActionsEditorProps) => {
-  const { watch } = useFormContext<{
-    actionData: PartialCategorizedActionKeyAndData[]
+  const { t } = useTranslation()
+  const { context } = useActionOptions()
+  const { control, watch } = useFormContext<{
+    actionData: ActionKeyAndData[]
   }>()
 
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
+  const { append } = useFieldArray({
+    name: actionDataFieldName as 'actionData',
+    control,
+  })
+
   // Group action data by adjacent action, preserving order. Adjacent data of
   // the same action are combined into a group so they can be rendered together.
   const groupedActionData = actionData.reduce(
-    (
-      acc,
-      { _id, categoryKey, actionKey, data },
-      index
-    ): GroupedActionData[] => {
+    (acc, { _id, actionKey, data }, index): GroupedActionData[] => {
       const loadedAction = actionKey && loadedActions[actionKey]
 
-      // Get category from loaded action if key is undefined. It should only be
-      // undefined if the action data is loaded from a duplicate/prefill or bulk
-      // import.
-      const category = categoryKey
-        ? categories.find((c) => c.key === categoryKey)
-        : loadedAction?.category
-
-      // If no action and no category, skip. This is likely due to a cached
-      // action in the saved form that no longer exists, or was used and is no
-      // longer usable (such as enabling multiple choice). If action key is
-      // defined but no action is found, same thing.
-      if (!category || (actionKey && !loadedAction)) {
-        return acc
-      }
-
-      // If no action is selected, add new group since still picking action from
-      // category.
+      // If no action, skip. This is likely due to a cached action in the saved
+      // form that no longer exists, or was used and is no longer usable (such
+      // as enabling multiple choice). If action key is defined but no action is
+      // found, same thing.
       if (!loadedAction) {
-        return [
-          ...acc,
-          {
-            category,
-            action: undefined,
-            actionDefaults: {},
-            all: [
-              {
-                _id,
-                index,
-                data,
-              },
-            ],
-          },
-        ]
+        return acc
       }
 
       // If most recent group is for the current action, add the current
@@ -135,7 +103,6 @@ export const ActionsEditor = ({
         // Or create new group if previously adjacent group is for a different
         // action.
         acc.push({
-          category,
           action: loadedAction.action,
           actionDefaults: loadedAction.defaults,
           all: [
@@ -169,67 +136,160 @@ export const ActionsEditor = ({
     {} as Partial<Record<ActionKey, Error>>
   )
 
-  return groupedActionData.length > 0 ? (
-    <div className={clsx('flex flex-col gap-2', className)}>
-      {groupedActionData.map((group, index) => (
-        <div
-          key={
-            // Re-render when the group at a given position changes.
-            `${index}-${group.category.key}`
-          }
-          className="group relative"
-          id={`A${index + 1}`}
-        >
-          <ActionEditor
-            {...group}
-            SuspenseLoader={SuspenseLoader}
-            actionDataErrors={actionDataErrors}
-            actionDataFieldName={actionDataFieldName}
-            categories={categories}
-            erroredActionKeys={erroredActionKeys}
-            loadedActions={loadedActions}
-            loadingActionKeys={loadingActionKeys}
+  const [categoryKeySelected, setCategoryKeySelected] =
+    useState<ActionCategoryKey>(categories[0].key)
+  const selectedCategory =
+    categories.find((c) => c.key === categoryKeySelected) || categories[0]
+
+  return (
+    <>
+      {groupedActionData.length > 0 ? (
+        <div className={clsx('flex flex-col gap-2', className)}>
+          {groupedActionData.map((group, index) => (
+            <div
+              key={
+                // Re-render when the group at a given position changes.
+                `${index}-${group.action?.key}`
+              }
+              className="group relative"
+              id={`A${index + 1}`}
+            >
+              <ActionEditor
+                {...group}
+                SuspenseLoader={SuspenseLoader}
+                actionDataErrors={actionDataErrors}
+                actionDataFieldName={actionDataFieldName}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="secondary-text -mt-2 italic">
+          {t('info.noActionsAdded')}
+        </p>
+      )}
+
+      <div className="mt-4 flex flex-col gap-4 rounded-md border border-dashed border-border-primary p-4">
+        <div className="flex flex-row gap-2">
+          <p className="title-text">{t('title.actionLibrary')}</p>
+          <TooltipInfoIcon
+            size="sm"
+            title={t('info.actionLibraryDescription', {
+              context: context.type,
+            })}
           />
         </div>
-      ))}
-    </div>
-  ) : null
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="-mx-4 flex min-w-0 shrink-0 flex-row gap-y-0 overflow-x-auto px-4 pb-3 sm:flex-col sm:pb-0">
+            {categories.map((category) => (
+              <Button
+                key={category.key}
+                className={clsx(
+                  'shrink-0 rounded-b-none !py-1 !px-2 sm:w-full sm:rounded-b-md sm:!py-2 sm:!px-3',
+                  categoryKeySelected === category.key &&
+                    'border-b border-icon-primary sm:border-b-0 sm:bg-background-interactive-selected'
+                )}
+                onClick={() => setCategoryKeySelected(category.key)}
+                variant="none"
+              >
+                {category.key === ActionCategoryKey.CommonlyUsed && (
+                  <Star className="!h-5 !w-5" />
+                )}
+
+                {category.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="hidden w-[1px] min-w-0 shrink-0 self-stretch bg-border-primary sm:block"></div>
+
+          <div className="flex min-w-0 grow flex-col gap-2">
+            {selectedCategory?.actions
+              .filter(
+                (action) =>
+                  // Never show programmatic actions.
+                  !action.programmaticOnly &&
+                  // Show if reusable or not already used.
+                  (!action.notReusable ||
+                    !actionData.some((a) => a.actionKey !== action.key))
+              )
+              .map((action) => (
+                <Button
+                  key={categoryKeySelected + action.key}
+                  contentContainerClassName="gap-4 text-left"
+                  disabled={
+                    loadingActionKeys.includes(action.key) ||
+                    !!erroredActionKeys[action.key]
+                  }
+                  onClick={() => {
+                    const loadedAction = loadedActions[action.key]
+                    if (!loadedAction) {
+                      return
+                    }
+
+                    append({
+                      actionKey: action.key,
+                      // Clone to prevent the form from mutating the original
+                      // object.
+                      data: cloneDeep(loadedAction.defaults ?? {}),
+                    })
+                  }}
+                  variant="ghost"
+                >
+                  {action.Icon && (
+                    <p className="text-3xl">
+                      <action.Icon />
+                    </p>
+                  )}
+
+                  <div className="flex grow flex-col items-start gap-1">
+                    <p className="primary-text">{action.label}</p>
+                    <p className="caption-text">{action.description}</p>
+                  </div>
+
+                  {erroredActionKeys[action.key] && (
+                    <TooltipInfoIcon
+                      size="lg"
+                      title={erroredActionKeys[action.key]!.message}
+                      warning
+                    />
+                  )}
+
+                  {loadingActionKeys.includes(action.key) && (
+                    <Loader fill={false} size={32} />
+                  )}
+                </Button>
+              ))}
+          </div>
+        </div>
+      </div>
+    </>
+  )
 }
 
 export type ActionEditorProps = GroupedActionData & {
-  categories: ActionCategoryWithLabel[]
-  loadedActions: LoadedActions
   actionDataFieldName: string
   // The errors for all actions, pointed to by `actionsFieldName` above.
-  actionDataErrors:
-    | FieldErrors<PartialCategorizedActionKeyAndData[]>
-    | undefined
+  actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
 
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-} & Pick<
-    ActionCategoryActionPickerCardProps,
-    'loadingActionKeys' | 'erroredActionKeys'
-  >
+}
 
 // Renders a group of data that belong to the same action, or a category action
 // picker if no action is selected.
 export const ActionEditor = ({
-  categories,
-  loadedActions,
   actionDataFieldName: _actionDataFieldName,
   actionDataErrors,
-  loadingActionKeys,
-  erroredActionKeys,
 
-  category,
   action,
   actionDefaults,
   all,
   SuspenseLoader,
 }: ActionEditorProps) => {
   const { t } = useTranslation()
-  const { control, watch, setValue, clearErrors } = useFormContext<{
-    actionData: PartialCategorizedActionKeyAndData[]
+  const { control, watch, clearErrors } = useFormContext<{
+    actionData: ActionKeyAndData[]
   }>()
 
   // Type assertion assumes the passed in field name is correct.
@@ -239,12 +299,9 @@ export const ActionEditor = ({
     control,
   })
   const addAction = useCallback(
-    (
-      data: Partial<PartialCategorizedActionKeyAndData>,
-      insertIndex?: number
-    ) => {
-      const actionData: PartialCategorizedActionKeyAndData = {
-        // See `CategorizedActionKeyAndData` comment in
+    (data: ActionKeyAndDataNoId, insertIndex?: number) => {
+      const actionData: ActionKeyAndData = {
+        // See `ActionKeyAndData` comment in
         // `packages/types/actions.ts` for an explanation of why we need to
         // append with a unique ID.
         _id: uuidv4(),
@@ -261,8 +318,6 @@ export const ActionEditor = ({
 
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
-
-  const [changeCategoryOpen, setChangeCategoryOpen] = useState(false)
 
   const [page, setPage] = useState(PAGINATION_MIN_PAGE)
   const lastPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
@@ -286,98 +341,6 @@ export const ActionEditor = ({
     all.reverse().forEach(({ index }) => remove(index))
   }
 
-  // If no action, render category picker.
-  if (!action) {
-    // A category picker must have exactly one corresponding action data field
-    // so we can retrieve what index to update.
-    const index = all[0]?.index
-    if (typeof index !== 'number') {
-      return null
-    }
-
-    return (
-      <>
-        <ActionCategoryActionPickerCard
-          category={category}
-          erroredActionKeys={erroredActionKeys}
-          loadingActionKeys={loadingActionKeys}
-          onChangeCategory={() => setChangeCategoryOpen(true)}
-          onRemove={onRemove}
-          onSelectAction={({ key }, event) => {
-            const action = loadedActions[key]
-            if (!action) {
-              return
-            }
-
-            // If holding shift, add as a new action.
-            if (event.shiftKey) {
-              addAction({
-                categoryKey: category.key,
-                actionKey: key,
-                // Clone to prevent the form from mutating the original object.
-                data: cloneDeep(action.defaults ?? {}),
-              })
-              return
-            }
-
-            // Update the first action key and data.
-            setValue(`${actionDataFieldName}.${index}.actionKey`, key)
-            setValue(
-              `${actionDataFieldName}.${index}.data`,
-              // Clone to prevent the form from mutating the original object.
-              cloneDeep(action.defaults ?? {})
-            )
-          }}
-          usedActionKeys={
-            actionData
-              .map(({ actionKey }) => actionKey)
-              .filter(Boolean) as ActionKey[]
-          }
-        />
-
-        <FilterableItemPopup
-          filterableItemKeys={ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS}
-          items={categories.map((c) => ({
-            ...c,
-            selected: c.key === category.key,
-          }))}
-          onSelect={({ key }) => {
-            // Change category key.
-            setValue(`${actionDataFieldName}.${index}.categoryKey`, key)
-          }}
-          searchPlaceholder={t('info.findCategory')}
-          trigger={{
-            type: 'manual',
-            open: changeCategoryOpen,
-            setOpen: setChangeCategoryOpen,
-          }}
-        />
-      </>
-    )
-  }
-
-  const goBackToCategoryPicker = () => {
-    // Remove all entries for this action except the first one so that it
-    // reverts back to a single category picker. Remove the indices in reverse
-    // order to prevent the indices from changing. This assumes `all` is ordered
-    // by ascending index.
-    all
-      .slice(1)
-      .reverse()
-      .forEach(({ index }) => remove(index))
-
-    // Clear action key and data for the first entry, preserving the category
-    // key. Set the category key in case it is undefined. A category key may be
-    // undefined if an action was duplicated, prefilled, or manually added from
-    // another action.
-    const index = all[0].index
-    setValue(`${actionDataFieldName}.${index}.categoryKey`, category.key)
-    setValue(`${actionDataFieldName}.${index}.actionKey`, undefined)
-    setValue(`${actionDataFieldName}.${index}.data`, undefined)
-    // Clear errors on action data if any left over.
-    clearErrors(`${actionDataFieldName}.${index}.data`)
-  }
-
   const lastIndex = Math.min(all.length, ACTIONS_PER_PAGE) - 1
   const allowAdding = !action.notReusable && !action.programmaticOnly
 
@@ -385,9 +348,7 @@ export const ActionEditor = ({
     <ActionCard
       action={action}
       actionCount={all.length}
-      category={category}
       childrenContainerClassName="!px-0"
-      onCategoryClick={goBackToCategoryPicker}
       onRemove={onRemove}
     >
       {all
@@ -438,16 +399,7 @@ export const ActionEditor = ({
                         <IconButton
                           Icon={Remove}
                           circular
-                          onClick={() => {
-                            // If only one action left, go back to category
-                            // picker.
-                            if (all.length === 1) {
-                              goBackToCategoryPicker()
-                            } else {
-                              // Otherwise just remove this action.
-                              removeAction()
-                            }
-                          }}
+                          onClick={removeAction}
                           size="sm"
                           variant="secondary"
                         />
@@ -478,13 +430,11 @@ export const ActionEditor = ({
               // Insert another entry for the same action with the default
               // values after the last one in this group.
               insert(all[all.length - 1].index + 1, {
-                // See `CategorizedActionKeyAndData` comment in
-                // `packages/types/actions.ts` for an explanation of why we need
-                // to insert with a unique ID.
+                // See `ActionKeyAndData` comment in `packages/types/actions.ts`
+                // for an explanation of why we need to insert with a unique ID.
                 _id: uuidv4(),
-                categoryKey: category.key,
                 actionKey: action.key,
-                data: cloneDeep(actionDefaults),
+                data: cloneDeep(actionDefaults ?? {}),
               })
 
               // Go to the last page.

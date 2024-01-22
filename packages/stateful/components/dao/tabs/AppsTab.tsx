@@ -23,10 +23,10 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  ActionKeyAndData,
+  ActionKeyAndDataNoId,
   BaseNewProposalProps,
   CosmosMsgFor_Empty,
-  PartialCategorizedActionKeyAndData,
-  PartialCategorizedActionKeyAndDataNoId,
   ProposalDraft,
 } from '@dao-dao/types'
 import {
@@ -351,28 +351,25 @@ const ActionMatcherAndProposer = ({
   const decodedMessages = useMemo(() => decodeMessages(msgs), [msgs])
 
   // Call relevant action hooks in the same order every time.
-  const actionData: PartialCategorizedActionKeyAndDataNoId[] =
-    decodedMessages.map((message) => {
-      const actionMatch = actionsForMatching
-        .map(({ category, action }) => ({
-          category,
-          action,
-          ...action.useDecodedCosmosMsg(message),
-        }))
-        .find(({ match }) => match)
+  const actionData: ActionKeyAndDataNoId[] = decodedMessages.map((message) => {
+    const actionMatch = actionsForMatching
+      .map((action) => ({
+        action,
+        ...action.useDecodedCosmosMsg(message),
+      }))
+      .find(({ match }) => match)
 
-      // There should always be a match since custom matches all. This should
-      // never happen as long as the Custom action exists.
-      if (!actionMatch?.match) {
-        throw new Error(t('error.loadingData'))
-      }
+    // There should always be a match since custom matches all. This should
+    // never happen as long as the Custom action exists.
+    if (!actionMatch?.match) {
+      throw new Error(t('error.loadingData'))
+    }
 
-      return {
-        categoryKey: actionMatch.category.key,
-        actionKey: actionMatch.action.key,
-        data: actionMatch.data,
-      }
-    })
+    return {
+      actionKey: actionMatch.action.key,
+      data: actionMatch.data,
+    }
+  })
 
   const formMethods = useForm<NewSingleChoiceProposalForm>({
     mode: 'onChange',
@@ -380,7 +377,7 @@ const ActionMatcherAndProposer = ({
       title: '',
       description: '',
       actionData: actionData.map(
-        (data): PartialCategorizedActionKeyAndData => ({
+        (data): ActionKeyAndData => ({
           _id: uuidv4(),
           ...data,
         })
@@ -395,7 +392,7 @@ const ActionMatcherAndProposer = ({
       title: proposalData.title,
       description: proposalData.description,
       actionData: actionData.map(
-        (data): PartialCategorizedActionKeyAndData => ({
+        (data): ActionKeyAndData => ({
           _id: uuidv4(),
           ...data,
         })

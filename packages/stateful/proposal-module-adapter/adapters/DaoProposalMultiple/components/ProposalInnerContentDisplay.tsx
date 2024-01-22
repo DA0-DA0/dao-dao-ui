@@ -4,9 +4,9 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { Loader } from '@dao-dao/stateless'
 import {
+  ActionAndData,
+  ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
-  CategorizedActionAndData,
-  CategorizedActionKeyAndData,
   ProposalStatusEnum,
   ProposalVoteOption,
 } from '@dao-dao/types'
@@ -80,29 +80,25 @@ export const InnerProposalInnerContentDisplay = ({
     (choice, index): MultipleChoiceOptionData => {
       const voteOption = voteOptions[index]
       const decodedMessages = mappedDecodedMessages[index]
-      const actionData: CategorizedActionAndData[] = decodedMessages.map(
-        (message) => {
-          const actionMatch = actionsForMatching
-            .map(({ category, action }) => ({
-              category,
-              action,
-              ...action.useDecodedCosmosMsg(message),
-            }))
-            .find(({ match }) => match)
+      const actionData: ActionAndData[] = decodedMessages.map((message) => {
+        const actionMatch = actionsForMatching
+          .map((action) => ({
+            action,
+            ...action.useDecodedCosmosMsg(message),
+          }))
+          .find(({ match }) => match)
 
-          // There should always be a match since custom matches all. This
-          // should never happen as long as the Custom action exists.
-          if (!actionMatch?.match) {
-            throw new Error(t('error.loadingData'))
-          }
-
-          return {
-            category: actionMatch.category,
-            action: actionMatch.action,
-            data: actionMatch.data,
-          }
+        // There should always be a match since custom matches all. This
+        // should never happen as long as the Custom action exists.
+        if (!actionMatch?.match) {
+          throw new Error(t('error.loadingData'))
         }
-      )
+
+        return {
+          action: actionMatch.action,
+          data: actionMatch.data,
+        }
+      })
 
       return {
         choice,
@@ -125,12 +121,8 @@ export const InnerProposalInnerContentDisplay = ({
           title: choice.title,
           description: choice.description,
           actionData: actionData.map(
-            (
-              { category, action, data },
-              index
-            ): CategorizedActionKeyAndData => ({
+            ({ action, data }, index): ActionKeyAndData => ({
               _id: index.toString(),
-              categoryKey: category.key,
               actionKey: action.key,
               data,
             })

@@ -15,8 +15,8 @@ export const makeDaoAppearanceActionCategory: ActionCategoryMaker = ({
   context.type === ActionContextType.Dao
     ? {
         key: ActionCategoryKey.DaoAppearance,
-        label: t('actionCategory.daoAppearanceLabel'),
-        description: t('actionCategory.daoAppearanceDescription'),
+        label: t('actionCategory.appearanceLabel'),
+        description: t('actionCategory.appearanceDescription'),
         actionMakers: [makeUpdateInfoAction, makeManageWidgetsAction],
       }
     : null

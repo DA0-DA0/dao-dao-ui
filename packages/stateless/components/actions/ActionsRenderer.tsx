@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
-import {
-  Action,
-  CategorizedActionAndData,
-  CategorizedActionKeyAndData,
-} from '@dao-dao/types/actions'
+import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
@@ -20,7 +16,7 @@ export const ACTIONS_PER_PAGE = 20
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
-  actionData: CategorizedActionAndData[]
+  actionData: ActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
   // If undefined, will not show warning to view all pages. This is likely only
@@ -40,12 +36,8 @@ export const ActionsRenderer = ({
   const actionKeysWithData = useMemo(
     () =>
       actionData.map(
-        (
-          { category: { key: categoryKey }, action: { key: actionKey }, data },
-          index
-        ): CategorizedActionKeyAndData => ({
+        ({ action: { key: actionKey }, data }, index): ActionKeyAndData => ({
           _id: index.toString(),
-          categoryKey,
           actionKey,
           data,
         })
@@ -193,7 +185,7 @@ export type ActionRendererProps = {
     index: number
     data: any
   }[]
-  allActionsWithData: CategorizedActionKeyAndData[]
+  allActionsWithData: ActionKeyAndData[]
   // If undefined, will not show warning to view all pages. This is likely only
   // defined when the user can vote.
   setSeenAllPages?: () => void

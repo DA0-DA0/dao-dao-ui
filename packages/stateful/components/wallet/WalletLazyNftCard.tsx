@@ -62,7 +62,7 @@ export const WalletLazyNftCard = (
 
   const transferActionDefaults = useActionForKey(
     ActionKey.TransferNft
-  )?.action.useDefaults() as TransferNftData | undefined
+  )?.useDefaults() as TransferNftData | undefined
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [

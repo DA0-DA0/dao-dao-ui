@@ -2,8 +2,8 @@ import { ComponentType, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  CategorizedAction,
-  CategorizedActionAndData,
+  Action,
+  ActionAndData,
   CosmosMsgFor_Empty,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -15,7 +15,7 @@ import { ActionsRenderer } from './ActionsRenderer'
 export type NestedActionsRendererProps = {
   // Must point to a `msgs` field in the current form context.
   msgsFieldName: string
-  actionsForMatching: CategorizedAction[]
+  actionsForMatching: Action[]
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -35,8 +35,7 @@ export const NestedActionsRenderer = ({
   const actionData = decodedMessages
     .map((message) => {
       const actionMatch = actionsForMatching
-        .map(({ category, action }) => ({
-          category,
+        .map((action) => ({
           action,
           ...action.useDecodedCosmosMsg(message),
         }))
@@ -44,13 +43,12 @@ export const NestedActionsRenderer = ({
 
       return (
         actionMatch && {
-          category: actionMatch.category,
           action: actionMatch.action,
           data: actionMatch.data,
         }
       )
     })
-    .filter(Boolean) as CategorizedActionAndData[]
+    .filter(Boolean) as ActionAndData[]
 
   return (
     <>
