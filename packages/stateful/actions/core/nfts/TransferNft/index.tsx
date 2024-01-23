@@ -36,10 +36,13 @@ import { useActionOptions } from '../../../react'
 import { TransferNftComponent, TransferNftData } from './Component'
 
 const useDefaults: UseDefaults<TransferNftData> = () => {
+  const {
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
   return {
-    chainId: '',
+    chainId: currentChainId,
     collection: '',
     tokenId: '',
     recipient: walletAddress,
@@ -194,7 +197,7 @@ const Component: ActionComponent = (props) => {
       : undefined
   )
   const nftInfo = useRecoilValue(
-    !!tokenId && !!collection
+    chainId && collection && tokenId
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)
   )

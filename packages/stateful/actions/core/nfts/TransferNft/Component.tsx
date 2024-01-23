@@ -216,7 +216,6 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
             if (nft.key === selectedKey) {
-              setValue((fieldNamePrefix + 'chainId') as 'chainId', '')
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
               setValue((fieldNamePrefix + 'collection') as 'collection', '')
             } else {

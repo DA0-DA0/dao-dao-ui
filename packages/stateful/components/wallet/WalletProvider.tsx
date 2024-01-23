@@ -180,6 +180,7 @@ export const WalletProvider = ({
             [getChainForChainId(chainId).chain_name]: {
               rpc: [rpc],
               rest: [rest],
+              isLazy: true,
             },
           }),
           {} as Record<string, Endpoints>

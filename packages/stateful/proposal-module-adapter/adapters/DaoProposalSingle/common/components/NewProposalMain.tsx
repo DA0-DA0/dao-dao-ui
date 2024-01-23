@@ -1,11 +1,7 @@
-import { useFieldArray, useFormContext } from 'react-hook-form'
-import { v4 as uuidv4 } from 'uuid'
+import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import {
-  ActionCategorySelector,
-  ActionsEditor,
-  ActionsRenderer,
-} from '@dao-dao/stateless'
+import { ActionsEditor, ActionsRenderer } from '@dao-dao/stateless'
 import { LoadedAction } from '@dao-dao/types'
 
 import { useLoadedActionsAndCategories } from '../../../../../actions'
@@ -19,24 +15,20 @@ export type NewProposalMainProps = {
 export const NewProposalMain = ({
   actionsReadOnlyMode,
 }: NewProposalMainProps) => {
+  const { t } = useTranslation()
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const {
-    control,
     watch,
     formState: { errors },
   } = useFormContext<NewProposalForm>()
-
-  const { append } = useFieldArray({
-    name: 'actionData',
-    control,
-    shouldUnregister: true,
-  })
 
   const actionData = watch('actionData') || []
 
   return (
     <>
+      <p className="title-text">{t('title.actions')}</p>
+
       {actionsReadOnlyMode ? (
         <ActionsRenderer
           SuspenseLoader={SuspenseLoader}
@@ -64,23 +56,6 @@ export const NewProposalMain = ({
           className="-mb-2"
           loadedActions={loadedActions}
         />
-      )}
-
-      {!actionsReadOnlyMode && (
-        <div className="self-start">
-          <ActionCategorySelector
-            categories={categories}
-            onSelectCategory={({ key }) => {
-              append({
-                // See `CategorizedActionKeyAndData` comment in
-                // `packages/types/actions.ts` for an explanation of why we need
-                // to append with a unique ID.
-                _id: uuidv4(),
-                categoryKey: key,
-              })
-            }}
-          />
-        </div>
       )}
     </>
   )

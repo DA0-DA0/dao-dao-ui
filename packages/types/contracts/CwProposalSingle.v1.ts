@@ -5,7 +5,6 @@ import {
   Duration,
   Expiration,
   ProposalStatus,
-  Timestamp,
   Uint128,
 } from './common'
 import { Threshold, Votes } from './DaoProposalSingle.common'
@@ -73,9 +72,6 @@ export interface Proposal {
   title: string
   total_power: Uint128
   votes: Votes
-  // V2
-  created?: Timestamp
-  last_updated?: Timestamp
 }
 export type ProposalCountResponse = number
 export interface ProposalHooksResponse {

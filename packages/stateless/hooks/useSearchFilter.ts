@@ -1,7 +1,9 @@
 import Fuse from 'fuse.js'
 import {
+  ChangeEventHandler,
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -11,9 +13,45 @@ import {
 import { SearchBarProps } from '../components'
 import { useQuerySyncedState } from './useQuerySyncedState'
 
-interface UseSearchFilterReturn<T> {
+export type UseSearchFilterOptions<T> = {
+  /**
+   * Data to filter.
+   */
+  data: T[]
+  /**
+   * The filterable keys for the dataset.
+   */
+  filterableKeys: Fuse.FuseOptionKey<T>[]
+  /**
+   * Optional Fuse options.
+   */
+  options?: Fuse.IFuseOptions<T>
+  /**
+   * Optionally store the search param in the URL query string.
+   */
+  querySyncedParam?: string
+  /**
+   * Optionally add a filter change callback listener.
+   */
+  onFilterChange?: (filter: string) => void
+}
+
+export type UseSearchFilterReturn<T> = {
+  /**
+   * Props to pass through to the `SearchBar` component.
+   */
   searchBarProps: SearchBarProps
+  /**
+   * The filtered data.
+   */
   filteredData: { item: T; originalIndex: number }[]
+  /**
+   * The filter string.
+   */
+  filter: string
+  /**
+   * A function that lets setting the search filter.
+   */
   setFilter: Dispatch<SetStateAction<string>>
 }
 
@@ -37,13 +75,13 @@ interface UseSearchFilterReturn<T> {
 // and only update the Fuse.js collection when the data deeply changed, but that
 // required extra state updates and logic that often led to infinite loops. If
 // this becomes a performance issue, we can revisit this.
-export const useSearchFilter = <T extends unknown>(
-  data: T[],
-  filterableKeys: Fuse.FuseOptionKey<T>[],
-  options?: Fuse.IFuseOptions<T>,
-  // If defined, store the search param in a query param.
-  querySyncedParam?: string
-): UseSearchFilterReturn<T> => {
+export const useSearchFilter = <T extends unknown>({
+  data,
+  filterableKeys,
+  options,
+  querySyncedParam,
+  onFilterChange,
+}: UseSearchFilterOptions<T>): UseSearchFilterReturn<T> => {
   // Store latest data in a ref so we can compare it to the current data.
   const dataRef = useRef(data)
 
@@ -84,12 +122,24 @@ export const useSearchFilter = <T extends unknown>(
     }
   }, [fuse, filter, data])
 
+  const onFilterChangeRef = useRef(onFilterChange)
+  onFilterChangeRef.current = onFilterChange
+  const onChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (event) => {
+      const filter = event.target.value
+      setFilter(filter)
+      onFilterChangeRef.current?.(filter)
+    },
+    [setFilter]
+  )
+
   return {
     searchBarProps: {
-      onChange: (event) => setFilter(event.target.value),
+      onChange,
       value: filter,
     },
     filteredData,
+    filter,
     setFilter,
   }
 }

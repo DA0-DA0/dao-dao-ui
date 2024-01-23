@@ -4,7 +4,6 @@ import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 import {
   ActionCategoryWithLabel,
   ActionKey,
-  CategorizedAction,
   IActionsContext,
   LoadedActions,
   UseActionsOptions,
@@ -69,15 +68,10 @@ export const useActionsForMatching = () => {
   return useMemo(
     () =>
       categories
-        .flatMap((category): CategorizedAction[] =>
-          category.actions.map((action) => ({
-            category,
-            action,
-          }))
-        )
+        .flatMap((category) => category.actions)
         .sort((a, b) => {
-          const aValue = actionKeyToMatchOrder(a.action.key)
-          const bValue = actionKeyToMatchOrder(b.action.key)
+          const aValue = actionKeyToMatchOrder(a.key)
+          const bValue = actionKeyToMatchOrder(b.key)
           return aValue - bValue
         }),
     [categories]
@@ -90,7 +84,7 @@ export const useActionOptions = () => useActionsContext().options
 // Only core actions are always provided. Adapter-specific actions may be
 // available but are not guaranteed based on the context.
 export const useActionForKey = (actionKey: ActionKey) =>
-  useActionsForMatching().find(({ action }) => action.key === actionKey)
+  useActionsForMatching().find(({ key }) => key === actionKey)
 
 // Flatten action categories into processed list of actions for generating
 // messages from actions.

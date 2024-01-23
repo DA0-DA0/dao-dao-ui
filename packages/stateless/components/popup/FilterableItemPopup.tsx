@@ -71,10 +71,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   const open = trigger.type === 'manual' ? trigger.open : _open
   const setOpen = trigger.type === 'manual' ? trigger.setOpen : _setOpen
 
-  const { searchBarProps, filteredData, setFilter } = useSearchFilter(
-    items,
-    filterableItemKeys
-  )
+  const { searchBarProps, filteredData, setFilter } = useSearchFilter({
+    data: items,
+    filterableKeys: filterableItemKeys,
+  })
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
 
