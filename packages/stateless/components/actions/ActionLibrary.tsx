@@ -78,7 +78,7 @@ export const ActionLibrary = ({
 
   const [_categoryKeySelected, setCategoryKeySelected] = useState<
     ActionCategoryKey | undefined
-  >(categories[0].key)
+  >(categories[0]?.key)
 
   // Default nothing selected.
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -115,7 +115,7 @@ export const ActionLibrary = ({
   const categoryKeySelected = filter
     ? undefined
     : // Fallback to first category if state empty.
-      _categoryKeySelected || categories[0].key
+      _categoryKeySelected || categories[0]?.key
   const selectedCategory = categoryKeySelected
     ? categories.find((c) => c.key === categoryKeySelected)
     : undefined

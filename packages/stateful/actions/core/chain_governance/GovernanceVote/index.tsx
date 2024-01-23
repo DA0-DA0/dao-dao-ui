@@ -13,6 +13,7 @@ import {
   DaoSupportedChainPickerInput,
   Loader,
 } from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -167,7 +168,17 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   t,
   chain: { chain_id: currentChainId },
+  context,
 }) => {
+  if (
+    // Governance module cannot participate in governance.
+    context.type === ActionContextType.Gov ||
+    // Neutron does not use the x/gov module.
+    currentChainId === ChainId.NeutronMainnet
+  ) {
+    return null
+  }
+
   const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
     chainId: currentChainId,
     proposalId: '',

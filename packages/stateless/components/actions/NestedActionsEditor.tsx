@@ -60,13 +60,12 @@ export const NestedActionsEditor: ActionComponent<
   }, [msgs])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       <ActionsEditor
         SuspenseLoader={SuspenseLoader}
         actionDataErrors={errors?._actionData}
         actionDataFieldName={fieldNamePrefix + '_actionData'}
         categories={categories}
-        className="mb-4"
         loadedActions={loadedActions}
       />
 

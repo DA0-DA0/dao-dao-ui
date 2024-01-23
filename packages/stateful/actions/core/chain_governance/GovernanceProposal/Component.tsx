@@ -466,14 +466,13 @@ export const GovernanceProposalComponent: ActionComponent<
           </div>
 
           {supportsV1GovProposals && !useV1LegacyContent ? (
-            <>
-              <InputLabel
-                name={t('title.actions')}
-                primary={onGovernancePage}
-              />
+            <div
+              className={clsx(onGovernancePage && 'mt-4 flex flex-col gap-4')}
+            >
+              <InputLabel name={t('title.actions')} title={onGovernancePage} />
 
               <NestedActionsEditor {...props} />
-            </>
+            </div>
           ) : (
             <>
               {data.legacy.typeUrl === CommunityPoolSpendProposal.typeUrl && (

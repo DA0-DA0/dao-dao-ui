@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 
 export interface InputLabelProps
-  extends Omit<ComponentProps<'span'>, 'children'> {
+  extends Omit<ComponentProps<'span'>, 'children' | 'title'> {
   mono?: boolean
   name?: string
   tooltip?: ReactNode
@@ -13,6 +13,7 @@ export interface InputLabelProps
   children?: ReactNode | ReactNode[]
   optional?: boolean
   primary?: boolean
+  title?: boolean
 }
 
 export const InputLabel = ({
@@ -24,6 +25,7 @@ export const InputLabel = ({
   children,
   optional,
   primary,
+  title,
   ...rest
 }: InputLabelProps) => {
   const { t } = useTranslation()
@@ -35,7 +37,7 @@ export const InputLabel = ({
     >
       <span
         className={clsx(
-          primary ? 'primary-text' : 'secondary-text',
+          title ? 'title-text' : primary ? 'primary-text' : 'secondary-text',
           mono && 'font-mono',
           className
         )}
