@@ -107,6 +107,7 @@ Connected.decorators = [makeDappLayoutDecorator()]
 export const Disconnected = Template.bind({})
 Disconnected.args = {
   ...Connected.args,
+  openSearch: () => alert('search'),
   connected: false,
   rightSidebarContent: (
     <ProfileDisconnectedCard
