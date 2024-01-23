@@ -46,7 +46,7 @@ export const ImageDropInput = ({
       dragHereOrSelect={
         <Trans i18nKey="form.dragImageHereOrClick">
           Drag image here or{' '}
-          <span className="pointer-events-auto underline transition-opacity hover:opacity-80 active:opacity-70">
+          <span className="underline transition-opacity hover:opacity-80 active:opacity-70">
             click
           </span>{' '}
           to select one.

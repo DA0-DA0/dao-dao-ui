@@ -157,7 +157,7 @@ export const MultipleChoiceOptionEditor = <
           </Button>
         )}
 
-        <p className="title-text -mb-2">{t('title.actions')}</p>
+        <p className="title-text mb-1">{t('title.actions')}</p>
 
         <ActionsEditor
           SuspenseLoader={SuspenseLoader}
