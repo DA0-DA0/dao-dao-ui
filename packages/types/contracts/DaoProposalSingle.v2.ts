@@ -7,7 +7,6 @@ import {
   Expiration,
   ModuleInstantiateInfo,
   ProposalStatus,
-  Timestamp,
   Uint128,
 } from './common'
 import { Threshold, Vote, Votes } from './DaoProposalSingle.common'
@@ -134,10 +133,8 @@ export interface ProposalResponse {
 }
 export interface SingleChoiceProposal {
   allow_revoting: boolean
-  created: Timestamp
   description: string
   expiration: Expiration
-  last_updated: Timestamp
   min_voting_period?: Expiration | null
   msgs: CosmosMsgFor_Empty[]
   proposer: Addr
