@@ -9,6 +9,7 @@ export interface SearchBarProps
   hideIcon?: boolean
   variant?: 'sm' | 'lg'
   ghost?: boolean
+  onIconClick?: () => void
 }
 
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
@@ -19,6 +20,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
       hideIcon,
       variant = 'lg',
       ghost,
+      onIconClick,
       ...props
     },
     ref
@@ -41,7 +43,13 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
         )}
       >
         {!hideIcon && (
-          <Search className="!h-5 !w-5 text-icon-tertiary transition group-focus-within:text-icon-primary" />
+          <Search
+            className={clsx(
+              '!h-5 !w-5 text-icon-tertiary transition group-focus-within:text-icon-primary',
+              onIconClick && 'cursor-pointer'
+            )}
+            onClick={onIconClick}
+          />
         )}
 
         <input

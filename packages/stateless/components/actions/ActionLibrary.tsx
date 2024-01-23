@@ -228,20 +228,30 @@ export const ActionLibrary = ({
       className="mt-2 flex flex-col gap-4 rounded-md border border-dashed border-border-primary p-4"
       ref={actionLibraryRef}
     >
-      <div className="flex flex-row gap-2">
-        <p className="title-text">{t('title.actionLibrary')}</p>
-        <TooltipInfoIcon size="sm" title={t('info.actionLibraryDescription')} />
+      <div className="flex flex-col items-stretch gap-y-2 gap-x-[calc(1.5rem+1px)] md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-row gap-2 md:w-48">
+          <p className="title-text">{t('title.actionLibrary')}</p>
+          <TooltipInfoIcon
+            size="sm"
+            title={t('info.actionLibraryDescription')}
+          />
+        </div>
+
+        <SearchBar
+          {...searchBarProps}
+          containerClassName="md:w-[6rem] md:focus-within:w-full md:max-w-xs md:ring-[transparent] !duration-300 transition-all md:!ring-0 md:!p-0 md:!pb-1 overflow-hidden"
+          onIconClick={() => searchBarRef.current?.focus()}
+          ref={searchBarRef}
+        />
       </div>
 
-      <SearchBar {...searchBarProps} ref={searchBarRef} />
-
       <div className="flex flex-col gap-x-3 gap-y-1 md:flex-row md:items-start">
-        <div className="-mx-4 flex min-w-0 shrink-0 flex-row gap-y-0 overflow-x-auto px-4 pb-3 pt-1 md:flex-col md:pb-1">
+        <div className="no-scrollbar -mx-4 flex min-w-0 shrink-0 flex-row gap-y-0 overflow-x-auto px-4 pb-2 pt-1 md:w-56 md:flex-col md:pb-1">
           {categories.map((category) => (
             <Button
               key={category.key}
               className={clsx(
-                'shrink-0 rounded-b-none border-b border-transparent !py-1 !px-2 md:w-full md:rounded-b-md md:!border-b-0 md:!py-2 md:!px-3',
+                'shrink-0 rounded-b-none border-b border-transparent !py-1 !px-2 md:w-full md:rounded-b-md md:!border-b-0 md:!py-2 md:!px-3 md:text-left',
                 categoryKeySelected === category.key &&
                   '!border-icon-primary md:bg-background-interactive-selected'
               )}
