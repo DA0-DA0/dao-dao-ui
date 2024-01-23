@@ -388,7 +388,8 @@ export const decodeIcaExecuteMsg = (
     const { packetData: { data } = {} } = decodedMsg.stargate.value as MsgSendTx
     const protobufMessages = data && CosmosTx.decode(data).messages
     const cosmosMsgsWithSenders =
-      protobufMessages?.map((protobuf) => protobufToCwMsg(protobuf)) || []
+      protobufMessages?.map((protobuf) => protobufToCwMsg(protobuf, false)) ||
+      []
 
     if (
       (type === 'zero' && cosmosMsgsWithSenders.length !== 0) ||
@@ -413,7 +414,8 @@ export const decodeIcaExecuteMsg = (
       msgsWithSenders,
       cosmosMsgsWithSenders,
     }
-  } catch {
+  } catch (err) {
+    console.error('ICA decode error', err)
     return {
       match: false,
     }
