@@ -12,11 +12,9 @@ import {
   FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
-  useFieldArray,
   useForm,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   MeTransactionBuilderProps,
@@ -30,7 +28,6 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCategorySelector,
   ActionsEditor,
   Button,
   ButtonLink,
@@ -68,18 +65,11 @@ export const MeTransactionBuilder = ({
   const { config } = useChainContext()
 
   const {
-    control,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
   } = formMethods
-
-  const { append } = useFieldArray({
-    name: 'actions',
-    control,
-    shouldUnregister: true,
-  })
 
   const actionData = watch('actions') || []
 
@@ -173,21 +163,6 @@ export const MeTransactionBuilder = ({
             categories={categories}
             loadedActions={loadedActions}
           />
-
-          <div>
-            <ActionCategorySelector
-              categories={categories}
-              onSelectCategory={({ key }) => {
-                append({
-                  // See `CategorizedActionKeyAndData` comment in
-                  // `packages/types/actions.ts` for an explanation of why we
-                  // need to append with a unique ID.
-                  _id: uuidv4(),
-                  categoryKey: key,
-                })
-              }}
-            />
-          </div>
 
           <div className="mt-4 flex flex-row items-center justify-between gap-6 border-y border-border-secondary py-6">
             <p className="title-text text-text-body">

@@ -3,15 +3,15 @@ import { UseFormReturn } from 'react-hook-form'
 
 import {
   ActionCategoryWithLabel,
+  ActionKeyAndData,
   LoadedActions,
-  PartialCategorizedActionKeyAndData,
 } from './actions'
 import { SuspenseLoaderProps, WalletProfileHeaderProps } from './components'
 import { CosmosMsgFor_Empty } from './contracts'
 import { LoadingData } from './misc'
 
 export type MeTransactionForm = {
-  actions: PartialCategorizedActionKeyAndData[]
+  actions: ActionKeyAndData[]
 }
 
 export type MeTransactionSave = MeTransactionForm & {

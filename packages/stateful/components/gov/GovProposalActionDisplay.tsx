@@ -8,7 +8,7 @@ import {
   Loader,
 } from '@dao-dao/stateless'
 import {
-  CategorizedActionAndData,
+  ActionAndData,
   GovProposalActionDisplayProps,
   GovProposalVersion,
 } from '@dao-dao/types'
@@ -61,8 +61,7 @@ const InnerGovProposalActionDisplay = ({
   const actionData = decodedMessages
     .map((message) => {
       const actionMatch = actionsForMatching
-        .map(({ category, action }) => ({
-          category,
+        .map((action) => ({
           action,
           ...action.useDecodedCosmosMsg(message),
         }))
@@ -70,13 +69,12 @@ const InnerGovProposalActionDisplay = ({
 
       return (
         actionMatch && {
-          category: actionMatch.category,
           action: actionMatch.action,
           data: actionMatch.data,
         }
       )
     })
-    .filter(Boolean) as CategorizedActionAndData[]
+    .filter(Boolean) as ActionAndData[]
 
   const decodedContent =
     content.version === GovProposalVersion.V1_BETA_1

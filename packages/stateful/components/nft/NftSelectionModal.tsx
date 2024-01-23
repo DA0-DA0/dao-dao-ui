@@ -138,7 +138,10 @@ export const NftSelectionModal = ({
   })
 
   const { searchBarProps, filteredData: filteredSearchedNfts } =
-    useSearchFilter(filteredNfts, FILTERABLE_KEYS)
+    useSearchFilter({
+      data: filteredNfts,
+      filterableKeys: FILTERABLE_KEYS,
+    })
 
   const [_nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
   const nftPage = Math.min(

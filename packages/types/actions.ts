@@ -14,6 +14,7 @@ import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
 
 export enum ActionCategoryKey {
+  CommonlyUsed = 'commonlyUsed',
   Authorizations = 'authorizations',
   ChainGovernance = 'chainGovernance',
   DaoAppearance = 'daoAppearance',
@@ -89,42 +90,27 @@ export enum ActionKey {
   DeletePost = 'deletePost',
 }
 
-export type CategorizedActionAndData = {
-  category: ActionCategoryWithLabel
+export type ActionAndData = {
   action: Action
   data: any
 }
 
-export type PartialCategorizedActionAndData = Partial<CategorizedActionAndData>
-
-export type CategorizedActionKeyAndData = {
+export type ActionKeyAndData = {
   // Add an ID field to prevent unnecessary re-renders when things move around.
   // This should be handled by react-hook-form's `useFieldArray`, but it only
   // works internally for that specific hook call, and we need to use it in many
   // different components.
   _id: string
-  categoryKey: ActionCategoryKey
   actionKey: ActionKey
   data: any
 }
 
-export type PartialCategorizedActionKeyAndDataNoId = Partial<
-  Omit<CategorizedActionKeyAndData, '_id'>
->
-
-export type PartialCategorizedActionKeyAndData =
-  PartialCategorizedActionKeyAndDataNoId &
-    Pick<CategorizedActionKeyAndData, '_id'>
-
-export type CategorizedAction = {
-  category: ActionCategoryWithLabel
-  action: Action
-}
+export type ActionKeyAndDataNoId = Omit<ActionKeyAndData, '_id'>
 
 // A component which will render an action's input form.
 export type ActionComponentProps<O = undefined, D = any> = {
   fieldNamePrefix: string
-  allActionsWithData: PartialCategorizedActionKeyAndData[]
+  allActionsWithData: ActionKeyAndData[]
   index: number
   data: D
 } & (
@@ -133,7 +119,7 @@ export type ActionComponentProps<O = undefined, D = any> = {
       errors: FieldErrors
       // Adds a new action to the form.
       addAction: (
-        action: Partial<PartialCategorizedActionKeyAndData>,
+        action: ActionKeyAndDataNoId,
         // If omitted, the action will be appened to the end of the list.
         insertIndex?: number
       ) => void
@@ -341,5 +327,5 @@ export type NestedActionsEditorFormData = {
   msgs: CosmosMsgFor_Empty[]
 
   // Internal action data so that errors are added to main form.
-  _actionData?: PartialCategorizedActionKeyAndData[]
+  _actionData?: ActionKeyAndData[]
 }

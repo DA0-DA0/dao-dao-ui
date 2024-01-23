@@ -31,7 +31,7 @@ export const SubDaosTab = () => {
   )
 
   const upgradeToV2Action = useActionForKey(ActionKey.UpgradeV1ToV2)
-  const upgradeToV2ActionDefaults = upgradeToV2Action?.action.useDefaults()
+  const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
 
   return (
     <StatelessSubDaosTab
@@ -45,7 +45,7 @@ export const SubDaosTab = () => {
           actions: upgradeToV2Action
             ? [
                 {
-                  actionKey: upgradeToV2Action.action.key,
+                  actionKey: upgradeToV2Action.key,
                   data: upgradeToV2ActionDefaults,
                 },
               ]

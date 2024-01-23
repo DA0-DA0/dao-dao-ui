@@ -408,8 +408,8 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     const v1SubDaos = useV1SubDaos()
 
     return (
-      context.info.coreVersion !== ContractVersion.V1 &&
-      !v1SubDaos.loading &&
+      context.info.coreVersion !== ContractVersion.V1 ||
+      v1SubDaos.loading ||
       v1SubDaos.data.length === 0
     )
   }

@@ -1,3 +1,4 @@
+import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,8 +11,10 @@ import {
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
+  IconButton,
   PageHeaderContent,
   RightSidebarContent,
+  Tooltip,
 } from '../components'
 
 export type HomeProps = {
@@ -23,6 +26,7 @@ export type HomeProps = {
   rightSidebarContent: ReactNode
   feedProps: FeedProps
   connected: boolean
+  openSearch: () => void
 }
 
 const maxWidth = 'mx-auto w-full max-w-5xl'
@@ -35,13 +39,22 @@ export const Home = ({
   followingDaosProps,
   feedProps,
   connected,
+  openSearch,
 }: HomeProps) => {
   const { t } = useTranslation()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent className={maxWidth} title={t('title.home')} />
+      <PageHeaderContent
+        className={maxWidth}
+        rightNode={
+          <Tooltip title={t('title.search')}>
+            <IconButton Icon={Search} onClick={openSearch} variant="none" />
+          </Tooltip>
+        }
+        title={t('title.home')}
+      />
 
       {/* Feed and Following DAOs*/}
       {connected && (

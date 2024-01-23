@@ -1,10 +1,6 @@
 import queryString from 'query-string'
 
-import {
-  DaoPageMode,
-  DaoTabId,
-  PartialCategorizedActionKeyAndDataNoId,
-} from '@dao-dao/types'
+import { ActionKeyAndDataNoId, DaoPageMode, DaoTabId } from '@dao-dao/types'
 
 import { DaoProposalSingleAdapterId } from './constants/adapters'
 
@@ -78,9 +74,7 @@ export const getAccountPath = (
 
 // Create a path for the Me page transaction builder with a pre-filled
 // transaction form.
-export const getMeTxPrefillPath = (
-  actions: PartialCategorizedActionKeyAndDataNoId[]
-) => {
+export const getMeTxPrefillPath = (actions: ActionKeyAndDataNoId[]) => {
   const base = '/me/tx'
   const query = `?${queryString.stringify({
     prefill: JSON.stringify({
@@ -100,7 +94,7 @@ export const getDaoProposalSinglePrefill = ({
   description = '',
   actions = [],
 }: {
-  actions?: PartialCategorizedActionKeyAndDataNoId[]
+  actions?: ActionKeyAndDataNoId[]
   title?: string
   description?: string
 }): string =>

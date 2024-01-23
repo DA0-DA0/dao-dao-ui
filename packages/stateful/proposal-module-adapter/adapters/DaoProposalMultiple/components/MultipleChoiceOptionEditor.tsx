@@ -8,14 +8,11 @@ import {
   FieldValues,
   Path,
   UseFormRegister,
-  useFieldArray,
   useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
-  ActionCategorySelector,
   ActionsEditor,
   Button,
   DropdownIconButton,
@@ -67,7 +64,7 @@ export const MultipleChoiceOptionEditor = <
 }: MultipleChoiceOptionEditorProps<FV, FieldName>) => {
   const { t } = useTranslation()
 
-  const { control, watch, getValues } = useFormContext<NewProposalForm>()
+  const { watch, getValues } = useFormContext<NewProposalForm>()
 
   const [expanded, setExpanded] = useState(true)
   const toggleExpanded = () => {
@@ -76,12 +73,6 @@ export const MultipleChoiceOptionEditor = <
   }
 
   const description = watch(`choices.${optionIndex}.description`)
-
-  const { append } = useFieldArray({
-    name: `choices.${optionIndex}.actionData`,
-    control,
-    shouldUnregister: true,
-  })
 
   // Default to if description exists, in case of duplication.
   const [showingDescription, setShowingDescription] = useState(!!description)
@@ -130,66 +121,51 @@ export const MultipleChoiceOptionEditor = <
       </div>
 
       <div
-        className={clsx('ml-[calc(0.75rem-1.5px)] mt-4', !expanded && 'hidden')}
+        className={clsx(
+          'ml-[calc(0.75rem-1.5px)] mt-4 flex flex-col gap-4 border-l-[3px] border-border-interactive-focus pt-1 pl-5',
+          !expanded && 'hidden'
+        )}
       >
-        <div className="flex flex-col gap-4 border-l-[3px] border-border-interactive-focus pt-1 pl-5">
-          {showingDescription ? (
-            <>
-              <p className="primary-text text-text-body">
-                {t('form.description')}
-              </p>
+        {showingDescription ? (
+          <>
+            <p className="primary-text text-text-body">
+              {t('form.description')}
+            </p>
 
-              <div className="flex flex-col">
-                <TextAreaInput
-                  autoFocus
-                  error={errorsOption?.description}
-                  fieldName={descriptionFieldName}
-                  placeholder={t(
-                    'form.multipleChoiceOptionDescriptionPlaceholder'
-                  )}
-                  register={registerOption}
-                  rows={5}
-                />
-                <InputErrorMessage error={errorsOption?.description} />
-              </div>
-            </>
-          ) : (
-            <Button
-              className="self-start"
-              onClick={() => setShowingDescription(true)}
-              variant="ghost"
-            >
-              <Add className="text-icon-secondary" />
-              {t('button.addADescriptionOptional')}
-            </Button>
-          )}
+            <div className="flex flex-col">
+              <TextAreaInput
+                autoFocus
+                error={errorsOption?.description}
+                fieldName={descriptionFieldName}
+                placeholder={t(
+                  'form.multipleChoiceOptionDescriptionPlaceholder'
+                )}
+                register={registerOption}
+                rows={5}
+              />
+              <InputErrorMessage error={errorsOption?.description} />
+            </div>
+          </>
+        ) : (
+          <Button
+            className="self-start"
+            onClick={() => setShowingDescription(true)}
+            variant="ghost"
+          >
+            <Add className="text-icon-secondary" />
+            {t('button.addADescriptionOptional')}
+          </Button>
+        )}
 
-          <ActionsEditor
-            SuspenseLoader={SuspenseLoader}
-            actionDataErrors={errorsOption?.actionData}
-            actionDataFieldName={`choices.${optionIndex}.actionData`}
-            categories={categories}
-            loadedActions={loadedActions}
-          />
-        </div>
+        <p className="title-text mb-1">{t('title.actions')}</p>
 
-        <div className="border-l-[3px] border-dashed border-border-interactive-focus pt-4 pb-2 pl-5">
-          <ActionCategorySelector
-            categories={categories}
-            // There will be many action selector buttons on-screen, so the
-            // keybind wouldn't know which one to open.
-            disableKeybind
-            onSelectCategory={({ key }) => {
-              append({
-                // See `CategorizedActionKeyAndData` comment in
-                // `packages/types/actions.ts` for an explanation of why we need
-                // to append with a unique ID.
-                _id: uuidv4(),
-                categoryKey: key,
-              })
-            }}
-          />
-        </div>
+        <ActionsEditor
+          SuspenseLoader={SuspenseLoader}
+          actionDataErrors={errorsOption?.actionData}
+          actionDataFieldName={`choices.${optionIndex}.actionData`}
+          categories={categories}
+          loadedActions={loadedActions}
+        />
       </div>
     </div>
   )

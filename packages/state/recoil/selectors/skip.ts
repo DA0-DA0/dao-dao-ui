@@ -101,16 +101,30 @@ export const skipRecommendedAssetsSelector = selectorFamily<
   key: 'skipRecommendedAssets',
   get:
     ({ fromChainId, denom, toChainId }) =>
-    async () =>
-      await skipClient.recommendAssets({
-        sourceAssetChainID: fromChainId,
-        sourceAssetDenom: denom,
-        destChainID: toChainId,
-      }),
+    async () => {
+      try {
+        return await skipClient.recommendAssets({
+          sourceAssetChainID: fromChainId,
+          sourceAssetDenom: denom,
+          destChainID: toChainId,
+        })
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          (err.message.toLowerCase().includes('not found') ||
+            err.message.includes('no recommendation found'))
+        ) {
+          return []
+        }
+
+        // Rethrow other errors.
+        throw err
+      }
+    },
 })
 
 export const skipRecommendedAssetSelector = selectorFamily<
-  AssetRecommendation,
+  AssetRecommendation | undefined,
   {
     fromChainId: string
     denom: string
@@ -135,10 +149,6 @@ export const skipRecommendedAssetSelector = selectorFamily<
         recommendations.find(({ reason }) => reason === 'DIRECT') ||
         recommendations[0]
 
-      if (!recommendation) {
-        throw new Error('No asset recommendation found from Skip API.')
-      }
-
       return recommendation
     },
 })
@@ -160,13 +170,17 @@ export const skipRouteSelector = selectorFamily<
   get:
     ({ fromChainId, toChainId, sourceDenom, amountIn }) =>
     async ({ get }) => {
-      const { asset } = get(
+      const asset = get(
         skipRecommendedAssetSelector({
           fromChainId,
           denom: sourceDenom,
           toChainId,
         })
-      )
+      )?.asset
+
+      if (!asset) {
+        throw new Error('No recommended asset found.')
+      }
 
       const route = await skipClient.route({
         sourceAssetChainID: fromChainId,
@@ -267,30 +281,12 @@ export const skipRecommendedAssetForGenericTokenSelector = selectorFamily<
   key: 'chainSymbolForToken',
   get:
     ({ type, denomOrAddress, sourceChainId, targetChainId }) =>
-    ({ get }) => {
-      try {
-        return get(
-          skipRecommendedAssetSelector({
-            fromChainId: sourceChainId,
-            denom: (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress,
-            toChainId: targetChainId,
-          })
-        ).asset
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          ((err.message.includes('base token') &&
-            err.message.includes('not found')) ||
-            err.message.includes('no recommendation found') ||
-            err.message.includes('No asset recommendation found'))
-        ) {
-          return
-        }
-
-        // Throw other errors. This is also necessary to throw the promise
-        // returned by the `get` function when the data is still loading (recoil
-        // internal process).
-        throw err
-      }
-    },
+    ({ get }) =>
+      get(
+        skipRecommendedAssetSelector({
+          fromChainId: sourceChainId,
+          denom: (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress,
+          toChainId: targetChainId,
+        })
+      )?.asset,
 })

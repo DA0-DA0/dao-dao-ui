@@ -57,7 +57,7 @@ export const TabRenderer = ({
   )
 
   const vestingAction = useActionForKey(ActionKey.ManageVesting)
-  const vestingActionDefaults = vestingAction?.action.useDefaults()
+  const vestingActionDefaults = vestingAction?.useDefaults()
 
   // Vesting payments that need a slash registered.
   const vestingPaymentsNeedingSlashRegistration =
@@ -79,7 +79,7 @@ export const TabRenderer = ({
               prefill: getDaoProposalSinglePrefill({
                 actions: [
                   {
-                    actionKey: vestingAction.action.key,
+                    actionKey: vestingAction.key,
                     data: vestingActionDefaults,
                   },
                 ],
@@ -102,7 +102,7 @@ export const TabRenderer = ({
                         slashes
                           .filter((slash) => slash.unregisteredAmount > 0)
                           .map((slash) => ({
-                            action: vestingAction,
+                            actionKey: vestingAction.key,
                             data: {
                               ...vestingActionDefaults,
                               mode: 'registerSlash',

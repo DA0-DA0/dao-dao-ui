@@ -14,9 +14,9 @@ import {
 } from '@dao-dao/stateless'
 import { SuspenseLoaderProps, TransProps } from '@dao-dao/types'
 import {
+  ActionAndData,
   ActionComponent,
   ActionKey,
-  CategorizedActionAndData,
   LoadedAction,
   LoadedActions,
 } from '@dao-dao/types/actions'
@@ -202,11 +202,7 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
       <ActionsRenderer
         SuspenseLoader={SuspenseLoader}
         actionData={pendingActions.map(
-          ({
-            loadedAction: { category, action },
-            data,
-          }): CategorizedActionAndData => ({
-            category,
+          ({ loadedAction: { action }, data }): ActionAndData => ({
             action,
             data,
           })

@@ -3,7 +3,7 @@ import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { ActionCategoryMaker, CategorizedAction } from './actions'
+import { Action, ActionCategoryMaker } from './actions'
 import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
 import {
@@ -275,7 +275,7 @@ export type BaseProposalInnerContentDisplayProps<
   // Once proposal messages are loaded, the inner component is responsible for
   // setting the duplicate form data for the duplicate button in the header.
   setDuplicateFormData?: (data: FormData) => void
-  actionsForMatching: CategorizedAction[]
+  actionsForMatching: Action[]
   // Called when the user has viewed all action pages.
   setSeenAllActionPages?: () => void
 }

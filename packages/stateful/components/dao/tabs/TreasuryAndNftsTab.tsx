@@ -56,12 +56,12 @@ export const TreasuryAndNftsTab = () => {
 
   // ManageCw721 action defaults to adding
   const addCw721Action = useActionForKey(ActionKey.ManageCw721)
-  const addCw721ActionDefaults = addCw721Action?.action.useDefaults()
+  const addCw721ActionDefaults = addCw721Action?.useDefaults()
   const addCw721ActionPrefill = getDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
           {
-            actionKey: addCw721Action.action.key,
+            actionKey: addCw721Action.key,
             data: addCw721ActionDefaults,
           },
         ]

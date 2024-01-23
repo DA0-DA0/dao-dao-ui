@@ -1,8 +1,8 @@
 import {
-  CategorizedActionAndData,
+  ActionAndData,
+  ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
-  PartialCategorizedActionKeyAndData,
   PercentOrMajorityValue,
   ProcessedTQ,
   ProposalTimestampInfo,
@@ -14,7 +14,7 @@ import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle
 export interface NewProposalForm {
   title: string
   description: string
-  actionData: PartialCategorizedActionKeyAndData[]
+  actionData: ActionKeyAndData[]
 }
 
 // Converted data from actions into Cosmos messages.
@@ -105,5 +105,5 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
 
 export type MessagesWithActionData = {
   decodedMessages: any[]
-  actionData: CategorizedActionAndData[]
+  actionData: ActionAndData[]
 }

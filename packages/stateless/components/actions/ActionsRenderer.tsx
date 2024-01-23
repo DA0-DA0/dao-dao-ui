@@ -5,12 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
-import {
-  Action,
-  ActionCategoryWithLabel,
-  CategorizedActionAndData,
-  CategorizedActionKeyAndData,
-} from '@dao-dao/types/actions'
+import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
@@ -21,7 +16,7 @@ export const ACTIONS_PER_PAGE = 20
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
-  actionData: CategorizedActionAndData[]
+  actionData: ActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
   // If undefined, will not show warning to view all pages. This is likely only
@@ -41,12 +36,8 @@ export const ActionsRenderer = ({
   const actionKeysWithData = useMemo(
     () =>
       actionData.map(
-        (
-          { category: { key: categoryKey }, action: { key: actionKey }, data },
-          index
-        ): CategorizedActionKeyAndData => ({
+        ({ action: { key: actionKey }, data }, index): ActionKeyAndData => ({
           _id: index.toString(),
-          categoryKey,
           actionKey,
           data,
         })
@@ -58,7 +49,7 @@ export const ActionsRenderer = ({
   // Group action data by adjacent action, preserving order.
   const groupedActionData = useMemo(
     () =>
-      actionData.reduce((acc, { category, action, data }, index) => {
+      actionData.reduce((acc, { action, data }, index) => {
         // If most recent action is the same as the current action, add the
         // current action's data to the most recent action's data.
         const lastAction = acc[acc.length - 1]
@@ -71,7 +62,6 @@ export const ActionsRenderer = ({
         } else {
           // Otherwise, add a new action to the list.
           acc.push({
-            category,
             action,
             all: [
               {
@@ -189,14 +179,13 @@ export const ActionsRenderer = ({
 }
 
 export type ActionRendererProps = {
-  category: ActionCategoryWithLabel
   action: Action
   all: {
     // Index of data in `allActionsWithData` list.
     index: number
     data: any
   }[]
-  allActionsWithData: CategorizedActionKeyAndData[]
+  allActionsWithData: ActionKeyAndData[]
   // If undefined, will not show warning to view all pages. This is likely only
   // defined when the user can vote.
   setSeenAllPages?: () => void
@@ -205,7 +194,6 @@ export type ActionRendererProps = {
 
 // Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
-  category,
   action,
   all,
   allActionsWithData,
@@ -253,7 +241,6 @@ export const ActionRenderer = ({
       <ActionCard
         action={action}
         actionCount={all.length}
-        category={category}
         childrenContainerClassName="!px-0"
       >
         {all.map(

@@ -43,6 +43,7 @@ const HomePage: NextPage = () => {
         openSearch: () => setCommandModalVisible(true),
         followingDaos: followingDaosLoading,
       }}
+      openSearch={() => setCommandModalVisible(true)}
       rightSidebarContent={
         isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }

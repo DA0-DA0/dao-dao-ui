@@ -1,10 +1,6 @@
 import { useMemo } from 'react'
 
-import {
-  CategorizedActionKeyAndData,
-  LoadedActions,
-  PartialCategorizedActionKeyAndData,
-} from '@dao-dao/types'
+import { ActionKeyAndData, LoadedActions } from '@dao-dao/types'
 import {
   convertActionsToMessages,
   decodeMessages,
@@ -15,10 +11,7 @@ import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 
 export type RawActionsRendererProps = {
   // This likely comes from a form field array that holds the action data.
-  actionData: (
-    | CategorizedActionKeyAndData
-    | PartialCategorizedActionKeyAndData
-  )[]
+  actionData: ActionKeyAndData[]
   // This comes from the `useLoadedActionsAndCategories` hook.
   loadedActions: LoadedActions
 }
