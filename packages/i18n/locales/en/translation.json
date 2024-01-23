@@ -813,9 +813,7 @@
   "info": {
     "abstainVote": "Abstain",
     "accountPageDescription": "View tokens and NFTs for the account with address {{address}}.",
-    "actionLibraryDescription_dao": "Choose an action from one of the categories below to use it. Actions are performed when the proposal is passed and executed.",
-    "actionLibraryDescription_gov": "Choose an action from one of the categories below to use it. Actions are performed when the proposal is passed and executed.",
-    "actionLibraryDescription_wallet": "Choose an action from one of the categories below to include it in the transaction.",
+    "actionLibraryDescription": "Choose an action from one of the categories below to add it.",
     "actionPageWarning": "There are {{actions}} actions across {{pages}} pages. Make sure you view all pages before voting.",
     "actionPaysTokenSwap_paid": "This action sent {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",

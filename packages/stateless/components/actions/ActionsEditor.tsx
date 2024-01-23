@@ -12,7 +12,6 @@ import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useActionOptions } from '@dao-dao/stateful/actions'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
   ActionAndData,
@@ -62,7 +61,6 @@ export const ActionsEditor = ({
   SuspenseLoader,
 }: ActionsEditorProps) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
   const { control, watch } = useFormContext<{
     actionData: ActionKeyAndData[]
   }>()
@@ -174,9 +172,7 @@ export const ActionsEditor = ({
           <p className="title-text">{t('title.actionLibrary')}</p>
           <TooltipInfoIcon
             size="sm"
-            title={t('info.actionLibraryDescription', {
-              context: context.type,
-            })}
+            title={t('info.actionLibraryDescription')}
           />
         </div>
 
