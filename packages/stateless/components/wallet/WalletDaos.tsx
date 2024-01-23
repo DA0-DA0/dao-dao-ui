@@ -23,12 +23,11 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
   const { t } = useTranslation()
 
   const allDaos = daos.loading || daos.errored || !daos.data ? [] : daos.data
-  const { searchBarProps, filteredData } = useSearchFilter(
-    allDaos,
-    FILTERABLE_KEYS,
-    undefined,
-    'dq'
-  )
+  const { searchBarProps, filteredData } = useSearchFilter({
+    data: allDaos,
+    filterableKeys: FILTERABLE_KEYS,
+    querySyncedParam: 'dq',
+  })
 
   const [chainId, setChainId] = useQuerySyncedState<string | undefined>({
     param: 'dqc',
