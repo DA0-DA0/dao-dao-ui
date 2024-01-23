@@ -101,12 +101,26 @@ export const skipRecommendedAssetsSelector = selectorFamily<
   key: 'skipRecommendedAssets',
   get:
     ({ fromChainId, denom, toChainId }) =>
-    async () =>
-      await skipClient.recommendAssets({
-        sourceAssetChainID: fromChainId,
-        sourceAssetDenom: denom,
-        destChainID: toChainId,
-      }),
+    async () => {
+      try {
+        return await skipClient.recommendAssets({
+          sourceAssetChainID: fromChainId,
+          sourceAssetDenom: denom,
+          destChainID: toChainId,
+        })
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          (err.message.toLowerCase().includes('not found') ||
+            err.message.includes('no recommendation found'))
+        ) {
+          return []
+        }
+
+        // Rethrow other errors.
+        throw err
+      }
+    },
 })
 
 export const skipRecommendedAssetSelector = selectorFamily<

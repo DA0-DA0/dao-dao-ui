@@ -27,11 +27,15 @@ export const useSyncWalletSigner = () => {
     }
 
     ;(async () => {
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-      setSigningCosmWasmClient(
-        // cosmos-kit has an older version of the package. This is a workaround.
-        signingCosmWasmClient as unknown as SigningCosmWasmClient
-      )
+      try {
+        const signingCosmWasmClient = await getSigningCosmWasmClient()
+        setSigningCosmWasmClient(
+          // cosmos-kit has an older version of the package. This is a workaround.
+          signingCosmWasmClient as unknown as SigningCosmWasmClient
+        )
+      } catch (err) {
+        console.error(err)
+      }
     })()
   }, [
     setSigningCosmWasmClient,
