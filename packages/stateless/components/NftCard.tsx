@@ -269,18 +269,19 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             {highestOffer && (
               <div className="space-y-2">
                 <p className="secondary-text">{t('title.highestOffer')}</p>
-                <div className="body-text font-mono">
-                  {highestOffer.amount && highestOffer.offerToken && (
-                    <TokenAmountDisplay
-                      amount={convertMicroDenomToDenomWithDecimals(
-                        highestOffer.amount,
-                        highestOffer.offerToken.decimals
-                      )}
-                      decimals={highestOffer.offerToken.decimals}
-                      iconUrl={highestOffer.offerToken.imageUrl}
-                      symbol={highestOffer.offerToken.symbol}
-                    />
-                  )}
+                <div className="body-text space-y-1 font-mono">
+                  {typeof highestOffer.amount === 'number' &&
+                    highestOffer.offerToken && (
+                      <TokenAmountDisplay
+                        amount={convertMicroDenomToDenomWithDecimals(
+                          highestOffer.amount,
+                          highestOffer.offerToken.decimals
+                        )}
+                        decimals={highestOffer.offerToken.decimals}
+                        iconUrl={highestOffer.offerToken.imageUrl}
+                        symbol={highestOffer.offerToken.symbol}
+                      />
+                    )}
                   {highestOffer.amountUsd && (
                     <div className="caption-text flex flex-row items-center gap-1">
                       <TokenAmountDisplay

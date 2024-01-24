@@ -93,9 +93,8 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
         )
 
         nftCardInfos.push(
-          ...data.tokens.tokens.map((token) => {
-            console.log(token)
-            return nftCardInfoFromStargazeIndexerNft(
+          ...data.tokens.tokens.map((token) =>
+            nftCardInfoFromStargazeIndexerNft(
               chainId,
               token,
               token.highestOffer?.offerPrice?.denom
@@ -103,7 +102,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
                 : undefined,
               timestamp
             )
-          })
+          )
         )
 
         if (nftCardInfos.length === data.tokens.pageInfo.total) {

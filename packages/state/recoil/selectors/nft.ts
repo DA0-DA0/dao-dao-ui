@@ -83,7 +83,7 @@ export const allNftUsdValueSelector = selectorFamily<
   number,
   WithChainId<{ address: string }>
 >({
-  key: 'commonNftAllNftUsdValue',
+  key: 'nftAllNftUsdValue',
   get:
     ({ chainId, address }) =>
     ({ get }) => {
@@ -92,14 +92,14 @@ export const allNftUsdValueSelector = selectorFamily<
         waitForAll(
           accounts
             .filter(
-              (x) =>
-                x.chainId === ChainId.StargazeMainnet ||
-                x.chainId === ChainId.StargazeTestnet
+              ({ chainId }) =>
+                chainId === ChainId.StargazeMainnet ||
+                chainId === ChainId.StargazeTestnet
             )
-            .map((x) =>
+            .map(({ chainId, address }) =>
               stargazeWalletUsdValueSelector({
-                chainId: x.chainId,
-                address: x.address,
+                chainId,
+                address,
               })
             )
         )
