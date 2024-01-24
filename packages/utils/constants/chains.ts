@@ -919,6 +919,47 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
     },
   },
+  {
+    chainId: ChainId.MigalooTestnet,
+    name: 'migaloo',
+    mainnet: false,
+    accentColor: '#3ccd64',
+    factoryContractAddress:
+      'migaloo1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqvk723g',
+    indexes: {
+      search: 'migaloo_testnet_daos',
+    },
+    explorerUrlTemplates: {
+      tx: 'https://testnet.ping.pub/migaloo/tx/REPLACE',
+      gov: 'https://testnet.ping.pub/migaloo/gov',
+      govProp: 'https://testnet.ping.pub/migaloo/gov/REPLACE',
+      wallet: 'https://testnet.ping.pub/migaloo/account/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 1,
+      Cw4Group: 18, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 19,
+
+      // ContractVersion.V240
+      CwPayrollFactory: 3,
+      CwTokenSwap: 4,
+      CwTokenfactoryIssuer: 5,
+      CwVesting: 6,
+      DaoCore: 7,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 9,
+      DaoPreProposeApprover: 10,
+      DaoPreProposeMultiple: 11,
+      DaoPreProposeSingle: 12,
+      DaoProposalMultiple: 13,
+      DaoProposalSingle: 14,
+      DaoVotingCw4: 15,
+      DaoVotingCw721Staked: 16,
+      DaoVotingTokenStaked: 17,
+    },
+  },
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -975,6 +1016,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.MigalooMainnet]: {
     rpc: 'https://migaloo-rpc.polkachu.com',
     rest: 'https://migaloo-api.polkachu.com',
+  },
+  [ChainId.MigalooTestnet]: {
+    rpc: 'https://migaloo-testnet-rpc.polkachu.com',
+    rest: 'https://migaloo-testnet-api.polkachu.com',
   },
   [ChainId.KujiraMainnet]: {
     rpc: 'https://kujira-rpc.polkachu.com',
