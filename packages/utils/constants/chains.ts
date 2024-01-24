@@ -22,7 +22,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     indexes: {
       search: 'daos',
-      featured: 'featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/juno/tx/REPLACE',
@@ -185,8 +184,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     indexes: {
       search: 'osmosis_daos',
-      // Use same as mainnet.
-      featured: 'osmosis_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/osmosis/tx/REPLACE',
@@ -364,7 +361,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
     indexes: {
       search: 'neutron_daos',
-      featured: 'neutron_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/neutron/tx/REPLACE',
@@ -501,7 +497,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
     indexes: {
       search: 'stargaze_daos',
-      featured: 'stargaze_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/stargaze/tx/REPLACE',
@@ -655,7 +650,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'migaloo19q77nmuaq3mnwecnxu7cfj6y6nd4jzw9x20v6xm66lmhqlvxwrkscaefz8',
     indexes: {
       search: 'migaloo_daos',
-      featured: 'migaloo_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/migaloo/tx/REPLACE',
@@ -791,7 +785,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'juno1dacj3j6pwr7jx0jeu99qdc4a2ylc2rxp4v3zap54sfrl3ntrhe8qkjfpku',
     indexes: {
       search: 'testnet_daos',
-      featured: 'featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
@@ -843,8 +836,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'osmo1v5k3527dt2vt67848h8jk0az9dyl8sunsqaapznf2j9tm4arxxfs7gwa0n',
     indexes: {
       search: 'osmosis_testnet_daos',
-      // Use same as mainnet.
-      featured: 'osmosis_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/osmosis/tx/REPLACE',
@@ -892,8 +883,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'stars1ajrde5kky0c3xspjthqncxd72qmyu5trfsspn6ndk892gyqwakzsdjmegx',
     indexes: {
       search: 'stargaze_testnet_daos',
-      // Use same as mainnet.
-      featured: 'stargaze_featured_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
