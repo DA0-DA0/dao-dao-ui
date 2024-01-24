@@ -9,7 +9,6 @@ import {
 } from '@dao-dao/types'
 import {
   CommonError,
-  NUM_FEATURED_DAOS,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
@@ -260,11 +259,13 @@ export const indexerMeilisearchClientSelector = selector({
   dangerouslyAllowMutability: true,
 })
 
-// Top 10 featured DAOs by TVL with certain conditions.
+/**
+ * Featured DAOs on a given chain.
+ */
 export const indexerFeaturedDaosSelector = selectorFamily<
   {
     address: string
-    tvl: number
+    order: number
   }[],
   string
 >({
@@ -277,62 +278,16 @@ export const indexerFeaturedDaosSelector = selectorFamily<
         return []
       }
 
-      const priorityFeaturedDaos: string[] =
+      const featuredDaos: {
+        address: string
+        order: number
+      }[] =
         get(
           queryGenericIndexerSelector({
             chainId,
-            formula: 'priorityFeaturedDaos',
+            formula: 'featuredDaos',
           })
         ) || []
-
-      const client = get(indexerMeilisearchClientSelector)
-      const index = client.index(config.indexes.featured)
-
-      let hits: {
-        contractAddress: string
-        value: { tvl: number }
-      }[] = []
-      try {
-        hits = (
-          await index.search<{
-            contractAddress: string
-            value: { tvl: number }
-          }>(null, {
-            limit: NUM_FEATURED_DAOS,
-            filter: [
-              'value.daysSinceLastProposalPassed >= 0',
-              'value.daysSinceLastProposalPassed <= 90',
-              'value.giniCoefficient >= 0',
-              'value.giniCoefficient < 0.75',
-              'value.memberCount >= 3',
-              // Exclude priority.
-              ...(priorityFeaturedDaos.length > 0
-                ? [
-                    `NOT contractAddress IN ["${priorityFeaturedDaos.join(
-                      '", "'
-                    )}"]`,
-                  ]
-                : []),
-            ],
-            sort: ['value.tvl:desc'],
-          })
-        ).hits
-      } catch (err) {
-        console.error(err)
-      }
-
-      const featuredDaos = [
-        // Insert priority DAOs first.
-        ...priorityFeaturedDaos.map((address) => ({
-          address,
-          // Rank first.
-          tvl: Infinity,
-        })),
-        ...hits.map((hit) => ({
-          address: hit.contractAddress,
-          tvl: hit.value.tvl,
-        })),
-      ]
 
       return featuredDaos
     },

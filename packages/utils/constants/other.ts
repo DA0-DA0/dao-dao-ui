@@ -74,8 +74,6 @@ export const ICA_CHAINS_TX_PREFIX = 'ica:'
 
 export const CHAIN_GAS_MULTIPLIER = 2
 
-export const NUM_FEATURED_DAOS = 10
-
 // Neutron DAOs.
 export const NEUTRON_GOVERNANCE_DAO =
   'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'

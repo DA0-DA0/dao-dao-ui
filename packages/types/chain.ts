@@ -119,10 +119,6 @@ export type SupportedChainConfig = BaseChainConfig & {
      * DAO search index
      */
     search: string
-    /**
-     * Featured DAO inde
-     */
-    featured: string
   }
   /**
    * Code IDs stored on this chain that are used throughout the UI.

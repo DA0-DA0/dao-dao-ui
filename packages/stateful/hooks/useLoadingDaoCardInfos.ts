@@ -3,7 +3,7 @@ import { constSelector, waitForAll } from 'recoil'
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
-import { NUM_FEATURED_DAOS, getSupportedChains } from '@dao-dao/utils'
+import { getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
 import { useSupportedChainWallets } from './useSupportedChainWallets'
@@ -62,16 +62,15 @@ export const useLoadingFeaturedDaoCardInfos = (
       ? { loading: true }
       : {
           loading: false,
-          data: chains
-            .flatMap(({ chain }, index) =>
-              featuredDaos.data[index].map(({ address: coreAddress, tvl }) => ({
+          data: chains.flatMap(({ chain }, index) =>
+            featuredDaos.data[index]
+              .map(({ address: coreAddress, order }) => ({
                 chainId: chain.chain_id,
                 coreAddress,
-                tvl,
+                order,
               }))
-            )
-            .sort((a, b) => b.tvl - a.tvl)
-            .slice(0, NUM_FEATURED_DAOS),
+              .sort((a, b) => a.order - b.order)
+          ),
         }
   )
 }
