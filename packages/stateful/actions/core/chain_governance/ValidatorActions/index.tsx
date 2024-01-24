@@ -3,7 +3,9 @@ import cloneDeep from 'lodash.clonedeep'
 import { useCallback } from 'react'
 
 import { PickEmoji } from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
 import {
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -40,7 +42,17 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
   const {
     t,
     chain: { chain_id: currentChainId },
+    context,
   } = options
+
+  if (
+    // Governance module cannot run a validator.
+    context.type === ActionContextType.Gov ||
+    // Neutron does not have validators.
+    currentChainId === ChainId.NeutronMainnet
+  ) {
+    return null
+  }
 
   const getValidatorAddress = (chainId: string) =>
     toValidatorAddress(

@@ -23,6 +23,7 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
+  ChainId,
   GOVERNANCE_PROPOSAL_TYPES,
   GovProposalVersion,
   GovernanceProposalActionData,
@@ -273,7 +274,17 @@ export const makeGovernanceProposalAction: ActionMaker<
     t,
     address,
     chain: { chain_id: currentChainId },
+    context,
   } = options
+
+  if (
+    // Governance module cannot participate in governance.
+    context.type === ActionContextType.Gov ||
+    // Neutron does not use the x/gov module.
+    currentChainId === ChainId.NeutronMainnet
+  ) {
+    return null
+  }
 
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
     const govParams = useCachedLoadingWithError(

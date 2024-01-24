@@ -16,7 +16,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { ChainId, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -198,7 +198,17 @@ export const makeGovernanceDepositAction: ActionMaker<GovernanceDepositData> = (
   const {
     t,
     chain: { chain_id: currentChainId },
+    context,
   } = options
+
+  if (
+    // Governance module cannot participate in governance.
+    context.type === ActionContextType.Gov ||
+    // Neutron does not use the x/gov module.
+    currentChainId === ChainId.NeutronMainnet
+  ) {
+    return null
+  }
 
   const useDefaults: UseDefaults<GovernanceDepositData> = () => ({
     chainId: currentChainId,
