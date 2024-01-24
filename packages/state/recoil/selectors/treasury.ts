@@ -29,8 +29,8 @@ import {
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import { allNftUsdValueSelector } from './contracts/CommonNft'
 import { queryWalletIndexerSelector } from './indexer'
+import { allNftUsdValueSelector } from './nft'
 import { genericTokenSelector, usdPriceSelector } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{

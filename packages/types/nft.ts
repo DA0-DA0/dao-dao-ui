@@ -1,5 +1,6 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
+import { GenericToken } from '.'
 import { ChainId, WithChainId } from './chain'
 import {
   ButtonLinkProps,
@@ -71,9 +72,9 @@ export type NftCardInfo = {
   // Metadata loaded from the token URI.
   metadata?: Record<string, any>
   highestOffer?: {
+    offerToken?: GenericToken | null
     amount?: number | null
     amountUsd?: number | null
-    denom?: string | null
   }
   name: string
   description: string | undefined

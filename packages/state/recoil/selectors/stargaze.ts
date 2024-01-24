@@ -11,7 +11,7 @@ export const stargazeWalletUsdValueSelector = selectorFamily<
   number,
   WithChainId<{ address: string }>
 >({
-  key: 'commonNftStargazeWalletUsdValue',
+  key: 'stargazeWalletUsdValue',
   get:
     ({ chainId, address }) =>
     async () => {
@@ -19,7 +19,7 @@ export const stargazeWalletUsdValueSelector = selectorFamily<
         chainId !== ChainId.StargazeMainnet &&
         chainId !== ChainId.StargazeTestnet
       ) {
-        throw new Error('Expected Stargaze mainnet chain')
+        throw new Error('Expected Stargaze chain')
       }
 
       const { error, data } = await stargazeIndexerClient.query({
@@ -33,11 +33,9 @@ export const stargazeWalletUsdValueSelector = selectorFamily<
         throw error
       }
 
-      if (
-        data.wallet?.stats?.totalValueUsd === null ||
-        data.wallet?.stats?.totalValueUsd === undefined
-      )
-        throw new Error('Unexpected response from Stargaze indexer')
+      if (!data?.wallet?.stats?.totalValueUsd) {
+        return 0
+      }
 
       return data.wallet.stats.totalValueUsd
     },

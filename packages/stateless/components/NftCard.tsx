@@ -18,6 +18,7 @@ import {
 } from '@dao-dao/types'
 import {
   NFT_VIDEO_EXTENSIONS,
+  convertMicroDenomToDenomWithDecimals,
   getImageUrlForChainId,
   getNftName,
   objectMatchesStructure,
@@ -268,11 +269,18 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             {highestOffer && (
               <div className="space-y-2">
                 <p className="secondary-text">{t('title.highestOffer')}</p>
-                <p className="body-text font-mono">
-                  {highestOffer.amount?.toLocaleString(undefined, {
-                    maximumSignificantDigits: 3,
-                  })}{' '}
-                  ${highestOffer.denom}
+                <div className="body-text font-mono">
+                  {highestOffer.amount && highestOffer.offerToken && (
+                    <TokenAmountDisplay
+                      amount={convertMicroDenomToDenomWithDecimals(
+                        highestOffer.amount,
+                        highestOffer.offerToken.decimals
+                      )}
+                      decimals={highestOffer.offerToken.decimals}
+                      iconUrl={highestOffer.offerToken.imageUrl}
+                      symbol={highestOffer.offerToken.symbol}
+                    />
+                  )}
                   {highestOffer.amountUsd && (
                     <div className="caption-text flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -287,7 +295,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                       />
                     </div>
                   )}
-                </p>
+                </div>
               </div>
             )}
           </div>

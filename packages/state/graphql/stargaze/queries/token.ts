@@ -12,6 +12,7 @@ export const stargazeTokenQuery = gql(`
         offerPrice {
           amount
           amountUsd
+          denom
         }
       }
       media {
@@ -54,6 +55,7 @@ export const stargazeTokensForOwnerQuery = gql(`
           offerPrice {
             amount
             amountUsd
+            denom
           }
         }
         media {
