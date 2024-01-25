@@ -30,6 +30,7 @@ import {
   cosmWasmClientForChainSelector,
 } from './chain'
 import { queryWalletIndexerSelector } from './indexer'
+import { allNftUsdValueSelector } from './nft'
 import { genericTokenSelector, usdPriceSelector } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{
@@ -209,24 +210,33 @@ export const daoTvlSelector = selectorFamily<
         )
       )
 
-      const amount = allBalances
-        .map(({ token, balance }, index) => {
-          // Don't calculate price if could not load token decimals correctly.
-          if (token.decimals === 0) {
-            return 0
-          }
-
-          const price =
-            (usdPrices[index].state === 'hasValue' &&
-              usdPrices[index].getValue()?.usdPrice) ||
-            0
-          return (
-            price &&
-            convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
-              price
-          )
+      const nftAmount = get(
+        allNftUsdValueSelector({
+          chainId,
+          address: coreAddress,
         })
-        .reduce((price, total) => price + total, 0)
+      )
+
+      const amount =
+        nftAmount +
+        allBalances
+          .map(({ token, balance }, index) => {
+            // Don't calculate price if could not load token decimals correctly.
+            if (token.decimals === 0) {
+              return 0
+            }
+
+            const price =
+              (usdPrices[index].state === 'hasValue' &&
+                usdPrices[index].getValue()?.usdPrice) ||
+              0
+            return (
+              price &&
+              convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
+                price
+            )
+          })
+          .reduce((price, total) => price + total, 0)
 
       return {
         amount,

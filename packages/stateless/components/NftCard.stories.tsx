@@ -48,10 +48,9 @@ export const makeProps = (): NftCardProps => {
     owner: 'junoOwnerAddress',
     name: `${id}`,
     description: `Description of NFT #${id}`,
-    floorPrice: {
+    highestOffer: {
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
-      denom: 'STARS',
     },
     externalLink: {
       href: '/dog_nft.png',

@@ -1,7 +1,10 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
-import { NftUriData } from '@dao-dao/types'
+import { ChainId, NftUriData, WithChainId } from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
+
+import { accountsSelector } from './account'
+import { stargazeWalletUsdValueSelector } from './stargaze'
 
 // Tries to parse [EIP-721] metadata out of an NFT's metadata JSON.
 //
@@ -74,6 +77,35 @@ export const nftUriDataSelector = selectorFamily<
       console.error(err)
     }
   },
+})
+
+export const allNftUsdValueSelector = selectorFamily<
+  number,
+  WithChainId<{ address: string }>
+>({
+  key: 'nftAllNftUsdValue',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const accounts = get(accountsSelector({ chainId, address }))
+      const sum = get(
+        waitForAll(
+          accounts
+            .filter(
+              ({ chainId }) =>
+                chainId === ChainId.StargazeMainnet ||
+                chainId === ChainId.StargazeTestnet
+            )
+            .map(({ chainId, address }) =>
+              stargazeWalletUsdValueSelector({
+                chainId,
+                address,
+              })
+            )
+        )
+      ).reduce((acc, x) => acc + x, 0)
+      return sum
+    },
 })
 
 // Maps domain -> human readable name. If a domain is in this set, NFTs

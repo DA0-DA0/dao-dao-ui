@@ -18,12 +18,14 @@ import {
 } from '@dao-dao/types'
 import {
   NFT_VIDEO_EXTENSIONS,
+  convertMicroDenomToDenomWithDecimals,
   getImageUrlForChainId,
   getNftName,
   objectMatchesStructure,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
+import { TokenAmountDisplay, TooltipInfoIcon } from '..'
 import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
@@ -63,7 +65,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       checkbox,
       imageUrl,
       metadata,
-      floorPrice,
+      highestOffer,
+      fetchedTimestamp,
       name,
       description,
       tokenId,
@@ -225,7 +228,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           />
         )}
 
-        {(!hideCollection || (owner && EntityDisplay) || floorPrice) && (
+        {(!hideCollection || (owner && EntityDisplay) || highestOffer) && (
           <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
             {/* Collection */}
             {!hideCollection && (
@@ -262,17 +265,44 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               </div>
             )}
 
-            {/* Floor price */}
-            {floorPrice && (
+            {/* Highest offer */}
+            {highestOffer && (
               <div className="space-y-2">
-                <p className="secondary-text">{t('title.floorPrice')}</p>
+                <p className="secondary-text">{t('title.highestOffer')}</p>
+                <div className="body-text space-y-1 font-mono">
+                  {typeof highestOffer.amount === 'number' &&
+                    !isNaN(highestOffer.amount) &&
+                    highestOffer.offerToken && (
+                      <TokenAmountDisplay
+                        amount={convertMicroDenomToDenomWithDecimals(
+                          highestOffer.amount,
+                          highestOffer.offerToken.decimals
+                        )}
+                        decimals={highestOffer.offerToken.decimals}
+                        iconUrl={highestOffer.offerToken.imageUrl}
+                        symbol={highestOffer.offerToken.symbol}
+                      />
+                    )}
+                  {highestOffer.amountUsd && (
+                    <div
+                      className={clsx(
+                        'caption-text flex flex-row items-center gap-1',
+                        !!highestOffer.offerToken?.imageUrl && 'ml-7'
+                      )}
+                    >
+                      <TokenAmountDisplay
+                        amount={highestOffer.amountUsd}
+                        dateFetched={fetchedTimestamp}
+                        estimatedUsdValue
+                      />
 
-                <p className="body-text font-mono">
-                  {floorPrice.amount.toLocaleString(undefined, {
-                    maximumSignificantDigits: 3,
-                  })}{' '}
-                  ${floorPrice.denom}
-                </p>
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedStargazeUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
