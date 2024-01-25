@@ -94,7 +94,7 @@ export const nftCardInfoFromStargazeIndexerNft = (
     ? {
         offerToken,
         amountUsd: token.highestOffer?.offerPrice?.amountUsd,
-        amount: token.highestOffer?.offerPrice?.amount,
+        amount: Number(token.highestOffer?.offerPrice?.amount),
       }
     : undefined,
   fetchedTimestamp: timestamp,

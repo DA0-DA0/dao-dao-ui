@@ -271,6 +271,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                 <p className="secondary-text">{t('title.highestOffer')}</p>
                 <div className="body-text space-y-1 font-mono">
                   {typeof highestOffer.amount === 'number' &&
+                    !isNaN(highestOffer.amount) &&
                     highestOffer.offerToken && (
                       <TokenAmountDisplay
                         amount={convertMicroDenomToDenomWithDecimals(
