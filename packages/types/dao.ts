@@ -33,6 +33,7 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
@@ -93,6 +94,10 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
 export enum PreProposeModuleType {
   Approval = 'approval',
   Approver = 'approver',
+  // Neutron fork SubDAOs use timelock.
+  NeutronSubdaoSingle = 'neutron_subdao_single',
+  // Neutron fork DAO uses overrule pre-propose paired with SubDAO timelocks.
+  NeutronOverruleSingle = 'neutron_overrule_single',
   Other = 'other',
 }
 
@@ -110,6 +115,11 @@ export type PreProposeModuleApproverConfig = {
   preProposeApprovalContract: string
 }
 
+export type PreProposeModuleNeutronSubdaoSingleConfig = {
+  timelockAddress: string
+  timelockConfig: NeutronCwdSubdaoTimelockSingleConfig
+}
+
 export type PreProposeModuleTypedConfig =
   | {
       type: PreProposeModuleType.Approval
@@ -118,6 +128,14 @@ export type PreProposeModuleTypedConfig =
   | {
       type: PreProposeModuleType.Approver
       config: PreProposeModuleApproverConfig
+    }
+  | {
+      type: PreProposeModuleType.NeutronSubdaoSingle
+      config: PreProposeModuleNeutronSubdaoSingleConfig
+    }
+  | {
+      type: PreProposeModuleType.NeutronOverruleSingle
+      config?: undefined
     }
   | {
       type: PreProposeModuleType.Other

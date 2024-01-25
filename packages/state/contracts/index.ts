@@ -63,6 +63,18 @@ export {
   NeutronVotingRegistryQueryClient,
 } from './NeutronVotingRegistry'
 export {
+  NeutronCwdPreProposeSingleOverruleClient,
+  NeutronCwdPreProposeSingleOverruleQueryClient,
+} from './NeutronCwdPreProposeSingleOverrule'
+export {
+  NeutronCwdSubdaoPreProposeSingleClient,
+  NeutronCwdSubdaoPreProposeSingleQueryClient,
+} from './NeutronCwdSubdaoPreProposeSingle'
+export {
+  NeutronCwdSubdaoTimelockSingleClient,
+  NeutronCwdSubdaoTimelockSingleQueryClient,
+} from './NeutronCwdSubdaoTimelockSingle'
+export {
   PolytoneListenerClient,
   PolytoneListenerQueryClient,
 } from './PolytoneListener'

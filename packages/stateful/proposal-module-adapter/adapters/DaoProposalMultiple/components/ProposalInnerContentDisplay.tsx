@@ -195,8 +195,9 @@ export const InnerProposalInnerContentDisplay = ({
             (statusKey === ProposalStatusEnum.Passed ||
               statusKey === ProposalStatusEnum.Executed ||
               statusKey === ProposalStatusEnum.ExecutionFailed ||
-              statusKey === 'veto_timelock') &&
-            !!winningChoice
+              statusKey === 'veto_timelock' ||
+              statusKey === ProposalStatusEnum.NeutronTimelocked) &&
+            winningChoice
               ? winningChoice.index === data.choice.index
               : undefined
           }

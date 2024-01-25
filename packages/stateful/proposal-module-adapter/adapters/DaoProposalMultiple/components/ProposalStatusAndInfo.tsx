@@ -10,6 +10,7 @@ import {
 import clsx from 'clsx'
 import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
 import { DaoProposalMultipleSelectors } from '@dao-dao/state'
@@ -19,9 +20,11 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  Tooltip,
   TooltipTruncatedText,
   useConfiguredChainContext,
   useDaoInfoContext,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -30,7 +33,11 @@ import {
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { formatPercentOf100, getProposalStatusKey } from '@dao-dao/utils'
+import {
+  formatDateTimeTz,
+  formatPercentOf100,
+  getProposalStatusKey,
+} from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
@@ -86,7 +93,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, ...proposal },
+  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: { winningChoice, quorumReached, turnoutPercent, isTie },
   depositInfo,
   onVoteSuccess,
@@ -194,6 +201,8 @@ const InnerProposalStatusAndInfo = ({
       onExecuteSuccess,
     })
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
       Icon: ({ className }) => (
@@ -239,6 +248,24 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
+    ...(vetoTimelockExpiration
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: t('title.vetoTimeLeft'),
+            Value: (props) => (
+              <Tooltip title={formatDateTimeTz(vetoTimelockExpiration)}>
+                <p {...props}>
+                  <TimeAgo
+                    date={vetoTimelockExpiration}
+                    formatter={timeAgoFormatter}
+                  />
+                </p>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
     ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
           {
@@ -275,7 +302,8 @@ const InnerProposalStatusAndInfo = ({
     (statusKey === ProposalStatusEnum.Passed ||
       statusKey === ProposalStatusEnum.Executed ||
       statusKey === ProposalStatusEnum.ExecutionFailed ||
-      statusKey === 'veto_timelock')
+      statusKey === 'veto_timelock' ||
+      statusKey === ProposalStatusEnum.NeutronTimelocked)
       ? ([
           {
             Icon: PollOutlined,
@@ -330,6 +358,12 @@ const InnerProposalStatusAndInfo = ({
             ? hasWinner
               ? 'vetoedWinner'
               : 'vetoedNoWinner'
+            : statusKey === 'veto_timelock'
+            ? 'vetoTimelock'
+            : statusKey === ProposalStatusEnum.NeutronOverruled
+            ? 'overruled'
+            : statusKey === ProposalStatusEnum.NeutronTimelocked
+            ? 'overruleTimelock'
             : undefined,
         turnoutPercent: formatPercentOf100(turnoutPercent),
         turnoutWinningPercent: hasWinner

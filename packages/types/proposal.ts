@@ -2,6 +2,7 @@ import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
 import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
+import { ProposalResponse } from './contracts/DaoProposalSingle.v2'
 import { DurationWithUnits } from './units'
 
 export type ProposalCreatedCardProps = Omit<
@@ -128,4 +129,14 @@ export type ProposalVetoConfig = {
   timelockDuration: DurationWithUnits
   earlyExecute: boolean
   vetoBeforePassed: boolean
+}
+
+/**
+ * Information about the timelock overrule that was created for a timelocked
+ * proposal on Neutron.
+ */
+export type NeutronTimelockOverrule = {
+  dao: string
+  proposalModulePrefix: string
+  proposal: ProposalResponse
 }

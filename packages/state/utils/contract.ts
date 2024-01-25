@@ -6,6 +6,7 @@ import {
   PreProposeModuleType,
   PreProposeModuleTypedConfig,
 } from '@dao-dao/types'
+import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
   cosmWasmClientRouter,
@@ -18,6 +19,8 @@ import {
 import {
   DaoPreProposeApprovalSingleQueryClient,
   DaoPreProposeApproverQueryClient,
+  NeutronCwdSubdaoPreProposeSingleQueryClient,
+  NeutronCwdSubdaoTimelockSingleQueryClient,
 } from '../contracts'
 import { queryIndexer } from '../indexer'
 
@@ -210,6 +213,77 @@ export const fetchPreProposeModule = async (
       }
       break
     }
+    case ContractName.NeutronCwdSubdaoPreProposeSingle: {
+      let timelockAddress: string | undefined
+      // Try indexer first.
+      try {
+        timelockAddress = await queryIndexer({
+          type: 'contract',
+          address: preProposeAddress,
+          formula: 'item',
+          args: {
+            key: 'timelock_contract_address',
+          },
+          chainId,
+        })
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, fallback to querying chain.
+      if (!timelockAddress) {
+        const client = new NeutronCwdSubdaoPreProposeSingleQueryClient(
+          await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+          preProposeAddress
+        )
+
+        timelockAddress = (await client.queryExtension({
+          msg: {
+            timelock_address: {},
+          },
+        })) as string
+      }
+
+      let config: NeutronCwdSubdaoTimelockSingleConfig | undefined
+      // Try indexer first.
+      try {
+        config = await queryIndexer({
+          type: 'contract',
+          address: timelockAddress,
+          formula: 'item',
+          args: {
+            key: 'config',
+          },
+          chainId,
+        })
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, fallback to querying chain.
+      if (!config) {
+        const client = new NeutronCwdSubdaoTimelockSingleQueryClient(
+          await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+          timelockAddress
+        )
+
+        config = await client.config()
+      }
+
+      typedConfig = {
+        type: PreProposeModuleType.NeutronSubdaoSingle,
+        config: {
+          timelockAddress,
+          timelockConfig: config,
+        },
+      }
+      break
+    }
+    case ContractName.NeutronCwdPreProposeSingleOverrule:
+      typedConfig = {
+        type: PreProposeModuleType.NeutronOverruleSingle,
+      }
+      break
   }
 
   return {
