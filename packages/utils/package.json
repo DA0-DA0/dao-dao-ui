@@ -6,7 +6,9 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "jest",
-    "protobuf": "node protobuf/scripts/codegen.js && git apply protobuf/patches.diff"
+    "protobuf:codegen": "node protobuf/scripts/codegen.js",
+    "protobuf:patch": "git apply protobuf/patches.diff",
+    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
     "@chain-registry/assets": "^1.26.1",

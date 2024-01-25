@@ -1770,7 +1770,6 @@ export const MsgInstantiateContract2 = {
       obj.funds = [];
     }
     obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
-    // TODO(protobuf): is this still necessary?
     if (message.fixMsg) {
       obj.fix_msg = message.fixMsg;
     }
