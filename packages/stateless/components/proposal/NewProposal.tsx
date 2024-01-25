@@ -111,27 +111,34 @@ export const NewProposal = <
   const [submitError, setSubmitError] = useState('')
 
   const [holdingAltForSimulation, setHoldingAltForSimulation] = useState(false)
-  // Unset holding alt after 3 seconds, in case it got stuck.
+  const [holdingShiftForForce, setHoldingShiftForForce] = useState(false)
+  // Unset holding alt/shift after 3 seconds, in case it got stuck.
   useEffect(() => {
-    if (!holdingAltForSimulation) {
-      return
-    }
-
-    const timeout = setTimeout(() => setHoldingAltForSimulation(false), 3000)
-
-    return () => {
-      clearTimeout(timeout)
+    if (holdingAltForSimulation) {
+      const timeout = setTimeout(() => setHoldingAltForSimulation(false), 3000)
+      return () => clearTimeout(timeout)
     }
   }, [holdingAltForSimulation])
+  useEffect(() => {
+    if (holdingShiftForForce) {
+      const timeout = setTimeout(() => setHoldingShiftForForce(false), 3000)
+      return () => clearTimeout(timeout)
+    }
+  }, [holdingShiftForForce])
+  // Detect keys.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Alt') {
         setHoldingAltForSimulation(true)
+      } else if (event.key === 'Shift') {
+        setHoldingShiftForForce(true)
       }
     }
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.key === 'Alt') {
         setHoldingAltForSimulation(false)
+      } else if (event.key === 'Shift') {
+        setHoldingShiftForForce(false)
       }
     }
 
@@ -189,13 +196,26 @@ export const NewProposal = <
         return
       }
 
-      if (holdingAltForSimulation) {
-        simulateProposal(data)
-      } else {
-        createProposal(data)
+      simulateProposal(data)
+
+      // Even on error, force publish if holding shift.
+    } else if (holdingShiftForForce) {
+      let data: ProposalData
+      try {
+        data = getProposalDataFromFormData(getValues())
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
       }
 
-      // If not simulating, just show error to check above.
+      createProposal(data)
+
+      // If not simulating or creating, show error to check for errors.
     } else {
       setSubmitError(t('error.correctErrorsAbove'))
     }
@@ -204,6 +224,7 @@ export const NewProposal = <
   return (
     <form
       className="flex flex-col gap-6"
+      noValidate={holdingAltForSimulation || holdingShiftForForce}
       onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
     >
       <Header />
@@ -243,6 +264,8 @@ export const NewProposal = <
               title={
                 holdingAltForSimulation
                   ? undefined
+                  : holdingShiftForForce
+                  ? t('info.forcePublishTooltip')
                   : !connected
                   ? t('error.logInToContinue')
                   : depositUnsatisfied
@@ -292,6 +315,11 @@ export const NewProposal = <
                   <>
                     <p>{t('button.simulate')}</p>
                     <Speed className="!h-5 !w-5" />
+                  </>
+                ) : holdingShiftForForce ? (
+                  <>
+                    <p>{t('button.forcePublish')}</p>
+                    <GavelRounded className="!h-4 !w-4" />
                   </>
                 ) : (
                   <>
