@@ -6,7 +6,12 @@ import {
   genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { NumbersEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
-import { DepositRefundPolicy, Feature, TokenType } from '@dao-dao/types'
+import {
+  ContractVersion,
+  DepositRefundPolicy,
+  Feature,
+  TokenType,
+} from '@dao-dao/types'
 import {
   ActionChainContextType,
   ActionContextType,
@@ -86,6 +91,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   // Disallow usage if:
   // - not a DAO
   // - DAO doesn't support multiple choice proposals
+  // - Neutron fork SubDAO
   // - chain is not supported (type-check, implied by DAO check)
   //
   // Disallows creation at the bottom of this function if:
@@ -95,6 +101,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   if (
     context.type !== ActionContextType.Dao ||
     !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
+    // Neutron fork SubDAOs don't support multiple choice proposals due to the
+    // timelock/overrule system only being designed for single choice proposals.
+    context.info.coreVersion === ContractVersion.V2AlphaNeutronFork ||
     chainContext.type !== ActionChainContextType.Supported
   ) {
     return null
