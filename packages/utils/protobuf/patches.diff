@@ -1,7 +1,7 @@
-diff --git a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
+diff --git b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
 index c04740c22..98853e53d 100644
---- a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
-+++ b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
+--- b/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
++++ a/packages/utils/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
 @@ -3,6 +3,7 @@ import { Grant, GrantAmino, GrantSDKType } from "./authz";
  import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
  import { BinaryReader, BinaryWriter } from "../../../binary";
@@ -27,10 +27,19 @@ index c04740c22..98853e53d 100644
      } else {
        obj.msgs = [];
      }
-diff --git a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 974dcf4b6..0599cc51f 100644
---- a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
-+++ b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
+diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
+index 0fc3ae7a3..416477c43 100644
+--- b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
++++ a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
+@@ -1,7 +1,7 @@
+ //@ts-nocheck
+ import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+ import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+-import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType, voteOptionFromJSON } from "./gov";
++import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
+ import { Timestamp } from "../../../google/protobuf/timestamp";
+ import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
+ import { TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "../v1beta1/gov";
 @@ -18,6 +18,7 @@ import { PromoteToPrivilegedContractProposal, PromoteToPrivilegedContractProposa
  import { SetCodeAuthorizationProposal, SetCodeAuthorizationProposalProtoMsg, SetCodeAuthorizationProposalSDKType, RemoveCodeAuthorizationProposal, RemoveCodeAuthorizationProposalProtoMsg, RemoveCodeAuthorizationProposalSDKType, SetContractAuthorizationProposal, SetContractAuthorizationProposalProtoMsg, SetContractAuthorizationProposalSDKType, RemoveContractAuthorizationProposal, RemoveContractAuthorizationProposalProtoMsg, RemoveContractAuthorizationProposalSDKType } from "../../../publicawesome/stargaze/globalfee/v1/proposal";
  import { BinaryReader, BinaryWriter } from "../../../binary";
@@ -48,40 +57,150 @@ index 974dcf4b6..0599cc51f 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -595,7 +596,7 @@ export const MsgSubmitProposal = {
+@@ -594,10 +595,8 @@ export const MsgSubmitProposal = {
+   },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
-     if (message.messages) {
+-    if (message.messages) {
 -      obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
+-    } else {
+-      obj.messages = [];
++    if (message.messages.length) {
 +      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
-     } else {
-       obj.messages = [];
      }
-@@ -608,7 +609,10 @@ export const MsgSubmitProposal = {
+     if (message.initialDeposit) {
+       obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+@@ -608,7 +607,9 @@ export const MsgSubmitProposal = {
      obj.metadata = message.metadata;
      obj.title = message.title;
      obj.summary = message.summary;
 -    obj.expedited = message.expedited;
-+    // TODO(protobuf): is this still necessary?
 +    if (message.expedited) {
 +      obj.expedited = message.expedited;
 +    }
      return obj;
    },
    fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-diff --git a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-index 11d5dba92..a9e55d389 100644
---- a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-+++ b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-@@ -1770,7 +1770,10 @@ export const MsgInstantiateContract2 = {
+@@ -907,7 +908,7 @@ export const MsgVote = {
+       message.voter = object.voter;
+     }
+     if (object.option !== undefined && object.option !== null) {
+-      message.option = voteOptionFromJSON(object.option);
++      message.option = object.option;
+     }
+     if (object.metadata !== undefined && object.metadata !== null) {
+       message.metadata = object.metadata;
+diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
+index 41cc80d9f..f9fe6a774 100644
+--- b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
++++ a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
+@@ -1,7 +1,7 @@
+ //@ts-nocheck
+ import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+ import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+-import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType, voteOptionFromJSON } from "./gov";
++import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "./gov";
+ import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
+ import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
+ import { SoftwareUpgradeProposal, SoftwareUpgradeProposalProtoMsg, SoftwareUpgradeProposalSDKType, CancelSoftwareUpgradeProposal, CancelSoftwareUpgradeProposalProtoMsg, CancelSoftwareUpgradeProposalSDKType } from "../../upgrade/v1beta1/upgrade";
+@@ -467,7 +467,7 @@ export const MsgVote = {
+       message.voter = object.voter;
+     }
+     if (object.option !== undefined && object.option !== null) {
+-      message.option = voteOptionFromJSON(object.option);
++      message.option = object.option;
+     }
+     return message;
+   },
+diff --git b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
+index 11d5dba92..e5ef23ea1 100644
+--- b/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
++++ a/packages/utils/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
+@@ -1770,7 +1770,9 @@ export const MsgInstantiateContract2 = {
        obj.funds = [];
      }
      obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
 -    obj.fix_msg = message.fixMsg;
-+    // TODO(protobuf): is this still necessary?
 +    if (message.fixMsg) {
 +      obj.fix_msg = message.fixMsg;
 +    }
      return obj;
    },
    fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
+diff --git b/packages/utils/protobuf/codegen/neutron/transfer/v1/query.rpc.Query.ts a/packages/utils/protobuf/codegen/neutron/transfer/v1/query.rpc.Query.ts
+index 1ac4702eb..0c1da3f64 100644
+--- b/packages/utils/protobuf/codegen/neutron/transfer/v1/query.rpc.Query.ts
++++ a/packages/utils/protobuf/codegen/neutron/transfer/v1/query.rpc.Query.ts
+@@ -5,13 +5,13 @@ import { QueryDenomTraceRequest, QueryDenomTraceResponse, QueryDenomTracesReques
+ /** Query provides defines the gRPC querier service. */
+ export interface Query {
+   /** DenomTrace queries a denomination trace information. */
+-  denomTrace(request: ibc.applications.transfer.v1.QueryDenomTraceRequest): Promise<QueryDenomTraceResponse>;
++  denomTrace(request: QueryDenomTraceRequest): Promise<QueryDenomTraceResponse>;
+   /** DenomTraces queries all denomination traces. */
+-  denomTraces(request?: ibc.applications.transfer.v1.QueryDenomTracesRequest): Promise<QueryDenomTracesResponse>;
++  denomTraces(request?: QueryDenomTracesRequest): Promise<QueryDenomTracesResponse>;
+   /** Params queries all parameters of the ibc-transfer module. */
+-  params(request?: ibc.applications.transfer.v1.QueryParamsRequest): Promise<QueryParamsResponse>;
++  params(request?: QueryParamsRequest): Promise<QueryParamsResponse>;
+   /** DenomHash queries a denomination hash information. */
+-  denomHash(request: ibc.applications.transfer.v1.QueryDenomHashRequest): Promise<QueryDenomHashResponse>;
++  denomHash(request: QueryDenomHashRequest): Promise<QueryDenomHashResponse>;
+ }
+ export class QueryClientImpl implements Query {
+   private readonly rpc: Rpc;
+@@ -22,25 +22,25 @@ export class QueryClientImpl implements Query {
+     this.params = this.params.bind(this);
+     this.denomHash = this.denomHash.bind(this);
+   }
+-  denomTrace(request: ibc.applications.transfer.v1.QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<QueryDenomTraceResponse> {
+-    const data = ibc.applications.transfer.v1.QueryDenomTraceRequest.encode(request).finish();
++  denomTrace(request: QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<QueryDenomTraceResponse> {
++    const data = QueryDenomTraceRequest.encode(request).finish();
+     const promise = this.rpc.request("neutron.transfer.Query", "DenomTrace", data);
+     return promise.then(data => QueryDenomTraceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+-  denomTraces(request: ibc.applications.transfer.v1.QueryDenomTracesRequest = {
++  denomTraces(request: QueryDenomTracesRequest = {
+     pagination: undefined
+   }, useInterfaces: boolean = true): Promise<QueryDenomTracesResponse> {
+-    const data = ibc.applications.transfer.v1.QueryDenomTracesRequest.encode(request).finish();
++    const data = QueryDenomTracesRequest.encode(request).finish();
+     const promise = this.rpc.request("neutron.transfer.Query", "DenomTraces", data);
+     return promise.then(data => QueryDenomTracesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+-  params(request: ibc.applications.transfer.v1.QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+-    const data = ibc.applications.transfer.v1.QueryParamsRequest.encode(request).finish();
++  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
++    const data = QueryParamsRequest.encode(request).finish();
+     const promise = this.rpc.request("neutron.transfer.Query", "Params", data);
+     return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+-  denomHash(request: ibc.applications.transfer.v1.QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
+-    const data = ibc.applications.transfer.v1.QueryDenomHashRequest.encode(request).finish();
++  denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
++    const data = QueryDenomHashRequest.encode(request).finish();
+     const promise = this.rpc.request("neutron.transfer.Query", "DenomHash", data);
+     return promise.then(data => QueryDenomHashResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+@@ -49,16 +49,16 @@ export const createRpcQueryExtension = (base: QueryClient) => {
+   const rpc = createProtobufRpcClient(base);
+   const queryService = new QueryClientImpl(rpc);
+   return {
+-    denomTrace(request: ibc.applications.transfer.v1.QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<ibc.applications.transfer.v1.QueryDenomTraceResponse> {
++    denomTrace(request: QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<QueryDenomTraceResponse> {
+       return queryService.denomTrace(request, useInterfaces);
+     },
+-    denomTraces(request?: ibc.applications.transfer.v1.QueryDenomTracesRequest, useInterfaces: boolean = true): Promise<ibc.applications.transfer.v1.QueryDenomTracesResponse> {
++    denomTraces(request?: QueryDenomTracesRequest, useInterfaces: boolean = true): Promise<QueryDenomTracesResponse> {
+       return queryService.denomTraces(request, useInterfaces);
+     },
+-    params(request?: ibc.applications.transfer.v1.QueryParamsRequest, useInterfaces: boolean = true): Promise<ibc.applications.transfer.v1.QueryParamsResponse> {
++    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+       return queryService.params(request, useInterfaces);
+     },
+-    denomHash(request: ibc.applications.transfer.v1.QueryDenomHashRequest, useInterfaces: boolean = true): Promise<ibc.applications.transfer.v1.QueryDenomHashResponse> {
++    denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
+       return queryService.denomHash(request, useInterfaces);
+     }
+   };

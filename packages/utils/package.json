@@ -6,7 +6,9 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "jest",
-    "protobuf": "node protobuf/scripts/codegen.js && git apply protobuf/patches.diff"
+    "protobuf:codegen": "node protobuf/scripts/codegen.js",
+    "protobuf:patch": "git apply protobuf/patches.diff",
+    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
     "@chain-registry/assets": "^1.26.1",
@@ -17,7 +19,7 @@
     "@cosmjs/tendermint-rpc": "^0.31.0",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
-    "chain-registry": "^1.25.1",
+    "chain-registry": "^1.26.0",
     "json5": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
     "long": "^5.2.1",
@@ -35,7 +37,7 @@
     "@cosmjs/proto-signing": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
     "@cosmjs/tendermint-rpc": "^0.31.0",
-    "@cosmology/telescope": "^1.4.1",
+    "@cosmology/telescope": "^1.4.12",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@types/lodash.clonedeep": "^4.5.0",
