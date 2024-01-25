@@ -5,22 +5,24 @@ import { useTranslation } from 'react-i18next'
 
 export interface SearchBarProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'variant'> {
-  containerClassName?: string
   hideIcon?: boolean
   variant?: 'sm' | 'lg'
   ghost?: boolean
   onIconClick?: () => void
+  iconClassName?: string
+  containerClassName?: string
 }
 
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   function SearchBar(
     {
-      containerClassName,
       className,
       hideIcon,
       variant = 'lg',
       ghost,
       onIconClick,
+      iconClassName,
+      containerClassName,
       ...props
     },
     ref
@@ -46,7 +48,8 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
           <Search
             className={clsx(
               '!h-5 !w-5 text-icon-tertiary transition group-focus-within:text-icon-primary',
-              onIconClick && 'cursor-pointer'
+              onIconClick && 'cursor-pointer',
+              iconClassName
             )}
             onClick={onIconClick}
           />
