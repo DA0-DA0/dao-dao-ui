@@ -65,16 +65,16 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
         Component: SubDaosTab,
         Icon: FiberSmartRecordOutlined,
       },
+      ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
+        label: t(labelI18nKey),
+        ...tab,
+      })) ?? []),
       {
         id: DaoTabId.Apps,
         label: t('title.apps'),
         Component: AppsTab,
         Icon: WebOutlined,
       },
-      ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
-        label: t(labelI18nKey),
-        ...tab,
-      })) ?? []),
       ...(loadingWidgets.loading
         ? []
         : loadingWidgets.data.map(

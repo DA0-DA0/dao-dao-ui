@@ -33,6 +33,7 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
@@ -391,12 +392,21 @@ export enum DaoTabId {
   Staked = 'staked',
   Collection = 'collection',
   Apps = 'apps',
+  Vaults = 'vaults',
 }
 
 export type DaoTab = {
-  // ID used in URL hash.
+  /**
+   * ID used in URL hash and uniquely identifies a selected DAO.
+   */
   id: DaoTabId | string
+  /**
+   * Tab display name
+   */
   label: string
+  /**
+   * Tab icon that shows up in the SDA sidebar.
+   */
   Icon: ComponentType<{ className: string }>
 }
 
@@ -444,4 +454,30 @@ export type DaoWithVetoableProposals = WithChainId<
 export type DaoWithDropdownVetoableProposalList<T> = {
   dao: DaoDropdownInfo
   proposals: T[]
+}
+
+export type VotingVaultInfo =
+  // Real vaults have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: true
+      /**
+       * The token that will be used to bond.
+       */
+      bondToken: GenericToken
+    }
+  // Virtual vaults do not have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: false
+    }
+
+export type VotingVaultWithInfo = VotingVault & {
+  info: VotingVaultInfo
 }

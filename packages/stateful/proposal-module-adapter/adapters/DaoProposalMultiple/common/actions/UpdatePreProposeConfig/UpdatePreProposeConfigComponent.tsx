@@ -11,12 +11,12 @@ import {
   MoneyEmoji,
   SegmentedControls,
   TokenInput,
-  TokenInputOption,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
   DepositRefundPolicy,
   GenericToken,
+  TokenInputOption,
   TokenType,
 } from '@dao-dao/types'
 import {
