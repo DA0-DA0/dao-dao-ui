@@ -6,6 +6,7 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
@@ -111,6 +112,10 @@ export const ActionsEditor = ({
     [] as GroupedActionData[]
   )
 
+  // Start with scroll to new actions disabled to prevent scrolling on initial
+  // page load. Only enable once an action is selected from the library.
+  const [scrollToNewActions, setScrollToNewActions] = useState(false)
+
   return (
     <>
       {groupedActionData.length > 0 ? (
@@ -129,6 +134,7 @@ export const ActionsEditor = ({
                 SuspenseLoader={SuspenseLoader}
                 actionDataErrors={actionDataErrors}
                 actionDataFieldName={actionDataFieldName}
+                scrollToNewActions={scrollToNewActions}
               />
             </div>
           ))}
@@ -143,6 +149,11 @@ export const ActionsEditor = ({
         actionDataFieldName={actionDataFieldName}
         categories={categories}
         loadedActions={loadedActions}
+        onSelect={() => {
+          // Enable scrolling to new actions once an action is selected for the
+          // first time.
+          setScrollToNewActions(true)
+        }}
       />
     </>
   )
@@ -153,6 +164,7 @@ export type ActionEditorProps = GroupedActionData & {
   // The errors for all actions, pointed to by `actionsFieldName` above.
   actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
 
+  scrollToNewActions: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -165,6 +177,8 @@ export const ActionEditor = ({
   action,
   actionDefaults,
   all,
+
+  scrollToNewActions,
   SuspenseLoader,
 }: ActionEditorProps) => {
   const { t } = useTranslation()
@@ -224,6 +238,10 @@ export const ActionEditor = ({
   const lastIndex = Math.min(all.length, ACTIONS_PER_PAGE) - 1
   const allowAdding = !action.notReusable && !action.programmaticOnly
 
+  // IDs already seen. This is used to prevent scrolling to the same action more
+  // than once.
+  const idsSeenRef = useRef<Set<string>>(new Set())
+
   return (
     <ActionCard
       action={action}
@@ -250,7 +268,22 @@ export const ActionEditor = ({
                 _id || `${index}-${action.key}`
               }
             >
-              <div className="flex animate-fade-in flex-row items-start gap-4 px-6">
+              <div
+                className="flex animate-fade-in flex-row items-start gap-4 px-6"
+                ref={(node) => {
+                  // Scroll new actions into view when added. If not scrolling,
+                  // still register we saw these so we don't scroll later.
+                  if (node && _id && !idsSeenRef.current.has(_id)) {
+                    idsSeenRef.current.add(_id)
+
+                    if (scrollToNewActions) {
+                      node.scrollIntoView({
+                        behavior: 'smooth',
+                      })
+                    }
+                  }
+                }}
+              >
                 <div className="flex min-w-0 grow flex-col gap-4">
                   <SuspenseLoader fallback={<Loader size={36} />}>
                     <action.Component
@@ -309,13 +342,13 @@ export const ActionEditor = ({
             onClick={() => {
               // Insert another entry for the same action with the default
               // values after the last one in this group.
-              insert(all[all.length - 1].index + 1, {
-                // See `ActionKeyAndData` comment in `packages/types/actions.ts`
-                // for an explanation of why we need to insert with a unique ID.
-                _id: uuidv4(),
-                actionKey: action.key,
-                data: cloneDeep(actionDefaults ?? {}),
-              })
+              addAction(
+                {
+                  actionKey: action.key,
+                  data: cloneDeep(actionDefaults ?? {}),
+                },
+                all[all.length - 1].index + 1
+              )
 
               // Go to the last page.
               setPage(lastPage)
