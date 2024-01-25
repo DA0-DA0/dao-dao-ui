@@ -4,7 +4,6 @@ import cloneDeep from 'lodash.clonedeep'
 import {
   ComponentType,
   Fragment,
-  MutableRefObject,
   useCallback,
   useEffect,
   useRef,
@@ -113,7 +112,9 @@ export const ActionsEditor = ({
     [] as GroupedActionData[]
   )
 
-  const justSelectedActionRef = useRef(false)
+  // Start with scroll to new actions disabled to prevent scrolling on initial
+  // page load. Only enable once an action is selected from the library.
+  const [scrollToNewActions, setScrollToNewActions] = useState(false)
 
   return (
     <>
@@ -133,7 +134,7 @@ export const ActionsEditor = ({
                 SuspenseLoader={SuspenseLoader}
                 actionDataErrors={actionDataErrors}
                 actionDataFieldName={actionDataFieldName}
-                justSelectedActionRef={justSelectedActionRef}
+                scrollToNewActions={scrollToNewActions}
               />
             </div>
           ))}
@@ -149,7 +150,9 @@ export const ActionsEditor = ({
         categories={categories}
         loadedActions={loadedActions}
         onSelect={() => {
-          justSelectedActionRef.current = true
+          // Enable scrolling to new actions once an action is selected for the
+          // first time.
+          setScrollToNewActions(true)
         }}
       />
     </>
@@ -161,7 +164,7 @@ export type ActionEditorProps = GroupedActionData & {
   // The errors for all actions, pointed to by `actionsFieldName` above.
   actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
 
-  justSelectedActionRef: MutableRefObject<boolean>
+  scrollToNewActions: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -175,7 +178,7 @@ export const ActionEditor = ({
   actionDefaults,
   all,
 
-  justSelectedActionRef,
+  scrollToNewActions,
   SuspenseLoader,
 }: ActionEditorProps) => {
   const { t } = useTranslation()
@@ -200,13 +203,11 @@ export const ActionEditor = ({
         ...data,
       }
 
-      justSelectedActionRef.current = true
-
       return insertIndex !== undefined
         ? insert(insertIndex, actionData)
         : append(actionData)
     },
-    [append, insert, justSelectedActionRef]
+    [append, insert]
   )
 
   // All categorized actions from the form.
@@ -270,16 +271,15 @@ export const ActionEditor = ({
               <div
                 className="flex animate-fade-in flex-row items-start gap-4 px-6"
                 ref={(node) => {
-                  // Scroll new actions into view if just selected a new action.
-                  // The just selected check ensures we don't scroll on page
-                  // load when actions already exist.
+                  // Scroll new actions into view when added. If not scrolling,
+                  // still register we saw these so we don't scroll later.
                   if (node && _id && !idsSeenRef.current.has(_id)) {
                     idsSeenRef.current.add(_id)
-                    if (justSelectedActionRef.current) {
-                      node?.scrollIntoView({
+
+                    if (scrollToNewActions) {
+                      node.scrollIntoView({
                         behavior: 'smooth',
                       })
-                      justSelectedActionRef.current = false
                     }
                   }
                 }}

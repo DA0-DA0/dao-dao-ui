@@ -19,5 +19,7 @@ export interface CollapsibleProps {
   containerClassName?: string
   headerClassName?: string
   labelClassName?: string
+  labelContainerClassName?: string
+  dropdownContainerClassName?: string
   contentContainerClassName?: string
 }
