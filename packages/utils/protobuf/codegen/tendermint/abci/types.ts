@@ -2,7 +2,7 @@ import { Timestamp } from "../../google/protobuf/timestamp";
 import { ConsensusParams, ConsensusParamsAmino, ConsensusParamsSDKType } from "../types/params";
 import { ProofOps, ProofOpsAmino, ProofOpsSDKType } from "../crypto/proof";
 import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
-import { BlockIDFlag, blockIDFlagFromJSON, blockIDFlagToJSON } from "../types/validator";
+import { BlockIDFlag, blockIDFlagFromJSON } from "../types/validator";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { toTimestamp, fromTimestamp, bytesFromBase64, base64FromBytes } from "../../helpers";
 export enum CheckTxType {
@@ -2384,7 +2384,7 @@ export const RequestCheckTx = {
   toAmino(message: RequestCheckTx, useInterfaces: boolean = false): RequestCheckTxAmino {
     const obj: any = {};
     obj.tx = message.tx ? base64FromBytes(message.tx) : undefined;
-    obj.type = checkTxTypeToJSON(message.type);
+    obj.type = message.type;
     return obj;
   },
   fromAminoMsg(object: RequestCheckTxAminoMsg): RequestCheckTx {
@@ -4490,7 +4490,7 @@ export const ResponseOfferSnapshot = {
   },
   toAmino(message: ResponseOfferSnapshot, useInterfaces: boolean = false): ResponseOfferSnapshotAmino {
     const obj: any = {};
-    obj.result = responseOfferSnapshot_ResultToJSON(message.result);
+    obj.result = message.result;
     return obj;
   },
   fromAminoMsg(object: ResponseOfferSnapshotAminoMsg): ResponseOfferSnapshot {
@@ -4643,7 +4643,7 @@ export const ResponseApplySnapshotChunk = {
   },
   toAmino(message: ResponseApplySnapshotChunk, useInterfaces: boolean = false): ResponseApplySnapshotChunkAmino {
     const obj: any = {};
-    obj.result = responseApplySnapshotChunk_ResultToJSON(message.result);
+    obj.result = message.result;
     if (message.refetchChunks) {
       obj.refetch_chunks = message.refetchChunks.map(e => e);
     } else {
@@ -4781,7 +4781,7 @@ export const ResponseProcessProposal = {
   },
   toAmino(message: ResponseProcessProposal, useInterfaces: boolean = false): ResponseProcessProposalAmino {
     const obj: any = {};
-    obj.status = responseProcessProposal_ProposalStatusToJSON(message.status);
+    obj.status = message.status;
     return obj;
   },
   fromAminoMsg(object: ResponseProcessProposalAminoMsg): ResponseProcessProposal {
@@ -4907,7 +4907,7 @@ export const ResponseVerifyVoteExtension = {
   },
   toAmino(message: ResponseVerifyVoteExtension, useInterfaces: boolean = false): ResponseVerifyVoteExtensionAmino {
     const obj: any = {};
-    obj.status = responseVerifyVoteExtension_VerifyStatusToJSON(message.status);
+    obj.status = message.status;
     return obj;
   },
   fromAminoMsg(object: ResponseVerifyVoteExtensionAminoMsg): ResponseVerifyVoteExtension {
@@ -5815,7 +5815,7 @@ export const VoteInfo = {
   toAmino(message: VoteInfo, useInterfaces: boolean = false): VoteInfoAmino {
     const obj: any = {};
     obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
-    obj.block_id_flag = blockIDFlagToJSON(message.blockIdFlag);
+    obj.block_id_flag = message.blockIdFlag;
     return obj;
   },
   fromAminoMsg(object: VoteInfoAminoMsg): VoteInfo {
@@ -5914,7 +5914,7 @@ export const ExtendedVoteInfo = {
     obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
     obj.vote_extension = message.voteExtension ? base64FromBytes(message.voteExtension) : undefined;
     obj.extension_signature = message.extensionSignature ? base64FromBytes(message.extensionSignature) : undefined;
-    obj.block_id_flag = blockIDFlagToJSON(message.blockIdFlag);
+    obj.block_id_flag = message.blockIdFlag;
     return obj;
   },
   fromAminoMsg(object: ExtendedVoteInfoAminoMsg): ExtendedVoteInfo {
@@ -6021,7 +6021,7 @@ export const Misbehavior = {
   },
   toAmino(message: Misbehavior, useInterfaces: boolean = false): MisbehaviorAmino {
     const obj: any = {};
-    obj.type = misbehaviorTypeToJSON(message.type);
+    obj.type = message.type;
     obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
