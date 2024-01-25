@@ -4,8 +4,10 @@ import cloneDeep from 'lodash.clonedeep'
 import {
   ComponentType,
   Fragment,
+  MutableRefObject,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
@@ -111,6 +113,8 @@ export const ActionsEditor = ({
     [] as GroupedActionData[]
   )
 
+  const justSelectedActionRef = useRef(false)
+
   return (
     <>
       {groupedActionData.length > 0 ? (
@@ -129,6 +133,7 @@ export const ActionsEditor = ({
                 SuspenseLoader={SuspenseLoader}
                 actionDataErrors={actionDataErrors}
                 actionDataFieldName={actionDataFieldName}
+                justSelectedActionRef={justSelectedActionRef}
               />
             </div>
           ))}
@@ -143,6 +148,9 @@ export const ActionsEditor = ({
         actionDataFieldName={actionDataFieldName}
         categories={categories}
         loadedActions={loadedActions}
+        onSelect={() => {
+          justSelectedActionRef.current = true
+        }}
       />
     </>
   )
@@ -153,6 +161,7 @@ export type ActionEditorProps = GroupedActionData & {
   // The errors for all actions, pointed to by `actionsFieldName` above.
   actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
 
+  justSelectedActionRef: MutableRefObject<boolean>
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -165,6 +174,8 @@ export const ActionEditor = ({
   action,
   actionDefaults,
   all,
+
+  justSelectedActionRef,
   SuspenseLoader,
 }: ActionEditorProps) => {
   const { t } = useTranslation()
@@ -189,11 +200,13 @@ export const ActionEditor = ({
         ...data,
       }
 
+      justSelectedActionRef.current = true
+
       return insertIndex !== undefined
         ? insert(insertIndex, actionData)
         : append(actionData)
     },
-    [append, insert]
+    [append, insert, justSelectedActionRef]
   )
 
   // All categorized actions from the form.
@@ -224,6 +237,10 @@ export const ActionEditor = ({
   const lastIndex = Math.min(all.length, ACTIONS_PER_PAGE) - 1
   const allowAdding = !action.notReusable && !action.programmaticOnly
 
+  // IDs already seen. This is used to prevent scrolling to the same action more
+  // than once.
+  const idsSeenRef = useRef<Set<string>>(new Set())
+
   return (
     <ActionCard
       action={action}
@@ -250,7 +267,23 @@ export const ActionEditor = ({
                 _id || `${index}-${action.key}`
               }
             >
-              <div className="flex animate-fade-in flex-row items-start gap-4 px-6">
+              <div
+                className="flex animate-fade-in flex-row items-start gap-4 px-6"
+                ref={(node) => {
+                  // Scroll new actions into view if just selected a new action.
+                  // The just selected check ensures we don't scroll on page
+                  // load when actions already exist.
+                  if (node && _id && !idsSeenRef.current.has(_id)) {
+                    idsSeenRef.current.add(_id)
+                    if (justSelectedActionRef.current) {
+                      node?.scrollIntoView({
+                        behavior: 'smooth',
+                      })
+                      justSelectedActionRef.current = false
+                    }
+                  }
+                }}
+              >
                 <div className="flex min-w-0 grow flex-col gap-4">
                   <SuspenseLoader fallback={<Loader size={36} />}>
                     <action.Component
@@ -309,13 +342,13 @@ export const ActionEditor = ({
             onClick={() => {
               // Insert another entry for the same action with the default
               // values after the last one in this group.
-              insert(all[all.length - 1].index + 1, {
-                // See `ActionKeyAndData` comment in `packages/types/actions.ts`
-                // for an explanation of why we need to insert with a unique ID.
-                _id: uuidv4(),
-                actionKey: action.key,
-                data: cloneDeep(actionDefaults ?? {}),
-              })
+              addAction(
+                {
+                  actionKey: action.key,
+                  data: cloneDeep(actionDefaults ?? {}),
+                },
+                all[all.length - 1].index + 1
+              )
 
               // Go to the last page.
               setPage(lastPage)

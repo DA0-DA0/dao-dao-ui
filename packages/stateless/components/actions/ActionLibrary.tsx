@@ -37,12 +37,17 @@ export type ActionLibraryProps = {
    * The react-hook-form field name that stores the action data.
    */
   actionDataFieldName: string
+  /**
+   * A callback when an action is selected.
+   */
+  onSelect?: (action: Action) => void
 }
 
 export const ActionLibrary = ({
   categories,
   loadedActions,
   actionDataFieldName,
+  onSelect,
 }: ActionLibraryProps) => {
   const { t } = useTranslation()
 
@@ -55,12 +60,16 @@ export const ActionLibrary = ({
   })
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
   const onSelectAction = useCallback(
     (action: Action) => {
       const loadedAction = loadedActions[action.key]
       if (!loadedAction) {
         return
       }
+
+      onSelectRef.current?.(action)
 
       addAction({
         // See `ActionKeyAndData` comment in
