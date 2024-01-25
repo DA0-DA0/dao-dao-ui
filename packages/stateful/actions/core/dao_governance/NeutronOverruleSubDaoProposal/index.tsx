@@ -78,7 +78,7 @@ export const makeNeutronOverruleSubDaoProposalAction: ActionMaker<
   if (
     chainId !== ChainId.NeutronMainnet ||
     context.type !== ActionContextType.Dao ||
-    context.info.coreVersion !== ContractVersion.V2AlphaNeutron
+    context.info.coreVersion !== ContractVersion.V2AlphaNeutronFork
   ) {
     return null
   }
