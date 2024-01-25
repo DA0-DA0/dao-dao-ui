@@ -285,9 +285,10 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                     )}
                   {highestOffer.amountUsd && (
                     <div
-                      className={`caption-text flex flex-row items-center gap-1${
-                        highestOffer.offerToken?.imageUrl ? ' ml-7' : ''
-                      }`}
+                      className={clsx(
+                        'caption-text flex flex-row items-center gap-1',
+                        !!highestOffer.offerToken?.imageUrl && 'ml-7'
+                      )}
                     >
                       <TokenAmountDisplay
                         amount={highestOffer.amountUsd}
