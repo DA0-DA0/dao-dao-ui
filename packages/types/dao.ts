@@ -396,9 +396,17 @@ export enum DaoTabId {
 }
 
 export type DaoTab = {
-  // ID used in URL hash.
+  /**
+   * ID used in URL hash and uniquely identifies a selected DAO.
+   */
   id: DaoTabId | string
+  /**
+   * Tab display name
+   */
   label: string
+  /**
+   * Tab icon that shows up in the SDA sidebar.
+   */
   Icon: ComponentType<{ className: string }>
 }
 
