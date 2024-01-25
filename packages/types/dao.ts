@@ -96,6 +96,8 @@ export enum PreProposeModuleType {
   Approver = 'approver',
   // Neutron fork SubDAOs use timelock.
   NeutronSubdaoSingle = 'neutron_subdao_single',
+  // Neutron fork DAO uses overrule pre-propose paired with SubDAO timelocks.
+  NeutronOverruleSingle = 'neutron_overrule_single',
   Other = 'other',
 }
 
@@ -130,6 +132,10 @@ export type PreProposeModuleTypedConfig =
   | {
       type: PreProposeModuleType.NeutronSubdaoSingle
       config: PreProposeModuleNeutronSubdaoSingleConfig
+    }
+  | {
+      type: PreProposeModuleType.NeutronOverruleSingle
+      config?: undefined
     }
   | {
       type: PreProposeModuleType.Other

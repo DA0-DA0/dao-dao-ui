@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  PreProposeModuleType,
   ProposalModule,
   ProposalModuleAdapter,
   TypedOption,
@@ -35,6 +36,12 @@ export const ProposalModuleSelector = ({
   const options = useMemo(
     () =>
       proposalModules
+        // Disallow selecting Neutron overrule proposal module, as it is used
+        // automatically in SubDAOs.
+        .filter(
+          ({ prePropose }) =>
+            prePropose?.type !== PreProposeModuleType.NeutronOverruleSingle
+        )
         .map((proposalModule): TypedOption<ProposalModule> | undefined => {
           const adapter = matchAdapter(proposalModule.contractName)
 

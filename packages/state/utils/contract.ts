@@ -279,6 +279,11 @@ export const fetchPreProposeModule = async (
       }
       break
     }
+    case ContractName.NeutronCwdPreProposeSingleOverrule:
+      typedConfig = {
+        type: PreProposeModuleType.NeutronOverruleSingle,
+      }
+      break
   }
 
   return {
