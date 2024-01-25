@@ -103,6 +103,7 @@ export const DaoVotingVaultCard = ({
 const NAME_OVERRIDES: Partial<Record<string, string>> = {
   'CREDITS VAULT': 'Credits Vault',
   'Investors Vault': 'Early Backers Vault',
+  'Timewave Vesting Vault': 'Timewave Vault',
 }
 const DESCRIPTION_OVERRIDES: Partial<Record<string, string>> = {
   'Lockdrop Vault':
