@@ -1271,7 +1271,7 @@
     "vetoableProposalsTooltip": "Proposals in other DAOs that this DAO ({{daoName}}) has the power to veto.",
     "vetoed": "Vetoed",
     "vetoing": "Vetoing",
-    "virtualVotingVaultTooltip": "Virtual voting vaults do not support bonding tokens manually. Instead they derive voting power from other sources.",
+    "virtualVotingVaultTooltip": "Virtual voting vaults do not support bonding tokens manually, deriving voting power from other sources instead.",
     "voteOnGovernanceProposalDescription": "Vote on an open chain governance proposal, as an individual or as a validator.",
     "voteUntilExpirationExplanation": "Although the proposal outcome is determined, you may cast a vote until the proposal expires to be included in the final tally.",
     "votesRefreshAutomatically": "Votes refresh automatically.",
