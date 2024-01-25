@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import {
   LoadingDataWithError,
   StatefulDaoVotingVaultCardProps,
+  VotingVaultWithMetadata,
 } from '@dao-dao/types'
-import { VotingVault } from '@dao-dao/types/contracts/NeutronVotingRegistry'
 
 import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
@@ -13,7 +13,7 @@ import { Loader } from '../../logo'
 
 export type NeutronVotingVaultsTabProps = {
   totalVotingPower: LoadingDataWithError<number>
-  loadingVaults: LoadingDataWithError<VotingVault[]>
+  loadingVaults: LoadingDataWithError<VotingVaultWithMetadata[]>
   DaoVotingVaultCard: ComponentType<StatefulDaoVotingVaultCardProps>
 }
 
@@ -43,6 +43,10 @@ export const NeutronVotingVaultsTab = ({
           <GridCardContainer>
             {loadingVaults.data
               .filter((vault) => vault.state === 'Active')
+              .sort((a, b) =>
+                // Sort virtual vaults last.
+                a.virtual === b.virtual ? 0 : a.virtual && !b.virtual ? 1 : -1
+              )
               .map((vault) => (
                 <DaoVotingVaultCard
                   key={vault.address}

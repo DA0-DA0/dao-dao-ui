@@ -201,7 +201,11 @@ export const isVirtualSelector = selectorFamily<boolean, QueryClientParams>({
         waitForAllSettled([
           listBondersSelector({
             ...queryClientParams,
-            params: [{}],
+            params: [
+              {
+                limit: 1,
+              },
+            ],
           }),
         ])
       )[0]
@@ -236,16 +240,9 @@ export const vaultInfoSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const [listBonders, _config] = get(
+      const [isVirtual, _config] = get(
         waitForAllSettled([
-          listBondersSelector({
-            ...queryClientParams,
-            params: [
-              {
-                limit: 1,
-              },
-            ],
-          }),
+          isVirtualSelector(queryClientParams),
           configSelector({
             ...queryClientParams,
             params: [],
@@ -253,14 +250,7 @@ export const vaultInfoSelector = selectorFamily<
         ])
       )
 
-      const virtual =
-        listBonders.state === 'hasError' &&
-        listBonders.contents instanceof Error &&
-        listBonders.contents.message.includes(
-          'Bonding is not available for this contract'
-        )
-
-      if (virtual) {
+      if (isVirtual.state === 'hasValue' && isVirtual.contents) {
         return {
           real: false,
         }

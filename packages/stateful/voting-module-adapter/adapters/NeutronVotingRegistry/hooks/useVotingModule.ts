@@ -6,8 +6,11 @@ import {
   NeutronVotingRegistrySelectors,
 } from '@dao-dao/state'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
-import { GenericToken, LoadingDataWithError } from '@dao-dao/types'
-import { VotingVault } from '@dao-dao/types/contracts/NeutronVotingRegistry'
+import {
+  GenericToken,
+  LoadingDataWithError,
+  VotingVaultWithMetadata,
+} from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
@@ -15,18 +18,18 @@ export type LoadingVaults = LoadingDataWithError<{
   /**
    * All voting vaults.
    */
-  votingVaults: VotingVault[]
+  votingVaults: VotingVaultWithMetadata[]
   /**
    * Only the real voting vaults with their bond tokens.
    */
   realVaults: {
-    vault: VotingVault
+    vault: VotingVaultWithMetadata
     bondToken: GenericToken
   }[]
   /**
    * Only the virtual voting vaults.
    */
-  virtualVaults: VotingVault[]
+  virtualVaults: VotingVaultWithMetadata[]
 }>
 
 export type UseVotingModuleReturn = {
@@ -59,6 +62,21 @@ export const useVotingModule = (): UseVotingModuleReturn => {
   )
 
   return useMemo((): UseVotingModuleReturn => {
+    const vaults =
+      votingVaults.loading ||
+      votingVaults.errored ||
+      vaultInfos.loading ||
+      vaultInfos.errored
+        ? []
+        : votingVaults.data
+            .map(
+              (vault, index): VotingVaultWithMetadata => ({
+                ...vault,
+                virtual: !vaultInfos.data[index].real,
+              })
+            )
+            .sort((a, b) => a.name.localeCompare(b.name))
+
     const loadingVaults: LoadingVaults =
       votingVaults.loading || vaultInfos.loading
         ? {
@@ -82,8 +100,8 @@ export const useVotingModule = (): UseVotingModuleReturn => {
             errored: false,
             updating: votingVaults.updating || vaultInfos.updating,
             data: {
-              votingVaults: votingVaults.data,
-              realVaults: votingVaults.data.flatMap((vault, index) => {
+              votingVaults: vaults,
+              realVaults: vaults.flatMap((vault, index) => {
                 const info = vaultInfos.data[index]
                 return info.real
                   ? {
@@ -92,9 +110,7 @@ export const useVotingModule = (): UseVotingModuleReturn => {
                     }
                   : []
               }),
-              virtualVaults: votingVaults.data.filter(
-                (_, index) => !vaultInfos.data[index].real
-              ),
+              virtualVaults: vaults.filter((vault) => vault.virtual),
             },
           }
 

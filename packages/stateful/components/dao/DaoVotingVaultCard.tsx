@@ -35,13 +35,6 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
       : constSelector(undefined)
   )
 
-  const loadingVirtualSelector = useCachedLoadingWithError(
-    NeutronVaultSelectors.isVirtualSelector({
-      contractAddress: props.vault.address,
-      chainId,
-    })
-  )
-
   return (
     <StatelessDaoVotingVaultCard
       vaultVotingPowerPercent={
@@ -60,11 +53,6 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
                       props.totalVotingPower.data) *
                     100,
             }
-      }
-      virtual={
-        !loadingVirtualSelector.loading &&
-        !loadingVirtualSelector.errored &&
-        loadingVirtualSelector.data
       }
       walletVotingPowerPercent={
         loadingVaultVotingPower.loading ||

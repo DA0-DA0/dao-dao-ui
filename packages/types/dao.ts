@@ -33,6 +33,7 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
@@ -445,4 +446,11 @@ export type DaoWithVetoableProposals = WithChainId<
 export type DaoWithDropdownVetoableProposalList<T> = {
   dao: DaoDropdownInfo
   proposals: T[]
+}
+
+export type VotingVaultWithMetadata = VotingVault & {
+  /**
+   * Whether or not this is a virtual vault. Virtual vaults do not have bonding.
+   */
+  virtual: boolean
 }

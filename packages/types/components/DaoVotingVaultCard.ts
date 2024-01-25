@@ -1,8 +1,8 @@
-import { VotingVault } from '../contracts/NeutronVotingRegistry'
+import { VotingVaultWithMetadata } from '../dao'
 import { LoadingData } from '../misc'
 
 export type DaoVotingVaultCardProps = {
-  vault: VotingVault
+  vault: VotingVaultWithMetadata
   /**
    * The percent of all vaults' voting power controlled by this vault.
    */
@@ -12,10 +12,6 @@ export type DaoVotingVaultCardProps = {
    * undefined, no wallet connected, so hide it.
    */
   walletVotingPowerPercent: LoadingData<number | undefined>
-  /**
-   * Whether or not this is a virtual vault. Virtual vaults do not have bonding.
-   */
-  virtual?: boolean
 }
 
 export type StatefulDaoVotingVaultCardProps = Omit<
