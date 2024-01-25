@@ -1,7 +1,7 @@
 import { Proof, ProofAmino, ProofSDKType } from "../crypto/proof";
 import { Consensus, ConsensusAmino, ConsensusSDKType } from "../version/types";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { BlockIDFlag, ValidatorSet, ValidatorSetAmino, ValidatorSetSDKType, blockIDFlagFromJSON, blockIDFlagToJSON } from "./validator";
+import { BlockIDFlag, ValidatorSet, ValidatorSetAmino, ValidatorSetSDKType, blockIDFlagFromJSON } from "./validator";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes, toTimestamp, fromTimestamp } from "../../helpers";
 /** SignedMsgType is a type of signed message in the consensus. */
@@ -1235,7 +1235,7 @@ export const Vote = {
   },
   toAmino(message: Vote, useInterfaces: boolean = false): VoteAmino {
     const obj: any = {};
-    obj.type = signedMsgTypeToJSON(message.type);
+    obj.type = message.type;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
     obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
@@ -1441,7 +1441,7 @@ export const CommitSig = {
   },
   toAmino(message: CommitSig, useInterfaces: boolean = false): CommitSigAmino {
     const obj: any = {};
-    obj.block_id_flag = blockIDFlagToJSON(message.blockIdFlag);
+    obj.block_id_flag = message.blockIdFlag;
     obj.validator_address = message.validatorAddress ? base64FromBytes(message.validatorAddress) : undefined;
     obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.signature = message.signature ? base64FromBytes(message.signature) : undefined;
@@ -1663,7 +1663,7 @@ export const ExtendedCommitSig = {
   },
   toAmino(message: ExtendedCommitSig, useInterfaces: boolean = false): ExtendedCommitSigAmino {
     const obj: any = {};
-    obj.block_id_flag = blockIDFlagToJSON(message.blockIdFlag);
+    obj.block_id_flag = message.blockIdFlag;
     obj.validator_address = message.validatorAddress ? base64FromBytes(message.validatorAddress) : undefined;
     obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.signature = message.signature ? base64FromBytes(message.signature) : undefined;
@@ -1797,7 +1797,7 @@ export const Proposal = {
   },
   toAmino(message: Proposal, useInterfaces: boolean = false): ProposalAmino {
     const obj: any = {};
-    obj.type = signedMsgTypeToJSON(message.type);
+    obj.type = message.type;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
     obj.pol_round = message.polRound;

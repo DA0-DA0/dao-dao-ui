@@ -607,7 +607,6 @@ export const MsgSubmitProposal = {
     obj.metadata = message.metadata;
     obj.title = message.title;
     obj.summary = message.summary;
-    // TODO(protobuf): is this still necessary?
     if (message.expedited) {
       obj.expedited = message.expedited;
     }

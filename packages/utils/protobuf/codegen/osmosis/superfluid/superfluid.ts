@@ -347,7 +347,7 @@ export const SuperfluidAsset = {
   toAmino(message: SuperfluidAsset, useInterfaces: boolean = false): SuperfluidAssetAmino {
     const obj: any = {};
     obj.denom = message.denom;
-    obj.asset_type = superfluidAssetTypeToJSON(message.assetType);
+    obj.asset_type = message.assetType;
     return obj;
   },
   fromAminoMsg(object: SuperfluidAssetAminoMsg): SuperfluidAsset {
