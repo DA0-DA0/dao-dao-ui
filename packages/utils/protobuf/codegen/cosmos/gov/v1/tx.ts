@@ -595,10 +595,8 @@ export const MsgSubmitProposal = {
   },
   toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
     const obj: any = {};
-    if (message.messages) {
+    if (message.messages.length) {
       obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
-    } else {
-      obj.messages = [];
     }
     if (message.initialDeposit) {
       obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
