@@ -3987,6 +3987,14 @@
     "@cosmos-kit/core" "^2.7.12"
     "@cosmos-kit/walletconnect" "^2.4.15"
 
+"@cosmos-kit/keplr@2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/keplr/-/keplr-2.5.2.tgz#13c1e25ed0663752aa7f4bc86c2d56d73a9219ec"
+  integrity sha512-cKbBsjHkgOZTYyBlEAlRITtSJMp+yrdA9rDPoGNCyU8SnoOtqbLyoDOLXBpwhS0WDtDq2Twby+yx570LCPC5Qg==
+  dependencies:
+    "@cosmos-kit/keplr-extension" "^2.6.2"
+    "@cosmos-kit/keplr-mobile" "^2.5.2"
+
 "@cosmos-kit/leap-extension@^2.6.2":
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-2.6.2.tgz#96e416b3ce5f1b0cf3142bfffcae4f427ac1cb8e"

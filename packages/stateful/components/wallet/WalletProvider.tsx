@@ -5,8 +5,8 @@ import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-ex
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as exodusWallets } from '@cosmos-kit/exodus'
 import { wallets as frontierWallets } from '@cosmos-kit/frontier'
+import { wallets as keplrWallets } from '@cosmos-kit/keplr'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
-import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
 import { wallets as ledgerWallets } from '@cosmos-kit/ledger'
@@ -143,9 +143,7 @@ export const WalletProvider = ({
     ...leapMetamaskWallets,
     // Alphabetize.
     ...[
-      ...keplrExtensionWallets,
-      // Only allow Keplr Mobile on mainnet since it can't use testnet.
-      ...(MAINNET ? keplrMobileWallets : []),
+      ...keplrWallets,
       ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
       ...stationWallets,
       ...vectisWallets,
