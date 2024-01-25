@@ -1,8 +1,8 @@
-import { VotingVaultWithMetadata } from '../dao'
+import { VotingVaultWithInfo } from '../dao'
 import { LoadingData } from '../misc'
 
 export type DaoVotingVaultCardProps = {
-  vault: VotingVaultWithMetadata
+  vault: VotingVaultWithInfo
   /**
    * The percent of all vaults' voting power controlled by this vault.
    */

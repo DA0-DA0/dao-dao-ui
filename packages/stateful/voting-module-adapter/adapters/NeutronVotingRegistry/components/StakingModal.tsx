@@ -57,13 +57,25 @@ const InnerStakingModal = ({
   const { coreAddress, chainId } = useVotingModuleAdapterOptions()
 
   const { loadingVaults } = useVotingModule()
+  const realVaults =
+    loadingVaults.loading || loadingVaults.errored
+      ? []
+      : loadingVaults.data.flatMap(({ info, ...vault }) =>
+          info.real
+            ? {
+                ...vault,
+                ...info,
+              }
+            : []
+        )
+
   const loadingStakedTokens = useCachedLoadingWithError(
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
       : waitForAll(
-          loadingVaults.data.realVaults.map(({ vault }) =>
+          realVaults.map(({ address: contractAddress }) =>
             NeutronVaultSelectors.bondingStatusSelector({
-              contractAddress: vault.address,
+              contractAddress,
               chainId,
               params: [
                 {
@@ -78,11 +90,11 @@ const InnerStakingModal = ({
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
       : waitForAll(
-          loadingVaults.data.realVaults.map(({ bondToken }) =>
+          realVaults.map(({ bondToken: { chainId, type, denomOrAddress } }) =>
             genericTokenBalanceSelector({
-              chainId: bondToken.chainId,
-              type: bondToken.type,
-              denomOrAddress: bondToken.denomOrAddress,
+              chainId,
+              type,
+              denomOrAddress,
               address: address,
             })
           )
@@ -105,8 +117,7 @@ const InnerStakingModal = ({
   const selectedVault =
     loadingVaults.loading || loadingVaults.errored
       ? undefined
-      : loadingVaults.data.realVaults[selectedVaultIndex] ||
-        loadingVaults.data.realVaults[0]
+      : realVaults[selectedVaultIndex] || realVaults[0]
   const selectedVaultStakedTokens =
     loadingStakedTokens.loading || loadingStakedTokens.errored
       ? undefined
@@ -117,11 +128,11 @@ const InnerStakingModal = ({
       : loadingUnstakedTokens.data[selectedVaultIndex]?.balance
 
   const doStake = NeutronVaultHooks.useBond({
-    contractAddress: selectedVault?.vault.address ?? '',
+    contractAddress: selectedVault?.address ?? '',
     sender: address,
   })
   const doUnstake = NeutronVaultHooks.useUnbond({
-    contractAddress: selectedVault?.vault.address ?? '',
+    contractAddress: selectedVault?.address ?? '',
     sender: address,
   })
 
@@ -277,7 +288,7 @@ const InnerStakingModal = ({
       tokenPicker={
         loadingVaults.loading ||
         loadingVaults.errored ||
-        loadingVaults.data.realVaults.length === 1
+        realVaults.length === 1
           ? undefined
           : {
               tokens:
@@ -287,15 +298,13 @@ const InnerStakingModal = ({
                     }
                   : {
                       loading: false,
-                      data: loadingVaults.data.realVaults.map(
-                        ({ bondToken }) => bondToken
-                      ),
+                      data: realVaults.map(({ bondToken }) => bondToken),
                     },
               onSelectToken: (token) => {
                 const index =
                   loadingVaults.loading || loadingVaults.errored
                     ? -1
-                    : loadingVaults.data.realVaults.findIndex(({ bondToken }) =>
+                    : realVaults.findIndex(({ bondToken }) =>
                         tokensEqual(token, bondToken)
                       )
 
@@ -304,8 +313,7 @@ const InnerStakingModal = ({
               selectedToken:
                 loadingVaults.loading || loadingVaults.errored
                   ? undefined
-                  : loadingVaults.data.realVaults[selectedVaultIndex]
-                      ?.bondToken,
+                  : realVaults[selectedVaultIndex]?.bondToken,
             }
       }
       unstakingDuration={

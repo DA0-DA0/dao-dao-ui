@@ -448,9 +448,28 @@ export type DaoWithDropdownVetoableProposalList<T> = {
   proposals: T[]
 }
 
-export type VotingVaultWithMetadata = VotingVault & {
-  /**
-   * Whether or not this is a virtual vault. Virtual vaults do not have bonding.
-   */
-  virtual: boolean
+export type VotingVaultInfo =
+  // Real vaults have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: true
+      /**
+       * The token that will be used to bond.
+       */
+      bondToken: GenericToken
+    }
+  // Virtual vaults do not have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: false
+    }
+
+export type VotingVaultWithInfo = VotingVault & {
+  info: VotingVaultInfo
 }

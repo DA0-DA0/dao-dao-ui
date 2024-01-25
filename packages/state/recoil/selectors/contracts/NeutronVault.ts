@@ -91,8 +91,10 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+      get(refreshWalletBalancesIdAtom(params[0].address))
 
+      // Don't use the indexer because different vaults have different voting
+      // power sources.
       const client = get(queryClient(queryClientParams))
       return await client.votingPowerAtHeight(...params)
     },
@@ -107,10 +109,11 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id =
-        get(refreshWalletBalancesIdAtom(undefined)) +
-        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+      get(refreshWalletBalancesIdAtom(undefined))
+      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
+      // Don't use the indexer because different vaults have different voting
+      // power sources.
       const client = get(queryClient(queryClientParams))
       return await client.totalPowerAtHeight(...params)
     },
@@ -125,8 +128,10 @@ export const bondingStatusSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+      get(refreshWalletBalancesIdAtom(params[0].address))
 
+      // Don't use the indexer because different vaults have different voting
+      // power sources.
       const client = get(queryClient(queryClientParams))
       return await client.bondingStatus(...params)
     },

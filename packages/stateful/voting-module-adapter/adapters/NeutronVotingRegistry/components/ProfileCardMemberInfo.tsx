@@ -30,6 +30,18 @@ export const ProfileCardMemberInfo = ({
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
   const { votingRegistryAddress, loadingVaults } = useVotingModule()
+  const realVaults =
+    loadingVaults.loading || loadingVaults.errored
+      ? []
+      : loadingVaults.data.flatMap(({ info, ...vault }) =>
+          info.real
+            ? {
+                ...vault,
+                ...info,
+              }
+            : []
+        )
+
   const loadingWalletVotingPower = useCachedLoadingWithError(
     !address
       ? undefined
@@ -54,9 +66,9 @@ export const ProfileCardMemberInfo = ({
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
       : waitForAll(
-          loadingVaults.data.realVaults.map(({ vault }) =>
+          realVaults.map(({ address: contractAddress }) =>
             NeutronVaultSelectors.bondingStatusSelector({
-              contractAddress: vault.address,
+              contractAddress,
               chainId,
               params: [
                 {
@@ -71,11 +83,11 @@ export const ProfileCardMemberInfo = ({
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined
       : waitForAll(
-          loadingVaults.data.realVaults.map(({ bondToken }) =>
+          realVaults.map(({ bondToken: { chainId, type, denomOrAddress } }) =>
             genericTokenBalanceSelector({
-              chainId: bondToken.chainId,
-              type: bondToken.type,
-              denomOrAddress: bondToken.denomOrAddress,
+              chainId,
+              type,
+              denomOrAddress,
               address: address,
             })
           )
@@ -100,19 +112,17 @@ export const ProfileCardMemberInfo = ({
               }
             : {
                 loading: false,
-                data: loadingVaults.data.realVaults.map(
-                  ({ bondToken }, index) => ({
-                    token: bondToken,
-                    staked: convertMicroDenomToDenomWithDecimals(
-                      loadingStakedTokens.data[index].unbondable_abount,
-                      bondToken.decimals
-                    ),
-                    unstaked: convertMicroDenomToDenomWithDecimals(
-                      loadingUnstakedTokens.data[index].balance,
-                      bondToken.decimals
-                    ),
-                  })
-                ),
+                data: realVaults.map(({ bondToken }, index) => ({
+                  token: bondToken,
+                  staked: convertMicroDenomToDenomWithDecimals(
+                    loadingStakedTokens.data[index].unbondable_abount,
+                    bondToken.decimals
+                  ),
+                  unstaked: convertMicroDenomToDenomWithDecimals(
+                    loadingUnstakedTokens.data[index].balance,
+                    bondToken.decimals
+                  ),
+                })),
               }
         }
         loadingVotingPower={

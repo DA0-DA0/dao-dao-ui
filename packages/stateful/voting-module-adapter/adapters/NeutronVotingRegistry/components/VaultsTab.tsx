@@ -29,7 +29,7 @@ export const VaultsTab = () => {
               loading: false,
               errored: false,
               updating: loadingVaults.updating,
-              data: loadingVaults.data.votingVaults,
+              data: loadingVaults.data,
             }
       }
       totalVotingPower={
