@@ -11,7 +11,8 @@ import {
   TextInput,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { ChainId, ContractVersion } from '@dao-dao/types'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
 import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
@@ -29,34 +30,40 @@ export const UpdateInfoComponent: ActionComponent<
   UpdateInfoData
 > = ({ fieldNamePrefix, errors, isCreating, data }) => {
   const { name } = useDaoInfoContext()
-  const { address } = useActionOptions()
+  const { address, context } = useActionOptions()
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
+  const isNeutronForkDao =
+    context.type === ActionContextType.Dao &&
+    context.info.chainId === ChainId.NeutronMainnet &&
+    context.info.coreVersion === ContractVersion.V2AlphaNeutronFork
+
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-4">
-      {isCreating ? (
-        <div className="flex flex-col gap-4 pl-2">
-          <ImageSelector
-            Trans={Trans}
-            error={errors?.image_url}
-            fieldName={fieldNamePrefix + 'image_url'}
-            register={register}
-            setValue={setValue}
-            watch={watch}
+      {!isNeutronForkDao &&
+        (isCreating ? (
+          <div className="flex flex-col gap-4 pl-2">
+            <ImageSelector
+              Trans={Trans}
+              error={errors?.image_url}
+              fieldName={fieldNamePrefix + 'image_url'}
+              register={register}
+              setValue={setValue}
+              watch={watch}
+            />
+            <InputLabel name={t('form.selectAnImage')} />
+          </div>
+        ) : (
+          <DaoImage
+            LinkWrapper={LinkWrapper}
+            className="ml-2"
+            coreAddress={address}
+            daoName={name}
+            imageUrl={data.image_url}
+            size="lg"
           />
-          <InputLabel name={t('form.selectAnImage')} />
-        </div>
-      ) : (
-        <DaoImage
-          LinkWrapper={LinkWrapper}
-          className="ml-2"
-          coreAddress={address}
-          daoName={name}
-          imageUrl={data.image_url}
-          size="lg"
-        />
-      )}
+        ))}
 
       <div className="flex grow flex-col gap-2">
         <div>
@@ -83,31 +90,34 @@ export const UpdateInfoComponent: ActionComponent<
           <InputErrorMessage error={errors?.description} />
         </div>
 
-        <div className="flex flex-row flex-wrap gap-2">
-          <FormSwitchCard
-            containerClassName="grow"
-            fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
-            label={t('form.automaticallyAddTokensTitle')}
-            readOnly={!isCreating}
-            setValue={setValue}
-            sizing="sm"
-            tooltip={t('form.automaticallyAddTokensTooltip')}
-            tooltipIconSize="sm"
-            value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
-          />
+        {!isNeutronForkDao && (
+          <div className="flex flex-row flex-wrap gap-2">
+            <FormSwitchCard
+              containerClassName="grow"
+              fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
+              label={t('form.automaticallyAddTokensTitle')}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.automaticallyAddTokensTooltip')}
+              tooltipIconSize="sm"
+              value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
+            />
 
-          <FormSwitchCard
-            containerClassName="grow"
-            fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
-            label={t('form.automaticallyAddNFTsTitle')}
-            readOnly={!isCreating}
-            setValue={setValue}
-            sizing="sm"
-            tooltip={t('form.automaticallyAddNFTsTooltip')}
-            tooltipIconSize="sm"
-            value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
-          />
-        </div>
+            <FormSwitchCard
+              containerClassName="grow"
+              fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
+              label={t('form.automaticallyAddNFTsTitle')}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.automaticallyAddNFTsTooltip')}
+              tooltipIconSize="sm"
+              value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
+            />
+          </div>
+        )}
+
         {!isCreating && (
           <p className="text-xs italic text-text-tertiary">
             {t('info.daoInfoWillRefresh', {

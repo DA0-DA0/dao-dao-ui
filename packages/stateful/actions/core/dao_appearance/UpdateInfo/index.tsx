@@ -2,7 +2,12 @@ import { useCallback } from 'react'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { InfoEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
-import { ActionContextType, ActionMaker } from '@dao-dao/types'
+import {
+  ActionContextType,
+  ActionMaker,
+  ChainId,
+  ContractVersion,
+} from '@dao-dao/types'
 import {
   ActionKey,
   UseDecodedCosmosMsg,
@@ -52,11 +57,21 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
               funds: [],
               msg: {
                 update_config: {
-                  config: {
-                    ...data,
-                    // Replace empty string with null.
-                    image_url: data.image_url?.trim() || null,
-                  },
+                  config:
+                    context.info.chainId === ChainId.NeutronMainnet &&
+                    context.info.coreVersion ===
+                      ContractVersion.V2AlphaNeutronFork
+                      ? // The Neutron fork DAO has a different config structure.
+                        {
+                          name: data.name,
+                          description: data.description,
+                          dao_uri: 'dao_uri' in data ? data.dao_uri : null,
+                        }
+                      : {
+                          ...data,
+                          // Replace empty string with null.
+                          image_url: data.image_url?.trim() || null,
+                        },
                 },
               },
             },
@@ -78,8 +93,6 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
               config: {
                 name: {},
                 description: {},
-                automatically_add_cw20s: {},
-                automatically_add_cw721s: {},
               },
             },
           },

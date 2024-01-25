@@ -6,16 +6,16 @@ import * as _104 from "./mint/genesis";
 import * as _105 from "./mint/mint";
 import * as _106 from "./mint/query";
 import * as _107 from "./mint/tx";
-import * as _284 from "./feeshare/v1/tx.amino";
-import * as _285 from "./mint/tx.amino";
-import * as _286 from "./feeshare/v1/tx.registry";
-import * as _287 from "./mint/tx.registry";
-import * as _288 from "./feeshare/v1/query.rpc.Query";
-import * as _289 from "./mint/query.rpc.Query";
-import * as _290 from "./feeshare/v1/tx.rpc.msg";
-import * as _291 from "./mint/tx.rpc.msg";
-import * as _370 from "./rpc.query";
-import * as _371 from "./rpc.tx";
+import * as _315 from "./feeshare/v1/tx.amino";
+import * as _316 from "./mint/tx.amino";
+import * as _317 from "./feeshare/v1/tx.registry";
+import * as _318 from "./mint/tx.registry";
+import * as _319 from "./feeshare/v1/query.rpc.Query";
+import * as _320 from "./mint/query.rpc.Query";
+import * as _321 from "./feeshare/v1/tx.rpc.msg";
+import * as _322 from "./mint/tx.rpc.msg";
+import * as _417 from "./rpc.query";
+import * as _418 from "./rpc.tx";
 export namespace juno {
   export namespace feeshare {
     export const v1 = {
@@ -23,10 +23,10 @@ export namespace juno {
       ..._101,
       ..._102,
       ..._103,
-      ..._284,
-      ..._286,
-      ..._288,
-      ..._290
+      ..._315,
+      ..._317,
+      ..._319,
+      ..._321
     };
   }
   export const mint = {
@@ -34,13 +34,13 @@ export namespace juno {
     ..._105,
     ..._106,
     ..._107,
-    ..._285,
-    ..._287,
-    ..._289,
-    ..._291
+    ..._316,
+    ..._318,
+    ..._320,
+    ..._322
   };
   export const ClientFactory = {
-    ..._370,
-    ..._371
+    ..._417,
+    ..._418
   };
 }
