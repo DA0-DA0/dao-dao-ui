@@ -47,7 +47,7 @@ export const NeutronOverruleSubDaoProposalComponent: ActionComponent<
   return (
     <>
       <div className="flex flex-col gap-1">
-        <InputLabel name={t('title.dao')} />
+        <InputLabel name={t('title.subDao')} />
 
         <EntityDisplay address={coreAddress} />
       </div>
