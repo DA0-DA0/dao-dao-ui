@@ -92,7 +92,6 @@ const config = {
       'i.stargaze-apis.com',
       'nftstorage.link',
       'ipfs.daodao.zone',
-      'dao-dao.myfilebase.com',
       'img-proxy.ekez.workers.dev',
       'raw.githubusercontent.com',
     ],
