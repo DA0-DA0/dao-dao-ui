@@ -62,15 +62,17 @@ export const useLoadingFeaturedDaoCardInfos = (
       ? { loading: true }
       : {
           loading: false,
-          data: chains.flatMap(({ chain }, index) =>
-            featuredDaos.data[index]
-              .map(({ address: coreAddress, order }) => ({
-                chainId: chain.chain_id,
-                coreAddress,
-                order,
-              }))
-              .sort((a, b) => a.order - b.order)
-          ),
+          data: chains
+            .flatMap(({ chain }, index) =>
+              featuredDaos.data[index].map(
+                ({ address: coreAddress, order }) => ({
+                  chainId: chain.chain_id,
+                  coreAddress,
+                  order,
+                })
+              )
+            )
+            .sort((a, b) => a.order - b.order),
         }
   )
 }
