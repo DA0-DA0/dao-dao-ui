@@ -102,7 +102,7 @@ export const TreasuryAndNftsTab = () => {
         }
       )}
       isMember={isMember}
-      nfts={nfts.loading ? {} : nfts.data}
+      nfts={nfts}
       tokens={tokens.loading ? {} : tokens.data}
     />
   )
