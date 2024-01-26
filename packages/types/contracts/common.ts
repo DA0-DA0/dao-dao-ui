@@ -310,6 +310,9 @@ export enum ProposalStatusEnum {
   ExecutionFailed = 'execution_failed',
   Closed = 'closed',
   Vetoed = 'vetoed',
+  // Neutron timelocked statuses.
+  NeutronTimelocked = 'neutron_timelocked',
+  NeutronOverruled = 'neutron_overruled',
 }
 /**
  * The `VetoTimelock` proposal status enum variant that is represented as an

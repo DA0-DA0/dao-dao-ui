@@ -71,10 +71,12 @@ export const ProposalVoteTally = ({
             <div className="flex flex-row items-center gap-1">
               <p className="text-text-tertiary">
                 {statusKey === ProposalStatusEnum.Open ||
-                statusKey === 'veto_timelock'
+                statusKey === 'veto_timelock' ||
+                statusKey === ProposalStatusEnum.NeutronTimelocked
                   ? t('title.currentWinner')
                   : statusKey === ProposalStatusEnum.Rejected ||
-                    statusKey === ProposalStatusEnum.Vetoed
+                    statusKey === ProposalStatusEnum.Vetoed ||
+                    statusKey === ProposalStatusEnum.NeutronOverruled
                   ? t('title.noWinner')
                   : t('title.winner')}
               </p>

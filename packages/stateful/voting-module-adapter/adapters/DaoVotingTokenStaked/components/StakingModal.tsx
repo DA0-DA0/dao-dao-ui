@@ -34,14 +34,17 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
-  <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>
+  <SuspenseLoader
+    fallback={<ModalLoader onClose={props.onClose} visible={props.visible} />}
+  >
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
 
 const InnerStakingModal = ({
-  initialMode = StakingMode.Stake,
+  visible,
   onClose,
+  initialMode = StakingMode.Stake,
   maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
@@ -67,14 +70,6 @@ const InnerStakingModal = ({
     fetchClaims: true,
     fetchWalletStakedValue: true,
   })
-
-  if (
-    sumClaimsAvailable === undefined ||
-    loadingUnstakedBalance === undefined ||
-    loadingWalletStakedValue === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const [amount, setAmount] = useState(0)
 
@@ -208,7 +203,7 @@ const InnerStakingModal = ({
 
           toast.success(
             `Claimed ${convertMicroDenomToDenomWithDecimals(
-              sumClaimsAvailable,
+              sumClaimsAvailable || 0,
               governanceToken.decimals
             ).toLocaleString(undefined, {
               maximumFractionDigits: governanceToken.decimals,
@@ -234,12 +229,12 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={sumClaimsAvailable}
+      claimableTokens={sumClaimsAvailable || 0}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
       loadingStakableTokens={
-        loadingUnstakedBalance.loading
+        !loadingUnstakedBalance || loadingUnstakedBalance.loading
           ? { loading: true }
           : {
               loading: false,
@@ -250,7 +245,7 @@ const InnerStakingModal = ({
             }
       }
       loadingUnstakableTokens={
-        loadingWalletStakedValue.loading
+        !loadingWalletStakedValue || loadingWalletStakedValue.loading
           ? { loading: true }
           : {
               loading: false,
@@ -273,6 +268,7 @@ const InnerStakingModal = ({
       setAmount={(newAmount) => setAmount(newAmount)}
       token={governanceToken}
       unstakingDuration={unstakingDuration ?? null}
+      visible={visible}
     />
   )
 }

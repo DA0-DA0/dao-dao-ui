@@ -3,6 +3,7 @@ import {
   ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
+  NeutronTimelockOverrule,
   PercentOrMajorityValue,
   ProcessedTQ,
   ProposalTimestampInfo,
@@ -101,6 +102,9 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   // If this proposal is in its veto timelock period, this is the date that the
   // timelock period expires.
   vetoTimelockExpiration?: Date
+  // If this is a proposal in a Neutron fork SubDAO with timelock, this is the
+  // overrule proposal and its DAO created once executed and thus timelocked.
+  neutronTimelockOverrule?: NeutronTimelockOverrule
 }
 
 export type MessagesWithActionData = {

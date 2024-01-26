@@ -5,35 +5,42 @@ import { useTranslation } from 'react-i18next'
 import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
+  GenericToken,
   LoadingData,
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
+import {
+  formatPercentOf100,
+  humanReadableList,
+  secondsToWdhms,
+} from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps
   extends Omit<BaseProfileCardMemberInfoProps, 'maxGovernanceTokenDeposit'> {
   daoName: string
   claimingLoading: boolean
   stakingLoading: boolean
-  tokenSymbol: string
-  tokenDecimals: number
   unstakingTasks: UnstakingTask[]
   unstakingDurationSeconds: number | undefined
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
   loadingVotingPower: LoadingData<number>
-  loadingStakedTokens: LoadingData<number>
-  loadingUnstakedTokens: LoadingData<number>
+  loadingTokens: LoadingData<
+    {
+      token: GenericToken
+      staked: number
+      unstaked: number
+    }[]
+  >
+  hideUnstaking?: boolean
 }
 
 export const ProfileCardMemberInfoTokens = ({
   daoName,
   claimingLoading,
   stakingLoading,
-  tokenSymbol,
-  tokenDecimals,
   unstakingTasks,
   unstakingDurationSeconds,
   onClaim,
@@ -41,8 +48,8 @@ export const ProfileCardMemberInfoTokens = ({
   refreshUnstakingTasks,
   cantVoteOnProposal,
   loadingVotingPower,
-  loadingStakedTokens,
-  loadingUnstakedTokens,
+  loadingTokens,
+  hideUnstaking,
 }: ProfileCardMemberInfoTokensProps) => {
   const { t } = useTranslation()
 
@@ -57,7 +64,7 @@ export const ProfileCardMemberInfoTokens = ({
       ) ?? 0,
     [unstakingTasks]
   )
-  const unstakingBalance = useMemo(
+  const totalUnstakingBalance = useMemo(
     () =>
       unstakingTasks.reduce(
         (acc, task) =>
@@ -68,14 +75,35 @@ export const ProfileCardMemberInfoTokens = ({
       ) ?? 0,
     [unstakingTasks]
   )
+  const unstakingBalanceByToken = useMemo(
+    () =>
+      unstakingTasks.reduce(
+        (acc, task) => ({
+          ...acc,
+          [task.token.denomOrAddress]:
+            (acc[task.token.denomOrAddress] || 0) +
+            (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+        }),
+        {} as Partial<Record<string, number>>
+      ),
+    [unstakingTasks]
+  )
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
-  const isMember = !loadingStakedTokens.loading && loadingStakedTokens.data > 0
-  const canBeMemberButIsnt =
-    !loadingUnstakedTokens.loading &&
-    !isMember &&
-    loadingUnstakedTokens.data > 0
+  const hasStaked =
+    !loadingTokens.loading &&
+    loadingTokens.data.some(({ staked }) => staked > 0)
+  const hasUnstaked =
+    !loadingTokens.loading &&
+    loadingTokens.data.some(({ unstaked }) => unstaked > 0)
+  const isMember = !loadingVotingPower.loading && loadingVotingPower.data > 0
+  const canBeMemberButIsnt = !isMember && hasUnstaked
+
+  const onlyOneToken = !loadingTokens.loading && loadingTokens.data.length === 1
+  const onlyTokenSymbol = loadingTokens.loading
+    ? '...'
+    : loadingTokens.data[0].token.symbol
 
   return (
     <>
@@ -88,7 +116,11 @@ export const ProfileCardMemberInfoTokens = ({
             <p className="secondary-text mb-4 text-text-body">
               {t('info.tokenDaoNotMemberInfo', {
                 context: cantVoteOnProposal ? 'proposal' : 'dao',
-                tokenSymbol,
+                tokenSymbol: loadingTokens.loading
+                  ? '...'
+                  : humanReadableList(
+                      loadingTokens.data.map(({ token }) => token.symbol)
+                    ),
                 daoName,
               })}
             </p>
@@ -97,41 +129,65 @@ export const ProfileCardMemberInfoTokens = ({
 
         <div className="flex flex-row items-start justify-between">
           <p>{t('title.balances')}</p>
+
           <div
             className={clsx(
               'flex items-end gap-1',
               // If can't vote on proposal or has staked tokens, show staked
               // tokens first since it is most relevant. Otherwise, show
               // unstaked tokens first.
-              cantVoteOnProposal ||
-                (!loadingStakedTokens.loading && loadingStakedTokens.data > 0)
-                ? 'flex-col'
-                : 'flex-col-reverse'
+              cantVoteOnProposal || hasStaked ? 'flex-col' : 'flex-col-reverse'
             )}
           >
-            <TokenAmountDisplay
-              amount={loadingStakedTokens}
-              className={clsx('text-right font-mono', {
-                'text-text-tertiary':
-                  loadingStakedTokens.loading || loadingStakedTokens.data === 0,
-              })}
-              decimals={tokenDecimals}
-              suffix={` ${t('info.staked')}`}
-              symbol={tokenSymbol}
-            />
+            {loadingTokens.loading ? (
+              // Loading placeholder.
+              <TokenAmountDisplay
+                amount={{ loading: true }}
+                className="text-right font-mono text-text-tertiary"
+                decimals={0}
+                suffix={` ${t('info.staked')}`}
+                symbol=""
+              />
+            ) : (
+              loadingTokens.data.map(({ token, staked }) => (
+                <TokenAmountDisplay
+                  key={token.denomOrAddress}
+                  amount={staked}
+                  className={clsx(
+                    'text-right font-mono',
+                    !staked && 'text-text-tertiary'
+                  )}
+                  decimals={token.decimals}
+                  suffix={` ${t('info.staked')}`}
+                  symbol={token.symbol}
+                />
+              ))
+            )}
 
-            <TokenAmountDisplay
-              amount={loadingUnstakedTokens}
-              className={clsx(
-                'text-right font-mono',
-                loadingUnstakedTokens.loading ||
-                  loadingUnstakedTokens.data === 0
-                  ? 'text-text-tertiary'
-                  : 'text-icon-interactive-valid'
-              )}
-              decimals={tokenDecimals}
-              symbol={tokenSymbol}
-            />
+            {loadingTokens.loading ? (
+              // Loading placeholder.
+              <TokenAmountDisplay
+                amount={{ loading: true }}
+                className="text-right font-mono text-text-tertiary"
+                decimals={0}
+                symbol=""
+              />
+            ) : (
+              loadingTokens.data.map(({ token, unstaked }) => (
+                <TokenAmountDisplay
+                  key={token.denomOrAddress}
+                  amount={unstaked}
+                  className={clsx(
+                    'text-right font-mono',
+                    unstaked
+                      ? 'text-icon-interactive-valid'
+                      : 'text-text-tertiary'
+                  )}
+                  decimals={token.decimals}
+                  symbol={token.symbol}
+                />
+              ))
+            )}
           </div>
         </div>
 
@@ -155,26 +211,40 @@ export const ProfileCardMemberInfoTokens = ({
         )}
 
         {/* Show unstaking balance if any are unstaking or claimable or if they are a member. */}
-        {(isMember || unstakingBalance > 0 || claimableBalance > 0) && (
-          <div className="flex flex-row items-center justify-between">
-            <p>{t('title.unstakingTokens')}</p>
+        {!hideUnstaking &&
+          (isMember || totalUnstakingBalance > 0 || claimableBalance > 0) && (
+            <div className="flex flex-row items-center justify-between">
+              <p>{t('title.unstakingTokens')}</p>
 
-            <Button
-              className={clsx(
-                'text-right font-mono underline-offset-2',
-                unstakingBalance === 0 && 'text-text-tertiary'
-              )}
-              onClick={() => setShowUnstakingTokens(true)}
-              variant={unstakingBalance > 0 ? 'underline' : 'none'}
-            >
-              <TokenAmountDisplay
-                amount={unstakingBalance}
-                decimals={tokenDecimals}
-                symbol={tokenSymbol}
-              />
-            </Button>
-          </div>
-        )}
+              <Button
+                className={clsx(
+                  'text-right font-mono underline-offset-2',
+                  totalUnstakingBalance === 0 && 'text-text-tertiary'
+                )}
+                contentContainerClassName="justify-end flex flex-col items-end"
+                onClick={() => setShowUnstakingTokens(true)}
+                variant={totalUnstakingBalance > 0 ? 'underline' : 'none'}
+              >
+                {!loadingTokens.loading &&
+                  (onlyOneToken
+                    ? loadingTokens.data
+                    : loadingTokens.data.filter(
+                        ({ token }) =>
+                          !!unstakingBalanceByToken[token.denomOrAddress]
+                      )
+                  ).map(({ token }) => (
+                    <TokenAmountDisplay
+                      key={token.denomOrAddress}
+                      amount={
+                        unstakingBalanceByToken[token.denomOrAddress] || 0
+                      }
+                      decimals={token.decimals}
+                      symbol={token.symbol}
+                    />
+                  ))}
+              </Button>
+            </div>
+          )}
       </div>
 
       <div className="mt-6 flex flex-col gap-2">
@@ -190,46 +260,49 @@ export const ProfileCardMemberInfoTokens = ({
               canBeMemberButIsnt ? 'secondary' : 'primary'
             }
           >
-            {t('button.claimNumTokens', {
-              amount: claimableBalance.toLocaleString(undefined, {
-                maximumFractionDigits: tokenDecimals,
-              }),
-              tokenSymbol,
-            })}
+            {loadingTokens.loading || !onlyOneToken
+              ? t('button.claimYourTokens')
+              : t('button.claimNumTokens', {
+                  amount: claimableBalance.toLocaleString(undefined, {
+                    maximumFractionDigits: loadingTokens.data[0].token.decimals,
+                  }),
+                  tokenSymbol: onlyTokenSymbol,
+                })}
           </Button>
         )}
 
         <Button
           contentContainerClassName="justify-center"
-          disabled={
-            claimingLoading ||
-            (!isMember &&
-              (loadingUnstakedTokens.loading ||
-                loadingUnstakedTokens.data === 0))
-          }
+          disabled={claimingLoading || (!isMember && !hasUnstaked)}
           loading={stakingLoading}
           onClick={onStake}
           size="lg"
           variant={canBeMemberButIsnt ? 'primary' : 'secondary'}
         >
-          {!loadingStakedTokens.loading && loadingStakedTokens.data === 0
-            ? t('button.stakeTokenSymbol', { tokenSymbol })
-            : t('button.manageStake', { tokenSymbol })}
+          {loadingTokens.loading || !hasStaked
+            ? onlyOneToken
+              ? t('button.stakeTokenSymbol', { tokenSymbol: onlyTokenSymbol })
+              : t('button.stakeTokens')
+            : onlyOneToken
+            ? t('button.manageStake', { tokenSymbol: onlyTokenSymbol })
+            : t('button.manageYourStake')}
         </Button>
       </div>
 
-      <UnstakingModal
-        onClaim={onClaim}
-        onClose={() => setShowUnstakingTokens(false)}
-        refresh={refreshUnstakingTasks}
-        tasks={unstakingTasks}
-        unstakingDuration={
-          unstakingDurationSeconds
-            ? secondsToWdhms(unstakingDurationSeconds)
-            : undefined
-        }
-        visible={showUnstakingTokens}
-      />
+      {!hideUnstaking && (
+        <UnstakingModal
+          onClaim={onClaim}
+          onClose={() => setShowUnstakingTokens(false)}
+          refresh={refreshUnstakingTasks}
+          tasks={unstakingTasks}
+          unstakingDuration={
+            unstakingDurationSeconds
+              ? secondsToWdhms(unstakingDurationSeconds)
+              : undefined
+          }
+          visible={showUnstakingTokens}
+        />
+      )}
     </>
   )
 }

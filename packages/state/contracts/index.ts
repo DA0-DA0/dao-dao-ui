@@ -57,6 +57,23 @@ export {
   DaoVotingTokenStakedClient,
   DaoVotingTokenStakedQueryClient,
 } from './DaoVotingTokenStaked'
+export { NeutronVaultClient, NeutronVaultQueryClient } from './NeutronVault'
+export {
+  NeutronVotingRegistryClient,
+  NeutronVotingRegistryQueryClient,
+} from './NeutronVotingRegistry'
+export {
+  NeutronCwdPreProposeSingleOverruleClient,
+  NeutronCwdPreProposeSingleOverruleQueryClient,
+} from './NeutronCwdPreProposeSingleOverrule'
+export {
+  NeutronCwdSubdaoPreProposeSingleClient,
+  NeutronCwdSubdaoPreProposeSingleQueryClient,
+} from './NeutronCwdSubdaoPreProposeSingle'
+export {
+  NeutronCwdSubdaoTimelockSingleClient,
+  NeutronCwdSubdaoTimelockSingleQueryClient,
+} from './NeutronCwdSubdaoTimelockSingle'
 export {
   PolytoneListenerClient,
   PolytoneListenerQueryClient,

@@ -1,8 +1,9 @@
-import { selectorFamily, waitForNone } from 'recoil'
+import { selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
   CommonNftSelectors,
   DaoCoreV2Selectors,
+  genericTokenSelector,
   nftUriDataSelector,
   queryWalletIndexerSelector,
   refreshWalletBalancesIdAtom,
@@ -12,7 +13,13 @@ import {
   stargazeTokensForOwnerQuery,
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
-import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
+import {
+  ChainId,
+  GenericToken,
+  NftCardInfo,
+  TokenType,
+  WithChainId,
+} from '@dao-dao/types'
 import { LazyNftCardInfo, LoadingNfts } from '@dao-dao/types/nft'
 import {
   MAINNET,
@@ -51,6 +58,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           // have changed ownership.
           fetchPolicy: 'no-cache',
         })
+        const timestamp = new Date()
 
         if (error) {
           throw error
@@ -60,9 +68,34 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           break
         }
 
+        const genericTokens = get(
+          waitForAll(
+            data.tokens.tokens
+              .filter((token) => token.highestOffer?.offerPrice?.denom)
+              .map((token) =>
+                genericTokenSelector({
+                  chainId,
+                  type: TokenType.Native,
+                  denomOrAddress: token.highestOffer!.offerPrice!.denom!,
+                })
+              )
+          )
+        )
+
+        const genericTokensMap: Map<string, GenericToken> = new Map(
+          genericTokens.map((item) => [item.denomOrAddress, item])
+        )
+
         nftCardInfos.push(
           ...data.tokens.tokens.map((token) =>
-            nftCardInfoFromStargazeIndexerNft(chainId, token)
+            nftCardInfoFromStargazeIndexerNft(
+              chainId,
+              token,
+              token.highestOffer?.offerPrice?.denom
+                ? genericTokensMap.get(token.highestOffer.offerPrice.denom)
+                : undefined,
+              timestamp
+            )
           )
         )
 
@@ -155,7 +188,21 @@ export const nftCardInfoSelector = selectorFamily<
           throw new Error('Failed to load NFT from Stargaze')
         }
 
-        return nftCardInfoFromStargazeIndexerNft(chainId, data.token)
+        const genericToken = data.token?.highestOffer?.offerPrice?.denom
+          ? get(
+              genericTokenSelector({
+                chainId,
+                type: TokenType.Native,
+                denomOrAddress: data.token.highestOffer.offerPrice.denom,
+              })
+            )
+          : undefined
+
+        return nftCardInfoFromStargazeIndexerNft(
+          chainId,
+          data.token,
+          genericToken
+        )
       }
 
       const tokenInfo = get(
@@ -278,7 +325,6 @@ export const walletLazyNftCardInfosSelector = selectorFamily<
     ({ walletAddress, chainId }) =>
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
-
       // Use Stargaze's API if we're on the Stargaze chain.
       if (
         chainId === ChainId.StargazeMainnet ||

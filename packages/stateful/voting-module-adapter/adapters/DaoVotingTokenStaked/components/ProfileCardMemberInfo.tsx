@@ -51,8 +51,7 @@ export const ProfileCardMemberInfo = ({
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
   const {
-    governanceTokenInfo,
-    token,
+    token: governanceToken,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
     fetchWalletBalance: true,
@@ -72,14 +71,6 @@ export const ProfileCardMemberInfo = ({
     fetchWalletStakedValue: true,
     fetchTotalStakedValue: true,
   })
-
-  if (
-    loadingUnstakedBalance === undefined ||
-    loadingWalletStakedValue === undefined ||
-    loadingTotalStakedValue === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const doClaim = DaoVotingTokenStakedHooks.useClaim({
     contractAddress: votingModuleAddress,
@@ -109,10 +100,10 @@ export const ProfileCardMemberInfo = ({
       toast.success(
         `Claimed ${convertMicroDenomToDenomWithDecimals(
           sumClaimsAvailable,
-          governanceTokenInfo.decimals
+          governanceToken.decimals
         ).toLocaleString(undefined, {
-          maximumFractionDigits: governanceTokenInfo.decimals,
-        })} $${governanceTokenInfo.symbol}`
+          maximumFractionDigits: governanceToken.decimals,
+        })} $${governanceToken.symbol}`
       )
     } catch (err) {
       console.error(err)
@@ -124,8 +115,8 @@ export const ProfileCardMemberInfo = ({
     awaitNextBlock,
     isWalletConnected,
     doClaim,
-    governanceTokenInfo.decimals,
-    governanceTokenInfo.symbol,
+    governanceToken.decimals,
+    governanceToken.symbol,
     refreshBalances,
     refreshClaims,
     refreshTotals,
@@ -146,11 +137,11 @@ export const ProfileCardMemberInfo = ({
 
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({
-      token,
+      token: governanceToken,
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
-        governanceTokenInfo.decimals
+        governanceToken.decimals
       ),
       date: convertExpirationToDate(
         blocksPerYear,
@@ -161,11 +152,11 @@ export const ProfileCardMemberInfo = ({
       ),
     })),
     ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
-      token,
+      token: governanceToken,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
-        governanceTokenInfo.decimals
+        governanceToken.decimals
       ),
       date: convertExpirationToDate(
         blocksPerYear,
@@ -179,40 +170,39 @@ export const ProfileCardMemberInfo = ({
 
   return (
     <>
-      {showStakingModal && (
-        <StakingModal
-          maxDeposit={maxGovernanceTokenDeposit}
-          onClose={() => setShowStakingModal(false)}
-        />
-      )}
-
       <ProfileCardMemberInfoTokens
         claimingLoading={claimingLoading}
         daoName={daoName}
-        loadingStakedTokens={
-          loadingWalletStakedValue.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: convertMicroDenomToDenomWithDecimals(
-                  loadingWalletStakedValue.data,
-                  governanceTokenInfo.decimals
-                ),
-              }
-        }
-        loadingUnstakedTokens={
+        loadingTokens={
+          !loadingWalletStakedValue ||
+          loadingWalletStakedValue.loading ||
+          !loadingUnstakedBalance ||
           loadingUnstakedBalance.loading
-            ? { loading: true }
+            ? {
+                loading: true,
+              }
             : {
                 loading: false,
-                data: convertMicroDenomToDenomWithDecimals(
-                  loadingUnstakedBalance.data,
-                  governanceTokenInfo.decimals
-                ),
+                data: [
+                  {
+                    token: governanceToken,
+                    staked: convertMicroDenomToDenomWithDecimals(
+                      loadingWalletStakedValue.data,
+                      governanceToken.decimals
+                    ),
+                    unstaked: convertMicroDenomToDenomWithDecimals(
+                      loadingUnstakedBalance.data,
+                      governanceToken.decimals
+                    ),
+                  },
+                ],
               }
         }
         loadingVotingPower={
-          loadingWalletStakedValue.loading || loadingTotalStakedValue.loading
+          !loadingWalletStakedValue ||
+          loadingWalletStakedValue.loading ||
+          !loadingTotalStakedValue ||
+          loadingTotalStakedValue.loading
             ? { loading: true }
             : {
                 loading: false,
@@ -226,8 +216,6 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
-        tokenDecimals={governanceTokenInfo.decimals}
-        tokenSymbol={governanceTokenInfo.symbol}
         unstakingDurationSeconds={
           (unstakingDuration &&
             durationToSeconds(blocksPerYear, unstakingDuration)) ||
@@ -235,6 +223,12 @@ export const ProfileCardMemberInfo = ({
         }
         unstakingTasks={unstakingTasks}
         {...props}
+      />
+
+      <StakingModal
+        maxDeposit={maxGovernanceTokenDeposit}
+        onClose={() => setShowStakingModal(false)}
+        visible={showStakingModal}
       />
     </>
   )

@@ -75,6 +75,7 @@ export enum ActionKey {
   IcaExecute = 'icaExecute',
   ManageIcas = 'manageIcas',
   VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
+  NeutronOverruleSubDaoProposal = 'neutronOverruleSubDaoProposal',
   ManageVetoableDaos = 'manageVetoableDaos',
   UploadCode = 'uploadCode',
   ManageSubDaoPause = 'manageSubDaoPause',

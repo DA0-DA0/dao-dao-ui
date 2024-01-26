@@ -1,6 +1,13 @@
-directive @defer(if: Boolean, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @defer(
+  if: Boolean
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
-directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
 
 """
 Indicates exactly one field must be supplied and this field must not be `null`.
@@ -8,10 +15,14 @@ Indicates exactly one field must be supplied and this field must not be `null`.
 directive @oneOf on INPUT_OBJECT
 
 enum PresaleType {
-  """REGULAR - Presale mints DO count towards total mintable"""
+  """
+  REGULAR - Presale mints DO count towards total mintable
+  """
   REGULAR
 
-  """FLEX - Presale mints don't count towards total mintable"""
+  """
+  FLEX - Presale mints don't count towards total mintable
+  """
   FLEX
 }
 
@@ -22,7 +33,8 @@ type MinterTokenCounts {
 }
 
 interface MinterSale {
-  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  perAddressLimit: Int
+    @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
   startTime: UnixNanoseconds
   endTime: UnixNanoseconds
   numMembers: Int
@@ -37,8 +49,12 @@ type MinterPreSale implements MinterSale {
   numMembers: Int
   mintPrice: CoinAmount
   isMember: Boolean
-  hasMember(walletAddress: String): Boolean @deprecated(reason: "use isMember instead and pass walletAddress to minter.")
-  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  hasMember(walletAddress: String): Boolean
+    @deprecated(
+      reason: "use isMember instead and pass walletAddress to minter."
+    )
+  perAddressLimit: Int
+    @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
   tokenCounts: MinterTokenCounts
   type: PresaleType
 }
@@ -50,12 +66,15 @@ type MinterPublicSale implements MinterSale {
   numMembers: Int
   mintPrice: CoinAmount
   discountPrice: CoinAmount
-  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  perAddressLimit: Int
+    @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
   tokenCounts: MinterTokenCounts
 }
 
 type Minter {
-  """Minter contract address"""
+  """
+  Minter contract address
+  """
   contractAddress: String
   preSale: MinterPreSale
   publicSale: MinterPublicSale
@@ -76,25 +95,39 @@ type MintCount {
   whitelistType: WhitelistType!
 }
 
-"""Represents the traits of an NFT token."""
+"""
+Represents the traits of an NFT token.
+"""
 type TokenTrait {
-  """The name of the trait."""
+  """
+  The name of the trait.
+  """
   name: String!
 
-  """The value of the trait."""
+  """
+  The value of the trait.
+  """
   value: String!
 
-  """The rarity percentage associated with the trait."""
+  """
+  The rarity percentage associated with the trait.
+  """
   rarityPercent: Float
 
-  """The rarity score associated with the trait."""
+  """
+  The rarity score associated with the trait.
+  """
   rarityScore: Float
 
-  """A metric to represent the overall rarity."""
+  """
+  A metric to represent the overall rarity.
+  """
   rarity: Float
 }
 
-"""Enumerates different types of token-related activities."""
+"""
+Enumerates different types of token-related activities.
+"""
 enum ActivityType {
   TOKEN_MINT
   TOKEN_TRANSFER
@@ -118,123 +151,203 @@ enum ActivityType {
   ROYALTY_PAYOUT
 }
 
-"""Represents a paginated result of token events."""
+"""
+Represents a paginated result of token events.
+"""
 type TokenEvents implements CursorPaginatedQuery {
-  """List of token events."""
+  """
+  List of token events.
+  """
   events: [TokenEvent]
 
-  """Pagination info."""
+  """
+  Pagination info.
+  """
   pageInfo: CursorPageInfo
 }
 
-"""Represents an individual token event."""
+"""
+Represents an individual token event.
+"""
 type TokenEvent implements Event {
-  """Unique cursor for pagination."""
+  """
+  Unique cursor for pagination.
+  """
   cursor: ID
 
-  """Type of token activity."""
+  """
+  Type of token activity.
+  """
   type: ActivityType
 
-  """Price associated with the event."""
+  """
+  Price associated with the event.
+  """
   price: MicroAmount
 
-  """Price in USD."""
+  """
+  Price in USD.
+  """
   priceUsd: String
 
-  """Date of the event."""
+  """
+  Date of the event.
+  """
   date: String
 
-  """The associated token."""
+  """
+  The associated token.
+  """
   token: Token
 }
 
-"""Represents detailed token activity."""
+"""
+Represents detailed token activity.
+"""
 type TokenActivity {
-  """Unique identifier."""
+  """
+  Unique identifier.
+  """
   id: ID!
 
-  """Type of activity."""
+  """
+  Type of activity.
+  """
   type: ActivityType
 
-  """Transaction Hash."""
+  """
+  Transaction Hash.
+  """
   txHash: String
 
-  """Date of the activity."""
+  """
+  Date of the activity.
+  """
   date: String
 
-  """Deprecated: Price associated with the activity."""
+  """
+  Deprecated: Price associated with the activity.
+  """
   price: MicroAmount @deprecated(reason: "Use activityPrice for denom support.")
 
-  """Price associated with the activity."""
+  """
+  Price associated with the activity.
+  """
   activityPrice: CoinAmount
 
-  """Expiry date/time."""
+  """
+  Expiry date/time.
+  """
   expires: String
 
-  """Wallet account of the sender."""
+  """
+  Wallet account of the sender.
+  """
   from: WalletAccount
 
-  """Wallet account of the receiver."""
+  """
+  Wallet account of the receiver.
+  """
   to: WalletAccount
 }
 
-"""Represents the main structure of an NFT token."""
+"""
+Represents the main structure of an NFT token.
+"""
 type Token {
-  """Unique identifier in format: "<collection addr>/<token id>"."""
+  """
+  Unique identifier in format: "<collection addr>/<token id>".
+  """
   id: ID!
 
-  """Metadata associated with the token."""
+  """
+  Metadata associated with the token.
+  """
   metadata: JSONObject
 
-  """Per-collection unique token ID."""
+  """
+  Per-collection unique token ID.
+  """
   tokenId: String!
 
-  """Collection to which the token belongs."""
+  """
+  Collection to which the token belongs.
+  """
   collection: Collection!
 
-  """Token's name."""
+  """
+  Token's name.
+  """
   name: String
 
-  """Media associated with the token."""
+  """
+  Media associated with the token.
+  """
   media: Media
 
-  """Edition number of the token."""
+  """
+  Edition number of the token.
+  """
   edition: Int
 
-  """Description of the token."""
+  """
+  Description of the token.
+  """
   description: String
 
-  """URI for token data."""
+  """
+  URI for token data.
+  """
   tokenUri: String
 
-  """List of token traits."""
+  """
+  List of token traits.
+  """
   traits: [TokenTrait!]
 
-  """Date when the token was minted."""
+  """
+  Date when the token was minted.
+  """
   mintedAt: String
 
-  """Price at which the token was minted."""
+  """
+  Price at which the token was minted.
+  """
   mintPrice: MicroAmount
 
-  """Date when the token was listed for sale."""
+  """
+  Date when the token was listed for sale.
+  """
   listedAt: String
 
-  """Order based on rarity."""
+  """
+  Order based on rarity.
+  """
   rarityOrder: Int
 
-  """Score based on rarity."""
+  """
+  Score based on rarity.
+  """
   rarityScore: Float
 
-  """Current live auction details, if applicable."""
+  """
+  Current live auction details, if applicable.
+  """
   auction: LiveAuction
 
-  """The wallet address of the Current owner of the token."""
+  """
+  The wallet address of the Current owner of the token.
+  """
   owner: WalletAccount
 
-  """Current listed price of the token. (deprecated)"""
+  """
+  Current listed price of the token. (deprecated)
+  """
   price: MicroAmount @deprecated(reason: "Use listPrice for denom support.")
 
-  """Current listed price of the token."""
+  """
+  Current listed price of the token.
+  """
   listPrice: CoinAmount
 
   """
@@ -247,13 +360,19 @@ type Token {
   """
   activity(filterByActivity: ActivityType, sortBy: EventSort): [TokenActivity!]
 
-  """Retrieves the highest offer made on this token, filterable by address."""
+  """
+  Retrieves the highest offer made on this token, filterable by address.
+  """
   highestOffer(filterByAddr: String): Offer
 
-  """The expiry date and time of the token listing or offer."""
+  """
+  The expiry date and time of the token listing or offer.
+  """
   expiresAtDateTime: String
 
-  """The address for which this token is reserved, if applicable."""
+  """
+  The address for which this token is reserved, if applicable.
+  """
   reserveFor: WalletAccount
 
   """
@@ -261,142 +380,237 @@ type Token {
   """
   saleType: SaleType
 
-  """(Deprecated) The price at which the token last sold for."""
-  lastSale: MicroAmount @deprecated(reason: "Use lastSalePrice instead for denom support")
+  """
+  (Deprecated) The price at which the token last sold for.
+  """
+  lastSale: MicroAmount
+    @deprecated(reason: "Use lastSalePrice instead for denom support")
 
-  """The price at which the token last sold for."""
+  """
+  The price at which the token last sold for.
+  """
   lastSalePrice: CoinAmount
 
-  """Indicates if the token contains explicit content."""
+  """
+  Indicates if the token contains explicit content.
+  """
   isExplicit: Boolean
 
-  """Indicates if actions on the token are restricted to its owner only."""
+  """
+  Indicates if actions on the token are restricted to its owner only.
+  """
   onlyOwner: Boolean
 }
 
 type LiveAuction {
-  """Start time of the live auction."""
+  """
+  Start time of the live auction.
+  """
   startTime: String
 
-  """End time of the live auction."""
+  """
+  End time of the live auction.
+  """
   endTime: String
 
-  """The current highest bid details in the auction."""
+  """
+  The current highest bid details in the auction.
+  """
   highestBid: Offer
 
-  """Seller wallet details including address and name."""
+  """
+  Seller wallet details including address and name.
+  """
   seller: WalletAccount
 
-  """Auction duration in seconds."""
+  """
+  Auction duration in seconds.
+  """
   duration: Int
 }
 
 input TraitFilter {
-  """Name of the trait to filter by."""
+  """
+  Name of the trait to filter by.
+  """
   name: String!
 
-  """Value of the trait to filter by."""
+  """
+  Value of the trait to filter by.
+  """
   value: String!
 }
 
 enum SaleType {
-  """Tokens with a fixed price."""
+  """
+  Tokens with a fixed price.
+  """
   FIXED_PRICE
 
-  """Tokens available in a live auction."""
+  """
+  Tokens available in a live auction.
+  """
   LIVE_AUCTION
 
-  """Tokens available in a non-live auction."""
+  """
+  Tokens available in a non-live auction.
+  """
   AUCTION
 
-  """Any type of sale."""
+  """
+  Any type of sale.
+  """
   ANY
 
-  """Tokens that are not currently listed."""
+  """
+  Tokens that are not currently listed.
+  """
   UNLISTED
 
-  """Tokens that are currently listed."""
+  """
+  Tokens that are currently listed.
+  """
   LISTED
 
-  """Listings that have expired."""
+  """
+  Listings that have expired.
+  """
   EXPIRED
 }
 
 enum TokenSort {
-  """Sort tokens by their ID in descending order."""
+  """
+  Sort tokens by their ID in descending order.
+  """
   TOKEN_ID_DESC
 
-  """Sort tokens by rarity in ascending order."""
+  """
+  Sort tokens by rarity in ascending order.
+  """
   RARITY_ASC
 
-  """Sort tokens by rarity in descending order."""
+  """
+  Sort tokens by rarity in descending order.
+  """
   RARITY_DESC
 
-  """Sort tokens by price in ascending order."""
+  """
+  Sort tokens by price in ascending order.
+  """
   PRICE_ASC
 
-  """Sort tokens by price in descending order."""
+  """
+  Sort tokens by price in descending order.
+  """
   PRICE_DESC
 
-  """Sort tokens by their name in ascending order."""
+  """
+  Sort tokens by their name in ascending order.
+  """
   NAME_ASC
 
-  """Sort tokens by their name in descending order."""
+  """
+  Sort tokens by their name in descending order.
+  """
   NAME_DESC
 
-  """Sort tokens by collection address and token ID in ascending order."""
+  """
+  Sort tokens by collection address and token ID in ascending order.
+  """
   COLLECTION_ADDR_TOKEN_ID_ASC
 
-  """Sort tokens by their minting date/time in ascending order."""
+  """
+  Sort tokens by their minting date/time in ascending order.
+  """
   MINTED_ASC
 
-  """Sort tokens by their minting date/time in descending order."""
+  """
+  Sort tokens by their minting date/time in descending order.
+  """
   MINTED_DESC
 
-  """Sort tokens by their listing date/time in ascending order."""
+  """
+  Sort tokens by their listing date/time in ascending order.
+  """
   LISTED_ASC
 
-  """Sort tokens by their listing date/time in descending order."""
+  """
+  Sort tokens by their listing date/time in descending order.
+  """
   LISTED_DESC
 
-  """Sort tokens by the end time of live auctions in ascending order."""
+  """
+  Sort tokens by the end time of live auctions in ascending order.
+  """
   LIVE_AUCTION_END_TIME_ASC
 
-  """Sort tokens by the highest bid in live auctions in descending order."""
+  """
+  Sort tokens by the highest bid in live auctions in descending order.
+  """
   LIVE_AUCTION_HIGHEST_BID_DESC
 
-  """Sort tokens by the highest bid in live auctions in ascending order."""
+  """
+  Sort tokens by the highest bid in live auctions in ascending order.
+  """
   LIVE_AUCTION_HIGHEST_BID_ASC
+
+  """
+  Sort tokens by the end time they were acquired in ascending order.
+  """
+  ACQUIRED_ASC
+
+  """
+  Sort tokens by the end time they were acquired in descending order.
+  """
+  ACQUIRED_DESC
 }
 
 enum AuctionEndPreset {
-  """Auctions ending in the next 1 hour."""
+  """
+  Auctions ending in the next 1 hour.
+  """
   NEXT_1_HOUR
 
-  """Auctions ending in the next 6 hours."""
+  """
+  Auctions ending in the next 6 hours.
+  """
   NEXT_6_HOURS
 
-  """Auctions ending in the next 24 hours."""
+  """
+  Auctions ending in the next 24 hours.
+  """
   NEXT_24_HOURS
 
-  """Auctions ending in the next 48 hours."""
+  """
+  Auctions ending in the next 48 hours.
+  """
   NEXT_48_HOURS
 
-  """Auctions ending in the next 7 days."""
+  """
+  Auctions ending in the next 7 days.
+  """
   NEXT_7_DAYS
 }
 
 enum TokenSaleType {
-  """Tokens sold at a fixed price."""
+  """
+  Tokens sold at a fixed price.
+  """
   FIXED_PRICE
 
-  """Tokens sold in an auction."""
+  """
+  Tokens sold in an auction.
+  """
   AUCTION
 
-  """Tokens sold via an offer."""
+  """
+  Tokens sold via an offer.
+  """
   OFFER
 
-  """Offers made for any token in a collection."""
+  """
+  Offers made for any token in a collection.
+  """
   COLLECTION_OFFER
 }
 
@@ -414,115 +628,181 @@ enum TokenSaleSort {
 }
 
 type TokensResult implements PaginatedQuery {
-  """List of tokens as per query."""
+  """
+  List of tokens as per query.
+  """
   tokens: [Token!]!
 
-  """Pagination information."""
+  """
+  Pagination information.
+  """
   pageInfo: PageInfo
 }
 
 type TokenSale {
-  """Unique identifier for the token sale."""
+  """
+  Unique identifier for the token sale.
+  """
   id: ID!
 
-  """Type of the token sale."""
+  """
+  Type of the token sale.
+  """
   saleType: TokenSaleType
 
-  """Date of the sale."""
+  """
+  Date of the sale.
+  """
   date: String
 
-  """Address of the token's collection."""
+  """
+  Address of the token's collection.
+  """
   collectionAddr: String
 
-  """ID of the sold token."""
+  """
+  ID of the sold token.
+  """
   tokenId: String
 
-  """Details of the sold token."""
+  """
+  Details of the sold token.
+  """
   token: Token
 
-  """Details of the token's collection."""
+  """
+  Details of the token's collection.
+  """
   collection: Collection
 
-  """Price at which the token was sold."""
+  """
+  Price at which the token was sold.
+  """
   price: MicroAmount
 
-  """Price in USD at which the token was sold."""
+  """
+  Price in USD at which the token was sold.
+  """
   priceUsd: Float
 
-  """Wallet address of the seller."""
+  """
+  Wallet address of the seller.
+  """
   sellerAddr: String
 
-  """Wallet address of the buyer."""
+  """
+  Wallet address of the buyer.
+  """
   buyerAddr: String
 
-  """Wallet info of the seller including wallet address and name."""
+  """
+  Wallet info of the seller including wallet address and name.
+  """
   seller: WalletAccount
 
-  """Wallet info of the buyer including wallet address and name."""
+  """
+  Wallet info of the buyer including wallet address and name.
+  """
   buyer: WalletAccount
 }
 
 type TokenSalesResults implements PaginatedQuery {
-  """List of token sales as per query."""
+  """
+  List of token sales as per query.
+  """
   tokenSales: [TokenSale!]!
 
-  """Pagination information."""
+  """
+  Pagination information.
+  """
   pageInfo: PageInfo
 }
 
 input PriceFilter {
-  """Minimum listed token price for filtering."""
+  """
+  Minimum listed token price for filtering.
+  """
   min: Float
 
-  """Maximum listed token price for filtering."""
+  """
+  Maximum listed token price for filtering.
+  """
   max: Float
 }
 
 type Query {
-  """Retrieve a single token by its collection address and token ID."""
+  """
+  Retrieve a single token by its collection address and token ID.
+  """
   token(collectionAddr: String!, tokenId: String!): Token
 
   """
   Retrieve a list of tokens based on various filters and sorting criteria.
   """
   tokens(
-    """Filter tokens by owner address or name"""
+    """
+    Filter tokens by owner address or name
+    """
     owner: String @deprecated(reason: "Use ownerAddrOrName instead")
 
-    """Filter tokens by owner address or name"""
+    """
+    Filter tokens by owner address or name
+    """
     ownerAddrOrName: String
 
-    """Filter tokens that are on auction from a specific seller address."""
+    """
+    Filter tokens that are on auction from a specific seller address.
+    """
     sellerAddrOrName: String
 
-    """Filter tokens from a specific collection."""
+    """
+    Filter tokens from a specific collection.
+    """
     collectionAddr: String
 
-    """Filter tokens by specific traits."""
+    """
+    Filter tokens by specific traits.
+    """
     filterByTraits: [TraitFilter!]
 
-    """Filter tokens within a specific price range."""
+    """
+    Filter tokens within a specific price range.
+    """
     filterByPrice: PriceFilter
 
-    """Filter tokens by sale type."""
+    """
+    Filter tokens by sale type.
+    """
     filterForSale: SaleType
 
-    """Offset for pagination."""
+    """
+    Offset for pagination.
+    """
     offset: Int
 
-    """Limit the number of results or for pagination."""
+    """
+    Limit the number of results or for pagination.
+    """
     limit: Int
 
-    """Define how the tokens should be sorted."""
+    """
+    Define how the tokens should be sorted.
+    """
     sortBy: TokenSort
 
-    """Filter tokens from multiple collections addresses."""
+    """
+    Filter tokens from multiple collections addresses.
+    """
     filterByCollectionAddrs: [String!]
 
-    """Filter tokens by auction end time presets."""
+    """
+    Filter tokens by auction end time presets.
+    """
     filterAuctionEndByPreset: AuctionEndPreset
 
-    """Filter tokens by a specific range of auction end dates."""
+    """
+    Filter tokens by a specific range of auction end dates.
+    """
     filterAuctionEndByDate: DateRange
   ): TokensResult
 
@@ -530,25 +810,39 @@ type Query {
   Retrieve a list of token sales based on various filters and sorting criteria.
   """
   tokenSales(
-    """Offset for pagination."""
+    """
+    Offset for pagination.
+    """
     offset: Int
 
-    """Limit the number of results or for pagination."""
+    """
+    Limit the number of results or for pagination.
+    """
     limit: Int
 
-    """Filter token sales from multiple collections addresses."""
+    """
+    Filter token sales from multiple collections addresses.
+    """
     filterByCollectionAddrs: [String!]
 
-    """Filter token sales by date presets."""
+    """
+    Filter token sales by date presets.
+    """
     filterByDatePreset: DatePreset
 
-    """Filter token sales by a specific date range."""
+    """
+    Filter token sales by a specific date range.
+    """
     filterByDateRange: DateRange
 
-    """Filter token sales by sale type."""
+    """
+    Filter token sales by sale type.
+    """
     filterBySale: [TokenSaleType!]
 
-    """Define how the token sales should be sorted."""
+    """
+    Define how the token sales should be sorted.
+    """
     sortBy: TokenSaleSort
   ): TokenSalesResults
 
@@ -556,39 +850,109 @@ type Query {
   Retrieve a list of token events which aren't included in the standard tokens query based on various filters.
   """
   tokenEvents(
-    """Limit the number of results."""
+    """
+    Limit the number of results.
+    """
     limit: Int
 
-    """Filter token events by specific activity types."""
+    """
+    Filter token events by specific activity types.
+    """
     filterByTokenEventTypes: [ActivityType!]
 
-    """Filter token events from a specific collection address."""
+    """
+    Filter token events from a specific collection address.
+    """
     collectionAddr: String
 
-    """Filter token events after a specific cursor for pagination."""
+    """
+    Filter token events after a specific cursor for pagination.
+    """
     after: String
 
-    """Filter token events before a specific cursor for pagination."""
+    """
+    Filter token events before a specific cursor for pagination.
+    """
     before: String
   ): TokenEvents
 
-  """Retrieve a list of badges owned by a specific wallet."""
+  """
+  Retrieve a list of badges owned by a specific wallet.
+  """
   badges(ownerAddrOrName: String, offset: Int, limit: Int): TokensResult
-  collectionOffers(after: String, before: String, collectionAddr: String!): CollectionOffersResult
-  offers(filterByTypes: [OfferType], fromAddr: String, toAddr: String): OffersResult
+  collectionOffers(
+    after: String
+    before: String
+    collectionAddr: String!
+  ): CollectionOffersResult
+  offers(
+    filterByTypes: [OfferType]
+    fromAddr: String
+    toAddr: String
+  ): OffersResult
   media(url: String!): Media @deprecated
   name(name: String!): Name
-  names(offset: Int, limit: Int, sortBy: NameSortBy, ownerAddr: String, associatedAddr: String): NamesResult
-  collections(offset: Int, limit: Int, sortBy: CollectionSort, searchQuery: String, filterByAddrs: [String!], filterByCreators: [String!], filterByFeatured: [CollectionFeaturedType!], filterByCategories: [String!], filterByMintStatus: [CollectionMintStatus!], minMaxFilters: CollectionMinMaxFilters): CollectionsResult
+  names(
+    offset: Int
+    limit: Int
+    sortBy: NameSortBy
+    ownerAddr: String
+    associatedAddr: String
+  ): NamesResult
+  collections(
+    offset: Int
+    limit: Int
+    sortBy: CollectionSort
+    searchQuery: String
+    filterByAddrs: [String!]
+    filterByCreators: [String!]
+    filterByFeatured: [CollectionFeaturedType!]
+    filterByCategories: [String!]
+    filterByMintStatus: [CollectionMintStatus!]
+    minMaxFilters: CollectionMinMaxFilters
+  ): CollectionsResult
   collection(address: String!): Collection
-  collectionActivity(address: String!, filterByActivity: [ActivityType!], pagination: CursorPaginationInput): CollectionActivityResult
+  collectionActivity(
+    address: String!
+    filterByActivity: [ActivityType!]
+    pagination: CursorPaginationInput
+  ): CollectionActivityResult
   collectionCategories: [CollectionCategoryInfo!]
-  collectionSales(address: String!, granularity: DateGranularity!, filterByDatePreset: DatePreset, filterByDateRange: DateRange, limit: Int, offset: Int): CollectionSalesResult
-  collectionCounts(owner: String, seller: String, filterForSale: SaleType, limit: Int, offset: Int): CollectionCountsResult
-  collectionsWithCounts(owner: String, seller: String, filterForSale: SaleType, limit: Int, offset: Int): CollectionsResult @deprecated(reason: "Use collectionsCounts query instead.")
+  collectionSales(
+    address: String!
+    granularity: DateGranularity!
+    filterByDatePreset: DatePreset
+    filterByDateRange: DateRange
+    limit: Int
+    offset: Int
+  ): CollectionSalesResult
+  collectionCounts(
+    owner: String
+    seller: String
+    filterForSale: SaleType
+    limit: Int
+    offset: Int
+  ): CollectionCountsResult
+  collectionsWithCounts(
+    owner: String
+    seller: String
+    filterForSale: SaleType
+    limit: Int
+    offset: Int
+  ): CollectionsResult
+    @deprecated(reason: "Use collectionsCounts query instead.")
   wallet(address: String!, filterByTime: WalletStatsTimeSeries): WalletAccount
-  wallets(offset: Int, limit: Int, sortBy: WalletSort, filterByTime: WalletStatsTimeSeries, searchQuery: String): WalletsResult
-  walletActivity(address: String!, pagination: CursorPaginationInput): WalletActivityResult
+  wallets(
+    offset: Int
+    limit: Int
+    sortBy: WalletSort
+    filterByTime: WalletStatsTimeSeries
+    searchQuery: String
+  ): WalletsResult
+  walletActivity(
+    address: String!
+    pagination: CursorPaginationInput
+  ): WalletActivityResult
   analytics: Analytics
 }
 
@@ -623,7 +987,8 @@ enum OfferType {
 type Offer {
   id: ID!
   type: OfferType
-  price: MicroAmount!
+  price: MicroAmount! @deprecated(reason: "Use offerPrice instead")
+  offerPrice: CoinAmount
   floorPriceDifferencePercent: Float
   fromAddr: String
   from: WalletAccount
@@ -677,9 +1042,13 @@ type Image {
   jpgLink: String
 }
 
-"""Can be an image or video asset."""
+"""
+Can be an image or video asset.
+"""
 type VisualAsset {
-  """The type of media of the main url."""
+  """
+  The type of media of the main url.
+  """
   type: MediaType
   width: Int
   height: Int
@@ -756,7 +1125,7 @@ type Collection {
   royaltyInfo: RoyaltyInfo
   creationTime: UnixNanoseconds
   startTradingTime: UnixNanoseconds
-  traits: [CollectionTrait!]
+  traits(filterForSale: SaleType): [CollectionTrait!]
   minter(walletAddress: String): Minter
   mintStatus: CollectionMintStatus
   categories: CollectionCategories
@@ -800,6 +1169,7 @@ type CollectionTraitValue {
   rarityPercent: Float
   numTokens: Int!
   numTokensForSale: Int!
+  floorPrice: MicroAmount
 }
 
 type CollectionTrait {
@@ -807,7 +1177,9 @@ type CollectionTrait {
   values: [CollectionTraitValue!]!
 }
 
-"""Stats are refreshed every 15 mins with the worker process."""
+"""
+Stats are refreshed every 15 mins with the worker process.
+"""
 type CollectionStats {
   collectionAddr: ID!
   change6HourPercent: Float
@@ -860,28 +1232,44 @@ type CollectionCategoryInfo {
 }
 
 type CollectionTokenCounts {
-  """Number of tokens remaining to mint."""
+  """
+  Number of tokens remaining to mint.
+  """
   mintable: Int
 
-  """Number of tokens minted."""
+  """
+  Number of tokens minted.
+  """
   minted: Int
 
-  """Number of tokens airdropped."""
+  """
+  Number of tokens airdropped.
+  """
   airdropped: Int
 
-  """Total number of tokens possible (from the minter)."""
+  """
+  Total number of tokens possible (from the minter).
+  """
   total: Int
 
-  """Number of tokens for sale."""
+  """
+  Number of tokens for sale.
+  """
   listed: Int
 
-  """Number of tokens that are minted and not burned."""
+  """
+  Number of tokens that are minted and not burned.
+  """
   active: Int
 
-  """Number of tokens burned."""
+  """
+  Number of tokens burned.
+  """
   burned: Int
 
-  """Number of tokens that are returned from collectionsWithCounts query."""
+  """
+  Number of tokens that are returned from collectionsWithCounts query.
+  """
   current: Int @deprecated(reason: "Use collectionCounts query instead.")
 }
 
@@ -1142,7 +1530,9 @@ type WalletActivity implements Activity {
   isValid: Boolean
 }
 
-"""Stats are refreshed every 15 mins with the worker process."""
+"""
+Stats are refreshed every 15 mins with the worker process.
+"""
 type WalletStats {
   address: ID!
   numTrades: Int
@@ -1321,9 +1711,13 @@ enum AnalyticsTimeScale {
   month
 }
 
-"""Various Metrics for a particular day"""
+"""
+Various Metrics for a particular day
+"""
 type AnalyticsDailyMetrics {
-  """Unique ID"""
+  """
+  Unique ID
+  """
   id: Int!
   collectionCreationFeesStarsAmount: MicroAmount!
   collectionCreationFeesUsdAmount: Float!
@@ -1370,7 +1764,9 @@ type AnalyticsDailyMetricsResult implements PaginatedQuery {
   pageInfo: PageInfo!
 }
 
-"""Sum of AnalyticsDailyMetrics for a given date range """
+"""
+Sum of AnalyticsDailyMetrics for a given date range
+"""
 type AnalyticsMetricsSummary {
   averageDailyRevenue: MicroAmount!
   burned: MicroAmount!
@@ -1432,10 +1828,22 @@ type AnalyticsCollectionOwnerDistributon {
 type Analytics {
   topTokenSales(offset: Int, limit: Int): AnalyticsTopTokenSalesResult
   platformTotals: AnalyticsPlatformTotals!
-  metricsSummary(where: AnalyticsDateRangeInput): AnalyticsMetricsSummaryByCurrency!
-  topCollectionHolders(collectionAddr: String!): [AnalyticsTopCollectionHolder!]!
-  collectionOwnerDistributon(collectionAddr: String!): [AnalyticsCollectionOwnerDistributon!]!
-  dailyMetrics(offset: Int, limit: Int, orderBy: AnalyticsDateOrderByInput, where: AnalyticsDateRangeInput, aggregation: AnalyticsTimeScale): AnalyticsDailyMetricsResult!
+  metricsSummary(
+    where: AnalyticsDateRangeInput
+  ): AnalyticsMetricsSummaryByCurrency!
+  topCollectionHolders(
+    collectionAddr: String!
+  ): [AnalyticsTopCollectionHolder!]!
+  collectionOwnerDistributon(
+    collectionAddr: String!
+  ): [AnalyticsCollectionOwnerDistributon!]!
+  dailyMetrics(
+    offset: Int
+    limit: Int
+    orderBy: AnalyticsDateOrderByInput
+    where: AnalyticsDateRangeInput
+    aggregation: AnalyticsTimeScale
+  ): AnalyticsDailyMetricsResult!
 }
 
 """
@@ -1443,10 +1851,14 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-"""MicroAmount custom scalar type"""
+"""
+MicroAmount custom scalar type
+"""
 scalar MicroAmount
 
-"""UnixNanoseconds custom scalar type"""
+"""
+UnixNanoseconds custom scalar type
+"""
 scalar UnixNanoseconds
 
 """
@@ -1489,4 +1901,5 @@ type CoinAmount {
   denom: String
   symbol: String
   amount: MicroAmount
+  amountUsd: Float
 }

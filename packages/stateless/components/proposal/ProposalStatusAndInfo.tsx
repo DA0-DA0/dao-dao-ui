@@ -45,6 +45,8 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
     // Whether or not the vetoer is a DAO and the current user is a member of
     // that vetoer DAO.
     isVetoerDaoMember: boolean
+    // Whether or not this is part of the Neutron fork overrule flow.
+    isNeutronOverrule: boolean
   }
   footer?: ReactNode
   // Whether or not the user has viewed all action pages. If they haven't, they
@@ -235,15 +237,16 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
           )}
         >
           <div className="flex flex-col gap-1">
-            {vetoOrEarlyExecute.isVetoerDaoMember && (
-              <InfoCard
-                content={t('info.vetoActionDaoMemberExplanation', {
-                  context: vetoOrEarlyExecute.onEarlyExecute
-                    ? 'withEarlyExecute'
-                    : 'withoutEarlyExecute',
-                })}
-              />
-            )}
+            {!vetoOrEarlyExecute.isNeutronOverrule &&
+              vetoOrEarlyExecute.isVetoerDaoMember && (
+                <InfoCard
+                  content={t('info.vetoActionDaoMemberExplanation', {
+                    context: vetoOrEarlyExecute.onEarlyExecute
+                      ? 'withEarlyExecute'
+                      : 'withoutEarlyExecute',
+                  })}
+                />
+              )}
 
             {vetoOrEarlyExecute.onEarlyExecute && (
               <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
@@ -257,7 +260,9 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
               option={{
                 Icon: ThumbDown,
                 value: 'veto',
-                label: t('button.veto'),
+                label: vetoOrEarlyExecute.isNeutronOverrule
+                  ? t('button.goToOverruleProposal')
+                  : t('button.veto'),
               }}
             />
 

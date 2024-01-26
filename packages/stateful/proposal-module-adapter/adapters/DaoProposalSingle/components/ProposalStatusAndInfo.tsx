@@ -97,7 +97,13 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
+  proposal: {
+    timestampInfo,
+    votingOpen,
+    vetoTimelockExpiration,
+    neutronTimelockOverrule,
+    ...proposal
+  },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -246,6 +252,7 @@ const InnerProposalStatusAndInfo = ({
     useProposalVetoState({
       statusKey,
       vetoConfig: 'veto' in config ? config.veto : undefined,
+      neutronTimelockOverrule,
       onVetoSuccess,
       onExecuteSuccess,
     })
@@ -451,6 +458,14 @@ const InnerProposalStatusAndInfo = ({
             ? thresholdReached && (!quorum || quorumReached)
               ? 'vetoedPassed'
               : 'vetoedNotPassed'
+            : statusKey === 'veto_timelock'
+            ? 'vetoTimelock'
+            : statusKey === ProposalStatusEnum.NeutronOverruled
+            ? thresholdReached && (!quorum || quorumReached)
+              ? 'overruledPassed'
+              : 'overruledNotPassed'
+            : statusKey === ProposalStatusEnum.NeutronTimelocked
+            ? 'overruleTimelock'
             : undefined,
         turnoutPercent: formatPercentOf100(turnoutPercent),
         turnoutYesPercent: formatPercentOf100(turnoutYesPercent),

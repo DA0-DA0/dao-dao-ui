@@ -116,6 +116,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         else if (status === ProposalStatusEnum.Vetoed) {
           toast.success(t('success.proposalVetoed'))
         }
+        // On overrule, show success toast.
+        else if (status === ProposalStatusEnum.NeutronOverruled) {
+          toast.success(t('success.proposalOverruled'))
+        }
       }
     }
   )

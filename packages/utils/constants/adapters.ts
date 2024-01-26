@@ -4,6 +4,7 @@ export const DaoVotingCw20StakedAdapterId = 'DaoVotingCw20Staked'
 export const DaoVotingCw721StakedAdapterId = 'DaoVotingCw721Staked'
 export const DaoVotingNativeStakedAdapterId = 'DaoVotingNativeStaked'
 export const DaoVotingTokenStakedAdapterId = 'DaoVotingTokenStaked'
+export const NeutronVotingRegistryAdapterId = 'NeutronVotingRegistry'
 
 // Proposal modules
 export const DaoProposalSingleAdapterId = 'DaoProposalSingle'

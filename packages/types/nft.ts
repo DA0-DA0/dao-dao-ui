@@ -1,5 +1,6 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
+import { GenericToken } from '.'
 import { ChainId, WithChainId } from './chain'
 import {
   ButtonLinkProps,
@@ -20,6 +21,13 @@ export type StargazeNft = {
     contractAddress?: string | null
     name?: string | null
   }
+  highestOffer?: {
+    offerPrice?: {
+      amount?: number | null
+      amountUsd?: number | null
+      denom?: string | null
+    } | null
+  } | null
   media?: {
     url?: string | null
     visualAssets?: {
@@ -63,9 +71,10 @@ export type NftCardInfo = {
   imageUrl?: string
   // Metadata loaded from the token URI.
   metadata?: Record<string, any>
-  floorPrice?: {
-    amount: number
-    denom: string
+  highestOffer?: {
+    offerToken?: GenericToken | null
+    amount?: number | null
+    amountUsd?: number | null
   }
   name: string
   description: string | undefined
@@ -73,6 +82,7 @@ export type NftCardInfo = {
   // This indicates whether or not the NFT is staked in a DAO. It is manually
   // set in `walletStakedLazyNftCardInfosSelector`.
   staked?: boolean
+  fetchedTimestamp?: Date
 }
 
 export type NftCardProps = NftCardInfo & {
@@ -108,7 +118,7 @@ export type LazyNftCardInfo = WithChainId<
     tokenId: string
     // If passed and the NFT is staked, get staker info from this contract.
     stakingContractAddress?: string
-  } & Pick<NftCardInfo, 'staked'>
+  } & Pick<NftCardInfo, 'staked' | 'highestOffer'>
 >
 
 export type LazyNftCardProps = LazyNftCardInfo &

@@ -33,6 +33,8 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
+import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
@@ -92,6 +94,10 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
 export enum PreProposeModuleType {
   Approval = 'approval',
   Approver = 'approver',
+  // Neutron fork SubDAOs use timelock.
+  NeutronSubdaoSingle = 'neutron_subdao_single',
+  // Neutron fork DAO uses overrule pre-propose paired with SubDAO timelocks.
+  NeutronOverruleSingle = 'neutron_overrule_single',
   Other = 'other',
 }
 
@@ -109,6 +115,11 @@ export type PreProposeModuleApproverConfig = {
   preProposeApprovalContract: string
 }
 
+export type PreProposeModuleNeutronSubdaoSingleConfig = {
+  timelockAddress: string
+  timelockConfig: NeutronCwdSubdaoTimelockSingleConfig
+}
+
 export type PreProposeModuleTypedConfig =
   | {
       type: PreProposeModuleType.Approval
@@ -117,6 +128,14 @@ export type PreProposeModuleTypedConfig =
   | {
       type: PreProposeModuleType.Approver
       config: PreProposeModuleApproverConfig
+    }
+  | {
+      type: PreProposeModuleType.NeutronSubdaoSingle
+      config: PreProposeModuleNeutronSubdaoSingleConfig
+    }
+  | {
+      type: PreProposeModuleType.NeutronOverruleSingle
+      config?: undefined
     }
   | {
       type: PreProposeModuleType.Other
@@ -391,12 +410,21 @@ export enum DaoTabId {
   Staked = 'staked',
   Collection = 'collection',
   Apps = 'apps',
+  Vaults = 'vaults',
 }
 
 export type DaoTab = {
-  // ID used in URL hash.
+  /**
+   * ID used in URL hash and uniquely identifies a selected DAO.
+   */
   id: DaoTabId | string
+  /**
+   * Tab display name
+   */
   label: string
+  /**
+   * Tab icon that shows up in the SDA sidebar.
+   */
   Icon: ComponentType<{ className: string }>
 }
 
@@ -444,4 +472,30 @@ export type DaoWithVetoableProposals = WithChainId<
 export type DaoWithDropdownVetoableProposalList<T> = {
   dao: DaoDropdownInfo
   proposals: T[]
+}
+
+export type VotingVaultInfo =
+  // Real vaults have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: true
+      /**
+       * The token that will be used to bond.
+       */
+      bondToken: GenericToken
+    }
+  // Virtual vaults do not have bond tokens.
+  | {
+      /**
+       * Whether or not this is a real vault. Real vaults have bonding, whereas
+       * virtual vaults don't.
+       */
+      real: false
+    }
+
+export type VotingVaultWithInfo = VotingVault & {
+  info: VotingVaultInfo
 }

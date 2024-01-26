@@ -33,14 +33,17 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
-  <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>
+  <SuspenseLoader
+    fallback={<ModalLoader onClose={props.onClose} visible={props.visible} />}
+  >
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
 
 const InnerStakingModal = ({
-  initialMode = StakingMode.Stake,
   onClose,
+  visible,
+  initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { chainId, coreAddress } = useVotingModuleAdapterOptions()
@@ -59,17 +62,13 @@ const InnerStakingModal = ({
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
-  const {
-    collectionAddress: collectionAddress,
-    collectionInfo,
-    loadingWalletBalance: loadingUnstakedBalance,
-  } = useGovernanceCollectionInfo({
-    fetchWalletBalance: true,
-  })
+  const { collectionAddress: collectionAddress, collectionInfo } =
+    useGovernanceCollectionInfo({
+      fetchWalletBalance: true,
+    })
   const {
     stakingContractAddress,
     refreshTotals,
-    sumClaimsAvailable,
     loadingWalletStakedValue,
     refreshClaims,
     loadingWalletStakedNfts,
@@ -100,14 +99,6 @@ const InnerStakingModal = ({
     walletStakedBalanceLoadable.contents
       ? Number(walletStakedBalanceLoadable.contents.power)
       : undefined
-
-  if (
-    sumClaimsAvailable === undefined ||
-    loadingUnstakedBalance === undefined ||
-    loadingWalletStakedValue === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const doStakeMultiple = Cw721BaseHooks.useSendNftMultiple({
     contractAddress: collectionAddress,
@@ -293,7 +284,7 @@ const InnerStakingModal = ({
       selectedKeys={currentTokenIds.map((tokenId) =>
         getNftKey(chainId, collectionAddress, tokenId)
       )}
-      visible={true}
+      visible={visible}
     />
   )
 }

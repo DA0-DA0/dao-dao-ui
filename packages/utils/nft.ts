@@ -1,6 +1,6 @@
 // If name is only a number, prefix with collection name. Fallback to token ID
 
-import { NftCardInfo, StargazeNft } from '@dao-dao/types'
+import { GenericToken, NftCardInfo, StargazeNft } from '@dao-dao/types'
 
 import { STARGAZE_URL_BASE } from './constants'
 
@@ -70,7 +70,9 @@ export const getNftKey = (
 
 export const nftCardInfoFromStargazeIndexerNft = (
   chainId: string,
-  token: StargazeNft
+  token: StargazeNft,
+  offerToken: GenericToken | null = null,
+  timestamp: Date = new Date()
 ): NftCardInfo => ({
   key: getNftKey(
     chainId,
@@ -88,4 +90,12 @@ export const nftCardInfoFromStargazeIndexerNft = (
   imageUrl: token.media?.visualAssets?.lg?.url || token.media?.url || undefined,
   name: token.name || token.tokenId || 'Unknown NFT',
   description: token.description || undefined,
+  highestOffer: offerToken
+    ? {
+        offerToken,
+        amountUsd: token.highestOffer?.offerPrice?.amountUsd,
+        amount: Number(token.highestOffer?.offerPrice?.amount),
+      }
+    : undefined,
+  fetchedTimestamp: timestamp,
 })

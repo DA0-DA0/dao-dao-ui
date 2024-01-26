@@ -8,6 +8,9 @@ export enum ContractName {
   PreProposeApprovalSingle = 'crates.io:dao-pre-propose-approval-single',
   PreProposeApprover = 'crates.io:dao-pre-propose-approver',
   NeutronCwdSubdaoCore = 'crates.io:cwd-subdao-core',
+  NeutronCwdSubdaoPreProposeSingle = 'crates.io:cwd-subdao-pre-propose-single',
+  NeutronCwdSubdaoTimelockSingle = 'crates.io:cwd-subdao-timelock-single',
+  NeutronCwdPreProposeSingleOverrule = 'crates.io:cwd-pre-propose-single-overrule',
 }
 
 export const NEUTRON_SUBDAO_CORE_CONTRACT_NAMES = [
@@ -54,6 +57,10 @@ export const DAO_VOTING_CW721_STAKED_CONTRACT_NAMES = [
 export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [
   // V2.3.0+
   'crates.io:dao-voting-token-staked',
+]
+
+export const NEUTRON_VOTING_REGISTRY_CONTRACT_NAMES = [
+  'crates.io:neutron-voting-registry',
 ]
 
 export const DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES = [
