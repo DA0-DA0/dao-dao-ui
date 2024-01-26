@@ -5,6 +5,7 @@ import {
   AccountType,
   DaoAccountTreasury,
   DaoFiatDepositModalProps,
+  LoadingData,
   LoadingNfts,
   LoadingTokens,
   TokenCardInfo,
@@ -27,7 +28,7 @@ export type TreasuryAndNftsTabProps<
 > = {
   connected: boolean
   tokens: LoadingTokens<T>
-  nfts: LoadingNfts<N & { key: string }>
+  nfts: LoadingData<LoadingNfts<N & { key: string }>>
   createCrossChainAccountPrefillHref: string
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
@@ -55,9 +56,10 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
     const chainTokens = tokens[account.chainId]
     // NFTs are only loaded for main account on a chain.
     const chainNfts =
-      account.type === AccountType.Native ||
-      account.type === AccountType.Polytone
-        ? nfts[account.chainId]
+      !nfts.loading &&
+      (account.type === AccountType.Native ||
+        account.type === AccountType.Polytone)
+        ? nfts.data[account.chainId]
         : undefined
 
     return {
@@ -101,7 +103,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
                   : bValue - aValue
               }),
           },
-      nfts: !chainNfts
+      nfts: nfts.loading
+        ? { loading: true, errored: false }
+        : !chainNfts
         ? { loading: false, errored: false, data: [] }
         : chainNfts.loading || chainNfts.errored
         ? chainNfts

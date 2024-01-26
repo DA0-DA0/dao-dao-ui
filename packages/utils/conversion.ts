@@ -300,6 +300,8 @@ export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
     ? IPFS_GATEWAY_TEMPLATE.replace('PATH', ipfsUrl.replace('ipfs://', ''))
     : ipfsUrl
 
+const IPFS_CID_PREFIX_URL = /^https?:\/\/(.+)\.ipfs\.[^/]+(.*)$/
+
 // Transform image URLs to ensure they can be accessed. They need to be using
 // https protocol, not ipfs, and potentially from a whitelisted IPFS gateway.
 // They only need to be from a whitelisted IPFS gateway if being used in a
@@ -317,29 +319,18 @@ export const toAccessibleImageUrl = (
     return replaceRelative ? SITE_URL + url : url
   }
 
+  // Convert `https://CID.ipfs.<domain>` to our IPFS gateway because we have to
+  // explicitly whitelist domains, and the CID is the part that changes. Except
+  // use Stargaze's IPFS gateway since they pin NFT content.
+  if (!url.includes('ipfs.stargaze.zone') && IPFS_CID_PREFIX_URL.test(url)) {
+    const matches = url.match(IPFS_CID_PREFIX_URL)
+    if (matches?.length === 3) {
+      url = IPFS_GATEWAY_TEMPLATE.replace('PATH', matches[1] + matches[2])
+      return url
+    }
+  }
+
   url = transformIpfsUrlToHttpsIfNecessary(url)
-
-  // Convert `https://CID.ipfs.nftstorage.link` to
-  // `https://nftstorage.link/ipfs/CID` because we have to explicitly whitelist
-  // domains, and the CID is the part that changes.
-  if (url.includes('.ipfs.nftstorage.link')) {
-    const matches = url.match(/([a-zA-Z0-9]+)\.ipfs\.nftstorage\.link(.*)$/)
-    if (matches?.length === 3) {
-      url = `https://nftstorage.link/ipfs/${matches[1]}${matches[2]}`
-      return url
-    }
-  }
-
-  // Convert `https://CID.ipfs.cf-ipfs.com` to `https://cf-ipfs.com/ipfs/CID`
-  // because we have to explicitly whitelist domains, and the CID is the part
-  // that changes.
-  if (url.includes('.ipfs.cf-ipfs.com')) {
-    const matches = url.match(/([a-zA-Z0-9]+)\.ipfs\.cf-ipfs\.com(.*)$/)
-    if (matches?.length === 3) {
-      url = `https://cf-ipfs.com/ipfs/${matches[1]}${matches[2]}`
-      return url
-    }
-  }
 
   // If this is not an IPFS image, we can't enforce that it is coming from one
   // of our NextJS allowed image sources. Thus proxy it through a whitelisted

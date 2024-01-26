@@ -80,6 +80,8 @@ export const NEUTRON_GOVERNANCE_DAO =
 export const NEUTRON_SECURITY_SUBDAO =
   'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
 
+export const IPFS_GATEWAY_TEMPLATE = 'https://ipfs.daodao.zone/ipfs/PATH'
+
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']
 

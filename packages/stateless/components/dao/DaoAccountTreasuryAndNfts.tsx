@@ -131,7 +131,10 @@ export const DaoAccountTreasuryAndNfts = <
 
         {nfts.loading ||
         (!nfts.errored && nfts.updating && nfts.data.length === 0) ? (
-          <Loader className="mt-6" />
+          <div className="mt-4 flex flex-row items-center gap-4">
+            <p className="title-text">{t('title.nfts')}</p>
+            <Loader fill={false} size={22} />
+          </div>
         ) : nfts.errored ? (
           <ErrorPage error={nfts.error} />
         ) : nfts.data.length > 0 ? (
