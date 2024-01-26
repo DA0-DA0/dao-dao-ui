@@ -18,14 +18,17 @@ import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
-import { OsmosisHistoricalPriceChartPrecision } from '@dao-dao/state/recoil'
 import {
   SegmentedControls,
   WarningCard,
   useCachedLoadingWithError,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { TokenType, TreasuryHistoryGraphProps } from '@dao-dao/types'
+import {
+  TokenPriceHistoryRange,
+  TokenType,
+  TreasuryHistoryGraphProps,
+} from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTimeTz,
@@ -67,8 +70,9 @@ export const TreasuryHistoryGraph = ({
   const brandColor = useNamedThemeColor('text-brand')
   const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
-  const [precision, setPrecision] =
-    useState<OsmosisHistoricalPriceChartPrecision>('hour')
+  const [range, setRange] = useState<TokenPriceHistoryRange>(
+    TokenPriceHistoryRange.Month
+  )
 
   // If in a DAO, this should load the DAO's governance token info. Undefined if
   // not in a DAO or fails to load for some reason.
@@ -79,7 +83,7 @@ export const TreasuryHistoryGraph = ({
     treasuryValueHistorySelector({
       chainId,
       address,
-      precision,
+      range,
       filter: account && {
         account: {
           type: account.type,
@@ -417,30 +421,37 @@ export const TreasuryHistoryGraph = ({
         )}
       </div>
 
-      <SegmentedControls<OsmosisHistoricalPriceChartPrecision>
+      <SegmentedControls<TokenPriceHistoryRange>
         className="self-end"
-        onSelect={(value) => setPrecision(value)}
-        selected={precision}
+        onSelect={(value) => setRange(value)}
+        selected={range}
         tabs={[
           {
-            label: 'M',
-            value: 'fiveminutes',
-            tooltip: t('info.priceHistoryPrecision', {
-              context: 'fiveminutes',
-            }),
-          },
-          {
-            label: 'H',
-            value: 'hour',
-            tooltip: t('info.priceHistoryPrecision', {
-              context: 'hour',
-            }),
-          },
-          {
             label: 'D',
-            value: 'day',
-            tooltip: t('info.priceHistoryPrecision', {
+            value: TokenPriceHistoryRange.Day,
+            tooltip: t('info.priceHistoryRange', {
               context: 'day',
+            }),
+          },
+          {
+            label: 'W',
+            value: TokenPriceHistoryRange.Week,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'week',
+            }),
+          },
+          {
+            label: 'M',
+            value: TokenPriceHistoryRange.Month,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'month',
+            }),
+          },
+          {
+            label: 'Y',
+            value: TokenPriceHistoryRange.Year,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'year',
             }),
           },
         ]}

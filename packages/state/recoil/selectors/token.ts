@@ -7,14 +7,17 @@ import {
 
 import {
   Account,
+  AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
   GenericTokenSource,
   GenericTokenWithUsdPrice,
+  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
+  COINGECKO_API_BASE,
   MAINNET,
   getChainForChainId,
   getChainForChainName,
@@ -183,7 +186,52 @@ export const genericTokenSelector = selectorFamily<
     },
 })
 
+export const coinGeckoUsdPriceSelector = selectorFamily<
+  GenericTokenWithUsdPrice | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+>({
+  key: 'coinGeckoUsdPrice',
+  get:
+    (params) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      const token = get(genericTokenSelector(params))
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(skipAssetSelector(params))
+      if (!asset?.coingeckoID) {
+        return
+      }
+
+      // TODO(coingecko): move query and API key to cloudflare worker
+      try {
+        const {
+          market_data: {
+            current_price: { usd },
+          },
+        }: { market_data: { current_price: { usd: number } } } = await (
+          await fetch(
+            COINGECKO_API_BASE +
+              `/coins/${asset.coingeckoID}?x_cg_demo_api_key=CG-2kpMwLzH6oMgx1zJ5G8P7eeQ&localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=fals`
+          )
+        ).json()
+
+        return {
+          token,
+          usdPrice: usd,
+          timestamp: new Date(),
+        }
+      } catch {
+        return undefined
+      }
+    },
+})
+
 const priceSelectors = [
+  coinGeckoUsdPriceSelector,
   osmosisUsdPriceSelector,
   astroportUsdPriceSelector,
   whiteWhaleUsdPriceSelector,
@@ -604,6 +652,58 @@ export const sourceChainAndDenomSelector = selectorFamily<
           sourceType === TokenType.Cw20
             ? sourceDenom.replace(/^cw20:/, '')
             : sourceDenom,
+      }
+    },
+})
+
+export const historicalUsdPriceSelector = selectorFamily<
+  AmountWithTimestamp[] | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'> & {
+    range: TokenPriceHistoryRange
+  }
+>({
+  key: 'historicalUsdPrice',
+  get:
+    ({ chainId, type, denomOrAddress, range }) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(
+        skipAssetSelector({
+          type,
+          chainId,
+          denomOrAddress,
+        })
+      )
+
+      if (!asset?.coingeckoID) {
+        return
+      }
+
+      const now = Date.now()
+
+      // TODO(coingecko): move query and API key to cloudflare worker
+      try {
+        const { prices }: { prices: [number, number][] } = await (
+          await fetch(
+            COINGECKO_API_BASE +
+              `/coins/${
+                asset.coingeckoID
+              }/market_chart/range?x_cg_demo_api_key=CG-2kpMwLzH6oMgx1zJ5G8P7eeQ&vs_currency=usd&from=${(
+                BigInt(now - range) / BigInt(1000)
+              ).toString()}&to=${(BigInt(now) / BigInt(1000)).toString()}`
+          )
+        ).json()
+
+        return prices.map(([timestamp, amount]) => ({
+          timestamp: new Date(timestamp),
+          amount,
+        }))
+      } catch {
+        return undefined
       }
     },
 })

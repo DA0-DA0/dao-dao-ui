@@ -2,7 +2,6 @@ import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
-  OsmosisHistoricalPriceChartPrecision,
   accountsSelector,
   allBalancesSelector,
   communityPoolBalancesSelector,
@@ -11,8 +10,6 @@ import {
   historicalBalancesSelector,
   historicalUsdPriceSelector,
   nativeDelegatedBalanceSelector,
-  osmosisPrecisionToMinutes,
-  osmosisPrecisionToStartSecondsAgo,
   usdPriceSelector,
 } from '@dao-dao/state'
 import {
@@ -22,6 +19,7 @@ import {
   GenericTokenSource,
   LoadingTokens,
   TokenCardInfo,
+  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
@@ -205,6 +203,18 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
 
 const ACCOUNT_FILTER_PROPERTIES = ['type', 'chainId', 'address'] as const
 
+// The interval of data returned from CoinGecko at these ranges.
+// https://www.coingecko.com/api/documentation
+const tokenPriceHistoryRangeInterval: Record<TokenPriceHistoryRange, number> = {
+  // Daily.
+  [TokenPriceHistoryRange.Year]: 24 * 60 * 60 * 1000,
+  // Hourly.
+  [TokenPriceHistoryRange.Month]: 60 * 60 * 1000,
+  [TokenPriceHistoryRange.Week]: 60 * 60 * 1000,
+  // Every 5 minutes.
+  [TokenPriceHistoryRange.Day]: 5 * 60 * 1000,
+}
+
 export const treasuryValueHistorySelector = selectorFamily<
   {
     timestamps: Date[]
@@ -224,7 +234,7 @@ export const treasuryValueHistorySelector = selectorFamily<
   },
   WithChainId<{
     address: string
-    precision: OsmosisHistoricalPriceChartPrecision
+    range: TokenPriceHistoryRange
     filter?: {
       // Filter by any of the account properties.
       account?: Partial<Pick<Account, typeof ACCOUNT_FILTER_PROPERTIES[number]>>
@@ -244,7 +254,7 @@ export const treasuryValueHistorySelector = selectorFamily<
     ({
       chainId: nativeChainId,
       address,
-      precision,
+      range,
       filter,
       nativeGovernanceTokenDenom,
       cw20GovernanceTokenAddress,
@@ -279,25 +289,11 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       }
 
-      const startTime = new Date(
-        Date.now() - osmosisPrecisionToStartSecondsAgo[precision] * 1000
-      )
+      const startTime = new Date(Date.now() - range)
+      const intervalMs = tokenPriceHistoryRangeInterval[range]
       // Snap to beginning.
-      switch (precision) {
-        case 'day':
-          startTime.setHours(0, 0, 0, 0)
-          break
-        case 'hour':
-          startTime.setMinutes(0, 0, 0)
-          break
-        // case 'fiveminutes':
-        default:
-          startTime.setSeconds(0, 0)
-          break
-      }
+      startTime.setHours(0, 0, 0, 0)
       const startTimeUnixMs = startTime.getTime()
-      // minutes to milliseconds
-      const intervalMs = osmosisPrecisionToMinutes[precision] * 60 * 1000
 
       // Historical balances.
       const historicalBalancesByTimestamp = get(
@@ -318,10 +314,10 @@ export const treasuryValueHistorySelector = selectorFamily<
           balancesByTimestamp
             .map(({ timestamp }) => timestamp.getTime())
             // Remove last timestamp since we replace it with current balance.
-            // Remove from each one individually like this (instead of after
-            // the sort below) since the last timestamp will be different for
-            // each account depending on when the query finished. Each is
-            // already sorted internally, so no need to sort before slicing.
+            // Remove from each one individually like this (instead of after the
+            // sort below) since the last timestamp will be different for each
+            // account depending on when the query finished. Each is already
+            // sorted internally, so no need to sort before slicing.
             .slice(0, -1)
         )
       )
@@ -389,7 +385,7 @@ export const treasuryValueHistorySelector = selectorFamily<
               chainId,
               type,
               denomOrAddress,
-              precision,
+              range,
             })
           )
         )
