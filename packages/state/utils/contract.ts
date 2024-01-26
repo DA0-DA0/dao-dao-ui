@@ -220,10 +220,7 @@ export const fetchPreProposeModule = async (
         timelockAddress = await queryIndexer({
           type: 'contract',
           address: preProposeAddress,
-          formula: 'item',
-          args: {
-            key: 'timelock_contract_address',
-          },
+          formula: 'neutron/cwdSubdaoPreProposeSingle/timelockAddress',
           chainId,
         })
       } catch (err) {
@@ -250,10 +247,7 @@ export const fetchPreProposeModule = async (
         config = await queryIndexer({
           type: 'contract',
           address: timelockAddress,
-          formula: 'item',
-          args: {
-            key: 'config',
-          },
+          formula: 'neutron/cwdSubdaoTimelockSingle/config',
           chainId,
         })
       } catch (err) {
