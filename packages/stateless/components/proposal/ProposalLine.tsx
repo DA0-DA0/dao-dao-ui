@@ -93,7 +93,7 @@ export const ProposalLine = ({
           )}
         </div>
 
-        <p className="body-text break-words line-clamp-2">{title}</p>
+        <p className="body-text line-clamp-2 break-words">{title}</p>
       </div>
 
       <div className="flex flex-row items-center justify-between gap-6">

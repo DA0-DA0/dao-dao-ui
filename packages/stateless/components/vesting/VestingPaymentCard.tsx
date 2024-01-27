@@ -341,7 +341,7 @@ export const VestingPaymentCard = ({
 
             <MarkdownRenderer
               className={
-                descriptionCollapsed ? 'break-words line-clamp-2' : undefined
+                descriptionCollapsed ? 'line-clamp-2 break-words' : undefined
               }
               markdown={description}
             />

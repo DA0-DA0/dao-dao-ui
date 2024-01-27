@@ -335,7 +335,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             <div className="space-y-1">
               <MarkdownRenderer
                 className={
-                  descriptionCollapsed ? 'break-words line-clamp-3' : undefined
+                  descriptionCollapsed ? 'line-clamp-3 break-words' : undefined
                 }
                 markdown={description}
               />

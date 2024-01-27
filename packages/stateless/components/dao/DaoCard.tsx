@@ -140,7 +140,7 @@ export const DaoCard = ({
       </div>
 
       <div className="self-stretch">
-        <p className="secondary-text mb-5 w-full break-words line-clamp-3">
+        <p className="secondary-text line-clamp-3 mb-5 w-full break-words">
           {removeMarkdown(description)}
         </p>
 
