@@ -75,7 +75,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           // Make clickable for onClick and onEdit.
           (onClick || onEdit) && 'cursor-pointer',
           // Enable group events for onEdit.
-          onEdit && 'group',
+          onEdit && 'group/profileimage',
 
           className
         )}
@@ -87,7 +87,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           className={clsx(
             'absolute top-0 right-0 bottom-0 left-0 bg-cover bg-center',
             onEdit && [
-              'transition group-hover:brightness-[0.35]',
+              'group-hover/profileimage:brightness-[0.35] transition',
               // If showing placeholder, dim even when not hovering.
               showingPlaceholder ? 'brightness-[0.5]' : 'brightness-100',
             ],
@@ -112,7 +112,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {onEdit && (
           <div
             className={clsx(
-              'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center transition-opacity group-hover:opacity-100',
+              'group-hover/profileimage:opacity-100 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center transition-opacity',
               // If showing placeholder, show edit even when not hovering.
               showingPlaceholder ? 'opacity-70' : 'opacity-0',
               sizingRoundingClassNames

@@ -59,7 +59,7 @@ export const ProposalCard = ({
           </p>
         </DaoImage>
         <p className="primary-text text-center text-text-body">{title}</p>
-        <p className="secondary-text break-words line-clamp-4">
+        <p className="secondary-text line-clamp-4 break-words">
           {removeMarkdown(description)}
         </p>
       </div>

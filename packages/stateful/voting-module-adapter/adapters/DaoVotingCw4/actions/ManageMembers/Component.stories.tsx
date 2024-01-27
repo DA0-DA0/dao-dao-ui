@@ -3,10 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { AddressInput } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
-import {
-  ManageMembersComponent,
-  ManageMembersData,
-} from './ManageMembersComponent'
+import { EntityDisplay } from '../../../../../components'
+import { ManageMembersComponent, ManageMembersData } from './Component'
 
 export default {
   title:
@@ -36,7 +34,11 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    currentMembers: ['member1', 'member2'],
+    currentMembers: {
+      loading: false,
+      data: ['member1', 'member2'],
+    },
     AddressInput,
+    EntityDisplay,
   },
 }

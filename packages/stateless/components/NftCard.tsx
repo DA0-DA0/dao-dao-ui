@@ -113,7 +113,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     return (
       <div
         className={clsx(
-          'group relative flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
+          'group/nft relative flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
           {
             'hover:bg-background-secondary hover:ring-border-interactive-focus':
               externalLink || checkbox,
@@ -189,7 +189,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               openInNewTab
             >
               <TooltipLikeDisplay
-                className="absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90 group-hover:opacity-100"
+                className="group-hover/nft:opacity-100 absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90"
                 icon={<ArrowOutwardRounded className="!h-5 !w-5" />}
                 label={t('button.openInDestination', {
                   destination: externalLink.name,
@@ -210,7 +210,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   props: ({ open }) => ({
                     Icon: ExpandCircleDownOutlined,
                     className: clsx(
-                      'shadow-dp4 group-hover:opacity-100',
+                      'group-hover/nft:opacity-100 shadow-dp4',
                       !open && 'opacity-0'
                     ),
                     variant: 'primary_inverted',
@@ -335,7 +335,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             <div className="space-y-1">
               <MarkdownRenderer
                 className={
-                  descriptionCollapsed ? 'break-words line-clamp-3' : undefined
+                  descriptionCollapsed ? 'line-clamp-3 break-words' : undefined
                 }
                 markdown={description}
               />

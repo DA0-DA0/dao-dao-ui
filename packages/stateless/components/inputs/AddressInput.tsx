@@ -193,7 +193,7 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'secondary-text group flex min-w-0 items-center gap-3 bg-transparent font-sans text-sm transition-all',
+        'secondary-text flex min-w-0 items-center gap-3 bg-transparent font-sans text-sm transition-all',
         // If not only displaying entity, add more border.
         onlyDisplayEntity
           ? 'p-2'

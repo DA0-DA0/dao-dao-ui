@@ -73,7 +73,7 @@ export const SegmentedControls = <T extends unknown>({
   return (
     <div
       className={clsx(
-        'group grid auto-cols-fr grid-flow-col rounded-md bg-background-tertiary',
+        'grid auto-cols-fr grid-flow-col rounded-md bg-background-tertiary',
         disabled && 'pointer-events-none',
         noWrap && 'w-max',
         className

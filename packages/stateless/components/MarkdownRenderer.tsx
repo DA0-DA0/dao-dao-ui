@@ -101,14 +101,14 @@ const HeadingRenderer: HeadingComponent = ({
         setCopied(true)
         toast.success(t('info.copiedLinkToClipboard'))
       },
-      className: 'group flex flex-row gap-4 items-center cursor-pointer',
+      className: 'group/mdlink flex flex-row gap-4 items-center cursor-pointer',
     },
     [
       <span key="children">{children}</span>,
       <IconButton
         key="copy"
         Icon={copied ? Check : Link}
-        className="leading-none opacity-0 transition-opacity group-hover:opacity-100"
+        className="group-hover/mdlink:opacity-100 leading-none opacity-0 transition-opacity"
         size="sm"
         variant="none"
       />,

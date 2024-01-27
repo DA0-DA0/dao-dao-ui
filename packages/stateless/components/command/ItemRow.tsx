@@ -21,7 +21,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
     return (
       <div
         className={clsx(
-          'group flex h-9 flex-row items-center gap-2 rounded-md bg-transparent p-3 transition',
+          'flex h-9 flex-row items-center gap-2 rounded-md bg-transparent p-3 transition',
           !item.disabled &&
             'cursor-pointer hover:bg-background-interactive-hover',
           !item.disabled && selected && 'bg-background-interactive-hover',

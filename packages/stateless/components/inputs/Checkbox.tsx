@@ -9,10 +9,6 @@ export interface CheckboxProps {
   onClick?: () => void
   className?: string
   readOnly?: boolean
-  // Apply css hover/active states using tailwind group modifiers in addition to
-  // the normal modifiers. This lets the parent component appear to serve as a
-  // checkbox as well.
-  styleWithGroup?: boolean
   size?: 'sm' | 'default'
 }
 
@@ -21,7 +17,6 @@ export const Checkbox = ({
   onClick,
   className,
   readOnly,
-  styleWithGroup = true,
   size = 'default',
 }: CheckboxProps) => (
   <div
@@ -30,13 +25,7 @@ export const Checkbox = ({
       checked ? 'bg-component-pill' : 'bg-background-button',
       readOnly
         ? 'pointer-events-none'
-        : {
-            'cursor-pointer hover:bg-background-button-hover  active:bg-background-button-pressed active:outline-2':
-              true,
-            // Respond to parent group as well.
-            'group-hover:bg-background-button-hover group-active:bg-background-button-pressed group-active:outline-2':
-              styleWithGroup,
-          },
+        : 'cursor-pointer hover:bg-background-button-hover  active:bg-background-button-pressed active:outline-2',
       className
     )}
     onClick={readOnly ? undefined : onClick}
