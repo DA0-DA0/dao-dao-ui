@@ -12,12 +12,12 @@ import {
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
-import { AddressInput } from '../../../../../components'
+import { AddressInput, EntityDisplay } from '../../../../../components'
 import { useLoadingVotingModule } from '../../hooks/useLoadingVotingModule'
 import {
   ManageMembersData,
   ManageMembersComponent as StatelessManageMembersComponent,
-} from './ManageMembersComponent'
+} from './Component'
 
 const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
   toAdd: [],
@@ -36,12 +36,14 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         currentMembers:
-          votingModule.loading ||
-          votingModule.errored ||
-          !votingModule.data.members
-            ? []
-            : votingModule.data.members.map(({ addr }) => addr),
+          votingModule.loading || votingModule.errored
+            ? { loading: true }
+            : {
+                loading: false,
+                data: votingModule.data.members?.map(({ addr }) => addr) || [],
+              },
         AddressInput,
+        EntityDisplay,
       }}
     />
   )
@@ -72,7 +74,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
               msg: {
                 update_members: {
                   add: toAdd,
-                  remove: toRemove.map(({ addr }) => addr),
+                  remove: toRemove,
                 },
               },
             },
@@ -106,11 +108,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
         match: true,
         data: {
           toAdd: msg.wasm.execute.msg.update_members.add,
-          toRemove: msg.wasm.execute.msg.update_members.remove.map(
-            (addr: string) => ({
-              addr,
-            })
-          ),
+          toRemove: msg.wasm.execute.msg.update_members.remove,
         },
       }
     }
