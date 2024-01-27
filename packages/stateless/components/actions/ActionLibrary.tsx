@@ -291,7 +291,7 @@ export const ActionLibrary = ({
                 !action.programmaticOnly &&
                 // Show if reusable or not already used.
                 (!action.notReusable ||
-                  !actionData.some((a) => a.actionKey !== action.key))
+                  !actionData.some((a) => a.actionKey === action.key))
             )
             .map((action, index) => (
               <Button
