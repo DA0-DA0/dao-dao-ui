@@ -126,7 +126,7 @@ export const ActionsEditor = ({
                 // Re-render when the group at a given position changes.
                 `${index}-${group.action?.key}`
               }
-              className="group relative"
+              className="relative"
               id={`A${index + 1}`}
             >
               <ActionEditor

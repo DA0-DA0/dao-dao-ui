@@ -17,7 +17,6 @@ const tailwindConfig = {
     safelist: [/data-theme$/],
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
     require('./button'),
     require('@tailwindcss/typography'),
     require('tailwindcss-safe-area'),

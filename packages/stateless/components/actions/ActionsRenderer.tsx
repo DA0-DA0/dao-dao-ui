@@ -124,7 +124,7 @@ export const ActionsRenderer = ({
   return (
     <div className="flex flex-col gap-2">
       {groupedActionData.map((props, index) => (
-        <div key={index} className="group relative" id={`A${index + 1}`}>
+        <div key={index} className="group/action relative" id={`A${index + 1}`}>
           <ActionRenderer
             key={
               // Re-render when the action at a given position changes so the
@@ -160,7 +160,7 @@ export const ActionsRenderer = ({
           {!hideCopyLink && (
             <IconButton
               Icon={copied === index ? Check : Link}
-              className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
+              className="group-hover/action:opacity-100 absolute top-1 right-1 opacity-0 transition-opacity"
               onClick={() => {
                 const url = new URL(window.location.href)
                 url.hash = '#' + `A${index + 1}`
