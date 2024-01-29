@@ -2,8 +2,8 @@ syntax = "proto3";
 package osmosis.concentratedliquidity.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "osmosis/concentrated-liquidity/params.proto";
-import "osmosis/concentrated-liquidity/tickInfo.proto";
+import "osmosis/concentratedliquidity/params.proto";
+import "osmosis/concentratedliquidity/v1beta1/tickInfo.proto";
 
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
@@ -13,10 +13,10 @@ import "cosmos_proto/cosmos.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
-import "osmosis/concentrated-liquidity/position.proto";
-import "osmosis/concentrated-liquidity/incentive_record.proto";
+import "osmosis/concentratedliquidity/v1beta1/position.proto";
+import "osmosis/concentratedliquidity/v1beta1/incentive_record.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/concentrated-liquidity/client/queryproto";
+option go_package = "github.com/osmosis-labs/osmosis/v22/x/concentrated-liquidity/client/queryproto";
 
 service Query {
   // Pools returns all concentrated liquidity pools
@@ -31,7 +31,7 @@ service Query {
         "/osmosis/concentratedliquidity/v1beta1/params";
   }
 
-  // UserPositions returns all concentrated postitions of some address.
+  // UserPositions returns all concentrated positions of some address.
   rpc UserPositions(UserPositionsRequest) returns (UserPositionsResponse) {
     option (google.api.http).get =
         "/osmosis/concentratedliquidity/v1beta1/positions/{address}";
@@ -174,6 +174,7 @@ message ParamsResponse { Params params = 1 [ (gogoproto.nullable) = false ]; }
 
 message TickLiquidityNet {
   string liquidity_net = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"liquidity_net\"",
     (gogoproto.nullable) = false
@@ -183,6 +184,7 @@ message TickLiquidityNet {
 
 message LiquidityDepthWithRange {
   string liquidity_amount = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"liquidity_net\"",
     (gogoproto.nullable) = false
@@ -205,8 +207,15 @@ message LiquidityNetInDirectionResponse {
       [ (gogoproto.nullable) = false ];
   int64 current_tick = 2;
   string current_liquidity = 3 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"current_liquidity\"",
+    (gogoproto.nullable) = false
+  ];
+  string current_sqrt_price = 4 [
+
+    (gogoproto.customtype) = "github.com/osmosis-labs/osmosis/osmomath.BigDec",
+    (gogoproto.moretags) = "yaml:\"current_sqrt_price\"",
     (gogoproto.nullable) = false
   ];
 }
@@ -218,6 +227,8 @@ message LiquidityPerTickRangeRequest {
 message LiquidityPerTickRangeResponse {
   repeated LiquidityDepthWithRange liquidity = 1
       [ (gogoproto.nullable) = false ];
+
+  int64 bucket_index = 2 [ (gogoproto.moretags) = "yaml:\"bucket_index\"" ];
 }
 
 // ===================== QueryClaimableSpreadRewards
@@ -338,7 +349,7 @@ message NumNextInitializedTicksResponse {
   int64 current_tick = 2;
   string current_liquidity = 3 [
 
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"current_liquidity\"",
     (gogoproto.nullable) = false
   ];

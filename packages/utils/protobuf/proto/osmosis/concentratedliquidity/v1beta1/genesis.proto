@@ -6,12 +6,12 @@ import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/any.proto";
 import "osmosis/accum/v1beta1/accum.proto";
-import "osmosis/concentrated-liquidity/params.proto";
-import "osmosis/concentrated-liquidity/position.proto";
-import "osmosis/concentrated-liquidity/tickInfo.proto";
-import "osmosis/concentrated-liquidity/incentive_record.proto";
+import "osmosis/concentratedliquidity/params.proto";
+import "osmosis/concentratedliquidity/v1beta1/position.proto";
+import "osmosis/concentratedliquidity/v1beta1/tickInfo.proto";
+import "osmosis/concentratedliquidity/v1beta1/incentive_record.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/concentrated-liquidity/types/genesis";
+option go_package = "github.com/osmosis-labs/osmosis/v22/x/concentrated-liquidity/types/genesis";
 
 // FullTick contains tick index and pool id along with other tick model
 // information.
@@ -61,7 +61,7 @@ message PositionData {
 message GenesisState {
   // params are all the parameters of the module
   Params params = 1 [ (gogoproto.nullable) = false ];
-  // pool data containining serialized pool struct and ticks.
+  // pool data containing serialized pool struct and ticks.
   repeated PoolData pool_data = 2 [ (gogoproto.nullable) = false ];
 
   repeated PositionData position_data = 3 [ (gogoproto.nullable) = false ];
