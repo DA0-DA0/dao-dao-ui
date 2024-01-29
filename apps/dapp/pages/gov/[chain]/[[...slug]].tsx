@@ -3,8 +3,11 @@
 
 import {
   AccountBalanceWalletOutlined,
+  AccountBalanceWalletRounded,
   FiberSmartRecordOutlined,
+  FiberSmartRecordRounded,
   HowToVoteOutlined,
+  HowToVoteRounded,
 } from '@mui/icons-material'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -17,7 +20,6 @@ import {
   ButtonLink,
   DaoCard,
   GovCommunityPoolTab,
-  GovInfoBar,
   GovPageWrapper,
   GovPageWrapperProps,
   GovProposalsTab,
@@ -45,6 +47,7 @@ import {
   SITE_URL,
   getConfiguredChainConfig,
   getConfiguredChains,
+  getDisplayNameForChainId,
   getGovPath,
 } from '@dao-dao/utils'
 
@@ -64,12 +67,14 @@ const InnerGovHome = () => {
       label: t('title.proposals'),
       Component: GovProposalsTab,
       Icon: HowToVoteOutlined,
+      IconFilled: HowToVoteRounded,
     },
     {
       id: DaoTabId.Treasury,
       label: t('title.communityPool'),
       Component: GovCommunityPoolTab,
       Icon: AccountBalanceWalletOutlined,
+      IconFilled: AccountBalanceWalletRounded,
     },
     // If SubDAOs exist, show them.
     ...(CHAIN_SUBDAOS[chainId]?.length
@@ -79,6 +84,7 @@ const InnerGovHome = () => {
             label: t('title.subDaos'),
             Component: GovSubDaosTab,
             Icon: FiberSmartRecordOutlined,
+            IconFilled: FiberSmartRecordRounded,
           },
         ]
       : []),
@@ -130,7 +136,6 @@ const InnerGovHome = () => {
   return (
     <DaoDappTabbedHome
       ButtonLink={ButtonLink}
-      DaoInfoBar={GovInfoBar}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
@@ -255,7 +260,10 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps = makeGetGovStaticProps({
-  getProps: async ({ chainName }) => ({
+  getProps: async ({ chain, chainName }) => ({
     url: SITE_URL + getGovPath(chainName),
+    overrideDescription: `The native chain governance for ${getDisplayNameForChainId(
+      chain.chain_id
+    )}.`,
   }),
 })

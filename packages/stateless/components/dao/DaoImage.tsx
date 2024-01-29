@@ -54,7 +54,7 @@ export const DaoImage = ({
     // SDA header
     'h-8 w-8': size === 'md',
     // DAO home page
-    'h-24 w-24': size === 'lg',
+    'h-20 w-20 xs:h-24 xs:w-24': size === 'lg',
   })
 
   return (

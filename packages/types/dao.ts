@@ -426,6 +426,10 @@ export type DaoTab = {
    * Tab icon that shows up in the SDA sidebar.
    */
   Icon: ComponentType<{ className: string }>
+  /**
+   * Tab icon that shows up in the main DAO tabs.
+   */
+  IconFilled: ComponentType<{ className: string }>
 }
 
 export type DaoTabWithComponent = DaoTab & {

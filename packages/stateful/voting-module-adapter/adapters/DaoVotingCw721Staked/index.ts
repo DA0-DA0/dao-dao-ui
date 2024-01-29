@@ -1,4 +1,8 @@
-import { ImageRounded, PeopleAltOutlined } from '@mui/icons-material'
+import {
+  ImageRounded,
+  PeopleAltOutlined,
+  PeopleAltRounded,
+} from '@mui/icons-material'
 
 import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
 import {
@@ -40,12 +44,14 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
           labelI18nKey: 'title.members',
           Component: MembersTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
         {
           id: DaoTabId.Collection,
           labelI18nKey: 'title.nftCollection',
           Component: NftCollectionTab,
           Icon: ImageRounded,
+          IconFilled: ImageRounded,
         },
       ],
 

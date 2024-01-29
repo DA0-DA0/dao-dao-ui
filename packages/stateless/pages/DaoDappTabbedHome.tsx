@@ -1,32 +1,22 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
-import { useRef } from 'react'
-import { useTranslation } from 'react-i18next'
+import clsx from 'clsx'
+import { useEffect, useRef } from 'react'
+
+import { ContractVersion, DaoDappTabbedHomeProps } from '@dao-dao/types'
 
 import {
-  ContractVersion,
-  DaoDappTabbedHomeProps,
-  DaoPageMode,
-} from '@dao-dao/types'
-import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
-
-import {
+  Button,
   IconButtonLink,
   Loader,
   PageHeaderContent,
   RightSidebarContent,
-  SegmentedControls,
-  Tooltip,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useChainContext } from '../hooks'
-import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
-
-const SDA_URL_PREFIX = `https://dao.${MAINNET ? '' : 'testnet.'}daodao.zone`
 
 export const DaoDappTabbedHome = ({
   daoInfo,
   follow,
-  DaoInfoBar,
   rightSidebarContent,
   SuspenseLoader,
   ButtonLink,
@@ -37,23 +27,41 @@ export const DaoDappTabbedHome = ({
   breadcrumbsOverride,
   parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
-  const { t } = useTranslation()
   const { config: chainConfig } = useChainContext()
 
-  const {
-    getDaoPath,
-    router: { asPath },
-  } = useDaoNavHelpers()
-  // Swap the DAO path prefixes instead of just rebuilding the path to preserve
-  // any additional info (such as query params).
-  const singleDaoPath = asPath.replace(
-    getDaoPath(''),
-    baseGetDaoPath(DaoPageMode.Sda, '')
-  )
+  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
 
-  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
+  // When the selected tab changes, center the new tab.
+  useEffect(() => {
+    const tabIndex = tabs.findIndex(({ id }) => id === selectedTabId)
+    if (tabIndex < 0) {
+      return
+    }
+
+    const tab = tabContainerRef.current?.children[tabIndex]
+    if (tab) {
+      const containerRect = tabContainerRef.current.getBoundingClientRect()
+      const containerCenter = containerRect.width / 2
+
+      const tabRect = tab.getBoundingClientRect()
+      // The scrollable container may be offset from the left of the screen by
+      // the nav sidebar. Thus, to center the tab horizontally in the container,
+      // we need to subtract the container's left offset.
+      // `getBoundingClientRect` is relative to the whole window, but the scroll
+      // position is relative to the container itself, so we need the center of
+      // the container.
+      const tabCenter = tabRect.left + tabRect.width / 2 - containerRect.left
+
+      tabContainerRef.current.scrollTo({
+        left: tabContainerRef.current.scrollLeft + tabCenter - containerCenter,
+        behavior: 'smooth',
+      })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTabId])
 
   return (
     <>
@@ -76,86 +84,43 @@ export const DaoDappTabbedHome = ({
                 variant="ghost"
               />
             ) : undefined
-          ) : (
-            // Go to SDA.
-            <Tooltip title={t('button.viewDaosPage')}>
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={SDA_URL_PREFIX + singleDaoPath}
-                variant="ghost"
-              />
-            </Tooltip>
-          )
+          ) : undefined
         }
       />
 
       <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
         <DaoSplashHeader
           ButtonLink={ButtonLink}
-          DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
           follow={follow}
           parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         />
 
-        <div className="h-[1px] bg-border-base" />
-
-        <div
-          className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2"
-          ref={tabContainerRef}
-        >
-          <SegmentedControls
-            className="mx-auto hidden w-max max-w-full mdlg:grid"
-            moreTabs={
-              tabs.length > 4
-                ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
-                : undefined
-            }
-            onSelect={onSelectTabId}
-            selected={selectedTabId}
-            tabs={tabs
-              .slice(0, 4)
-              .map(({ id, label }) => ({ label, value: id }))}
-          />
-
-          <SegmentedControls
-            className="mx-auto mdlg:hidden"
-            noWrap
-            onSelect={(tabId, e) => {
-              onSelectTabId(tabId)
-
-              // Scroll tab to horizontal center.
-              if (tabContainerRef.current) {
-                const containerRect =
-                  tabContainerRef.current.getBoundingClientRect()
-                const containerCenter = containerRect.width / 2
-
-                const tabRect = e.currentTarget.getBoundingClientRect()
-                // The scrollable container may be offset from the left of the
-                // screen by the nav sidebar. Thus, to center the tab
-                // horizontally in the container, we need to subtract the
-                // container's left offset. `getBoundingClientRect` is relative
-                // to the whole window, but the scroll position is relative to
-                // the container itself, so we need the center of the container.
-                const tabCenter =
-                  tabRect.left + tabRect.width / 2 - containerRect.left
-
-                tabContainerRef.current.scrollTo({
-                  left:
-                    tabContainerRef.current.scrollLeft +
-                    tabCenter -
-                    containerCenter,
-                  behavior: 'smooth',
-                })
-              }
-            }}
-            selected={selectedTabId}
-            tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
-          />
+        <div className="flex flex-row items-center justify-center border-b border-border-primary">
+          <div
+            className="no-scrollbar flex flex-row items-end overflow-x-auto pt-1"
+            ref={tabContainerRef}
+          >
+            {tabs.map(({ id, label, IconFilled }) => (
+              <Button
+                key={id}
+                className={clsx(
+                  'shrink-0 !rounded-b-none border-b border-transparent !py-2 !px-4',
+                  selectedTabId === id && '!border-icon-primary'
+                )}
+                contentContainerClassName="!gap-1.5"
+                onClick={() => onSelectTabId(id)}
+                variant="none"
+              >
+                <IconFilled className="!h-6 !w-6" />
+                {label}
+              </Button>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-2 border-t border-border-secondary py-6">
+        <div className="pt-5 pb-6">
           {/* Don't render a tab unless it is visible. */}
           {selectedTab && (
             <SuspenseLoader fallback={<Loader />}>

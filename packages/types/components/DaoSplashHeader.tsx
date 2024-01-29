@@ -8,7 +8,6 @@ import { LinkWrapperProps } from './LinkWrapper'
 export type DaoSplashHeaderProps = {
   daoInfo: DaoInfo
   follow?: FollowState
-  DaoInfoBar: ComponentType
   ButtonLink: ComponentType<ButtonLinkProps>
   LinkWrapper: ComponentType<LinkWrapperProps>
   /**

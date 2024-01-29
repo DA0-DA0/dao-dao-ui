@@ -1,4 +1,4 @@
-import { ArticleOutlined } from '@mui/icons-material'
+import { ArticleOutlined, ArticleRounded } from '@mui/icons-material'
 
 import {
   ActionCategoryKey,
@@ -18,6 +18,7 @@ import { PressData } from './types'
 export const PressWidget: Widget<PressData> = {
   id: WidgetId.Press,
   Icon: ArticleOutlined,
+  IconFilled: ArticleRounded,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
   Renderer,

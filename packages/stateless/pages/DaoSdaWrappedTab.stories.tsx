@@ -43,6 +43,7 @@ Default.args = {
         />
       ),
       Icon: HomeRounded,
+      IconFilled: HomeRounded,
     },
   ],
   tabId: DaoTabId.Home,

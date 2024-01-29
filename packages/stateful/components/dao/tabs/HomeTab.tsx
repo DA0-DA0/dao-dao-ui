@@ -73,11 +73,14 @@ export const HomeTab = () => {
       {mode === DaoPageMode.Sda && (
         <DaoSplashHeader
           ButtonLink={ButtonLink}
-          DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
         />
       )}
+
+      <div className="m-6">
+        <DaoInfoBar />
+      </div>
 
       <div
         className={clsx(

@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLink,
-  DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
   LinkWrapper,
@@ -128,7 +127,6 @@ const InnerDaoHome = () => {
   return (
     <DaoDappTabbedHome
       ButtonLink={ButtonLink}
-      DaoInfoBar={DaoInfoBar}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}

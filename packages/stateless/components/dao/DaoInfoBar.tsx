@@ -8,10 +8,7 @@ export * from '@dao-dao/types/components/DaoInfoBar'
 
 export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
   <div
-    className={clsx(
-      'flex flex-row flex-wrap items-center gap-12 px-8 pt-5 pb-9',
-      className
-    )}
+    className={clsx('flex flex-row flex-wrap items-center gap-12', className)}
   >
     {items.map(({ Icon, label, tooltip, loading, value }, index) => (
       <div

@@ -1,4 +1,4 @@
-import { PeopleAltOutlined } from '@mui/icons-material'
+import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
 import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 import {
@@ -28,6 +28,7 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
           labelI18nKey: 'title.votingVaults',
           Component: VaultsTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
       ],
 

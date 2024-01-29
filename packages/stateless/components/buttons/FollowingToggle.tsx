@@ -25,7 +25,7 @@ export const FollowingToggle = ({
         className={className}
         loading={updatingFollowing}
         onClick={onFollow}
-        variant={following ? 'secondary' : 'primary'}
+        variant="secondary"
       >
         {following ? t('button.following') : t('button.follow')}
       </Button>

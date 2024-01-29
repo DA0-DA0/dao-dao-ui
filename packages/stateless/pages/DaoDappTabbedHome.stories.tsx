@@ -16,8 +16,6 @@ import { DaoTabId, TokenCardProps } from '@dao-dao/types'
 
 import {
   ButtonLink,
-  DaoInfoBar,
-  DaoInfoBarProps,
   LinkWrapper,
   MembersTabProps,
   NftCardProps,
@@ -27,7 +25,6 @@ import {
   SubDaosTabProps,
   TreasuryAndNftsTabProps,
 } from '../components'
-import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
 import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
@@ -64,9 +61,6 @@ const Template: ComponentStory<typeof DaoDappTabbedHome> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  DaoInfoBar: () => (
-    <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />
-  ),
   tabs: [
     {
       id: DaoTabId.Proposals,
@@ -75,10 +69,11 @@ Default.args = {
         <ProposalsTabStory {...(ProposalsTabStory.args as ProposalsTabProps)} />
       ),
       Icon: GavelRounded,
+      IconFilled: GavelRounded,
     },
     {
       id: DaoTabId.Treasury,
-      label: 'Treasury & NFTs',
+      label: 'Treasury',
       Component: () => (
         <TreasuryAndNftsTabStory
           {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps<
@@ -88,6 +83,7 @@ Default.args = {
         />
       ),
       Icon: AccountBalanceRounded,
+      IconFilled: AccountBalanceRounded,
     },
     {
       id: DaoTabId.SubDaos,
@@ -96,6 +92,7 @@ Default.args = {
         <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
       ),
       Icon: EscalatorWarningRounded,
+      IconFilled: EscalatorWarningRounded,
     },
     {
       id: DaoTabId.Members,
@@ -104,6 +101,7 @@ Default.args = {
         <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
       ),
       Icon: PeopleAltRounded,
+      IconFilled: PeopleAltRounded,
     },
   ],
   selectedTabId: DaoTabId.Proposals,
