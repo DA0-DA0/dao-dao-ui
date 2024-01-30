@@ -106,11 +106,12 @@ export const DaoDappTabbedHome = ({
               <Button
                 key={id}
                 className={clsx(
-                  'shrink-0 !rounded-b-none border-b border-transparent !py-2 !px-4',
+                  'shrink-0 !rounded-b-none border-b border-transparent !py-2 !px-3 text-text-primary md:!px-4 lg:!px-5',
                   selectedTabId === id && '!border-icon-primary'
                 )}
                 contentContainerClassName="!gap-1.5"
                 onClick={() => onSelectTabId(id)}
+                size="lg"
                 variant="none"
               >
                 <IconFilled className="!h-6 !w-6" />

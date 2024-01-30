@@ -8,6 +8,7 @@ import { useProposalModuleAdapterCommonContext } from '../../proposal-module-ada
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
+import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const ProposalDaoInfoCardSections = () => {
   const { coreAddress, proposalModules } = useDaoInfoContext()
@@ -23,7 +24,7 @@ export const ProposalDaoInfoCardSections = () => {
             }}
             proposalModule={proposalModule}
           >
-            <ProposalDaoInfoCards />
+            <ProposalDaoInfoCardsSection />
           </ProposalModuleAdapterCommonProvider>
         </SuspenseLoader>
       ))}
@@ -31,7 +32,7 @@ export const ProposalDaoInfoCardSections = () => {
   )
 }
 
-const ProposalDaoInfoCards = () => {
+const ProposalDaoInfoCardsSection = () => {
   const { t } = useTranslation()
   const {
     id,
