@@ -1,8 +1,3 @@
-import {
-  AccountBalanceOutlined,
-  LockOpenOutlined,
-  PeopleAltOutlined,
-} from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfoBar, useDaoInfoContext } from '@dao-dao/stateless'
@@ -15,7 +10,6 @@ export const DaoInfoBarLoader = () => {
     <DaoInfoBar
       items={[
         {
-          Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           loading: true,
@@ -24,7 +18,6 @@ export const DaoInfoBarLoader = () => {
         ...(activeThreshold
           ? [
               {
-                Icon: LockOpenOutlined,
                 label: t('title.activeThreshold'),
                 tooltip: t('info.activeThresholdDescription'),
                 loading: true,
@@ -33,8 +26,8 @@ export const DaoInfoBarLoader = () => {
             ]
           : []),
         {
-          Icon: PeopleAltOutlined,
           label: t('title.members'),
+          tooltip: t('info.membersTooltip'),
           loading: true,
           value: undefined,
         },

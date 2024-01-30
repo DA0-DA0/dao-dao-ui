@@ -1,7 +1,6 @@
-import { PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBarItem } from '@dao-dao/stateless'
+import { DaoInfoBarItem } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useLoadingVotingModule } from './useLoadingVotingModule'
@@ -15,8 +14,8 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
 
   return [
     {
-      Icon: PeopleAltOutlined,
       label: t('title.members'),
+      tooltip: t('info.membersTooltip'),
       loading: votingModule.loading,
       value: votingModule.loading
         ? undefined

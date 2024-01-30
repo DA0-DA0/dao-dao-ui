@@ -1,7 +1,7 @@
-import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/stateless'
+import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { DaoInfoBarItem } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
@@ -24,15 +24,19 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
 
   return [
     {
-      Icon: PeopleAltOutlined,
       label: t('title.totalSupply'),
+      tooltip: t('info.totalSupplyTooltip', {
+        tokenSymbol: symbol,
+      }),
       value: (
         <TokenAmountDisplay amount={totalSupply} decimals={0} symbol={symbol} />
       ),
     },
     {
-      Icon: LayersOutlined,
       label: t('title.totalStaked'),
+      tooltip: t('info.totalStakedTooltip', {
+        tokenSymbol: symbol,
+      }),
       value: loadingTotalStakedValue.loading
         ? '...'
         : formatPercentOf100(

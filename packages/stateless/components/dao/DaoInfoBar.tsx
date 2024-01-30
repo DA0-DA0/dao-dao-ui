@@ -4,27 +4,25 @@ import { DaoInfoBarProps } from '@dao-dao/types/components/DaoInfoBar'
 
 import { TooltipInfoIcon } from '../tooltip'
 
-export * from '@dao-dao/types/components/DaoInfoBar'
-
 export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
   <div
-    className={clsx('flex flex-row flex-wrap items-center gap-12', className)}
+    className={clsx('flex flex-row flex-wrap items-stretch gap-1', className)}
   >
-    {items.map(({ Icon, label, tooltip, loading, value }, index) => (
+    {items.map(({ label, tooltip, loading, value }, index) => (
       <div
         key={index}
-        className="flex grow basis-0 flex-col items-center gap-1 text-center"
+        className="flex shrink-0 grow flex-col justify-between gap-2 rounded-md bg-background-tertiary px-4 py-3"
       >
-        <Icon className="mb-2 h-5 w-5 text-icon-secondary" />
-
         <div className="flex flex-row items-center gap-1">
-          <p className="secondary-text">{label}</p>
+          <p className="primary-text font-normal text-text-secondary">
+            {label}
+          </p>
           {tooltip && <TooltipInfoIcon size="xs" title={tooltip} />}
         </div>
 
         <div
           className={clsx(
-            'symbol-small-body-text flex flex-row gap-1 font-mono',
+            'symbol-small-body-text flex flex-row gap-1 self-end text-right font-mono text-sm',
             loading && 'animate-pulse'
           )}
         >

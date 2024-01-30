@@ -1,7 +1,7 @@
-import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/stateless'
+import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { DaoInfoBarItem } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
@@ -23,8 +23,10 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
 
   return [
     {
-      Icon: PeopleAltOutlined,
       label: t('title.totalSupply'),
+      tooltip: t('info.totalSupplyTooltip', {
+        tokenSymbol: symbol,
+      }),
       value: (
         <TokenAmountDisplay
           amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
@@ -34,8 +36,10 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       ),
     },
     {
-      Icon: LayersOutlined,
       label: t('title.totalStaked'),
+      tooltip: t('info.totalStakedTooltip', {
+        tokenSymbol: symbol,
+      }),
       value: (
         <TokenAmountDisplay
           amount={

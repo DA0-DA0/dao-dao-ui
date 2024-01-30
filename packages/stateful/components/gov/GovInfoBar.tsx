@@ -1,4 +1,3 @@
-import { AccountBalanceOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { communityPoolTvlSelector } from '@dao-dao/state'
@@ -27,7 +26,6 @@ export const GovInfoBar = () => {
     <DaoInfoBar
       items={[
         {
-          Icon: AccountBalanceOutlined,
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           value: (

@@ -1,14 +1,13 @@
-import { ComponentType, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-export interface DaoInfoBarItem {
-  Icon: ComponentType<{ className: string }>
+export type DaoInfoBarItem = {
   label: string
   tooltip?: string
   loading?: boolean
   value: ReactNode
 }
 
-export interface DaoInfoBarProps {
+export type DaoInfoBarProps = {
   items: DaoInfoBarItem[]
   className?: string
 }

@@ -1,9 +1,3 @@
-import {
-  AccountBalanceOutlined,
-  LockOpenOutlined,
-  ThumbDownOutlined,
-  ThumbsUpDownOutlined,
-} from '@mui/icons-material'
 import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
@@ -111,7 +105,6 @@ const InnerDaoInfoBar = () => {
       items={[
         // Common items.
         {
-          Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           value: (
@@ -137,7 +130,6 @@ const InnerDaoInfoBar = () => {
         ...(activeThreshold
           ? [
               {
-                Icon: LockOpenOutlined,
                 label: t('title.activeThreshold'),
                 tooltip: t('info.activeThresholdDescription'),
                 value:
@@ -159,13 +151,11 @@ const InnerDaoInfoBar = () => {
             ]
           : []),
         ...allApprovers.map((approver) => ({
-          Icon: ThumbsUpDownOutlined,
           label: t('title.approver'),
           tooltip: t('info.daoApproverExplanation'),
           value: <EntityDisplay address={approver} hideImage noCopy />,
         })),
         ...flattenedVetoers.map((vetoer) => ({
-          Icon: ThumbDownOutlined,
           label: t('title.vetoer'),
           tooltip: t('info.daoVetoerExplanation'),
           value: <EntityDisplay address={vetoer} hideImage noCopy />,

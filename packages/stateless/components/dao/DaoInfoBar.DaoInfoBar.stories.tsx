@@ -1,9 +1,3 @@
-import {
-  AccountBalanceOutlined,
-  LayersOutlined,
-  Link,
-  PeopleAltOutlined,
-} from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
@@ -24,7 +18,6 @@ export const Default = Template.bind({})
 Default.args = {
   items: [
     {
-      Icon: Link,
       label: 'DAO address',
       value: (
         <CopyToClipboardUnderline
@@ -39,19 +32,16 @@ Default.args = {
       ),
     },
     {
-      Icon: AccountBalanceOutlined,
       label: 'DAO Treasury',
       tooltip:
         'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on Osmosis.',
       value: '35.12 est. USD value',
     },
     {
-      Icon: PeopleAltOutlined,
       label: 'Total supply',
       value: '45.2K $REAL',
     },
     {
-      Icon: LayersOutlined,
       label: 'Total staked',
       value: '0.003234%',
     },
