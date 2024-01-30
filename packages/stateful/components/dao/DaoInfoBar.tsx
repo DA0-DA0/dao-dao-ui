@@ -105,7 +105,7 @@ const InnerDaoInfoBar = () => {
       items={[
         // Common items.
         {
-          label: t('title.daoTreasury'),
+          label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           value: (
             <TokenAmountDisplay

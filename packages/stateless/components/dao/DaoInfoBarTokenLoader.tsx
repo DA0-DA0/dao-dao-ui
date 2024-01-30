@@ -11,7 +11,7 @@ export const DaoInfoBarTokenLoader = () => {
     <DaoInfoBar
       items={[
         {
-          label: t('title.daoTreasury'),
+          label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           loading: true,
           value: undefined,
@@ -37,6 +37,14 @@ export const DaoInfoBarTokenLoader = () => {
         {
           label: t('title.totalStaked'),
           tooltip: t('info.totalStakedTooltip', {
+            tokenSymbol: t('info.tokens'),
+          }),
+          loading: true,
+          value: undefined,
+        },
+        {
+          label: t('title.unstakingPeriod'),
+          tooltip: t('info.unstakingPeriodTooltip', {
             tokenSymbol: t('info.tokens'),
           }),
           loading: true,

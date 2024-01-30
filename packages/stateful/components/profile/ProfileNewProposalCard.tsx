@@ -77,7 +77,7 @@ export const InnerProfileNewProposalCard = () => {
           lines,
           addresses: [
             {
-              label: t('title.daoTreasury'),
+              label: t('title.treasury'),
               address: coreAddress,
             },
             ...addresses,

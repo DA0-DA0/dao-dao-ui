@@ -7,7 +7,7 @@ import {
   StakingMode,
 } from '@dao-dao/types/components/StakingModal'
 import { Duration } from '@dao-dao/types/contracts/common'
-import { durationIsNonZero, humanReadableDuration } from '@dao-dao/utils'
+import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import {
@@ -337,15 +337,23 @@ const StakeUnstakeModesBody = ({
         mode === StakingMode.Unstake ||
         mode === StakingMode.Restake) &&
         unstakingDuration &&
-        durationIsNonZero(unstakingDuration) && (
+        ('height' in unstakingDuration
+          ? unstakingDuration.height
+          : unstakingDuration.time) > 0 && (
           <div className="mt-7 space-y-5 border-t border-border-secondary pt-7">
             <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
-                `: ${humanReadableDuration(unstakingDuration)}`}
+                `: ${convertDurationToHumanReadableString(
+                  t,
+                  unstakingDuration
+                )}`}
             </p>
             <p className="body-text text-text-secondary">
               {t('info.unstakingMechanics', {
-                humanReadableTime: humanReadableDuration(unstakingDuration),
+                humanReadableTime: convertDurationToHumanReadableString(
+                  t,
+                  unstakingDuration
+                ),
               })}
             </p>
           </div>

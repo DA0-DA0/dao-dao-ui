@@ -10,7 +10,7 @@ export const DaoInfoBarLoader = () => {
     <DaoInfoBar
       items={[
         {
-          label: t('title.daoTreasury'),
+          label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           loading: true,
           value: undefined,

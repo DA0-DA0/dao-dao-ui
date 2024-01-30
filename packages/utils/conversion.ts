@@ -172,6 +172,15 @@ export const convertDurationWithUnitsToHumanReadableString = (
     count: value,
   }).toLocaleLowerCase()}`
 
+export const convertDurationToHumanReadableString = (
+  t: TFunction,
+  duration: Duration
+) =>
+  convertDurationWithUnitsToHumanReadableString(
+    t,
+    convertDurationToDurationWithUnits(duration)
+  )
+
 // Convert Recoil loadable into our generic data loader type with a default
 // value on error. See the comment above the LoadingData type for more details.
 export const loadableToLoadingData = <T>(

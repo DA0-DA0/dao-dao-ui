@@ -2,7 +2,10 @@ import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoBarItem } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import {
+  convertDurationToHumanReadableString,
+  formatPercentOf100,
+} from '@dao-dao/utils'
 
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
@@ -10,7 +13,7 @@ import { useStakingInfo } from './useStakingInfo'
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
 
-  const { loadingTotalStakedValue } = useStakingInfo({
+  const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
 
@@ -42,6 +45,15 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
         : formatPercentOf100(
             (loadingTotalStakedValue.data / totalSupply) * 100
           ),
+    },
+    {
+      label: t('title.unstakingPeriod'),
+      tooltip: t('info.unstakingPeriodTooltip', {
+        tokenSymbol: symbol,
+      }),
+      value: unstakingDuration
+        ? convertDurationToHumanReadableString(t, unstakingDuration)
+        : t('info.none'),
     },
   ]
 }
