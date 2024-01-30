@@ -127,6 +127,20 @@ const InnerDaoInfoBar = () => {
             />
           ),
         },
+        ...allApprovers.map((approver) => ({
+          label: t('title.approver'),
+          tooltip: t('info.daoApproverExplanation'),
+          value: <EntityDisplay address={approver} hideImage noCopy />,
+        })),
+        ...flattenedVetoers.map((vetoer) => ({
+          label: t('title.vetoer'),
+          tooltip: t('info.daoVetoerExplanation'),
+          value: <EntityDisplay address={vetoer} hideImage noCopy />,
+        })),
+        // Voting module-specific items.
+        ...votingModuleItems,
+        // Put active threshold last so it's closer to voting module items which
+        // may contain staking information.
         ...(activeThreshold
           ? [
               {
@@ -150,18 +164,6 @@ const InnerDaoInfoBar = () => {
               },
             ]
           : []),
-        ...allApprovers.map((approver) => ({
-          label: t('title.approver'),
-          tooltip: t('info.daoApproverExplanation'),
-          value: <EntityDisplay address={approver} hideImage noCopy />,
-        })),
-        ...flattenedVetoers.map((vetoer) => ({
-          label: t('title.vetoer'),
-          tooltip: t('info.daoVetoerExplanation'),
-          value: <EntityDisplay address={vetoer} hideImage noCopy />,
-        })),
-        // Voting module-specific items.
-        ...votingModuleItems,
       ]}
     />
   )
