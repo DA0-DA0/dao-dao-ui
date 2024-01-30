@@ -45,7 +45,7 @@ export const ProfileMemberCard = ({
       {...wrapperProps}
     >
       <div className="border-t border-t-border-primary p-6 pb-4">
-        <p className="link-text mb-3">{t('title.yourMembership')}</p>
+        <p className="link-text mb-3">{t('title.membership')}</p>
 
         {membershipInfo}
       </div>

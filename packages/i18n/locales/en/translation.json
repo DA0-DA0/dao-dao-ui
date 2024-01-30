@@ -1484,6 +1484,7 @@
     "deposited": "Deposited",
     "deposits": "Deposits",
     "description": "Description",
+    "details": "Details",
     "discord": "Discord",
     "discordNotifier": "Discord Notifier",
     "distribution": "Distribution",
@@ -1764,7 +1765,6 @@
     "winningChoice": "Winning choice",
     "withdrawTokenSwap": "Withdraw Token Swap",
     "withdrawValidatorCommission": "Claim validator commission",
-    "yourMembership": "Your membership",
     "yourNotifiers": "Your notifiers",
     "yourSubmission": "Your submission"
   },

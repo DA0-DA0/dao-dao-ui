@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
@@ -69,7 +68,7 @@ export const HomeTab = () => {
         )
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       {mode === DaoPageMode.Sda && (
         <DaoSplashHeader
           ButtonLink={ButtonLink}
@@ -78,18 +77,9 @@ export const HomeTab = () => {
         />
       )}
 
-      <div className="m-6">
-        <DaoInfoBar />
-      </div>
+      <p className="title-text mt-4">{t('title.membership')}</p>
 
-      <div
-        className={clsx(
-          'mt-4 w-full rounded-md bg-background-secondary p-6',
-          isWalletConnected ? 'max-w-md' : 'max-w-xs'
-        )}
-      >
-        <p className="title-text mb-4">{t('title.yourMembership')}</p>
-
+      <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
         {isWalletConnected ? (
           <ProfileCardMemberInfo
             maxGovernanceTokenDeposit={
@@ -102,6 +92,10 @@ export const HomeTab = () => {
           <ConnectWallet center className="mt-6 w-full" />
         )}
       </div>
+
+      <p className="title-text mt-4">{t('title.details')}</p>
+
+      <DaoInfoBar />
 
       <DaoWidgets />
     </div>
