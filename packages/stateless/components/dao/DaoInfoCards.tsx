@@ -7,7 +7,7 @@ import { TooltipInfoIcon } from '../tooltip'
 export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
   <div
     className={clsx(
-      'grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+      'grid grid-cols-1 gap-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
       className
     )}
   >
