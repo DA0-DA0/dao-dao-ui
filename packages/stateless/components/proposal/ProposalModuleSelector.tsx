@@ -76,7 +76,7 @@ export const ProposalModuleSelector = ({
   return (
     <div
       className={clsx(
-        'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+        'flex flex-row flex-wrap items-center gap-x-4 gap-y-2',
         className
       )}
     >
