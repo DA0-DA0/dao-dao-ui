@@ -1,6 +1,8 @@
+import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { daoTvlSelector } from '@dao-dao/state'
+import { Cw1WhitelistSelectors, daoTvlSelector } from '@dao-dao/state'
 import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
@@ -8,6 +10,7 @@ import {
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { PreProposeModuleType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDate,
@@ -18,6 +21,7 @@ import {
   useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
+import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const MainDaoInfoCards = () => {
@@ -39,7 +43,8 @@ const InnerMainDaoInfoCards = () => {
     hooks: { useMainDaoInfoCards, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleCards = useMainDaoInfoCards()
-  const { coreAddress, activeThreshold, created } = useDaoInfoContext()
+  const { coreAddress, activeThreshold, created, proposalModules } =
+    useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -55,6 +60,46 @@ const InnerMainDaoInfoCards = () => {
       amount: -1,
       timestamp: new Date(),
     }
+  )
+
+  // Get unique approvers from all proposal modules.
+  const allApprovers = uniq(
+    proposalModules.flatMap(({ prePropose }) =>
+      prePropose?.type === PreProposeModuleType.Approval
+        ? prePropose.config.approver
+        : []
+    )
+  )
+
+  // Get unique vetoers from all proposal modules.
+  const allVetoers = uniq(
+    proposalModules.flatMap(({ config }) =>
+      config?.veto ? [config.veto.vetoer] : []
+    )
+  )
+
+  // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
+  // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
+  // undefined.
+  const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
+    waitForAll(
+      allVetoers.map((vetoer) =>
+        Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+          chainId,
+          contractAddress: vetoer,
+        })
+      )
+    )
+  )
+
+  // If a vetoer is a cw1-whitelist contract, replace it with its admins.
+  const flattenedVetoers = uniq(
+    allVetoers.flatMap((vetoer, index) =>
+      cw1WhitelistAdminsLoadable.state === 'hasValue' &&
+      cw1WhitelistAdminsLoadable.contents[index]?.length
+        ? (cw1WhitelistAdminsLoadable.contents[index] as string[])
+        : [vetoer]
+    )
   )
 
   return (
@@ -120,6 +165,18 @@ const InnerMainDaoInfoCards = () => {
               },
             ]
           : []),
+        // Show approvers and vetoers from proposal modules here in the main
+        // info section because it is very relevant and should be surfaced.
+        ...allApprovers.map((approver) => ({
+          label: t('title.approver'),
+          tooltip: t('info.daoApproverExplanation'),
+          value: <EntityDisplay address={approver} />,
+        })),
+        ...flattenedVetoers.map((vetoer) => ({
+          label: t('title.vetoer'),
+          tooltip: t('info.daoVetoerExplanation'),
+          value: <EntityDisplay address={vetoer} />,
+        })),
       ]}
     />
   )

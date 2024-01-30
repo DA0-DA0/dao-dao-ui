@@ -499,7 +499,6 @@
     "amount": "amount",
     "anotherAccount": "Another account",
     "approverDescription": "Specify a DAO that must approve proposals before they can be voted on. This does not currently work with multiple choice proposals.",
-    "approverTitle": "Approver",
     "attributeName": "Attribute name",
     "attributeNamePlaceholder": "Community impact",
     "audioUrl": "Audio URL",

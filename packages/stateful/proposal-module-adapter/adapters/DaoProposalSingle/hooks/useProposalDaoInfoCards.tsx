@@ -242,7 +242,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
     ...(proposalModule.prePropose?.type === PreProposeModuleType.Approval
       ? [
           {
-            label: t('form.approverTitle'),
+            label: t('title.approver'),
             tooltip: t('info.daoApproverExplanation'),
             value: (
               <EntityDisplay

@@ -78,7 +78,7 @@ export const makeApproverVotingConfigItem = (): DaoCreationVotingConfigItem<
     DaoCreationVotingConfigWithEnableMultipleChoice
 > => ({
   Icon: PersonRaisingHandEmoji,
-  nameI18nKey: 'form.approverTitle',
+  nameI18nKey: 'title.approver',
   descriptionI18nKey: 'form.approverDescription',
   Input: ApproverInput,
   getInputError: () => undefined,
