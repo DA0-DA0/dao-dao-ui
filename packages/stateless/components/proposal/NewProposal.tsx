@@ -238,8 +238,6 @@ export const NewProposal = <
 
       <Main actionsReadOnlyMode={actionsReadOnlyMode} />
 
-      <p className="title-text mt-2 -mb-2">{t('title.details')}</p>
-
       <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">
