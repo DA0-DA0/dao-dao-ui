@@ -7,6 +7,9 @@ import {
 import { StatefulTokenAmountDisplayProps, TokenType } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+/**
+ * Automatically show a native coin token amount.
+ */
 export const TokenAmountDisplay = ({
   coin: { amount, denom },
   ...props

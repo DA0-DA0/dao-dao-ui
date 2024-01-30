@@ -4,7 +4,11 @@ import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { Action, ActionCategoryMaker } from './actions'
-import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
+import {
+  DaoInfoCard,
+  LinkWrapperProps,
+  SelfRelayExecuteModalProps,
+} from './components'
 import { Expiration } from './contracts'
 import {
   CheckedDepositInfo,
@@ -48,6 +52,7 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
   // Hooks
   hooks: {
     useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
+    useProposalDaoInfoCards: () => DaoInfoCard[]
   }
 
   // Components

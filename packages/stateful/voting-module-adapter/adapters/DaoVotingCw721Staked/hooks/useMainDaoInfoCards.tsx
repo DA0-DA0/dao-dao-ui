@@ -1,17 +1,23 @@
 import { useTranslation } from 'react-i18next'
 
-import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { DaoVotingCw721StakedSelectors } from '@dao-dao/state'
+import {
+  TokenAmountDisplay,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
   formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
@@ -25,7 +31,24 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     collectionInfo: { symbol, totalSupply },
   } = useGovernanceCollectionInfo()
 
+  const loadingMembers = useCachedLoadingWithError(
+    DaoVotingCw721StakedSelectors.topStakersSelector({
+      chainId,
+      contractAddress: votingModuleAddress,
+    })
+  )
+
   return [
+    {
+      label: t('title.members'),
+      tooltip: t('info.membersTooltip'),
+      loading: loadingMembers.loading,
+      value: loadingMembers.loading
+        ? undefined
+        : loadingMembers.errored
+        ? '<error>'
+        : loadingMembers.data?.length ?? '<error>',
+    },
     {
       label: t('title.totalSupply'),
       tooltip: t('info.totalSupplyTooltip', {

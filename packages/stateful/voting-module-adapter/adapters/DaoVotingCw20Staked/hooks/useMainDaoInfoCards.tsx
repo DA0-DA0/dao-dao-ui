@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { DaoVotingCw20StakedSelectors } from '@dao-dao/state'
+import {
+  TokenAmountDisplay,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
@@ -15,7 +19,8 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { chainId, votingModuleAddress, coreAddress } =
+    useVotingModuleAdapterOptions()
   const { totalVotingWeight } = useMembership({
     coreAddress,
   })
@@ -26,7 +31,24 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     governanceTokenInfo: { decimals, symbol, total_supply },
   } = useGovernanceTokenInfo()
 
+  const loadingMembers = useCachedLoadingWithError(
+    DaoVotingCw20StakedSelectors.topStakersSelector({
+      chainId,
+      contractAddress: votingModuleAddress,
+    })
+  )
+
   return [
+    {
+      label: t('title.members'),
+      tooltip: t('info.membersTooltip'),
+      loading: loadingMembers.loading,
+      value: loadingMembers.loading
+        ? undefined
+        : loadingMembers.errored
+        ? '<error>'
+        : loadingMembers.data?.length ?? '<error>',
+    },
     {
       label: t('title.totalSupply'),
       tooltip: t('info.totalSupplyTooltip', {

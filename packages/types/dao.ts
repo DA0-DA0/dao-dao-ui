@@ -111,7 +111,14 @@ export type PreProposeModuleApprovalConfig = {
 }
 
 export type PreProposeModuleApproverConfig = {
+  /**
+   * The DAO that needs approval from the approver.
+   */
   approvalDao: string
+  /**
+   * The pre-propose approval contract attached to the proposal module in the
+   * approval DAO.
+   */
   preProposeApprovalContract: string
 }
 

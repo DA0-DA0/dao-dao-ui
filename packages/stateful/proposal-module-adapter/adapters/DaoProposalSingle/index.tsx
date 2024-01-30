@@ -41,6 +41,7 @@ import {
   useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
+  useProposalDaoInfoCards,
   useProposalRefreshers,
 } from './hooks'
 import { DaoCreationExtraVotingConfig, NewProposalForm } from './types'
@@ -126,6 +127,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             options,
             depositInfoSelector,
           }),
+        useProposalDaoInfoCards,
       },
 
       // Components

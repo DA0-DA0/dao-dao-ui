@@ -19,6 +19,7 @@ import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
+import { ProposalDaoInfoCardSections } from '../ProposalDaoInfoCardSections'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
@@ -77,7 +78,7 @@ export const HomeTab = () => {
         />
       )}
 
-      <p className="title-text mt-4">{t('title.membership')}</p>
+      <p className="header-text mt-2">{t('title.membership')}</p>
 
       <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
         {isWalletConnected ? (
@@ -89,13 +90,19 @@ export const HomeTab = () => {
             }
           />
         ) : (
-          <ConnectWallet center className="mt-6 w-full" />
+          <>
+            <p className="body-text mb-3">{t('info.logInToViewMembership')}</p>
+
+            <ConnectWallet size="md" />
+          </>
         )}
       </div>
 
-      <p className="title-text mt-4">{t('title.details')}</p>
+      <p className="header-text mt-4">{t('title.details')}</p>
 
       <MainDaoInfoCards />
+
+      <ProposalDaoInfoCardSections />
 
       <DaoWidgets />
     </div>

@@ -20,16 +20,12 @@ export const MainDaoInfoCardsTokenLoader = () => {
           loading: true,
           value: undefined,
         },
-        ...(activeThreshold
-          ? [
-              {
-                label: t('title.activeThreshold'),
-                tooltip: t('info.activeThresholdDescription'),
-                loading: true,
-                value: undefined,
-              },
-            ]
-          : []),
+        {
+          label: t('title.members'),
+          tooltip: t('info.membersTooltip'),
+          loading: true,
+          value: undefined,
+        },
         {
           label: t('title.totalSupply'),
           tooltip: t('info.totalSupplyTooltip', {
@@ -54,6 +50,16 @@ export const MainDaoInfoCardsTokenLoader = () => {
           loading: true,
           value: undefined,
         },
+        ...(activeThreshold
+          ? [
+              {
+                label: t('title.activeThreshold'),
+                tooltip: t('info.activeThresholdDescription'),
+                loading: true,
+                value: undefined,
+              },
+            ]
+          : []),
       ]}
     />
   )

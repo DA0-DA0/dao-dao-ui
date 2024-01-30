@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { DaoVotingNativeStakedSelectors } from '@dao-dao/state/recoil'
+import { DaoVotingTokenStakedSelectors } from '@dao-dao/state/recoil'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
@@ -20,7 +20,7 @@ export const MembersTab = () => {
   const { token } = useGovernanceTokenInfo()
 
   const topStakers = useRecoilValue(
-    DaoVotingNativeStakedSelectors.topStakersSelector({
+    DaoVotingTokenStakedSelectors.topStakersSelector({
       chainId,
       contractAddress: votingModuleAddress,
     })

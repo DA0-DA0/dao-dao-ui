@@ -29,7 +29,8 @@ export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
             loading && 'animate-pulse'
           )}
         >
-          {value || (loading && '...')}
+          {/* Make sure to render 0. */}
+          {value || typeof value === 'number' ? value : loading && '...'}
         </div>
       </div>
     ))}

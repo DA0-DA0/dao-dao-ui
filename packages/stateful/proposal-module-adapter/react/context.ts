@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react'
 import {
   IProposalModuleAdapter,
   IProposalModuleAdapterCommon,
+  IProposalModuleAdapterCommonOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleCommonContext,
   IProposalModuleContext,
@@ -59,3 +60,7 @@ export const useProposalModuleAdapterCommonContext =
 export const useProposalModuleAdapterCommon =
   (): IProposalModuleAdapterCommon =>
     useProposalModuleAdapterCommonContext().common
+
+export const useProposalModuleAdapterCommonOptions =
+  (): IProposalModuleAdapterCommonOptions =>
+    useProposalModuleAdapterCommonContext().options
