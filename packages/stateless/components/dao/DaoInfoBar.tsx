@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { DaoInfoBarProps } from '@dao-dao/types/components/DaoInfoBar'
+import { DaoInfoBarProps } from '@dao-dao/types'
 
 import { TooltipInfoIcon } from '../tooltip'
 
