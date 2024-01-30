@@ -1,22 +1,22 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
-import { DaoInfoBar } from './DaoInfoBar'
+import { DaoInfoCards } from './DaoInfoCards'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / dao / DaoInfoBar',
-  component: DaoInfoBar,
-} as ComponentMeta<typeof DaoInfoBar>
+  title: 'DAO DAO / packages / stateless / components / dao / DaoInfoCards',
+  component: DaoInfoCards,
+} as ComponentMeta<typeof DaoInfoCards>
 
-const Template: ComponentStory<typeof DaoInfoBar> = (args) => (
+const Template: ComponentStory<typeof DaoInfoCards> = (args) => (
   <div className="max-w-2xl">
-    <DaoInfoBar {...args} />
+    <DaoInfoCards {...args} />
   </div>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  items: [
+  cards: [
     {
       label: 'DAO address',
       value: (

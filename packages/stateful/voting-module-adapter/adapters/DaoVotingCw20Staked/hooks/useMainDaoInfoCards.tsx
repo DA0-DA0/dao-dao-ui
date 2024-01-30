@@ -1,24 +1,26 @@
 import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplay } from '@dao-dao/stateless'
-import { DaoInfoBarItem } from '@dao-dao/types'
+import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useMembership } from '../../../../hooks'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 import { useStakingInfo } from './useStakingInfo'
 
-export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
+export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
-    fetchTotalStakedValue: true,
+  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { totalVotingWeight } = useMembership({
+    coreAddress,
   })
 
-  if (loadingTotalStakedValue === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
+  const { unstakingDuration } = useStakingInfo()
 
   const {
     governanceTokenInfo: { decimals, symbol, total_supply },
@@ -43,23 +45,13 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       tooltip: t('info.totalStakedTooltip', {
         tokenSymbol: symbol,
       }),
-      value: (
-        <TokenAmountDisplay
-          amount={
-            loadingTotalStakedValue.loading
-              ? { loading: true }
-              : {
-                  loading: false,
-                  data: convertMicroDenomToDenomWithDecimals(
-                    loadingTotalStakedValue.data,
-                    decimals
-                  ),
-                }
-          }
-          decimals={decimals}
-          symbol={symbol}
-        />
-      ),
+      loading: totalVotingWeight === undefined,
+      value:
+        totalVotingWeight === undefined
+          ? undefined
+          : formatPercentOf100(
+              (totalVotingWeight / Number(total_supply)) * 100
+            ),
     },
     {
       label: t('title.unstakingPeriod'),

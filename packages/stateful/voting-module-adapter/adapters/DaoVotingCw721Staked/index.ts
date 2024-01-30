@@ -4,7 +4,7 @@ import {
   PeopleAltRounded,
 } from '@mui/icons-material'
 
-import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
+import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -20,7 +20,7 @@ import {
 } from './components'
 import {
   useCommonGovernanceTokenInfo,
-  useDaoInfoBarItems,
+  useMainDaoInfoCards,
   useProfileNewProposalCardAddresses,
 } from './hooks'
 
@@ -31,7 +31,7 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
+      useMainDaoInfoCards,
       useProfileNewProposalCardAddresses,
       useCommonGovernanceTokenInfo,
     },
@@ -55,7 +55,7 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
         },
       ],
 
-      DaoInfoBarLoader: DaoInfoBarTokenLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsTokenLoader,
       ProfileCardMemberInfo,
     },
 

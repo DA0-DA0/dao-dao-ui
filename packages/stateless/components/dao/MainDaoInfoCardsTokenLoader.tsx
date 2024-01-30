@@ -1,15 +1,19 @@
 import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '../../hooks'
-import { DaoInfoBar } from './DaoInfoBar'
+import { DaoInfoCards } from './DaoInfoCards'
 
-export const DaoInfoBarTokenLoader = () => {
+/**
+ * A common loader for the MainDaoInfoCards stateful component for token-based
+ * voting module adapters.
+ */
+export const MainDaoInfoCardsTokenLoader = () => {
   const { t } = useTranslation()
   const { activeThreshold } = useDaoInfoContext()
 
   return (
-    <DaoInfoBar
-      items={[
+    <DaoInfoCards
+      cards={[
         {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),

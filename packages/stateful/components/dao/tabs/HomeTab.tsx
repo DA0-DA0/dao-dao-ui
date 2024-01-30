@@ -17,8 +17,8 @@ import { useVotingModuleAdapter } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
-import { DaoInfoBar } from '../DaoInfoBar'
 import { DaoWidgets } from '../DaoWidgets'
+import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
@@ -95,7 +95,7 @@ export const HomeTab = () => {
 
       <p className="title-text mt-4">{t('title.details')}</p>
 
-      <DaoInfoBar />
+      <MainDaoInfoCards />
 
       <DaoWidgets />
     </div>

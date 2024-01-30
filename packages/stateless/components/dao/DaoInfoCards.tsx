@@ -1,17 +1,17 @@
 import clsx from 'clsx'
 
-import { DaoInfoBarProps } from '@dao-dao/types'
+import { DaoInfoCardsProps } from '@dao-dao/types'
 
 import { TooltipInfoIcon } from '../tooltip'
 
-export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
+export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
   <div
     className={clsx(
       'grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
       className
     )}
   >
-    {items.map(({ label, tooltip, loading, value }, index) => (
+    {cards.map(({ label, tooltip, loading, value }, index) => (
       <div
         key={index}
         className="flex flex-col gap-2 rounded-md bg-background-tertiary px-4 py-3"

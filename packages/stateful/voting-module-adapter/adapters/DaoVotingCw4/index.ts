@@ -12,11 +12,14 @@ import {
 
 import { makeManageMembersAction } from './actions'
 import {
-  DaoInfoBarLoader,
+  MainDaoInfoCardsLoader,
   MembersTab,
   ProfileCardMemberInfo,
 } from './components'
-import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
+import {
+  useMainDaoInfoCards,
+  useProfileNewProposalCardAddresses,
+} from './hooks'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   id: DaoVotingCw4AdapterId,
@@ -25,7 +28,7 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
+      useMainDaoInfoCards,
       useProfileNewProposalCardAddresses,
     },
 
@@ -41,7 +44,7 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
         },
       ],
 
-      DaoInfoBarLoader,
+      MainDaoInfoCardsLoader,
       ProfileCardMemberInfo,
     },
 

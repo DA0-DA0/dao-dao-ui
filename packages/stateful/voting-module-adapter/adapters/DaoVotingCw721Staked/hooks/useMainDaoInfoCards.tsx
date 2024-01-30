@@ -1,17 +1,18 @@
 import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplay } from '@dao-dao/stateless'
-import { DaoInfoBarItem } from '@dao-dao/types'
+import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
+import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
 
-export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
+export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
+
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
@@ -21,8 +22,8 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   }
 
   const {
-    governanceTokenInfo: { decimals, symbol, total_supply },
-  } = useGovernanceTokenInfo()
+    collectionInfo: { symbol, totalSupply },
+  } = useGovernanceCollectionInfo()
 
   return [
     {
@@ -31,11 +32,7 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
         tokenSymbol: symbol,
       }),
       value: (
-        <TokenAmountDisplay
-          amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
-          decimals={decimals}
-          symbol={symbol}
-        />
+        <TokenAmountDisplay amount={totalSupply} decimals={0} symbol={symbol} />
       ),
     },
     {
@@ -43,23 +40,11 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       tooltip: t('info.totalStakedTooltip', {
         tokenSymbol: symbol,
       }),
-      value: (
-        <TokenAmountDisplay
-          amount={
-            loadingTotalStakedValue.loading
-              ? { loading: true }
-              : {
-                  loading: false,
-                  data: convertMicroDenomToDenomWithDecimals(
-                    loadingTotalStakedValue.data,
-                    decimals
-                  ),
-                }
-          }
-          decimals={decimals}
-          symbol={symbol}
-        />
-      ),
+      value: loadingTotalStakedValue.loading
+        ? '...'
+        : formatPercentOf100(
+            (loadingTotalStakedValue.data / totalSupply) * 100
+          ),
     },
     {
       label: t('title.unstakingPeriod'),

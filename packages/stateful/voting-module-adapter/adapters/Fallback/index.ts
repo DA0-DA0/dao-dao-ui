@@ -12,14 +12,14 @@ export const FallbackAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems: () => [],
+      useMainDaoInfoCards: () => [],
       useProfileNewProposalCardAddresses: () => [],
     },
 
     // Components
     components: {
       ProfileCardMemberInfo: Placeholder,
-      DaoInfoBarLoader: Loader,
+      MainDaoInfoCardsLoader: Loader,
     },
 
     // Functions

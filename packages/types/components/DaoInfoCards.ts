@@ -1,13 +1,13 @@
 import { ReactNode } from 'react'
 
-export type DaoInfoBarItem = {
+export type DaoInfoCard = {
   label: string
   tooltip?: string
   loading?: boolean
   value: ReactNode
 }
 
-export type DaoInfoBarProps = {
-  items: DaoInfoBarItem[]
+export type DaoInfoCardsProps = {
+  cards: DaoInfoCard[]
   className?: string
 }

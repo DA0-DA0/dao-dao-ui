@@ -4,7 +4,7 @@ import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { Cw1WhitelistSelectors, daoTvlSelector } from '@dao-dao/state'
 import {
-  DaoInfoBar as StatelessDaoInfoBar,
+  DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
   useCachedLoading,
   useChain,
@@ -23,25 +23,25 @@ import {
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoInfoBar = () => {
+export const MainDaoInfoCards = () => {
   const {
-    components: { DaoInfoBarLoader },
+    components: { MainDaoInfoCardsLoader },
   } = useVotingModuleAdapter()
 
   return (
-    <SuspenseLoader fallback={<DaoInfoBarLoader />}>
-      <InnerDaoInfoBar />
+    <SuspenseLoader fallback={<MainDaoInfoCardsLoader />}>
+      <InnerMainDaoInfoCards />
     </SuspenseLoader>
   )
 }
 
-const InnerDaoInfoBar = () => {
+const InnerMainDaoInfoCards = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const {
-    hooks: { useDaoInfoBarItems, useCommonGovernanceTokenInfo },
+    hooks: { useMainDaoInfoCards, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const votingModuleItems = useDaoInfoBarItems()
+  const votingModuleCards = useMainDaoInfoCards()
   const { coreAddress, activeThreshold, proposalModules } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
@@ -101,8 +101,8 @@ const InnerDaoInfoBar = () => {
   )
 
   return (
-    <StatelessDaoInfoBar
-      items={[
+    <StatelessDaoInfoCards
+      cards={[
         // Common items.
         {
           label: t('title.treasury'),
@@ -137,9 +137,9 @@ const InnerDaoInfoBar = () => {
           tooltip: t('info.daoVetoerExplanation'),
           value: <EntityDisplay address={vetoer} hideImage noCopy />,
         })),
-        // Voting module-specific items.
-        ...votingModuleItems,
-        // Put active threshold last so it's closer to voting module items which
+        // Voting module-specific cards.
+        ...votingModuleCards,
+        // Put active threshold last so it's closer to voting module cards which
         // may contain staking information.
         ...(activeThreshold
           ? [

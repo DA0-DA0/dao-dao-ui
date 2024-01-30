@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBar, useDaoInfoContext } from '@dao-dao/stateless'
+import { DaoInfoCards, useDaoInfoContext } from '@dao-dao/stateless'
 
-export const DaoInfoBarLoader = () => {
+export const MainDaoInfoCardsLoader = () => {
   const { t } = useTranslation()
   const { activeThreshold } = useDaoInfoContext()
 
   return (
-    <DaoInfoBar
-      items={[
+    <DaoInfoCards
+      cards={[
         {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),

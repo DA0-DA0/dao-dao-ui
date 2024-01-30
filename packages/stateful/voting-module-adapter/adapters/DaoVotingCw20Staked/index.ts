@@ -1,6 +1,6 @@
 import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
-import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
+import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -15,7 +15,7 @@ import { makeMintAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
   useCommonGovernanceTokenInfo,
-  useDaoInfoBarItems,
+  useMainDaoInfoCards,
   useProfileNewProposalCardAddresses,
 } from './hooks'
 
@@ -26,14 +26,14 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
+      useMainDaoInfoCards,
       useProfileNewProposalCardAddresses,
       useCommonGovernanceTokenInfo,
     },
 
     // Components
     components: {
-      DaoInfoBarLoader: DaoInfoBarTokenLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsTokenLoader,
       ProfileCardMemberInfo,
       StakingModal,
 

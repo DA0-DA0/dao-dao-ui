@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { communityPoolTvlSelector } from '@dao-dao/state'
 import {
-  DaoInfoBar,
+  DaoInfoCards,
   TokenAmountDisplay,
   useCachedLoading,
   useChain,
@@ -23,8 +23,8 @@ export const GovInfoBar = () => {
   )
 
   return (
-    <DaoInfoBar
-      items={[
+    <DaoInfoCards
+      cards={[
         {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),

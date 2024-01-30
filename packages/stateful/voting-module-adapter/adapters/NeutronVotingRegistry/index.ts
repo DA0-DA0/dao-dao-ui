@@ -6,7 +6,7 @@ import {
   NeutronVotingRegistryAdapterId,
 } from '@dao-dao/utils'
 
-import { DaoInfoBarLoader, ProfileCardMemberInfo } from './components'
+import { MainDaoInfoCardsLoader, ProfileCardMemberInfo } from './components'
 import { VaultsTab } from './components/VaultsTab'
 
 export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
@@ -16,7 +16,7 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems: () => [],
+      useMainDaoInfoCards: () => [],
       useProfileNewProposalCardAddresses: () => [],
     },
 
@@ -32,7 +32,7 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
         },
       ],
 
-      DaoInfoBarLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsLoader,
       ProfileCardMemberInfo,
     },
 
