@@ -78,7 +78,7 @@ export const ProposalLine = ({
     </div>
 
     {/* Mobile */}
-    <div className="flex min-h-[9.5rem] flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
+    <div className="flex min-h-[7rem] flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
       <div className="flex flex-col gap-2">
         <div className="flex flex-row flex-wrap items-start justify-between gap-2">
           <p className="caption-text font-mono">
