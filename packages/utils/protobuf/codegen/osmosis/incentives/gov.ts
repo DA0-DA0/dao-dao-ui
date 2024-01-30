@@ -7,6 +7,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
  * creation fees.
  */
 export interface CreateGroupsProposal {
+  $typeUrl?: "/osmosis.incentives.CreateGroupsProposal";
   title: string;
   description: string;
   createGroups: CreateGroup[];
@@ -35,12 +36,14 @@ export interface CreateGroupsProposalAminoMsg {
  * creation fees.
  */
 export interface CreateGroupsProposalSDKType {
+  $typeUrl?: "/osmosis.incentives.CreateGroupsProposal";
   title: string;
   description: string;
   create_groups: CreateGroupSDKType[];
 }
 function createBaseCreateGroupsProposal(): CreateGroupsProposal {
   return {
+    $typeUrl: "/osmosis.incentives.CreateGroupsProposal",
     title: "",
     description: "",
     createGroups: []
