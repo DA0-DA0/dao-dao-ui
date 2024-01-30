@@ -19,7 +19,6 @@ import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
-import { ProposalDaoInfoCardSections } from '../ProposalDaoInfoCardSections'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
@@ -101,8 +100,6 @@ export const HomeTab = () => {
       <p className="header-text mt-4">{t('title.details')}</p>
 
       <MainDaoInfoCards />
-
-      <ProposalDaoInfoCardSections />
 
       <DaoWidgets />
     </div>

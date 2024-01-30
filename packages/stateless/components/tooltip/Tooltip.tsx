@@ -28,7 +28,7 @@ export const Tooltip = ({
         tooltip: clsx(
           classes?.tooltip ??
             '!rounded-md !border !border-border-component-primary !bg-component-tooltip !font-sans !text-xs !font-normal !text-text-component-primary',
-          morePadding && '!p-3'
+          morePadding && '!p-2 xs:!p-3'
         ),
       }}
       enterTouchDelay={
