@@ -33,7 +33,7 @@ export const NewProposalMain = () => {
   const choices = watch('choices') ?? []
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       {choices.length > 0 && (
         <div className="flex flex-col items-stretch gap-6">
           {multipleChoiceFields.map(({ id }, index) => (
