@@ -22,7 +22,6 @@ import {
   CreateProposal,
   PageLoader,
   ProposalModuleSelector,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -37,12 +36,12 @@ import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
 import { useWallet } from '../../hooks/useWallet'
 import {
   ProposalModuleAdapterCommonProvider,
-  matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
-import { ProfileDisconnectedCard, ProfileNewProposalCard } from '../profile'
+import { ProfileDaoHomeCard, ProfileDisconnectedCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const CreateDaoProposal = () => {
   const daoInfo = useDaoInfoContext()
@@ -344,6 +343,7 @@ const InnerCreateDaoProposal = ({
             forceFallback={!prefillChecked}
           >
             <NewProposal
+              ProposalDaoInfoCards={ProposalDaoInfoCards}
               deleteDraft={deleteDraft}
               draft={draft}
               draftSaving={draftSaving}
@@ -368,46 +368,12 @@ const InnerCreateDaoProposal = ({
         }
         rightSidebarContent={
           isWalletConnected ? (
-            <ProfileNewProposalCard />
+            <ProfileDaoHomeCard />
           ) : (
             <ProfileDisconnectedCard />
           )
         }
       />
-
-      <SuspenseLoader fallback={null}>
-        <PreloadAllNewProposalCardInfoLines />
-      </SuspenseLoader>
     </FormProvider>
   )
-}
-
-/**
- * Preload new proposal card info lines for all proposal modules so the card
- * doesn't suspend when we switch proposal modules.
- */
-const PreloadAllNewProposalCardInfoLines = () => {
-  const chain = useChain()
-  const { coreAddress, proposalModules } = useDaoInfoContext()
-
-  // Pre-load all proposal card info lines for all proposal module adapters so
-  // the page doesn't suspend when we switch proposal modules.
-  const proposalModuleHooks = useMemo(
-    () =>
-      proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain,
-            coreAddress,
-          }).hooks.useProfileNewProposalCardInfoLines
-      ),
-    [chain, coreAddress, proposalModules]
-  )
-  // Proposal modules stay constant, so we can safely ignore the warning.
-  proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useProfileNewProposalCardInfoLines()
-  )
-
-  return null
 }

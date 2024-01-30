@@ -17,7 +17,7 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards: () => [],
-      useProfileNewProposalCardAddresses: () => [],
+      useVotingModuleRelevantAddresses: () => [],
     },
 
     // Components

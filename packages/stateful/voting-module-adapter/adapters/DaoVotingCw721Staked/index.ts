@@ -21,7 +21,7 @@ import {
 import {
   useCommonGovernanceTokenInfo,
   useMainDaoInfoCards,
-  useProfileNewProposalCardAddresses,
+  useVotingModuleRelevantAddresses,
 } from './hooks'
 
 export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
@@ -32,7 +32,7 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards,
-      useProfileNewProposalCardAddresses,
+      useVotingModuleRelevantAddresses,
       useCommonGovernanceTokenInfo,
     },
 

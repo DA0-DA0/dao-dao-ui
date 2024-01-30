@@ -81,14 +81,16 @@ export const ProfileCardWrapper = ({
         )}
       </div>
 
-      <div
-        className={clsx(
-          'flex flex-col items-stretch border-t border-t-border-primary p-6',
-          childContainerClassName
-        )}
-      >
-        {children}
-      </div>
+      {children && (
+        <div
+          className={clsx(
+            'flex flex-col items-stretch border-t border-t-border-primary p-6',
+            childContainerClassName
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   )
 }

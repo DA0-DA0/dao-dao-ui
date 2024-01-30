@@ -1,3 +1,3 @@
 export * from './useLoadingVotingModule'
 export * from './useMainDaoInfoCards'
-export * from './useProfileNewProposalCardAddresses'
+export * from './useVotingModuleRelevantAddresses'

@@ -56,6 +56,7 @@ import { useProposalModuleAdapterCommonContext } from '../../../proposal-module-
 import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
 import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
+import { ProposalDaoInfoCards } from '../ProposalDaoInfoCards'
 
 export const AppsTab = () => {
   const { t } = useTranslation()
@@ -547,6 +548,7 @@ const ActionMatcherAndProposer = ({
       <FormProvider {...formMethods}>
         <SuspenseLoader fallback={<Loader />}>
           <NewProposal
+            ProposalDaoInfoCards={ProposalDaoInfoCards}
             actionsReadOnlyMode
             deleteDraft={deleteDraft}
             draft={draft}

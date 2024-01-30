@@ -16,10 +16,7 @@ import {
   MembersTab,
   ProfileCardMemberInfo,
 } from './components'
-import {
-  useMainDaoInfoCards,
-  useProfileNewProposalCardAddresses,
-} from './hooks'
+import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   id: DaoVotingCw4AdapterId,
@@ -29,7 +26,7 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards,
-      useProfileNewProposalCardAddresses,
+      useVotingModuleRelevantAddresses,
     },
 
     // Components

@@ -13,7 +13,7 @@ export const FallbackAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards: () => [],
-      useProfileNewProposalCardAddresses: () => [],
+      useVotingModuleRelevantAddresses: () => [],
     },
 
     // Components

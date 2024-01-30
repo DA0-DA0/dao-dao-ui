@@ -51,7 +51,6 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
 
   // Hooks
   hooks: {
-    useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
     useProposalDaoInfoCards: () => DaoInfoCard[]
   }
 
@@ -311,6 +310,11 @@ export type BaseNewProposalProps<FormData extends FieldValues = any> = {
   // If true, will display actions as read only. This is useful when prompting a
   // proposal to be created from preset actions. Default: false.
   actionsReadOnlyMode?: boolean
+  /**
+   * The ProposalDaoInfoCards stateful component that renders the proposal
+   * module's config cards.
+   */
+  ProposalDaoInfoCards: ComponentType
 }
 
 export type WalletVoteInfo<T> = {
@@ -332,13 +336,6 @@ export type ProposalVoteOption<Vote> = {
   label: string
   value: Vote
   color?: string
-}
-
-export type ProfileNewProposalCardInfoLine = {
-  Icon: ComponentType<{ className: string }>
-  label: string
-  value: string
-  valueClassName?: string
 }
 
 export type PercentOrMajorityValue = {

@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
 
-import { ProfileNewProposalCardAddress } from '@dao-dao/types'
+import { VotingModuleRelevantAddress } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useLoadingVotingModule } from './useLoadingVotingModule'
 
-export const useProfileNewProposalCardAddresses =
-  (): ProfileNewProposalCardAddress[] => {
+export const useVotingModuleRelevantAddresses =
+  (): VotingModuleRelevantAddress[] => {
     const { t } = useTranslation()
     const { coreAddress } = useVotingModuleAdapterOptions()
     const votingModule = useLoadingVotingModule(coreAddress)

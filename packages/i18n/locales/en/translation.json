@@ -1033,7 +1033,7 @@
     "nftCollectionExplanation_unstaked": "These NFTs would provide voting power if they were staked, but no one is currently staking them.",
     "nftImage": "NFT image",
     "no": "No",
-    "noActionsAdded": "No actions have been added.",
+    "noActionsAdded": "No actions have been added. If you want this proposal to do something upon execution, add an action below.",
     "noActiveCompensationCycle": "There is no active compensation cycle.",
     "noCompletedCyclesYet": "No completed cycles yet.",
     "noDaosFollowedYet": "You have not yet followed any DAOs.",

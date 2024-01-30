@@ -1,11 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  Loader,
-  DaoInfoCards as StatelessDaoInfoCards,
-  TooltipInfoIcon,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { Loader, TooltipInfoIcon, useDaoInfoContext } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
 
 import { ProposalModuleAdapterCommonProvider } from '../../proposal-module-adapter'
@@ -41,9 +36,6 @@ const ProposalDaoInfoCards = () => {
   const {
     id,
     options: { proposalModule },
-    common: {
-      hooks: { useProposalDaoInfoCards },
-    },
   } = useProposalModuleAdapterCommonContext()
 
   const approvee =
@@ -79,7 +71,7 @@ const ProposalDaoInfoCards = () => {
         />
       </div>
 
-      <StatelessDaoInfoCards cards={useProposalDaoInfoCards()} />
+      <ProposalDaoInfoCards />
     </>
   )
 }

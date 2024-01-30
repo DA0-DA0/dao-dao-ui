@@ -23,7 +23,7 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards,
-      useProfileNewProposalCardAddresses: () => [],
+      useVotingModuleRelevantAddresses: () => [],
       useCommonGovernanceTokenInfo,
     },
 

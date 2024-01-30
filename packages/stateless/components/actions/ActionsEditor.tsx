@@ -140,7 +140,7 @@ export const ActionsEditor = ({
           ))}
         </div>
       ) : (
-        <p className="secondary-text -mt-3 italic">
+        <p className="secondary-text -mt-3 max-w-prose italic">
           {t('info.noActionsAdded')}
         </p>
       )}

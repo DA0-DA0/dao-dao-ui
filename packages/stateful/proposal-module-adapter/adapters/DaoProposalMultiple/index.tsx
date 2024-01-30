@@ -9,7 +9,6 @@ import {
   NewProposal,
   makeActionCategoryMakers,
   depositInfoSelector as makeDepositInfoSelector,
-  makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -96,11 +95,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
       // Hooks
       hooks: {
-        useProfileNewProposalCardInfoLines:
-          makeUseProfileNewProposalCardInfoLines({
-            options,
-            depositInfoSelector,
-          }),
         useProposalDaoInfoCards,
       },
 

@@ -16,7 +16,7 @@ import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
   useCommonGovernanceTokenInfo,
   useMainDaoInfoCards,
-  useProfileNewProposalCardAddresses,
+  useVotingModuleRelevantAddresses,
 } from './hooks'
 
 export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
@@ -27,7 +27,7 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useMainDaoInfoCards,
-      useProfileNewProposalCardAddresses,
+      useVotingModuleRelevantAddresses,
       useCommonGovernanceTokenInfo,
     },
 

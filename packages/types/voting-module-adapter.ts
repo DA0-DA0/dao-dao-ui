@@ -2,7 +2,6 @@ import { ComponentType } from 'react'
 
 import { ActionCategoryMaker } from './actions'
 import { DaoInfoCard, StakingMode } from './components'
-import { ProfileNewProposalCardAddress } from './components/ProfileNewProposalCard'
 import { DaoTabWithComponent } from './dao'
 import { GenericToken } from './token'
 
@@ -19,11 +18,16 @@ export interface BaseStakingModalProps {
   maxDeposit?: string
 }
 
+export type VotingModuleRelevantAddress = {
+  label: string
+  address: string
+}
+
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
     useMainDaoInfoCards: () => DaoInfoCard[]
-    useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
+    useVotingModuleRelevantAddresses: () => VotingModuleRelevantAddress[]
     useCommonGovernanceTokenInfo?: () => GenericToken
   }
 
