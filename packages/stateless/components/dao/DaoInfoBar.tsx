@@ -22,7 +22,7 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
 
         <div
           className={clsx(
-            'symbol-small-body-text flex flex-row gap-1 self-end text-right font-mono text-sm',
+            'symbol-small-body-text flex flex-row gap-1 self-end pr-1 text-right font-mono text-sm',
             loading && 'animate-pulse'
           )}
         >
