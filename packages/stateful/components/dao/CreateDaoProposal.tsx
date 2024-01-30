@@ -351,15 +351,12 @@ const InnerCreateDaoProposal = ({
               loadDraft={loadDraft}
               onCreateSuccess={onCreateSuccess}
               proposalModuleSelector={
-                daoInfo.proposalModules.length > 1 && (
-                  <div className="my-2">
-                    <ProposalModuleSelector
-                      matchAdapter={matchProposalModuleAdapter}
-                      selected={selectedProposalModule.address}
-                      setSelected={setSelectedProposalModule}
-                    />
-                  </div>
-                )
+                <ProposalModuleSelector
+                  className="my-2"
+                  matchAdapter={matchProposalModuleAdapter}
+                  selected={selectedProposalModule.address}
+                  setSelected={setSelectedProposalModule}
+                />
               }
               saveDraft={saveDraft}
               unloadDraft={unloadDraft}
