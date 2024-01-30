@@ -38,10 +38,10 @@ export const createRPCMsgClient = async ({
     concentratedliquidity: {
       poolmodel: {
         concentrated: {
-          v1beta1: new (await import("./concentrated-liquidity/pool-model/concentrated/tx.rpc.msg")).MsgClientImpl(rpc)
+          v1beta1: new (await import("./concentratedliquidity/poolmodel/concentrated/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
         }
       },
-      v1beta1: new (await import("./concentrated-liquidity/tx.rpc.msg")).MsgClientImpl(rpc)
+      v1beta1: new (await import("./concentratedliquidity/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     },
     gamm: {
       poolmodels: {
