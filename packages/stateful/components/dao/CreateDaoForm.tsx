@@ -693,7 +693,7 @@ export const InnerCreateDaoForm = ({
         ) : (
           <DaoHeader
             LinkWrapper={LinkWrapper}
-            className="mt-4 mb-6"
+            className="mt-4 mb-12"
             description={description}
             imageUrl={imageUrl}
             name={name}

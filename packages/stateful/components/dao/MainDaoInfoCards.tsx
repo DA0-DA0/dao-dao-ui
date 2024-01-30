@@ -10,6 +10,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   convertMicroDenomToDenomWithDecimals,
+  formatDate,
   formatPercentOf100,
 } from '@dao-dao/utils'
 
@@ -38,7 +39,7 @@ const InnerMainDaoInfoCards = () => {
     hooks: { useMainDaoInfoCards, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleCards = useMainDaoInfoCards()
-  const { coreAddress, activeThreshold } = useDaoInfoContext()
+  const { coreAddress, activeThreshold, created } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -60,6 +61,15 @@ const InnerMainDaoInfoCards = () => {
     <StatelessDaoInfoCards
       cards={[
         // Common items.
+        ...(created
+          ? [
+              {
+                label: t('title.established'),
+                tooltip: t('info.establishedTooltip'),
+                value: formatDate(created),
+              },
+            ]
+          : []),
         {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),

@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+import { formatDate } from '@dao-dao/utils'
+
 import { useDaoInfoContext } from '../../hooks'
 import { DaoInfoCards } from './DaoInfoCards'
 
@@ -9,11 +11,20 @@ import { DaoInfoCards } from './DaoInfoCards'
  */
 export const MainDaoInfoCardsTokenLoader = () => {
   const { t } = useTranslation()
-  const { activeThreshold } = useDaoInfoContext()
+  const { activeThreshold, created } = useDaoInfoContext()
 
   return (
     <DaoInfoCards
       cards={[
+        ...(created
+          ? [
+              {
+                label: t('title.established'),
+                tooltip: t('info.establishedTooltip'),
+                value: formatDate(created),
+              },
+            ]
+          : []),
         {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
