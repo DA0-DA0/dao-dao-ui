@@ -14,7 +14,10 @@ export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
     {cards.map(({ label, tooltip, loading, value }, index) => (
       <div
         key={index}
-        className="flex flex-col gap-1 rounded-md bg-background-tertiary px-3 py-2 xs:gap-2 xs:px-4 xs:py-3"
+        className={clsx(
+          'flex flex-col gap-1 rounded-md bg-background-tertiary px-3 py-2 xs:gap-2 xs:px-4 xs:py-3',
+          loading && 'animate-pulse'
+        )}
       >
         <div className="flex flex-row items-center gap-1">
           <p className="primary-text text-xs font-normal text-text-secondary xs:text-sm">
@@ -23,12 +26,7 @@ export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
           {tooltip && <TooltipInfoIcon size="xs" title={tooltip} />}
         </div>
 
-        <div
-          className={clsx(
-            'symbol-small-body-text flex flex-row gap-1 font-mono text-xs xs:text-sm',
-            loading && 'animate-pulse'
-          )}
-        >
+        <div className="symbol-small-body-text flex flex-row gap-1 font-mono text-xs xs:text-sm">
           {/* Make sure to render 0. */}
           {value || typeof value === 'number' ? value : loading && '...'}
         </div>
