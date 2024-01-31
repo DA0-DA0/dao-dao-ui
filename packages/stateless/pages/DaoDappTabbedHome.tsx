@@ -1,6 +1,6 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ContractVersion, DaoDappTabbedHomeProps } from '@dao-dao/types'
 
@@ -63,6 +63,31 @@ export const DaoDappTabbedHome = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTabId])
 
+  // Detect vertical scrolling from a mouse and scroll the tabs horizontally if
+  // the mouse is hovering over them. This is to add support for scrolling the
+  // tabs on a desktop with only a single scrollable direction. Horizontal
+  // scrolling can be used natively by holding shift, but most people don't know
+  // that.
+  const [horizontalScrollActive, setHorizontalScrollActive] = useState(false)
+  useEffect(() => {
+    if (!horizontalScrollActive || !tabContainerRef.current) {
+      return
+    }
+
+    const tabContainer = tabContainerRef.current
+
+    const onWheel = (event: WheelEvent) => {
+      // Subtract Y delta so that this scrolls horizontally to the right when
+      // scrolling down and to the left when scrolling up.
+      tabContainer.scrollLeft += event.deltaX - event.deltaY
+
+      event.preventDefault()
+    }
+
+    tabContainer.addEventListener('wheel', onWheel)
+    return () => tabContainer.removeEventListener('wheel', onWheel)
+  }, [horizontalScrollActive])
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
@@ -100,6 +125,8 @@ export const DaoDappTabbedHome = ({
         <div className="flex flex-row items-center justify-center border-b border-border-primary">
           <div
             className="no-scrollbar flex flex-row items-end overflow-x-auto pt-1"
+            onMouseLeave={() => setHorizontalScrollActive(false)}
+            onMouseOver={() => setHorizontalScrollActive(true)}
             ref={tabContainerRef}
           >
             {tabs.map(({ id, label, IconFilled }) => (
