@@ -38,8 +38,8 @@ import {
   neutronAminoConverters,
   neutronProtoRegistry,
   osmosisAminoConverters,
-  regenAminoConverters,
   osmosisProtoRegistry,
+  regenAminoConverters,
   regenProtoRegistry,
   publicawesomeAminoConverters as stargazeAminoConverters,
   publicawesomeProtoRegistry as stargazeProtoRegistry,
@@ -716,9 +716,18 @@ export const decodeGovProposal = async (
       (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
     )
 
-  let title = govProposal.proposal.title || legacyContent[0]?.title || ''
+  let title =
+    govProposal.proposal.title ||
+    legacyContent.find((content) => content?.title)?.title ||
+    legacyContent[0]?.typeUrl ||
+    (decodedMessages[0] &&
+      'stargate' in decodedMessages[0] &&
+      decodedMessages[0].stargate.type_url) ||
+    '<no title>'
   let description =
-    govProposal.proposal.summary || legacyContent[0]?.description || ''
+    govProposal.proposal.summary ||
+    legacyContent.find((content) => content?.description)?.description ||
+    ''
   // If metadata is a URL, try to fetch metadata.
   if (
     govProposal.proposal.metadata &&
