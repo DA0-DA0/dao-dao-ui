@@ -21,7 +21,7 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   SITE_URL,
-  cosmosSdkVersionIs47OrHigher,
+  cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getConfiguredChains,
   getGovProposalPath,
@@ -212,13 +212,13 @@ export const makeGetGovProposalStaticProps = ({
 
         if (indexerProposal) {
           if (indexerProposal.version === GovProposalVersion.V1) {
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1,
               id: BigInt(proposalId),
               proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
             })
           } else {
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1_BETA_1,
               id: BigInt(proposalId),
               proposal: ProposalV1Beta1.decode(
@@ -246,7 +246,7 @@ export const makeGetGovProposalStaticProps = ({
               await client.base.tendermint.v1beta1.getNodeInfo()
             ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
 
-          if (cosmosSdkVersionIs47OrHigher(cosmosSdkVersion)) {
+          if (cosmosSdkVersionIs46OrHigher(cosmosSdkVersion)) {
             try {
               const proposalV1 = (
                 await client.gov.v1.proposal({
@@ -257,7 +257,7 @@ export const makeGetGovProposalStaticProps = ({
                 throw new Error('NOT_FOUND')
               }
 
-              proposal = decodeGovProposal({
+              proposal = await decodeGovProposal({
                 version: GovProposalVersion.V1,
                 id: BigInt(proposalId),
                 proposal: proposalV1,
@@ -284,7 +284,7 @@ export const makeGetGovProposalStaticProps = ({
               throw new Error('NOT_FOUND')
             }
 
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1_BETA_1,
               id: BigInt(proposalId),
               proposal: proposalV1Beta1,
