@@ -21,6 +21,8 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       onExpand,
       indentDropdownSize = 0,
       noContentIndent = false,
+      noPlaceholderDot = false,
+      dropdownIconSize = 'sm',
       children,
       containerClassName,
       headerClassName,
@@ -85,10 +87,13 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
                 <DropdownIconButton
                   className="text-icon-primary"
                   open={expanded}
+                  size={dropdownIconSize}
                   toggle={toggleExpanded}
                 />
               ) : (
-                <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
+                !noPlaceholderDot && (
+                  <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
+                )
               )}
             </div>
 

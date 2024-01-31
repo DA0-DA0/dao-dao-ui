@@ -15,7 +15,10 @@ export interface DropdownIconButtonProps
 export const DropdownIconButton = forwardRef<
   HTMLButtonElement,
   DropdownIconButtonProps
->(function DropdownIconButton({ open, toggle, iconClassName, ...props }, ref) {
+>(function DropdownIconButton(
+  { open, toggle, iconClassName, size = 'sm', ...props },
+  ref
+) {
   return (
     <IconButton
       Icon={ArrowDropDown}
@@ -25,7 +28,7 @@ export const DropdownIconButton = forwardRef<
         iconClassName
       )}
       onClick={toggle}
-      size="sm"
+      size={size}
       variant="ghost"
       {...props}
       ref={ref}

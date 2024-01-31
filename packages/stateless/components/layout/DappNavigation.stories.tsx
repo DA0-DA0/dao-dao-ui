@@ -45,7 +45,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -57,7 +57,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',
@@ -79,7 +79,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -91,7 +91,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution super duper long name',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',
@@ -113,7 +113,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -125,7 +125,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',

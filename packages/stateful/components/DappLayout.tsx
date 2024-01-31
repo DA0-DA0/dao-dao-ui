@@ -135,6 +135,11 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             followingDaoDropdownInfosSelector({
               chainId: chain.chain_id,
               walletPublicKey: walletHexPublicKey,
+              // If not compact, remove any SubDAO from the top level that
+              // exists as a SubDAO of another followed DAO at the top level.
+              // When compact, SubDAOs aren't visible, so we should show
+              // followed SubDAOs in the top level.
+              removeTopLevelSubDaos: !compact,
             })
           )
         )

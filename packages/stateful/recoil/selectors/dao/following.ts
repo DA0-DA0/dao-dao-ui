@@ -1,10 +1,19 @@
 import uniq from 'lodash.uniq'
-import { atomFamily, selectorFamily, waitForAll } from 'recoil'
+import {
+  atomFamily,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { DaoDropdownInfo } from '@dao-dao/stateless'
-import { ProposalModule, WithChainId } from '@dao-dao/types'
-import { FOLLOWING_DAOS_PREFIX, KVPK_API_BASE } from '@dao-dao/utils'
+import { DaoDropdownInfo, ProposalModule, WithChainId } from '@dao-dao/types'
+import {
+  FOLLOWING_DAOS_PREFIX,
+  KVPK_API_BASE,
+  keepSubDaosInDropdown,
+  subDaoExistsInDropdown,
+} from '@dao-dao/utils'
 
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
@@ -72,15 +81,23 @@ export const followingDaosSelector = selectorFamily<
 
 export const followingDaoDropdownInfosSelector = selectorFamily<
   DaoDropdownInfo[],
-  WithChainId<{ walletPublicKey: string }>
+  WithChainId<{
+    walletPublicKey: string
+    /**
+     * Whether or not to remove DAOs from the top-level that already exist as
+     * SubDAOs (at any level of nesting) in another top-level DAO.
+     */
+    removeTopLevelSubDaos: boolean
+  }>
 >({
   key: 'followingDaoDropdownInfos',
   get:
-    (params) =>
+    ({ removeTopLevelSubDaos, ...params }) =>
     ({ get }) => {
       const following = get(followingDaosSelector(params))
-      return get(
-        waitForAll(
+
+      const daos = get(
+        waitForAllSettled(
           following.map((coreAddress) =>
             daoDropdownInfoSelector({
               coreAddress,
@@ -88,7 +105,25 @@ export const followingDaoDropdownInfosSelector = selectorFamily<
             })
           )
         )
-      ).filter(Boolean) as DaoDropdownInfo[]
+      ).flatMap((loadable) => loadable.valueMaybe() || [])
+
+      const infos =
+        // Remove SubDAOs that are not being followed.
+        keepSubDaosInDropdown(
+          // Keep top-level DAOs only if they are not SubDAOs elsewhere. This
+          // ensures that a SubDAO is not shown multiple times. If both a parent
+          // DAO and SubDAO are followed, the SubDAO will only appear in the
+          // parent's dropdown. If the parent isn't followed, the SubDAO will
+          // appear in the top level.
+          removeTopLevelSubDaos
+            ? daos.filter(
+                ({ coreAddress }) => !subDaoExistsInDropdown(daos, coreAddress)
+              )
+            : daos,
+          following
+        )
+
+      return infos
     },
 })
 

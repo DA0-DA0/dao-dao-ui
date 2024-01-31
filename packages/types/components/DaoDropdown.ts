@@ -2,18 +2,18 @@ import { ComponentType, ReactNode } from 'react'
 
 import { LinkWrapperProps } from './LinkWrapper'
 
-export interface DaoDropdownInfo {
+export type DaoDropdownInfo = {
   chainId: string
   coreAddress: string
   imageUrl: string
   name: string
-  subdaos?: DaoDropdownInfo[]
+  subDaos?: DaoDropdownInfo[]
 }
 
-export interface DaoDropdownProps {
+export type DaoDropdownProps = {
   dao: DaoDropdownInfo
   children?: ReactNode
-  showSubdaos?: boolean
+  showSubDaos?: boolean
   indent?: number
   compact?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>

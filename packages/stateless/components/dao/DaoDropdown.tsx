@@ -8,12 +8,10 @@ import { useDaoNavHelpers } from '../../hooks'
 import { Collapsible } from '../Collapsible'
 import { Tooltip } from '../tooltip/Tooltip'
 
-export * from '@dao-dao/types/components/DaoDropdown'
-
 export const DaoDropdown = ({
-  dao: { coreAddress, imageUrl, name, subdaos },
+  dao: { coreAddress, imageUrl, name, subDaos },
   children,
-  showSubdaos = true,
+  showSubDaos = true,
   indent = 0,
   compact = false,
   LinkWrapper,
@@ -46,6 +44,8 @@ export const DaoDropdown = ({
     <Collapsible
       containerClassName="!gap-0"
       defaultCollapsed={defaultCollapsed}
+      dropdownContainerClassName="!gap-1"
+      dropdownIconSize="xs"
       headerClassName={clsx(
         'rounded-md',
         selected && 'bg-background-interactive-selected'
@@ -58,13 +58,14 @@ export const DaoDropdown = ({
         LinkWrapper,
       }}
       noContentIndent
+      noPlaceholderDot
     >
-      {!!((showSubdaos && subdaos?.length) || children) && (
+      {!!((showSubDaos && subDaos?.length) || children) && (
         <>
           {children}
 
-          {showSubdaos &&
-            subdaos?.map((dao, index) => (
+          {showSubDaos &&
+            subDaos?.map((dao, index) => (
               <DaoDropdown
                 key={index}
                 LinkWrapper={LinkWrapper}
