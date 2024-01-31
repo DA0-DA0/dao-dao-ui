@@ -1,6 +1,6 @@
 import { CheckBoxOutlineBlankRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
+import { ComponentType, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
@@ -25,13 +25,43 @@ export const HorizontalScroller = <P extends {}>({
 }: HorizontalScrollerProps<P>) => {
   const { t } = useTranslation()
 
+  const scrollableContainerRef = useRef<HTMLDivElement>(null)
+
+  // Detect vertical scrolling from a mouse and scroll horizontally if the mouse
+  // is hovering over them. This is to add support for scrolling on a desktop
+  // with only a single scrollable direction. Horizontal scrolling can be used
+  // natively by holding shift, but most people don't know that.
+  const [horizontalScrollActive, setHorizontalScrollActive] = useState(false)
+  useEffect(() => {
+    if (!horizontalScrollActive || !scrollableContainerRef.current) {
+      return
+    }
+
+    const container = scrollableContainerRef.current
+
+    const onWheel = (event: WheelEvent) => {
+      // Subtract Y delta so that this scrolls horizontally to the right when
+      // scrolling down and to the left when scrolling up.
+      container.scrollLeft += event.deltaX - event.deltaY
+
+      event.preventDefault()
+    }
+
+    container.addEventListener('wheel', onWheel)
+    return () => container.removeEventListener('wheel', onWheel)
+  }, [horizontalScrollActive])
+
   return (
-    <div className={clsx('relative', containerClassName)}>
+    <div
+      className={clsx('relative', containerClassName)}
+      onMouseLeave={() => setHorizontalScrollActive(false)}
+      onMouseOver={() => setHorizontalScrollActive(true)}
+    >
       {/* Left shadow */}
       {!items.loading && items.data.length > 0 && (
         <div
           className={clsx(
-            'absolute top-0 bottom-0 left-0 z-10 animate-fade-in',
+            'pointer-events-none absolute top-0 bottom-0 left-0 z-10 animate-fade-in',
             shadowClassName
           )}
           style={{
@@ -49,7 +79,10 @@ export const HorizontalScroller = <P extends {}>({
           body={t('info.nothingFound')}
         />
       ) : (
-        <div className="no-scrollbar w-full overflow-scroll">
+        <div
+          className="no-scrollbar w-full overflow-scroll"
+          ref={scrollableContainerRef}
+        >
           <div className="flex w-max flex-row gap-2 py-1 sm:gap-3 lg:gap-4">
             {items.data.map((item, index) => (
               <div key={index} className={itemClassName}>
@@ -64,7 +97,7 @@ export const HorizontalScroller = <P extends {}>({
       {!items.loading && items.data.length > 0 && (
         <div
           className={clsx(
-            'absolute top-0 right-0 bottom-0 z-10 animate-fade-in',
+            'pointer-events-none absolute top-0 right-0 bottom-0 z-10 animate-fade-in',
             shadowClassName
           )}
           style={{
