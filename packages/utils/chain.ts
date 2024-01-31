@@ -66,7 +66,7 @@ export const getRpcForChainId = (
     throw new Error(`No RPCs found for chain ID "${chainId}"`)
   }
 
-  return rpcs[offset % rpcs.length].address
+  return rpcs[offset % rpcs.length].address.replace(/http:\/\//, 'https://')
 }
 
 export const cosmosValidatorToValidator = ({
