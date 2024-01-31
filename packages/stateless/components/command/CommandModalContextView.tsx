@@ -159,7 +159,12 @@ export const CommandModalContextView = ({
             sectionIndex
           ) => (
             <Fragment key={sectionIndex}>
-              <div className="flex flex-row justify-between gap-4">
+              <div
+                className={clsx(
+                  'flex flex-row justify-between gap-4',
+                  sectionIndex > 0 && 'mt-3'
+                )}
+              >
                 <p className="link-text h-7 py-1 pl-3 text-text-tertiary">
                   {name}
                 </p>

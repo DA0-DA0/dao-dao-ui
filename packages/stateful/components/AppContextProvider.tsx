@@ -128,8 +128,7 @@ const DappContextProvider = ({
     )
   const setRootCommandContextMaker = useCallback(
     (maker) =>
-      // See comment in `_setRootCommandContextMaker` for an explanation on why
-      // we pass a function here.
+      // See comment above for an explanation on why we pass a function here.
       _setRootCommandContextMaker(() => maker),
     []
   )
