@@ -38,7 +38,9 @@ import {
   neutronAminoConverters,
   neutronProtoRegistry,
   osmosisAminoConverters,
+  regenAminoConverters,
   osmosisProtoRegistry,
+  regenProtoRegistry,
   publicawesomeAminoConverters as stargazeAminoConverters,
   publicawesomeProtoRegistry as stargazeProtoRegistry,
 } from '../protobuf'
@@ -545,6 +547,7 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
   ...neutronProtoRegistry,
+  ...regenProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
@@ -564,6 +567,7 @@ export const aminoTypes = new AminoTypes({
   ...stargazeAminoConverters,
   ...gaiaAminoConverters,
   ...neutronAminoConverters,
+  ...regenAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
