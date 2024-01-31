@@ -15,11 +15,13 @@ import {
   StargateMsg,
 } from '@dao-dao/types'
 
+import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
 import { processError } from '../error'
 import {
   cwVoteOptionToGovVoteOption,
   govVoteOptionToCwVoteOption,
 } from '../gov'
+import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import {
   cosmosAminoConverters,
@@ -670,9 +672,9 @@ export const decodeGovProposalV1Messages = (
   })
 
 // Decode governance proposal content using a protobuf.
-export const decodeGovProposal = (
+export const decodeGovProposal = async (
   govProposal: GovProposal
-): GovProposalWithDecodedContent => {
+): Promise<GovProposalWithDecodedContent> => {
   if (govProposal.version === GovProposalVersion.V1_BETA_1) {
     let title = govProposal.proposal.content?.title || ''
     let description = govProposal.proposal.content?.description || ''
@@ -710,10 +712,34 @@ export const decodeGovProposal = (
       (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
     )
 
+  let title = govProposal.proposal.title || legacyContent[0]?.title || ''
+  let description =
+    govProposal.proposal.summary || legacyContent[0]?.description || ''
+  // If metadata is a URL, try to fetch metadata.
+  if (
+    govProposal.proposal.metadata &&
+    isValidUrl(govProposal.proposal.metadata, true)
+  ) {
+    try {
+      const res = await fetch(
+        transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)
+      )
+      const json = await res.json()
+      if (objectMatchesStructure(json, { title: {} })) {
+        title = json.title
+      }
+      if (objectMatchesStructure(json, { details: {} })) {
+        description = json.details
+      } else if (objectMatchesStructure(json, { description: {} })) {
+        description = json.description
+      }
+    } catch {}
+  }
+
   return {
     ...govProposal,
-    title: govProposal.proposal.title,
-    description: govProposal.proposal.summary,
+    title,
+    description,
     decodedMessages,
     legacyContent,
   }

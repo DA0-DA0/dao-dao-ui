@@ -516,6 +516,15 @@ export const getChainIdForAddress = (address: string): string => {
 }
 
 /**
+ * Returns true if the cosmos SDK version is 0.46 or higher.
+ *
+ * @param version the cosmos SDK version string
+ * @returns true if the cosmos sdk version is 0.46 or higher
+ */
+export const cosmosSdkVersionIs46OrHigher = (version: string) =>
+  semverGte(version, '0.46.0')
+
+/**
  * Returns true if the cosmos SDK version is 0.47 or higher.
  *
  * @param version the cosmos SDK version string

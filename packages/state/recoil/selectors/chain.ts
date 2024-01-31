@@ -31,6 +31,7 @@ import {
 import {
   addressIsModule,
   cosmWasmClientRouter,
+  cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
   decodeGovProposal,
@@ -273,20 +274,31 @@ export const cosmosSdkVersionSelector = selectorFamily<string, WithChainId<{}>>(
 )
 
 /**
- * A chain supports the v1 gov module if it uses Cosmos SDK v0.47 or higher.
+ * A chain supports the v1 gov module if it uses Cosmos SDK v0.46 or higher.
  */
 export const chainSupportsV1GovModuleSelector = selectorFamily<
   boolean,
-  WithChainId<{}>
+  WithChainId<{
+    // Whether or not v0.47 or higher is required. V1 gov is supported by
+    // v0.46+, but some other things, like unified gov params, are supported
+    // only on v0.47+.
+    require47?: boolean
+  }>
 >({
   key: 'chainSupportsV1GovModule',
   get:
-    (params) =>
+    ({ require47, ...params }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(params.chainId))
       const version = get(cosmosSdkVersionSelector(params))
 
-      if (!cosmosSdkVersionIs47OrHigher(version)) {
+      if (
+        !(
+          require47
+            ? cosmosSdkVersionIs47OrHigher
+            : cosmosSdkVersionIs46OrHigher
+        )(version)
+      ) {
         return false
       }
 
@@ -782,7 +794,7 @@ export const govProposalsSelector = selectorFamily<
         }
       }
 
-      const proposals = [
+      const proposals = await Promise.all([
         ...(v1Beta1Proposals || []).map((proposal) =>
           decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
@@ -797,7 +809,7 @@ export const govProposalsSelector = selectorFamily<
             proposal,
           })
         ),
-      ]
+      ])
 
       return {
         proposals,
@@ -836,13 +848,13 @@ export const govProposalSelector = selectorFamily<
 
       if (indexerProposal) {
         if (indexerProposal.version === GovProposalVersion.V1) {
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
           })
         } else {
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal: ProposalV1Beta1.decode(fromBase64(indexerProposal.data)),
@@ -865,7 +877,7 @@ export const govProposalSelector = selectorFamily<
             throw new Error('Proposal not found')
           }
 
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: proposal,
@@ -891,7 +903,7 @@ export const govProposalSelector = selectorFamily<
         throw new Error('Proposal not found')
       }
 
-      return decodeGovProposal({
+      return await decodeGovProposal({
         version: GovProposalVersion.V1_BETA_1,
         id: BigInt(proposalId),
         proposal: proposal,
@@ -1015,9 +1027,11 @@ export const govParamsSelector = selectorFamily<AllGovParams, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
+      const supportsUnifiedV1GovParams = get(
+        chainSupportsV1GovModuleSelector({ chainId, require47: true })
+      )
 
-      if (supportsV1Gov) {
+      if (supportsUnifiedV1GovParams) {
         try {
           const { params } = await client.gov.v1.params({
             // Does not matter.
