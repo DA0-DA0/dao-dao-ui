@@ -1,9 +1,10 @@
 import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FollowState, LinkWrapperProps } from '@dao-dao/types'
 
-import { FollowingToggle } from '../buttons'
+import { Button, FollowingToggle } from '../buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { Modal } from '../modals'
 import { DaoImage, DaoImageProps } from './DaoImage'
@@ -29,6 +30,8 @@ export const DaoHeader = ({
   follow,
   className,
 }: DaoHeaderProps) => {
+  const { t } = useTranslation()
+  const [descriptionCollapsed, setDescriptionCollapsed] = useState(false)
   const [descriptionVisible, setDescriptionVisible] = useState(false)
 
   return (
@@ -49,16 +52,45 @@ export const DaoHeader = ({
             {follow && <FollowingToggle {...follow} />}
           </div>
 
-          <div onClick={() => setDescriptionVisible(true)}>
-            <MarkdownRenderer
-              className="body-text line-clamp-3 max-w-prose cursor-pointer !overflow-hidden"
-              markdown={description}
-            />
-          </div>
+          {!!description && (
+            <div
+              className={clsx(
+                'max-w-prose space-y-1',
+                descriptionCollapsed && 'cursor-pointer'
+              )}
+              onClick={() => setDescriptionVisible(true)}
+            >
+              <MarkdownRenderer
+                className="body-text line-clamp-3 !overflow-hidden"
+                markdown={description}
+                ref={
+                  // Decide if description should be collapsible based on if
+                  // text is being truncated or not.
+                  (ref) => {
+                    if (!ref || descriptionCollapsed) {
+                      return
+                    }
+
+                    setDescriptionCollapsed(ref.scrollHeight > ref.clientHeight)
+                  }
+                }
+              />
+
+              {descriptionCollapsed && (
+                <Button
+                  className="text-text-tertiary"
+                  onClick={() => setDescriptionVisible(true)}
+                  variant="none"
+                >
+                  {t('button.readMore')}
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {!!description && (
+      {descriptionCollapsed && (
         <Modal
           header={{
             title: name,

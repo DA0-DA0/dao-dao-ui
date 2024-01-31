@@ -1,6 +1,12 @@
 import { Check, Link } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, createElement, useEffect, useState } from 'react'
+import {
+  ComponentType,
+  createElement,
+  forwardRef,
+  useEffect,
+  useState,
+} from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
@@ -34,45 +40,52 @@ export type MarkdownRendererProps = {
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
-export const MarkdownRenderer = ({
-  markdown,
-  addAnchors,
-  className,
-  EntityDisplay,
-}: MarkdownRendererProps) => (
-  <ReactMarkdown
-    className={clsx(
-      'prose prose-sm overflow-auto break-words dark:prose-invert',
-      className
-    )}
-    components={{
-      ...(addAnchors
-        ? {
-            h1: HeadingRenderer,
-            h2: HeadingRenderer,
-            h3: HeadingRenderer,
-            h4: HeadingRenderer,
-            h5: HeadingRenderer,
-            h6: HeadingRenderer,
-          }
-        : undefined),
-      ...(EntityDisplay
-        ? {
-            [ENTITY_DISPLAY_NODE_TAG]: EntityDisplay,
-          }
-        : undefined),
-    }}
-    linkTarget="_blank"
-    rawSourcePos
-    rehypePlugins={[
-      rehypeSanitize,
-      ...(EntityDisplay ? [remarkEntityDisplay] : []),
-    ]}
-    remarkPlugins={[remarkGfm]}
-  >
-    {markdown}
-  </ReactMarkdown>
-)
+export const MarkdownRenderer = forwardRef<
+  HTMLInputElement,
+  MarkdownRendererProps
+>(function MarkdownRenderer(
+  { markdown, addAnchors, className, EntityDisplay },
+  ref
+) {
+  return (
+    <div
+      className={clsx(
+        'prose prose-sm overflow-auto break-words dark:prose-invert',
+        className
+      )}
+      ref={ref}
+    >
+      <ReactMarkdown
+        components={{
+          ...(addAnchors
+            ? {
+                h1: HeadingRenderer,
+                h2: HeadingRenderer,
+                h3: HeadingRenderer,
+                h4: HeadingRenderer,
+                h5: HeadingRenderer,
+                h6: HeadingRenderer,
+              }
+            : undefined),
+          ...(EntityDisplay
+            ? {
+                [ENTITY_DISPLAY_NODE_TAG]: EntityDisplay,
+              }
+            : undefined),
+        }}
+        linkTarget="_blank"
+        rawSourcePos
+        rehypePlugins={[
+          rehypeSanitize,
+          ...(EntityDisplay ? [remarkEntityDisplay] : []),
+        ]}
+        remarkPlugins={[remarkGfm]}
+      >
+        {markdown}
+      </ReactMarkdown>
+    </div>
+  )
+})
 
 const HeadingRenderer: HeadingComponent = ({
   children,

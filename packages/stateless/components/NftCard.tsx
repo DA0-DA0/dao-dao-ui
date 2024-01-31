@@ -308,25 +308,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           </div>
         )}
 
-        <div
-          className="flex min-h-[5.5rem] grow flex-col gap-2 py-4 px-6"
-          ref={
-            // Decide if description should be collapsible based on if text is
-            // being truncated or not.
-            (ref) => {
-              if (!ref || descriptionCollapsible) {
-                return
-              }
-
-              const descriptionPTag = ref?.children[1]?.children[0]
-              const descriptionOverflowing =
-                !!descriptionPTag &&
-                descriptionPTag.scrollHeight > descriptionPTag.clientHeight
-
-              setDescriptionCollapsible(descriptionOverflowing)
-            }
-          }
-        >
+        <div className="flex min-h-[5.5rem] grow flex-col gap-2 py-4 px-6">
           <p className="primary-text">
             {getNftName(collectionName, tokenId, name)}
           </p>
@@ -335,16 +317,31 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             <div className="space-y-1">
               <MarkdownRenderer
                 className={
-                  descriptionCollapsed ? 'line-clamp-3 break-words' : undefined
+                  descriptionCollapsed
+                    ? 'line-clamp-3 !overflow-hidden break-words'
+                    : undefined
                 }
                 markdown={description}
+                ref={
+                  // Decide if description should be collapsible based on if
+                  // text is being truncated or not.
+                  (ref) => {
+                    if (!ref || descriptionCollapsible) {
+                      return
+                    }
+
+                    setDescriptionCollapsible(
+                      ref.scrollHeight > ref.clientHeight
+                    )
+                  }
+                }
               />
 
-              {(descriptionCollapsible || !descriptionCollapsed) && (
+              {descriptionCollapsible && (
                 <Button
                   className="text-text-tertiary"
                   onClick={() => setDescriptionCollapsed((c) => !c)}
-                  variant="underline"
+                  variant="none"
                 >
                   {descriptionCollapsed
                     ? t('button.readMore')
