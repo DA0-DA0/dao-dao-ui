@@ -228,6 +228,7 @@ export const DaoTokenCard = ({
             : [],
           extraSections: extraActionSections,
         }}
+        hideDaosGoverned
         lazyInfo={lazyInfo}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}

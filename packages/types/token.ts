@@ -134,6 +134,10 @@ export type TokenCardProps = TokenCardInfo & {
     // Extra sections to add to the action popup.
     extraSections?: ButtonPopupSection[]
   }
+  /**
+   * Whether or not to hide the DAOs governed section.
+   */
+  hideDaosGoverned?: boolean
 }
 
 export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
