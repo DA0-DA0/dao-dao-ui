@@ -1,4 +1,4 @@
-import { ArrowOutwardRounded } from '@mui/icons-material'
+import { ArrowBackIosNew, ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 
@@ -6,6 +6,7 @@ import { ContractVersion, DaoDappTabbedHomeProps } from '@dao-dao/types'
 
 import {
   Button,
+  IconButton,
   IconButtonLink,
   Loader,
   PageHeaderContent,
@@ -32,6 +33,8 @@ export const DaoDappTabbedHome = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
+  const [showTabLeftButton, setShowTabLeftButton] = useState(false)
+  const [showTabRightButton, setShowTabRightButton] = useState(false)
 
   // When the selected tab changes, center the new tab.
   useEffect(() => {
@@ -62,6 +65,32 @@ export const DaoDappTabbedHome = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTabId])
+
+  // Show/hide the tab left/right buttons based on scroll position.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !tabContainerRef.current) {
+      return
+    }
+
+    const tabContainer = tabContainerRef.current
+
+    const updateVisibilities = () => {
+      setShowTabLeftButton(tabContainer.scrollLeft > 0)
+      // This needs a tiny 2 pixel buffer in case of rounding in some cases.
+      setShowTabRightButton(
+        tabContainer.scrollLeft <
+          tabContainer.scrollWidth - tabContainer.offsetWidth - 2
+      )
+    }
+
+    tabContainer.addEventListener('scroll', updateVisibilities)
+    window.addEventListener('resize', updateVisibilities)
+
+    return () => {
+      tabContainer.removeEventListener('scroll', updateVisibilities)
+      window.removeEventListener('resize', updateVisibilities)
+    }
+  }, [])
 
   // Detect vertical scrolling from a mouse and scroll the tabs horizontally if
   // the mouse is hovering over them. This is to add support for scrolling the
@@ -122,9 +151,80 @@ export const DaoDappTabbedHome = ({
           parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         />
 
-        <div className="flex flex-row items-center justify-center border-b border-border-primary">
+        <div className="relative flex flex-row items-center justify-center border-b border-border-primary">
+          {/* -bottom-1 to account for border of the container */}
           <div
-            className="no-scrollbar flex flex-row items-end overflow-x-auto pt-1"
+            className={clsx(
+              'pointer-events-none absolute left-0 top-0 -bottom-1 z-10 flex animate-fade-in flex-col items-center justify-center transition-opacity',
+              showTabLeftButton ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            <div
+              className="absolute top-0 bottom-0 left-0 w-6"
+              style={{
+                background:
+                  'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+              }}
+            ></div>
+
+            <IconButton
+              Icon={ArrowBackIosNew}
+              className={clsx(
+                'relative -left-6',
+                showTabLeftButton && 'pointer-events-auto'
+              )}
+              iconClassName="text-icon-tertiary"
+              onClick={() => {
+                if (tabContainerRef.current) {
+                  tabContainerRef.current.scrollBy({
+                    left: -tabContainerRef.current.offsetWidth,
+                    behavior: 'smooth',
+                  })
+                }
+              }}
+              size="xs"
+              variant="none"
+            />
+          </div>
+
+          {/* -bottom-1 to account for border of the container */}
+          <div
+            className={clsx(
+              'pointer-events-none absolute right-0 top-0 -bottom-1 z-10 flex animate-fade-in flex-col items-center justify-center transition-opacity',
+              showTabRightButton ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            <div
+              className="absolute top-0 bottom-0 right-0 w-6"
+              style={{
+                background:
+                  'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+              }}
+            ></div>
+
+            <IconButton
+              Icon={ArrowBackIosNew}
+              className={clsx(
+                'relative -right-6',
+                showTabRightButton && 'pointer-events-auto'
+              )}
+              iconClassName="rotate-180 text-icon-tertiary"
+              onClick={() => {
+                if (tabContainerRef.current) {
+                  tabContainerRef.current.scrollBy({
+                    left: tabContainerRef.current.offsetWidth,
+                    behavior: 'smooth',
+                  })
+                }
+              }}
+              size="xs"
+              variant="none"
+            />
+          </div>
+
+          {/* -mb-[1px] to account for border of the container so the selected tab's border overlaps instead of stacking vertically */}
+          <div
+            className="no-scrollbar -mb-[1px] flex flex-row items-end overflow-x-auto pt-1"
             onMouseLeave={() => setHorizontalScrollActive(false)}
             onMouseOver={() => setHorizontalScrollActive(true)}
             ref={tabContainerRef}
