@@ -722,7 +722,7 @@ export const decodeGovProposal = async (
     legacyContent[0]?.typeUrl ||
     (decodedMessages[0] &&
       'stargate' in decodedMessages[0] &&
-      decodedMessages[0].stargate.type_url) ||
+      decodedMessages[0].stargate.type_url.split('.').pop()) ||
     '<no title>'
   let description =
     govProposal.proposal.summary ||
