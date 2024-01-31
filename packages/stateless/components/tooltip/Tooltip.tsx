@@ -35,6 +35,10 @@ export const Tooltip = ({
         // Makes it much easier to click on the tooltip on mobile.
         0
       }
+      leaveTouchDelay={
+        // Show tooltips for 5 seconds on touch devices.
+        5000
+      }
       title={title}
       {...props}
     >
