@@ -3,9 +3,9 @@ import {
   CheckRounded,
   GavelOutlined,
   HomeOutlined,
-  InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
+  NotificationsOutlined,
   PersonOutline,
   Search,
 } from '@mui/icons-material'
@@ -223,12 +223,12 @@ export const DappNavigation = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 href="/me"
-                label={t('title.me')}
+                label={t('title.account')}
                 selected={asPath.startsWith('/me')}
               />
 
               <Row
-                Icon={InboxOutlined}
+                Icon={NotificationsOutlined}
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 href="/inbox"

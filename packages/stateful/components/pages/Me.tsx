@@ -111,13 +111,13 @@ export const Me: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={t('info.meDescription')}
+        description={t('info.accountDescription')}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: t('title.me'),
-          description: t('info.meDescription'),
+          title: t('title.account'),
+          description: t('info.accountDescription'),
         }}
-        title={t('title.me')}
+        title={t('title.account')}
       />
 
       {!configuredChainConfig ? (
@@ -153,7 +153,7 @@ export const Me: NextPage = () => {
           connectWalletButton={<ConnectWallet />}
           connecting={isWalletConnecting}
           rightSidebarContent={<ProfileDisconnectedCard />}
-          title={t('title.me')}
+          title={t('title.account')}
         />
       )}
     </>

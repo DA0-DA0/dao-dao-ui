@@ -815,6 +815,7 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "accountDescription": "View your tokens, NFTs, and DAOs, or execute transactions from your wallet.",
     "accountPageDescription": "View tokens and NFTs for the account with address {{address}}.",
     "actionLibraryDescription": "Choose one or more actions to perform upon execution.",
     "actionPageWarning": "There are {{actions}} actions across {{pages}} pages. Make sure you view all pages before voting.",
@@ -1009,7 +1010,6 @@
     "manageWidgetsDescription": "Add, update, and remove widgets.",
     "maxSlippageDescription": "As the transaction is executing, the swap price will fluctuate. If the price slips beyond this maximum slippage, the swap will not occur.",
     "meBalancesNftsDescription": "These are the NFTs you own on {{chainName}}.",
-    "meDescription": "View your tokens and NFTs, and execute transactions from your wallet.",
     "members": "members",
     "membersTooltip": "The number of members in the DAO.",
     "membershipDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, existing members must vote to add you.",
@@ -1573,7 +1573,6 @@
     "manageVetoableDaos": "Manage Vetoable DAOs",
     "manageWidgets": "Manage Widgets",
     "maxSlippage": "Maximum slippage",
-    "me": "Me",
     "memberOfDao": "Member of {{daoName}}",
     "members": "Members",
     "membership": "Membership",

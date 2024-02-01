@@ -75,7 +75,7 @@ export const Me = ({
         className="mx-auto max-w-5xl"
         gradient
         rightNode={<ChainSwitcher />}
-        title={t('title.me')}
+        title={t('title.account')}
       />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
