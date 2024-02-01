@@ -83,6 +83,8 @@ export const DaoDappTabbedHome = ({
       )
     }
 
+    updateVisibilities()
+
     tabContainer.addEventListener('scroll', updateVisibilities)
     window.addEventListener('resize', updateVisibilities)
 
@@ -177,7 +179,10 @@ export const DaoDappTabbedHome = ({
               onClick={() => {
                 if (tabContainerRef.current) {
                   tabContainerRef.current.scrollBy({
-                    left: -tabContainerRef.current.offsetWidth,
+                    left: -Math.min(
+                      tabContainerRef.current.scrollLeft,
+                      tabContainerRef.current.offsetWidth
+                    ),
                     behavior: 'smooth',
                   })
                 }
@@ -212,7 +217,12 @@ export const DaoDappTabbedHome = ({
               onClick={() => {
                 if (tabContainerRef.current) {
                   tabContainerRef.current.scrollBy({
-                    left: tabContainerRef.current.offsetWidth,
+                    left: Math.min(
+                      tabContainerRef.current.scrollWidth -
+                        tabContainerRef.current.scrollLeft -
+                        tabContainerRef.current.offsetWidth,
+                      tabContainerRef.current.offsetWidth
+                    ),
                     behavior: 'smooth',
                   })
                 }
