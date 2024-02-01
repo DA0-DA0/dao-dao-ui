@@ -9,7 +9,7 @@ import {
   HowToVoteOutlined,
   HowToVoteRounded,
 } from '@mui/icons-material'
-import type { GetStaticPaths, NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -259,7 +259,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetGovStaticProps({
+export const getStaticProps: GetStaticProps = makeGetGovStaticProps({
   getProps: async ({ chain, chainName }) => ({
     url: SITE_URL + getGovPath(chainName),
     overrideDescription: `The native chain governance for ${getDisplayNameForChainId(

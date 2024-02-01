@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { GetStaticPaths, NextPage } from 'next'
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 
 import {
   CreateSubDao,
@@ -29,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetDaoStaticProps({
+export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
   appMode: DaoPageMode.Dapp,
   getProps: async ({ t, coreAddress }) => ({
     url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress, 'create'),

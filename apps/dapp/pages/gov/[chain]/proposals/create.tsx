@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import type { GetStaticPaths, NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 
 import {
   CreateGovProposal,
@@ -29,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetGovStaticProps({
+export const getStaticProps: GetStaticProps = makeGetGovStaticProps({
   getProps: ({ t, chainName }) => ({
     url: SITE_URL + getGovProposalPath(chainName, 'create'),
     followingTitle: t('title.createAProposal'),

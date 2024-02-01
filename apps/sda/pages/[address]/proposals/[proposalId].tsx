@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import type { GetStaticPaths } from 'next'
+import type { GetStaticPaths, GetStaticProps } from 'next'
 
 import { DaoProposal } from '@dao-dao/stateful'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
@@ -17,7 +17,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetDaoProposalStaticProps({
+export const getStaticProps: GetStaticProps = makeGetDaoProposalStaticProps({
   appMode: DaoPageMode.Sda,
   getProposalUrlPrefix: ({ address }) =>
     SITE_URL +

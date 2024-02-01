@@ -14,7 +14,6 @@ export const CreateDaoVoting = ({
     register,
     watch,
     setValue,
-    control,
   },
   commonVotingConfig: {
     items: commonVotingConfigItems,

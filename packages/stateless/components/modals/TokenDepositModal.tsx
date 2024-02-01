@@ -85,7 +85,7 @@ export const TokenDepositModal = ({
       }
     >
       {warning && (
-        <div className="bg-background-secondary flex flex-row items-center gap-4 rounded-md p-4">
+        <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
           <WarningRounded className="!h-10 !w-10" />
 
           <p>{warning}</p>
