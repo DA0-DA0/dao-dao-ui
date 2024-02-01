@@ -1,6 +1,6 @@
 import { ArrowBackIosNew, ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { ContractVersion, DaoDappTabbedHomeProps } from '@dao-dao/types'
 
@@ -32,47 +32,54 @@ export const DaoDappTabbedHome = ({
 
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
-  const tabContainerRef = useRef<HTMLDivElement>(null)
+  const [tabContainer, _setTabContainer] = useState<HTMLDivElement | null>(null)
+  const setTabContainer = useCallback((tabContainer: HTMLDivElement | null) => {
+    _setTabContainer(tabContainer)
+  }, [])
+
   const [showTabLeftButton, setShowTabLeftButton] = useState(false)
   const [showTabRightButton, setShowTabRightButton] = useState(false)
 
   // When the selected tab changes, center the new tab.
   useEffect(() => {
     const tabIndex = tabs.findIndex(({ id }) => id === selectedTabId)
-    if (tabIndex < 0) {
+    if (tabIndex < 0 || !tabContainer) {
       return
     }
 
-    const tab = tabContainerRef.current?.children[tabIndex]
+    const tab = tabContainer.children[tabIndex]
     if (tab) {
-      const containerRect = tabContainerRef.current.getBoundingClientRect()
-      const containerCenter = containerRect.width / 2
-
       const tabRect = tab.getBoundingClientRect()
-      // The scrollable container may be offset from the left of the screen by
-      // the nav sidebar. Thus, to center the tab horizontally in the container,
-      // we need to subtract the container's left offset.
-      // `getBoundingClientRect` is relative to the whole window, but the scroll
-      // position is relative to the container itself, so we need the center of
-      // the container.
-      const tabCenter = tabRect.left + tabRect.width / 2 - containerRect.left
 
-      tabContainerRef.current.scrollTo({
-        left: tabContainerRef.current.scrollLeft + tabCenter - containerCenter,
+      // The left edge of the tab inside its scrollable container.
+      const tabScrollLeft =
+        tabRect.left -
+        tabContainer.getBoundingClientRect().left +
+        tabContainer.scrollLeft
+
+      const tabCenter = tabScrollLeft + tabRect.width / 2
+      const newContainerLeft = tabCenter - tabContainer.offsetWidth / 2
+
+      tabContainer.scrollTo({
+        left: Math.max(
+          0,
+          Math.min(
+            newContainerLeft,
+            tabContainer.scrollWidth - tabContainer.offsetWidth
+          )
+        ),
         behavior: 'smooth',
       })
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTabId])
+  }, [selectedTabId, tabContainer])
 
   // Show/hide the tab left/right buttons based on scroll position.
   useEffect(() => {
-    if (typeof window === 'undefined' || !tabContainerRef.current) {
+    if (typeof window === 'undefined' || !tabContainer) {
       return
     }
-
-    const tabContainer = tabContainerRef.current
 
     const updateVisibilities = () => {
       setShowTabLeftButton(tabContainer.scrollLeft > 0)
@@ -92,7 +99,7 @@ export const DaoDappTabbedHome = ({
       tabContainer.removeEventListener('scroll', updateVisibilities)
       window.removeEventListener('resize', updateVisibilities)
     }
-  }, [])
+  }, [tabContainer])
 
   // Detect vertical scrolling from a mouse and scroll the tabs horizontally if
   // the mouse is hovering over them. This is to add support for scrolling the
@@ -101,11 +108,9 @@ export const DaoDappTabbedHome = ({
   // that.
   const [horizontalScrollActive, setHorizontalScrollActive] = useState(false)
   useEffect(() => {
-    if (!horizontalScrollActive || !tabContainerRef.current) {
+    if (!horizontalScrollActive || !tabContainer) {
       return
     }
-
-    const tabContainer = tabContainerRef.current
 
     const onWheel = (event: WheelEvent) => {
       // Subtract Y delta so that this scrolls horizontally to the right when
@@ -117,7 +122,7 @@ export const DaoDappTabbedHome = ({
 
     tabContainer.addEventListener('wheel', onWheel)
     return () => tabContainer.removeEventListener('wheel', onWheel)
-  }, [horizontalScrollActive])
+  }, [horizontalScrollActive, tabContainer])
 
   return (
     <>
@@ -177,11 +182,11 @@ export const DaoDappTabbedHome = ({
               )}
               iconClassName="text-icon-tertiary"
               onClick={() => {
-                if (tabContainerRef.current) {
-                  tabContainerRef.current.scrollBy({
+                if (tabContainer) {
+                  tabContainer.scrollBy({
                     left: -Math.min(
-                      tabContainerRef.current.scrollLeft,
-                      tabContainerRef.current.offsetWidth
+                      tabContainer.scrollLeft,
+                      tabContainer.offsetWidth
                     ),
                     behavior: 'smooth',
                   })
@@ -215,13 +220,13 @@ export const DaoDappTabbedHome = ({
               )}
               iconClassName="rotate-180 text-icon-tertiary"
               onClick={() => {
-                if (tabContainerRef.current) {
-                  tabContainerRef.current.scrollBy({
+                if (tabContainer) {
+                  tabContainer.scrollBy({
                     left: Math.min(
-                      tabContainerRef.current.scrollWidth -
-                        tabContainerRef.current.scrollLeft -
-                        tabContainerRef.current.offsetWidth,
-                      tabContainerRef.current.offsetWidth
+                      tabContainer.scrollWidth -
+                        tabContainer.scrollLeft -
+                        tabContainer.offsetWidth,
+                      tabContainer.offsetWidth
                     ),
                     behavior: 'smooth',
                   })
@@ -237,7 +242,7 @@ export const DaoDappTabbedHome = ({
             className="no-scrollbar -mb-[1px] flex flex-row items-end overflow-x-auto pt-1"
             onMouseLeave={() => setHorizontalScrollActive(false)}
             onMouseOver={() => setHorizontalScrollActive(true)}
-            ref={tabContainerRef}
+            ref={setTabContainer}
           >
             {tabs.map(({ id, label, IconFilled }) => (
               <Button
