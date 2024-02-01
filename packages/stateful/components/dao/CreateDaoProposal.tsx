@@ -66,9 +66,7 @@ export const CreateDaoProposal = () => {
 
   return (
     <ProposalModuleAdapterCommonProvider
-      initialOptions={{
-        coreAddress: daoInfo.coreAddress,
-      }}
+      coreAddress={daoInfo.coreAddress}
       proposalModule={selectedProposalModule}
     >
       <InnerCreateDaoProposal

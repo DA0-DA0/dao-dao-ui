@@ -23,9 +23,7 @@ export const ProposalLine = ({
 }: StatefulProposalLineProps) => (
   <ChainProvider chainId={chainId}>
     <ProposalModuleAdapterProvider
-      initialOptions={{
-        coreAddress,
-      }}
+      coreAddress={coreAddress}
       proposalId={proposalId}
       proposalModules={proposalModules}
     >

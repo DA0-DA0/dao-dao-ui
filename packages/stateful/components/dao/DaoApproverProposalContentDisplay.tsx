@@ -129,9 +129,7 @@ export const DaoApproverProposalContentDisplay = ({
   return (
     <DaoProviders info={daoInfo}>
       <ProposalModuleAdapterProvider
-        initialOptions={{
-          coreAddress: daoInfo.coreAddress,
-        }}
+        coreAddress={daoInfo.coreAddress}
         proposalId={
           // Add prefix of target proposal module so it matches.
           `${proposalModuleWithPreProposeApproval.prefix}${preProposeApprovalProposalId}`

@@ -306,9 +306,7 @@ export const AppsTab = () => {
 
       {msgs && (
         <ProposalModuleAdapterCommonProvider
-          initialOptions={{
-            coreAddress: coreAddress,
-          }}
+          coreAddress={coreAddress}
           proposalModule={singleChoiceProposalModule}
         >
           <ActionMatcherAndProposer

@@ -19,9 +19,7 @@ export const ProposalDaoInfoCardSections = () => {
         <SuspenseLoader key={proposalModule.address} fallback={<Loader />}>
           <ProposalModuleAdapterCommonProvider
             key={proposalModule.address}
-            initialOptions={{
-              coreAddress,
-            }}
+            coreAddress={coreAddress}
             proposalModule={proposalModule}
           >
             <ProposalDaoInfoCardsSection />

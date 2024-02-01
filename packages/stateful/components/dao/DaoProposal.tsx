@@ -290,9 +290,7 @@ export const DaoProposal = ({
         // for some reason.
         serializedInfo.coreAddress + proposalInfo.id
       }
-      initialOptions={{
-        coreAddress: serializedInfo.coreAddress,
-      }}
+      coreAddress={serializedInfo.coreAddress}
       proposalId={proposalInfo.id}
       proposalModules={serializedInfo.proposalModules}
     >
