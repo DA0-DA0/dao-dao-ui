@@ -13,8 +13,8 @@ import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
   getDisplayNameForChainId,
   getFallbackImage,
+  shortenTokenSymbol,
   toAccessibleImageUrl,
-  transformIbcSymbol,
 } from '@dao-dao/utils'
 
 export const TokenLine = <T extends TokenCardInfo>(
@@ -23,7 +23,7 @@ export const TokenLine = <T extends TokenCardInfo>(
   const { TokenCard, token, transparentBackground, lazyInfo, color } = props
   const { t } = useTranslation()
 
-  const { tokenSymbol } = transformIbcSymbol(token.symbol)
+  const { tokenSymbol } = shortenTokenSymbol(token.symbol)
 
   const [cardVisible, setCardVisible] = useState(false)
   // On route change, close the card.
@@ -41,7 +41,7 @@ export const TokenLine = <T extends TokenCardInfo>(
         )}
         onClick={() => setCardVisible(true)}
       >
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex min-w-0 flex-row items-center gap-2">
           {color && (
             <div
               className="h-2 w-2 shrink-0 rounded-full"
@@ -73,7 +73,7 @@ export const TokenLine = <T extends TokenCardInfo>(
             </div>
           </Tooltip>
 
-          <p className="title-text">${tokenSymbol}</p>
+          <p className="title-text truncate">${tokenSymbol}</p>
         </div>
 
         <TokenAmountDisplay

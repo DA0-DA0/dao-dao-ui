@@ -66,7 +66,7 @@ export const TokenAmountDisplay = ({
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
     return (
-      <p {...props} className={clsx('animate-pulse', props.className)}>
+      <p {...props} className={clsx('animate-pulse truncate', props.className)}>
         {translateOrOmitSymbol(tokenTranslation, '...')}
       </p>
     )
@@ -157,7 +157,10 @@ export const TokenAmountDisplay = ({
     translateOrOmitSymbol(tokenTranslation, showFullAmount ? full : compact)
 
   const content = (
-    <p {...props}>
+    <p
+      {...props}
+      className={clsx('min-w-0 max-w-full truncate', props.className)}
+    >
       <span className={prefixClassName}>{prefix}</span>
       {display}
       <span className={suffixClassName}>{suffix}</span>
@@ -193,7 +196,7 @@ export const TokenAmountDisplay = ({
       }
     >
       {iconUrl ? (
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex min-w-0 flex-row items-center gap-2">
           {/* Icon */}
           <div
             className={clsx(

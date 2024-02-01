@@ -76,7 +76,7 @@ export const WalletBalances = <
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <div>
-            <div className="mb-6 -mt-4 flex flex-row justify-end">
+            <div className="mb-6 flex flex-row justify-end">
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 

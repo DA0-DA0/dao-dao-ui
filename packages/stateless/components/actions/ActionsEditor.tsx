@@ -22,6 +22,7 @@ import {
   LoadedActions,
 } from '@dao-dao/types/actions'
 
+import { useDaoInfoContextIfAvailable } from '../../hooks'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
@@ -63,6 +64,8 @@ export const ActionsEditor = ({
   const { watch } = useFormContext<{
     actionData: ActionKeyAndData[]
   }>()
+
+  const isDao = !!useDaoInfoContextIfAvailable()
 
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
@@ -141,7 +144,9 @@ export const ActionsEditor = ({
         </div>
       ) : (
         <p className="secondary-text -mt-3 max-w-prose italic">
-          {t('info.noActionsAdded')}
+          {t('info.noActionsAdded', {
+            context: isDao ? 'dao' : undefined,
+          })}
         </p>
       )}
 

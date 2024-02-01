@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  transformIbcSymbol,
+  shortenTokenSymbol,
 } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
@@ -50,7 +50,7 @@ export const TokenDepositModal = ({
 
   const min = convertMicroDenomToDenomWithDecimals(1, token.decimals)
 
-  const { tokenSymbol } = transformIbcSymbol(token.symbol)
+  const { tokenSymbol } = shortenTokenSymbol(token.symbol)
 
   return (
     <Modal
@@ -85,7 +85,7 @@ export const TokenDepositModal = ({
       }
     >
       {warning && (
-        <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+        <div className="bg-background-secondary flex flex-row items-center gap-4 rounded-md p-4">
           <WarningRounded className="!h-10 !w-10" />
 
           <p>{warning}</p>

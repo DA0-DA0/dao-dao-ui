@@ -1,4 +1,5 @@
 import { fromBech32 } from '@cosmjs/encoding'
+import { GroupRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -18,7 +19,7 @@ import {
   Loader,
   PageHeaderContent,
   RightSidebarContent,
-  SegmentedControls,
+  TabBar,
   WalletProfileHeader,
   useCachedLoadable,
   useCachedLoadingWithError,
@@ -37,7 +38,6 @@ import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { AccountBalances } from './AccountBalances'
 import { AccountDaos } from './AccountDaos'
 
 export const Account: NextPage = () => {
@@ -69,12 +69,8 @@ export const Account: NextPage = () => {
     {
       id: MeTabId.Daos,
       label: t('title.daos'),
+      Icon: GroupRounded,
       Component: AccountDaos,
-    },
-    {
-      id: MeTabId.Balances,
-      label: t('title.balances'),
-      Component: AccountBalances,
     },
   ]
 
@@ -152,23 +148,6 @@ export const Account: NextPage = () => {
       ? (tabPath as MeTabId)
       : tabs[0].id
 
-  const tabSelector = (
-    <div className="flex flex-row items-center justify-center">
-      <SegmentedControls
-        onSelect={(tab) =>
-          router.replace(getAccountPath(walletAddress, tab), undefined, {
-            shallow: true,
-          })
-        }
-        selected={selectedTabId}
-        tabs={tabs.map(({ id, label }) => ({
-          label,
-          value: id,
-        }))}
-      />
-    </div>
-  )
-
   return (
     <>
       <NextSeo
@@ -191,7 +170,6 @@ export const Account: NextPage = () => {
       <PageHeaderContent
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={<div className="hidden sm:block">{tabSelector}</div>}
         title={t('title.account')}
       />
 
@@ -209,7 +187,15 @@ export const Account: NextPage = () => {
               <CopyableAddress address={address as string} />
             </WalletProfileHeader>
 
-            <div className="mb-4 -mt-2 sm:hidden">{tabSelector}</div>
+            <TabBar
+              onSelect={(tab) =>
+                router.replace(getAccountPath(walletAddress, tab), undefined, {
+                  shallow: true,
+                })
+              }
+              selectedTabId={selectedTabId}
+              tabs={tabs}
+            />
 
             {tabs.map(({ id, Component }) => (
               <div

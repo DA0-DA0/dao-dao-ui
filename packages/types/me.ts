@@ -29,6 +29,7 @@ export enum MeTabId {
 export type MeTab = {
   id: MeTabId
   label: string
+  Icon: ComponentType<{ className: string }>
   Component: ComponentType
 }
 
