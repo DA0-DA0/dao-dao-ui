@@ -40,7 +40,7 @@ export const ProfileMemberCard = ({
 
   return (
     <ProfileCardWrapper
-      childContainerClassName="p-0 border-t-0"
+      childContainerClassName="!p-0 border-t-0"
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       {...wrapperProps}
     >

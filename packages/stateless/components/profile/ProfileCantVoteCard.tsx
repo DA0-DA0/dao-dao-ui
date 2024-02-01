@@ -32,7 +32,7 @@ export const ProfileCantVoteCard = ({
 
   return (
     <ProfileCardWrapper
-      childContainerClassName="p-0 border-t-0"
+      childContainerClassName="!p-0 border-t-0"
       compact
       underHeaderComponent={
         <MembershipPill daoName={daoName} ghost isMember={isMember} />
