@@ -652,10 +652,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       search: 'migaloo_daos',
     },
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/migaloo/tx/REPLACE',
-      gov: 'https://ping.pub/migaloo/gov',
-      govProp: 'https://ping.pub/migaloo/gov/REPLACE',
-      wallet: 'https://ping.pub/migaloo/account/REPLACE',
+      tx: 'https://inbloc.org/migaloo/transactions/REPLACE',
+      gov: 'https://inbloc.org/migaloo/governance',
+      govProp: 'https://inbloc.org/migaloo/proposal/REPLACE',
+      wallet: 'https://inbloc.org/migaloo/account/REPLACE',
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
