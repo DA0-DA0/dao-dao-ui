@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
+import { NormalComponents } from 'react-markdown/lib/complex-types'
 import rehypeSanitize from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
 import { Transformer } from 'unified'
@@ -57,6 +58,7 @@ export const MarkdownRenderer = forwardRef<
     >
       <ReactMarkdown
         components={{
+          table: TableRenderer,
           ...(addAnchors
             ? {
                 h1: HeadingRenderer,
@@ -86,6 +88,19 @@ export const MarkdownRenderer = forwardRef<
     </div>
   )
 })
+
+// Scroll tables horizontally if necessary.
+const TableRenderer: NormalComponents['table'] = ({
+  children,
+  className,
+  ...props
+}) => (
+  <div className="styled-scrollbar overflow-x-auto px-2">
+    <table {...props} className={clsx('!min-w-max', className)}>
+      {children}
+    </table>
+  </div>
+)
 
 const HeadingRenderer: HeadingComponent = ({
   children,
