@@ -11,11 +11,15 @@ import clsx from 'clsx'
 import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IconButtonLinkProps, WalletProfileData } from '@dao-dao/types'
+import {
+  DaoPageMode,
+  IconButtonLinkProps,
+  WalletProfileData,
+} from '@dao-dao/types'
 
 import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
-import { useAppContext } from '../layout/AppContext'
+import { useAppContextIfAvailable } from '../layout/AppContext'
 import { Notifications, NotificationsProps } from '../Notifications'
 import { Popup } from '../popup'
 import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
@@ -45,7 +49,10 @@ export const ConnectedWallet = ({
   className,
 }: ConnectedWalletProps) => {
   const { t } = useTranslation()
-  const { inbox } = useAppContext()
+
+  // SDA error pages are not wrapped in app context, so we aren't guaranteed to
+  // be in it.
+  const { mode, inbox } = useAppContextIfAvailable() ?? {}
 
   const [copied, setCopied] = useState(false)
   // Debounce copy unset after 2 seconds.
@@ -116,7 +123,7 @@ export const ConnectedWallet = ({
         </div>
       </div>
 
-      {inbox && (
+      {mode === DaoPageMode.Dapp && inbox && (
         <Popup
           popupClassName="max-w-lg max-h-[48rem]"
           position="left"
