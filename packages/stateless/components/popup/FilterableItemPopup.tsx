@@ -24,7 +24,7 @@ import { TriggerRenderer } from './Popup'
 
 export interface FilterableItem {
   key: string | number
-  Icon?: ComponentType
+  Icon?: ComponentType<{ className?: string }>
   iconUrl?: string
   iconClassName?: string
   label: ReactNode
@@ -248,7 +248,9 @@ export const FilterableItemPopup = <T extends FilterableItem>({
               >
                 {item.Icon ? (
                   <p className="text-2xl">
-                    <item.Icon />
+                    <item.Icon
+                      className={clsx('!h-7 !w-7', item.iconClassName)}
+                    />
                   </p>
                 ) : item.iconUrl ? (
                   <div

@@ -95,6 +95,10 @@ export type ChainPickerPopupProps = {
    * If true, will make the button more like a text header instead.
    */
   headerMode?: boolean
+  /**
+   * If true, will hide the label of the selected chain.
+   */
+  hideSelectedLabel?: boolean
 }
 
 /**
@@ -112,6 +116,7 @@ export const ChainPickerPopup = ({
   noneLabel,
   NoneIcon,
   headerMode,
+  hideSelectedLabel,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
@@ -202,15 +207,17 @@ export const ChainPickerPopup = ({
                         }}
                       />
                     )
-                  : showNone && NoneIcon && <NoneIcon />}
+                  : showNone && NoneIcon && <NoneIcon className="!h-6 !w-6" />}
 
-                <p className={clsx(!selectedChain && 'text-text-tertiary')}>
-                  {selectedChain?.label ||
-                    (showNone && noneLabel) ||
-                    (labelMode === 'chain'
-                      ? t('button.selectChain')
-                      : t('button.selectToken'))}
-                </p>
+                {!hideSelectedLabel && (
+                  <p className={clsx(!selectedChain && 'text-text-tertiary')}>
+                    {selectedChain?.label ||
+                      (showNone && noneLabel) ||
+                      (labelMode === 'chain'
+                        ? t('button.selectChain')
+                        : t('button.selectToken'))}
+                  </p>
+                )}
               </div>
 
               {!disabled && <ArrowDropDown className="!h-6 !w-6" />}

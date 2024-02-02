@@ -1,5 +1,10 @@
 import { useCallback } from 'react'
-import { useSetRecoilState, waitForAll } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  waitForAll,
+} from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import {
@@ -44,7 +49,7 @@ export const VetoableProposals: FeedSource<
         : undefined
     )
 
-    const followingDaosLoadable = useCachedLoadable(
+    const followingDaosLoadable = useRecoilValueLoadable(
       supportedChainWallets.every(({ hexPublicKey }) => hexPublicKey)
         ? waitForAll(
             supportedChainWallets.flatMap(
@@ -57,20 +62,21 @@ export const VetoableProposals: FeedSource<
                   : []
             )
           )
-        : undefined
+        : constSelector([])
     )
 
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
       followingDaosLoadable.state === 'hasValue'
-        ? supportedChainWallets.flatMap(({ chainWallet: { chain } }, index) =>
-            followingDaosLoadable.contents[index].map((coreAddress) =>
-              webSocketChannelNameForDao({
-                coreAddress,
-                chainId: chain.chain_id,
-              })
-            )
+        ? supportedChainWallets.flatMap(
+            ({ chainWallet: { chain } }, index) =>
+              followingDaosLoadable.contents[index]?.map((coreAddress) =>
+                webSocketChannelNameForDao({
+                  coreAddress,
+                  chainId: chain.chain_id,
+                })
+              ) || []
           )
         : [],
       ['proposal', 'vote'],
