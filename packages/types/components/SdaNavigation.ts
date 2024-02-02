@@ -2,6 +2,7 @@ import { ComponentType } from 'react'
 
 import { DaoTab } from '../dao'
 import { LinkWrapperProps } from './LinkWrapper'
+import { StatefulNavWalletProps } from './NavWallet'
 
 export interface SdaNavigationProps {
   tabs: DaoTab[]
@@ -10,8 +11,5 @@ export interface SdaNavigationProps {
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
-  SidebarWallet: ComponentType<{
-    containerClassName: string
-    inResponsiveNav?: boolean
-  }>
+  NavWallet: ComponentType<StatefulNavWalletProps>
 }

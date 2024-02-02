@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { SdaNavigationProps } from './SdaNavigation'
 
-export interface SdaLayoutProps {
+export type SdaLayoutProps = {
   navigationProps: SdaNavigationProps
   children: ReactNode
 }

@@ -1,34 +1,15 @@
 import clsx from 'clsx'
 
-import {
-  ConnectWallet,
-  ConnectWalletProps,
-  ConnectedWallet,
-  ConnectedWalletProps,
-} from '../wallet'
+import { NavWalletProps } from '@dao-dao/types'
+
+import { ConnectWallet, NavWalletConnected } from '../wallet'
 import { ConnectWalletIcon } from '../wallet/ConnectWalletIcon'
 
-export type SidebarWalletProps = {
-  containerClassName?: string
-  compact?: boolean
-  /**
-   * Whether or not this is displayed in the responsive navigation sidebar.
-   */
-  inResponsiveNav?: boolean
-} & (
-  | ({
-      connected: true
-    } & Omit<ConnectedWalletProps, 'className'>)
-  | ({
-      connected: false
-    } & Pick<ConnectWalletProps, 'onConnect' | 'loading'>)
-)
-
-export const SidebarWallet = ({
+export const NavWallet = ({
   containerClassName,
   compact,
   ...props
-}: SidebarWalletProps) => (
+}: NavWalletProps) => (
   <div
     className={clsx(
       'flex shrink-0 flex-col justify-center',
@@ -36,7 +17,7 @@ export const SidebarWallet = ({
     )}
   >
     {props.connected ? (
-      <ConnectedWallet
+      <NavWalletConnected
         compact={compact}
         {...{
           ...props,

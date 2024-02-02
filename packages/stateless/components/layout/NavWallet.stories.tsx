@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { SidebarWallet } from './SidebarWallet'
+import { NavWallet } from './NavWallet'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / layout / SidebarWallet',
-  component: SidebarWallet,
-} as ComponentMeta<typeof SidebarWallet>
+  title: 'DAO DAO / packages / stateless / components / layout / NavWallet',
+  component: NavWallet,
+} as ComponentMeta<typeof NavWallet>
 
-const Template: ComponentStory<typeof SidebarWallet> = (args) => (
-  <SidebarWallet {...args} />
+const Template: ComponentStory<typeof NavWallet> = (args) => (
+  <NavWallet {...args} />
 )
 
 export const Connected = Template.bind({})

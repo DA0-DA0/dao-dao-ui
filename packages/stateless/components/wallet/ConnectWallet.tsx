@@ -3,15 +3,9 @@ import clsx from 'clsx'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonProps } from '@dao-dao/types'
+import { ConnectWalletProps } from '@dao-dao/types'
 
 import { Button } from '../buttons'
-
-export interface ConnectWalletProps
-  extends Partial<Omit<ButtonProps, 'onClick'>> {
-  onConnect?: () => void
-  className?: string
-}
 
 export const ConnectWallet = forwardRef<HTMLButtonElement, ConnectWalletProps>(
   function ConnectWallet({ onConnect, size = 'lg', ...props }, ref) {

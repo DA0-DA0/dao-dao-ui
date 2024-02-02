@@ -34,7 +34,7 @@ import {
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
 import { MigrateFollowingModal } from './MigrateFollowingModal'
-import { SidebarWallet } from './SidebarWallet'
+import { NavWallet } from './NavWallet'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -182,7 +182,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
-          SidebarWallet,
+          NavWallet,
         }}
       >
         {children}

@@ -1,5 +1,4 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { Wallet } from '@cosmos-kit/core'
 import {
   Check,
   Logout,
@@ -8,41 +7,21 @@ import {
   Wallet as WalletIcon,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DaoPageMode,
-  IconButtonLinkProps,
-  WalletProfileData,
-} from '@dao-dao/types'
+import { DaoPageMode, NavWalletConnectedProps } from '@dao-dao/types'
 
 import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
 import { useAppContextIfAvailable } from '../layout/AppContext'
-import { Notifications, NotificationsProps } from '../Notifications'
+import { Notifications } from '../Notifications'
 import { Popup } from '../popup'
 import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
 import { Tooltip } from '../tooltip'
 import { WalletLogo } from './WalletLogo'
 
-export type ConnectedWalletProps = {
-  wallet: Wallet
-  walletAddress: string
-  walletProfileData: WalletProfileData
-  updateProfileName: (name: string | null) => Promise<void>
-  onEditProfileImage: () => void
-  disconnect: () => Promise<void>
-  IconButtonLink: ComponentType<IconButtonLinkProps>
-  className?: string
-  compact?: boolean
-  /**
-   * Whether or not this is displayed in the responsive navigation sidebar.
-   */
-  inResponsiveNav?: boolean
-} & Pick<NotificationsProps, 'InboxMainItemRenderer' | 'onCheck'>
-
-export const ConnectedWallet = ({
+export const NavWalletConnected = ({
   wallet,
   walletAddress,
   walletProfileData,
@@ -54,7 +33,7 @@ export const ConnectedWallet = ({
   className,
   compact,
   inResponsiveNav,
-}: ConnectedWalletProps) => {
+}: NavWalletConnectedProps) => {
   const { t } = useTranslation()
 
   // SDA error pages are not wrapped in app context, so we aren't guaranteed to

@@ -19,7 +19,7 @@ import { useAutoRefreshData, useDaoTabs } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
-import { SidebarWallet } from './SidebarWallet'
+import { NavWallet } from './NavWallet'
 import { SuspenseLoader } from './SuspenseLoader'
 import { WalletModals } from './wallet'
 
@@ -50,7 +50,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         compact,
         setCompact,
         mountedInBrowser,
-        SidebarWallet,
+        NavWallet,
       }}
     >
       <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>

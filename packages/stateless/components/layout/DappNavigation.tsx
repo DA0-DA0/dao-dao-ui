@@ -63,7 +63,7 @@ export const DappNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-  SidebarWallet,
+  NavWallet,
 }: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -171,7 +171,7 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet
+        <NavWallet
           containerClassName="md:hidden py-5 border-b border-border-secondary shrink-0"
           inResponsiveNav
         />

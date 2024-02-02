@@ -20,7 +20,7 @@ const Template: ComponentStory<typeof ProfileHomeCard> = (args) => (
 )
 
 export const Default = Template.bind({})
-// Wallet details are used in other story files, like `SidebarWallet` and
+// Wallet details are used in other story files, like `NavWallet` and
 // `makeDappLayoutDecorator`.
 Default.args = {
   walletProfileData: WALLET_PROFILE_DATA,
@@ -50,7 +50,7 @@ Default.parameters = {
 }
 
 export const Loading = Template.bind({})
-// Wallet details are used in other story files, like `SidebarWallet` and
+// Wallet details are used in other story files, like `NavWallet` and
 // `makeDappLayoutDecorator`.
 Loading.args = {
   ...Default.args,

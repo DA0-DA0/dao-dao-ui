@@ -1,22 +1,15 @@
 import { useSetRecoilState } from 'recoil'
 
 import { updateProfileNftVisibleAtom } from '@dao-dao/state'
-import {
-  SidebarWallet as OriginalSidebarWallet,
-  SidebarWalletProps,
-} from '@dao-dao/stateless'
+import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
+import { StatefulNavWalletProps } from '@dao-dao/types'
 
 import { useWallet, useWalletInfo } from '../hooks'
 import { IconButtonLink } from './IconButtonLink'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export const SidebarWallet = (
-  props: Pick<
-    SidebarWalletProps,
-    'containerClassName' | 'compact' | 'inResponsiveNav'
-  >
-) => {
+export const NavWallet = (props: StatefulNavWalletProps) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()
   const { walletProfileData, updateProfileName } = useWalletInfo()
@@ -25,11 +18,9 @@ export const SidebarWallet = (
   )
 
   return (
-    <SuspenseLoader
-      fallback={<OriginalSidebarWallet connected={false} loading />}
-    >
+    <SuspenseLoader fallback={<StatelessNavWallet connected={false} loading />}>
       {isWalletConnected && address && wallet ? (
-        <OriginalSidebarWallet
+        <StatelessNavWallet
           IconButtonLink={IconButtonLink}
           InboxMainItemRenderer={InboxMainItemRenderer}
           connected
@@ -42,11 +33,7 @@ export const SidebarWallet = (
           {...props}
         />
       ) : (
-        <OriginalSidebarWallet
-          connected={false}
-          onConnect={openView}
-          {...props}
-        />
+        <StatelessNavWallet connected={false} onConnect={openView} {...props} />
       )}
     </SuspenseLoader>
   )

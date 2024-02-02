@@ -3,6 +3,7 @@ import { ComponentType } from 'react'
 import { LoadingData } from '../misc'
 import { DaoDropdownInfo } from './DaoDropdown'
 import { LinkWrapperProps } from './LinkWrapper'
+import { StatefulNavWalletProps } from './NavWallet'
 
 export type NavigationTokenPrice = {
   label: string
@@ -22,8 +23,5 @@ export type DappNavigationProps = {
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
-  SidebarWallet: ComponentType<{
-    containerClassName: string
-    inResponsiveNav?: boolean
-  }>
+  NavWallet: ComponentType<StatefulNavWalletProps>
 }

@@ -4,17 +4,12 @@ import { useRecoilValue } from 'recoil'
 
 import { walletChainIdAtom } from '@dao-dao/state'
 import {
-  ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
   Tooltip,
   useChainContextIfAvailable,
 } from '@dao-dao/stateless'
+import { StatefulConnectWalletProps } from '@dao-dao/types'
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
-
-export type StatefulConnectWalletProps = Omit<
-  ConnectWalletProps,
-  'loading' | 'onConnect'
->
 
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const { t } = useTranslation()

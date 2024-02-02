@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { DappNavigationProps } from './DappNavigation'
 
-export interface DappLayoutProps {
+export type DappLayoutProps = {
   navigationProps: DappNavigationProps
   children: ReactNode
 }

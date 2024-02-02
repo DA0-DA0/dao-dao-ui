@@ -7,7 +7,7 @@ import {
 } from '@dao-dao/stateless'
 import { PageHeaderProps } from '@dao-dao/types'
 
-import { SidebarWallet } from './SidebarWallet'
+import { NavWallet } from './NavWallet'
 
 // This is a portal that teleports content, used in pages to render content in
 // the header (which is located in a separate React tree due to `DappLayout` and
@@ -42,8 +42,8 @@ export const PageHeaderContent = (props: PageHeaderProps) => {
         <div className="flex flex-row items-center justify-end gap-3 lg:gap-4">
           {props.rightNode}
 
-          <SidebarWallet containerClassName="hidden md:flex border-l border-border-secondary pl-3 lg:pl-4 min-w-72 self-stretch" />
-          <SidebarWallet
+          <NavWallet containerClassName="hidden md:flex border-l border-border-secondary pl-3 lg:pl-4 min-w-72 self-stretch" />
+          <NavWallet
             compact
             containerClassName="md:hidden border-l border-border-secondary pl-3 self-stretch"
           />

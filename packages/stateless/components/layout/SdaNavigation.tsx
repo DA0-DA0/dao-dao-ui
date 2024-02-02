@@ -51,7 +51,7 @@ export const SdaNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-  SidebarWallet,
+  NavWallet,
 }: SdaNavigationProps) => {
   const daoInfo = useDaoInfoContext()
   const { t } = useTranslation()
@@ -154,7 +154,7 @@ export const SdaNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet containerClassName="md:hidden" inResponsiveNav />
+        <NavWallet containerClassName="md:hidden" inResponsiveNav />
 
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {

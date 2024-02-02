@@ -1,13 +1,9 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { InboxApi, InboxPageSlug } from '@dao-dao/types'
+import { InboxApi, InboxPageSlug, NotificationsProps } from '@dao-dao/types'
 
-import {
-  InboxSettingsModal,
-  Notifications,
-  NotificationsProps,
-} from '../components'
+import { InboxSettingsModal, Notifications } from '../components'
 
 export type InboxProps = {
   api: InboxApi
