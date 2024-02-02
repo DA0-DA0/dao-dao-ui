@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ConnectWallet, ConnectWalletProps } from '../wallet'
+import { ConnectWalletProps } from '@dao-dao/types'
+
+import { ConnectWallet } from '../wallet'
 import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { ProfileDisconnectedCard } from './ProfileDisconnectedCard'
 

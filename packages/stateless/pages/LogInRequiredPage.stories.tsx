@@ -4,8 +4,9 @@ import {
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { ConnectWalletProps } from '@dao-dao/types'
 
-import { ConnectWallet, ConnectWalletProps } from '../components'
+import { ConnectWallet } from '../components'
 import { Default as ConnectWalletStory } from '../components/wallet/ConnectWallet.stories'
 import { LogInRequiredPage } from './LogInRequiredPage'
 
