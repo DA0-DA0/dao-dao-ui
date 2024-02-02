@@ -36,6 +36,10 @@ export type ConnectedWalletProps = {
   IconButtonLink: ComponentType<IconButtonLinkProps>
   className?: string
   compact?: boolean
+  /**
+   * Whether or not this is displayed in the responsive navigation sidebar.
+   */
+  inResponsiveNav?: boolean
 } & Pick<NotificationsProps, 'InboxMainItemRenderer' | 'onCheck'>
 
 export const ConnectedWallet = ({
@@ -49,6 +53,7 @@ export const ConnectedWallet = ({
   InboxMainItemRenderer,
   className,
   compact,
+  inResponsiveNav,
 }: ConnectedWalletProps) => {
   const { t } = useTranslation()
 
@@ -131,7 +136,7 @@ export const ConnectedWallet = ({
       {mode === DaoPageMode.Dapp && inbox && !compact && (
         <Popup
           popupClassName="max-w-lg max-h-[48rem]"
-          position="left"
+          position={inResponsiveNav ? 'wide' : 'left'}
           trigger={{
             type: 'icon_button',
             tooltip:

@@ -11,6 +11,10 @@ import { ConnectWalletIcon } from '../wallet/ConnectWalletIcon'
 export type SidebarWalletProps = {
   containerClassName?: string
   compact?: boolean
+  /**
+   * Whether or not this is displayed in the responsive navigation sidebar.
+   */
+  inResponsiveNav?: boolean
 } & (
   | ({
       connected: true

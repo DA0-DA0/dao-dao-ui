@@ -154,7 +154,7 @@ export const SdaNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet containerClassName="md:hidden" />
+        <SidebarWallet containerClassName="md:hidden" inResponsiveNav />
 
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {

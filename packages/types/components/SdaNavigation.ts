@@ -10,5 +10,8 @@ export interface SdaNavigationProps {
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
-  SidebarWallet: ComponentType<{ containerClassName: string }>
+  SidebarWallet: ComponentType<{
+    containerClassName: string
+    inResponsiveNav?: boolean
+  }>
 }

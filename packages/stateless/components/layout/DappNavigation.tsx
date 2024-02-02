@@ -171,7 +171,10 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet containerClassName="md:hidden py-5 border-b border-border-secondary shrink-0" />
+        <SidebarWallet
+          containerClassName="md:hidden py-5 border-b border-border-secondary shrink-0"
+          inResponsiveNav
+        />
 
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>

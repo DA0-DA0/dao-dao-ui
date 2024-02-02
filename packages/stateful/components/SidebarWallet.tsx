@@ -12,7 +12,10 @@ import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = (
-  props: Pick<SidebarWalletProps, 'containerClassName' | 'compact'>
+  props: Pick<
+    SidebarWalletProps,
+    'containerClassName' | 'compact' | 'inResponsiveNav'
+  >
 ) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()

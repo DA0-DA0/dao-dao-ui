@@ -124,12 +124,16 @@ export const Popup = ({
     // Offset for outline of Trigger.
     top: (rect) => rect.bottom + 4,
     left:
-      position === 'right' || position === 'full'
+      position === 'right'
         ? (rect) => rect.left - 2
+        : position === 'wide'
+        ? () => 24
         : null,
     right:
-      position === 'left' || position === 'full'
+      position === 'left'
         ? (rect) => window.innerWidth - rect.right - 2
+        : position === 'wide'
+        ? () => 24
         : null,
     width: null,
   })
