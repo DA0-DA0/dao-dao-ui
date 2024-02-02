@@ -5,18 +5,11 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { discordNotifierSetupAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { PageLoader, useDaoNavHelpers } from '@dao-dao/stateless'
-import { DaoPageMode, DaoTabId } from '@dao-dao/types'
+import { DaoTabId } from '@dao-dao/types'
 
-export type DiscordRedirectProps = {
-  // The discord page renders outside the context of any one DAO, but we still
-  // to be able to use the nav helpers to redirect to the desired DAO page on
-  // the SDA. Thus, the SDA must manually specify the mode to use.
-  overrideMode?: DaoPageMode
-}
-
-export const DiscordRedirect = ({ overrideMode }: DiscordRedirectProps) => {
+export const DiscordRedirect = () => {
   const { t } = useTranslation()
-  const { goToDao, router } = useDaoNavHelpers(overrideMode)
+  const { goToDao, router } = useDaoNavHelpers()
   const [discordNotifierSetup, setDiscordNotificationSetup] = useRecoilState(
     discordNotifierSetupAtom
   )

@@ -17,7 +17,6 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
-  web3AuthPromptAtom,
 } from '@dao-dao/state'
 import {
   AppContextProvider,
@@ -52,8 +51,6 @@ const InnerApp = ({
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
-  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
-
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
@@ -87,13 +84,19 @@ const InnerApp = ({
       {/* Show loader on fallback page when loading static props. */}
       {router.isFallback ? (
         <PageLoader />
-      ) : router.pathname === '/discord' ||
+      ) : // These are not DAO pages.
+      router.pathname === '/discord' ||
         router.pathname === '/404' ||
         router.pathname === '/500' ||
         router.pathname === '/_error' ? (
-        <Component {...pageProps} />
+        <WalletProvider>
+          {/* AppContextProvider uses wallet context via the inbox. */}
+          <AppContextProvider mode={DaoPageMode.Sda}>
+            <Component {...pageProps} />
+          </AppContextProvider>
+        </WalletProvider>
       ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
+        <WalletProvider>
           {/* AppContextProvider uses wallet context via the inbox. */}
           <AppContextProvider mode={DaoPageMode.Sda}>
             {/* All non-error/discord redirect SDA pages are a DAO page. */}

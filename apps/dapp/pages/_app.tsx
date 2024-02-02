@@ -17,7 +17,6 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
-  web3AuthPromptAtom,
 } from '@dao-dao/state'
 import {
   AppContextProvider,
@@ -43,8 +42,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
 
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-
-  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -80,7 +77,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       {router.isFallback ? (
         <PageLoader />
       ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
+        <WalletProvider>
           {/* AppContextProvider uses wallet context via the inbox. */}
           <AppContextProvider mode={DaoPageMode.Dapp}>
             <DappLayout>
