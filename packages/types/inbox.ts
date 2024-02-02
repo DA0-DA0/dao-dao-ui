@@ -101,6 +101,14 @@ export type InboxItemRendererProps<Data extends unknown> = {
   item: InboxLoadedItemWithData
   data: Data
   clear: () => Promise<boolean>
+  /**
+   * Whether or not the check handler is available.
+   */
+  canCheck: boolean
+  /**
+   * Optionally style things a bit more compact. Used in the popup.
+   */
+  compact?: boolean
 }
 
 export type InboxMainItemRendererProps = {
@@ -114,9 +122,13 @@ export type InboxMainItemRendererProps = {
    */
   checked: boolean
   /**
-   * Check handler. Called with the item ID.
+   * Check handler. Called with the item ID. If undefined, hide check button.
    */
-  onCheck: (id: string) => void
+  onCheck?: (id: string) => void
+  /**
+   * Optionally style things a bit more compact. Used in the popup.
+   */
+  compact?: boolean
 }
 
 export type InboxUpdateConfig = {

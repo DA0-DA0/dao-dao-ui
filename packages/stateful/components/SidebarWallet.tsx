@@ -8,6 +8,7 @@ import {
 
 import { useWallet, useWalletInfo } from '../hooks'
 import { IconButtonLink } from './IconButtonLink'
+import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = (
@@ -27,6 +28,7 @@ export const SidebarWallet = (
       {isWalletConnected && address && wallet ? (
         <OriginalSidebarWallet
           IconButtonLink={IconButtonLink}
+          InboxMainItemRenderer={InboxMainItemRenderer}
           connected
           disconnect={disconnect}
           onEditProfileImage={() => setUpdateProfileNftVisible(true)}

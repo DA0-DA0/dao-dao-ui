@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -20,6 +21,8 @@ import { EntityDisplay } from '../../EntityDisplay'
 export const ProposalRenderer = ({
   item,
   data: { chainId, dao, proposalId, proposalTitle },
+  canCheck,
+  compact,
 }: InboxItemRendererProps<InboxItemTypeProposalCreatedData>) => {
   const { t } = useTranslation()
   const { getDaoProposalPath } = useDaoNavHelpers()
@@ -29,6 +32,17 @@ export const ProposalRenderer = ({
   })
 
   const timestamp = item.timestamp && new Date(item.timestamp)
+  const timestampDisplay = timestamp && (
+    <Tooltip title={formatDateTimeTz(timestamp)}>
+      <p className="legend-text mt-0.5 inline-block text-text-quaternary">
+        {timestamp < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) ? (
+          formatDate(timestamp)
+        ) : (
+          <TimeAgo date={timestamp} formatter={timestampFormatter} />
+        )}
+      </p>
+    </Tooltip>
+  )
 
   const status =
     item.type === InboxItemType.ProposalCreated ||
@@ -46,15 +60,15 @@ export const ProposalRenderer = ({
 
   return (
     <ButtonLink
-      className="!p-0 !pr-16 !ring-0"
+      className={clsx('!p-0 !ring-0', canCheck && '!pr-16')}
       containerClassName="grow"
       href={getDaoProposalPath(dao, proposalId)}
       loadingVariant="pulse"
       noRounding
       variant="ghost"
     >
-      <div className="flex grow flex-col gap-2 px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex flex-row items-start gap-1">
+      <div className="flex min-w-0 grow flex-col gap-1 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-row items-start gap-2">
           <ChainProvider chainId={chainId}>
             <EntityDisplay
               address={dao}
@@ -66,24 +80,14 @@ export const ProposalRenderer = ({
             />
           </ChainProvider>
 
-          {timestamp && (
-            <Tooltip title={formatDateTimeTz(timestamp)}>
-              <p className="legend-text mt-0.5 inline-block text-text-quaternary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {'• '}
-                {timestamp < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) ? (
-                  formatDate(timestamp)
-                ) : (
-                  <TimeAgo date={timestamp} formatter={timestampFormatter} />
-                )}
-              </p>
-            </Tooltip>
-          )}
+          {!compact && timestampDisplay}
         </div>
 
-        <p className="secondary-text ml-10 -mt-4 break-words text-text-tertiary">
+        <p className="secondary-text ml-10 -mt-3 break-words text-text-tertiary md:-mt-4">
           {(status ? status + ' ' : '') + proposalId + ': ' + proposalTitle}
         </p>
+
+        {compact && <div className="ml-10">{timestampDisplay}</div>}
       </div>
     </ButtonLink>
   )

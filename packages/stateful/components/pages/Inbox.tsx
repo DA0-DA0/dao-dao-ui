@@ -175,7 +175,6 @@ export const Inbox: NextPage = () => {
           checked={checked}
           connected={isWalletConnected}
           onCheck={onCheck}
-          state={inbox}
           verify={verify}
         />
       ) : (

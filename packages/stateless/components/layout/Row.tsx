@@ -75,7 +75,7 @@ export const Row = ({
             >
               <Icon className="!h-8 !w-8" />
               {showBadge && (
-                <div className="absolute -top-[0.1rem] right-0 h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+                <div className="absolute -top-[0.1rem] right-0 h-1.5 w-1.5 animate-fade-in rounded-full bg-icon-interactive-active"></div>
               )}
             </div>
           </Tooltip>
@@ -103,7 +103,7 @@ export const Row = ({
           <div className="relative flex h-6 w-6 items-center justify-center">
             <Icon className="!h-6 !w-6" />
             {showBadge && (
-              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 animate-fade-in rounded-full bg-icon-interactive-active"></div>
             )}
           </div>
 

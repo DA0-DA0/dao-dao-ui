@@ -4,6 +4,7 @@ import {
   Check,
   Logout,
   NotificationsOutlined,
+  Settings,
   Wallet as WalletIcon,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -14,11 +15,14 @@ import { IconButtonLinkProps, WalletProfileData } from '@dao-dao/types'
 
 import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
+import { useAppContext } from '../layout/AppContext'
+import { Notifications, NotificationsProps } from '../Notifications'
+import { Popup } from '../popup'
 import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
 import { Tooltip } from '../tooltip'
 import { WalletLogo } from './WalletLogo'
 
-export interface ConnectedWalletProps {
+export type ConnectedWalletProps = {
   wallet: Wallet
   walletAddress: string
   walletProfileData: WalletProfileData
@@ -27,7 +31,7 @@ export interface ConnectedWalletProps {
   disconnect: () => Promise<void>
   IconButtonLink: ComponentType<IconButtonLinkProps>
   className?: string
-}
+} & Pick<NotificationsProps, 'InboxMainItemRenderer' | 'onCheck'>
 
 export const ConnectedWallet = ({
   wallet,
@@ -37,9 +41,11 @@ export const ConnectedWallet = ({
   onEditProfileImage,
   disconnect,
   IconButtonLink,
+  InboxMainItemRenderer,
   className,
 }: ConnectedWalletProps) => {
   const { t } = useTranslation()
+  const { inbox } = useAppContext()
 
   const [copied, setCopied] = useState(false)
   // Debounce copy unset after 2 seconds.
@@ -110,15 +116,50 @@ export const ConnectedWallet = ({
         </div>
       </div>
 
-      <Tooltip title={t('button.notifications')}>
-        <IconButtonLink
-          Icon={NotificationsOutlined}
-          className="ml-2 text-icon-secondary"
-          href="/notifications"
-          size="sm"
-          variant="ghost"
-        />
-      </Tooltip>
+      {inbox && (
+        <Popup
+          popupClassName="max-w-lg max-h-[48rem]"
+          position="left"
+          trigger={{
+            type: 'icon_button',
+            tooltip:
+              !inbox.loading && inbox.items.length > 0
+                ? t('title.notificationsWithCount', {
+                    count: inbox.items.length,
+                  })
+                : t('title.notifications'),
+            props: {
+              Icon: NotificationsOutlined,
+              className: 'ml-2 text-icon-secondary relative',
+              variant: 'ghost',
+              size: 'sm',
+              // Show badge when notifications exist.
+              children: !inbox.loading && inbox.items.length > 0 && (
+                <div className="absolute top-[0.2rem] right-[0.2rem] h-1 w-1 animate-fade-in rounded-full bg-icon-interactive-active"></div>
+              ),
+            },
+          }}
+        >
+          <div className="flex flex-row items-center justify-between border-b border-border-base p-4">
+            <p className="header-text">{t('title.notifications')}</p>
+
+            <Tooltip title={t('button.settings')}>
+              <IconButtonLink
+                Icon={Settings}
+                href="/notifications/settings"
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
+          </div>
+
+          <Notifications
+            InboxMainItemRenderer={InboxMainItemRenderer}
+            className="no-scrollbar overflow-y-auto"
+            compact
+          />
+        </Popup>
+      )}
 
       <Tooltip title={t('button.logOut')}>
         <IconButton

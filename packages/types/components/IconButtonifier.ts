@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, ComponentType } from 'react'
+import { ComponentPropsWithoutRef, ComponentType, ReactNode } from 'react'
 
 export interface IconButtonifierProps {
   variant:
@@ -18,6 +18,7 @@ export interface IconButtonifierProps {
   focused?: boolean
   className?: string
   iconClassName?: string
+  children?: ReactNode
 }
 
 export type IconButtonProps = ComponentPropsWithoutRef<'button'> &
