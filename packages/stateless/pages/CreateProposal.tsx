@@ -2,14 +2,7 @@ import { Clear } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoTabId } from '@dao-dao/types'
-
-import {
-  IconButton,
-  PageHeaderContent,
-  RightSidebarContent,
-  Tooltip,
-} from '../components'
+import { IconButton, RightSidebarContent, Tooltip } from '../components'
 
 export type CreateProposalProps = {
   newProposal: ReactNode
@@ -27,16 +20,6 @@ export const CreateProposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          homeTab: {
-            id: DaoTabId.Proposals,
-            sdaLabel: t('title.proposals'),
-          },
-          current: t('title.createProposal'),
-        }}
-        className="mx-auto max-w-5xl"
-      />
 
       <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
         <div className="flex flex-row items-center justify-between gap-4">

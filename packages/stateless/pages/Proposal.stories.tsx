@@ -51,7 +51,6 @@ Default.args = {
       {...props}
     />
   ),
-  id: 'B2',
   voteTally: (
     <ProposalVoteTally
       {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}

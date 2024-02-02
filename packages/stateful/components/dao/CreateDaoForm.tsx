@@ -21,7 +21,6 @@ import {
   DaoHeader,
   ImageSelector,
   Loader,
-  PageHeaderContent,
   RightSidebarContent,
   TooltipInfoIcon,
   useAppContext,
@@ -78,6 +77,7 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import { LinkWrapper } from '../LinkWrapper'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'

@@ -32,6 +32,7 @@ import { useQuerySyncedRecoilState } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletAllConfiguredChainSwitcher } from '../wallet/WalletChainSwitcher'
@@ -120,6 +121,17 @@ export const Me: NextPage = () => {
         title={t('title.account')}
       />
 
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        gradient
+        rightNode={
+          <div className="flex flex-col items-center justify-center self-stretch border-r border-border-secondary pr-3">
+            <WalletAllConfiguredChainSwitcher />
+          </div>
+        }
+        title={t('title.account')}
+      />
+
       {!configuredChainConfig ? (
         <PageLoader />
       ) : isWalletConnected ? (
@@ -136,7 +148,6 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessMe
-                ChainSwitcher={WalletAllConfiguredChainSwitcher}
                 MeBalances={MeBalances}
                 MeDaos={MeDaos}
                 MeTransactionBuilder={MeTransactionBuilder}
@@ -153,7 +164,6 @@ export const Me: NextPage = () => {
           connectWalletButton={<ConnectWallet />}
           connecting={isWalletConnecting}
           rightSidebarContent={<ProfileDisconnectedCard />}
-          title={t('title.account')}
         />
       )}
     </>

@@ -1,15 +1,24 @@
+import { useSetRecoilState } from 'recoil'
+
+import { updateProfileNftVisibleAtom } from '@dao-dao/state'
 import {
   SidebarWallet as OriginalSidebarWallet,
   SidebarWalletProps,
 } from '@dao-dao/stateless'
 
-import { useWallet } from '../hooks'
+import { useWallet, useWalletInfo } from '../hooks'
+import { IconButtonLink } from './IconButtonLink'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = (
   props: Pick<SidebarWalletProps, 'containerClasName'>
 ) => {
-  const { openView, isWalletConnected, address, username, wallet } = useWallet()
+  const { openView, isWalletConnected, address, wallet, disconnect } =
+    useWallet()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
 
   return (
     <SuspenseLoader
@@ -17,11 +26,14 @@ export const SidebarWallet = (
     >
       {isWalletConnected && address && wallet ? (
         <OriginalSidebarWallet
+          IconButtonLink={IconButtonLink}
           connected
-          openWalletModal={openView}
+          disconnect={disconnect}
+          onEditProfileImage={() => setUpdateProfileNftVisible(true)}
+          updateProfileName={updateProfileName}
+          wallet={wallet}
           walletAddress={address}
-          walletLogo={wallet.logo}
-          walletName={username || wallet?.prettyName}
+          walletProfileData={walletProfileData}
           {...props}
         />
       ) : (

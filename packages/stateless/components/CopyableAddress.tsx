@@ -3,6 +3,8 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { CopyToClipboardProps } from '@dao-dao/types'
+
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 
 export type CopyableAddressProps = {
@@ -12,7 +14,7 @@ export type CopyableAddressProps = {
   className?: string
   iconClassName?: string
   textClassName?: string
-}
+} & Pick<CopyToClipboardProps, 'takeStartEnd' | 'onCopy'>
 
 export const CopyableAddress = ({
   address,
@@ -21,6 +23,8 @@ export const CopyableAddress = ({
   className,
   iconClassName,
   textClassName,
+  takeStartEnd,
+  onCopy,
 }: CopyableAddressProps) => {
   const { t } = useTranslation()
 
@@ -37,7 +41,9 @@ export const CopyableAddress = ({
 
       <CopyToClipboardUnderline
         className={clsx('text-sm !text-text-tertiary', textClassName)}
-        takeAll
+        onCopy={onCopy}
+        takeAll={takeStartEnd ? undefined : true}
+        takeStartEnd={takeStartEnd}
         tooltip={t('button.clickToCopyAddress')}
         value={address}
       />

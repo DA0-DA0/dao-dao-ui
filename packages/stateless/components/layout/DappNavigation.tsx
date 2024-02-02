@@ -1,13 +1,13 @@
 import {
   Add,
   CheckRounded,
-  GavelOutlined,
   HomeOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   NotificationsOutlined,
   PersonOutline,
   Search,
+  WidgetsOutlined,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
@@ -207,11 +207,11 @@ export const DappNavigation = ({
           />
 
           <Row
-            Icon={GavelOutlined}
+            Icon={WidgetsOutlined}
             LinkWrapper={LinkWrapper}
             compact={compact}
             href={getGovPath(chainConfig.name)}
-            label={t('title.governance')}
+            label={t('title.chains')}
             selected={asPath.startsWith(getGovPath(''))}
           />
 

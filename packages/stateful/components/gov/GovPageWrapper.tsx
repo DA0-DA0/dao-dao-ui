@@ -15,6 +15,7 @@ import {
 import { DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export type GovPageWrapperProps = PropsWithChildren<{
@@ -122,9 +123,9 @@ export const GovPageWrapper = ({
             </DaoInfoContext.Provider>
           </ChainProvider>
         ) : error ? (
-          <ErrorPage500 error={error} />
+          <ErrorPage500 PageHeaderContent={PageHeaderContent} error={error} />
         ) : (
-          <DaoNotFound />
+          <DaoNotFound PageHeaderContent={PageHeaderContent} />
         )}
       </SuspenseLoader>
     </>

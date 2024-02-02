@@ -98,9 +98,7 @@ export type ChainPickerPopupProps = {
 }
 
 /**
- * A form picker that is intended to be used in DAO actions to choose a
- * supported chain to execute a message from. This should include the DAO native
- * chain and current or potential cross-chain (polytone) accounts.
+ * A popup that allows the user to select a chain.
  */
 export const ChainPickerPopup = ({
   chains,

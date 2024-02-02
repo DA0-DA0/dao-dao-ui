@@ -17,7 +17,6 @@ import {
   CopyableAddress,
   ErrorPage,
   Loader,
-  PageHeaderContent,
   RightSidebarContent,
   TabBar,
   WalletProfileHeader,
@@ -75,11 +74,6 @@ export const Account = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        gradient
-        title={t('title.account')}
-      />
 
       <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
         {!hexPublicKey.loading &&

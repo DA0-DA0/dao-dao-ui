@@ -13,19 +13,13 @@ import {
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 
-import {
-  PageHeaderContent,
-  RightSidebarContent,
-  TabBar,
-  WalletProfileHeader,
-} from '../components'
+import { RightSidebarContent, TabBar, WalletProfileHeader } from '../components'
 
 export type MeProps = {
   rightSidebarContent: ReactNode
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
   MeDaos: ComponentType
-  ChainSwitcher: ComponentType<any>
 } & Pick<
   WalletProfileHeaderProps,
   'openProfileNftUpdate' | 'profileData' | 'updateProfileName'
@@ -36,7 +30,6 @@ export const Me = ({
   MeBalances,
   MeTransactionBuilder,
   MeDaos,
-  ChainSwitcher,
   ...headerProps
 }: MeProps) => {
   const { t } = useTranslation()
@@ -86,12 +79,6 @@ export const Me = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        gradient
-        rightNode={<ChainSwitcher />}
-        title={t('title.account')}
-      />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
         <WalletProfileHeader editable {...headerProps} />

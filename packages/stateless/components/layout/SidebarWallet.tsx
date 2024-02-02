@@ -6,7 +6,6 @@ import {
   ConnectedWallet,
   ConnectedWalletProps,
 } from '../wallet'
-import { PAGE_HEADER_HEIGHT_CLASS_NAMES } from './PageHeader'
 
 export type SidebarWalletProps = { containerClasName?: string } & (
   | ({
@@ -23,8 +22,7 @@ export const SidebarWallet = ({
 }: SidebarWalletProps) => (
   <div
     className={clsx(
-      'flex shrink-0 flex-col justify-center',
-      PAGE_HEADER_HEIGHT_CLASS_NAMES,
+      'flex shrink-0 flex-col justify-center self-stretch',
       containerClasName
     )}
   >
@@ -39,7 +37,7 @@ export const SidebarWallet = ({
       <ConnectWallet
         center
         className="w-full"
-        variant="secondary"
+        variant="primary"
         {...{
           ...props,
           connected: undefined,

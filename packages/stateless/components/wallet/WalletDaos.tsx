@@ -63,7 +63,6 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
           onSelect={setChainId}
           selectedChainId={chainId}
           showNone
-          // wrapperClassName="flex flex-row items-stretch"
         />
       </div>
 

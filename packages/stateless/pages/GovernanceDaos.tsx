@@ -1,51 +1,33 @@
-import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   DaoCardInfo,
   GridCardContainer,
   Loader,
-  PageHeaderContent,
   RightSidebarContent,
 } from '../components'
-import { useChain } from '../hooks'
 
-export type GovernanceHomeProps = {
+export type GovernanceDaosProps = {
   daos: LoadingData<DaoCardInfo[]>
   DaoCard: ComponentType<DaoCardInfo>
   rightSidebarContent: ReactNode
-  // If present, override current breadcrumb route with this node.
-  breadcrumbsOverride?: ReactNode
 }
 
-const maxWidth = 'mx-auto w-full max-w-5xl'
-
-export const GovernanceHome = ({
+export const GovernanceDaos = ({
   daos,
   DaoCard,
   rightSidebarContent,
-  breadcrumbsOverride,
-}: GovernanceHomeProps) => {
+}: GovernanceDaosProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          home: true,
-          override: !!breadcrumbsOverride,
-          current: breadcrumbsOverride || getDisplayNameForChainId(chainId),
-        }}
-        className={maxWidth}
-      />
 
-      <div className={clsx('flex flex-col items-start gap-8', maxWidth)}>
+      <div className="mx-auto flex max-w-5xl flex-col items-start gap-8">
         <p className="title-text">{t('title.governanceDaos')}</p>
 
         {daos.loading ? (

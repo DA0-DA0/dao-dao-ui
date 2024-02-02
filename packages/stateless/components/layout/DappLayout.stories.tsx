@@ -1,11 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import { DappLayoutProps, PageHeaderProps } from '@dao-dao/types'
 
-import { ConnectWallet, ConnectWalletProps } from '../wallet'
-import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { DappLayout } from './DappLayout'
 import { DappNavigationProps } from './DappNavigation'
 import { Default as DappNavigatonStory } from './DappNavigation.stories'
@@ -31,12 +28,6 @@ export const DefaultArgs: DappLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStoryArgs,
-  walletProfileData: WALLET_PROFILE_DATA,
-  connect: () => alert('connect'),
-  connected: true,
-  connectWalletButton: (
-    <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
-  ),
 }
 
 const Template: ComponentStory<typeof DappLayout> = (args) => {

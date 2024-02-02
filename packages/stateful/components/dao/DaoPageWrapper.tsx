@@ -24,6 +24,7 @@ import {
 
 import { makeDaoContext, makeGenericContext } from '../../command'
 import { daoInfoSelector } from '../../recoil'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoProviders } from './DaoProviders'
 
@@ -190,9 +191,9 @@ export const DaoPageWrapper = ({
             </SuspenseLoader>
           </DaoProviders>
         ) : error ? (
-          <ErrorPage500 error={error} />
+          <ErrorPage500 PageHeaderContent={PageHeaderContent} error={error} />
         ) : (
-          <DaoNotFound />
+          <DaoNotFound PageHeaderContent={PageHeaderContent} />
         )}
       </SuspenseLoader>
     </>

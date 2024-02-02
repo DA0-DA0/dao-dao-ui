@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { PageHeaderContent } from '@dao-dao/stateful'
+
 import { ErrorPage500 } from './ErrorPage500'
 
 export default {
@@ -14,4 +16,5 @@ const Template: ComponentStory<typeof ErrorPage500> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   error: 'Error!!!!!',
+  PageHeaderContent,
 }

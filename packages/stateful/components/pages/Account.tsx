@@ -27,6 +27,7 @@ import {
 
 import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { AccountDaos } from './AccountDaos'
@@ -125,6 +126,12 @@ export const Account: NextPage = () => {
           }),
         }}
         title={t('title.account') + ': ' + accountAddress}
+      />
+
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        gradient
+        title={t('title.account')}
       />
 
       <ChainProvider chainId={configuredChain.chainId}>

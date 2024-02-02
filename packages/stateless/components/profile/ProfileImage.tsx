@@ -67,11 +67,10 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         className={clsx(
           // Center icon.
           'relative flex shrink-0 items-center justify-center border border-transparent',
-          (!imageUrl || loadingImage) && 'border-border-interactive-disabled',
+          (!imageUrl || loadingImage) && '!border-border-interactive-disabled',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
-          loadingImage &&
-            'animate-pulse border border-border-interactive-disabled',
+          loadingImage && 'animate-pulse !border-border-interactive-disabled',
           // Make clickable for onClick and onEdit.
           (onClick || onEdit) && 'cursor-pointer',
           // Enable group events for onEdit.

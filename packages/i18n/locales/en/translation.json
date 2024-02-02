@@ -124,7 +124,6 @@
     "goToProposal": "Go to proposal",
     "gotIt": "Got it",
     "hide": "Hide",
-    "hideLogInButton": "Hide log in button",
     "hidePreview": "Hide preview",
     "hideQrCode": "Hide QR code",
     "hideRawData": "Hide raw data",
@@ -156,6 +155,7 @@
     "newVestingPayment": "New vesting payment",
     "nominate": "Nominate",
     "none": "None",
+    "notifications": "Notifications",
     "openInChainExplorer": "Open in chain explorer",
     "openInDestination": "Open in {{destination}}",
     "openSidebarToVote": "Open sidebar to vote",
@@ -1439,6 +1439,7 @@
     "chainModule": {
       "gov": "Governance Module"
     },
+    "chains": "Chains",
     "choices": "Choices",
     "chooseAStructure": "Choose a structure",
     "chooseAnAction": "Choose an action...",

@@ -9,6 +9,7 @@ import { Status as StatelessStatus } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ChainStatus } from '../ChainStatus'
+import { PageHeaderContent } from '../PageHeaderContent'
 
 export const StatusPage = () => {
   const { t } = useTranslation()
@@ -33,6 +34,11 @@ export const StatusPage = () => {
           title: t('title.status'),
           description: t('info.statusPageDescription'),
         }}
+        title={t('title.status')}
+      />
+
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
         title={t('title.status')}
       />
 

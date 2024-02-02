@@ -14,9 +14,7 @@ const Template: ComponentStory<typeof SidebarWallet> = (args) => (
 export const Connected = Template.bind({})
 Connected.args = {
   connected: true,
-  walletLogo: '/daodao.png',
   walletAddress: 'juno123abc987zyx',
-  walletName: 'my_wallet',
 }
 
 export const Connecting = Template.bind({})

@@ -1,19 +1,10 @@
-import { ArrowOutwardRounded } from '@mui/icons-material'
+import { DaoDappTabbedHomeProps } from '@dao-dao/types'
 
-import { ContractVersion, DaoDappTabbedHomeProps } from '@dao-dao/types'
-
-import {
-  IconButtonLink,
-  Loader,
-  PageHeaderContent,
-  RightSidebarContent,
-  TabBar,
-} from '../components'
+import { Loader, RightSidebarContent, TabBar } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useChainContext } from '../hooks'
+import { useDaoInfoContext } from '../hooks'
 
 export const DaoDappTabbedHome = ({
-  daoInfo,
   follow,
   rightSidebarContent,
   SuspenseLoader,
@@ -22,37 +13,14 @@ export const DaoDappTabbedHome = ({
   tabs,
   selectedTabId,
   onSelectTabId,
-  breadcrumbsOverride,
   parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
-  const { config: chainConfig } = useChainContext()
-
+  const daoInfo = useDaoInfoContext()
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          home: true,
-          override: !!breadcrumbsOverride,
-          current: breadcrumbsOverride || daoInfo.name,
-        }}
-        className="mx-auto max-w-5xl"
-        gradient
-        rightNode={
-          daoInfo.coreVersion === ContractVersion.Gov ? (
-            chainConfig?.explorerUrlTemplates?.gov ? (
-              // Go to governance page of chain explorer.
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={chainConfig.explorerUrlTemplates.gov}
-                variant="ghost"
-              />
-            ) : undefined
-          ) : undefined
-        }
-      />
 
       <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
         <DaoSplashHeader

@@ -1,3 +1,4 @@
+import { wallets as keplrWallets } from '@cosmos-kit/keplr-extension'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ConnectedWallet } from './ConnectedWallet'
@@ -14,8 +15,6 @@ const Template: ComponentStory<typeof ConnectedWallet> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  walletLogo: '/daodao.png',
-  walletName: '@Modern-Edamame',
+  wallet: keplrWallets[0].walletInfo,
   walletAddress: 'juno123abx789xyz',
-  openWalletModal: () => alert('open'),
 }

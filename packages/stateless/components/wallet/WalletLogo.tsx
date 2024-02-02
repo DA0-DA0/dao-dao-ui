@@ -4,7 +4,7 @@ import clsx from 'clsx'
 export type WalletLogoProps = {
   logo: Wallet['logo']
   className?: string
-  size?: 'sm' | 'lg'
+  size?: 'xs' | 'sm' | 'lg'
   dropShadow?: boolean
 }
 
@@ -19,6 +19,7 @@ export const WalletLogo = ({
       className={clsx(
         'bg-contain bg-center bg-no-repeat',
         {
+          'h-4 w-4': size === 'xs',
           'h-6 w-6': size === 'sm',
           'h-10 w-10': size === 'lg',
         },
@@ -36,6 +37,7 @@ export const WalletLogo = ({
       className={clsx(
         'relative bg-contain bg-center bg-no-repeat',
         {
+          'h-4 w-4': size === 'xs',
           'h-6 w-6': size === 'sm',
           'h-10 w-10': size === 'lg',
         },
@@ -50,6 +52,7 @@ export const WalletLogo = ({
     >
       <div
         className={clsx('absolute bg-contain bg-center bg-no-repeat', {
+          '-right-0.5 -bottom-0.5 h-1.5 w-1.5': size === 'xs',
           '-right-0.5 -bottom-0.5 h-2.5 w-2.5': size === 'sm',
           '-right-1 -bottom-1 h-4 w-4': size === 'lg',
         })}

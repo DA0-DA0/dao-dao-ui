@@ -14,12 +14,14 @@ import {
 } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
+  DaoTabId,
   PreProposeModuleType,
   ProposalStatusEnum,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
 import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -207,6 +209,17 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   return (
     <>
+      <PageHeaderContent
+        breadcrumbs={{
+          homeTab: {
+            id: DaoTabId.Proposals,
+            sdaLabel: t('title.proposals'),
+          },
+          current: `${t('title.proposal')} ${proposalInfo.id}`,
+        }}
+        className="mx-auto max-w-5xl"
+      />
+
       <Proposal
         ProposalStatusAndInfo={
           isPreProposeApprovalProposal &&
@@ -231,7 +244,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             />
           )
         }
-        id={proposalInfo.id}
         rightSidebarContent={
           isWalletConnected ? (
             <SuspenseLoader
@@ -297,5 +309,5 @@ export const DaoProposal = ({
       <InnerDaoProposal proposalInfo={proposalInfo} />
     </ProposalModuleAdapterProvider>
   ) : (
-    <ProposalNotFound />
+    <ProposalNotFound PageHeaderContent={PageHeaderContent} />
   )

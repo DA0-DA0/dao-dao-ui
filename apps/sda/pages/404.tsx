@@ -4,7 +4,7 @@
 import type { GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { ErrorPage404 } from '@dao-dao/stateless'
+import { ErrorPage404 } from '@dao-dao/stateful'
 import { DaoPageMode } from '@dao-dao/types'
 
 const SdaErrorPage404 = () => <ErrorPage404 overrideMode={DaoPageMode.Sda} />

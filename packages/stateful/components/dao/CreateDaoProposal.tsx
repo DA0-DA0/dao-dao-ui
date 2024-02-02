@@ -27,6 +27,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
+  DaoTabId,
   ProposalDraft,
   ProposalModule,
   ProposalPrefill,
@@ -39,6 +40,7 @@ import {
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileDaoHomeCard, ProfileDisconnectedCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
@@ -332,43 +334,56 @@ const InnerCreateDaoProposal = ({
   )
 
   return (
-    <FormProvider {...formMethods}>
-      <CreateProposal
-        clear={clear}
-        newProposal={
-          <SuspenseLoader
-            fallback={<PageLoader />}
-            forceFallback={!prefillChecked}
-          >
-            <NewProposal
-              ProposalDaoInfoCards={ProposalDaoInfoCards}
-              deleteDraft={deleteDraft}
-              draft={draft}
-              draftSaving={draftSaving}
-              drafts={drafts}
-              loadDraft={loadDraft}
-              onCreateSuccess={onCreateSuccess}
-              proposalModuleSelector={
-                <ProposalModuleSelector
-                  className="my-2"
-                  matchAdapter={matchProposalModuleAdapter}
-                  selected={selectedProposalModule.address}
-                  setSelected={setSelectedProposalModule}
-                />
-              }
-              saveDraft={saveDraft}
-              unloadDraft={unloadDraft}
-            />
-          </SuspenseLoader>
-        }
-        rightSidebarContent={
-          isWalletConnected ? (
-            <ProfileDaoHomeCard />
-          ) : (
-            <ProfileDisconnectedCard />
-          )
-        }
+    <>
+      <PageHeaderContent
+        breadcrumbs={{
+          homeTab: {
+            id: DaoTabId.Proposals,
+            sdaLabel: t('title.proposals'),
+          },
+          current: t('title.createProposal'),
+        }}
+        className="mx-auto max-w-5xl"
       />
-    </FormProvider>
+
+      <FormProvider {...formMethods}>
+        <CreateProposal
+          clear={clear}
+          newProposal={
+            <SuspenseLoader
+              fallback={<PageLoader />}
+              forceFallback={!prefillChecked}
+            >
+              <NewProposal
+                ProposalDaoInfoCards={ProposalDaoInfoCards}
+                deleteDraft={deleteDraft}
+                draft={draft}
+                draftSaving={draftSaving}
+                drafts={drafts}
+                loadDraft={loadDraft}
+                onCreateSuccess={onCreateSuccess}
+                proposalModuleSelector={
+                  <ProposalModuleSelector
+                    className="my-2"
+                    matchAdapter={matchProposalModuleAdapter}
+                    selected={selectedProposalModule.address}
+                    setSelected={setSelectedProposalModule}
+                  />
+                }
+                saveDraft={saveDraft}
+                unloadDraft={unloadDraft}
+              />
+            </SuspenseLoader>
+          }
+          rightSidebarContent={
+            isWalletConnected ? (
+              <ProfileDaoHomeCard />
+            ) : (
+              <ProfileDisconnectedCard />
+            )
+          }
+        />
+      </FormProvider>
+    </>
   )
 }

@@ -1,12 +1,8 @@
 import { ComponentType, ReactNode, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import { DaoTabId } from '@dao-dao/types'
-
-import { PageHeaderContent, RightSidebarContent } from '../components'
+import { RightSidebarContent } from '../components'
 
 export type ProposalProps = {
-  id: string
   voteTally: ReactNode
   votesCast: ReactNode
   ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
@@ -15,15 +11,12 @@ export type ProposalProps = {
 }
 
 export const Proposal = ({
-  id,
   voteTally,
   votesCast,
   ProposalStatusAndInfo,
   contentDisplay,
   rightSidebarContent,
 }: ProposalProps) => {
-  const { t } = useTranslation()
-
   // Scroll to hash manually if available since this component and thus the
   // desired target anchor text won't be ready right when the page renders.
   useEffect(() => {
@@ -46,16 +39,6 @@ export const Proposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          homeTab: {
-            id: DaoTabId.Proposals,
-            sdaLabel: t('title.proposals'),
-          },
-          current: `${t('title.proposal')} ${id}`,
-        }}
-        className="mx-auto max-w-5xl"
-      />
 
       {/* Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so we can add those to our scrollable view instead. Also set height to full height of parent and some overflow to account for extended margins. */}
       <div className="relative mx-auto -mt-10 -mb-6 h-[calc(100%+4rem)] max-w-5xl">

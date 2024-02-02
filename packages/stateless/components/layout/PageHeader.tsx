@@ -1,14 +1,12 @@
 import { Menu } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
 
 import { IconButton } from '../icon_buttons'
-import { PageLoader } from '../logo'
 import { TopGradient } from '../TopGradient'
-import { useAppContext, useAppContextIfAvailable } from './AppContext'
+import { useAppContext } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 sm:h-20'
@@ -111,7 +109,7 @@ export const PageHeader = ({
           />
         </div>
 
-        <div className="absolute top-0 right-0 bottom-0 flex flex-col justify-center">
+        <div className="absolute top-0 right-0 bottom-0 flex flex-row items-stretch justify-end">
           {rightNode}
         </div>
 
@@ -121,30 +119,5 @@ export const PageHeader = ({
         )}
       </div>
     </div>
-  )
-}
-
-// This is a portal that inserts a PageHeader wherever the AppContext's
-// `pageHeaderRef` is placed. This is handled by the layout components. See the
-// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
-// how this works.
-//
-// If not in an AppContext, this component will render a PageHeader normally
-// instead of using the portal.
-export const PageHeaderContent = (props: PageHeaderProps) => {
-  const appContext = useAppContextIfAvailable()
-
-  // If app context is available, but the page header ref is not, render nothing
-  // until the ref is available. If not in an app context, render the element
-  // directly. The direct render is useful when outside the AppContext, such as
-  // error pages in the SDA.
-  return appContext ? (
-    appContext.pageHeaderRef.current ? (
-      createPortal(<PageHeader {...props} />, appContext.pageHeaderRef.current)
-    ) : (
-      <PageLoader className="absolute top-0 right-0 bottom-0 left-0 z-50 bg-background-base" />
-    )
-  ) : (
-    <PageHeader {...props} />
   )
 }

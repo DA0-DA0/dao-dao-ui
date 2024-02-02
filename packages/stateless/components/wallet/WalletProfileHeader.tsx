@@ -18,7 +18,7 @@ export const WalletProfileHeader = ({
   return (
     <div
       className={clsx(
-        'flex flex-col items-center gap-2 text-center',
+        'flex flex-col items-center gap-3 text-center',
         className
       )}
     >
@@ -30,7 +30,7 @@ export const WalletProfileHeader = ({
       />
 
       <ProfileNameDisplayAndEditor
-        editingContainerClassName="h-8"
+        editingContainerClassName="h-8 !min-w-72"
         nameClassName="!font-bold !text-2xl"
         updateProfileName={canEditProfile ? updateProfileName : undefined}
         walletProfileData={profileData}

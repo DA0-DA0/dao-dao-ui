@@ -1,4 +1,3 @@
-import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,10 +10,7 @@ import {
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
-  IconButton,
-  PageHeaderContent,
   RightSidebarContent,
-  Tooltip,
 } from '../components'
 
 export type HomeProps = {
@@ -26,10 +22,9 @@ export type HomeProps = {
   rightSidebarContent: ReactNode
   feedProps: FeedProps
   connected: boolean
-  openSearch: () => void
 }
 
-const maxWidth = 'mx-auto w-full max-w-5xl'
+export const HOME_MAX_WIDTH = 'mx-auto w-full max-w-5xl'
 // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
 const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
@@ -39,43 +34,36 @@ export const Home = ({
   followingDaosProps,
   feedProps,
   connected,
-  openSearch,
 }: HomeProps) => {
   const { t } = useTranslation()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className={maxWidth}
-        rightNode={
-          <Tooltip title={t('title.search')}>
-            <IconButton Icon={Search} onClick={openSearch} variant="none" />
-          </Tooltip>
-        }
-        title={t('title.home')}
-      />
 
       {/* Feed and Following DAOs*/}
       {connected && (
         <>
-          <div className={clsx('mb-8', maxWidth)}>
+          <div className={clsx('mb-8', HOME_MAX_WIDTH)}>
             <Feed {...feedProps} />
           </div>
 
-          <div className={maxWidth}>
+          <div className={HOME_MAX_WIDTH}>
             <FollowingDaos {...followingDaosProps} />
           </div>
 
           {/* Divider */}
           <div
-            className={clsx('my-10 h-[1px] bg-border-secondary', maxWidth)}
+            className={clsx(
+              'my-10 h-[1px] bg-border-secondary',
+              HOME_MAX_WIDTH
+            )}
           ></div>
         </>
       )}
 
       <div className="flex flex-col items-center gap-8">
-        <p className={clsx('title-text', maxWidth)}>
+        <p className={clsx('title-text', HOME_MAX_WIDTH)}>
           {t('title.featuredDaos')}
         </p>
 
@@ -87,7 +75,7 @@ export const Home = ({
             'self-stretch px-[1px]',
             !featuredDaosProps.items.loading &&
               featuredDaosProps.items.data.length === 0
-              ? maxWidth
+              ? HOME_MAX_WIDTH
               : '-mx-6'
           )}
           itemClassName="w-64"
