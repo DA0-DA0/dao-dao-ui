@@ -13,7 +13,7 @@ export const CreateProposal = ({ newProposal, clear }: CreateProposalProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
+    <div className="flex min-h-full flex-col items-stretch gap-6">
       <div className="flex flex-row items-center justify-between gap-4">
         <p className="title-text text-text-body">{t('title.newProposal')}</p>
 

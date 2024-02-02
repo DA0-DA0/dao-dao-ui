@@ -120,7 +120,6 @@ export const DaoDappHome = () => {
           home: true,
           current: daoInfo.name,
         }}
-        className="mx-auto max-w-5xl"
         gradient
         rightNode={
           daoInfo.coreVersion === ContractVersion.Gov ? (

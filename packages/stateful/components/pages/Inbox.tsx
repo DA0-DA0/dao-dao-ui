@@ -107,13 +107,13 @@ export const Inbox: NextPage = () => {
       />
 
       <PageHeaderContent
-        className="mx-auto max-w-5xl"
         expandBorderToEdge
         rightNode={
           <div className="flex flex-row items-center gap-2 self-stretch">
             <Tooltip title={t('button.refresh')}>
               <IconButton
                 Icon={Refresh}
+                disabled={!api.ready}
                 iconClassName={clsx(refreshSpinning && 'animate-spin-medium')}
                 // If spinning but no longer refreshing, stop after iteration.
                 onAnimationIteration={

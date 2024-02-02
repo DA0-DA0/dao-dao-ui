@@ -121,7 +121,6 @@ export const Me: NextPage = () => {
       />
 
       <PageHeaderContent
-        className="mx-auto max-w-5xl"
         gradient
         rightNode={
           <div className="-mr-1 flex flex-col items-center justify-center self-stretch">

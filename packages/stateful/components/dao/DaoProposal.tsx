@@ -215,7 +215,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           },
           current: `${t('title.proposal')} ${proposalInfo.id}`,
         }}
-        className="mx-auto max-w-5xl"
       />
 
       <Proposal

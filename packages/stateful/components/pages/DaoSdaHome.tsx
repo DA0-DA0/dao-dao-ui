@@ -66,7 +66,6 @@ export const DaoSdaHome = () => {
           home: true,
           current: activeTab?.label,
         }}
-        className="mx-auto max-w-5xl"
         gradient
       />
 

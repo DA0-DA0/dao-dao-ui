@@ -114,22 +114,22 @@ export const TabBar = ({
       {/* -bottom-1 to account for border of the container */}
       <div
         className={clsx(
-          'pointer-events-none absolute left-0 top-0 -bottom-1 z-10 flex animate-fade-in flex-col items-center justify-center transition-opacity',
+          'pointer-events-none absolute left-0 top-0 -bottom-1 z-10 flex flex-col items-center justify-center transition-opacity',
           showTabLeftButton ? 'opacity-100' : 'opacity-0'
         )}
       >
         <div
-          className="absolute top-0 bottom-0 left-0 w-6"
+          className="absolute top-0 bottom-0 left-0 w-8"
           style={{
             background:
-              'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+              'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 75%, rgba(var(--color-background-base), 1) 100%)',
           }}
         ></div>
 
         <IconButton
           Icon={ArrowBackIosNew}
           className={clsx(
-            'relative -left-6',
+            'relative -left-3',
             showTabLeftButton && 'pointer-events-auto'
           )}
           iconClassName="text-icon-tertiary"
@@ -152,22 +152,22 @@ export const TabBar = ({
       {/* -bottom-1 to account for border of the container */}
       <div
         className={clsx(
-          'pointer-events-none absolute right-0 top-0 -bottom-1 z-10 flex animate-fade-in flex-col items-center justify-center transition-opacity',
+          'pointer-events-none absolute right-0 top-0 -bottom-1 z-10 flex flex-col items-center justify-center transition-opacity',
           showTabRightButton ? 'opacity-100' : 'opacity-0'
         )}
       >
         <div
-          className="absolute top-0 bottom-0 right-0 w-6"
+          className="absolute top-0 bottom-0 right-0 w-8"
           style={{
             background:
-              'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+              'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 75%, rgba(var(--color-background-base), 1) 100%)',
           }}
         ></div>
 
         <IconButton
           Icon={ArrowBackIosNew}
           className={clsx(
-            'relative -right-6',
+            'relative -right-3',
             showTabRightButton && 'pointer-events-auto'
           )}
           iconClassName="rotate-180 text-icon-tertiary"

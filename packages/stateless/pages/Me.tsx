@@ -75,7 +75,7 @@ export const Me = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
+    <div className="flex flex-col items-stretch gap-6">
       <WalletProfileHeader editable {...headerProps} />
 
       <TabBar

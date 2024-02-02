@@ -14,7 +14,7 @@ export const Status = ({ ChainStatus }: StatusProps) => {
   const chains = getSupportedChains().filter((c) => !c.noIndexer)
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <p className="primary-text mb-4">{t('info.statusPageDescription')}</p>
 
       {chains.map(({ chainId }) => (

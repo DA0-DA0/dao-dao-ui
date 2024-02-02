@@ -127,11 +127,7 @@ export const Account: NextPage = () => {
         title={t('title.account') + ': ' + accountAddress}
       />
 
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        gradient
-        title={t('title.account')}
-      />
+      <PageHeaderContent gradient title={t('title.account')} />
 
       <ChainProvider chainId={configuredChain.chainId}>
         <StatelessAccount

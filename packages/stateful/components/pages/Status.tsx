@@ -37,10 +37,7 @@ export const StatusPage = () => {
         title={t('title.status')}
       />
 
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        title={t('title.status')}
-      />
+      <PageHeaderContent title={t('title.status')} />
 
       <StatelessStatus ChainStatus={ChainStatus} />
     </>

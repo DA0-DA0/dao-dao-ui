@@ -21,7 +21,6 @@ export type HomeProps = {
   connected: boolean
 }
 
-export const HOME_MAX_WIDTH = 'mx-auto w-full max-w-5xl'
 // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
 const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
@@ -38,28 +37,19 @@ export const Home = ({
       {/* Feed and Following DAOs*/}
       {connected && (
         <>
-          <div className={clsx('mb-8', HOME_MAX_WIDTH)}>
+          <div className="mb-8 w-full">
             <Feed {...feedProps} />
           </div>
 
-          <div className={HOME_MAX_WIDTH}>
-            <FollowingDaos {...followingDaosProps} />
-          </div>
+          <FollowingDaos {...followingDaosProps} />
 
           {/* Divider */}
-          <div
-            className={clsx(
-              'my-10 h-[1px] bg-border-secondary',
-              HOME_MAX_WIDTH
-            )}
-          ></div>
+          <div className="my-10 h-[1px] w-full bg-border-secondary"></div>
         </>
       )}
 
       <div className="flex flex-col items-center gap-8">
-        <p className={clsx('title-text', HOME_MAX_WIDTH)}>
-          {t('title.featuredDaos')}
-        </p>
+        <p className="title-text self-start">{t('title.featuredDaos')}</p>
 
         {/* Featured DAOs container */}
         <HorizontalScroller
@@ -67,10 +57,9 @@ export const Home = ({
           // Margin offsets container padding.
           containerClassName={clsx(
             'self-stretch px-[1px]',
-            !featuredDaosProps.items.loading &&
-              featuredDaosProps.items.data.length === 0
-              ? HOME_MAX_WIDTH
-              : '-mx-6'
+            (featuredDaosProps.items.loading ||
+              featuredDaosProps.items.data.length > 0) &&
+              '-mx-6'
           )}
           itemClassName="w-64"
           shadowClassName={widthOfSidePadding}

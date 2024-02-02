@@ -18,7 +18,7 @@ export const DaoDappTabbedHome = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
+    <div className="relative z-[1] -mt-4 flex flex-col items-stretch">
       <DaoSplashHeader
         ButtonLink={ButtonLink}
         LinkWrapper={LinkWrapper}

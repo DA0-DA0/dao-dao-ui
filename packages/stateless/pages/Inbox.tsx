@@ -54,34 +54,32 @@ export const Inbox = ({
 
   return (
     <>
-      <div className="-mx-7 -mt-10 min-h-full">
-        <div className="relative mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-4">
-          {loading ? (
-            <PageLoader className="mt-10" />
-          ) : items.length === 0 ? (
-            <NoContent
-              Icon={DoneAll}
-              body={t('info.emptyInboxCaughtUp')}
-              noBorder
-            />
-          ) : (
-            <div className="flex grow flex-col">
-              {items.map((item) => (
-                <div
+      <div className="relative -mx-6 -mt-10 flex min-h-full flex-col items-stretch gap-4">
+        {loading ? (
+          <PageLoader className="mt-10" />
+        ) : items.length === 0 ? (
+          <NoContent
+            Icon={DoneAll}
+            body={t('info.emptyInboxCaughtUp')}
+            noBorder
+          />
+        ) : (
+          <div className="flex grow flex-col">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="animate-fade-in border-b border-border-secondary"
+              >
+                <InboxMainItemRenderer
                   key={item.id}
-                  className="animate-fade-in border-b border-border-secondary xl:border-x"
-                >
-                  <InboxMainItemRenderer
-                    key={item.id}
-                    checked={!!checked[item.id]}
-                    item={item}
-                    onCheck={onCheck}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  checked={!!checked[item.id]}
+                  item={item}
+                  onCheck={onCheck}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <InboxSettingsModal

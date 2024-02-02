@@ -113,15 +113,15 @@ export const SdaNavigation = ({
         className={clsx(
           // General
           'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base pb-6 text-lg',
-          // If compact, items will manager their own padding so that
-          // highlighted rows fill the whole width.
-          !compact && 'px-6',
+          // If compact, items will manage their own padding so that highlighted
+          // rows fill the whole width.
+          compact ? 'pl-safe' : 'pr-6 pl-safe-or-[1.5rem]',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90dvw] shadow-dp8 transition-all pt-safe',
+          'absolute top-0 bottom-0 z-20 w-[96dvw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
           'md:relative md:left-0 md:pt-0 md:shadow-none md:transition-[padding-left]',
-          compact ? 'md:w-min' : 'md:w-[264px]'
+          compact ? 'md:w-min' : 'md:w-72'
         )}
       >
         <PageHeader

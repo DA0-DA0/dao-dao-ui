@@ -49,7 +49,6 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
           },
           current: `${t('title.proposal')} ${proposalId}`,
         }}
-        className="mx-auto max-w-5xl"
       />
 
       <Proposal

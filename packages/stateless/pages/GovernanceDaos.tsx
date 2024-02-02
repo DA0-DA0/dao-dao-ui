@@ -14,7 +14,7 @@ export const GovernanceDaos = ({ daos, DaoCard }: GovernanceDaosProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col items-start gap-8">
+    <div className="flex flex-col items-start gap-8">
       <p className="title-text">{t('title.governanceDaos')}</p>
 
       {daos.loading ? (

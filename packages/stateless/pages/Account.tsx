@@ -69,7 +69,7 @@ export const Account = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
+    <div className="flex min-h-full flex-col items-stretch gap-6">
       {!hexPublicKey.loading && (hexPublicKey.errored || !hexPublicKey.data) ? (
         <ErrorPage title={t('error.couldntFindWallet')}>
           <ButtonLink href="/" variant="secondary">

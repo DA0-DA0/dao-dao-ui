@@ -7,7 +7,6 @@ import { useSetRecoilState } from 'recoil'
 import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainPickerPopup,
-  HOME_MAX_WIDTH,
   IconButton,
   Home as StatelessHome,
   Tooltip,
@@ -73,7 +72,6 @@ export const Home = () => {
   return (
     <>
       <PageHeaderContent
-        className={HOME_MAX_WIDTH}
         rightNode={
           <>
             <Tooltip title={t('title.search')}>

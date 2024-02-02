@@ -145,7 +145,6 @@ export const ChainGovernanceHome = () => {
             />
           ),
         }}
-        className="mx-auto max-w-5xl"
         gradient
         rightNode={
           coreVersion === ContractVersion.Gov ? (

@@ -59,8 +59,13 @@ export const InnerCommandModalContextView = ({
     // Filter if possible.
     if (filter) {
       const fuse = new Fuse(itemsWithSection, {
-        // Allow filtering by DAO's name, coreAddress, and polytone proxies.
-        keys: ['item.name', 'item.coreAddress', 'item.polytoneProxies'],
+        keys: [
+          'item.name',
+          'item.keywords',
+          // Allow filtering by DAO's coreAddress and polytone proxies.
+          'item.coreAddress',
+          'item.polytoneProxies',
+        ],
       })
       itemsWithSection = fuse.search(filter).map((o) => o.item)
     }
@@ -69,20 +74,7 @@ export const InnerCommandModalContextView = ({
     // one of their items first appears in list of all filtered items.
     const orderedSections = itemsWithSection.reduce(
       (acc, { section }) => (acc.includes(section) ? acc : [...acc, section]),
-      // Start with the sections that have an order field, if a searched item
-      // exists for them.
-      filter
-        ? sections
-            .filter(
-              (section) =>
-                section.searchOrder !== undefined &&
-                itemsWithSection.some((o) => o.section === section)
-            )
-            .sort(
-              (a, b) =>
-                (a.searchOrder ?? Infinity) - (b.searchOrder ?? Infinity)
-            )
-        : []
+      [] as CommandModalContextSection[]
     )
 
     // For each section, override the items with the sorted and filtered

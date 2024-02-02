@@ -340,7 +340,6 @@ const InnerCreateDaoProposal = ({
           },
           current: t('title.createProposal'),
         }}
-        className="mx-auto max-w-5xl"
       />
 
       <FormProvider {...formMethods}>

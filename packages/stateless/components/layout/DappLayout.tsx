@@ -39,14 +39,14 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
   }, [scrollPathDelta])
 
   return (
-    <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden pt-safe">
+    <div className="relative z-[1] mx-auto flex h-full w-full max-w-7xl flex-row items-stretch overflow-hidden pt-safe">
       <ErrorBoundary>
         <DappNavigation {...navigationProps} />
       </ErrorBoundary>
 
       <main
         className={clsx(
-          'flex grow flex-col overflow-hidden border-x border-border-base transition-opacity',
+          'flex grow flex-col overflow-hidden border-l border-border-base transition-opacity',
           // After navigation bar responsive cutoff, it automatically displays.
           responsiveNavigation.enabled
             ? 'opacity-30 md:opacity-100'
@@ -55,9 +55,8 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
       >
         <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
 
-        {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
         <div
-          className="no-scrollbar relative grow overflow-y-auto px-7 pt-10 pb-8"
+          className="no-scrollbar relative grow overflow-y-auto px-6 pt-10 pb-8"
           // PageHeader uses this ID to obtain this element and track its
           // scroll position so that it can move the top gradient accordingly
           // to match the underlying gradient on the page.

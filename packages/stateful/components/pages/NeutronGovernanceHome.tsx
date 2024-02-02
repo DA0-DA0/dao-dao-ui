@@ -78,7 +78,6 @@ export const NeutronGovernanceHome = () => {
             />
           ),
         }}
-        className="mx-auto max-w-5xl"
       />
 
       <GovernanceDaos DaoCard={DaoCard} daos={daosLoading} />
