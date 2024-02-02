@@ -1,17 +1,15 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { InboxApi, InboxPageSlug, NotificationsProps } from '@dao-dao/types'
+import { InboxPageSlug, NotificationsProps } from '@dao-dao/types'
 
 import { InboxSettingsModal, Notifications } from '../components'
 
 export type InboxProps = {
-  api: InboxApi
-  verify: () => void
   connected: boolean
 } & Omit<NotificationsProps, 'className'>
 
-export const Inbox = ({ api, verify, connected, ...props }: InboxProps) => {
+export const Inbox = ({ connected, ...props }: InboxProps) => {
   const {
     query: { slug: _slug },
     isReady,
@@ -37,9 +35,9 @@ export const Inbox = ({ api, verify, connected, ...props }: InboxProps) => {
       <Notifications {...props} className="-mx-6 md:-mt-10 md:min-h-full" />
 
       <InboxSettingsModal
-        api={api}
+        api={props.inbox.api}
         onClose={() => replace('/notifications', undefined, { shallow: true })}
-        verify={slug === InboxPageSlug.Verify ? verify : undefined}
+        verify={slug === InboxPageSlug.Verify ? props.inbox.verify : undefined}
         visible={settingsModalVisible && connected && ready}
       />
     </>

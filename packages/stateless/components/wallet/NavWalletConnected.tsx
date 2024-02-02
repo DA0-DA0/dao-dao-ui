@@ -3,7 +3,6 @@ import {
   Check,
   Logout,
   NotificationsOutlined,
-  Settings,
   Wallet as WalletIcon,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -28,11 +27,10 @@ export const NavWalletConnected = ({
   updateProfileName,
   onEditProfileImage,
   disconnect,
-  IconButtonLink,
-  InboxMainItemRenderer,
   className,
   compact,
   inResponsiveNav,
+  ...notificationsProps
 }: NavWalletConnectedProps) => {
   const { t } = useTranslation()
 
@@ -139,18 +137,15 @@ export const NavWalletConnected = ({
           <div className="flex flex-row items-center justify-between border-b border-border-base p-4">
             <p className="header-text">{t('title.notifications')}</p>
 
-            <Tooltip title={t('button.settings')}>
-              <IconButtonLink
-                Icon={Settings}
-                href="/notifications/settings"
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
+            <div className="flex flex-row items-center gap-1 md:gap-2">
+              {notificationsProps.inbox.buttons.refresh}
+              {notificationsProps.inbox.buttons.clear}
+              {notificationsProps.inbox.buttons.settings}
+            </div>
           </div>
 
           <Notifications
-            InboxMainItemRenderer={InboxMainItemRenderer}
+            {...notificationsProps}
             className="no-scrollbar overflow-y-auto"
             compact
           />

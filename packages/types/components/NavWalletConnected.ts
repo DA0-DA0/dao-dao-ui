@@ -1,8 +1,6 @@
 import { Wallet } from '@cosmos-kit/core'
-import { ComponentType } from 'react'
 
 import { WalletProfileData } from '../profile'
-import { IconButtonLinkProps } from './IconButtonLink'
 import { NotificationsProps } from './Notifications'
 
 export type NavWalletConnectedProps = {
@@ -12,7 +10,6 @@ export type NavWalletConnectedProps = {
   updateProfileName: (name: string | null) => Promise<void>
   onEditProfileImage: () => void
   disconnect: () => Promise<void>
-  IconButtonLink: ComponentType<IconButtonLinkProps>
   /**
    * Optional container class name.
    */
@@ -25,4 +22,4 @@ export type NavWalletConnectedProps = {
    * Whether or not this is displayed in the responsive navigation sidebar.
    */
   inResponsiveNav?: boolean
-} & Pick<NotificationsProps, 'InboxMainItemRenderer' | 'onCheck'>
+} & Pick<NotificationsProps, 'inbox' | 'InboxMainItemRenderer'>

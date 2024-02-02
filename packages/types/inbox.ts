@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 export type InboxState = {
   loading: boolean
@@ -102,10 +102,6 @@ export type InboxItemRendererProps<Data extends unknown> = {
   data: Data
   clear: () => Promise<boolean>
   /**
-   * Whether or not the check handler is available.
-   */
-  canCheck: boolean
-  /**
    * Optionally style things a bit more compact. Used in the popup.
    */
   compact?: boolean
@@ -122,9 +118,9 @@ export type InboxMainItemRendererProps = {
    */
   checked: boolean
   /**
-   * Check handler. Called with the item ID. If undefined, hide check button.
+   * Check handler. Called with the item ID.
    */
-  onCheck?: (id: string) => void
+  onCheck: (id: string) => void
   /**
    * Optionally style things a bit more compact. Used in the popup.
    */
@@ -195,6 +191,43 @@ export type InboxApi = {
   verify: (code: string) => Promise<boolean>
   config: InboxConfig | undefined
   push: PushSubscriptionManager
+}
+
+export type InboxApiWithUi = {
+  /**
+   * The inbox API.
+   */
+  api: InboxApi
+  /**
+   * A map of inbox item ID to whether or not it is checked for removal.
+   */
+  checked: Record<string, boolean>
+  /**
+   * The callback that toggles the checked status of an inbox item.
+   */
+  onCheck: (id: string) => void
+  /**
+   * A function that uses the verification code in the URL query params and
+   * attempts to verify.
+   */
+  verify: () => void
+  /**
+   * The buttons that perform various actions.
+   */
+  buttons: {
+    /**
+     * Refresh the inbox.
+     */
+    refresh: ReactNode
+    /**
+     * Clear the checked items, or clear all if none are checked.
+     */
+    clear: ReactNode
+    /**
+     * Open the settings modal.
+     */
+    settings: ReactNode
+  }
 }
 
 export enum InboxPageSlug {

@@ -29,38 +29,30 @@ export const InboxMainItemRenderer = ({
     <div
       className={clsx('relative transition-opacity', checked && 'opacity-30')}
     >
-      <Renderer
-        canCheck={!!onCheck}
-        clear={clear}
-        compact={compact}
-        data={item.data}
-        item={item}
-      />
+      <Renderer clear={clear} compact={compact} data={item.data} item={item} />
 
-      {onCheck && (
-        <div
-          className="absolute top-0 bottom-0 right-4 flex flex-row items-center"
-          onClick={() => onCheck(item.id)}
+      <div
+        className="absolute top-0 bottom-0 right-4 flex flex-row items-center"
+        onClick={() => onCheck(item.id)}
+      >
+        <Tooltip
+          title={
+            checked
+              ? t('button.keepNotification')
+              : t('button.clearNotification')
+          }
         >
-          <Tooltip
-            title={
-              checked
-                ? t('button.keepNotification')
-                : t('button.clearNotification')
-            }
-          >
-            <IconButton
-              Icon={checked ? RemoveSharp : CloseSharp}
-              onClick={(e) => {
-                e.stopPropagation()
-                onCheck(item.id)
-              }}
-              size="sm"
-              variant="ghost"
-            />
-          </Tooltip>
-        </div>
-      )}
+          <IconButton
+            Icon={checked ? RemoveSharp : CloseSharp}
+            onClick={(e) => {
+              e.stopPropagation()
+              onCheck(item.id)
+            }}
+            size="sm"
+            variant="ghost"
+          />
+        </Tooltip>
+      </div>
     </div>
   ) : (
     <WarningCard content={t('error.unknownInboxType')} />

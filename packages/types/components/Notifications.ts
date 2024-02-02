@@ -1,17 +1,12 @@
 import { ComponentType } from 'react'
 
-import { InboxMainItemRendererProps } from '../inbox'
+import { InboxApiWithUi, InboxMainItemRendererProps } from '../inbox'
 
 export type NotificationsProps = {
   /**
-   * Map of item ID to whether or not it is checked for removal.
+   * The inbox API UI information from the `useInboxApiWithUi` hook.
    */
-  checked?: Record<string, boolean>
-  /**
-   * Function to toggle whether or not an item is checked for removal. If
-   * undefined, check button hidden.
-   */
-  onCheck?: (id: string) => void
+  inbox: InboxApiWithUi
   /**
    * The stateful inbox item renderer component.
    */

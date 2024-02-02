@@ -4,8 +4,7 @@ import { updateProfileNftVisibleAtom } from '@dao-dao/state'
 import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
 import { StatefulNavWalletProps } from '@dao-dao/types'
 
-import { useWallet, useWalletInfo } from '../hooks'
-import { IconButtonLink } from './IconButtonLink'
+import { useInboxApiWithUi, useWallet, useWalletInfo } from '../hooks'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
@@ -16,15 +15,18 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
+  const inbox = useInboxApiWithUi({
+    mode: 'popup',
+  })
 
   return (
     <SuspenseLoader fallback={<StatelessNavWallet connected={false} loading />}>
       {isWalletConnected && address && wallet ? (
         <StatelessNavWallet
-          IconButtonLink={IconButtonLink}
           InboxMainItemRenderer={InboxMainItemRenderer}
           connected
           disconnect={disconnect}
+          inbox={inbox}
           onEditProfileImage={() => setUpdateProfileNftVisible(true)}
           updateProfileName={updateProfileName}
           wallet={wallet}

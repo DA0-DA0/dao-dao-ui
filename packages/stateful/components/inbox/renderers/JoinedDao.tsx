@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
@@ -24,7 +23,6 @@ export const JoinedDaoRenderer = ({
   item,
   data: { chainId, dao },
   clear,
-  canCheck,
   compact,
 }: InboxItemRendererProps<InboxItemTypeJoinedDaoData>) => {
   const { t } = useTranslation()
@@ -53,7 +51,7 @@ export const JoinedDaoRenderer = ({
   return (
     <div className="relative flex grow flex-row items-end justify-between">
       <ButtonLink
-        className={clsx('!p-0 !ring-0', canCheck ? '!pr-28' : '!pr-16')}
+        className="!p-0 !pr-28 !ring-0"
         containerClassName="grow"
         href={getDaoPath(dao)}
         loadingVariant="pulse"
@@ -84,12 +82,7 @@ export const JoinedDaoRenderer = ({
         </div>
       </ButtonLink>
 
-      <div
-        className={clsx(
-          'absolute top-0 bottom-0 flex flex-row items-center',
-          canCheck ? 'right-12' : 'right-4'
-        )}
-      >
+      <div className="absolute top-0 bottom-0 right-12 flex flex-row items-center">
         <Button
           disabled={updatingFollowing}
           loading={updatingFollowing && loadingFollowing}

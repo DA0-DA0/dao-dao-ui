@@ -10,8 +10,7 @@ import { NoContent, PageLoader, useAppContext } from '../components'
  * A component to render notifications in the inbox.
  */
 export const Notifications = ({
-  checked,
-  onCheck,
+  inbox: { checked, onCheck },
   InboxMainItemRenderer,
   compact,
   className,
@@ -47,7 +46,7 @@ export const Notifications = ({
             >
               <InboxMainItemRenderer
                 key={item.id}
-                checked={!!checked?.[item.id]}
+                checked={!!checked[item.id]}
                 compact={compact}
                 item={item}
                 onCheck={onCheck}

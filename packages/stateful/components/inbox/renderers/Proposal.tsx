@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -21,7 +20,6 @@ import { EntityDisplay } from '../../EntityDisplay'
 export const ProposalRenderer = ({
   item,
   data: { chainId, dao, proposalId, proposalTitle },
-  canCheck,
   compact,
 }: InboxItemRendererProps<InboxItemTypeProposalCreatedData>) => {
   const { t } = useTranslation()
@@ -60,7 +58,7 @@ export const ProposalRenderer = ({
 
   return (
     <ButtonLink
-      className={clsx('!p-0 !ring-0', canCheck && '!pr-16')}
+      className="!p-0 !pr-16 !ring-0"
       containerClassName="grow"
       href={getDaoProposalPath(dao, proposalId)}
       loadingVariant="pulse"
