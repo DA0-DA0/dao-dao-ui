@@ -1,6 +1,4 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { GroupRounded } from '@mui/icons-material'
-import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -14,21 +12,14 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
-  CopyableAddress,
-  ErrorPage,
-  Loader,
-  PageHeaderContent,
-  RightSidebarContent,
-  TabBar,
-  WalletProfileHeader,
+  Account as StatelessAccount,
   useCachedLoadable,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { MeTab, MeTabId, Theme } from '@dao-dao/types'
+import { Theme } from '@dao-dao/types'
 import {
   SITE_URL,
-  getAccountPath,
   getConfiguredChains,
   isValidWalletAddress,
   transformBech32Address,
@@ -60,31 +51,22 @@ export const Account: NextPage = () => {
   const configuredChain =
     getConfiguredChains().find(({ chain }) => chain.bech32_prefix === prefix) ||
     getConfiguredChains()[0]
-  const walletAddress = transformBech32Address(
+  const accountAddress = transformBech32Address(
     address as string,
     configuredChain.chainId
   )
 
-  const tabs: MeTab[] = [
-    {
-      id: MeTabId.Daos,
-      label: t('title.daos'),
-      Icon: GroupRounded,
-      Component: AccountDaos,
-    },
-  ]
-
   const hexPublicKey = useCachedLoadingWithError(
     walletHexPublicKeySelector({
       chainId: configuredChain.chain.chain_id,
-      walletAddress,
+      walletAddress: accountAddress,
     })
   )
 
   const profileData = useRecoilValue(
     walletProfileDataSelector({
       chainId: configuredChain.chain.chain_id,
-      address: walletAddress,
+      address: accountAddress,
     })
   )
 
@@ -129,87 +111,33 @@ export const Account: NextPage = () => {
     averageImgColorLoadable.contents,
   ])
 
-  // Pre-fetch tabs.
-  useEffect(() => {
-    Object.values(MeTabId).forEach((tab) => {
-      router.prefetch(getAccountPath(walletAddress, tab))
-    })
-  }, [router, walletAddress])
-
-  const _tab = router.query.tab
-  const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
-  const selectedTabId =
-    // If tabPath is not a valid tab, default to first tab. This ensures that
-    // the default `/me` page will render the first tab, and also that an
-    // invalid tab was not passed, though that should be impossible because Next
-    // will render any invalid tabs (not in the `getStaticPaths` function) with
-    // a 404 page.
-    tabPath && tabs.some(({ id }) => id === tabPath)
-      ? (tabPath as MeTabId)
-      : tabs[0].id
-
   return (
     <>
       <NextSeo
         description={t('info.accountPageDescription', {
-          address: walletAddress,
+          address: accountAddress,
         })}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: t('title.account') + ': ' + walletAddress,
+          title: t('title.account') + ': ' + accountAddress,
           description: t('info.accountPageDescription', {
-            address: walletAddress,
+            address: accountAddress,
           }),
         }}
-        title={t('title.account') + ': ' + walletAddress}
+        title={t('title.account') + ': ' + accountAddress}
       />
 
-      <RightSidebarContent>
-        <ProfileHomeCard />
-      </RightSidebarContent>
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        gradient
-        title={t('title.account')}
-      />
-
-      <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
-        {!hexPublicKey.loading &&
-        (hexPublicKey.errored || !hexPublicKey.data) ? (
-          <ErrorPage title={t('error.couldntFindWallet')}>
-            <ButtonLink href="/" variant="secondary">
-              {t('button.returnHome')}
-            </ButtonLink>
-          </ErrorPage>
-        ) : (
-          <ChainProvider chainId={configuredChain.chain.chain_id}>
-            <WalletProfileHeader editable={false} profileData={profileData}>
-              <CopyableAddress address={address as string} />
-            </WalletProfileHeader>
-
-            <TabBar
-              onSelect={(tab) =>
-                router.replace(getAccountPath(walletAddress, tab), undefined, {
-                  shallow: true,
-                })
-              }
-              selectedTabId={selectedTabId}
-              tabs={tabs}
-            />
-
-            {tabs.map(({ id, Component }) => (
-              <div
-                key={id}
-                className={clsx('grow', selectedTabId !== id && 'hidden')}
-              >
-                <SuspenseLoader fallback={<Loader />}>
-                  <Component />
-                </SuspenseLoader>
-              </div>
-            ))}
-          </ChainProvider>
-        )}
-      </div>
+      <ChainProvider chainId={configuredChain.chainId}>
+        <StatelessAccount
+          AccountDaos={AccountDaos}
+          ButtonLink={ButtonLink}
+          SuspenseLoader={SuspenseLoader}
+          address={accountAddress}
+          hexPublicKey={hexPublicKey}
+          profileData={profileData}
+          rightSidebarContent={<ProfileHomeCard />}
+        />
+      </ChainProvider>
     </>
   )
 }

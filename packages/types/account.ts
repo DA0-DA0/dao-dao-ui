@@ -1,11 +1,23 @@
-// The type of account. `native` means it's a wallet/smart contract/module
-// address on the native chain. `polytone` means it's a polytone account
-// controlled by an account on another chain.
+import { ComponentType } from 'react'
 
-// account controlled by an account on the same or another chain.
+import { ActionKeyAndData } from './actions'
+
+/**
+ * The type of account given whatever the relevant context is.
+ */
 export enum AccountType {
+  /**
+   * Wallet/smart contract/module address on the current chain given the
+   * context.
+   */
   Native = 'native',
+  /**
+   * A Polytone account controlled by an account on another chain.
+   */
   Polytone = 'polytone',
+  /**
+   * An ICA controlled by an account on another chain.
+   */
   Ica = 'ica',
 }
 
@@ -34,3 +46,28 @@ export type PolytoneAccount = BaseAccount & PolytoneAccountTypeConfig
 export type IcaAccount = BaseAccount & IcaAccountTypeConfig
 
 export type Account = NativeAccount | PolytoneAccount | IcaAccount
+
+/**
+ * Unique identifier for account tabs, which is used in the URL path.
+ */
+export enum AccountTabId {
+  Balances = 'balances',
+  Daos = 'daos',
+  TransactionBuilder = 'tx',
+}
+
+export type AccountTab = {
+  id: AccountTabId
+  label: string
+  Icon: ComponentType<{ className: string }>
+  Component: ComponentType
+}
+
+export type AccountTxForm = {
+  actions: ActionKeyAndData[]
+}
+
+export type AccountTxSave = AccountTxForm & {
+  name: string
+  description?: string
+}

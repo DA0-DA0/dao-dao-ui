@@ -4,10 +4,14 @@ import {
   WalletRounded,
 } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { ComponentType, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MeProps, MeTab, MeTabId } from '@dao-dao/types'
+import {
+  AccountTab,
+  AccountTabId,
+  WalletProfileHeaderProps,
+} from '@dao-dao/types'
 
 import {
   PageHeaderContent,
@@ -15,6 +19,17 @@ import {
   TabBar,
   WalletProfileHeader,
 } from '../components'
+
+export type MeProps = {
+  rightSidebarContent: ReactNode
+  MeBalances: ComponentType
+  MeTransactionBuilder: ComponentType
+  MeDaos: ComponentType
+  ChainSwitcher: ComponentType<any>
+} & Pick<
+  WalletProfileHeaderProps,
+  'openProfileNftUpdate' | 'profileData' | 'updateProfileName'
+>
 
 export const Me = ({
   rightSidebarContent,
@@ -27,21 +42,21 @@ export const Me = ({
   const { t } = useTranslation()
   const router = useRouter()
 
-  const tabs: MeTab[] = [
+  const tabs: AccountTab[] = [
     {
-      id: MeTabId.Balances,
+      id: AccountTabId.Balances,
       label: t('title.balances'),
       Icon: WalletRounded,
       Component: MeBalances,
     },
     {
-      id: MeTabId.Daos,
+      id: AccountTabId.Daos,
       label: t('title.daos'),
       Icon: GroupRounded,
       Component: MeDaos,
     },
     {
-      id: MeTabId.TransactionBuilder,
+      id: AccountTabId.TransactionBuilder,
       label: t('title.transactionBuilder'),
       Icon: ReceiptRounded,
       Component: MeTransactionBuilder,
@@ -50,7 +65,7 @@ export const Me = ({
 
   // Pre-fetch tabs.
   useEffect(() => {
-    Object.values(MeTabId).forEach((tab) => {
+    Object.values(AccountTabId).forEach((tab) => {
       router.prefetch(`/me/${tab}`)
     })
   }, [router])
@@ -64,7 +79,7 @@ export const Me = ({
     // will render any invalid tabs (not in the `getStaticPaths` function) with
     // a 404 page.
     tabPath && tabs.some(({ id }) => id === tabPath)
-      ? (tabPath as MeTabId)
+      ? (tabPath as AccountTabId)
       : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 

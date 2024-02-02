@@ -1,0 +1,119 @@
+import { GroupRounded } from '@mui/icons-material'
+import { useRouter } from 'next/router'
+import { ComponentType, ReactNode, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import {
+  AccountTab,
+  AccountTabId,
+  ButtonLinkProps,
+  LoadingDataWithError,
+  SuspenseLoaderProps,
+  WalletProfileHeaderProps,
+} from '@dao-dao/types'
+import { getAccountPath } from '@dao-dao/utils'
+
+import {
+  CopyableAddress,
+  ErrorPage,
+  Loader,
+  PageHeaderContent,
+  RightSidebarContent,
+  TabBar,
+  WalletProfileHeader,
+} from '../components'
+
+export type AccountProps = {
+  rightSidebarContent: ReactNode
+  address: string
+  hexPublicKey: LoadingDataWithError<string | undefined>
+  AccountDaos: ComponentType
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  ButtonLink: ComponentType<ButtonLinkProps>
+} & Pick<WalletProfileHeaderProps, 'profileData'>
+
+export const Account = ({
+  rightSidebarContent,
+  address,
+  hexPublicKey,
+  AccountDaos,
+  SuspenseLoader,
+  ButtonLink,
+  ...headerProps
+}: AccountProps) => {
+  const { t } = useTranslation()
+  const router = useRouter()
+
+  const tabs: AccountTab[] = [
+    {
+      id: AccountTabId.Daos,
+      label: t('title.daos'),
+      Icon: GroupRounded,
+      Component: AccountDaos,
+    },
+  ]
+
+  // Pre-fetch tabs.
+  useEffect(() => {
+    tabs.forEach(({ id }) => {
+      router.prefetch(getAccountPath(address, id))
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, address])
+
+  const _tab = router.query.tab
+  const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
+  const selectedTabId =
+    // If tabPath is not a valid tab, default to first tab. This ensures that
+    // the default `/account/:address` page will render the first tab, and also
+    // that an invalid tab was not passed.
+    tabPath && tabs.some(({ id }) => id === tabPath)
+      ? (tabPath as AccountTabId)
+      : tabs[0].id
+  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
+
+  return (
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        gradient
+        title={t('title.account')}
+      />
+
+      <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
+        {!hexPublicKey.loading &&
+        (hexPublicKey.errored || !hexPublicKey.data) ? (
+          <ErrorPage title={t('error.couldntFindWallet')}>
+            <ButtonLink href="/" variant="secondary">
+              {t('button.returnHome')}
+            </ButtonLink>
+          </ErrorPage>
+        ) : (
+          <>
+            <WalletProfileHeader editable={false} {...headerProps}>
+              <CopyableAddress address={address} />
+            </WalletProfileHeader>
+
+            <TabBar
+              onSelect={(tab) =>
+                router.replace(getAccountPath(address, tab), undefined, {
+                  shallow: true,
+                })
+              }
+              selectedTabId={selectedTabId}
+              tabs={tabs}
+            />
+
+            {/* Don't render a tab unless it is visible. */}
+            {selectedTab && (
+              <SuspenseLoader fallback={<Loader />}>
+                <selectedTab.Component />
+              </SuspenseLoader>
+            )}
+          </>
+        )}
+      </div>
+    </>
+  )
+}

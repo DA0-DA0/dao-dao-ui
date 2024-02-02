@@ -17,10 +17,10 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  AccountTxSave,
   AccountType,
   LazyDaoCardProps,
   LazyNftCardInfo,
-  MeTransactionSave,
   TokenCardInfo,
   TokenType,
   WithChainId,
@@ -49,7 +49,7 @@ import {
 //
 // Takes wallet public key as a parameter.
 export const temporarySavedTxsAtom = atomFamily<
-  Record<string, MeTransactionSave | null>,
+  Record<string, AccountTxSave | null>,
   string
 >({
   key: 'temporarySavedTxs',
@@ -57,7 +57,7 @@ export const temporarySavedTxsAtom = atomFamily<
 })
 
 // Takes wallet public key as a parameter.
-export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
+export const savedTxsSelector = selectorFamily<AccountTxSave[], string>({
   key: 'savedTxs',
   get:
     (walletPublicKey) =>
@@ -74,7 +74,7 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
         const { items } = (await response.json()) as {
           items: {
             key: string
-            value: MeTransactionSave
+            value: AccountTxSave
           }[]
         }
 
@@ -90,7 +90,7 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
           .map(([, value]) => value)
           // If the save is null, it came from the temporary map and means it
           // was deleted, so we need to remove it from the list.
-          .filter((save): save is MeTransactionSave => !!save)
+          .filter((save): save is AccountTxSave => !!save)
           .sort((a, b) => a.name.localeCompare(b.name))
 
         return saves

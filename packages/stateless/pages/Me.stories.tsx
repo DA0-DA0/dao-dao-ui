@@ -7,11 +7,7 @@ import {
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  MeTransactionBuilderProps,
-  TokenCardProps,
-  WalletBalancesProps,
-} from '@dao-dao/types'
+import { TokenCardProps, WalletBalancesProps } from '@dao-dao/types'
 
 import {
   NftCardProps,
@@ -21,6 +17,7 @@ import {
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Default as WalletBalancesStory } from '../components/wallet/WalletBalances.stories'
 import { Me } from './Me'
+import { MeTransactionBuilderProps } from './MeTransactionBuilder'
 import { Default as MeTransactionBuilderStory } from './MeTransactionBuilder.stories'
 
 export default {

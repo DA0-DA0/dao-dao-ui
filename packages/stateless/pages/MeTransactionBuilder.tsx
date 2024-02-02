@@ -7,19 +7,24 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
+  UseFormReturn,
   useForm,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  MeTransactionBuilderProps,
-  MeTransactionForm,
-  MeTransactionSave,
+  AccountTxForm,
+  AccountTxSave,
+  ActionCategoryWithLabel,
+  CosmosMsgFor_Empty,
+  LoadedActions,
+  LoadingData,
+  SuspenseLoaderProps,
 } from '@dao-dao/types'
 import {
   convertActionsToMessages,
@@ -45,6 +50,21 @@ import { useChainContext } from '../hooks'
 enum SubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
+}
+
+export type MeTransactionBuilderProps = {
+  categories: ActionCategoryWithLabel[]
+  loadedActions: LoadedActions
+  formMethods: UseFormReturn<AccountTxForm, object>
+  execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
+  loading: boolean
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  error?: string
+  txHash?: string
+  saves: LoadingData<AccountTxSave[]>
+  save: (save: AccountTxSave) => Promise<boolean>
+  deleteSave: (save: AccountTxSave) => Promise<boolean>
+  saving: boolean
 }
 
 export const MeTransactionBuilder = ({
@@ -77,7 +97,7 @@ export const MeTransactionBuilder = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const onSubmitForm: SubmitHandler<MeTransactionForm> = useCallback(
+  const onSubmitForm: SubmitHandler<AccountTxForm> = useCallback(
     ({ actions }, event) => {
       setShowSubmitErrorNote(false)
       setSubmitError('')
@@ -108,7 +128,7 @@ export const MeTransactionBuilder = ({
     [execute, loadedActions]
   )
 
-  const onSubmitError: SubmitErrorHandler<MeTransactionForm> = useCallback(
+  const onSubmitError: SubmitErrorHandler<AccountTxForm> = useCallback(
     (errors) => {
       console.error('Form errors', errors)
 
@@ -125,14 +145,14 @@ export const MeTransactionBuilder = ({
     handleSubmit: saveHandleSubmit,
     reset: saveReset,
     formState: { errors: saveErrors },
-  } = useForm<Omit<MeTransactionSave, 'actions'>>({
+  } = useForm<Omit<AccountTxSave, 'actions'>>({
     defaultValues: {
       name: '',
       description: '',
     },
   })
   const watchSaveName = saveWatch('name')
-  const onSave = async (data: Omit<MeTransactionSave, 'actions'>) => {
+  const onSave = async (data: Omit<AccountTxSave, 'actions'>) => {
     if (
       await save({
         ...data,
