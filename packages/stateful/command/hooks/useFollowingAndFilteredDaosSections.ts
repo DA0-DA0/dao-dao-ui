@@ -22,7 +22,7 @@ export interface UseFilteredDaosSectionOptions {
   limit?: number
 }
 
-const DEFAULT_LIMIT = 7
+const DEFAULT_LIMIT = 5
 
 export const useFollowingAndFilteredDaosSections = ({
   options,
