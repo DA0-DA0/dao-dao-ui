@@ -8,7 +8,6 @@ import { DappNavigationProps } from './DappNavigation'
 import { Default as DappNavigatonStory } from './DappNavigation.stories'
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
-import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / DappLayout',
@@ -27,7 +26,6 @@ export const DefaultArgs: DappLayoutProps = {
       </div>
     </div>
   ),
-  rightSidebarProps: RightSidebarStoryArgs,
 }
 
 const Template: ComponentStory<typeof DappLayout> = (args) => {

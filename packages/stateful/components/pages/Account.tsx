@@ -28,7 +28,6 @@ import {
 import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { AccountDaos } from './AccountDaos'
 
@@ -142,7 +141,6 @@ export const Account: NextPage = () => {
           address={accountAddress}
           hexPublicKey={hexPublicKey}
           profileData={profileData}
-          rightSidebarContent={<ProfileHomeCard />}
         />
       </ChainProvider>
     </>

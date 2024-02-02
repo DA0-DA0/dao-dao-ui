@@ -70,6 +70,6 @@ export const WalletChainSwitcher = ({
   )
 }
 
-export const WalletAllConfiguredChainSwitcher = (
+export const WalletConfiguredChainSwitcherHeader = (
   props: Omit<WalletChainSwitcherProps, 'type'>
 ) => <WalletChainSwitcher {...props} headerMode type="configured" />

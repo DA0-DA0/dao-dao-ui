@@ -19,8 +19,6 @@ import {
   LinkWrapper,
   MembersTabProps,
   NftCardProps,
-  ProfileMemberCard,
-  ProfileMemberCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
   TreasuryAndNftsTabProps,
@@ -29,7 +27,6 @@ import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.st
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
-import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
 import { DaoDappTabbedHome } from './DaoDappTabbedHome'
 
 export default {
@@ -104,11 +101,6 @@ Default.args = {
   ],
   selectedTabId: DaoTabId.Proposals,
   onSelectTabId: (tabId) => alert(tabId),
-  rightSidebarContent: (
-    <ProfileMemberCard
-      {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
-    />
-  ),
   SuspenseLoader,
   ButtonLink,
   LinkWrapper,

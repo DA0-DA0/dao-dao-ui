@@ -12,8 +12,7 @@ export * from '@dao-dao/types/components/DappLayout'
 
 export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
   const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
-  const { responsiveNavigation, responsiveRightSidebar, setPageHeaderRef } =
-    useAppContext()
+  const { responsiveNavigation, setPageHeaderRef } = useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +24,6 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
     : router.asPath
   useEffect(() => {
     responsiveNavigation.enabled && responsiveNavigation.toggle()
-    responsiveRightSidebar.enabled && responsiveRightSidebar.toggle()
 
     // When on a page, and navigating to another page with a Link, we need to
     // make sure the scrollable container moves to the top since we may be
@@ -49,13 +47,9 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
       <main
         className={clsx(
           'flex grow flex-col overflow-hidden border-x border-border-base transition-opacity',
-          // Navigation bar can be responsive up to sm size. After that, it
-          // automatically displays.
+          // After navigation bar responsive cutoff, it automatically displays.
           responsiveNavigation.enabled
-            ? 'opacity-30 sm:opacity-100'
-            : // Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
-            responsiveRightSidebar.enabled
-            ? 'opacity-30 2xl:opacity-100'
+            ? 'opacity-30 md:opacity-100'
             : 'opacity-100'
         )}
       >

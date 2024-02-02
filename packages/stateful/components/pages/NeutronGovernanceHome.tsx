@@ -11,15 +11,13 @@ import {
   getGovPath,
 } from '@dao-dao/utils'
 
-import { useLoadingDaoCardInfos, useWallet } from '../../hooks'
+import { useLoadingDaoCardInfos } from '../../hooks'
 import { DaoCard } from '../dao'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 
 export const NeutronGovernanceHome = () => {
   const router = useRouter()
   const { chain_id: chainId } = useChain()
-  const { isWalletConnected } = useWallet()
 
   const neutronSubdaos = useRecoilValueLoadable(
     DaoCoreV2Selectors.listAllSubDaosSelector({
@@ -83,13 +81,7 @@ export const NeutronGovernanceHome = () => {
         className="mx-auto max-w-5xl"
       />
 
-      <GovernanceDaos
-        DaoCard={DaoCard}
-        daos={daosLoading}
-        rightSidebarContent={
-          isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
-        }
-      />
+      <GovernanceDaos DaoCard={DaoCard} daos={daosLoading} />
     </>
   )
 }

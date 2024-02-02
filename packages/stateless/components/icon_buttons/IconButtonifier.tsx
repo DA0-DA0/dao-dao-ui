@@ -32,9 +32,10 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex shrink-0 items-center justify-center transition-all',
+    // Put transparent rings so it animates when a ring appears.
+    'flex shrink-0 items-center justify-center ring-1 ring-inset ring-transparent transition-all',
 
-    focused && 'ring-2 ring-inset ring-border-interactive-focus',
+    focused && '!ring-2 !ring-border-interactive-focus',
 
     // Rounding.
     {
@@ -88,6 +89,14 @@ export const getIconButtonifiedClassNames = ({
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,
+    },
+    // Brand variant
+    variant === 'brand' && {
+      // Default
+      'text-text-interactive-active !ring-border-interactive-active hover:bg-background-button-active hover:text-text-button-primary hover:!ring-0 active:bg-text-interactive-active active:text-text-button-primary active:!ring-0':
+        !disabled,
+      // Disabled
+      'bg-background-interactive-active text-text-button-primary': disabled,
     },
     // None variant
     variant === 'none' && {

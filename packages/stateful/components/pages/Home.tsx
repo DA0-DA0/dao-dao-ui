@@ -23,7 +23,6 @@ import {
 import { DaoCard } from '../dao'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 
 export const Home = () => {
   const { t } = useTranslation()
@@ -81,7 +80,7 @@ export const Home = () => {
               <IconButton Icon={Search} onClick={openSearch} variant="none" />
             </Tooltip>
 
-            <div className="flex flex-row items-center self-stretch border-x border-border-secondary pl-4 pr-3">
+            <div className="-mr-1 flex flex-row items-center self-stretch border-l border-border-secondary pl-4">
               <ChainPickerPopup
                 NoneIcon={BlurOn}
                 chains={{ type: 'supported' }}
@@ -122,9 +121,6 @@ export const Home = () => {
           openSearch,
           followingDaos: followingDaosLoading,
         }}
-        rightSidebarContent={
-          isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
-        }
       />
     </>
   )

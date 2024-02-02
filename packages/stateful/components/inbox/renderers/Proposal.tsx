@@ -46,7 +46,7 @@ export const ProposalRenderer = ({
 
   return (
     <ButtonLink
-      className="!p-0 !ring-0"
+      className="!p-0 !pr-16 !ring-0"
       containerClassName="grow"
       href={getDaoProposalPath(dao, proposalId)}
       loadingVariant="pulse"

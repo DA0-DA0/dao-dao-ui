@@ -1,7 +1,13 @@
 import { ComponentPropsWithoutRef, ComponentType } from 'react'
 
 export interface IconButtonifierProps {
-  variant: 'primary' | 'primary_inverted' | 'secondary' | 'ghost' | 'none'
+  variant:
+    | 'primary'
+    | 'primary_inverted'
+    | 'secondary'
+    | 'ghost'
+    | 'brand'
+    | 'none'
   // Custom size requires manual setting of sizes.
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'
   circular?: boolean

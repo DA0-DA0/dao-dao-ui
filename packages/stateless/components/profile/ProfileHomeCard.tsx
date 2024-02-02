@@ -126,12 +126,12 @@ export const ProfileHomeCard = ({
         <ButtonLink
           className="w-full"
           contentContainerClassName="justify-center"
-          href="/inbox"
+          href="/notifications"
           showBadge={inboxPendingCount > 0}
           size="lg"
           variant="secondary"
         >
-          {t('button.inboxWithNumNotifications', { count: inboxPendingCount })}
+          {t('button.numNotifications', { count: inboxPendingCount })}
         </ButtonLink>
       </div>
     </ProfileCardWrapper>

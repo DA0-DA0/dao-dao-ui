@@ -118,7 +118,9 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
             )}
             onClick={onEdit}
           >
-            <Edit className="!h-2/5 !w-2/5 text-icon-primary" />
+            {!loadingImage && (
+              <Edit className="!h-2/5 !w-2/5 text-icon-primary" />
+            )}
           </div>
         )}
       </div>

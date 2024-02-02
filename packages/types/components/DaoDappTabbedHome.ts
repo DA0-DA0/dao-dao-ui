@@ -1,4 +1,4 @@
-import { ComponentType, ReactNode } from 'react'
+import { ComponentType } from 'react'
 
 import { DaoTabWithComponent } from '../dao'
 import { ButtonLinkProps } from './Buttonifier'
@@ -7,7 +7,6 @@ import { LinkWrapperProps } from './LinkWrapper'
 import { SuspenseLoaderProps } from './SuspenseLoader'
 
 export type DaoDappTabbedHomeProps = Omit<DaoSplashHeaderProps, 'daoInfo'> & {
-  rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   ButtonLink: ComponentType<ButtonLinkProps>
   LinkWrapper: ComponentType<LinkWrapperProps>

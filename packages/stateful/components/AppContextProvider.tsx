@@ -20,8 +20,6 @@ export const AppContextProvider = ({
   // Visibility toggles.
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
-  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-    useState(false)
 
   // Page header. Set state when ref is set so it re-renders immediately.
   // Without this, the page header is invisible until the next render.
@@ -31,16 +29,6 @@ export const AppContextProvider = ({
     pageHeaderRef.current = ref
     if (ref) {
       setPageHeaderSet(true)
-    }
-  }, [])
-  // Right sidebar. Set state when ref is set so it re-renders immediately.
-  // Without this, the right sidebar is invisible until the next render.
-  const [, setRightSidebarSet] = useState(false)
-  const rightSidebarRef = useRef<HTMLDivElement | null>(null)
-  const setRightSidebarRef = useCallback((ref: HTMLDivElement | null) => {
-    rightSidebarRef.current = ref
-    if (ref) {
-      setRightSidebarSet(true)
     }
   }, [])
 
@@ -80,16 +68,10 @@ export const AppContextProvider = ({
       enabled: responsiveNavigationEnabled,
       toggle: () => setResponsiveNavigationEnabled((v) => !v),
     },
-    responsiveRightSidebar: {
-      enabled: responsiveRightSidebarEnabled,
-      toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-    },
-    // Include the page header and right sidebar portal refs in the context
-    // to be accessed by the component portals.
+    // Include the page header ref in the context to be accessed by the
+    // component portal.
     pageHeaderRef,
     setPageHeaderRef,
-    rightSidebarRef,
-    setRightSidebarRef,
   }
 
   // Install service worker.

@@ -13,13 +13,10 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
-  ProfileVoteCard,
-  ProfileVoteCardProps,
   ProposalContentDisplayProps,
   ProposalStatusAndInfo,
   ProposalStatusAndInfoProps,
 } from '../components'
-import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
 import { Default as ProposalContentDisplayStory } from '../components/proposal/ProposalContentDisplay.stories'
 import { Vote as ProposalStatusAndInfoVoteStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
@@ -61,9 +58,6 @@ Default.args = {
     <ProposalContentDisplayStory
       {...(ProposalContentDisplayStory.args as ProposalContentDisplayProps)}
     />
-  ),
-  rightSidebarContent: (
-    <ProfileVoteCard {...(ProfileVoteCardStory.args as ProfileVoteCardProps)} />
   ),
 }
 Default.parameters = {

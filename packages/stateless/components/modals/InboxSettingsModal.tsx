@@ -89,7 +89,7 @@ export const InboxSettingsModal = ({
         try {
           // Load config. On failure, close modal.
           if (!(await loadConfigRef.current())) {
-            routerPush('/inbox')
+            routerPush('/notifications')
             toast.error(t('error.loadingData'))
           }
         } finally {
@@ -144,7 +144,7 @@ export const InboxSettingsModal = ({
         )
       }
       header={{
-        title: t('title.inboxConfiguration'),
+        title: t('title.notificationSettings'),
       }}
       titleClassName="mb-2"
     >

@@ -11,7 +11,7 @@ import { IconButtonLink } from './IconButtonLink'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = (
-  props: Pick<SidebarWalletProps, 'containerClasName'>
+  props: Pick<SidebarWalletProps, 'containerClassName'>
 ) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()

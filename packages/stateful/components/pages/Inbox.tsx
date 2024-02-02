@@ -20,7 +20,6 @@ import { useInboxApi, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 import { InboxMainItemRenderer } from '../inbox'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 
 export const Inbox: NextPage = () => {
   const { t } = useTranslation()
@@ -51,7 +50,7 @@ export const Inbox: NextPage = () => {
         toast.error(t('error.invalidCode'))
       }
 
-      replace('/inbox/settings', undefined, { shallow: true })
+      replace('/notifications/settings', undefined, { shallow: true })
     }
   }, [code, isReady, replace, ready, t, doVerify])
 
@@ -98,20 +97,20 @@ export const Inbox: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={t('info.inboxDescription')}
+        description={t('info.notificationsDescription')}
         openGraph={{
           url: SITE_URL + asPath,
-          title: t('title.inbox'),
-          description: t('info.inboxDescription'),
+          title: t('title.notifications'),
+          description: t('info.notificationsDescription'),
         }}
-        title={t('title.inbox')}
+        title={t('title.notifications')}
       />
 
       <PageHeaderContent
         className="mx-auto max-w-5xl"
         expandBorderToEdge
         rightNode={
-          <div className="flex flex-row items-center gap-2 self-stretch border-r border-border-secondary pr-4">
+          <div className="flex flex-row items-center gap-2 self-stretch">
             <Tooltip title={t('button.refresh')}>
               <IconButton
                 Icon={Refresh}
@@ -148,7 +147,7 @@ export const Inbox: NextPage = () => {
                 disabled={!api.ready || api.updating}
                 loading={checking}
                 onClick={clearChecked}
-                variant={countChecked ? 'primary' : 'ghost'}
+                variant={countChecked ? 'brand' : 'ghost'}
               />
             </Tooltip>
 
@@ -157,14 +156,16 @@ export const Inbox: NextPage = () => {
                 Icon={Settings}
                 disabled={!api.ready}
                 onClick={() =>
-                  replace('/inbox/settings', undefined, { shallow: true })
+                  replace('/notifications/settings', undefined, {
+                    shallow: true,
+                  })
                 }
                 variant="ghost"
               />
             </Tooltip>
           </div>
         }
-        title={t('title.inbox')}
+        title={t('title.notifications')}
       />
 
       {isWalletConnected ? (
@@ -174,7 +175,6 @@ export const Inbox: NextPage = () => {
           checked={checked}
           connected={isWalletConnected}
           onCheck={onCheck}
-          rightSidebarContent={<ProfileHomeCard />}
           state={inbox}
           verify={verify}
         />
@@ -182,7 +182,6 @@ export const Inbox: NextPage = () => {
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
           connecting={isWalletConnecting}
-          rightSidebarContent={<ProfileDisconnectedCard />}
         />
       )}
     </>

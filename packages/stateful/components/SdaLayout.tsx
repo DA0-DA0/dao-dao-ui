@@ -50,9 +50,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         compact,
         setCompact,
         mountedInBrowser,
-      }}
-      rightSidebarProps={{
-        wallet: <SidebarWallet />,
+        SidebarWallet,
       }}
     >
       <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>

@@ -9,10 +9,26 @@ import { PageHeaderProps } from '@dao-dao/types'
 
 import { SidebarWallet } from './SidebarWallet'
 
-// This is a portal that inserts a PageHeader wherever the AppContext's
-// `pageHeaderRef` is placed. This is handled by the layout components. See the
-// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
-// how this works.
+// This is a portal that teleports content, used in pages to render content in
+// the header (which is located in a separate React tree due to `DappLayout` and
+// `SdaLayout` managing the layouts of the apps). This component uses a
+// reference to the target div (stored in the `AppContext`) and provides a
+// component that will funnel its `children` into a React portal
+// (https://reactjs.org/docs/portals.html). This ref is accessible via the
+// `useAppContext` hook so that descendants of the context provider (such as
+// page components) can use the `PageHeaderContent` component below and specify
+// what renders in the header. The API for a page is as simple as:
+//
+// export const Page = () => (
+//   <>
+//     <PageHeaderContent title="Page Title" />
+
+//     {/* ... Page content here ... */}
+//   </>
+// )
+//
+// See https://malcolmkee.com/blog/portal-to-subtree/ for an example using
+// portals to render components across subtrees with similar syntax.
 //
 // If not in an AppContext, this component will render a PageHeader normally
 // instead of using the portal.
@@ -23,10 +39,10 @@ export const PageHeaderContent = (props: PageHeaderProps) => {
     <PageHeader
       {...props}
       rightNode={
-        <div className="flex flex-row items-center justify-end gap-4 pr-2">
+        <div className="flex flex-row items-center justify-end gap-4">
           {props.rightNode}
 
-          <SidebarWallet />
+          <SidebarWallet containerClassName="hidden md:flex border-l border-border-secondary pl-4 min-w-72 self-stretch" />
         </div>
       }
     />

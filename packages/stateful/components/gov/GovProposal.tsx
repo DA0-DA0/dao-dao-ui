@@ -13,9 +13,7 @@ import { DaoTabId, GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { GovActionsProvider } from '../../actions'
-import { useWallet } from '../../hooks'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { GovProposalPageWrapperProps } from './GovPageWrapper'
 import { GovProposalContentDisplay } from './GovProposalContentDisplay'
@@ -32,7 +30,6 @@ type InnerGovProposalProps = {
 
 const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { t } = useTranslation()
-  const { isWalletConnected } = useWallet()
 
   const proposalId = proposal.id.toString()
   const ProposalStatusAndInfo = useCallback(
@@ -61,17 +58,6 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
           <GovActionsProvider>
             <GovProposalContentDisplay proposal={proposal} />
           </GovActionsProvider>
-        }
-        rightSidebarContent={
-          isWalletConnected ? (
-            <SuspenseLoader
-              fallback={<ProfileDisconnectedCard className="animate-pulse" />}
-            >
-              <ProfileHomeCard />
-            </SuspenseLoader>
-          ) : (
-            <ProfileDisconnectedCard />
-          )
         }
         voteTally={<GovProposalVoteTally proposalId={proposalId} />}
         votesCast={

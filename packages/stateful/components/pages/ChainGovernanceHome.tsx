@@ -30,7 +30,6 @@ import { GovCommunityPoolTab, GovProposalsTab, GovSubDaosTab } from '../gov'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const ChainGovernanceHome = () => {
@@ -167,7 +166,6 @@ export const ChainGovernanceHome = () => {
         LinkWrapper={LinkWrapper}
         SuspenseLoader={SuspenseLoader}
         onSelectTabId={onSelectTabId}
-        rightSidebarContent={<ProfileHomeCard />}
         selectedTabId={tabId}
         tabs={tabs}
       />

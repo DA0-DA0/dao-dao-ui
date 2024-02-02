@@ -3,7 +3,7 @@ import { Wallet } from '@cosmos-kit/core'
 import {
   Check,
   Logout,
-  Notifications,
+  NotificationsOutlined,
   Wallet as WalletIcon,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -61,7 +61,7 @@ export const ConnectedWallet = ({
         className
       )}
     >
-      <div className="flex min-w-0 flex-row items-stretch gap-3">
+      <div className="flex min-w-0 grow flex-row items-stretch gap-3">
         {/* Image */}
         <div className="relative flex shrink-0 items-center justify-center">
           <ProfileImage
@@ -90,7 +90,7 @@ export const ConnectedWallet = ({
           </Tooltip>
         </div>
 
-        <div className="flex min-w-0 flex-col items-stretch gap-0.5 pt-1">
+        <div className="flex min-w-0 grow flex-col items-stretch gap-0.5 pt-1">
           <ProfileNameDisplayAndEditor
             compact
             editingClassName="flex flex-col items-stretch"
@@ -102,10 +102,9 @@ export const ConnectedWallet = ({
             Icon={copied ? Check : WalletIcon}
             address={walletAddress}
             className="!justify-start"
-            hideIcon
-            iconClassName="!h-4 !w-4"
+            iconSizeClassName="!h-4 !w-4"
             onCopy={() => setCopied(true)}
-            takeStartEnd={{ start: prefixLength + 8, end: 8 }}
+            takeStartEnd={{ start: prefixLength + 5, end: 5 }}
             textClassName="!legend-text"
           />
         </div>
@@ -113,9 +112,9 @@ export const ConnectedWallet = ({
 
       <Tooltip title={t('button.notifications')}>
         <IconButtonLink
-          Icon={Notifications}
+          Icon={NotificationsOutlined}
           className="ml-2 text-icon-secondary"
-          href="/inbox"
+          href="/notifications"
           size="sm"
           variant="ghost"
         />

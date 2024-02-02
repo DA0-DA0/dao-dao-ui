@@ -11,18 +11,10 @@ export type CommonAppContext = {
     enabled: boolean
     toggle: () => void
   }
-  responsiveRightSidebar: {
-    enabled: boolean
-    toggle: () => void
-  }
 
   // Page header.
   pageHeaderRef: MutableRefObject<HTMLDivElement | null>
   setPageHeaderRef: (ref: HTMLDivElement | null) => void
-
-  // Right sidebar.
-  rightSidebarRef: MutableRefObject<HTMLDivElement | null>
-  setRightSidebarRef: (ref: HTMLDivElement | null) => void
 }
 
 export type IAppContext = CommonAppContext &

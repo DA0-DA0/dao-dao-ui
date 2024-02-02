@@ -22,9 +22,7 @@ import {
 
 import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
-import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
 import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
 import { DaoPreProposeApprovalProposalContentDisplay } from './DaoPreProposeApprovalProposalContentDisplay'
@@ -37,7 +35,7 @@ interface InnerDaoProposalProps {
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { isWalletConnected, address } = useWallet()
+  const { address } = useWallet()
   const {
     options: { proposalModule, isPreProposeApprovalProposal },
     adapter: {
@@ -242,17 +240,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
               proposalInfo={proposalInfo}
               setSeenAllActionPages={setSeenAllActionPages}
             />
-          )
-        }
-        rightSidebarContent={
-          isWalletConnected ? (
-            <SuspenseLoader
-              fallback={<ProfileDisconnectedCard className="animate-pulse" />}
-            >
-              <ProfileProposalCard />
-            </SuspenseLoader>
-          ) : (
-            <ProfileDisconnectedCard />
           )
         }
         voteTally={

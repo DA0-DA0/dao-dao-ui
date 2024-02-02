@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { SidebarWallet } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 
@@ -154,6 +155,7 @@ export const DefaultArgs: DappNavigationProps = {
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
   LinkWrapper,
+  SidebarWallet,
 }
 
 export const Default = Template.bind({})

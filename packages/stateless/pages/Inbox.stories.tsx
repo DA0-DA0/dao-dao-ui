@@ -5,8 +5,6 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 import { InboxItemType } from '@dao-dao/types'
 
-import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
-import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Inbox } from './Inbox'
 
 export default {
@@ -41,9 +39,6 @@ Default.args = {
     }),
     refresh: () => {},
   },
-  rightSidebarContent: (
-    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
-  ),
   InboxMainItemRenderer,
   connected: true,
 }
@@ -53,7 +48,7 @@ Default.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=308%3A29063',
   },
   nextRouter: {
-    asPath: '/inbox',
+    asPath: '/notifications',
   },
 }
 

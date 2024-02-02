@@ -16,7 +16,6 @@ import { ButtonLink } from '../ButtonLink'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDaoHomeCard, ProfileDisconnectedCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoDappHome = () => {
@@ -151,13 +150,6 @@ export const DaoDappHome = () => {
         }}
         onSelectTabId={onSelectTabId}
         parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
-        rightSidebarContent={
-          <SuspenseLoader
-            fallback={<ProfileDisconnectedCard className="animate-pulse" />}
-          >
-            <ProfileDaoHomeCard />
-          </SuspenseLoader>
-        }
         selectedTabId={tabId}
         tabs={tabs || []}
       />

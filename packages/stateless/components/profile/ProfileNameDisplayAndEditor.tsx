@@ -74,8 +74,8 @@ export const ProfileNameDisplayAndEditor = ({
       {canEdit && editingName !== undefined ? (
         <div
           className={clsx(
-            'relative -mt-0.5 mb-0.5',
-            compact ? 'pr-12' : 'min-w-40 flex flex-col items-center',
+            'relative -mt-1 mb-1 flex flex-col items-center',
+            compact ? 'pr-12' : 'min-w-40',
             editingContainerClassName
           )}
         >

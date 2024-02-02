@@ -9,6 +9,7 @@ export interface ButtonifierProps {
     | 'secondary'
     | 'ghost'
     | 'ghost_outline'
+    | 'brand'
     | 'underline'
     | 'none'
   size?: 'sm' | 'lg' | 'md' | 'none'

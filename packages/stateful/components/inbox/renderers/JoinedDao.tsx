@@ -37,9 +37,9 @@ export const JoinedDaoRenderer = ({
   const timestamp = item.timestamp && new Date(item.timestamp)
 
   return (
-    <div className="flex grow flex-row items-end justify-between">
+    <div className="relative flex grow flex-row items-end justify-between">
       <ButtonLink
-        className="!p-0 !ring-0"
+        className="!p-0 pr-16 !ring-0"
         containerClassName="grow"
         href={getDaoPath(dao)}
         loadingVariant="pulse"
@@ -81,25 +81,24 @@ export const JoinedDaoRenderer = ({
         </div>
       </ButtonLink>
 
-      <Button
-        center
-        className="h-full shrink-0 border-l border-border-secondary !px-4 !ring-0"
-        disabled={updatingFollowing}
-        loading={updatingFollowing && loadingFollowing}
-        loadingVariant="pulse"
-        noRounding
-        onClick={() => {
-          setLoadingFollowing(true)
-          setFollowing(dao).then((success) => {
-            if (success) {
-              clear()
-            }
-          })
-        }}
-        variant="ghost"
-      >
-        {t('button.follow')}
-      </Button>
+      <div className="absolute top-0 bottom-0 right-12 flex flex-row items-center">
+        <Button
+          disabled={updatingFollowing}
+          loading={updatingFollowing && loadingFollowing}
+          onClick={(e) => {
+            e.stopPropagation()
+            setLoadingFollowing(true)
+            setFollowing(dao).then((success) => {
+              if (success) {
+                clear()
+              }
+            })
+          }}
+          variant="ghost"
+        >
+          {t('button.follow')}
+        </Button>
+      </div>
     </div>
   )
 }

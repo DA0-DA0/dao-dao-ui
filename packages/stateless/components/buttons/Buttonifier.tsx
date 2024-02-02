@@ -53,12 +53,13 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || (!allowClickWhileLoading && loading)
 
   return clsx(
-    'relative block transition-all focus:outline-2 focus:outline-background-button-disabled',
+    // Put transparent rings so it animates when a ring appears.
+    'relative block ring-1 ring-inset ring-transparent transition-all focus:outline-2 focus:outline-background-button-disabled',
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
 
-    focused && 'ring-2 ring-inset ring-border-interactive-focus',
+    focused && '!ring-2 !ring-border-interactive-focus',
 
     // Rounded if circular.
     {
@@ -92,12 +93,12 @@ export const getButtonifiedClassNames = ({
     },
     // Primary outline variant
     variant === 'primary_outline' && {
-      'ring-2 ring-inset': true,
+      '!ring-2': true,
       // Default
-      'text-background-button ring-background-button hover:bg-background-button-hover hover:text-text-button-primary hover:ring-0 active:bg-background-button-pressed active:text-text-button-primary active:ring-0':
+      'text-background-button !ring-background-button hover:bg-background-button-hover hover:text-text-button-primary hover:!ring-0 active:bg-background-button-pressed active:text-text-button-primary active:!ring-0':
         !disabledOrLoading,
       // Disabled
-      'text-background-button-disabled ring-background-button-disabled':
+      'text-background-button-disabled !ring-background-button-disabled':
         disabledOrLoading,
     },
     // Secondary variant
@@ -120,9 +121,8 @@ export const getButtonifiedClassNames = ({
       'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabledOrLoading,
       // Outline
-      'ring-1 ring-inset ring-border-primary':
-        variant === 'ghost_outline' || loading,
-      'hover:ring-0': variant === 'ghost_outline' && !disabledOrLoading,
+      '!ring-border-primary': variant === 'ghost_outline' || loading,
+      'hover:!ring-0': variant === 'ghost_outline' && !disabledOrLoading,
       // Default, not pressed
       'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
       // Disabled, not pressed
@@ -130,6 +130,15 @@ export const getButtonifiedClassNames = ({
         disabledOrLoading && !pressed,
       // Default or disabled, pressed
       'bg-transparent text-text-brand': pressed,
+    },
+    // Brand variant
+    variant === 'brand' && {
+      // Default
+      'text-text-interactive-active !ring-border-interactive-active hover:bg-background-button-active hover:text-text-button-primary hover:!ring-0 active:bg-text-interactive-active active:text-text-button-primary active:!ring-0':
+        !disabledOrLoading,
+      // Disabled
+      'bg-background-interactive-active text-text-button-primary':
+        disabledOrLoading,
     },
     // Underline variant
     (variant === 'underline' || variant === 'none') && {
@@ -178,7 +187,7 @@ export const ButtonifiedChildren = ({
         {loadingLoader && (
           <Loader
             invert={variant === 'primary'}
-            size={size === 'sm' ? 18 : 24}
+            size={size === 'sm' || size === 'md' ? 18 : 24}
           />
         )}
       </div>

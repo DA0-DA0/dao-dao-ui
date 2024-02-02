@@ -33,9 +33,8 @@ import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { WalletAllConfiguredChainSwitcher } from '../wallet/WalletChainSwitcher'
+import { WalletConfiguredChainSwitcherHeader } from '../wallet/WalletChainSwitcher'
 import { MeBalances } from './MeBalances'
 import { MeDaos } from './MeDaos'
 import { MeTransactionBuilder } from './MeTransactionBuilder'
@@ -125,8 +124,8 @@ export const Me: NextPage = () => {
         className="mx-auto max-w-5xl"
         gradient
         rightNode={
-          <div className="flex flex-col items-center justify-center self-stretch border-r border-border-secondary pr-3">
-            <WalletAllConfiguredChainSwitcher />
+          <div className="-mr-1 flex flex-col items-center justify-center self-stretch">
+            <WalletConfiguredChainSwitcherHeader />
           </div>
         }
         title={t('title.account')}
@@ -153,7 +152,6 @@ export const Me: NextPage = () => {
                 MeTransactionBuilder={MeTransactionBuilder}
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
                 profileData={profileData}
-                rightSidebarContent={<ProfileHomeCard />}
                 updateProfileName={updateProfileName}
               />
             </SuspenseLoader>
@@ -163,7 +161,6 @@ export const Me: NextPage = () => {
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
           connecting={isWalletConnecting}
-          rightSidebarContent={<ProfileDisconnectedCard />}
         />
       )}
     </>

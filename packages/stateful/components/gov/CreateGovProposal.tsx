@@ -4,15 +4,12 @@ import { CreateProposal, PageLoader } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
 
 import { GovActionsProvider } from '../../actions'
-import { useWallet } from '../../hooks/useWallet'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { NewGovProposal } from './NewGovProposal'
 
 export const CreateGovProposal = () => {
   const { t } = useTranslation()
-  const { isWalletConnected } = useWallet()
 
   return (
     <>
@@ -34,9 +31,6 @@ export const CreateGovProposal = () => {
               <NewGovProposal />
             </SuspenseLoader>
           </GovActionsProvider>
-        }
-        rightSidebarContent={
-          isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
         }
       />
     </>

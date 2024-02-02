@@ -9,7 +9,7 @@ import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 sm:h-20'
+export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 md:h-20'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
@@ -73,7 +73,7 @@ export const PageHeader = ({
         <div
           className={clsx(
             'relative flex h-full w-full flex-row items-center justify-center',
-            !forceCenter && 'sm:justify-start',
+            !forceCenter && 'md:justify-start',
             // When showing title or breadcrumbs, add padding. The `sm`
             // breakpoint is when the UI switches from responsive to desktop
             // mode.
@@ -81,7 +81,7 @@ export const PageHeader = ({
               expandBorderToEdge ? 'px-8' : 'px-12',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
-              !forceCenter && 'sm:pl-0',
+              !forceCenter && 'md:pl-0',
             ]
           )}
         >
@@ -103,13 +103,19 @@ export const PageHeader = ({
         >
           <IconButton
             Icon={Menu}
-            className="!outline-none sm:hidden"
+            className="!outline-none md:hidden"
             onClick={toggle}
             variant="ghost"
           />
         </div>
 
-        <div className="absolute top-0 right-0 bottom-0 flex flex-row items-stretch justify-end">
+        <div
+          className={clsx(
+            'absolute top-0 bottom-0 flex flex-row items-stretch justify-end',
+            // Match `px-4` on the container.
+            expandBorderToEdge ? 'right-4' : 'right-0'
+          )}
+        >
           {rightNode}
         </div>
 

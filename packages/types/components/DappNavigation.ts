@@ -22,4 +22,5 @@ export type DappNavigationProps = {
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
+  SidebarWallet: ComponentType<{ containerClassName: string }>
 }

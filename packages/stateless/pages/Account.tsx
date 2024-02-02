@@ -1,6 +1,6 @@
 import { GroupRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { ComponentType, ReactNode, useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -17,13 +17,11 @@ import {
   CopyableAddress,
   ErrorPage,
   Loader,
-  RightSidebarContent,
   TabBar,
   WalletProfileHeader,
 } from '../components'
 
 export type AccountProps = {
-  rightSidebarContent: ReactNode
   address: string
   hexPublicKey: LoadingDataWithError<string | undefined>
   AccountDaos: ComponentType
@@ -32,7 +30,6 @@ export type AccountProps = {
 } & Pick<WalletProfileHeaderProps, 'profileData'>
 
 export const Account = ({
-  rightSidebarContent,
   address,
   hexPublicKey,
   AccountDaos,
@@ -72,42 +69,37 @@ export const Account = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+    <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
+      {!hexPublicKey.loading && (hexPublicKey.errored || !hexPublicKey.data) ? (
+        <ErrorPage title={t('error.couldntFindWallet')}>
+          <ButtonLink href="/" variant="secondary">
+            {t('button.returnHome')}
+          </ButtonLink>
+        </ErrorPage>
+      ) : (
+        <>
+          <WalletProfileHeader editable={false} {...headerProps}>
+            <CopyableAddress address={address} />
+          </WalletProfileHeader>
 
-      <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
-        {!hexPublicKey.loading &&
-        (hexPublicKey.errored || !hexPublicKey.data) ? (
-          <ErrorPage title={t('error.couldntFindWallet')}>
-            <ButtonLink href="/" variant="secondary">
-              {t('button.returnHome')}
-            </ButtonLink>
-          </ErrorPage>
-        ) : (
-          <>
-            <WalletProfileHeader editable={false} {...headerProps}>
-              <CopyableAddress address={address} />
-            </WalletProfileHeader>
+          <TabBar
+            onSelect={(tab) =>
+              router.replace(getAccountPath(address, tab), undefined, {
+                shallow: true,
+              })
+            }
+            selectedTabId={selectedTabId}
+            tabs={tabs}
+          />
 
-            <TabBar
-              onSelect={(tab) =>
-                router.replace(getAccountPath(address, tab), undefined, {
-                  shallow: true,
-                })
-              }
-              selectedTabId={selectedTabId}
-              tabs={tabs}
-            />
-
-            {/* Don't render a tab unless it is visible. */}
-            {selectedTab && (
-              <SuspenseLoader fallback={<Loader />}>
-                <selectedTab.Component />
-              </SuspenseLoader>
-            )}
-          </>
-        )}
-      </div>
-    </>
+          {/* Don't render a tab unless it is visible. */}
+          {selectedTab && (
+            <SuspenseLoader fallback={<Loader />}>
+              <selectedTab.Component />
+            </SuspenseLoader>
+          )}
+        </>
+      )}
+    </div>
   )
 }

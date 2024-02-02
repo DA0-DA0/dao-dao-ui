@@ -13,6 +13,7 @@ export type CopyableAddressProps = {
   hideIcon?: boolean
   className?: string
   iconClassName?: string
+  iconSizeClassName?: string
   textClassName?: string
 } & Pick<CopyToClipboardProps, 'takeStartEnd' | 'onCopy'>
 
@@ -22,6 +23,7 @@ export const CopyableAddress = ({
   hideIcon,
   className,
   iconClassName,
+  iconSizeClassName = '!h-5 !w-5',
   textClassName,
   takeStartEnd,
   onCopy,
@@ -36,7 +38,13 @@ export const CopyableAddress = ({
       )}
     >
       {!hideIcon && (
-        <Icon className={clsx('!h-5 !w-5 text-icon-tertiary', iconClassName)} />
+        <Icon
+          className={clsx(
+            'text-icon-tertiary',
+            iconSizeClassName,
+            iconClassName
+          )}
+        />
       )}
 
       <CopyToClipboardUnderline

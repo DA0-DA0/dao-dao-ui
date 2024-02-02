@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -10,7 +9,6 @@ import {
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
-  RightSidebarContent,
 } from '../components'
 
 export type HomeProps = {
@@ -19,7 +17,6 @@ export type HomeProps = {
     'Component' | 'items'
   >
   followingDaosProps: FollowingDaosProps
-  rightSidebarContent: ReactNode
   feedProps: FeedProps
   connected: boolean
 }
@@ -30,7 +27,6 @@ const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
 export const Home = ({
   featuredDaosProps,
-  rightSidebarContent,
   followingDaosProps,
   feedProps,
   connected,
@@ -39,8 +35,6 @@ export const Home = ({
 
   return (
     <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-
       {/* Feed and Following DAOs*/}
       {connected && (
         <>

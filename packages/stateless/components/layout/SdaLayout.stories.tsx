@@ -9,7 +9,6 @@ import {
 
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
-import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 import { SdaLayout } from './SdaLayout'
 import { Default as SdaNavigationStory } from './SdaNavigation.stories'
 
@@ -30,7 +29,6 @@ export const DefaultArgs: SdaLayoutProps = {
       </div>
     </div>
   ),
-  rightSidebarProps: RightSidebarStoryArgs,
 }
 
 const Template: ComponentStory<typeof SdaLayout> = (args) => {

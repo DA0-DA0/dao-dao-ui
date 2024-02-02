@@ -7,7 +7,7 @@ import {
   ConnectedWalletProps,
 } from '../wallet'
 
-export type SidebarWalletProps = { containerClasName?: string } & (
+export type SidebarWalletProps = { containerClassName?: string } & (
   | ({
       connected: true
     } & Omit<ConnectedWalletProps, 'className'>)
@@ -17,13 +17,13 @@ export type SidebarWalletProps = { containerClasName?: string } & (
 )
 
 export const SidebarWallet = ({
-  containerClasName,
+  containerClassName,
   ...props
 }: SidebarWalletProps) => (
   <div
     className={clsx(
-      'flex shrink-0 flex-col justify-center self-stretch',
-      containerClasName
+      'flex shrink-0 flex-col justify-center',
+      containerClassName
     )}
   >
     {props.connected ? (
@@ -37,7 +37,7 @@ export const SidebarWallet = ({
       <ConnectWallet
         center
         className="w-full"
-        variant="primary"
+        variant="brand"
         {...{
           ...props,
           connected: undefined,

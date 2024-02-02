@@ -10,7 +10,6 @@ import { DaoTabId } from '@dao-dao/types'
 
 import { useDaoTabs } from '../../hooks'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDaoHomeCard, ProfileDisconnectedCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoSdaHome = () => {
@@ -74,13 +73,6 @@ export const DaoSdaHome = () => {
       <DaoSdaWrappedTab
         SuspenseLoader={SuspenseLoader}
         allTabs={tabs || []}
-        rightSidebarContent={
-          <SuspenseLoader
-            fallback={<ProfileDisconnectedCard className="animate-pulse" />}
-          >
-            <ProfileDaoHomeCard />
-          </SuspenseLoader>
-        }
         tabId={selectedTabId}
       />
     </>

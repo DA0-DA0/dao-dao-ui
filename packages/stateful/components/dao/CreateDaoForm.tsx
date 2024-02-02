@@ -17,11 +17,9 @@ import {
   Button,
   ChainProvider,
   CreateDaoPages,
-  DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
   Loader,
-  RightSidebarContent,
   TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
@@ -634,12 +632,13 @@ export const InnerCreateDaoForm = ({
 
   return (
     <>
-      <RightSidebarContent>
+      {/* <RightSidebarContent>
         <DaoCreateSidebarCard
           // Once created, set pageIndex to 4 to show all checkboxes.
           pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
-      </RightSidebarContent>
+      </RightSidebarContent> */}
+
       <PageHeaderContent
         breadcrumbs={{
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
@@ -657,8 +656,8 @@ export const InnerCreateDaoForm = ({
         gradient
         rightNode={
           !makingSubDao && (
-            <div className="hidden sm:block">
-              <WalletChainSwitcher />
+            <div className="-mr-1 hidden flex-col items-center justify-center self-stretch sm:flex">
+              <WalletChainSwitcher headerMode />
             </div>
           )
         }

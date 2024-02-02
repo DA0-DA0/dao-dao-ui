@@ -37,10 +37,10 @@ export * from '@dao-dao/types/components/DappNavigation'
 // bottom, so the user can toggle between compact and not compact mode when it
 // is not forced.
 const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
-// Width of `sm` tailwind selector. Don't change this without changing all of
-// the `sm:` tailwind class media queries since they are set based on when it is
+// Width of `md` tailwind selector. Don't change this without changing all of
+// the `md:` tailwind class media queries since they are set based on when it is
 // in responsive mobile mode.
-const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 640
+const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 768
 
 // Force off when in responsive mobile mode since it displays full width when
 // open and we can show all details. Force on when larger than mobile but still
@@ -63,6 +63,7 @@ export const DappNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
+  SidebarWallet,
 }: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -71,7 +72,6 @@ export const DappNavigation = ({
       enabled: responsiveEnabled,
       toggle: toggleResponsive,
     },
-    responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
   const { asPath } = useRouter()
   const { config: chainConfig } = useConfiguredChainContext()
@@ -140,7 +140,7 @@ export const DappNavigation = ({
       {/* Layer underneath that allows closing the responsive navigation by tapping on visible parts of the page. */}
       {responsiveEnabled && (
         <div
-          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer sm:hidden"
+          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer md:hidden"
           onClick={() => responsiveEnabled && toggleResponsive()}
         ></div>
       )}
@@ -156,13 +156,8 @@ export const DappNavigation = ({
           'absolute top-0 bottom-0 z-20 w-[90dvw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
-          compact ? 'sm:w-min' : 'sm:w-[264px]',
-
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
-          responsiveRightSidebarEnabled
-            ? 'opacity-30 2xl:opacity-100'
-            : 'opacity-100'
+          'md:relative md:left-0 md:pt-0 md:shadow-none md:transition-[padding-left]',
+          compact ? 'md:w-min' : 'md:w-[264px]'
         )}
       >
         <PageHeader
@@ -175,6 +170,8 @@ export const DappNavigation = ({
           forceCenter={compact}
           noBorder={compact}
         />
+
+        <SidebarWallet containerClassName="md:hidden py-5 border-b border-border-secondary shrink-0" />
 
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>
@@ -231,11 +228,13 @@ export const DappNavigation = ({
                 Icon={NotificationsOutlined}
                 LinkWrapper={LinkWrapper}
                 compact={compact}
-                href="/inbox"
+                href="/notifications"
                 label={
                   !inboxCount.loading && inboxCount.data > 0
-                    ? t('title.inboxWithCount', { count: inboxCount.data })
-                    : t('title.inbox')
+                    ? t('title.notificationsWithCount', {
+                        count: inboxCount.data,
+                      })
+                    : t('title.notifications')
                 }
                 loading={inboxCount.loading}
                 showBadge={!inboxCount.loading && inboxCount.data > 0}
@@ -256,7 +255,7 @@ export const DappNavigation = ({
                       // elements in the sidebar, so the remaining space is
                       // used for the following DAOs. This number will need
                       // tweaking if the sidebar changes.
-                      'relative sm:max-h-[calc(100dvh-42rem)]',
+                      'relative md:max-h-[calc(100dvh-42rem)]',
                       !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                       compact && 'mt-1 w-min'
                     )}

@@ -27,10 +27,10 @@ import { Row } from './Row'
 // bottom, so the user can toggle between compact and not compact mode when it
 // is not forced.
 const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
-// Width of `sm` tailwind selector. Don't change this without changing all of
-// the `sm:` tailwind class media queries since they are set based on when it is
+// Width of `md` tailwind selector. Don't change this without changing all of
+// the `md:` tailwind class media queries since they are set based on when it is
 // in responsive mobile mode.
-const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 640
+const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 768
 
 // Force off when in responsive mobile mode since it displays full width when
 // open and we can show all details. Force on when larger than mobile but still
@@ -51,6 +51,7 @@ export const SdaNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
+  SidebarWallet,
 }: SdaNavigationProps) => {
   const daoInfo = useDaoInfoContext()
   const { t } = useTranslation()
@@ -64,7 +65,6 @@ export const SdaNavigation = ({
       enabled: responsiveEnabled,
       toggle: toggleResponsive,
     },
-    responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
 
   // Get the path to the DAO page on main DAO DAO.
@@ -104,7 +104,7 @@ export const SdaNavigation = ({
       {/* Layer underneath that allows closing the responsive navigation by tapping on visible parts of the page. */}
       {responsiveEnabled && (
         <div
-          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer sm:hidden"
+          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer md:hidden"
           onClick={() => responsiveEnabled && toggleResponsive()}
         ></div>
       )}
@@ -120,13 +120,8 @@ export const SdaNavigation = ({
           'absolute top-0 bottom-0 z-20 w-[90dvw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
-          compact ? 'sm:w-min' : 'sm:w-[264px]',
-
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
-          responsiveRightSidebarEnabled
-            ? 'opacity-30 2xl:opacity-100'
-            : 'opacity-100'
+          'md:relative md:left-0 md:pt-0 md:shadow-none md:transition-[padding-left]',
+          compact ? 'md:w-min' : 'md:w-[264px]'
         )}
       >
         <PageHeader
@@ -135,7 +130,7 @@ export const SdaNavigation = ({
               className={clsx(
                 'flex flex-row items-center gap-2 overflow-hidden',
                 // Make room for rightNode switch button.
-                daoDaoPath && !compact && 'px-12 sm:pl-0'
+                daoDaoPath && !compact && 'px-12 md:pl-0'
               )}
               href={getDaoPath(daoInfo.coreAddress)}
             >
@@ -158,6 +153,8 @@ export const SdaNavigation = ({
           forceCenter={compact}
           noBorder={compact}
         />
+
+        <SidebarWallet containerClassName="md:hidden" />
 
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {

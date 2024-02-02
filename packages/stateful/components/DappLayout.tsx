@@ -182,9 +182,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
-        }}
-        rightSidebarProps={{
-          wallet: <SidebarWallet />,
+          SidebarWallet,
         }}
       >
         {children}

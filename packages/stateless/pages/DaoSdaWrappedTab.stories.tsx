@@ -8,13 +8,8 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { DaoSplashHeaderProps, DaoTabId } from '@dao-dao/types'
 
-import {
-  DaoSplashHeader,
-  ProfileMemberCard,
-  ProfileMemberCardProps,
-} from '../components'
+import { DaoSplashHeader } from '../components'
 import { Default as DaoSplashHeaderStory } from '../components/dao/DaoSplashHeader.stories'
-import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
 import { DaoSdaWrappedTab } from './DaoSdaWrappedTab'
 
 export default {
@@ -47,11 +42,6 @@ Default.args = {
     },
   ],
   tabId: DaoTabId.Home,
-  rightSidebarContent: (
-    <ProfileMemberCard
-      {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
-    />
-  ),
   SuspenseLoader,
 }
 Default.parameters = {

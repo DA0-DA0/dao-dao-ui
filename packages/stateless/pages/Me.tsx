@@ -4,7 +4,7 @@ import {
   WalletRounded,
 } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { ComponentType, ReactNode, useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -13,10 +13,9 @@ import {
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 
-import { RightSidebarContent, TabBar, WalletProfileHeader } from '../components'
+import { TabBar, WalletProfileHeader } from '../components'
 
 export type MeProps = {
-  rightSidebarContent: ReactNode
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
   MeDaos: ComponentType
@@ -26,7 +25,6 @@ export type MeProps = {
 >
 
 export const Me = ({
-  rightSidebarContent,
   MeBalances,
   MeTransactionBuilder,
   MeDaos,
@@ -77,23 +75,19 @@ export const Me = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+    <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
+      <WalletProfileHeader editable {...headerProps} />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
-        <WalletProfileHeader editable {...headerProps} />
+      <TabBar
+        onSelect={(tab) =>
+          router.replace(`/me/${tab}`, undefined, { shallow: true })
+        }
+        selectedTabId={selectedTabId}
+        tabs={tabs}
+      />
 
-        <TabBar
-          onSelect={(tab) =>
-            router.replace(`/me/${tab}`, undefined, { shallow: true })
-          }
-          selectedTabId={selectedTabId}
-          tabs={tabs}
-        />
-
-        {/* Don't render a tab unless it is visible. */}
-        {selectedTab && <selectedTab.Component />}
-      </div>
-    </>
+      {/* Don't render a tab unless it is visible. */}
+      {selectedTab && <selectedTab.Component />}
+    </div>
   )
 }

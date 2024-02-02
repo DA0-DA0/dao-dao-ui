@@ -34,14 +34,12 @@ import {
 } from '@dao-dao/types'
 import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
-import { useWallet } from '../../hooks/useWallet'
 import {
   ProposalModuleAdapterCommonProvider,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileDaoHomeCard, ProfileDisconnectedCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
@@ -91,7 +89,6 @@ const InnerCreateDaoProposal = ({
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useDaoNavHelpers()
   const daoInfo = useDaoInfoContext()
-  const { isWalletConnected } = useWallet()
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
@@ -374,13 +371,6 @@ const InnerCreateDaoProposal = ({
                 unloadDraft={unloadDraft}
               />
             </SuspenseLoader>
-          }
-          rightSidebarContent={
-            isWalletConnected ? (
-              <ProfileDaoHomeCard />
-            ) : (
-              <ProfileDisconnectedCard />
-            )
           }
         />
       </FormProvider>
