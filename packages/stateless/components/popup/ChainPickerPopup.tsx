@@ -96,9 +96,13 @@ export type ChainPickerPopupProps = {
    */
   headerMode?: boolean
   /**
-   * If true, will hide the label of the selected chain.
+   * Optional class name applied to the selected chain icon.
    */
-  hideSelectedLabel?: boolean
+  selectedIconClassName?: string
+  /**
+   * Optional class name applied to the selected chain label.
+   */
+  selectedLabelClassName?: string
 }
 
 /**
@@ -116,7 +120,8 @@ export const ChainPickerPopup = ({
   noneLabel,
   NoneIcon,
   headerMode,
-  hideSelectedLabel,
+  selectedIconClassName,
+  selectedLabelClassName,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
@@ -189,7 +194,7 @@ export const ChainPickerPopup = ({
           className: buttonClassName,
           contentContainerClassName: clsx(
             'justify-between text-icon-primary',
-            !headerMode && '!gap-4'
+            headerMode ? '!gap-1' : '!gap-4'
           ),
           loading,
           disabled,
@@ -201,23 +206,34 @@ export const ChainPickerPopup = ({
                 {selectedChain
                   ? !!selectedChain.iconUrl && (
                       <div
-                        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+                        className={clsx(
+                          'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
+                          selectedIconClassName
+                        )}
                         style={{
                           backgroundImage: `url(${selectedChain.iconUrl})`,
                         }}
                       />
                     )
-                  : showNone && NoneIcon && <NoneIcon className="!h-6 !w-6" />}
+                  : showNone &&
+                    NoneIcon && (
+                      <NoneIcon
+                        className={clsx('!h-6 !w-6', selectedIconClassName)}
+                      />
+                    )}
 
-                {!hideSelectedLabel && (
-                  <p className={clsx(!selectedChain && 'text-text-tertiary')}>
-                    {selectedChain?.label ||
-                      (showNone && noneLabel) ||
-                      (labelMode === 'chain'
-                        ? t('button.selectChain')
-                        : t('button.selectToken'))}
-                  </p>
-                )}
+                <p
+                  className={clsx(
+                    !selectedChain && 'text-text-tertiary',
+                    selectedLabelClassName
+                  )}
+                >
+                  {selectedChain?.label ||
+                    (showNone && noneLabel) ||
+                    (labelMode === 'chain'
+                      ? t('button.selectChain')
+                      : t('button.selectToken'))}
+                </p>
               </div>
 
               {!disabled && <ArrowDropDown className="!h-6 !w-6" />}

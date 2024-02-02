@@ -13,7 +13,7 @@ import {
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 
-import { TabBar, WalletProfileHeader } from '../components'
+import { CopyableAddress, TabBar, WalletProfileHeader } from '../components'
 
 export type MeProps = {
   MeBalances: ComponentType
@@ -76,7 +76,9 @@ export const Me = ({
 
   return (
     <div className="flex flex-col items-stretch gap-6">
-      <WalletProfileHeader editable {...headerProps} />
+      <WalletProfileHeader editable {...headerProps}>
+        <CopyableAddress address={headerProps.profileData.address} />
+      </WalletProfileHeader>
 
       <TabBar
         onSelect={(tab) =>

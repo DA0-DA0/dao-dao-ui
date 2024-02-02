@@ -1,6 +1,7 @@
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 export type DaoInfoCard = {
+  Icon?: ComponentType<{ className?: string }>
   label: string
   tooltip?: string
   loading?: boolean

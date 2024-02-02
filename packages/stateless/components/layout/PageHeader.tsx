@@ -9,7 +9,7 @@ import { TopGradient } from '../TopGradient'
 import { useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 lg:h-[4.5rem]'
+export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-14 sm:h-16 md:h-[4.5rem]'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
@@ -18,10 +18,12 @@ export const PageHeader = ({
   className,
   noBorder = false,
   forceCenter = false,
+  leftMobileNode,
   centerNode,
   rightNode,
   gradient,
   expandBorderToEdge = false,
+  titleClassName,
 }: PageHeaderProps) => {
   const toggle = useAppContextIfAvailable()?.responsiveNavigation.toggle
 
@@ -85,28 +87,37 @@ export const PageHeader = ({
             ]
           )}
         >
-          {title ? (
-            <p className="header-text truncate leading-[5rem]">{title}</p>
-          ) : breadcrumbs ? (
-            <Breadcrumbs {...breadcrumbs} />
-          ) : (
-            centerNode
+          {!!title && (
+            <p
+              className={clsx(
+                'header-text truncate text-lg leading-[5rem] sm:text-xl',
+                titleClassName
+              )}
+            >
+              {title}
+            </p>
           )}
+
+          {!!breadcrumbs && <Breadcrumbs {...breadcrumbs} />}
+
+          {centerNode}
         </div>
 
         {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
         <div
           className={clsx(
-            'absolute top-0 bottom-0 flex flex-col justify-center',
+            'absolute top-0 bottom-0 flex flex-row items-center justify-start gap-1 md:hidden',
             expandBorderToEdge ? 'left-2' : '-left-2'
           )}
         >
           <IconButton
             Icon={Menu}
-            className="!outline-none md:hidden"
+            className="!outline-none"
             onClick={toggle}
             variant="ghost"
           />
+
+          {leftMobileNode}
         </div>
 
         <div

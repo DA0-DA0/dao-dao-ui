@@ -65,6 +65,7 @@ export type MeTransactionBuilderProps = {
   save: (save: AccountTxSave) => Promise<boolean>
   deleteSave: (save: AccountTxSave) => Promise<boolean>
   saving: boolean
+  MobileChainSwitcher: ComponentType<any>
 }
 
 export const MeTransactionBuilder = ({
@@ -80,6 +81,7 @@ export const MeTransactionBuilder = ({
   save,
   deleteSave,
   saving,
+  MobileChainSwitcher,
 }: MeTransactionBuilderProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
@@ -167,6 +169,10 @@ export const MeTransactionBuilder = ({
 
   return (
     <div className="flex flex-col gap-8">
+      <div className="md:hidden">
+        <MobileChainSwitcher />
+      </div>
+
       <p className="secondary-text">
         {t('info.transactionBuilderDescription')}
       </p>

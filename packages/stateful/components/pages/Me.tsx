@@ -123,7 +123,7 @@ export const Me: NextPage = () => {
       <PageHeaderContent
         gradient
         rightNode={
-          <div className="-mr-1 flex flex-col items-center justify-center self-stretch">
+          <div className="hidden md:block">
             <WalletConfiguredChainSwitcherHeader />
           </div>
         }

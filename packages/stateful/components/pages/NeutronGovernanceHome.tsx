@@ -75,6 +75,9 @@ export const NeutronGovernanceHome = () => {
                 }
               }}
               selectedChainId={chainId}
+              selectedIconClassName="xs:hidden"
+              // Match title in `PageHeader`.
+              selectedLabelClassName="hidden xs:block header-text truncate text-lg leading-[5rem] sm:text-xl"
             />
           ),
         }}

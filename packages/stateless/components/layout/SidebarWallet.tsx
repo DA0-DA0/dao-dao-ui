@@ -6,18 +6,23 @@ import {
   ConnectedWallet,
   ConnectedWalletProps,
 } from '../wallet'
+import { ConnectWalletIcon } from '../wallet/ConnectWalletIcon'
 
-export type SidebarWalletProps = { containerClassName?: string } & (
+export type SidebarWalletProps = {
+  containerClassName?: string
+  compact?: boolean
+} & (
   | ({
       connected: true
     } & Omit<ConnectedWalletProps, 'className'>)
   | ({
       connected: false
-    } & Omit<ConnectWalletProps, 'className'>)
+    } & Pick<ConnectWalletProps, 'onConnect' | 'loading'>)
 )
 
 export const SidebarWallet = ({
   containerClassName,
+  compact,
   ...props
 }: SidebarWalletProps) => (
   <div
@@ -28,6 +33,14 @@ export const SidebarWallet = ({
   >
     {props.connected ? (
       <ConnectedWallet
+        compact={compact}
+        {...{
+          ...props,
+          connected: undefined,
+        }}
+      />
+    ) : compact ? (
+      <ConnectWalletIcon
         {...{
           ...props,
           connected: undefined,

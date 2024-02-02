@@ -71,6 +71,7 @@ export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<Crea
     Icon: ClockEmoji,
     nameI18nKey: 'form.unstakingDurationTitle',
     descriptionI18nKey: 'form.unstakingDurationDescription',
+    tooltipI18nKey: 'info.unstakingPeriodTooltip_noToken',
     Input: UnstakingDurationInput,
     getInputError: ({ unstakingDuration } = {}) =>
       unstakingDuration?.value || unstakingDuration?.units,

@@ -641,6 +641,7 @@ export const InnerCreateDaoForm = ({
 
       <PageHeaderContent
         breadcrumbs={{
+          className: !makingSubDao ? 'hidden md:flex' : undefined,
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
           homeTab: makingSubDao
             ? {
@@ -648,16 +649,21 @@ export const InnerCreateDaoForm = ({
                 sdaLabel: t('title.subDaos'),
               }
             : undefined,
-          current:
-            name.trim() ||
-            (makingSubDao ? t('title.newSubDao') : t('title.newDao')),
+          current: makingSubDao ? t('title.newSubDao') : t('title.newDao'),
         }}
+        centerNode={
+          !makingSubDao && (
+            <WalletChainSwitcher
+              buttonClassName="md:hidden"
+              headerMode
+              selectedLabelClassName="hidden xs:block"
+            />
+          )
+        }
         gradient
         rightNode={
           !makingSubDao && (
-            <div className="-mr-1 hidden flex-col items-center justify-center self-stretch sm:flex">
-              <WalletChainSwitcher headerMode />
-            </div>
+            <WalletChainSwitcher buttonClassName="hidden md:block" headerMode />
           )
         }
       />
@@ -670,13 +676,9 @@ export const InnerCreateDaoForm = ({
         {/* Show image selector or DAO header depending on page. */}
         {pageIndex === 0 ? (
           <div className="flex flex-col items-center pb-10">
-            <div className="sm:hidden">
-              <WalletChainSwitcher />
-            </div>
-
             <ImageSelector
               Trans={Trans}
-              className="mt-10"
+              className="md:mt-10"
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
@@ -691,7 +693,7 @@ export const InnerCreateDaoForm = ({
         ) : (
           <DaoHeader
             LinkWrapper={LinkWrapper}
-            className="mt-4 mb-12"
+            className="mb-8 md:mt-4 md:mb-12"
             description={description}
             imageUrl={imageUrl}
             name={name}

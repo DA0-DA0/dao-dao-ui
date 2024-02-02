@@ -39,10 +39,14 @@ export const PageHeaderContent = (props: PageHeaderProps) => {
     <PageHeader
       {...props}
       rightNode={
-        <div className="flex flex-row items-center justify-end gap-4">
+        <div className="flex flex-row items-center justify-end gap-3 lg:gap-4">
           {props.rightNode}
 
-          <SidebarWallet containerClassName="hidden md:flex border-l border-border-secondary pl-4 min-w-72 self-stretch" />
+          <SidebarWallet containerClassName="hidden md:flex border-l border-border-secondary pl-3 lg:pl-4 min-w-72 self-stretch" />
+          <SidebarWallet
+            compact
+            containerClassName="md:hidden border-l border-border-secondary pl-3 self-stretch"
+          />
         </div>
       }
     />

@@ -35,6 +35,7 @@ export type ConnectedWalletProps = {
   disconnect: () => Promise<void>
   IconButtonLink: ComponentType<IconButtonLinkProps>
   className?: string
+  compact?: boolean
 } & Pick<NotificationsProps, 'InboxMainItemRenderer' | 'onCheck'>
 
 export const ConnectedWallet = ({
@@ -47,6 +48,7 @@ export const ConnectedWallet = ({
   IconButtonLink,
   InboxMainItemRenderer,
   className,
+  compact,
 }: ConnectedWalletProps) => {
   const { t } = useTranslation()
 
@@ -70,7 +72,8 @@ export const ConnectedWallet = ({
   return (
     <div
       className={clsx(
-        'flex grow flex-row items-center justify-between gap-2',
+        'flex grow flex-row items-center justify-between',
+        compact ? 'gap-3' : 'gap-2',
         className
       )}
     >
@@ -80,8 +83,8 @@ export const ConnectedWallet = ({
           <ProfileImage
             imageUrl={walletProfileData.profile.imageUrl}
             loading={walletProfileData.loading}
-            onEdit={onEditProfileImage}
-            size="sm"
+            onEdit={!compact ? onEditProfileImage : undefined}
+            size={compact ? 'xs' : 'sm'}
           />
 
           <Tooltip
@@ -103,27 +106,29 @@ export const ConnectedWallet = ({
           </Tooltip>
         </div>
 
-        <div className="flex min-w-0 grow flex-col items-stretch gap-0.5 pt-1">
-          <ProfileNameDisplayAndEditor
-            compact
-            editingClassName="flex flex-col items-stretch"
-            updateProfileName={updateProfileName}
-            walletProfileData={walletProfileData}
-          />
+        {!compact && (
+          <div className="flex min-w-0 grow flex-col items-stretch gap-0.5 pt-1">
+            <ProfileNameDisplayAndEditor
+              compact
+              editingClassName="flex flex-col items-stretch"
+              updateProfileName={updateProfileName}
+              walletProfileData={walletProfileData}
+            />
 
-          <CopyableAddress
-            Icon={copied ? Check : WalletIcon}
-            address={walletAddress}
-            className="!justify-start"
-            iconSizeClassName="!h-4 !w-4"
-            onCopy={() => setCopied(true)}
-            takeStartEnd={{ start: prefixLength + 5, end: 5 }}
-            textClassName="!legend-text"
-          />
-        </div>
+            <CopyableAddress
+              Icon={copied ? Check : WalletIcon}
+              address={walletAddress}
+              className="!justify-start"
+              iconSizeClassName="!h-4 !w-4"
+              onCopy={() => setCopied(true)}
+              takeStartEnd={{ start: prefixLength + 5, end: 5 }}
+              textClassName="!legend-text"
+            />
+          </div>
+        )}
       </div>
 
-      {mode === DaoPageMode.Dapp && inbox && (
+      {mode === DaoPageMode.Dapp && inbox && !compact && (
         <Popup
           popupClassName="max-w-lg max-h-[48rem]"
           position="left"
@@ -173,7 +178,7 @@ export const ConnectedWallet = ({
           Icon={Logout}
           className="text-icon-secondary"
           onClick={disconnect}
-          size="sm"
+          size={compact ? 'xs' : 'sm'}
           variant="ghost"
         />
       </Tooltip>

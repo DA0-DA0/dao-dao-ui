@@ -11,7 +11,7 @@ export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
       className
     )}
   >
-    {cards.map(({ label, tooltip, loading, value }, index) => (
+    {cards.map(({ Icon, label, tooltip, loading, value }, index) => (
       <div
         key={index}
         className={clsx(
@@ -20,9 +20,16 @@ export const DaoInfoCards = ({ cards, className }: DaoInfoCardsProps) => (
         )}
       >
         <div className="flex flex-row items-center gap-1">
+          {Icon && (
+            <div className="mr-0.5 !text-xl">
+              <Icon className="!h-4 !w-4" />
+            </div>
+          )}
+
           <p className="primary-text text-xs font-normal text-text-secondary xs:text-sm">
             {label}
           </p>
+
           {tooltip && <TooltipInfoIcon size="xs" title={tooltip} />}
         </div>
 

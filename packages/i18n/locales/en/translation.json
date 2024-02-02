@@ -1255,6 +1255,7 @@
     "unstakingDurationNoneExplanation": "Your tokens will unstake immediately.",
     "unstakingMechanics": "It will take {{humanReadableTime}} from the time you unstake your tokens before they are able to be redeemed by you. During that time, you will not receive staking rewards. You will not be able to cancel the unbonding.",
     "unstakingPeriodTooltip": "The amount of time you must wait after unstaking ${{tokenSymbol}} before you can withdraw.",
+    "unstakingPeriodTooltip_noToken": "The amount of time you must wait after unstaking before you can withdraw.",
     "unstakingStatus": {
       "claimed": "Claimed",
       "readyToClaim": "Ready to claim",

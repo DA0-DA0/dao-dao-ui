@@ -93,7 +93,7 @@ export const getIconButtonifiedClassNames = ({
     // Brand variant
     variant === 'brand' && {
       // Default
-      'text-text-interactive-active !ring-border-interactive-active hover:bg-background-button-active hover:text-text-button-primary hover:!ring-0 active:bg-text-interactive-active active:text-text-button-primary active:!ring-0':
+      'text-text-interactive-active hover:bg-background-button-active hover:text-text-button-primary active:bg-text-interactive-active active:text-text-button-primary':
         !disabled,
       // Disabled
       'bg-background-interactive-active text-text-button-primary': disabled,

@@ -310,7 +310,6 @@ export interface DaoCreationVotingConfigItem<
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleData>>
   getInputError: (errors?: FieldErrors<ModuleData>) => FieldError | undefined
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleData>>
-  getReviewClassName?: (data: ModuleData) => string
 }
 
 export type DaoCreationCommonVotingConfigItems = {

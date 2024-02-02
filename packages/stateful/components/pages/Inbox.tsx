@@ -94,6 +94,63 @@ export const Inbox: NextPage = () => {
     }
   }, [api, checked, countChecked, inbox.items])
 
+  const refreshButton = (
+    <Tooltip title={t('button.refresh')}>
+      <IconButton
+        Icon={Refresh}
+        disabled={!api.ready}
+        iconClassName={clsx(refreshSpinning && 'animate-spin-medium')}
+        // If spinning but no longer refreshing, stop after iteration.
+        onAnimationIteration={
+          refreshSpinning && !shouldBeSpinningRefresh
+            ? () => setRefreshSpinning(false)
+            : undefined
+        }
+        onClick={() => {
+          // Perform one spin even if refresh completes immediately. It will
+          // stop after 1 iteration if `refreshing` does not become true.
+          setRefreshSpinning(true)
+          inbox.refresh()
+        }}
+        variant="ghost"
+      />
+    </Tooltip>
+  )
+  const clearButton = (
+    // Matches clear button in InboxMainItemRenderer
+    <Tooltip
+      title={
+        countChecked
+          ? t('button.clearSelected', {
+              count: countChecked,
+            })
+          : t('button.clearAll')
+      }
+    >
+      <IconButton
+        Icon={countChecked ? Delete : ClearAll}
+        disabled={!api.ready || api.updating || !inbox.items.length}
+        loading={checking}
+        onClick={clearChecked}
+        variant={countChecked ? 'brand' : 'ghost'}
+      />
+    </Tooltip>
+  )
+  const settingsButton = (
+    <Tooltip title={t('button.settings')}>
+      <IconButton
+        Icon={Settings}
+        disabled={!api.ready}
+        onClick={() =>
+          replace('/notifications/settings', undefined, {
+            shallow: true,
+          })
+        }
+        variant="ghost"
+      />
+    </Tooltip>
+  )
+
   return (
     <>
       <NextSeo
@@ -109,64 +166,23 @@ export const Inbox: NextPage = () => {
       <PageHeaderContent
         expandBorderToEdge
         rightNode={
-          <div className="flex flex-row items-center gap-2 self-stretch">
-            <Tooltip title={t('button.refresh')}>
-              <IconButton
-                Icon={Refresh}
-                disabled={!api.ready}
-                iconClassName={clsx(refreshSpinning && 'animate-spin-medium')}
-                // If spinning but no longer refreshing, stop after iteration.
-                onAnimationIteration={
-                  refreshSpinning && !shouldBeSpinningRefresh
-                    ? () => setRefreshSpinning(false)
-                    : undefined
-                }
-                onClick={() => {
-                  // Perform one spin even if refresh completes immediately.
-                  // It will stop after 1 iteration if `refreshing` does not
-                  // become true.
-                  setRefreshSpinning(true)
-                  inbox.refresh()
-                }}
-                variant="ghost"
-              />
-            </Tooltip>
-
-            {/* Matches clear button in InboxMainItemRenderer */}
-            <Tooltip
-              title={
-                countChecked
-                  ? t('button.clearSelected', {
-                      count: countChecked,
-                    })
-                  : t('button.clearAll')
-              }
-            >
-              <IconButton
-                Icon={countChecked ? Delete : ClearAll}
-                disabled={!api.ready || api.updating}
-                loading={checking}
-                onClick={clearChecked}
-                variant={countChecked ? 'brand' : 'ghost'}
-              />
-            </Tooltip>
-
-            <Tooltip title={t('button.settings')}>
-              <IconButton
-                Icon={Settings}
-                disabled={!api.ready}
-                onClick={() =>
-                  replace('/notifications/settings', undefined, {
-                    shallow: true,
-                  })
-                }
-                variant="ghost"
-              />
-            </Tooltip>
+          <div className="hidden flex-row items-center gap-1 md:flex md:gap-2">
+            {refreshButton}
+            {clearButton}
+            {settingsButton}
           </div>
         }
         title={t('title.notifications')}
       />
+
+      <div className="-mx-7 -mt-10 flex flex-row items-center justify-between border-b border-border-secondary py-3 px-4 md:hidden">
+        <div className="flex flex-row items-center gap-2">
+          {refreshButton}
+          {settingsButton}
+        </div>
+
+        {clearButton}
+      </div>
 
       {isWalletConnected ? (
         <StatelessInbox

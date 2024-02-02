@@ -14,4 +14,6 @@ export type WalletBalancesProps<
   TokenLine: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
+  // If defined, show on mobile.
+  MobileChainSwitcher?: ComponentType<any>
 }

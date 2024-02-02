@@ -80,6 +80,7 @@ export const makeApproverVotingConfigItem = (): DaoCreationVotingConfigItem<
   Icon: PersonRaisingHandEmoji,
   nameI18nKey: 'title.approver',
   descriptionI18nKey: 'form.approverDescription',
+  tooltipI18nKey: 'info.daoApproverExplanation',
   Input: ApproverInput,
   getInputError: () => undefined,
   Review: ApproverReview,

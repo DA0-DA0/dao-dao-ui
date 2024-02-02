@@ -24,6 +24,8 @@ export type WalletBalancesProps = {
   NftCard: ComponentType<LazyNftCardInfo>
   // If true, use token card that has edit actions.
   editable: boolean
+  // If defined, show on mobile.
+  MobileChainSwitcher?: ComponentType<any>
 }
 
 export const WalletBalances = ({
@@ -31,6 +33,7 @@ export const WalletBalances = ({
   hexPublicKey,
   NftCard,
   editable,
+  MobileChainSwitcher,
 }: WalletBalancesProps) => {
   const { chain_id: chainId } = useChain()
 
@@ -107,6 +110,7 @@ export const WalletBalances = ({
 
   return (
     <StatelessWalletBalances
+      MobileChainSwitcher={MobileChainSwitcher}
       NftCard={NftCard}
       TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
       hiddenTokens={hiddenTokens}

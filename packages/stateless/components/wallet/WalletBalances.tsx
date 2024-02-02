@@ -33,6 +33,7 @@ export const WalletBalances = <
   TokenLine,
   nfts,
   NftCard,
+  MobileChainSwitcher,
 }: WalletBalancesProps<T, N>) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
@@ -76,7 +77,15 @@ export const WalletBalances = <
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <div>
-            <div className="mb-6 flex flex-row justify-end">
+            <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <div>
+                {MobileChainSwitcher && (
+                  <div className="pl-4 md:hidden">
+                    <MobileChainSwitcher />
+                  </div>
+                )}
+              </div>
+
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 

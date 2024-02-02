@@ -114,6 +114,16 @@ export const ChainGovernanceHome = () => {
     })
   }, [router, tabId])
 
+  const explorerButton =
+    coreVersion === ContractVersion.Gov && explorerUrlTemplates?.gov ? (
+      // Go to governance page of chain explorer.
+      <IconButtonLink
+        Icon={ArrowOutwardRounded}
+        href={explorerUrlTemplates.gov}
+        variant="ghost"
+      />
+    ) : undefined
+
   return (
     <>
       <PageHeaderContent
@@ -142,21 +152,18 @@ export const ChainGovernanceHome = () => {
                 }
               }}
               selectedChainId={chainId}
+              selectedIconClassName="xs:hidden"
+              // Match title in `PageHeader`.
+              selectedLabelClassName="hidden xs:block header-text truncate text-lg leading-[5rem] sm:text-xl"
             />
           ),
         }}
         gradient
+        leftMobileNode={explorerButton}
         rightNode={
-          coreVersion === ContractVersion.Gov ? (
-            explorerUrlTemplates?.gov ? (
-              // Go to governance page of chain explorer.
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={explorerUrlTemplates.gov}
-                variant="ghost"
-              />
-            ) : undefined
-          ) : undefined
+          explorerButton && (
+            <div className="hidden md:block">{explorerButton}</div>
+          )
         }
       />
 

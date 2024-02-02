@@ -109,6 +109,7 @@ export const makeVetoVotingConfigItem =
     Icon: ThumbDownEmoji,
     nameI18nKey: 'title.veto',
     descriptionI18nKey: 'info.vetoDescription',
+    tooltipI18nKey: 'info.daoVetoerExplanation',
     Input: VetoInput,
     getInputError: ({
       veto: { timelockDuration } = {
@@ -116,6 +117,4 @@ export const makeVetoVotingConfigItem =
       },
     } = {}) => timelockDuration?.value || timelockDuration?.units,
     Review: VetoReview,
-    getReviewClassName: ({ veto: { enabled } }) =>
-      enabled ? 'bg-component-badge-valid' : 'bg-component-badge-error',
   })
