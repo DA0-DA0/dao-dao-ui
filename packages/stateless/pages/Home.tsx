@@ -48,7 +48,7 @@ export const Home = ({
         </>
       )}
 
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-4">
         <p className="title-text self-start">{t('title.featuredDaos')}</p>
 
         {/* Featured DAOs container */}

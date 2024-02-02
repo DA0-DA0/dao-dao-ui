@@ -77,7 +77,7 @@ export const HomeTab = () => {
         />
       )}
 
-      <p className="header-text mt-2">{t('title.membership')}</p>
+      <p className="title-text mt-2">{t('title.membership')}</p>
 
       <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
         {isWalletConnected ? (
@@ -97,7 +97,7 @@ export const HomeTab = () => {
         )}
       </div>
 
-      <p className="header-text mt-4">{t('title.details')}</p>
+      <p className="title-text mt-4">{t('title.details')}</p>
 
       <MainDaoInfoCards />
 

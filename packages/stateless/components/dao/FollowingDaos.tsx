@@ -36,7 +36,7 @@ export const FollowingDaos = ({
   })
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <p className="title-text">{t('title.following')}</p>
 
