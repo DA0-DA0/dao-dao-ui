@@ -129,7 +129,7 @@ export const TabBar = ({
         <IconButton
           Icon={ArrowBackIosNew}
           className={clsx(
-            'relative -left-3',
+            'relative -left-5',
             showTabLeftButton && 'pointer-events-auto'
           )}
           iconClassName="text-icon-tertiary"
@@ -167,7 +167,7 @@ export const TabBar = ({
         <IconButton
           Icon={ArrowBackIosNew}
           className={clsx(
-            'relative -right-3',
+            'relative -right-5',
             showTabRightButton && 'pointer-events-auto'
           )}
           iconClassName="rotate-180 text-icon-tertiary"

@@ -9,7 +9,7 @@ import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 md:h-20'
+export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 lg:h-[4.5rem]'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
