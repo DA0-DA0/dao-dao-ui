@@ -52,7 +52,7 @@ export const DaoImage = ({
     // DaoCard
     'h-[4.5rem] w-[4.5rem]': size === 'sm',
     // SDA header
-    'h-8 w-8': size === 'md',
+    'h-7 w-7': size === 'md',
     // DAO home page
     'h-20 w-20 xs:h-24 xs:w-24': size === 'lg',
   })

@@ -31,7 +31,6 @@ export const DefaultArgs: DappNavigationProps = {
     data: 5,
   },
   setCommandModalVisible: () => alert('command!'),
-  version: '2.0',
   followingDaos: {
     loading: false,
     data: [
@@ -171,7 +170,6 @@ export const Loading = Template.bind({})
 Loading.args = {
   ...DefaultArgs,
   inboxCount: { loading: true },
-  tokenPrices: { loading: true },
   followingDaos: { loading: true },
 }
 Loading.parameters = Default.parameters

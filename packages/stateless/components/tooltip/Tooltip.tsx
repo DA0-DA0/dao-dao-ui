@@ -36,8 +36,8 @@ export const Tooltip = ({
         0
       }
       leaveTouchDelay={
-        // Show tooltips for 5 seconds on touch devices.
-        5000
+        // Show tooltips for 3 seconds on touch devices.
+        3000
       }
       title={title}
       {...props}

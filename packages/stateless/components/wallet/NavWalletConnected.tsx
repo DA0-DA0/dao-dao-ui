@@ -58,7 +58,8 @@ export const NavWalletConnected = ({
         className
       )}
     >
-      <div className="flex min-w-0 grow flex-row items-stretch gap-3">
+      {/* Icon overflows a bit on the bottom, so add extra room with pb-1. */}
+      <div className="flex min-w-0 grow flex-row items-stretch gap-3 pb-1">
         {/* Image */}
         <div className="relative flex shrink-0 items-center justify-center">
           <ProfileImage

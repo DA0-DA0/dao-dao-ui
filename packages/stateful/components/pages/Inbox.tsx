@@ -33,7 +33,7 @@ export const Inbox: NextPage = () => {
       />
 
       <PageHeaderContent
-        expandBorderToEdge
+        forceExpandBorderToEdge
         rightNode={
           <div className="hidden flex-row items-center gap-1 md:flex md:gap-2">
             {inbox.buttons.refresh}

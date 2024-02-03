@@ -1,5 +1,6 @@
 import { ComponentType, ReactNode } from 'react'
 
+import { CollapsibleProps } from './Collapsible'
 import { LinkWrapperProps } from './LinkWrapper'
 
 export type DaoDropdownInfo = {
@@ -17,5 +18,10 @@ export type DaoDropdownProps = {
   indent?: number
   compact?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
-  defaultCollapsed?: boolean
-}
+} & Pick<
+  CollapsibleProps,
+  | 'defaultCollapsed'
+  | 'labelClassName'
+  | 'imageClassName'
+  | 'labelContainerClassName'
+>

@@ -6,7 +6,6 @@ import { StatefulNavWalletProps } from './NavWallet'
 
 export interface SdaNavigationProps {
   tabs: DaoTab[]
-  version: string
   compact: boolean
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean

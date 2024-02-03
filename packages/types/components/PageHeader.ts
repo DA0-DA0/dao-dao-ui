@@ -42,9 +42,10 @@ export type PageHeaderProps = {
    */
   gradient?: boolean
   /*
-   * Expands the border to the edge of the page.
+   * Force expand the border to the edge of the page. This already happens on
+   * mobile, so this is only used on larger screens.
    */
-  expandBorderToEdge?: boolean
+  forceExpandBorderToEdge?: boolean
   /**
    * Optional class name for the title text.
    */

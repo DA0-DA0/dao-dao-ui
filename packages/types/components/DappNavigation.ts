@@ -5,18 +5,9 @@ import { DaoDropdownInfo } from './DaoDropdown'
 import { LinkWrapperProps } from './LinkWrapper'
 import { StatefulNavWalletProps } from './NavWallet'
 
-export type NavigationTokenPrice = {
-  label: string
-  price: number
-  priceDenom: string
-  change?: number
-}
-
 export type DappNavigationProps = {
   setCommandModalVisible: () => void
   inboxCount: LoadingData<number>
-  version: string
-  tokenPrices?: LoadingData<NavigationTokenPrice[]>
   followingDaos: LoadingData<DaoDropdownInfo[]>
   walletConnected: boolean
   compact: boolean

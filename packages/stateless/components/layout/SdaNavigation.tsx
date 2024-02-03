@@ -46,7 +46,6 @@ const DAPP_URL_PREFIX = `https://${MAINNET ? '' : 'testnet.'}daodao.zone`
 
 export const SdaNavigation = ({
   tabs,
-  version,
   compact,
   setCompact,
   mountedInBrowser,
@@ -154,7 +153,7 @@ export const SdaNavigation = ({
           noBorder={compact}
         />
 
-        <NavWallet containerClassName="md:hidden" inResponsiveNav />
+        <NavWallet inResponsiveNav />
 
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {
@@ -217,29 +216,17 @@ export const SdaNavigation = ({
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
-          {!compact && (
-            <div className="caption-text space-y-3 font-mono">
-              <p className="pl-[10px]">
-                {t('info.daodaoWithVersion', { version })}
-              </p>
-
-              <Footer />
-            </div>
-          )}
+          {!compact && <Footer />}
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-4 flex shrink-0 gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
-            {compact ? (
-              <Tooltip title={t('button.toggleTheme')}>
-                <ThemeToggle compact />
-              </Tooltip>
-            ) : (
+            <Tooltip title={t('button.toggleTheme')}>
               <ThemeToggle />
-            )}
+            </Tooltip>
 
             <IconButton
               Icon={

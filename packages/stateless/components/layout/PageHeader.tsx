@@ -22,7 +22,7 @@ export const PageHeader = ({
   centerNode,
   rightNode,
   gradient,
-  expandBorderToEdge = false,
+  forceExpandBorderToEdge = false,
   titleClassName,
 }: PageHeaderProps) => {
   const toggle = useAppContextIfAvailable()?.responsiveNavigation.toggle
@@ -55,7 +55,9 @@ export const PageHeader = ({
   }, [gradient])
 
   return (
-    <div className={clsx('relative', expandBorderToEdge && '-mx-6')}>
+    <div
+      className={clsx('relative -mx-6', !forceExpandBorderToEdge && 'md:mx-0')}
+    >
       {gradient && (
         <TopGradient
           style={{
@@ -66,8 +68,8 @@ export const PageHeader = ({
 
       <div
         className={clsx(
-          'relative',
-          expandBorderToEdge && 'px-4',
+          'relative px-4',
+          !forceExpandBorderToEdge && 'md:px-0',
           PAGE_HEADER_HEIGHT_CLASS_NAMES,
           className
         )}
@@ -80,7 +82,8 @@ export const PageHeader = ({
             // breakpoint is when the UI switches from responsive to desktop
             // mode.
             (title || breadcrumbs) && [
-              expandBorderToEdge ? 'px-8' : 'px-12',
+              'px-8',
+              !forceExpandBorderToEdge && 'md:px-12',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
               !forceCenter && 'md:pl-0',
@@ -106,8 +109,8 @@ export const PageHeader = ({
         {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
         <div
           className={clsx(
-            'absolute top-0 bottom-0 flex flex-row items-center justify-start gap-1 md:hidden',
-            expandBorderToEdge ? 'left-2' : '-left-2'
+            'absolute top-0 bottom-0 left-2 flex flex-row items-center justify-start gap-1 md:hidden',
+            !forceExpandBorderToEdge && 'md:-left-2'
           )}
         >
           <IconButton
@@ -122,9 +125,9 @@ export const PageHeader = ({
 
         <div
           className={clsx(
-            'absolute top-0 bottom-0 flex flex-row items-stretch justify-end',
             // Match `px-4` on the container.
-            expandBorderToEdge ? 'right-4' : 'right-0'
+            'absolute top-0 bottom-0 right-4 flex flex-row items-stretch justify-end',
+            !forceExpandBorderToEdge && 'md:right-0'
           )}
         >
           {rightNode}

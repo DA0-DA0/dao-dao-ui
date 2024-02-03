@@ -43,10 +43,7 @@ export const PageHeaderContent = (props: PageHeaderProps) => {
           {props.rightNode}
 
           <NavWallet containerClassName="hidden md:flex border-l border-border-secondary pl-3 lg:pl-4 min-w-72 self-stretch" />
-          <NavWallet
-            compact
-            containerClassName="md:hidden border-l border-border-secondary pl-3 self-stretch"
-          />
+          <NavWallet compact containerClassName="md:hidden" />
         </div>
       }
     />

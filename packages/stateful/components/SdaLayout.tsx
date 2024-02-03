@@ -46,7 +46,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       navigationProps={{
         tabs: loadingTabs.loading ? [] : loadingTabs.data,
         LinkWrapper,
-        version: '2.0',
         compact,
         setCompact,
         mountedInBrowser,

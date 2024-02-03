@@ -134,6 +134,15 @@ export const getButtonifiedClassNames = ({
     // Brand variant
     variant === 'brand' && {
       // Default
+      'bg-border-interactive-active text-text-button-primary hover:opacity-90 active:opacity-80':
+        !disabledOrLoading,
+      // Disabled
+      'bg-background-interactive-active text-text-button-primary':
+        disabledOrLoading,
+    },
+    // Brand outline variant
+    variant === 'brand_outline' && {
+      // Default
       'text-text-interactive-active !ring-border-interactive-active hover:bg-background-button-active hover:text-text-button-primary hover:!ring-0 active:bg-text-interactive-active active:text-text-button-primary active:!ring-0':
         !disabledOrLoading,
       // Disabled

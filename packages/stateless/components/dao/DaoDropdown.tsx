@@ -15,7 +15,7 @@ export const DaoDropdown = ({
   indent = 0,
   compact = false,
   LinkWrapper,
-  defaultCollapsed,
+  ...props
 }: DaoDropdownProps) => {
   const { asPath } = useRouter()
 
@@ -42,8 +42,8 @@ export const DaoDropdown = ({
     </LinkWrapper>
   ) : (
     <Collapsible
+      {...props}
       containerClassName="!gap-0"
-      defaultCollapsed={defaultCollapsed}
       dropdownContainerClassName="!gap-1"
       dropdownIconSize="xs"
       headerClassName={clsx(
@@ -68,6 +68,7 @@ export const DaoDropdown = ({
             subDaos?.map((dao, index) => (
               <DaoDropdown
                 key={index}
+                {...props}
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 dao={dao}

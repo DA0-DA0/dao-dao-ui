@@ -21,9 +21,7 @@ import { getGovPath } from '@dao-dao/utils'
 import { useConfiguredChainContext, usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
 import { Logo } from '../logo/Logo'
-import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
@@ -55,8 +53,6 @@ const getForceCompact = () =>
 export const DappNavigation = ({
   setCommandModalVisible,
   inboxCount,
-  version,
-  tokenPrices,
   followingDaos,
   walletConnected,
   compact,
@@ -163,7 +159,7 @@ export const DappNavigation = ({
         <PageHeader
           centerNode={
             <LinkWrapper className="flex flex-row items-center gap-2" href="/">
-              <Logo size={32} />
+              <Logo size={28} />
               {!compact && <p className="header-text">{t('meta.title')}</p>}
             </LinkWrapper>
           }
@@ -171,10 +167,7 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <NavWallet
-          containerClassName="md:hidden py-5 border-b border-border-secondary shrink-0"
-          inResponsiveNav
-        />
+        <NavWallet inResponsiveNav />
 
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>
@@ -279,6 +272,9 @@ export const DappNavigation = ({
                         LinkWrapper={LinkWrapper}
                         compact={compact}
                         dao={dao}
+                        imageClassName="h-8 w-8 md:h-6 md:w-6"
+                        labelClassName="text-base md:text-sm"
+                        labelContainerClassName="gap-3 md:gap-2"
                       />
                     ))}
 
@@ -305,50 +301,17 @@ export const DappNavigation = ({
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
-          {!compact && (
-            <div className="caption-text space-y-3 font-mono">
-              <p className="pl-[10px]">
-                {t('info.daodaoWithVersion', { version })}
-              </p>
-
-              {tokenPrices &&
-                (tokenPrices.loading ? (
-                  <Loader className="!justify-start" size={38} />
-                ) : (
-                  tokenPrices.data.map(
-                    ({ label, price, priceDenom, change }, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-row items-end justify-between gap-2"
-                      >
-                        <p className="text-text-primary">
-                          {label} = {price} ${priceDenom}
-                        </p>
-                        {change !== undefined && (
-                          <PricePercentChange value={change} />
-                        )}
-                      </div>
-                    )
-                  )
-                ))}
-
-              <Footer />
-            </div>
-          )}
+          {!compact && <Footer />}
 
           <div
             className={clsx(
-              'mt-8 flex shrink-0 gap-2',
+              'mt-4 flex shrink-0 gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
-            {compact ? (
-              <Tooltip title={t('button.toggleTheme')}>
-                <ThemeToggle compact />
-              </Tooltip>
-            ) : (
+            <Tooltip title={t('button.toggleTheme')}>
               <ThemeToggle />
-            )}
+            </Tooltip>
 
             <IconButton
               Icon={
@@ -357,7 +320,6 @@ export const DappNavigation = ({
               circular
               className="hidden shrink-0 lg:flex"
               onClick={() => setCompact(!compact)}
-              size={compact ? 'default' : 'xl'}
               variant="secondary"
             />
           </div>

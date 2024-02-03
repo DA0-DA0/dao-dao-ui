@@ -56,7 +56,6 @@ export const DefaultArgs: SdaNavigationProps = {
       IconFilled: PeopleAltRounded,
     },
   ],
-  version: '2.0',
   compact: false,
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,

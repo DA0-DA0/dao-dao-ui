@@ -27,6 +27,7 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       containerClassName,
       headerClassName,
       labelClassName,
+      imageClassName,
       labelContainerClassName,
       dropdownContainerClassName,
       contentContainerClassName,
@@ -46,7 +47,10 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       <>
         {!!imageUrl && (
           <div
-            className="h-6 w-6 overflow-hidden rounded-full bg-cover bg-center"
+            className={clsx(
+              'h-6 w-6 overflow-hidden rounded-full bg-cover bg-center',
+              imageClassName
+            )}
             style={{
               backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
             }}
@@ -70,8 +74,8 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
               key={index}
               // The triangle `IconButton` is w-6 and offset by the container's
               // ml-2, so to center this border beneath the arrow, we need to
-              // include the full offset (ml-2) and half the width (w-3), getting
-              // w-5.
+              // include the full offset (ml-2) and half the width (w-3),
+              // getting w-5.
               className="w-5 shrink-0 border-r border-border-secondary"
             ></div>
           ))}

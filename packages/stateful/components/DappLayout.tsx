@@ -166,7 +166,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.items.length,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          version: '2.0',
           followingDaos: mountedInBrowser
             ? followingDaoDropdownInfos.loading
               ? { loading: true }

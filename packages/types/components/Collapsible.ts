@@ -27,6 +27,7 @@ export type CollapsibleProps = {
   children?: ReactNode | ReactNode[]
   containerClassName?: string
   headerClassName?: string
+  imageClassName?: string
   labelClassName?: string
   labelContainerClassName?: string
   dropdownContainerClassName?: string
