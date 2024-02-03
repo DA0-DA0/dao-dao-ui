@@ -147,6 +147,7 @@ export const useOnWebSocketMessage = (
 
   const [listening, setListening] = useState(false)
 
+  const memoizedExpectedTypeOrTypes = useDeepCompareMemoize(expectedTypeOrTypes)
   useEffect(() => {
     if (channels.length === 0) {
       setListening(false)
@@ -160,10 +161,10 @@ export const useOnWebSocketMessage = (
           type: {},
           data: {},
         }) &&
-        ((typeof expectedTypeOrTypes === 'string' &&
-          data.type === expectedTypeOrTypes) ||
-          (Array.isArray(expectedTypeOrTypes) &&
-            expectedTypeOrTypes.includes(data.type)))
+        ((typeof memoizedExpectedTypeOrTypes === 'string' &&
+          data.type === memoizedExpectedTypeOrTypes) ||
+          (Array.isArray(memoizedExpectedTypeOrTypes) &&
+            memoizedExpectedTypeOrTypes.includes(data.type)))
       ) {
         callbackRef.current(data.data, false)
       }
@@ -177,7 +178,7 @@ export const useOnWebSocketMessage = (
       channels.forEach((channel) => channel.unbind('broadcast', handler))
       setListening(false)
     }
-  }, [channels, expectedTypeOrTypes])
+  }, [channels, memoizedExpectedTypeOrTypes])
 
   // Store listening in ref so the fallback function can access it within the
   // same instance of the function without re-rendering.
