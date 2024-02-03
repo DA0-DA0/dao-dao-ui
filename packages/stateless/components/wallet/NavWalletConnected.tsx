@@ -54,8 +54,7 @@ export const NavWalletConnected = ({
   return (
     <div
       className={clsx(
-        'flex grow flex-row items-center justify-between',
-        compact ? 'gap-3' : 'gap-2',
+        'flex grow flex-row items-center justify-between gap-3.5',
         className
       )}
     >
@@ -124,7 +123,7 @@ export const NavWalletConnected = ({
                 : t('title.notifications'),
             props: {
               Icon: NotificationsOutlined,
-              className: 'ml-2 text-icon-secondary relative',
+              className: 'text-icon-secondary relative',
               variant: 'ghost',
               size: 'sm',
               // Show badge when notifications exist.
