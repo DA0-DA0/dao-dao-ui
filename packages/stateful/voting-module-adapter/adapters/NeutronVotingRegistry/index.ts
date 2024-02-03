@@ -8,6 +8,7 @@ import {
 
 import { MainDaoInfoCardsLoader, ProfileCardMemberInfo } from './components'
 import { VaultsTab } from './components/VaultsTab'
+import { useMainDaoInfoCards } from './hooks'
 
 export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
   id: NeutronVotingRegistryAdapterId,
@@ -16,7 +17,7 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useMainDaoInfoCards: () => [],
+      useMainDaoInfoCards,
       useVotingModuleRelevantAddresses: () => [],
     },
 

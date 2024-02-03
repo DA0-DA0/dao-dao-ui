@@ -25,6 +25,16 @@ export const MainDaoInfoCardsLoader = () => {
           loading: true,
           value: undefined,
         },
+        {
+          label: t('info.tokenStaked', {
+            tokenSymbol: 'NTRN',
+          }),
+          tooltip: t('info.totalStakedTooltip', {
+            tokenSymbol: 'NTRN',
+          }),
+          loading: true,
+          value: undefined,
+        },
         ...(activeThreshold
           ? [
               {
