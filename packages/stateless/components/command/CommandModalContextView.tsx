@@ -66,7 +66,6 @@ export const CommandModalContextView = ({
       }
 
       switch (event.key) {
-        case 'ArrowLeft':
         case 'ArrowUp':
           setSelectedIndex((selection) => {
             let newIndex =
@@ -89,7 +88,6 @@ export const CommandModalContextView = ({
             return newIndex
           })
           break
-        case 'ArrowRight':
         case 'ArrowDown':
           setSelectedIndex((selection) => {
             let newIndex = (selection + 1) % itemsWithSection.length

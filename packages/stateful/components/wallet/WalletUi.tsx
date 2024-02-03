@@ -80,7 +80,7 @@ export const WalletUi = (props: WalletModalProps) => {
   return (
     <Modal
       backdropClassName="z-[41]"
-      containerClassName="!w-[24rem] !max-w-[90dvw]"
+      containerClassName="!w-[24rem]"
       contentContainerClassName={clsx(
         // When showing wallet list, remove padding as it has its own horizontal
         // borders and thus needs to manage its own padding.

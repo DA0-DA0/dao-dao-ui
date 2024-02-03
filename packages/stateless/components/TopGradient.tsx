@@ -13,20 +13,20 @@ export const TopGradient = ({
   const { accentColor } = useThemeContext()
   const baseColor =
     (accentColor &&
-      // Convert to rgba with alpha of 0.4 if in rgb format.
+      // Convert to rgba with alpha of 0.3 if in rgb format.
       (accentColor.startsWith('rgb')
-        ? `rgba(${accentColor.split('(')[1].split(')')[0]}, 0.4)`
-        : // Add alpha of #66 in hex (102, 40% of 255, in decimal) if hex format.
+        ? `rgba(${accentColor.split('(')[1].split(')')[0]}, 0.3)`
+        : // Add alpha of #4D in hex (77, ~30% of 255, in decimal) if hex format.
         accentColor.startsWith('#')
-        ? `${accentColor.slice(0, 7)}66`
+        ? `${accentColor.slice(0, 7)}4D`
         : undefined)) ||
-    'rgba(var(--brand), 0.4)'
+    'rgba(var(--brand), 0.3)'
 
   return (
     <div
       {...props}
       className={clsx(
-        'pointer-events-none absolute top-0 right-0 left-0 z-0 opacity-60',
+        'pointer-events-none absolute top-0 right-0 left-0 z-0 hidden opacity-60 md:block',
         className
       )}
       style={{

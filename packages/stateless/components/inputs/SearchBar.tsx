@@ -62,6 +62,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
           )}
           placeholder={t('title.search')}
           ref={ref}
+          size={1}
           type="text"
           {...props}
         />
