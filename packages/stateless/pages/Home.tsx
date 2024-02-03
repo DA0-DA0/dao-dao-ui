@@ -37,7 +37,7 @@ export const Home = ({
       {/* Feed and Following DAOs*/}
       {connected && (
         <>
-          <div className="mb-8 w-full">
+          <div className="mb-8 -mt-4 w-full md:-mt-2">
             <Feed {...feedProps} />
           </div>
 
@@ -49,7 +49,9 @@ export const Home = ({
       )}
 
       <div className="flex flex-col items-center gap-4">
-        <p className="title-text self-start">{t('title.featuredDaos')}</p>
+        <p className="title-text self-start text-lg">
+          {t('title.featuredDaos')}
+        </p>
 
         {/* Featured DAOs container */}
         <HorizontalScroller

@@ -38,7 +38,7 @@ export const FollowingDaos = ({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-        <p className="title-text">{t('title.following')}</p>
+        <p className="title-text text-lg">{t('title.following')}</p>
 
         <div className="flex grow flex-row justify-end">
           <ButtonPopup position="left" {...sortButtonPopupProps} />

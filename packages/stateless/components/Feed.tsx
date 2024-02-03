@@ -33,7 +33,7 @@ export const Feed = ({
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-start justify-between gap-x-8">
         <div className="flex flex-col gap-2">
-          <p className="title-text">{t('title.feed')}</p>
+          <p className="title-text text-lg">{t('title.feed')}</p>
 
           <p className="caption-text italic">{t('info.feedDescription')}</p>
         </div>
