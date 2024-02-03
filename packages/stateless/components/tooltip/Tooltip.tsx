@@ -31,10 +31,6 @@ export const Tooltip = ({
           morePadding && '!p-2 xs:!p-3'
         ),
       }}
-      enterTouchDelay={
-        // Makes it much easier to click on the tooltip on mobile.
-        0
-      }
       leaveTouchDelay={
         // Show tooltips for 3 seconds on touch devices.
         3000
