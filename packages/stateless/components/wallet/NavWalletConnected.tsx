@@ -112,7 +112,7 @@ export const NavWalletConnected = ({
 
       {mode === DaoPageMode.Dapp && inbox && !compact && (
         <Popup
-          popupClassName="max-w-lg max-h-[48rem]"
+          popupClassName="min-w-72 max-w-lg max-h-[48rem]"
           position={inResponsiveNav ? 'wide' : 'left'}
           trigger={{
             type: 'icon_button',
