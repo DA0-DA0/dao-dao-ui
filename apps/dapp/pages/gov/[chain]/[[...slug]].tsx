@@ -37,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps: GetStaticProps = makeGetGovStaticProps({
   getProps: async ({ chain, chainName }) => ({
     url: SITE_URL + getGovPath(chainName),
-    followingTitle: `${getDisplayNameForChainId(chain.chain_id)} Governance`,
+    followingTitle: 'Governance',
     overrideDescription: `The native chain governance for ${getDisplayNameForChainId(
       chain.chain_id
     )}.`,
