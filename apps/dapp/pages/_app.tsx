@@ -6,6 +6,7 @@ import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
 import { appWithTranslation } from 'next-i18next'
+import PlausibleProvider from 'next-plausible'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
@@ -68,27 +69,38 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   }, [navigatingToHref, setNavigatingToHref])
 
   return (
-    <ThemeProvider
-      theme={theme}
-      themeChangeCount={themeChangeCount}
-      updateTheme={setTheme}
+    <PlausibleProvider
+      customDomain="https://vis.daodao.zone"
+      domain="daodao.zone"
+      scriptProps={{
+        src: '/dao/dao.js',
+        // @ts-ignore
+        'data-api': '/dao/event',
+      }}
+      trackOutboundLinks
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : (
-        <WalletProvider>
-          {/* AppContextProvider uses wallet context via the inbox. */}
-          <AppContextProvider mode={DaoPageMode.Dapp}>
-            <DappLayout>
-              <Component {...pageProps} />
-            </DappLayout>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ThemeProvider
+        theme={theme}
+        themeChangeCount={themeChangeCount}
+        updateTheme={setTheme}
+      >
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : (
+          <WalletProvider>
+            {/* AppContextProvider uses wallet context via the inbox. */}
+            <AppContextProvider mode={DaoPageMode.Dapp}>
+              <DappLayout>
+                <Component {...pageProps} />
+              </DappLayout>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
-    </ThemeProvider>
+        <ToastNotifications />
+      </ThemeProvider>
+    </PlausibleProvider>
   )
 }
 
