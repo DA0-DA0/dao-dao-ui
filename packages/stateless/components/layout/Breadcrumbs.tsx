@@ -39,43 +39,35 @@ export const Breadcrumbs = ({
 
   const crumbs =
     mode === DaoPageMode.Dapp
-      ? // Special handling for chain governance breadcrumbs.
-        daoInfo?.coreVersion === ContractVersion.Gov && chainContext?.base
+      ? home || !daoInfo
+        ? [{ href: '/', label: t('title.home') }]
+        : // Special handling for chain governance breadcrumbs.
+        daoInfo.coreVersion === ContractVersion.Gov && chainContext?.base
         ? [
-            { href: '/', label: t('title.home') },
-            ...(home
-              ? []
-              : [
-                  {
-                    href: getGovPath(chainContext.base.name, homeTab?.id),
-                    label: chainContext.chain.pretty_name,
-                  },
-                ]),
+            {
+              href: getGovPath(chainContext.base.name, homeTab?.id),
+              label: chainContext.chain.pretty_name,
+            },
           ]
         : // Non-chain governance breadcrumbs. Normal DAOs.
-        daoInfo
-        ? home
-          ? [{ href: '/', label: t('title.home') }]
-          : [
-              {
-                href:
-                  // Link to home tab if available.
-                  getDaoPath(daoInfo.coreAddress, homeTab?.id),
-                label: daoInfo.name,
-              },
-            ]
-        : [{ href: '/', label: t('title.home') }]
+          [
+            {
+              href:
+                // Link to home tab if available.
+                getDaoPath(daoInfo.coreAddress, homeTab?.id),
+              label: daoInfo.name,
+            },
+          ]
+      : // SDA
+      home || !daoInfo
+      ? []
       : [
-          ...(home || !daoInfo
-            ? []
-            : [
-                {
-                  href:
-                    // Link to home tab if available.
-                    getDaoPath(daoInfo.coreAddress, homeTab?.id),
-                  label: homeTab?.sdaLabel || t('title.home'),
-                },
-              ]),
+          {
+            href:
+              // Link to home tab if available.
+              getDaoPath(daoInfo.coreAddress, homeTab?.id),
+            label: homeTab?.sdaLabel || t('title.home'),
+          },
         ]
 
   const hasCrumbs = crumbs.length > 0
