@@ -4,19 +4,24 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { refreshGovProposalsAtom } from '@dao-dao/state/recoil'
+import {
+  chainSupportsV1GovModuleSelector,
+  refreshGovProposalsAtom,
+} from '@dao-dao/state/recoil'
 import {
   Loader,
   ProposalVoter as StatelessProposalVoter,
+  useCachedLoading,
   useChain,
   useGovProposalVoteOptions,
 } from '@dao-dao/stateless'
 import { GovProposalWithMetadata, ProposalVoterProps } from '@dao-dao/types'
+import { MsgVote as MsgVoteV1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/tx'
 import {
   ProposalStatus,
   VoteOption,
 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgVote } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { MsgVote as MsgVoteV1Beta1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
@@ -28,18 +33,31 @@ export type GovProposalVoterProps = {
 } & Pick<ProposalVoterProps, 'className'>
 
 export const GovProposalVoter = (props: GovProposalVoterProps) => {
+  const { chain_id: chainId } = useChain()
+
   const loadingProposal = useLoadingGovProposal(props.proposalId)
+  const supportsV1 = useCachedLoading(
+    chainSupportsV1GovModuleSelector({ chainId }),
+    false
+  )
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
       forceFallback={
-        loadingProposal.loading || loadingProposal.data.walletVoteInfo.loading
+        loadingProposal.loading ||
+        loadingProposal.data.walletVoteInfo.loading ||
+        supportsV1.loading
       }
     >
       {!loadingProposal.loading &&
-        !loadingProposal.data.walletVoteInfo.loading && (
-          <InnerGovProposalVoter {...props} proposal={loadingProposal.data} />
+        !loadingProposal.data.walletVoteInfo.loading &&
+        !supportsV1.loading && (
+          <InnerGovProposalVoter
+            {...props}
+            proposal={loadingProposal.data}
+            supportsV1={supportsV1.data}
+          />
         )}
     </SuspenseLoader>
   )
@@ -52,9 +70,12 @@ const InnerGovProposalVoter = ({
     walletVoteInfo,
   },
   onVoteSuccess,
+  supportsV1,
   ...props
 }: GovProposalVoterProps & {
   proposal: GovProposalWithMetadata
+  // Whether or not this chain supports the v1 gov module.
+  supportsV1: boolean
 }) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
@@ -86,7 +107,7 @@ const InnerGovProposalVoter = ({
         const client = await getSigningStargateClient()
 
         const encodeObject: EncodeObject = {
-          typeUrl: MsgVote.typeUrl,
+          typeUrl: supportsV1 ? MsgVoteV1.typeUrl : MsgVoteV1Beta1.typeUrl,
           value: {
             proposalId,
             voter: walletAddress,
@@ -116,6 +137,7 @@ const InnerGovProposalVoter = ({
       isWalletConnected,
       proposalId,
       refreshProposal,
+      supportsV1,
       t,
       walletAddress,
     ]

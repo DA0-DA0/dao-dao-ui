@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   GovernanceProposalFromProposal,
+  Loader,
   NoContent,
   ProposalVoteButton,
   SelectInput,
@@ -47,6 +48,8 @@ export type GovernanceVoteData = {
   chainId: string
   proposalId: string
   vote: VoteOption
+  // Whether or not this uses the v1 gov module type as opposed to v1beta1.
+  v1: boolean | undefined
 }
 
 export const GovernanceVoteComponent: ActionComponent<
@@ -68,10 +71,14 @@ export const GovernanceVoteComponent: ActionComponent<
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
   const proposalSelected = proposals.find((p) => p.id.toString() === proposalId)
 
+  const v1 = watch((fieldNamePrefix + 'v1') as 'v1')
+
   return (
     <>
       {isCreating &&
-        (proposals.length === 0 ? (
+        (v1 === undefined ? (
+          <Loader />
+        ) : proposals.length === 0 ? (
           <NoContent
             Icon={CheckBoxOutlineBlankRounded}
             body={t('info.noGovernanceProposalsOpenForVoting')}

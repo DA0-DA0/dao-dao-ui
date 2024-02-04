@@ -926,7 +926,9 @@ export const MsgVote = {
     obj.proposal_id = message.proposalId ? message.proposalId.toString() : "0";
     obj.voter = message.voter;
     obj.option = message.option;
-    obj.metadata = message.metadata;
+    if (message.metadata) {
+      obj.metadata = message.metadata;
+    }
     return obj;
   },
   fromAminoMsg(object: MsgVoteAminoMsg): MsgVote {
