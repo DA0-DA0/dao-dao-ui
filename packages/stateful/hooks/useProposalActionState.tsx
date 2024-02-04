@@ -19,6 +19,7 @@ import {
 } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
+import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
 import { UseProposalPolytoneStateReturn } from './useProposalPolytoneState'
@@ -125,6 +126,11 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
 
+  const showPolytone =
+    !polytoneState.loading &&
+    statusKey === ProposalStatusEnum.Executed &&
+    polytoneState.data.hasPolytoneMessages
+
   return {
     action:
       statusKey === ProposalStatusEnum.Passed &&
@@ -161,10 +167,14 @@ export const useProposalActionState = ({
             description: t('error.polytoneExecutedNoRelay'),
           }
         : undefined,
-    footer: !polytoneState.loading &&
-      statusKey === ProposalStatusEnum.Executed &&
-      polytoneState.data.hasPolytoneMessages && (
-        <ProposalCrossChainRelayStatus state={polytoneState.data} />
-      ),
+    footer: (showPolytone || isWalletConnected) && (
+      <div className="flex flex-col gap-6">
+        {showPolytone && (
+          <ProposalCrossChainRelayStatus state={polytoneState.data} />
+        )}
+
+        {isWalletConnected && <ProfileProposalCard />}
+      </div>
+    ),
   }
 }

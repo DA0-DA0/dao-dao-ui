@@ -105,27 +105,37 @@ export const ProfileCardMemberInfoTokens = ({
     ? '...'
     : loadingTokens.data[0].token.symbol
 
-  return (
+  // If cannot vote on proposal, this means they did not have voting power at
+  // the time of proposal creation. Show proposal-specific message when in a
+  // proposal.
+  return cantVoteOnProposal ? (
+    <p className="legend-text">
+      {t('info.tokenDaoNotMemberInfo', {
+        context: 'proposal',
+        tokenSymbol: loadingTokens.loading
+          ? '...'
+          : humanReadableList(
+              loadingTokens.data.map(({ token }) => token.symbol)
+            ),
+        daoName,
+      })}
+    </p>
+  ) : (
     <>
       <div className="secondary-text space-y-3">
-        {
-          // If cannot vote on proposal, this means they did not have voting
-          // power at the time of proposal creation. Show proposal-specific
-          // message when in a proposal.
-          (cantVoteOnProposal || !isMember) && (
-            <p className="secondary-text mb-4 text-text-body">
-              {t('info.tokenDaoNotMemberInfo', {
-                context: cantVoteOnProposal ? 'proposal' : 'dao',
-                tokenSymbol: loadingTokens.loading
-                  ? '...'
-                  : humanReadableList(
-                      loadingTokens.data.map(({ token }) => token.symbol)
-                    ),
-                daoName,
-              })}
-            </p>
-          )
-        }
+        {!isMember && (
+          <p className="secondary-text mb-4 text-text-body">
+            {t('info.tokenDaoNotMemberInfo', {
+              context: 'dao',
+              tokenSymbol: loadingTokens.loading
+                ? '...'
+                : humanReadableList(
+                    loadingTokens.data.map(({ token }) => token.symbol)
+                  ),
+              daoName,
+            })}
+          </p>
+        )}
 
         <div className="flex flex-row items-start justify-between">
           <p>{t('title.balances')}</p>

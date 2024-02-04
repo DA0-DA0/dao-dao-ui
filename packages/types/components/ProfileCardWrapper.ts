@@ -10,4 +10,5 @@ export type ProfileCardWrapperProps = {
   underHeaderComponent: ReactNode
   childContainerClassName?: string
   compact?: boolean
+  className?: string
 }

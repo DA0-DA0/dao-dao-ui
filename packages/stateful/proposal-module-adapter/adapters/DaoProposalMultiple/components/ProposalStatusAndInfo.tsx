@@ -205,9 +205,7 @@ const InnerProposalStatusAndInfo = ({
 
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <EntityDisplay {...props} address={coreAddress} noCopy />
@@ -425,9 +423,7 @@ const InnerProposalStatusAndInfoLoader = (
   )
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>

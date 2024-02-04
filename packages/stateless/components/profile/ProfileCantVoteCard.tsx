@@ -1,12 +1,11 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ProfileCardWrapperProps } from '@dao-dao/types'
+
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
-import {
-  ProfileCardWrapper,
-  ProfileCardWrapperProps,
-} from './ProfileCardWrapper'
+import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileCantVoteCardProps
   extends Omit<
@@ -39,7 +38,13 @@ export const ProfileCantVoteCard = ({
       }
       {...wrapperProps}
     >
-      <div className="border-t border-t-border-primary p-6">
+      <div className="border-y border-border-primary p-4">
+        <p className="link-text mb-1">{t('title.membership')}</p>
+
+        {membershipInfo}
+      </div>
+
+      <div className="p-4">
         <div className="secondary-text flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2">
             <p>{t('title.votingPower')}</p>
@@ -53,16 +58,10 @@ export const ProfileCantVoteCard = ({
           <p className="font-mono text-text-interactive-disabled">0%</p>
         </div>
 
-        <div className="secondary-text mt-3 flex flex-row items-center justify-between">
+        <div className="secondary-text mt-2 flex flex-row items-center justify-between">
           <p>{t('title.vote')}</p>
           <p className="text-text-tertiary">{t('info.none')}</p>
         </div>
-      </div>
-
-      <div className="border-t border-t-border-primary p-6">
-        <p className="link-text mb-1">{t('title.membership')}</p>
-
-        {membershipInfo}
       </div>
     </ProfileCardWrapper>
   )

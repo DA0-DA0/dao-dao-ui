@@ -20,11 +20,11 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
   inline?: boolean
   action?: {
     header?: ReactNode
-    label: string
+    label?: string
     description?: string
-    Icon: ComponentType<{ className: string }>
-    loading: boolean
-    doAction: () => void
+    Icon?: ComponentType<{ className: string }>
+    loading?: boolean
+    doAction?: () => void
   }
   // Present if can vote.
   vote?: {
@@ -109,7 +109,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             inline ? 'p-6' : 'pb-10'
           )}
         >
-          <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-2">
             <AnalyticsOutlined className="h-6 w-6 text-icon-secondary" />
             <p className="secondary-text">{t('title.status')}</p>
           </div>
@@ -120,18 +120,17 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
       <div
         className={clsx(
-          'grid grid-cols-2 items-center gap-3',
+          'grid grid-cols-[1.25rem_2fr_4fr] items-center justify-items-center gap-2',
           inline ? 'p-6' : action || footer ? 'pt-8 pb-6' : 'py-8'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
           <Fragment key={index}>
-            <div className="flex flex-row items-center gap-3">
-              <Icon className="h-6 w-6 text-icon-secondary" />
-              <p className="secondary-text">{label}</p>
-            </div>
+            <Icon className="!h-5 !w-5 text-icon-secondary" />
 
-            <Value className="text-left !font-mono !text-base !font-medium !leading-5 !text-text-body" />
+            <p className="secondary-text w-full">{label}</p>
+
+            <Value className="w-full !font-mono !text-sm !font-medium !leading-5 !text-text-body" />
           </Fragment>
         ))}
       </div>
@@ -145,21 +144,24 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
         >
           {action.header}
 
-          <Button
-            center
-            loading={action.loading}
-            onClick={action.doAction}
-            size="lg"
-            variant={
-              // If voting is not displaying, or voting is displaying but they
-              // already voted (i.e. they can revote), show primary variant to
-              // draw attention to this action. Otherwise, show dimmer secondary
-              // variant to encourage them to vote first.
-              !vote || vote.currentVote ? 'primary' : 'secondary'
-            }
-          >
-            <action.Icon className="!h-5 !w-5" /> {action.label}
-          </Button>
+          {action.doAction && (
+            <Button
+              center
+              loading={action.loading}
+              onClick={action.doAction}
+              size="lg"
+              variant={
+                // If voting is not displaying, or voting is displaying but they
+                // already voted (i.e. they can revote), show primary variant to
+                // draw attention to this action. Otherwise, show dimmer
+                // secondary variant to encourage them to vote first.
+                !vote || vote.currentVote ? 'primary' : 'secondary'
+              }
+            >
+              {action.Icon && <action.Icon className="!h-5 !w-5" />}
+              {action.label}
+            </Button>
+          )}
 
           {action.description && <InfoCard content={action.description} />}
         </div>

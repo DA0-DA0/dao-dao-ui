@@ -1,12 +1,11 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ProfileCardWrapperProps } from '@dao-dao/types'
+
 import { Button } from '../buttons'
 import { MembershipPill } from './MembershipPill'
-import {
-  ProfileCardWrapper,
-  ProfileCardWrapperProps,
-} from './ProfileCardWrapper'
+import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 // Represents a tranch of tokens that is currently unstaking and will become
 // available at some well-known later date.

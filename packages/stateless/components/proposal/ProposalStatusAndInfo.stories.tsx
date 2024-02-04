@@ -9,7 +9,6 @@ import {
   Texture,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import clsx from 'clsx'
 
 import { Vote as VoteType } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
@@ -37,9 +36,7 @@ Default.args = {
   status: 'If the current vote stands, the proposal will pass.',
   info: [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: 'DAO',
       Value: (props) => (
         <ButtonLink

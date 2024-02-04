@@ -20,8 +20,7 @@ import { Tooltip } from '../tooltip/Tooltip'
 // Notes:
 //
 // The only token amounts we intentionally don't show with full decimals are USD
-// value estimates (i.e. USDC) (max 2) and ProfileHomeCard's unstaked and staked
-// balances (max 2).
+// value estimates (i.e. USDC) (max 2).
 
 // Default maximum decimals to use in a USD estimate.
 const USD_ESTIMATE_DEFAULT_MAX_DECIMALS = 2
