@@ -56,7 +56,7 @@ index 9eb780900..70b01f2fc 100644
    },
    fromAminoMsg(object: MetadataAminoMsg): Metadata {
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 6c5cc594d..72e20f771 100644
+index 6c5cc594d..590ec66c2 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,8 @@
@@ -110,6 +110,17 @@ index 6c5cc594d..72e20f771 100644
      }
      if (object.metadata !== undefined && object.metadata !== null) {
        message.metadata = object.metadata;
+@@ -923,7 +926,9 @@ export const MsgVote = {
+     obj.proposal_id = message.proposalId ? message.proposalId.toString() : "0";
+     obj.voter = message.voter;
+     obj.option = message.option;
+-    obj.metadata = message.metadata;
++    if (message.metadata) {
++      obj.metadata = message.metadata;
++    }
+     return obj;
+   },
+   fromAminoMsg(object: MsgVoteAminoMsg): MsgVote {
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 index 0a7aa8cc5..2451cbfd8 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
