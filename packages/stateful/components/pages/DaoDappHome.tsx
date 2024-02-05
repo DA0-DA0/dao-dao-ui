@@ -136,7 +136,7 @@ export const DaoDappHome = () => {
               href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
               variant="ghost"
             >
-              Propose
+              {t('button.propose')}
             </ButtonLink>
           )
         }

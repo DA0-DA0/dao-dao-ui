@@ -8,7 +8,7 @@ import {
   RotateRightOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useState } from 'react'
+import { ComponentProps, ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
@@ -27,7 +27,6 @@ import {
   useCachedLoading,
   useChain,
   useConfiguredChainContext,
-  useGovProposalVoteOptions,
 } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -46,17 +45,14 @@ import {
 import {
   ProposalStatus,
   Vote,
-  VoteOption,
 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import {
-  MsgDeposit,
-  MsgVote,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { MsgDeposit } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { GovProposalVoter } from './GovProposalVoter'
 
 export type GovProposalStatusAndInfoProps = {
   inline?: boolean
@@ -89,7 +85,7 @@ export const GovProposalStatusAndInfo = (
       {!loadingProposal.loading &&
         !depositToken.loading &&
         !!depositToken.data && (
-          <InnerProposalStatusAndInfo
+          <InnerGovProposalStatusAndInfo
             {...props}
             depositToken={depositToken.data}
             proposal={loadingProposal.data}
@@ -99,7 +95,7 @@ export const GovProposalStatusAndInfo = (
   )
 }
 
-const InnerProposalStatusAndInfo = ({
+const InnerGovProposalStatusAndInfo = ({
   proposal,
   depositToken,
   ...props
@@ -129,7 +125,6 @@ const InnerProposalStatusAndInfo = ({
       quorumReached,
       vetoReached,
     },
-    walletVoteInfo,
   } = proposal
 
   const minDepositAmount = minDeposit.find(
@@ -229,54 +224,6 @@ const InnerProposalStatusAndInfo = ({
     [setRefreshProposal]
   )
 
-  const [castingVote, setCastingVote] = useState(false)
-  const castVote = useCallback(
-    async (option: VoteOption) => {
-      if (!isWalletConnected) {
-        toast.error(t('error.logInToContinue'))
-        return
-      }
-
-      setCastingVote(true)
-      try {
-        const client = await getSigningStargateClient()
-
-        const encodeObject: EncodeObject = {
-          typeUrl: MsgVote.typeUrl,
-          value: {
-            proposalId,
-            voter: walletAddress,
-            option,
-          },
-        }
-
-        await client.signAndBroadcast(
-          walletAddress,
-          [encodeObject],
-          CHAIN_GAS_MULTIPLIER
-        )
-
-        toast.success(t('success.voteCast'))
-      } catch (err) {
-        console.error(err)
-        toast.error(processError(err))
-      } finally {
-        refreshProposal()
-        setCastingVote(false)
-      }
-    },
-    [
-      getSigningStargateClient,
-      isWalletConnected,
-      proposalId,
-      refreshProposal,
-      t,
-      walletAddress,
-    ]
-  )
-
-  const voteOptions = useGovProposalVoteOptions()
-
   const [depositValue, setDepositValue] = useState(missingDeposit)
   const [depositing, setDepositing] = useState(false)
   const deposit = useCallback(async () => {
@@ -336,9 +283,21 @@ const InnerProposalStatusAndInfo = ({
     walletAddress,
   ])
 
+  const Voter = useCallback(
+    (props: ComponentProps<Required<ProposalStatusAndInfoProps>['Voter']>) => (
+      <GovProposalVoter {...props} proposalId={proposalId.toString()} />
+    ),
+    [proposalId]
+  )
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
+      Voter={
+        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+          ? Voter
+          : undefined
+      }
       action={
         status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ? {
@@ -383,18 +342,6 @@ const InnerProposalStatusAndInfo = ({
       }
       info={info}
       status={statusText}
-      vote={
-        !walletVoteInfo.loading &&
-        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-          ? {
-              loading: castingVote,
-              currentVote: walletVoteInfo.data.vote?.[0].option,
-              onCastVote: castVote,
-              options: voteOptions,
-              proposalOpen: true,
-            }
-          : undefined
-      }
     />
   )
 }

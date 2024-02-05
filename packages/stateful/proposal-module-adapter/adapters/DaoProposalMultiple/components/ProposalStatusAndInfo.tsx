@@ -8,7 +8,7 @@ import {
   Tag,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect } from 'react'
+import { ComponentProps, ComponentType, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
@@ -51,16 +51,15 @@ import {
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
-  useCastVote,
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
-  useLoadingVoteOptions,
   useLoadingVotesInfo,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalVoter } from './ProposalVoter'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -96,11 +95,11 @@ const InnerProposalStatusAndInfo = ({
   proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: { winningChoice, quorumReached, turnoutPercent, isTie },
   depositInfo,
-  onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
   onVetoSuccess,
   openSelfRelayExecute,
+  voter,
   ...props
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
@@ -128,9 +127,6 @@ const InnerProposalStatusAndInfo = ({
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
   const statusKey = getProposalStatusKey(proposal.status)
-
-  const voteOptions = useLoadingVoteOptions()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = DaoProposalMultipleHooks.useExecute({
     contractAddress: proposalModule.address,
@@ -387,28 +383,32 @@ const InnerProposalStatusAndInfo = ({
     }
   }
 
+  const Voter = useCallback(
+    (props: ComponentProps<Required<ProposalStatusAndInfoProps>['Voter']>) => (
+      <ProposalVoter
+        {...props}
+        onVoteSuccess={voter.onVoteSuccess}
+        seenAllActionPages={voter.seenAllActionPages}
+      />
+    ),
+    [voter.onVoteSuccess, voter.seenAllActionPages]
+  )
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
+      Voter={
+        loadingWalletVoteInfo &&
+        !loadingWalletVoteInfo.loading &&
+        loadingWalletVoteInfo.data.canVote
+          ? Voter
+          : undefined
+      }
       action={action}
       footer={footer}
       info={info}
       status={status}
       vetoOrEarlyExecute={vetoOrEarlyExecute}
-      vote={
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote &&
-        !voteOptions.loading
-          ? {
-              loading: castingVote,
-              currentVote: loadingWalletVoteInfo.data.vote,
-              onCastVote: castVote,
-              options: voteOptions.data,
-              proposalOpen: statusKey === ProposalStatusEnum.Open,
-            }
-          : undefined
-      }
     />
   )
 }

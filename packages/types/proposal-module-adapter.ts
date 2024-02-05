@@ -7,6 +7,7 @@ import { Action, ActionCategoryMaker } from './actions'
 import {
   DaoInfoCard,
   LinkWrapperProps,
+  ProposalVoterProps,
   SelfRelayExecuteModalProps,
 } from './components'
 import { Expiration } from './contracts'
@@ -70,7 +71,7 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useLoadingProposalStatus: () => LoadingData<ProposalStatus | undefined>
+    useLoadingProposalStatus: () => LoadingData<ProposalStatus>
     useLoadingVoteOptions: () => LoadingData<ProposalVoteOption<Vote>[]>
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
@@ -89,6 +90,7 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
   // Components
   components: {
     ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
+    ProposalVoter: ComponentType<BaseProposalVoterProps>
     ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
@@ -259,14 +261,16 @@ export type BaseProposalStatusAndInfoProps = {
       'uniqueId' | 'chainIds' | 'transaction'
     >
   ) => void
-  onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
   onVetoSuccess: () => void | Promise<void>
-  // Whether or not the user has viewed all action pages. If they haven't, they
-  // can't vote.
-  seenAllActionPages: boolean
+} & {
+  voter: BaseProposalVoterProps
 }
+
+export type BaseProposalVoterProps = {
+  onVoteSuccess: () => void | Promise<void>
+} & Pick<ProposalVoterProps, 'seenAllActionPages'>
 
 export type BasePreProposeProposalStatusAndInfoProps = Pick<
   BaseProposalStatusAndInfoProps,

@@ -24,6 +24,7 @@ import {
   ProposalLine,
   ProposalStatusAndInfo,
   ProposalVoteTally,
+  ProposalVoter,
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
@@ -158,6 +159,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
     // Components
     components: {
       ProposalStatusAndInfo,
+      ProposalVoter,
       ProposalInnerContentDisplay,
       ProposalWalletVote,
       ProposalVotes,

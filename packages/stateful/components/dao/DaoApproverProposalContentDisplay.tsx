@@ -117,13 +117,12 @@ export const DaoApproverProposalContentDisplay = ({
     refreshing,
     title: proposalInfo.title,
     innerContentDisplay: <Loader />,
-    approvalContext:
-      !loadingProposalStatus.loading && loadingProposalStatus.data
-        ? {
-            type: ApprovalProposalContextType.Approver,
-            status: loadingProposalStatus.data,
-          }
-        : undefined,
+    approvalContext: !loadingProposalStatus.loading
+      ? {
+          type: ApprovalProposalContextType.Approver,
+          status: loadingProposalStatus.data,
+        }
+      : undefined,
   }
 
   return (

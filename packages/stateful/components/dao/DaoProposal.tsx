@@ -1,4 +1,12 @@
-import { ComponentProps, useCallback, useEffect, useState } from 'react'
+import {
+  ComponentProps,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -7,6 +15,7 @@ import {
   useProposalModuleAdapterContext,
 } from '@dao-dao/stateful/proposal-module-adapter'
 import {
+  Popup,
   Proposal,
   ProposalNotFound,
   ProposalProps,
@@ -41,6 +50,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     adapter: {
       components: {
         ProposalStatusAndInfo,
+        ProposalVoter,
         PreProposeApprovalProposalStatusAndInfo,
         ProposalVoteTally,
         ProposalVotes,
@@ -51,11 +61,23 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const { refreshProposalAndAll } = useProposalRefreshers()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+  const alreadyVoted =
+    loadingWalletVoteInfo &&
+    !loadingWalletVoteInfo.loading &&
+    !!loadingWalletVoteInfo.data.vote
+  const canVote =
+    loadingWalletVoteInfo &&
+    !loadingWalletVoteInfo.loading &&
+    loadingWalletVoteInfo.data.canVote
 
   const [selfRelayExecuteProps, setSelfRelayExecuteProps] =
     useState<
       Pick<SelfRelayExecuteModalProps, 'uniqueId' | 'chainIds' | 'transaction'>
     >()
+
+  const setVoteOpenRef = useRef<
+    (Dispatch<SetStateAction<boolean>> | null) | null
+  >(null)
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
@@ -70,6 +92,9 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           // toast.
           if (voter === address) {
             toast.success(t('success.voteCast'))
+
+            // Close vote popup in case it's open.
+            setVoteOpenRef.current?.(false)
           }
         }
       },
@@ -173,11 +198,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const setSeenAllActionPages =
     // Only set seen all action pages if the user can vote. This prevents the
     // warning from appearing if the user can't vote.
-    loadingWalletVoteInfo &&
-    !loadingWalletVoteInfo.loading &&
-    loadingWalletVoteInfo.data.canVote
-      ? _setSeenAllActionPages
-      : undefined
+    canVote ? _setSeenAllActionPages : undefined
 
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
@@ -190,9 +211,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
         onVetoSuccess={onVetoSuccess}
-        onVoteSuccess={onVoteSuccess}
         openSelfRelayExecute={setSelfRelayExecuteProps}
-        seenAllActionPages={seenAllActionPages}
+        voter={{
+          seenAllActionPages,
+          onVoteSuccess,
+        }}
       />
     ),
     [
@@ -215,6 +238,31 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           },
           current: `${t('title.proposal')} ${proposalInfo.id}`,
         }}
+        rightNode={
+          canVote ? (
+            <Popup
+              popupClassName="min-w-56 max-w-lg p-3"
+              position="left"
+              setOpenRef={setVoteOpenRef}
+              trigger={{
+                type: 'button',
+                props: {
+                  className: 'animate-fade-in',
+                  contentContainerClassName: 'text-sm',
+                  variant: 'brand_ghost',
+                  children: alreadyVoted
+                    ? t('button.changeVote')
+                    : t('title.vote'),
+                },
+              }}
+            >
+              <ProposalVoter
+                onVoteSuccess={onVoteSuccess}
+                seenAllActionPages={seenAllActionPages}
+              />
+            </Popup>
+          ) : undefined
+        }
       />
 
       <Proposal
