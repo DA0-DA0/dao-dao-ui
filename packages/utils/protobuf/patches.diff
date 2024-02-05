@@ -28,7 +28,7 @@ index c04740c22..98853e53d 100644
        obj.msgs = [];
      }
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 0fc3ae7a3..416477c43 100644
+index 77d8f28c8..a50ee67e9 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,7 @@
@@ -40,15 +40,15 @@ index 0fc3ae7a3..416477c43 100644
  import { Timestamp } from "../../../google/protobuf/timestamp";
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
  import { TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "../v1beta1/gov";
-@@ -18,6 +18,7 @@ import { PromoteToPrivilegedContractProposal, PromoteToPrivilegedContractProposa
- import { SetCodeAuthorizationProposal, SetCodeAuthorizationProposalProtoMsg, SetCodeAuthorizationProposalSDKType, RemoveCodeAuthorizationProposal, RemoveCodeAuthorizationProposalProtoMsg, RemoveCodeAuthorizationProposalSDKType, SetContractAuthorizationProposal, SetContractAuthorizationProposalProtoMsg, SetContractAuthorizationProposalSDKType, RemoveContractAuthorizationProposal, RemoveContractAuthorizationProposalProtoMsg, RemoveContractAuthorizationProposalSDKType } from "../../../publicawesome/stargaze/globalfee/v1/proposal";
+@@ -21,6 +21,7 @@ import { AllowDenomProposal, AllowDenomProposalProtoMsg, AllowDenomProposalSDKTy
+ import { CreditTypeProposal, CreditTypeProposalProtoMsg, CreditTypeProposalSDKType } from "../../../regen/ecocredit/v1/types";
  import { BinaryReader, BinaryWriter } from "../../../binary";
  import { toTimestamp, fromTimestamp } from "../../../helpers";
 +import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from "../../../../../messages";
  /**
   * MsgSubmitProposal defines an sdk.Msg type that supports submitting arbitrary
   * proposal Content.
-@@ -573,7 +574,7 @@ export const MsgSubmitProposal = {
+@@ -576,7 +577,7 @@ export const MsgSubmitProposal = {
    },
    fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
      const message = createBaseMsgSubmitProposal();
@@ -57,7 +57,7 @@ index 0fc3ae7a3..416477c43 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -594,10 +595,8 @@ export const MsgSubmitProposal = {
+@@ -597,10 +598,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
@@ -70,7 +70,7 @@ index 0fc3ae7a3..416477c43 100644
      }
      if (message.initialDeposit) {
        obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
-@@ -608,7 +607,9 @@ export const MsgSubmitProposal = {
+@@ -611,7 +610,9 @@ export const MsgSubmitProposal = {
      obj.metadata = message.metadata;
      obj.title = message.title;
      obj.summary = message.summary;
@@ -81,7 +81,7 @@ index 0fc3ae7a3..416477c43 100644
      return obj;
    },
    fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-@@ -907,7 +908,7 @@ export const MsgVote = {
+@@ -910,7 +911,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
@@ -91,7 +91,7 @@ index 0fc3ae7a3..416477c43 100644
      if (object.metadata !== undefined && object.metadata !== null) {
        message.metadata = object.metadata;
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-index 41cc80d9f..f9fe6a774 100644
+index 27a0730a2..2989a1f86 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 +++ a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 @@ -1,7 +1,7 @@
@@ -103,7 +103,7 @@ index 41cc80d9f..f9fe6a774 100644
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
  import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
  import { SoftwareUpgradeProposal, SoftwareUpgradeProposalProtoMsg, SoftwareUpgradeProposalSDKType, CancelSoftwareUpgradeProposal, CancelSoftwareUpgradeProposalProtoMsg, CancelSoftwareUpgradeProposalSDKType } from "../../upgrade/v1beta1/upgrade";
-@@ -467,7 +467,7 @@ export const MsgVote = {
+@@ -470,7 +470,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {

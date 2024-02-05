@@ -449,8 +449,21 @@ export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
 }
 
 export type DaoApp = {
+  /**
+   * App name.
+   */
   name: string
+  /**
+   * Optional platform name to show above the app name dimmed.
+   */
+  platform?: string
+  /**
+   * Thumbnail image.
+   */
   imageUrl: string
+  /**
+   * App URL.
+   */
   url: string
 }
 

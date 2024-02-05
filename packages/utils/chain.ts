@@ -66,7 +66,7 @@ export const getRpcForChainId = (
     throw new Error(`No RPCs found for chain ID "${chainId}"`)
   }
 
-  return rpcs[offset % rpcs.length].address
+  return rpcs[offset % rpcs.length].address.replace(/http:\/\//, 'https://')
 }
 
 export const cosmosValidatorToValidator = ({
@@ -514,6 +514,15 @@ export const getChainIdForAddress = (address: string): string => {
 
   return chainForAddress.chain.chain_id
 }
+
+/**
+ * Returns true if the cosmos SDK version is 0.46 or higher.
+ *
+ * @param version the cosmos SDK version string
+ * @returns true if the cosmos sdk version is 0.46 or higher
+ */
+export const cosmosSdkVersionIs46OrHigher = (version: string) =>
+  semverGte(version, '0.46.0')
 
 /**
  * Returns true if the cosmos SDK version is 0.47 or higher.

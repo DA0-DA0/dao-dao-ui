@@ -15,11 +15,13 @@ import {
   StargateMsg,
 } from '@dao-dao/types'
 
+import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
 import { processError } from '../error'
 import {
   cwVoteOptionToGovVoteOption,
   govVoteOptionToCwVoteOption,
 } from '../gov'
+import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import {
   cosmosAminoConverters,
@@ -37,6 +39,8 @@ import {
   neutronProtoRegistry,
   osmosisAminoConverters,
   osmosisProtoRegistry,
+  regenAminoConverters,
+  regenProtoRegistry,
   publicawesomeAminoConverters as stargazeAminoConverters,
   publicawesomeProtoRegistry as stargazeProtoRegistry,
 } from '../protobuf'
@@ -543,6 +547,7 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
   ...neutronProtoRegistry,
+  ...regenProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
@@ -562,6 +567,7 @@ export const aminoTypes = new AminoTypes({
   ...stargazeAminoConverters,
   ...gaiaAminoConverters,
   ...neutronAminoConverters,
+  ...regenAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
@@ -670,9 +676,9 @@ export const decodeGovProposalV1Messages = (
   })
 
 // Decode governance proposal content using a protobuf.
-export const decodeGovProposal = (
+export const decodeGovProposal = async (
   govProposal: GovProposal
-): GovProposalWithDecodedContent => {
+): Promise<GovProposalWithDecodedContent> => {
   if (govProposal.version === GovProposalVersion.V1_BETA_1) {
     let title = govProposal.proposal.content?.title || ''
     let description = govProposal.proposal.content?.description || ''
@@ -710,10 +716,43 @@ export const decodeGovProposal = (
       (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
     )
 
+  let title =
+    govProposal.proposal.title ||
+    legacyContent.find((content) => content?.title)?.title ||
+    legacyContent[0]?.typeUrl ||
+    (decodedMessages[0] &&
+      'stargate' in decodedMessages[0] &&
+      decodedMessages[0].stargate.type_url.split('.').pop()) ||
+    '<no title>'
+  let description =
+    govProposal.proposal.summary ||
+    legacyContent.find((content) => content?.description)?.description ||
+    ''
+  // If metadata is a URL, try to fetch metadata.
+  if (
+    govProposal.proposal.metadata &&
+    isValidUrl(govProposal.proposal.metadata, true)
+  ) {
+    try {
+      const res = await fetch(
+        transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)
+      )
+      const json = await res.json()
+      if (objectMatchesStructure(json, { title: {} })) {
+        title = json.title
+      }
+      if (objectMatchesStructure(json, { details: {} })) {
+        description = json.details
+      } else if (objectMatchesStructure(json, { description: {} })) {
+        description = json.description
+      }
+    } catch {}
+  }
+
   return {
     ...govProposal,
-    title: govProposal.proposal.title,
-    description: govProposal.proposal.summary,
+    title,
+    description,
     decodedMessages,
     legacyContent,
   }

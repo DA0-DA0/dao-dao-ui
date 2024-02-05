@@ -24,6 +24,8 @@ export * from "./osmosis/bundle";
 export * from "./osmosis/client";
 export * from "./publicawesome/bundle";
 export * from "./publicawesome/client";
+export * from "./regen/bundle";
+export * from "./regen/client";
 export * from "./noble/bundle";
 export * from "./tendermint/bundle";
 export * from "./varint";
