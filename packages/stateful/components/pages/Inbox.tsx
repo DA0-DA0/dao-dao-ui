@@ -1,10 +1,15 @@
+import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
 import { LogInRequiredPage, Inbox as StatelessInbox } from '@dao-dao/stateless'
-import { SITE_URL } from '@dao-dao/utils'
+import {
+  SITE_URL,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+  UNDO_PAGE_PADDING_TOP_CLASSES,
+} from '@dao-dao/utils'
 
 import { useInboxApiWithUi, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
@@ -44,27 +49,35 @@ export const Inbox: NextPage = () => {
         title={t('title.notifications')}
       />
 
-      <div className="-mx-7 -mt-10 flex flex-row items-center justify-between border-b border-border-secondary py-3 px-4 md:hidden">
-        <div className="flex flex-row items-center gap-2">
-          {inbox.buttons.refresh}
-          {inbox.buttons.settings}
+      <div
+        className={clsx(
+          UNDO_PAGE_PADDING_TOP_CLASSES,
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
+        )}
+      >
+        {/* Mobile button header underneath page header. */}
+        <div className="flex flex-row items-center justify-between border-b border-border-secondary py-3 px-4 md:hidden">
+          <div className="flex flex-row items-center gap-2">
+            {inbox.buttons.refresh}
+            {inbox.buttons.settings}
+          </div>
+
+          {inbox.buttons.clear}
         </div>
 
-        {inbox.buttons.clear}
+        {isWalletConnected ? (
+          <StatelessInbox
+            InboxMainItemRenderer={InboxMainItemRenderer}
+            connected
+            inbox={inbox}
+          />
+        ) : (
+          <LogInRequiredPage
+            connectWalletButton={<ConnectWallet />}
+            connecting={isWalletConnecting}
+          />
+        )}
       </div>
-
-      {isWalletConnected ? (
-        <StatelessInbox
-          InboxMainItemRenderer={InboxMainItemRenderer}
-          connected
-          inbox={inbox}
-        />
-      ) : (
-        <LogInRequiredPage
-          connectWalletButton={<ConnectWallet />}
-          connecting={isWalletConnecting}
-        />
-      )}
     </>
   )
 }

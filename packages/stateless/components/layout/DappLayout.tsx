@@ -1,14 +1,17 @@
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 
-import { DappLayoutProps } from '@dao-dao/types/components/DappLayout'
+import { DappLayoutProps } from '@dao-dao/types'
+import {
+  PAGE_PADDING_BOTTOM_CLASSES,
+  PAGE_PADDING_HORIZONTAL_CLASSES,
+  PAGE_PADDING_TOP_CLASSES,
+} from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { useAppContext } from './AppContext'
 import { DappNavigation } from './DappNavigation'
-
-export * from '@dao-dao/types/components/DappLayout'
 
 export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
   const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
@@ -56,7 +59,12 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
         <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
 
         <div
-          className="no-scrollbar relative grow overflow-y-auto px-6 pt-10 pb-8"
+          className={clsx(
+            'no-scrollbar relative grow overflow-y-auto',
+            PAGE_PADDING_TOP_CLASSES,
+            PAGE_PADDING_BOTTOM_CLASSES,
+            PAGE_PADDING_HORIZONTAL_CLASSES
+          )}
           // PageHeader uses this ID to obtain this element and track its
           // scroll position so that it can move the top gradient accordingly
           // to match the underlying gradient on the page.

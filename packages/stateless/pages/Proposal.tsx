@@ -1,4 +1,12 @@
+import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect } from 'react'
+
+import {
+  PAGE_PADDING_BOTTOM_CLASSES,
+  PAGE_PADDING_HORIZONTAL_CLASSES,
+  PAGE_PADDING_LEFT_CLASS,
+  PAGE_PADDING_TOP_CLASSES,
+} from '@dao-dao/utils'
 
 export type ProposalProps = {
   voteTally: ReactNode
@@ -33,16 +41,29 @@ export const Proposal = ({
   }, [])
 
   return (
-    // Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so
-    // we can add those to our scrollable view instead. Also set height to full
-    // height of parent and some overflow to account for extended margins.
-    <div className="relative -mt-10 -mb-6 h-[calc(100%+4rem)]">
-      <div className="absolute top-10 left-0 z-[2] hidden w-[18rem] mdlg:block">
-        <ProposalStatusAndInfo inline={false} />
+    // Undo page container padding so we can add those to our scrollable view
+    // instead. Also set height to full height of parent and some overflow to
+    // account for extended margins.
+    <div className="absolute top-0 left-0 right-0 bottom-0">
+      <div className="absolute top-0 left-0 z-[2] hidden w-[18rem] mdlg:block">
+        <div
+          className={clsx(PAGE_PADDING_TOP_CLASSES, PAGE_PADDING_LEFT_CLASS)}
+        >
+          <ProposalStatusAndInfo inline={false} />
+        </div>
       </div>
 
       {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
-      <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
+      <div
+        className={clsx(
+          // On mdlg size, add left padding to account for ProposalStatusAndInfo
+          // component floating to the left.
+          'no-scrollbar absolute top-0 right-0 left-0 bottom-0 z-[1] overflow-y-auto mdlg:pl-[21rem]',
+          PAGE_PADDING_TOP_CLASSES,
+          PAGE_PADDING_BOTTOM_CLASSES,
+          PAGE_PADDING_HORIZONTAL_CLASSES
+        )}
+      >
         <div className="mb-9">{contentDisplay}</div>
 
         <div className="mdlg:hidden">
@@ -51,7 +72,7 @@ export const Proposal = ({
 
         <div className="mt-3">{voteTally}</div>
 
-        <div className="mt-10 mb-12">{votesCast}</div>
+        <div className="mt-10">{votesCast}</div>
       </div>
     </div>
   )

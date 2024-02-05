@@ -3,13 +3,12 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
+import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
 import { useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
-
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-14 sm:h-16 md:h-[4.5rem]'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
@@ -56,7 +55,15 @@ export const PageHeader = ({
 
   return (
     <div
-      className={clsx('relative -mx-6', !forceExpandBorderToEdge && 'md:mx-0')}
+      className={clsx(
+        'relative',
+        // Undo container horizontal padding so border stretches to the edge on
+        // small screens.
+        UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+        // On large screens, don't undo container padding so there's a small gap
+        // (unless force expand is on).
+        !forceExpandBorderToEdge && 'md:mx-0'
+      )}
     >
       {gradient && (
         <TopGradient
@@ -68,9 +75,14 @@ export const PageHeader = ({
 
       <div
         className={clsx(
-          'relative px-4',
+          // Add padding to title content on small screens since the container
+          // padding is undone above in the container.
+          'relative h-14 px-4 sm:h-16 md:h-[4.5rem]',
+          // On large screens, no need to add padding since the normal page
+          // padding is in effect (unless force expand is on).
           !forceExpandBorderToEdge && 'md:px-0',
-          PAGE_HEADER_HEIGHT_CLASS_NAMES,
+          // Add bottom border.
+          !noBorder && 'border-b border-border-secondary',
           className
         )}
       >
@@ -125,18 +137,13 @@ export const PageHeader = ({
 
         <div
           className={clsx(
-            // Match `px-4` on the container.
+            // Match container padding since this is absolutely positioned.
             'absolute top-0 bottom-0 right-4 flex flex-row items-stretch justify-end',
             !forceExpandBorderToEdge && 'md:right-0'
           )}
         >
           {rightNode}
         </div>
-
-        {/* Use div for border so we can set absolute positioning and padding. */}
-        {!noBorder && (
-          <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
-        )}
       </div>
     </div>
   )

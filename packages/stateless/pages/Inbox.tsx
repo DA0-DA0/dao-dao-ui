@@ -32,7 +32,7 @@ export const Inbox = ({ connected, ...props }: InboxProps) => {
 
   return (
     <>
-      <Notifications {...props} className="-mx-6 md:-mt-10 md:min-h-full" />
+      <Notifications {...props} className="min-h-full" />
 
       <InboxSettingsModal
         api={props.inbox.api}

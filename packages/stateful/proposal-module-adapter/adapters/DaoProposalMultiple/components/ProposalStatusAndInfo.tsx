@@ -273,7 +273,7 @@ const InnerProposalStatusAndInfo = ({
               loadingExecutionTxHash.loading ? (
                 <p className={clsx('animate-pulse', props.className)}>...</p>
               ) : loadingExecutionTxHash.data ? (
-                <div className="flex flex-row items-center gap-1">
+                <div className="flex w-full flex-row items-center gap-1 overflow-hidden">
                   <CopyToClipboardUnderline
                     // Will truncate automatically.
                     takeAll
@@ -288,6 +288,7 @@ const InnerProposalStatusAndInfo = ({
                         'REPLACE',
                         loadingExecutionTxHash.data
                       )}
+                      size="sm"
                       variant="ghost"
                     />
                   )}

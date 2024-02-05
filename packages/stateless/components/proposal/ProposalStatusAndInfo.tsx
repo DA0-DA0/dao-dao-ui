@@ -120,7 +120,10 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
       <div
         className={clsx(
-          'grid grid-cols-[1.25rem_2fr_4fr] items-center justify-items-center gap-2',
+          'grid items-center justify-items-start gap-2',
+          inline
+            ? 'grid-cols-[1.25rem_2fr_7fr]'
+            : 'grid-cols-[1.25rem_2fr_5fr]',
           inline ? 'p-6' : action || footer ? 'pt-8 pb-6' : 'py-8'
         )}
       >
@@ -130,7 +133,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
             <p className="secondary-text w-full">{label}</p>
 
-            <Value className="w-full !font-mono !text-sm !font-medium !leading-5 !text-text-body" />
+            <Value className="pl-3 !font-mono !text-sm !font-medium !leading-5 !text-text-body" />
           </Fragment>
         ))}
       </div>

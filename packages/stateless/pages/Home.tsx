@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
+
 import {
   DaoCardInfo,
   Feed,
@@ -37,7 +39,7 @@ export const Home = ({
       {/* Feed and Following DAOs*/}
       {connected && (
         <>
-          <div className="mb-8 -mt-4 w-full md:-mt-2">
+          <div className="mb-8 w-full">
             <Feed {...feedProps} />
           </div>
 
@@ -61,7 +63,7 @@ export const Home = ({
             'self-stretch px-[1px]',
             (featuredDaosProps.items.loading ||
               featuredDaosProps.items.data.length > 0) &&
-              '-mx-6'
+              UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
           )}
           itemClassName="w-64"
           shadowClassName={widthOfSidePadding}
