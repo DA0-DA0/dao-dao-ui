@@ -69,7 +69,7 @@ export const WalletUiConnected = ({
             <WalletLogo
               className="!absolute -right-2 -bottom-2"
               logo={walletRepo?.current.walletInfo.logo}
-              size="sm"
+              size="md"
             />
           </Tooltip>
         </div>

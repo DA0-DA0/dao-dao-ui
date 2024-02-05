@@ -31,10 +31,11 @@ import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
 } from '../recoil'
+import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
 import { MigrateFollowingModal } from './MigrateFollowingModal'
-import { NavWallet } from './NavWallet'
+import { DockWallet, SidebarWallet } from './NavWallet'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -77,7 +78,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { isWalletConnected } = useWallet()
+  const { openView, isWalletConnected } = useWallet()
   const { walletHexPublicKey } = useWalletInfo()
 
   //! COMMAND MODAL
@@ -151,6 +152,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     // governance tab.
     <ChainProvider chainId={chainId}>
       <StatelessDappLayout
+        ButtonLink={ButtonLink}
+        DockWallet={DockWallet}
+        connect={openView}
         navigationProps={{
           walletConnected: isWalletConnected,
           LinkWrapper,
@@ -181,7 +185,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
-          NavWallet,
+          SidebarWallet,
         }}
       >
         {children}

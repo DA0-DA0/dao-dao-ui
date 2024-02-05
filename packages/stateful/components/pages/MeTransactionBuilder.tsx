@@ -29,7 +29,6 @@ import {
   temporarySavedTxsAtom,
 } from '../../recoil/selectors/wallet'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { WalletConfiguredChainSwitcherHeader } from '../wallet'
 
 export const MeTransactionBuilder = () => {
   const { t } = useTranslation()
@@ -220,7 +219,6 @@ export const MeTransactionBuilder = () => {
 
   return (
     <StatelessMeTransactionBuilder
-      MobileChainSwitcher={WalletConfiguredChainSwitcherHeader}
       SuspenseLoader={SuspenseLoader}
       categories={categories}
       deleteSave={deleteSave}

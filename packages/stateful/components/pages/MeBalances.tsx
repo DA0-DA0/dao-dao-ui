@@ -1,9 +1,5 @@
 import { useWallet } from '../../hooks'
-import {
-  WalletBalances,
-  WalletConfiguredChainSwitcherHeader,
-  WalletLazyNftCard,
-} from '../wallet'
+import { WalletBalances, WalletLazyNftCard } from '../wallet'
 
 export const MeBalances = () => {
   const { address: walletAddress, hexPublicKey } = useWallet({
@@ -12,7 +8,6 @@ export const MeBalances = () => {
 
   return (
     <WalletBalances
-      MobileChainSwitcher={WalletConfiguredChainSwitcherHeader}
       NftCard={WalletLazyNftCard}
       address={walletAddress}
       editable

@@ -52,7 +52,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
     // Size and rounding of container and children.
     const sizingRoundingClassNames = clsx(
       {
-        'h-8 w-8 rounded-full': size === 'xs',
+        'h-6 w-6 rounded-full': size === 'xs',
         'h-10 w-10 rounded-xl': size === 'sm',
         'h-16 w-16 rounded-2xl': size === 'lg',
         'h-24 w-24 rounded-full': size === 'xl',

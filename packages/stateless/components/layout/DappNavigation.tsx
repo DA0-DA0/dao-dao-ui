@@ -15,7 +15,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DappNavigationProps } from '@dao-dao/types/components/DappNavigation'
+import { DappNavigationProps } from '@dao-dao/types'
 import { getGovPath } from '@dao-dao/utils'
 
 import { useConfiguredChainContext, usePlatform } from '../../hooks'
@@ -27,8 +27,6 @@ import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
-
-export * from '@dao-dao/types/components/DappNavigation'
 
 // Width of `lg` tailwind selector. Don't change this without changing the
 // compact button media query class that shows the compact toggle at the very
@@ -59,7 +57,7 @@ export const DappNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-  NavWallet,
+  SidebarWallet,
 }: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -167,7 +165,7 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <NavWallet inResponsiveNav />
+        <SidebarWallet />
 
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>

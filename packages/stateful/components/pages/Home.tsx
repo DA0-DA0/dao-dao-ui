@@ -1,16 +1,11 @@
-import { BlurOn, Search } from '@mui/icons-material'
+import { BlurOn } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
-import {
-  ChainPickerPopup,
-  IconButton,
-  Home as StatelessHome,
-  Tooltip,
-} from '@dao-dao/stateless'
+import { ChainPickerPopup, Home as StatelessHome } from '@dao-dao/stateless'
 import { getSupportedChainConfig, getSupportedChains } from '@dao-dao/utils'
 
 import { useFeed } from '../../feed'
@@ -94,18 +89,6 @@ export const Home = () => {
     <>
       <PageHeaderContent
         centerNode={<div className="md:hidden">{chainPicker}</div>}
-        leftMobileNode={
-          <Tooltip title={t('title.search')}>
-            <IconButton
-              Icon={Search}
-              className="h-7 w-7"
-              iconClassName="!h-5 !w-5"
-              onClick={openSearch}
-              size="custom"
-              variant="ghost"
-            />
-          </Tooltip>
-        }
         rightNode={<div className="hidden md:block">{chainPicker}</div>}
         title={t('title.home')}
         titleClassName="hidden md:block"

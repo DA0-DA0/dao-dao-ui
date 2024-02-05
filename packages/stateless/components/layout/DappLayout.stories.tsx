@@ -1,10 +1,15 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { DappLayoutProps, PageHeaderProps } from '@dao-dao/types'
+import { DockWallet } from '@dao-dao/stateful'
+import {
+  DappLayoutProps,
+  DappNavigationProps,
+  PageHeaderProps,
+} from '@dao-dao/types'
 
+import { ButtonLink } from '../buttons'
 import { DappLayout } from './DappLayout'
-import { DappNavigationProps } from './DappNavigation'
 import { Default as DappNavigatonStory } from './DappNavigation.stories'
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
@@ -17,6 +22,9 @@ export default {
 
 export const DefaultArgs: DappLayoutProps = {
   navigationProps: DappNavigatonStory.args as DappNavigationProps,
+  connect: () => alert('connect'),
+  DockWallet,
+  ButtonLink,
   children: (
     <div className="flex h-full flex-col px-6">
       <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />

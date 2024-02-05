@@ -22,13 +22,15 @@ export const DaoDappTabbedHome = ({
 
   return (
     <div className="relative z-[1] flex flex-col items-stretch">
-      <DaoSplashHeader
-        ButtonLink={ButtonLink}
-        LinkWrapper={LinkWrapper}
-        daoInfo={daoInfo}
-        follow={follow}
-        parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
-      />
+      <div className="mb-4">
+        <DaoSplashHeader
+          ButtonLink={ButtonLink}
+          LinkWrapper={LinkWrapper}
+          daoInfo={daoInfo}
+          follow={follow}
+          parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
+        />
+      </div>
 
       <TabBar
         className={clsx(

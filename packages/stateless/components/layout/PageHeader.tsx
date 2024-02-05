@@ -15,7 +15,6 @@ export const PageHeader = ({
   className,
   noBorder = false,
   forceCenter = false,
-  leftMobileNode,
   centerNode,
   rightNode,
   forceExpandBorderToEdge = false,
@@ -93,8 +92,6 @@ export const PageHeader = ({
             onClick={toggle}
             variant="ghost"
           />
-
-          {leftMobileNode}
         </div>
 
         <div

@@ -149,6 +149,16 @@ export const getButtonifiedClassNames = ({
       'bg-background-interactive-active text-text-button-primary':
         disabledOrLoading,
     },
+    // Brand ghost variant
+    variant === 'brand_ghost' && {
+      // Default
+      'text-text-interactive-active hover:bg-background-interactive-active active:bg-background-interactive-active':
+        !disabledOrLoading,
+      // Outline
+      '!ring-border-interactive-active': loading,
+      // Disabled, not pressed
+      'bg-transparent text-text-interactive-disabled': disabledOrLoading,
+    },
     // Underline variant
     (variant === 'underline' || variant === 'none') && {
       // Always no padding

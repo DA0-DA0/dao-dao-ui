@@ -5,31 +5,20 @@ import clsx from 'clsx'
 import { NavWalletProps } from '@dao-dao/types'
 
 import { ConnectWallet, NavWalletConnected } from '../wallet'
-import { ConnectWalletIcon } from '../wallet/ConnectWalletIcon'
 
-export const NavWallet = ({
-  containerClassName,
-  compact,
-  ...props
-}: NavWalletProps) => (
+export const NavWallet = ({ mode, ...props }: NavWalletProps) => (
   <div
     className={clsx(
       'flex shrink-0 flex-col justify-center',
-      props.inResponsiveNav &&
-        '-mx-6 shrink-0 border-b border-border-secondary px-6 py-3 md:hidden',
-      containerClassName
+      mode === 'sidebar' &&
+        '-mx-6 border-b border-border-secondary px-6 py-3 md:hidden',
+      mode === 'header' &&
+        'min-w-72 hidden self-stretch border-l border-border-secondary pl-3 md:flex lg:pl-4'
     )}
   >
     {props.connected ? (
       <NavWalletConnected
-        compact={compact}
-        {...{
-          ...props,
-          connected: undefined,
-        }}
-      />
-    ) : compact ? (
-      <ConnectWalletIcon
+        mode={mode}
         {...{
           ...props,
           connected: undefined,

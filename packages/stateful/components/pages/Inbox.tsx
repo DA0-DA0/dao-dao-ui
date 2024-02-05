@@ -40,7 +40,7 @@ export const Inbox: NextPage = () => {
       <PageHeaderContent
         forceExpandBorderToEdge
         rightNode={
-          <div className="hidden flex-row items-center gap-1 md:flex md:gap-2">
+          <div className="flex flex-row items-center gap-1 md:gap-2">
             {inbox.buttons.refresh}
             {inbox.buttons.clear}
             {inbox.buttons.settings}
@@ -55,16 +55,6 @@ export const Inbox: NextPage = () => {
           UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
         )}
       >
-        {/* Mobile button header underneath page header. */}
-        <div className="flex flex-row items-center justify-between border-b border-border-secondary py-3 px-4 md:hidden">
-          <div className="flex flex-row items-center gap-2">
-            {inbox.buttons.refresh}
-            {inbox.buttons.settings}
-          </div>
-
-          {inbox.buttons.clear}
-        </div>
-
         {isWalletConnected ? (
           <StatelessInbox
             InboxMainItemRenderer={InboxMainItemRenderer}

@@ -152,18 +152,12 @@ export const ChainGovernanceHome = () => {
                 }
               }}
               selectedChainId={chainId}
-              selectedIconClassName="xs:hidden"
               // Match title in `PageHeader`.
-              selectedLabelClassName="hidden xs:block header-text truncate text-lg leading-[5rem] sm:text-xl"
+              selectedLabelClassName="header-text truncate text-lg leading-[5rem] sm:text-xl"
             />
           ),
         }}
-        leftMobileNode={explorerButton}
-        rightNode={
-          explorerButton && (
-            <div className="hidden md:block">{explorerButton}</div>
-          )
-        }
+        rightNode={explorerButton}
       />
 
       <DaoDappTabbedHome

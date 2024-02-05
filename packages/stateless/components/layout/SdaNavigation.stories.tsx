@@ -7,7 +7,7 @@ import {
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { NavWallet } from '@dao-dao/stateful'
+import { SidebarWallet } from '@dao-dao/stateful'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 import { DaoTabId, SdaNavigationProps } from '@dao-dao/types'
 
@@ -60,7 +60,7 @@ export const DefaultArgs: SdaNavigationProps = {
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
   LinkWrapper,
-  NavWallet,
+  SidebarWallet,
 }
 
 export const Default = Template.bind({})

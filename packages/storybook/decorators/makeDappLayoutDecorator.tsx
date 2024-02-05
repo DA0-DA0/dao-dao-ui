@@ -4,7 +4,7 @@ import {
   Default as DappLayoutStory,
   DefaultArgs as DappLayoutStoryArgs,
 } from '@dao-dao/stateless/components/layout/DappLayout.stories'
-import { DappNavigationProps } from '@dao-dao/stateless/components/layout/DappNavigation'
+import { DappNavigationProps } from '@dao-dao/types'
 
 export const makeDappLayoutDecorator: (props?: {
   navigationProps?: Partial<DappNavigationProps>

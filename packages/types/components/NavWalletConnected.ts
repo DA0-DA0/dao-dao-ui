@@ -15,11 +15,8 @@ export type NavWalletConnectedProps = {
    */
   className?: string
   /**
-   * Whether or not to use a small connection icon instead of a large button.
+   * The mode. This is used in the nav header on large screens, nav sidebar on
+   * small screens, and dock on small screens.
    */
-  compact?: boolean
-  /**
-   * Whether or not this is displayed in the responsive navigation sidebar.
-   */
-  inResponsiveNav?: boolean
+  mode: 'header' | 'sidebar' | 'dock'
 } & Pick<NotificationsProps, 'inbox' | 'InboxMainItemRenderer'>

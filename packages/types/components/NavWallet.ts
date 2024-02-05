@@ -1,12 +1,7 @@
 import { ConnectWalletProps } from './ConnectWallet'
 import { NavWalletConnectedProps } from './NavWalletConnected'
 
-export type NavWalletProps = {
-  /**
-   * Optional class name for the container.
-   */
-  containerClassName?: string
-} & (
+export type NavWalletProps = (
   | ({
       connected: true
     } & Omit<NavWalletConnectedProps, 'className'>)
@@ -14,9 +9,6 @@ export type NavWalletProps = {
       connected: false
     } & Pick<ConnectWalletProps, 'onConnect' | 'loading'>)
 ) &
-  Pick<NavWalletConnectedProps, 'compact' | 'inResponsiveNav'>
+  Pick<NavWalletConnectedProps, 'mode'>
 
-export type StatefulNavWalletProps = Pick<
-  NavWalletProps,
-  'containerClassName' | 'compact' | 'inResponsiveNav'
->
+export type StatefulNavWalletProps = Pick<NavWalletProps, 'mode'>

@@ -20,7 +20,11 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
   })
 
   return (
-    <SuspenseLoader fallback={<StatelessNavWallet connected={false} loading />}>
+    <SuspenseLoader
+      fallback={
+        <StatelessNavWallet connected={false} loading mode={props.mode} />
+      }
+    >
       {isWalletConnected && address && wallet ? (
         <StatelessNavWallet
           InboxMainItemRenderer={InboxMainItemRenderer}
@@ -40,3 +44,7 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
     </SuspenseLoader>
   )
 }
+
+export const HeaderWallet = () => <NavWallet mode="header" />
+export const SidebarWallet = () => <NavWallet mode="sidebar" />
+export const DockWallet = () => <NavWallet mode="dock" />

@@ -44,11 +44,11 @@ import { ButtonLink } from '../../../../components/ButtonLink'
 import {
   DaoProposalMultipleHooks,
   useAwaitNextBlock,
+  useProposalActionState,
   useProposalPolytoneState,
   useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
-import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useCastVote,

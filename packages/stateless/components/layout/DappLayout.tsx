@@ -1,3 +1,12 @@
+import {
+  HomeOutlined,
+  HomeRounded,
+  Notifications,
+  SearchOutlined,
+  Sensors,
+  WidgetsOutlined,
+  WidgetsRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 
@@ -6,16 +15,27 @@ import {
   PAGE_PADDING_BOTTOM_CLASSES,
   PAGE_PADDING_HORIZONTAL_CLASSES,
   PAGE_PADDING_TOP_CLASSES,
+  getGovPath,
 } from '@dao-dao/utils'
 
+import { useConfiguredChainContext } from '../../hooks'
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { useAppContext } from './AppContext'
+import { DappDock } from './DappDock'
 import { DappNavigation } from './DappNavigation'
+import { IDockItem } from './DockItem'
 
-export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
+export const DappLayout = ({
+  navigationProps,
+  connect,
+  DockWallet,
+  ButtonLink,
+  children,
+}: DappLayoutProps) => {
   const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
   const { responsiveNavigation, setPageHeaderRef } = useAppContext()
+  const { config: chainConfig } = useConfiguredChainContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -49,7 +69,7 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
 
       <main
         className={clsx(
-          'flex grow flex-col overflow-hidden border-l border-border-base transition-opacity',
+          'flex grow flex-col overflow-hidden transition-opacity md:border-l md:border-border-base',
           // After navigation bar responsive cutoff, it automatically displays.
           responsiveNavigation.enabled
             ? 'opacity-30 md:opacity-100'
@@ -69,6 +89,69 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
         >
           <ErrorBoundary>{children}</ErrorBoundary>
         </div>
+
+        {/* Mobile bottom bar */}
+        <DappDock
+          ButtonLink={ButtonLink}
+          items={[
+            {
+              key: 'home',
+              href: '/',
+              pathnames: ['/', '/[chain]'],
+              labelI18nKey: 'title.home',
+              IconUnselected: HomeOutlined,
+              IconSelected: HomeRounded,
+            },
+            {
+              key: 'search',
+              onClick: navigationProps.setCommandModalVisible,
+              labelI18nKey: 'title.search',
+              IconUnselected: SearchOutlined,
+              IconSelected: SearchOutlined,
+            },
+            {
+              key: 'chains',
+              href: getGovPath(chainConfig.name),
+              pathnames: '/gov/[chain]/[[...slug]]',
+              labelI18nKey: 'title.chains',
+              IconUnselected: WidgetsOutlined,
+              IconSelected: WidgetsRounded,
+            },
+            ...(navigationProps.walletConnected
+              ? ([
+                  {
+                    key: 'notifications',
+                    href: '/notifications',
+                    pathnames: ['/notifications/[[...slug]]'],
+                    labelI18nKey: 'title.notifications',
+                    IconUnselected: Notifications,
+                    IconSelected: Notifications,
+                    badge:
+                      !navigationProps.inboxCount.loading &&
+                      navigationProps.inboxCount.data > 0,
+                  },
+                  {
+                    key: 'account',
+                    href: '/me',
+                    pathnames: ['/me/[[...tab]]'],
+                    labelI18nKey: 'title.account',
+                    IconUnselected: DockWallet,
+                    IconSelected: DockWallet,
+                    compact: true,
+                  },
+                ] as IDockItem[])
+              : ([
+                  {
+                    key: 'login',
+                    onClick: connect,
+                    labelI18nKey: 'button.logIn',
+                    IconUnselected: Sensors,
+                    IconSelected: Sensors,
+                    brand: true,
+                  },
+                ] as IDockItem[])),
+          ]}
+        />
       </main>
     </div>
   )

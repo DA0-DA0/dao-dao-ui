@@ -121,11 +121,7 @@ export const Me: NextPage = () => {
       />
 
       <PageHeaderContent
-        rightNode={
-          <div className="hidden md:block">
-            <WalletConfiguredChainSwitcherHeader />
-          </div>
-        }
+        rightNode={<WalletConfiguredChainSwitcherHeader />}
         title={t('title.account')}
       />
 

@@ -25,11 +25,6 @@ export type PageHeaderProps = {
    */
   forceCenter?: boolean
   /**
-   * Add content to the left of the header on mobile, next to the navigation
-   * button.
-   */
-  leftMobileNode?: ReactNode
-  /**
    * Add content to the center of the header.
    */
   centerNode?: ReactNode
