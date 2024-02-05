@@ -111,10 +111,9 @@ export const TabBar = ({
         className
       )}
     >
-      {/* -bottom-1 to account for border of the container */}
       <div
         className={clsx(
-          'pointer-events-none absolute left-0 top-0 -bottom-1 z-10 flex flex-col items-center justify-center transition-opacity',
+          'pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex flex-col items-center justify-center transition-opacity',
           showTabLeftButton ? 'opacity-100' : 'opacity-0'
         )}
       >
@@ -149,10 +148,9 @@ export const TabBar = ({
         />
       </div>
 
-      {/* -bottom-1 to account for border of the container */}
       <div
         className={clsx(
-          'pointer-events-none absolute right-0 top-0 -bottom-1 z-10 flex flex-col items-center justify-center transition-opacity',
+          'pointer-events-none absolute right-0 top-0 bottom-0 z-10 flex flex-col items-center justify-center transition-opacity',
           showTabRightButton ? 'opacity-100' : 'opacity-0'
         )}
       >
