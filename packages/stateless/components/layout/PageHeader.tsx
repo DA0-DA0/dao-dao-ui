@@ -1,12 +1,10 @@
 import { Menu } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
-import { TopGradient } from '../TopGradient'
 import { useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
@@ -20,38 +18,10 @@ export const PageHeader = ({
   leftMobileNode,
   centerNode,
   rightNode,
-  gradient,
   forceExpandBorderToEdge = false,
   titleClassName,
 }: PageHeaderProps) => {
   const toggle = useAppContextIfAvailable()?.responsiveNavigation.toggle
-
-  // Intelligently move gradient to match scroll of page.
-  const [scrollableScrollTop, setScrollableScrollTop] = useState(0)
-  useEffect(() => {
-    if (typeof document === 'undefined' || !gradient) {
-      return
-    }
-
-    const gradientScrollElement = document.getElementById(
-      'main-content-scrollable'
-    )
-    if (!gradientScrollElement) {
-      return
-    }
-
-    // Prevent gradient from moving down on the page, happens during mobile
-    // browser scroll bounce. Only allow negative offsets to hide gradient
-    // upward as page is scrolled down.
-    const onScroll = () =>
-      setScrollableScrollTop(Math.max(gradientScrollElement.scrollTop, 0))
-
-    // Initialize with correct value.
-    onScroll()
-
-    gradientScrollElement.addEventListener('scroll', onScroll)
-    return () => gradientScrollElement.removeEventListener('scroll', onScroll)
-  }, [gradient])
 
   return (
     <div
@@ -65,14 +35,6 @@ export const PageHeader = ({
         !forceExpandBorderToEdge && 'md:mx-0'
       )}
     >
-      {gradient && (
-        <TopGradient
-          style={{
-            top: -scrollableScrollTop,
-          }}
-        />
-      )}
-
       <div
         className={clsx(
           // Add padding to title content on small screens since the container

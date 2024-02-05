@@ -121,7 +121,6 @@ export const Me: NextPage = () => {
       />
 
       <PageHeaderContent
-        gradient
         rightNode={
           <div className="hidden md:block">
             <WalletConfiguredChainSwitcherHeader />

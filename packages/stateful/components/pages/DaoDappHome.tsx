@@ -120,7 +120,6 @@ export const DaoDappHome = () => {
           home: true,
           current: daoInfo.name,
         }}
-        gradient
         rightNode={
           daoInfo.coreVersion === ContractVersion.Gov ? (
             chainConfig?.explorerUrlTemplates?.gov ? (

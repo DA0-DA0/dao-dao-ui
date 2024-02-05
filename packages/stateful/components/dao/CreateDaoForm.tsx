@@ -660,7 +660,6 @@ export const InnerCreateDaoForm = ({
             />
           )
         }
-        gradient
         rightNode={
           !makingSubDao && (
             <WalletChainSwitcher buttonClassName="hidden md:block" headerMode />

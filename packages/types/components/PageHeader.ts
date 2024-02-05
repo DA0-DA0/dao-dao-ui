@@ -38,10 +38,6 @@ export type PageHeaderProps = {
    */
   rightNode?: ReactNode
   /**
-   * Enable the gradient at the top of the page.
-   */
-  gradient?: boolean
-  /*
    * Force expand the border to the edge of the page. This already happens on
    * mobile, so this is only used on larger screens.
    */

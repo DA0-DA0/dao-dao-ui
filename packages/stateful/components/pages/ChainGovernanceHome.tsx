@@ -158,7 +158,6 @@ export const ChainGovernanceHome = () => {
             />
           ),
         }}
-        gradient
         leftMobileNode={explorerButton}
         rightNode={
           explorerButton && (

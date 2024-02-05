@@ -173,6 +173,13 @@ export const PAGE_PADDING_TOP_CLASSES = 'pt-6 sm:pt-10'
  * Classes usable by page content to undo the default top page padding.
  */
 export const UNDO_PAGE_PADDING_TOP_CLASSES = '-mt-6 sm:-mt-10'
+/**
+ * Classes usable by page content to undo the default top page padding by
+ * setting the `top` CSS property to the padding's negative. This is useful in
+ * sticky elements to set their sticky top position right under the header
+ * instead of at the padding.
+ */
+export const UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP = '-top-6 sm:-top-10'
 
 /**
  * The page content's bottom padding used in `DappLayout` and `SdaLayout`.

@@ -3,8 +3,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { BreadcrumbsProps } from '@dao-dao/types/components/Breadcrumbs'
+import { BreadcrumbsProps, ContractVersion, DaoPageMode } from '@dao-dao/types'
 import { getGovPath } from '@dao-dao/utils'
 
 import {
@@ -16,10 +15,7 @@ import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'
 import { Tooltip } from '../tooltip'
-import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
-
-export * from '@dao-dao/types/components/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
@@ -152,8 +148,6 @@ export const Breadcrumbs = ({
         // Close after any click inside this container.
         onClick={() => setResponsive(false)}
       >
-        <TopGradient />
-
         <div
           className="relative"
           style={{

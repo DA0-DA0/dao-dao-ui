@@ -1,4 +1,7 @@
+import clsx from 'clsx'
+
 import { DaoDappTabbedHomeProps } from '@dao-dao/types'
+import { UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP } from '@dao-dao/utils'
 
 import { Loader, TabBar } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
@@ -18,7 +21,7 @@ export const DaoDappTabbedHome = ({
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
-    <div className="relative z-[1] -mt-4 flex flex-col items-stretch">
+    <div className="relative z-[1] flex flex-col items-stretch">
       <DaoSplashHeader
         ButtonLink={ButtonLink}
         LinkWrapper={LinkWrapper}
@@ -28,6 +31,12 @@ export const DaoDappTabbedHome = ({
       />
 
       <TabBar
+        className={clsx(
+          // Stick to the top when the tab content scrolls down. Use higher z
+          // index to make sure this stays above tab content.
+          'sticky z-20 bg-background-base',
+          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP
+        )}
         onSelect={onSelectTabId}
         selectedTabId={selectedTabId}
         tabs={tabs.map(({ id, label, IconFilled }) => ({
@@ -37,7 +46,7 @@ export const DaoDappTabbedHome = ({
         }))}
       />
 
-      <div className="pt-5 pb-6">
+      <div className="z-10 pt-5 pb-6">
         {/* Don't render a tab unless it is visible. */}
         {selectedTab && (
           <SuspenseLoader fallback={<Loader />}>

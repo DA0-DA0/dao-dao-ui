@@ -70,7 +70,6 @@ export const DaoSplashHeader = ({
 
       <DaoHeader
         LinkWrapper={LinkWrapper}
-        className="mt-4 mb-6"
         coreAddress={daoInfo.coreAddress}
         description={daoInfo.description}
         follow={follow}

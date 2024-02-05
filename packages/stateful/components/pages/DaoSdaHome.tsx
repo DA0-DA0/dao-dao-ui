@@ -66,7 +66,6 @@ export const DaoSdaHome = () => {
           home: true,
           current: activeTab?.label,
         }}
-        gradient
       />
 
       <DaoSdaWrappedTab

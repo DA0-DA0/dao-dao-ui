@@ -65,10 +65,6 @@ export const DappLayout = ({ navigationProps, children }: DappLayoutProps) => {
             PAGE_PADDING_BOTTOM_CLASSES,
             PAGE_PADDING_HORIZONTAL_CLASSES
           )}
-          // PageHeader uses this ID to obtain this element and track its
-          // scroll position so that it can move the top gradient accordingly
-          // to match the underlying gradient on the page.
-          id="main-content-scrollable"
           ref={scrollableContainerRef}
         >
           <ErrorBoundary>{children}</ErrorBoundary>
