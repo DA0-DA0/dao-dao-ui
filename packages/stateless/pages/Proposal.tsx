@@ -66,13 +66,13 @@ export const Proposal = ({
       >
         <div className="mb-9">{contentDisplay}</div>
 
-        <div className="mdlg:hidden">
+        <div className="mb-3 mdlg:hidden">
           <ProposalStatusAndInfo inline />
         </div>
 
-        <div className="mt-3">{voteTally}</div>
+        <div>{voteTally}</div>
 
-        <div className="mt-10">{votesCast}</div>
+        <div className="mt-8">{votesCast}</div>
       </div>
     </div>
   )
