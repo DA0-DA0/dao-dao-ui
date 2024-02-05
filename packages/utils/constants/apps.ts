@@ -30,21 +30,25 @@ export const DAO_APPS: DaoApp[] = [
   },
   {
     name: 'FIN',
+    platform: 'Kujira',
     imageUrl: '/apps/fin.png',
     url: 'https://fin.kujira.network',
   },
   {
     name: 'BOW',
+    platform: 'Kujira',
     imageUrl: '/apps/bow.png',
     url: 'https://bow.kujira.network',
   },
   {
     name: 'GHOST',
+    platform: 'Kujira',
     imageUrl: '/apps/ghost.png',
     url: 'https://ghost.kujira.network',
   },
   {
     name: 'PILOT',
+    platform: 'Kujira',
     imageUrl: '/apps/pilot.png',
     url: 'https://pilot.kujira.network',
   },
