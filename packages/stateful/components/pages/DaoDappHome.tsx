@@ -132,7 +132,7 @@ export const DaoDappHome = () => {
             ) : undefined
           ) : (
             <ButtonLink
-              contentContainerClassName="text-text-primary text-sm"
+              contentContainerClassName="text-text-primary text-base"
               href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
               variant="ghost"
             >

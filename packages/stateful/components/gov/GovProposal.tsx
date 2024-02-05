@@ -72,7 +72,7 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
               type: 'button',
               props: {
                 className: 'animate-fade-in',
-                contentContainerClassName: 'text-sm',
+                contentContainerClassName: 'text-base',
                 variant: 'brand_ghost',
                 children: alreadyVoted
                   ? t('button.changeVote')
