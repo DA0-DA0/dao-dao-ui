@@ -1,5 +1,5 @@
 import { HowToVoteRounded } from '@mui/icons-material'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -67,10 +67,6 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Whether or not the current wallet is a member of the DAO.
    */
   isMember: boolean
-  /**
-   * Whether or not to disable infinite scroll. Defaults to false.
-   */
-  disableInfiniteScroll?: boolean
 
   ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
@@ -86,7 +82,6 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadMore,
   loadingMore,
   isMember,
-  disableInfiniteScroll,
   ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
@@ -99,10 +94,16 @@ export const ProposalList = <T extends { proposalId: string }>({
     daosWithVetoableProposals.length > 0 ||
     sections.some((section) => section.proposals.length > 0)
 
+  // Only infinite scroll if the last collapsible section is open (probably
+  // history).
+  const [lastCollapsibleSectionOpen, setLastCollapsibleSectionOpen] = useState(
+    sections.length === 0 || !sections[sections.length - 1].defaultCollapsed
+  )
+
   // Infinite scroll by loading more when scrolled near bottom.
   const { infiniteScrollRef } = useInfiniteScroll({
     loadMore,
-    disabled: disableInfiniteScroll || !canLoadMore || loadingMore,
+    disabled: !lastCollapsibleSectionOpen || !canLoadMore || loadingMore,
   })
 
   return (
@@ -152,6 +153,11 @@ export const ProposalList = <T extends { proposalId: string }>({
                     })}`}
                     labelClassName="text-text-secondary"
                     noContentIndent
+                    onExpand={
+                      index === sections.length - 1
+                        ? setLastCollapsibleSectionOpen
+                        : undefined
+                    }
                   >
                     {proposals.map((props) => (
                       <ProposalLine {...props} key={props.proposalId} />
