@@ -643,9 +643,26 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
   get:
     ({ chainId }) =>
     async ({ get }) => {
+      // Neutron does not have staking.
+      if (chainId === ChainId.NeutronMainnet) {
+        return 0
+      }
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const { params } = await client.staking.v1beta1.params()
-      return Number(params?.unbondingTime?.seconds ?? -1)
+      try {
+        const { params } = await client.staking.v1beta1.params()
+        return Number(params?.unbondingTime?.seconds ?? -1)
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          return 0
+        }
+
+        // Rethrow other errors.
+        throw err
+      }
     },
 })
 

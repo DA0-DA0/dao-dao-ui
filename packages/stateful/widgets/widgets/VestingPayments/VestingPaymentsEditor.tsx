@@ -21,6 +21,7 @@ import { useWallet } from '../../../hooks/useWallet'
 
 export const VestingPaymentsEditor = ({
   fieldNamePrefix,
+  isCreating,
 }: WidgetEditorProps<VestingPaymentsWidgetData>) => {
   const { t } = useTranslation()
 
@@ -118,21 +119,24 @@ export const VestingPaymentsEditor = ({
         )}
       </div>
 
-      {!!factory && version !== LATEST_VESTING_PAYMENTS_WIDGET_VERSION && (
-        <>
-          <p className="body-text">{t('info.updateVestingWidget')}</p>
+      {isCreating &&
+        !!factory &&
+        version !== LATEST_VESTING_PAYMENTS_WIDGET_VERSION && (
+          <>
+            <p className="body-text">{t('info.updateVestingWidget')}</p>
 
-          <Button
-            loading={instantiating}
-            onClick={instantiateVestingFactory}
-            variant="primary"
-          >
-            {t('button.prepareUpdate')}
-          </Button>
-        </>
-      )}
+            <Button
+              loading={instantiating}
+              onClick={instantiateVestingFactory}
+              variant="primary"
+            >
+              {t('button.prepareUpdate')}
+            </Button>
+          </>
+        )}
 
-      {!!factory &&
+      {isCreating &&
+        !!factory &&
         !!oldFactories?.length &&
         version === LATEST_VESTING_PAYMENTS_WIDGET_VERSION && (
           <p className="primary-text">{t('info.updatedVestingWidget')}</p>
