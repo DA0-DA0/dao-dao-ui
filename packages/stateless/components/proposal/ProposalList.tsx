@@ -94,8 +94,8 @@ export const ProposalList = <T extends { proposalId: string }>({
     daosWithVetoableProposals.length > 0 ||
     sections.some((section) => section.proposals.length > 0)
 
-  // Only infinite scroll if the last collapsible section is open (probably
-  // history).
+  // Only show load more and infinite scroll if the last collapsible section is
+  // open (probably history).
   const [lastCollapsibleSectionOpen, setLastCollapsibleSectionOpen] = useState(
     sections.length === 0 || !sections[sections.length - 1].defaultCollapsed
   )
@@ -167,7 +167,7 @@ export const ProposalList = <T extends { proposalId: string }>({
             )}
           </div>
 
-          {(canLoadMore || loadingMore) && (
+          {(canLoadMore || loadingMore) && lastCollapsibleSectionOpen && (
             <div className="mt-4 flex flex-row justify-end">
               <Button
                 className="secondary"
