@@ -2,12 +2,22 @@ import { GenericToken } from '@dao-dao/types'
 import { Vest } from '@dao-dao/types/contracts/CwVesting'
 
 export enum VestingPaymentsWidgetVersion {
-  // Version 1. Supports vesting payment owner different from factory owner.
+  /**
+   * Version 1 supports vesting payment owner different from factory owner.
+   */
   V1 = 1,
+  /**
+   * Version 2 fixes a bug that prevented vesting NTRN on Neutron.
+   */
+  V2 = 2,
 }
 
+/**
+ * The latest version of the vesting payments widget. This is used to check if
+ * an update is needed.
+ */
 export const LATEST_VESTING_PAYMENTS_WIDGET_VERSION =
-  VestingPaymentsWidgetVersion.V1
+  VestingPaymentsWidgetVersion.V2
 
 export type VestingPaymentsWidgetData = {
   factory: string
