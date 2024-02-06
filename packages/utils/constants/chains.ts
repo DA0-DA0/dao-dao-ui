@@ -379,7 +379,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwPayrollFactory: 553,
       CwTokenSwap: 564,
       CwTokenfactoryIssuer: 565,
-      CwVesting: 566,
+      CwVesting: 703,
       DaoCore: 567,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
       DaoPreProposeApprovalSingle: 569,
