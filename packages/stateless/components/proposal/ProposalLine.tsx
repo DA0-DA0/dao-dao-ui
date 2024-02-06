@@ -135,5 +135,5 @@ const ProposalLineLoaderDesktop = () => (
 )
 
 const ProposalLineLoaderMobile = () => (
-  <div className="h-[9.5rem] animate-pulse rounded-md bg-background-primary md:hidden"></div>
+  <div className="h-[7rem] animate-pulse rounded-md bg-background-primary md:hidden"></div>
 )

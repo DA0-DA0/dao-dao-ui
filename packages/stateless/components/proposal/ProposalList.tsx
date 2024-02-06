@@ -10,8 +10,8 @@ import {
 import { useDaoInfoContext, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
-import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
+import { ProposalLineLoader } from './ProposalLine'
 import { VetoableProposals } from './VetoableProposals'
 
 type ProposalSection<T extends { proposalId: string }> = {
@@ -67,6 +67,10 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Whether or not the current wallet is a member of the DAO.
    */
   isMember: boolean
+  /**
+   * Whether or not to disable infinite scroll. Defaults to false.
+   */
+  disableInfiniteScroll?: boolean
 
   ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
@@ -82,6 +86,7 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadMore,
   loadingMore,
   isMember,
+  disableInfiniteScroll,
   ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
@@ -97,10 +102,10 @@ export const ProposalList = <T extends { proposalId: string }>({
   // Infinite scroll by loading more when scrolled near bottom.
   const { infiniteScrollRef } = useInfiniteScroll({
     loadMore,
-    disabled: !canLoadMore || loadingMore,
+    disabled: disableInfiniteScroll || !canLoadMore || loadingMore,
   })
 
-  return proposalsExist ? (
+  return (
     <div
       className="border-t border-border-secondary py-6"
       ref={infiniteScrollRef}
@@ -108,74 +113,82 @@ export const ProposalList = <T extends { proposalId: string }>({
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
-        {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
-      </div>
-
-      {openProposals.length > 0 && (
-        <div className="mb-6 space-y-1">
-          {openProposals.map((props) => (
-            <ProposalLine {...props} key={props.proposalId} />
-          ))}
-        </div>
-      )}
-
-      {daosWithVetoableProposals.length > 0 && (
-        <VetoableProposals
-          LinkWrapper={LinkWrapper}
-          ProposalLine={ProposalLine}
-          className="mb-6 animate-fade-in"
-          daoName={daoName}
-          daosWithVetoableProposals={daosWithVetoableProposals}
-        />
-      )}
-
-      <div className="space-y-4">
-        {sections.map(
-          ({ title, proposals, total, defaultCollapsed }, index) =>
-            proposals.length > 0 && (
-              <Collapsible
-                key={index}
-                containerClassName="gap-3"
-                contentContainerClassName="space-y-1"
-                defaultCollapsed={defaultCollapsed}
-                label={`${title} • ${t('info.numProposals', {
-                  count: total ?? proposals.length,
-                })}`}
-                labelClassName="text-text-secondary"
-                noContentIndent
-              >
-                {proposals.map((props) => (
-                  <ProposalLine {...props} key={props.proposalId} />
-                ))}
-              </Collapsible>
-            )
+        {DiscordNotifierConfigureModal && proposalsExist && (
+          <DiscordNotifierConfigureModal />
         )}
       </div>
 
-      {(canLoadMore || loadingMore) && (
-        <div className="mt-6 flex flex-row justify-end">
-          <Button
-            className="secondary"
-            loading={loadingMore}
-            onClick={loadMore}
-          >
-            {t('button.loadMore')}
-          </Button>
+      {proposalsExist ? (
+        <>
+          {openProposals.length > 0 && (
+            <div className="mb-4 space-y-1 sm:mb-6">
+              {openProposals.map((props) => (
+                <ProposalLine {...props} key={props.proposalId} />
+              ))}
+            </div>
+          )}
+
+          {daosWithVetoableProposals.length > 0 && (
+            <VetoableProposals
+              LinkWrapper={LinkWrapper}
+              ProposalLine={ProposalLine}
+              className="mb-4 animate-fade-in sm:mb-6"
+              daoName={daoName}
+              daosWithVetoableProposals={daosWithVetoableProposals}
+            />
+          )}
+
+          <div className="space-y-4">
+            {sections.map(
+              ({ title, proposals, total, defaultCollapsed }, index) =>
+                proposals.length > 0 && (
+                  <Collapsible
+                    key={index}
+                    containerClassName="gap-3"
+                    contentContainerClassName="space-y-1"
+                    defaultCollapsed={defaultCollapsed}
+                    label={`${title} • ${t('info.numProposals', {
+                      count: total ?? proposals.length,
+                    })}`}
+                    labelClassName="text-text-secondary"
+                    noContentIndent
+                  >
+                    {proposals.map((props) => (
+                      <ProposalLine {...props} key={props.proposalId} />
+                    ))}
+                  </Collapsible>
+                )
+            )}
+          </div>
+
+          {(canLoadMore || loadingMore) && (
+            <div className="mt-4 flex flex-row justify-end">
+              <Button
+                className="secondary"
+                loading={loadingMore}
+                onClick={loadMore}
+              >
+                {t('button.loadMore')}
+              </Button>
+            </div>
+          )}
+        </>
+      ) : // If loading but no proposals are loaded yet, show placeholders.
+      loadingMore ? (
+        <div className="space-y-1">
+          {...Array(20)
+            .fill(0)
+            .map((_, index) => <ProposalLineLoader key={index} />)}
         </div>
+      ) : (
+        <NoContent
+          Icon={HowToVoteRounded}
+          actionNudge={t('info.createFirstOneQuestion')}
+          body={t('info.noProposalsYet')}
+          buttonLabel={t('button.newProposal')}
+          href={isMember ? createNewProposalHref : undefined}
+        />
       )}
     </div>
-  ) : // If loading but no proposals are loaded yet, just show loader.
-  loadingMore ? (
-    <div className="border-t border-border-secondary pt-6">
-      <Loader fill={false} />
-    </div>
-  ) : (
-    <NoContent
-      Icon={HowToVoteRounded}
-      actionNudge={t('info.createFirstOneQuestion')}
-      body={t('info.noProposalsYet')}
-      buttonLabel={t('button.newProposal')}
-      href={isMember ? createNewProposalHref : undefined}
-    />
   )
 }

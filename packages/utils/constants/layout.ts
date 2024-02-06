@@ -45,3 +45,8 @@ export const PAGE_PADDING_BOTTOM_CLASSES = 'pb-4 sm:pb-8'
  * Classes usable by page content to undo the default bottom page padding.
  */
 export const UNDO_PAGE_PADDING_BOTTOM_CLASSES = '-mb-4 sm:-mb-8'
+
+/**
+ * The page header's height classes.
+ */
+export const PAGE_HEADER_HEIGHT_CLASSES = 'h-14 sm:h-16 md:h-[4.5rem]'

@@ -2,7 +2,10 @@ import { Menu } from '@mui/icons-material'
 import clsx from 'clsx'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
-import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
+import {
+  PAGE_HEADER_HEIGHT_CLASSES,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+} from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { useAppContextIfAvailable } from './AppContext'
@@ -38,7 +41,8 @@ export const PageHeader = ({
         className={clsx(
           // Add padding to title content on small screens since the container
           // padding is undone above in the container.
-          'relative h-14 px-4 sm:h-16 md:h-[4.5rem]',
+          'relative px-4',
+          PAGE_HEADER_HEIGHT_CLASSES,
           // On large screens, no need to add padding since the normal page
           // padding is in effect (unless force expand is on).
           !forceExpandBorderToEdge && 'md:px-0',
@@ -55,8 +59,8 @@ export const PageHeader = ({
             // breakpoint is when the UI switches from responsive to desktop
             // mode.
             (title || breadcrumbs) && [
-              'px-8',
-              !forceExpandBorderToEdge && 'md:px-12',
+              'px-24',
+              !forceExpandBorderToEdge && 'md:px-28',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
               !forceCenter && 'md:pl-0',

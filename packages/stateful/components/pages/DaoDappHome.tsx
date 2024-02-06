@@ -1,4 +1,4 @@
-import { ArrowOutwardRounded } from '@mui/icons-material'
+import { Add, ArrowOutwardRounded } from '@mui/icons-material'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -132,10 +132,11 @@ export const DaoDappHome = () => {
             ) : undefined
           ) : (
             <ButtonLink
-              contentContainerClassName="text-text-primary text-base"
+              contentContainerClassName="text-text-primary text-base !gap-1.5"
               href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
               variant="ghost"
             >
+              <Add className="!hidden !h-5 !w-5 md:!block" />
               {t('button.propose')}
             </ButtonLink>
           )

@@ -1,17 +1,15 @@
 import { ArrowBackIosNew } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useCallback, useEffect, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 
 import { TabBarProps } from '@dao-dao/types'
 
 import { Button, IconButton } from '../components'
 
-export const TabBar = ({
-  tabs,
-  selectedTabId,
-  onSelect,
-  className,
-}: TabBarProps) => {
+export const TabBar = forwardRef<HTMLDivElement, TabBarProps>(function TabBar(
+  { tabs, selectedTabId, onSelect, className },
+  ref
+) {
   const [tabContainer, _setTabContainer] = useState<HTMLDivElement | null>(null)
   const setTabContainer = useCallback((tabContainer: HTMLDivElement | null) => {
     _setTabContainer(tabContainer)
@@ -110,6 +108,7 @@ export const TabBar = ({
         'relative flex flex-row items-center justify-center border-b border-border-primary',
         className
       )}
+      ref={ref}
     >
       <div
         className={clsx(
@@ -213,4 +212,4 @@ export const TabBar = ({
       </div>
     </div>
   )
-}
+})

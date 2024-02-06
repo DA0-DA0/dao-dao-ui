@@ -1,9 +1,14 @@
 import clsx from 'clsx'
+import { useRouter } from 'next/router'
+import { useEffect, useRef } from 'react'
 
 import { DaoDappTabbedHomeProps } from '@dao-dao/types'
-import { UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP } from '@dao-dao/utils'
+import {
+  UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
+  getScrollableAncestor,
+} from '@dao-dao/utils'
 
-import { Loader, TabBar } from '../components'
+import { PageLoader, TabBar, useAppContext } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks'
 
@@ -17,8 +22,58 @@ export const DaoDappTabbedHome = ({
   onSelectTabId,
   parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
+  const { asPath } = useRouter()
   const daoInfo = useDaoInfoContext()
+  const { pageHeaderRef } = useAppContext()
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
+
+  const tabBarRef = useRef<HTMLDivElement>(null)
+  const tabContainerRef = useRef<HTMLDivElement>(null)
+
+  // On tab bar change, scroll to top of tabs the user has scrolled down past
+  // them such that they are stuck at the top.
+  useEffect(() => {
+    if (
+      !tabBarRef.current?.parentElement ||
+      !tabContainerRef.current ||
+      !pageHeaderRef.current
+    ) {
+      return
+    }
+
+    const scrollableParent = tabBarRef.current?.parentElement
+      ? getScrollableAncestor(tabBarRef.current.parentElement)
+      : undefined
+    if (!scrollableParent) {
+      return
+    }
+
+    const tabBarRect = tabBarRef.current.getBoundingClientRect()
+    const pageHeaderRect = pageHeaderRef.current.getBoundingClientRect()
+
+    // Tab bar sticks right below page header when the page is scrolled down. We
+    // want to scroll to the top of the tab when a user is selected, only once
+    // already scrolled such that the tabs are sticky.
+    if (pageHeaderRect.bottom < tabBarRect.top) {
+      return
+    }
+
+    const scrollableParentPaddingTop =
+      Number(
+        window.getComputedStyle(scrollableParent).paddingTop.replace('px', '')
+      ) || 0
+
+    scrollableParent.scrollTo({
+      top:
+        tabContainerRef.current.offsetTop +
+        scrollableParentPaddingTop -
+        tabBarRect.height,
+      behavior: 'smooth',
+    })
+
+    // Only toggle on route change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asPath])
 
   return (
     <div className="relative z-[1] flex flex-col items-stretch">
@@ -40,6 +95,7 @@ export const DaoDappTabbedHome = ({
           UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP
         )}
         onSelect={onSelectTabId}
+        ref={tabBarRef}
         selectedTabId={selectedTabId}
         tabs={tabs.map(({ id, label, IconFilled }) => ({
           id,
@@ -48,10 +104,10 @@ export const DaoDappTabbedHome = ({
         }))}
       />
 
-      <div className="z-10 pt-5 pb-6">
+      <div className="z-10 pt-5 pb-6" ref={tabContainerRef}>
         {/* Don't render a tab unless it is visible. */}
         {selectedTab && (
-          <SuspenseLoader fallback={<Loader />}>
+          <SuspenseLoader fallback={<PageLoader size={32} />}>
             <selectedTab.Component />
           </SuspenseLoader>
         )}
