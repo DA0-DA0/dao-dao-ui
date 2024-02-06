@@ -126,7 +126,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           Icon: InboxOutlined,
           href: createProposalHref,
           loading: navigatingToHref === createProposalHref,
-          keywords: ['new', 'proposal'],
+          keywords: ['new'],
         },
         {
           name: following ? t('button.unfollow') : t('button.follow'),
