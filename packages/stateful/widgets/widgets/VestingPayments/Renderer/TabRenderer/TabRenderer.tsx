@@ -8,6 +8,7 @@ import {
   Loader,
   Modal,
   NoContent,
+  ProposalLineLoader,
   Tooltip,
   VestingPaymentLine,
   useDaoInfoContext,
@@ -146,7 +147,10 @@ export const TabRenderer = ({
               }
             >
               <Add className="!h-4 !w-4" />
-              {t('button.newVestingPayment')}
+              <span className="hidden md:inline">
+                {t('button.newVestingPayment')}
+              </span>
+              <span className="md:hidden">{t('button.new')}</span>
             </ButtonLink>
           </Tooltip>
         )}
@@ -154,7 +158,11 @@ export const TabRenderer = ({
 
       <div className="mb-9">
         {vestingPaymentsLoading.loading ? (
-          <Loader fill={false} />
+          <div className="space-y-1">
+            {...Array(20)
+              .fill(null)
+              .map((_, index) => <ProposalLineLoader key={index} />)}
+          </div>
         ) : vestingPaymentsLoading.errored ? (
           <ErrorPage error={vestingPaymentsLoading.error} />
         ) : vestingPaymentsLoading.data.length ? (

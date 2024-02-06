@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  Loader,
   NoContent,
+  ProposalLineLoader,
   Tooltip,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -98,7 +98,10 @@ export const TabRenderer = ({
             ) : (
               <>
                 <Add className="!h-4 !w-4" />
-                {t('button.newCompensationCycle')}
+                <span className="hidden md:inline">
+                  {t('button.newCompensationCycle')}
+                </span>
+                <span className="md:hidden">{t('button.new')}</span>
               </>
             )}
           </Button>
@@ -106,7 +109,7 @@ export const TabRenderer = ({
       </div>
 
       {loadingStatus.loading ? (
-        <Loader fill={false} />
+        <ProposalLineLoader />
       ) : // If no active survey, text is shown at the top. No need to render anything here.
       !loadingStatus.data ? null : (
         <OpenSurveySection status={loadingStatus.data} />
@@ -122,7 +125,11 @@ export const TabRenderer = ({
           </div>
 
           {loadingCompletedSurveys.loading ? (
-            <Loader fill={false} />
+            <div className="space-y-1">
+              {...Array(20)
+                .fill(null)
+                .map((_, index) => <ProposalLineLoader key={index} />)}
+            </div>
           ) : loadingCompletedSurveys.data.length > 0 ? (
             <div className="flex flex-col gap-1">
               {loadingCompletedSurveys.data.map((survey, index) => {
