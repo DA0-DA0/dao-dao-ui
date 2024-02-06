@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
+  chainSupportsV1GovModuleSelector,
   genericTokenSelector,
   refreshGovProposalsAtom,
 } from '@dao-dao/state/recoil'
@@ -43,6 +44,7 @@ import {
   getGovPath,
   processError,
 } from '@dao-dao/utils'
+import { MsgVote as MsgVoteV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
 import {
   ProposalStatus,
   Vote,
@@ -50,7 +52,7 @@ import {
 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   MsgDeposit,
-  MsgVote,
+  MsgVote as MsgVoteV1Beta1,
 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
@@ -80,19 +82,26 @@ export const GovProposalStatusAndInfo = (
         }),
     undefined
   )
+  const supportsV1 = useCachedLoading(
+    chainSupportsV1GovModuleSelector({ chainId }),
+    undefined
+  )
 
   return (
     <SuspenseLoader
       fallback={<InnerProposalStatusAndInfoLoader {...props} />}
-      forceFallback={loadingProposal.loading}
+      forceFallback={loadingProposal.loading || supportsV1.loading}
     >
       {!loadingProposal.loading &&
         !depositToken.loading &&
-        !!depositToken.data && (
+        !supportsV1.loading &&
+        !!depositToken.data &&
+        !!supportsV1.data && (
           <InnerProposalStatusAndInfo
             {...props}
             depositToken={depositToken.data}
             proposal={loadingProposal.data}
+            supportsV1={supportsV1.data}
           />
         )}
     </SuspenseLoader>
@@ -102,10 +111,13 @@ export const GovProposalStatusAndInfo = (
 const InnerProposalStatusAndInfo = ({
   proposal,
   depositToken,
+  supportsV1,
   ...props
 }: GovProposalStatusAndInfoProps & {
   proposal: GovProposalWithMetadata
   depositToken: GenericToken
+  // Whether or not this chain supports the v1 gov module.
+  supportsV1: boolean
 }) => {
   const { t } = useTranslation()
   const {
@@ -244,7 +256,7 @@ const InnerProposalStatusAndInfo = ({
         const client = await getSigningStargateClient()
 
         const encodeObject: EncodeObject = {
-          typeUrl: MsgVote.typeUrl,
+          typeUrl: supportsV1 ? MsgVoteV1.typeUrl : MsgVoteV1Beta1.typeUrl,
           value: {
             proposalId,
             voter: walletAddress,
@@ -272,6 +284,7 @@ const InnerProposalStatusAndInfo = ({
       isWalletConnected,
       proposalId,
       refreshProposal,
+      supportsV1,
       t,
       walletAddress,
     ]

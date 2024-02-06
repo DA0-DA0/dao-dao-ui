@@ -8,6 +8,9 @@ import { ActionKey } from '@dao-dao/types'
 export const actionKeyToMatchOrder = (key: ActionKey) =>
   (
     [
+      // Some actions are more specific authz actions.
+      ActionKey.AuthzExec,
+      ActionKey.AuthzGrantRevoke,
       // Some actions, like create/delete Press post, are more specific NFT
       // operations.
       ActionKey.MintNft,

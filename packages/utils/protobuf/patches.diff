@@ -28,7 +28,7 @@ index c04740c22..98853e53d 100644
        obj.msgs = [];
      }
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 77d8f28c8..a50ee67e9 100644
+index 77d8f28c8..a82a44710 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,7 @@
@@ -90,6 +90,17 @@ index 77d8f28c8..a50ee67e9 100644
      }
      if (object.metadata !== undefined && object.metadata !== null) {
        message.metadata = object.metadata;
+@@ -922,7 +923,9 @@ export const MsgVote = {
+     obj.proposal_id = message.proposalId ? message.proposalId.toString() : "0";
+     obj.voter = message.voter;
+     obj.option = message.option;
+-    obj.metadata = message.metadata;
++    if (message.metadata) {
++      obj.metadata = message.metadata;
++    }
+     return obj;
+   },
+   fromAminoMsg(object: MsgVoteAminoMsg): MsgVote {
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 index 27a0730a2..2989a1f86 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
@@ -127,3 +138,25 @@ index 11d5dba92..e5ef23ea1 100644
      return obj;
    },
    fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
+diff --git b/packages/utils/protobuf/codegen/regen/data/v1/tx.ts a/packages/utils/protobuf/codegen/regen/data/v1/tx.ts
+index 640c2bcef..5bd95374c 100644
+--- b/packages/utils/protobuf/codegen/regen/data/v1/tx.ts
++++ a/packages/utils/protobuf/codegen/regen/data/v1/tx.ts
+@@ -1,5 +1,5 @@
+ //@ts-nocheck
+-import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph } from "./types";
++import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph, ContentHash_GraphAmino, ContentHash_GraphSDKType } from "./types";
+ import { Timestamp } from "../../../google/protobuf/timestamp";
+ import { BinaryReader, BinaryWriter } from "../../../binary";
+ import { toTimestamp, fromTimestamp } from "../../../helpers";
+diff --git b/packages/utils/protobuf/codegen/regen/data/v2/tx.ts a/packages/utils/protobuf/codegen/regen/data/v2/tx.ts
+index fe58afb74..f0e94453b 100644
+--- b/packages/utils/protobuf/codegen/regen/data/v2/tx.ts
++++ a/packages/utils/protobuf/codegen/regen/data/v2/tx.ts
+@@ -1,5 +1,5 @@
+ //@ts-nocheck
+-import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph } from "./types";
++import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph, ContentHash_GraphAmino, ContentHash_GraphSDKType } from "./types";
+ import { Timestamp } from "../../../google/protobuf/timestamp";
+ import { BinaryReader, BinaryWriter } from "../../../binary";
+ import { toTimestamp, fromTimestamp } from "../../../helpers";
