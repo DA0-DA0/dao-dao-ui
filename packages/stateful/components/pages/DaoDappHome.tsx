@@ -4,11 +4,18 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoDappTabbedHome,
+  FollowingToggle,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, ContractVersion, DaoTabId, Feature } from '@dao-dao/types'
+import {
+  ActionKey,
+  ContractVersion,
+  DaoTabId,
+  Feature,
+  FollowState,
+} from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useDaoTabs, useFollowingDaos, useMembership } from '../../hooks'
@@ -113,6 +120,15 @@ export const DaoDappHome = () => {
       shallow: true,
     })
 
+  const follow: FollowState = {
+    following,
+    onFollow: () =>
+      following
+        ? setUnfollowing(daoInfo.coreAddress)
+        : setFollowing(daoInfo.coreAddress),
+    updatingFollowing,
+  }
+
   return (
     <>
       <PageHeaderContent
@@ -131,14 +147,26 @@ export const DaoDappHome = () => {
               />
             ) : undefined
           ) : (
-            <ButtonLink
-              contentContainerClassName="text-text-primary text-base !gap-1.5"
-              href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
-              variant="ghost"
-            >
-              <Add className="!hidden !h-5 !w-5 md:!block" />
-              {t('button.propose')}
-            </ButtonLink>
+            <>
+              {/* Show propose button on desktop. */}
+              <ButtonLink
+                className="hidden md:block"
+                contentContainerClassName="text-text-body text-base !gap-1.5"
+                href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
+                variant="ghost"
+              >
+                <Add className="!h-5 !w-5 !text-icon-primary" />
+                {t('button.propose')}
+              </ButtonLink>
+
+              {/* Show follow button on mobile. */}
+              <FollowingToggle
+                {...follow}
+                className="md:hidden"
+                contentContainerClassName="text-text-body text-sm"
+                variant="ghost"
+              />
+            </>
           )
         }
       />
@@ -147,14 +175,7 @@ export const DaoDappHome = () => {
         ButtonLink={ButtonLink}
         LinkWrapper={LinkWrapper}
         SuspenseLoader={SuspenseLoader}
-        follow={{
-          following,
-          onFollow: () =>
-            following
-              ? setUnfollowing(daoInfo.coreAddress)
-              : setFollowing(daoInfo.coreAddress),
-          updatingFollowing,
-        }}
+        follow={follow}
         onSelectTabId={onSelectTabId}
         parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         selectedTabId={tabId}
