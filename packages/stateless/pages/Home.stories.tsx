@@ -6,7 +6,7 @@ import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 import { DaoCard, IconButtonLink, LinkWrapper } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
-import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
+import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.stories'
 import { Home } from './Home'
 
 export default {

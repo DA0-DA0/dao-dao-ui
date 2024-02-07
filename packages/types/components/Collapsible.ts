@@ -14,6 +14,13 @@ export type CollapsibleProps = {
   defaultCollapsed?: boolean
   onExpand?: (expanded: boolean) => void
   indentDropdownSize?: number
+  /**
+   * Whether or not to indent the dropdown header.
+   */
+  noHeaderIndent?: boolean
+  /**
+   * Whether or not to indent the dropdown content.
+   */
   noContentIndent?: boolean
   /**
    * Hide the placeholder dot when there are no children and thus no dropdown.

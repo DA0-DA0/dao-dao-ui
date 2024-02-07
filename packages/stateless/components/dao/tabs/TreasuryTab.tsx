@@ -141,7 +141,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         Object.values(tokens).every(
           (chainTokens) => chainTokens?.loading || chainTokens?.errored
         ) ? (
-          <LineLoaders lines={20} />
+          <LineLoaders lines={20} type="token" />
         ) : (
           <div className="mt-2 flex flex-col gap-6 md:mt-0 md:gap-8">
             {treasuries.map((treasury) => (

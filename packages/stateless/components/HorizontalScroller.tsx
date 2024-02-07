@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
 
-import { Loader } from './logo'
+import { DaoCardLoader } from './dao/DaoCard'
 import { NoContent } from './NoContent'
 
 export interface HorizontalScrollerProps<P extends {}> {
@@ -71,26 +71,30 @@ export const HorizontalScroller = <P extends {}>({
         ></div>
       )}
 
-      {items.loading ? (
-        <Loader />
-      ) : items.data.length === 0 ? (
-        <NoContent
-          Icon={CheckBoxOutlineBlankRounded}
-          body={t('info.nothingFound')}
-        />
-      ) : (
+      {items.loading || items.data.length > 0 ? (
         <div
           className="no-scrollbar w-full overflow-scroll"
           ref={scrollableContainerRef}
         >
-          <div className="flex w-max flex-row gap-2 py-1 sm:gap-3 lg:gap-4">
-            {items.data.map((item, index) => (
-              <div key={index} className={itemClassName}>
-                <Component {...item} />
-              </div>
-            ))}
+          <div className="flex w-max flex-row gap-2 py-1 sm:gap-3">
+            {items.loading
+              ? [...Array(5)].map((_, index) => (
+                  <div key={index} className={itemClassName}>
+                    <DaoCardLoader />
+                  </div>
+                ))
+              : items.data.map((item, index) => (
+                  <div key={index} className={itemClassName}>
+                    <Component {...item} />
+                  </div>
+                ))}
           </div>
         </div>
+      ) : (
+        <NoContent
+          Icon={CheckBoxOutlineBlankRounded}
+          body={t('info.nothingFound')}
+        />
       )}
 
       {/* Right shadow */}

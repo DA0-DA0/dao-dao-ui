@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  LineLoader,
   LineLoaders,
   NoContent,
-  ProposalLineLoader,
   Tooltip,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -110,7 +110,7 @@ export const TabRenderer = ({
       </div>
 
       {loadingStatus.loading ? (
-        <ProposalLineLoader />
+        <LineLoader type="retroactive" />
       ) : // If no active survey, text is shown at the top. No need to render anything here.
       !loadingStatus.data ? null : (
         <OpenSurveySection status={loadingStatus.data} />
@@ -126,7 +126,7 @@ export const TabRenderer = ({
           </div>
 
           {loadingCompletedSurveys.loading ? (
-            <LineLoaders lines={20} />
+            <LineLoaders lines={20} type="retroactive" />
           ) : loadingCompletedSurveys.data.length > 0 ? (
             <div className="flex flex-col gap-1">
               {loadingCompletedSurveys.data.map((survey, index) => {

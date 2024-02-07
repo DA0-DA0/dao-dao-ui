@@ -17,7 +17,7 @@ import { Button } from '../../buttons'
 import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown } from '../../inputs/Dropdown'
-import { LineLoaders } from '../../LineLoader'
+import { Loader } from '../../logo'
 import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
 import { Tooltip } from '../../tooltip'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
@@ -242,7 +242,7 @@ export const MembersTab = ({
       )}
 
       {members.loading ? (
-        <LineLoaders lines={20} />
+        <Loader />
       ) : members.errored ? (
         <ErrorPage error={members.error} />
       ) : members.data.length ? (

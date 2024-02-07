@@ -7,10 +7,11 @@ import { LazyDaoCardProps, LoadingDataWithError } from '@dao-dao/types'
 
 import { useQuerySyncedState, useSearchFilter } from '../../hooks'
 import { Collapsible } from '../Collapsible'
+import { DaoCardLoader } from '../dao/DaoCard'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { SearchBar } from '../inputs'
-import { Loader, Logo } from '../logo'
+import { Logo } from '../logo'
 import { NoContent } from '../NoContent'
 import { ChainPickerPopup } from '../popup'
 
@@ -43,11 +44,7 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
   const activeDaos = filteredDaos.filter(({ item }) => !item.isInactive)
   const inactiveDaos = filteredDaos.filter(({ item }) => item.isInactive)
 
-  return daos.loading ? (
-    <Loader />
-  ) : daos.errored ? (
-    <ErrorPage error={daos.error} />
-  ) : (
+  return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-row items-stretch gap-2">
         <SearchBar
@@ -66,7 +63,15 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
         />
       </div>
 
-      {activeDaos.length > 0 || inactiveDaos.length > 0 ? (
+      {daos.loading ? (
+        <GridCardContainer>
+          {[...Array(6)].map((_, index) => (
+            <DaoCardLoader key={index} />
+          ))}
+        </GridCardContainer>
+      ) : daos.errored ? (
+        <ErrorPage error={daos.error} />
+      ) : activeDaos.length > 0 || inactiveDaos.length > 0 ? (
         <>
           {activeDaos.length > 0 && (
             <GridCardContainer>

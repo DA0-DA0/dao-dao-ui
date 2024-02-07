@@ -2,10 +2,11 @@ import {
   ArrowOutwardRounded,
   AudiotrackRounded,
   ExpandCircleDownOutlined,
+  Image,
   ImageNotSupported,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import Image from 'next/image'
+import NextImage from 'next/image'
 import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactPlayer from 'react-player'
@@ -25,7 +26,6 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { TokenAmountDisplay, TooltipInfoIcon } from '..'
 import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
@@ -33,6 +33,8 @@ import { Checkbox } from './inputs'
 import { LinkWrapper } from './LinkWrapper'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { ButtonPopup } from './popup/ButtonPopup'
+import { TokenAmountDisplay } from './token'
+import { TooltipInfoIcon } from './tooltip/TooltipInfoIcon'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
@@ -144,7 +146,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   width="100%"
                 />
               ) : imageUrl ? (
-                <Image
+                <NextImage
                   alt={t('info.nftImage')}
                   className="h-full w-full object-cover"
                   fill
@@ -243,7 +245,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                 </div>
 
                 {chainImage && (
-                  <Image
+                  <NextImage
                     alt=""
                     className="shrink-0"
                     height={20}
@@ -354,4 +356,25 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       </div>
     )
   }
+)
+
+export const NftCardLoader = () => (
+  <div className="flex animate-pulse flex-col items-stretch rounded-lg bg-background-primary">
+    <div className="relative flex flex-col items-stretch">
+      <div className="relative aspect-square">
+        <div className="absolute top-0 right-0 bottom-0 left-0">
+          <div className="flex h-full w-full items-center justify-center">
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            <Image className="!h-14 !w-14 text-icon-tertiary" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="border-b border-border-secondary py-4 px-6">
+      <div className="h-2"></div>
+    </div>
+
+    <div className="min-h-[5.5rem] grow gap-2 py-4 px-6"></div>
+  </div>
 )

@@ -24,10 +24,9 @@ import {
 
 import { useDaoInfoContextIfAvailable } from '../../hooks'
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { Tooltip } from '../tooltip'
-import { ActionCard } from './ActionCard'
+import { ActionCard, ActionCardLoader } from './ActionCard'
 import { ActionLibrary } from './ActionLibrary'
 import { ACTIONS_PER_PAGE } from './ActionsRenderer'
 
@@ -290,7 +289,7 @@ export const ActionEditor = ({
                 }}
               >
                 <div className="flex min-w-0 grow flex-col gap-4">
-                  <SuspenseLoader fallback={<Loader size={36} />}>
+                  <SuspenseLoader fallback={<ActionCardLoader />}>
                     <action.Component
                       addAction={addAction}
                       allActionsWithData={actionData}

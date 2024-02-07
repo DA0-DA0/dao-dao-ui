@@ -1,7 +1,7 @@
 import TimeAgo from 'react-timeago'
 
 import {
-  ProposalLineLoader,
+  LineLoader,
   ProposalStatus,
   ProposalLine as StatelessProposalLine,
   useTranslatedTimeDeltaFormatter,
@@ -20,7 +20,7 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
 
   return (
     <SuspenseLoader
-      fallback={<ProposalLineLoader />}
+      fallback={<LineLoader type="proposal" />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (

@@ -64,3 +64,18 @@ export const ActionCard = ({
     </div>
   )
 }
+
+export const ActionCardLoader = () => (
+  <div className="flex animate-pulse flex-col rounded-lg bg-background-tertiary">
+    <div className="primary-text flex flex-row items-center justify-between gap-8 border-b border-border-base p-4 text-text-body">
+      <div className="flex flex-row items-center gap-2 pr-4">
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        <p className="invisible text-xl">Icon</p>
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        <p className="title-text invisible">Label</p>
+      </div>
+    </div>
+
+    <div className="h-40"></div>
+  </div>
+)

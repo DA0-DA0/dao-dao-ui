@@ -1,6 +1,6 @@
 import {
+  LineLoader,
   PreProposeApprovalProposalStatus,
-  ProposalLineLoader,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import {
@@ -21,7 +21,7 @@ export const PreProposeApprovalProposalLine = (
 
   return (
     <SuspenseLoader
-      fallback={<ProposalLineLoader />}
+      fallback={<LineLoader type="proposal" />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (

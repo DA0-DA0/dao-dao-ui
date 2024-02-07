@@ -1,9 +1,9 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/types'
+import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
-import { DaoCardInfo, GridCardContainer, Loader } from '../components'
+import { DaoCardLoader, GridCardContainer } from '../components'
 
 export type GovernanceDaosProps = {
   daos: LoadingData<DaoCardInfo[]>
@@ -17,15 +17,13 @@ export const GovernanceDaos = ({ daos, DaoCard }: GovernanceDaosProps) => {
     <div className="flex flex-col items-start gap-8">
       <p className="title-text">{t('title.governanceDaos')}</p>
 
-      {daos.loading ? (
-        <Loader />
-      ) : (
-        <GridCardContainer>
-          {daos.data.map((props) => (
-            <DaoCard key={props.coreAddress} {...props} />
-          ))}
-        </GridCardContainer>
-      )}
+      <GridCardContainer>
+        {daos.loading
+          ? [...Array(3)].map((_, i) => <DaoCardLoader key={i} />)
+          : daos.data.map((props) => (
+              <DaoCard key={props.coreAddress} {...props} />
+            ))}
+      </GridCardContainer>
     </div>
   )
 }

@@ -118,12 +118,15 @@ export const DaoAccountTreasury = <T extends TokenCardInfo, N extends object>({
       >
         {tokens.loading ||
         (!tokens.errored && tokens.updating && tokens.data.length === 0) ? (
-          <LineLoaders lines={5} />
+          <div>
+            <TokenLineHeader />
+            <LineLoaders lines={3} type="token" />
+          </div>
         ) : tokens.errored ? (
           <ErrorPage error={tokens.error} />
         ) : (
           tokens.data.length > 0 && (
-            <div className="space-y-1">
+            <div>
               <TokenLineHeader />
 
               {tokens.data.map((props, index) => (

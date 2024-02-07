@@ -158,7 +158,11 @@ export const TabRenderer = ({
 
       <div className="mb-9">
         {vestingPaymentsLoading.loading ? (
-          <LineLoaders lines={20} />
+          <div className="border-t border-border-secondary pt-6">
+            <ActiveVestingPaymentLineHeader />
+
+            <LineLoaders lines={20} type="vesting" />
+          </div>
         ) : vestingPaymentsLoading.errored ? (
           <ErrorPage error={vestingPaymentsLoading.error} />
         ) : vestingPaymentsLoading.data.length ? (
@@ -227,14 +231,7 @@ export const TabRenderer = ({
 
             {activeVestingPayments.length > 0 && (
               <div className="space-y-1">
-                <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">
-                  <p>{t('title.recipient')}</p>
-                  <p className="hidden md:block">{t('title.start')}</p>
-                  <p className="hidden md:block">{t('title.end')}</p>
-                  <p className="text-right">
-                    {t('title.vestedOfTotalPayment')}
-                  </p>
-                </div>
+                <ActiveVestingPaymentLineHeader />
 
                 {activeVestingPayments.map((props, index) => (
                   <VestingPaymentLine
@@ -323,6 +320,19 @@ export const TabRenderer = ({
           <Loader />
         )}
       </Modal>
+    </div>
+  )
+}
+
+const ActiveVestingPaymentLineHeader = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">
+      <p>{t('title.recipient')}</p>
+      <p className="hidden md:block">{t('title.start')}</p>
+      <p className="hidden md:block">{t('title.end')}</p>
+      <p className="text-right">{t('title.vestedOfTotalPayment')}</p>
     </div>
   )
 }

@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { DaoCardInfo } from '@dao-dao/types'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
 import {
-  DaoCardInfo,
   Feed,
   FeedProps,
   FollowingDaos,

@@ -43,7 +43,7 @@ export const TokenLine = <T extends TokenCardInfo>(
     <>
       <div
         className={clsx(
-          'box-content grid h-7 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-2 px-3 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr] md:h-8 md:py-3 md:px-4',
+          'box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-2 px-3 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr] md:py-3 md:px-4',
           !transparentBackground && 'bg-background-tertiary'
         )}
         onClick={() => setCardVisible(true)}
@@ -128,7 +128,7 @@ export const TokenLine = <T extends TokenCardInfo>(
             />
           </div>
         ) : (
-          <div></div>
+          <div className="hidden sm:block"></div>
         )}
       </div>
 

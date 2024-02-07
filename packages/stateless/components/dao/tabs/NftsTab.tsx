@@ -7,7 +7,7 @@ import { LoadingData } from '@dao-dao/types'
 
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownProps } from '../../inputs/Dropdown'
-import { Loader } from '../../logo/Loader'
+import { NftCardLoader } from '../../NftCard'
 import { NoContent } from '../../NoContent'
 import { Pagination } from '../../Pagination'
 
@@ -60,7 +60,11 @@ export const NftsTab = <N extends object>({
       </div>
 
       {nfts.loading || numNfts.loading ? (
-        <Loader fill={false} />
+        <GridCardContainer className="pb-6">
+          {[...Array(pageSize)].map((_, index) => (
+            <NftCardLoader key={index} />
+          ))}
+        </GridCardContainer>
       ) : (
         <>
           <GridCardContainer

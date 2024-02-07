@@ -188,7 +188,7 @@ export const ProposalList = <T extends { proposalId: string }>({
         </>
       ) : // If loading but no proposals are loaded yet, show placeholders.
       loadingMore ? (
-        <LineLoaders lines={20} />
+        <LineLoaders lines={20} type="proposal" />
       ) : (
         <NoContent
           Icon={HowToVoteRounded}

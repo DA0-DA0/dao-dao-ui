@@ -16,7 +16,8 @@ import { useButtonPopupSorter, useChain, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { GridCardContainer } from '../GridCardContainer'
 import { DropdownIconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
+import { LineLoaders } from '../LineLoader'
+import { NftCardLoader } from '../NftCard'
 import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE } from '../Pagination'
 import { ButtonPopup } from '../popup'
@@ -72,9 +73,7 @@ export const WalletBalances = <
   return (
     <div className="flex flex-col gap-8">
       <div>
-        {tokens.loading || hiddenTokens.loading ? (
-          <Loader fill={false} />
-        ) : tokens.data.length ? (
+        {tokens.loading || hiddenTokens.loading || tokens.data.length ? (
           <div>
             <div className="mb-6 flex flex-row justify-end">
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
@@ -82,15 +81,19 @@ export const WalletBalances = <
 
             <TokenLineHeader />
 
-            <div className="space-y-1">
-              {visibleBalances.map((props, index) => (
-                <TokenLine
-                  key={props.token.denomOrAddress + index}
-                  transparentBackground={index % 2 !== 0}
-                  {...(props as T)}
-                />
-              ))}
-            </div>
+            {tokens.loading || hiddenTokens.loading ? (
+              <LineLoaders lines={10} type="token" />
+            ) : (
+              <div className="space-y-1">
+                {visibleBalances.map((props, index) => (
+                  <TokenLine
+                    key={props.token.denomOrAddress + index}
+                    transparentBackground={index % 2 !== 0}
+                    {...(props as T)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
@@ -147,15 +150,15 @@ export const WalletBalances = <
               </p>
             </div>
 
-            {nfts.loading ? (
-              <Loader fill={false} />
-            ) : nfts.data.length > 0 ? (
+            {nfts.loading || nfts.data.length > 0 ? (
               <GridCardContainer className="pb-6" ref={infiniteScrollRef}>
-                {nfts.data
-                  .slice(0, nftPage * NFTS_PER_PAGE)
-                  .map((props, index) => (
-                    <NftCard {...(props as N)} key={index} />
-                  ))}
+                {nfts.loading
+                  ? [...Array(3)].map((_, i) => <NftCardLoader key={i} />)
+                  : nfts.data
+                      .slice(0, nftPage * NFTS_PER_PAGE)
+                      .map((props, index) => (
+                        <NftCard {...(props as N)} key={index} />
+                      ))}
               </GridCardContainer>
             ) : (
               <NoContent Icon={Image} body={t('info.noNftsFound')} />

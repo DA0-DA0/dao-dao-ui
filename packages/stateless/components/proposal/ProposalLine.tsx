@@ -111,18 +111,3 @@ export const ProposalLine = ({
     </div>
   </LinkWrapper>
 )
-
-export const ProposalLineLoader = () => (
-  <>
-    <ProposalLineLoaderDesktop />
-    <ProposalLineLoaderMobile />
-  </>
-)
-
-const ProposalLineLoaderDesktop = () => (
-  <div className="hidden h-12 animate-pulse rounded-md bg-background-primary md:block"></div>
-)
-
-const ProposalLineLoaderMobile = () => (
-  <div className="h-28 animate-pulse rounded-md bg-background-primary md:hidden"></div>
-)

@@ -1556,6 +1556,7 @@
     "instantiateSmartContract": "Instantiate Smart Contract",
     "lastUpdated": "Last updated",
     "ledger": "Ledger",
+    "loadingSubDaos": "Loading SubDAOs...",
     "logInWith": "Log in with...",
     "loggedIn": "Logged in",
     "loggedOut": "Logged out",

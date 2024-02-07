@@ -3,15 +3,13 @@ import {
   CheckRounded,
   DescriptionOutlined,
   PersonRounded,
-  ShortcutOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
-import { ContractVersion } from '@dao-dao/types'
 import { DaoCardProps } from '@dao-dao/types/components/DaoCard'
-import { formatDate, getGovPath } from '@dao-dao/utils'
+import { formatDate } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
@@ -19,8 +17,6 @@ import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
-
-export * from '@dao-dao/types/components/DaoCard'
 
 export const DaoCard = ({
   coreAddress,
@@ -54,72 +50,42 @@ export const DaoCard = ({
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
-      <div
-        className={clsx(
-          'absolute top-0 left-0 flex w-full flex-row items-center p-2 sm:p-3',
-          {
-            'justify-between': !!parentDao,
-            'justify-end': !parentDao, // Keep the pin and member check at the end if no parent DAO.
-          }
+      <div className="absolute top-0 left-0 flex w-full flex-row items-center justify-between p-2 sm:p-3">
+        {showIsMember && !lazyData.loading && lazyData.data.isMember ? (
+          <Tooltip title={t('info.youAreMember')}>
+            <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
+          </Tooltip>
+        ) : (
+          <div></div>
         )}
-      >
-        {parentDao && (
-          <Tooltip title={t('info.goToParent')}>
-            <IconButtonLink
-              Icon={(props) => (
-                <ShortcutOutlined
-                  // Flip upside down.
-                  className={clsx('-scale-y-100', props.className)}
-                />
-              )}
-              className="text-icon-interactive-disabled"
-              href={(parentDao.coreVersion === ContractVersion.Gov
-                ? getGovPath
-                : getDaoPath)(parentDao.coreAddress)}
-              onClick={
-                // Don't click on DAO card.
-                (event) => event.stopPropagation()
+
+        {!follow.hide && (
+          <Tooltip
+            title={
+              follow.following
+                ? t('button.clickToUnfollow')
+                : t('button.clickToFollow')
+            }
+          >
+            <IconButton
+              Icon={CheckRounded}
+              className={
+                follow.following
+                  ? 'text-icon-interactive-active'
+                  : 'text-icon-secondary'
               }
+              loading={follow.updatingFollowing}
+              onClick={(event) => {
+                // Don't click on DAO card.
+                event.preventDefault()
+                event.stopPropagation()
+                follow.onFollow()
+              }}
               size="sm"
               variant="ghost"
             />
           </Tooltip>
         )}
-        <div className="flex flex-row items-center gap-3">
-          {showIsMember && !lazyData.loading && lazyData.data.isMember && (
-            <Tooltip title={t('info.youAreMember')}>
-              <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
-            </Tooltip>
-          )}
-
-          {!follow.hide && (
-            <Tooltip
-              title={
-                follow.following
-                  ? t('button.clickToUnfollow')
-                  : t('button.clickToFollow')
-              }
-            >
-              <IconButton
-                Icon={CheckRounded}
-                className={
-                  follow.following
-                    ? 'text-icon-interactive-active'
-                    : 'text-icon-secondary'
-                }
-                loading={follow.updatingFollowing}
-                onClick={(event) => {
-                  // Don't click on DAO card.
-                  event.preventDefault()
-                  event.stopPropagation()
-                  follow.onFollow()
-                }}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
-          )}
-        </div>
       </div>
 
       <div className="flex flex-col items-center">
@@ -200,3 +166,7 @@ export const DaoCard = ({
     </LinkWrapper>
   )
 }
+
+export const DaoCardLoader = () => (
+  <div className="h-[328px] w-full animate-pulse rounded-md bg-background-secondary"></div>
+)

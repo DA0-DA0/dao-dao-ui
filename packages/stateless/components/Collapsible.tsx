@@ -20,6 +20,7 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       defaultCollapsed = false,
       onExpand,
       indentDropdownSize = 0,
+      noHeaderIndent = false,
       noContentIndent = false,
       noPlaceholderDot = false,
       dropdownIconSize = 'sm',
@@ -82,7 +83,8 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
 
           <div
             className={clsx(
-              'ml-2 flex grow flex-row items-center gap-2 overflow-hidden',
+              'flex grow flex-row items-center gap-2 overflow-hidden',
+              !noHeaderIndent && 'ml-2',
               dropdownContainerClassName
             )}
           >

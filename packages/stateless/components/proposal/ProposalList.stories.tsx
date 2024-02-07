@@ -9,7 +9,7 @@ import {
 } from '../modals/DiscordNotifierConfigureModal'
 import { Default as DiscordNotifierConfigureModalStory } from '../modals/DiscordNotifierConfigureModal.stories'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
-import { makeProps as makeProposalProps } from './ProposalLine.ProposalLine.stories'
+import { makeProps as makeProposalProps } from './ProposalLine.stories'
 import { ProposalList } from './ProposalList'
 
 export default {
