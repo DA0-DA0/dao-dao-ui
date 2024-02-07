@@ -71,7 +71,8 @@ export const SubDaosTab = ({
               href={getDaoPath(coreAddress, 'create')}
             >
               <Add className="!h-4 !w-4" />
-              {t('button.newSubDao')}
+              <span className="hidden md:inline">{t('button.newSubDao')}</span>
+              <span className="md:hidden">{t('button.new')}</span>
             </ButtonLink>
           </Tooltip>
         )}

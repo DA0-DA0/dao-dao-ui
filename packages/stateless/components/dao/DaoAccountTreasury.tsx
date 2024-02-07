@@ -1,9 +1,12 @@
-import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AccountType, DaoAccountTreasury, TokenCardInfo } from '@dao-dao/types'
+import {
+  AccountType,
+  DaoAccountTreasuryInfo,
+  TokenCardInfo,
+} from '@dao-dao/types'
 import {
   getChainForChainId,
   getDisplayNameForChainId,
@@ -17,41 +20,35 @@ import { CopyToClipboard } from '../CopyToClipboard'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { DropdownIconButton } from '../icon_buttons'
+import { LineLoaders } from '../LineLoader'
 import { Loader } from '../logo'
-import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
+import { TokenLineHeader } from '../token'
 import { TooltipInfoIcon } from '../tooltip'
 
-export type DaoAccountTreasuryAndNftsProps<
+export type DaoAccountTreasuryProps<
   T extends TokenCardInfo,
   N extends object
 > = {
-  treasury: DaoAccountTreasury<T, N>
+  treasury: DaoAccountTreasuryInfo<T, N>
   connected: boolean
-  isMember: boolean
   // Maps serialized token source to color.
   tokenSourceColorMap: Record<string, string>
-  addCollectionHref?: string
   setDepositFiatChainId: (chainId: string | undefined) => void
-  TokenCard: ComponentType<T>
+  TokenLine: ComponentType<T>
   NftCard: ComponentType<N>
 }
 
 const NFTS_PER_PAGE = 18
 
-export const DaoAccountTreasuryAndNfts = <
-  T extends TokenCardInfo,
-  N extends object
->({
+export const DaoAccountTreasury = <T extends TokenCardInfo, N extends object>({
   treasury: { account, tokens, nfts },
   connected,
-  isMember,
   tokenSourceColorMap,
-  addCollectionHref,
   setDepositFiatChainId,
-  TokenCard,
+  TokenLine,
   NftCard,
-}: DaoAccountTreasuryAndNftsProps<T, N>) => {
+}: DaoAccountTreasuryProps<T, N>) => {
   const { t } = useTranslation()
 
   const bech32Prefix = getChainForChainId(account.chainId).bech32_prefix
@@ -60,19 +57,26 @@ export const DaoAccountTreasuryAndNfts = <
   const [nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
 
   return (
-    <div className="flex flex-col gap-4 pl-8">
+    <div className="flex flex-col gap-4">
       {/* header min-height of 3.5rem standardized across all tabs */}
-      <div className="flex min-h-[3.5rem] grow flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <div className="relative flex flex-row items-center gap-2">
+      <div className="flex grow flex-row items-center justify-between gap-4">
+        <div className="-ml-3 flex flex-row items-center gap-2">
           <DropdownIconButton
-            className="absolute -left-8"
             open={!collapsed}
             toggle={() => setCollapsed((c) => !c)}
           />
 
-          <ChainLogo chainId={account.chainId} size={28} />
+          <ChainLogo
+            chainId={account.chainId}
+            className="cursor-pointer"
+            onClick={() => setCollapsed((c) => !c)}
+            size={28}
+          />
 
-          <p className="title-text shrink-0">
+          <p
+            className="title-text shrink-0 cursor-pointer"
+            onClick={() => setCollapsed((c) => !c)}
+          >
             {getDisplayNameForChainId(account.chainId)}
           </p>
 
@@ -81,14 +85,16 @@ export const DaoAccountTreasuryAndNfts = <
           )}
         </div>
 
-        <div className="flex grow flex-row items-stretch justify-between gap-6">
+        <div className="flex min-w-0 grow flex-row items-stretch justify-between gap-6">
           <CopyToClipboard
-            className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
+            className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono text-xs transition hover:bg-background-secondary"
+            iconClassName="text-icon-secondary"
+            iconSize="sm"
             takeStartEnd={{
               start: bech32Prefix.length + 6,
               end: 6,
             }}
-            textClassName="!bg-transparent !p-0"
+            textClassName="!bg-transparent !p-0 text-text-secondary"
             tooltip={t('button.clickToCopyAddress')}
             value={account.address}
           />
@@ -112,20 +118,24 @@ export const DaoAccountTreasuryAndNfts = <
       >
         {tokens.loading ||
         (!tokens.errored && tokens.updating && tokens.data.length === 0) ? (
-          <Loader className="my-14" size={48} />
+          <LineLoaders lines={5} />
         ) : tokens.errored ? (
           <ErrorPage error={tokens.error} />
         ) : (
           tokens.data.length > 0 && (
-            <GridCardContainer cardType="wide">
+            <div className="space-y-1">
+              <TokenLineHeader />
+
               {tokens.data.map((props, index) => (
-                <TokenCard
+                <TokenLine
                   {...props}
                   key={index}
                   color={tokenSourceColorMap[serializeTokenSource(props.token)]}
+                  hideChainIcon
+                  transparentBackground={index % 2 !== 0}
                 />
               ))}
-            </GridCardContainer>
+            </div>
           )
         )}
 
@@ -161,19 +171,7 @@ export const DaoAccountTreasuryAndNfts = <
               total={nfts.data.length}
             />
           </>
-        ) : (
-          account.type === AccountType.Native && (
-            // Show NFT add prompt on native chain if no tokens nor NFTs.
-            <NoContent
-              Icon={Image}
-              actionNudge={t('info.areTheyMissingQuestion')}
-              body={t('info.noNftsBeingDisplayed')}
-              buttonLabel={t('button.addCollection')}
-              className="mt-4"
-              href={isMember ? addCollectionHref : undefined}
-            />
-          )
-        )}
+        ) : null}
       </div>
     </div>
   )

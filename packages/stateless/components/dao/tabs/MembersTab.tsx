@@ -17,8 +17,8 @@ import { Button } from '../../buttons'
 import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown } from '../../inputs/Dropdown'
+import { LineLoaders } from '../../LineLoader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
-import { ProposalLineLoader } from '../../proposal'
 import { Tooltip } from '../../tooltip'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VotingPowerDistribution } from '../../VotingPowerDistribution'
@@ -242,11 +242,7 @@ export const MembersTab = ({
       )}
 
       {members.loading ? (
-        <div className="space-y-1">
-          {...Array(20)
-            .fill(null)
-            .map((_, index) => <ProposalLineLoader key={index} />)}
-        </div>
+        <LineLoaders lines={20} />
       ) : members.errored ? (
         <ErrorPage error={members.error} />
       ) : members.data.length ? (

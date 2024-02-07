@@ -63,7 +63,8 @@ export const ProposalsTab = ({
             href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
           >
             <Add className="!h-4 !w-4" />
-            {t('button.newProposal')}
+            <span className="hidden md:inline">{t('button.newProposal')}</span>
+            <span className="md:hidden">{t('button.new')}</span>
           </ButtonLink>
         </Tooltip>
       </div>

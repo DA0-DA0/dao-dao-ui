@@ -20,7 +20,14 @@ import {
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
-  const { TokenCard, token, transparentBackground, lazyInfo, color } = props
+  const {
+    TokenCard,
+    token,
+    transparentBackground,
+    lazyInfo,
+    color,
+    hideChainIcon,
+  } = props
   const { t } = useTranslation()
 
   const { tokenSymbol } = shortenTokenSymbol(token.symbol)
@@ -36,21 +43,12 @@ export const TokenLine = <T extends TokenCardInfo>(
     <>
       <div
         className={clsx(
-          'box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-3 px-4 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr]',
+          'box-content grid h-7 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-2 px-3 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr] md:h-8 md:py-3 md:px-4',
           !transparentBackground && 'bg-background-tertiary'
         )}
         onClick={() => setCardVisible(true)}
       >
-        <div className="flex min-w-0 flex-row items-center gap-2">
-          {color && (
-            <div
-              className="h-2 w-2 shrink-0 rounded-full"
-              style={{
-                backgroundColor: color,
-              }}
-            ></div>
-          )}
-
+        <div className="flex min-w-0 flex-row items-center gap-2 md:gap-3">
           <Tooltip
             title={t('info.tokenOnChain', {
               token: tokenSymbol,
@@ -58,22 +56,44 @@ export const TokenLine = <T extends TokenCardInfo>(
             })}
           >
             <div
-              className="relative h-8 w-8 rounded-full bg-cover bg-center"
+              className="relative h-6 w-6 shrink-0 rounded-full bg-cover bg-center md:h-8 md:w-8"
               style={{
                 backgroundImage: `url(${toAccessibleImageUrl(
                   token.imageUrl || getFallbackImage(token.denomOrAddress)
                 )})`,
               }}
             >
-              <ChainLogo
-                chainId={token.chainId}
-                className="absolute -bottom-1 -right-1"
-                size={16}
-              />
+              {!hideChainIcon && (
+                <>
+                  {/* Large screen */}
+                  <ChainLogo
+                    chainId={token.chainId}
+                    className="absolute -bottom-1 -right-1 hidden md:block"
+                    size={16}
+                  />
+                  {/* Small screen */}
+                  <ChainLogo
+                    chainId={token.chainId}
+                    className="absolute -bottom-1 -right-1 md:hidden"
+                    size={12}
+                  />
+                </>
+              )}
             </div>
           </Tooltip>
 
-          <p className="title-text truncate">${tokenSymbol}</p>
+          <p className="title-text truncate text-sm md:text-base">
+            ${tokenSymbol}
+          </p>
+
+          {color && (
+            <div
+              className="hidden h-2 w-2 shrink-0 rounded-full md:block"
+              style={{
+                backgroundColor: color,
+              }}
+            ></div>
+          )}
         </div>
 
         <TokenAmountDisplay
@@ -104,6 +124,7 @@ export const TokenLine = <T extends TokenCardInfo>(
               }
               estimatedUsdValue
               hideSymbol
+              prefix="$"
             />
           </div>
         ) : (

@@ -1,5 +1,5 @@
 import {
-  TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
+  TreasuryTab as StatelessTreasuryTab,
   useCachedLoading,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -7,8 +7,7 @@ import {
 import { ActionKey, LazyNftCardInfo, TokenCardInfo } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../../actions'
-import { useMembership, useWallet } from '../../../hooks'
+import { useWallet } from '../../../hooks'
 import {
   lazyNftCardInfosForDaoSelector,
   treasuryTokenCardInfosForDaoSelector,
@@ -21,13 +20,12 @@ import {
 import { LazyNftCard } from '../../nft'
 import { TreasuryHistoryGraph } from '../../TreasuryHistoryGraph'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
-import { DaoTokenCard } from '../DaoTokenCard'
+import { DaoTokenLine } from '../DaoTokenLine'
 
-export const TreasuryAndNftsTab = () => {
+export const TreasuryTab = () => {
   const daoInfo = useDaoInfoContext()
   const { isWalletConnected } = useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const { isMember = false } = useMembership(daoInfo)
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -54,20 +52,6 @@ export const TreasuryAndNftsTab = () => {
     {}
   )
 
-  // ManageCw721 action defaults to adding
-  const addCw721Action = useActionForKey(ActionKey.ManageCw721)
-  const addCw721ActionDefaults = addCw721Action?.useDefaults()
-  const addCw721ActionPrefill = getDaoProposalSinglePrefill({
-    actions: addCw721Action
-      ? [
-          {
-            actionKey: addCw721Action.key,
-            data: addCw721ActionDefaults,
-          },
-        ]
-      : [],
-  })
-
   const createCrossChainAccountPrefill = getDaoProposalSinglePrefill({
     actions: [
       {
@@ -80,19 +64,11 @@ export const TreasuryAndNftsTab = () => {
   })
 
   return (
-    <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardInfo>
+    <StatelessTreasuryTab<TokenCardInfo, LazyNftCardInfo>
       FiatDepositModal={DaoFiatDepositModal}
       NftCard={LazyNftCard}
-      TokenCard={DaoTokenCard}
+      TokenLine={DaoTokenLine}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
-      addCollectionHref={
-        // Prefill URL only valid if action exists.
-        addCw721Action
-          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
-              prefill: addCw721ActionPrefill,
-            })
-          : undefined
-      }
       connected={isWalletConnected}
       createCrossChainAccountPrefillHref={getDaoProposalPath(
         daoInfo.coreAddress,
@@ -101,7 +77,6 @@ export const TreasuryAndNftsTab = () => {
           prefill: createCrossChainAccountPrefill,
         }
       )}
-      isMember={isMember}
       nfts={nfts}
       tokens={tokens.loading ? {} : tokens.data}
     />

@@ -1,26 +1,29 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoFiatDepositModal, TreasuryHistoryGraph } from '@dao-dao/stateful'
+import {
+  DaoFiatDepositModal,
+  DaoTokenLine,
+  TreasuryHistoryGraph,
+} from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { TokenCardProps } from '@dao-dao/types'
 
 import { NftCard, NftCardProps } from '../../NftCard'
 import { makeProps as makeNftCardProps } from '../../NftCard.stories'
-import { TokenCard } from '../../token/TokenCard'
 import { makeProps as makeTokenCardProps } from '../../token/TokenCard.stories'
-import { TreasuryAndNftsTab } from './TreasuryAndNftsTab'
+import { TreasuryTab } from './TreasuryTab'
 
 export default {
   title:
-    'DAO DAO / packages / stateless / components / dao / tabs / TreasuryAndNftsTab',
-  component: TreasuryAndNftsTab,
+    'DAO DAO / packages / stateless / components / dao / tabs / TreasuryTab',
+  component: TreasuryTab,
   decorators: [DaoPageWrapperDecorator],
-} as ComponentMeta<typeof TreasuryAndNftsTab>
+} as ComponentMeta<typeof TreasuryTab>
 
 const Template: ComponentStory<
-  typeof TreasuryAndNftsTab<TokenCardProps, NftCardProps & { key: string }>
-> = (args) => <TreasuryAndNftsTab {...args} />
+  typeof TreasuryTab<TokenCardProps, NftCardProps & { key: string }>
+> = (args) => <TreasuryTab {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
@@ -31,7 +34,7 @@ Default.args = {
       data: [makeTokenCardProps(true), makeTokenCardProps()],
     },
   },
-  TokenCard,
+  TokenLine: DaoTokenLine,
   nfts: {
     loading: false,
     data: {
@@ -49,8 +52,6 @@ Default.args = {
     },
   },
   NftCard,
-  isMember: true,
-  addCollectionHref: '#',
   FiatDepositModal: DaoFiatDepositModal,
   TreasuryHistoryGraph,
 }
@@ -58,14 +59,12 @@ Default.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   tokens: { [CHAIN_ID]: { loading: true, errored: false } },
-  TokenCard,
+  TokenLine: DaoTokenLine,
   nfts: {
     loading: false,
     data: { [CHAIN_ID]: { loading: true, errored: false } },
   },
   NftCard,
-  isMember: true,
-  addCollectionHref: '#',
   FiatDepositModal: DaoFiatDepositModal,
   TreasuryHistoryGraph,
 }

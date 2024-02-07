@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   AccountType,
-  DaoAccountTreasury,
+  DaoAccountTreasuryInfo,
   DaoFiatDepositModalProps,
   LoadingData,
   LoadingNfts,
@@ -15,17 +15,14 @@ import {
 import { areAccountsEqual, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
-import { Loader } from '../../logo/Loader'
+import { LineLoaders } from '../../LineLoader'
 import { TooltipInfoIcon } from '../../tooltip'
 import {
-  DaoAccountTreasuryAndNfts,
-  DaoAccountTreasuryAndNftsProps,
-} from '../DaoAccountTreasuryAndNfts'
+  DaoAccountTreasury,
+  DaoAccountTreasuryProps,
+} from '../DaoAccountTreasury'
 
-export type TreasuryAndNftsTabProps<
-  T extends TokenCardInfo,
-  N extends object
-> = {
+export type TreasuryTabProps<T extends TokenCardInfo, N extends object> = {
   connected: boolean
   tokens: LoadingTokens<T>
   nfts: LoadingData<LoadingNfts<N & { key: string }>>
@@ -33,18 +30,18 @@ export type TreasuryAndNftsTabProps<
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Omit<
-  DaoAccountTreasuryAndNftsProps<T, N>,
+  DaoAccountTreasuryProps<T, N>,
   'treasury' | 'setDepositFiatChainId' | 'tokenSourceColorMap'
 >
 
-export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
+export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
   connected,
   tokens,
   nfts,
   FiatDepositModal,
   TreasuryHistoryGraph,
   ...props
-}: TreasuryAndNftsTabProps<T, N>) => {
+}: TreasuryTabProps<T, N>) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
@@ -52,7 +49,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
-  const treasuries = accounts.map((account): DaoAccountTreasury<T, N> => {
+  const treasuries = accounts.map((account): DaoAccountTreasuryInfo<T, N> => {
     const chainTokens = tokens[account.chainId]
     // NFTs are only loaded for main account on a chain.
     const chainNfts =
@@ -127,7 +124,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
       <TreasuryHistoryGraph
         address={coreAddress}
         chainId={daoChainId}
-        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
+        className="mb-12 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
         graphClassName="max-h-[20rem]"
         header={
           <div className="flex flex-row items-center justify-center gap-1">
@@ -139,29 +136,27 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
         registerTokenColors={setTokenSourceColorMap}
       />
 
-      <div className="mb-9 mt-6">
-        {
-          // If there is nothing loaded, `every` returns true and shows loading.
-          Object.values(tokens).every(
-            (chainTokens) => chainTokens?.loading || chainTokens?.errored
-          ) ? (
-            <Loader className="mt-6" fill={false} />
-          ) : (
-            <div className="flex flex-col gap-8">
-              {treasuries.map((treasury) => (
-                <DaoAccountTreasuryAndNfts
-                  key={treasury.account.address}
-                  connected={connected}
-                  setDepositFiatChainId={setDepositFiatChainId}
-                  tokenSourceColorMap={tokenSourceColorMap}
-                  treasury={treasury}
-                  {...props}
-                />
-              ))}
-            </div>
-          )
-        }
-      </div>
+      {
+        // If there is nothing loaded, `every` returns true and shows loading.
+        Object.values(tokens).every(
+          (chainTokens) => chainTokens?.loading || chainTokens?.errored
+        ) ? (
+          <LineLoaders lines={20} />
+        ) : (
+          <div className="mt-2 flex flex-col gap-6 md:mt-0 md:gap-8">
+            {treasuries.map((treasury) => (
+              <DaoAccountTreasury
+                key={treasury.account.address}
+                connected={connected}
+                setDepositFiatChainId={setDepositFiatChainId}
+                tokenSourceColorMap={tokenSourceColorMap}
+                treasury={treasury}
+                {...props}
+              />
+            ))}
+          </div>
+        )
+      }
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal

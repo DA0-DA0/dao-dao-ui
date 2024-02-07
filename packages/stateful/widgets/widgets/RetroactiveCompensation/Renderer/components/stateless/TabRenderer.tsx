@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  LineLoaders,
   NoContent,
   ProposalLineLoader,
   Tooltip,
@@ -125,11 +126,7 @@ export const TabRenderer = ({
           </div>
 
           {loadingCompletedSurveys.loading ? (
-            <div className="space-y-1">
-              {...Array(20)
-                .fill(null)
-                .map((_, index) => <ProposalLineLoader key={index} />)}
-            </div>
+            <LineLoaders lines={20} />
           ) : loadingCompletedSurveys.data.length > 0 ? (
             <div className="flex flex-col gap-1">
               {loadingCompletedSurveys.data.map((survey, index) => {

@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react'
 
 import { DaoDappTabbedHomeProps } from '@dao-dao/types'
 import {
+  PAGE_PADDING_HORIZONTAL_CLASSES,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
   getScrollableAncestor,
 } from '@dao-dao/utils'
@@ -87,22 +89,27 @@ export const DaoDappTabbedHome = ({
         />
       </div>
 
-      <TabBar
+      <div
         className={clsx(
           // Stick to the top when the tab content scrolls down. Use higher z
           // index to make sure this stays above tab content.
-          'sticky z-20 bg-background-base',
-          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP
+          'sticky z-20 flex flex-col items-stretch bg-background-base',
+          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+          PAGE_PADDING_HORIZONTAL_CLASSES
         )}
-        onSelect={onSelectTabId}
-        ref={tabBarRef}
-        selectedTabId={selectedTabId}
-        tabs={tabs.map(({ id, label, IconFilled }) => ({
-          id,
-          label,
-          Icon: IconFilled,
-        }))}
-      />
+      >
+        <TabBar
+          onSelect={onSelectTabId}
+          ref={tabBarRef}
+          selectedTabId={selectedTabId}
+          tabs={tabs.map(({ id, label, IconFilled }) => ({
+            id,
+            label,
+            Icon: IconFilled,
+          }))}
+        />
+      </div>
 
       <div className="z-10 pt-5 pb-6" ref={tabContainerRef}>
         {/* Don't render a tab unless it is visible. */}

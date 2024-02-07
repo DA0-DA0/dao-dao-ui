@@ -452,7 +452,10 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
+export type DaoAccountTreasuryInfo<
+  T extends TokenCardInfo,
+  N extends object
+> = {
   account: Account
   tokens: LoadingDataWithError<T[]>
   nfts: LoadingDataWithError<(N & { key: string })[]>

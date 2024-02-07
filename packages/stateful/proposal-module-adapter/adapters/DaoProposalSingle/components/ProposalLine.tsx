@@ -55,9 +55,7 @@ const InnerProposalLine = ({
 
   return (
     <StatelessProposalLine
-      Status={({ dimmed }) => (
-        <ProposalStatus dimmed={dimmed} status={proposal.status} />
-      )}
+      Status={(props) => <ProposalStatus {...props} status={proposal.status} />}
       approvalContext={
         prePropose?.type === PreProposeModuleType.Approver
           ? {
@@ -106,7 +104,6 @@ const InnerProposalLine = ({
               />
             )
       }
-      votingOpen={proposal.votingOpen}
       {...props}
     />
   )

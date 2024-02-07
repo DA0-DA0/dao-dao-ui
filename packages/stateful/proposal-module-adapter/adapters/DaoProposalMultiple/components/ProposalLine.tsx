@@ -51,9 +51,7 @@ const InnerProposalLine = ({
 
   return (
     <StatelessProposalLine
-      Status={({ dimmed }) => (
-        <ProposalStatus dimmed={dimmed} status={proposal.status} />
-      )}
+      Status={(props) => <ProposalStatus {...props} status={proposal.status} />}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       timestampDisplay={
@@ -94,7 +92,6 @@ const InnerProposalLine = ({
               />
             )
       }
-      votingOpen={proposal.votingOpen}
       {...props}
     />
   )

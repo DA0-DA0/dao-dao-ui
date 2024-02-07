@@ -119,6 +119,10 @@ export type TokenCardInfo = {
   lazyInfo: LoadingData<TokenCardLazyInfo>
   // If defined, adds a color indicator.
   color?: string
+  /**
+   * Whether or not to hide the chain icon on tokens.
+   */
+  hideChainIcon?: boolean
 }
 
 export type TokenCardProps = TokenCardInfo & {

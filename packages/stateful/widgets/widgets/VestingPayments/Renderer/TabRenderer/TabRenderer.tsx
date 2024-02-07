@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next'
 import {
   DropdownIconButton,
   ErrorPage,
+  LineLoaders,
   Loader,
   Modal,
   NoContent,
-  ProposalLineLoader,
   Tooltip,
   VestingPaymentLine,
   useDaoInfoContext,
@@ -158,11 +158,7 @@ export const TabRenderer = ({
 
       <div className="mb-9">
         {vestingPaymentsLoading.loading ? (
-          <div className="space-y-1">
-            {...Array(20)
-              .fill(null)
-              .map((_, index) => <ProposalLineLoader key={index} />)}
-          </div>
+          <LineLoaders lines={20} />
         ) : vestingPaymentsLoading.errored ? (
           <ErrorPage error={vestingPaymentsLoading.error} />
         ) : vestingPaymentsLoading.data.length ? (

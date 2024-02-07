@@ -10,8 +10,8 @@ import {
 import { useDaoInfoContext, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
+import { LineLoaders } from '../LineLoader'
 import { NoContent } from '../NoContent'
-import { ProposalLineLoader } from './ProposalLine'
 import { VetoableProposals } from './VetoableProposals'
 
 type ProposalSection<T extends { proposalId: string }> = {
@@ -111,7 +111,7 @@ export const ProposalList = <T extends { proposalId: string }>({
       className="border-t border-border-secondary py-6"
       ref={infiniteScrollRef}
     >
-      <div className="mb-6 flex flex-row items-center justify-between gap-6">
+      <div className="mb-6 flex flex-row items-start justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
         {DiscordNotifierConfigureModal && proposalsExist && (
@@ -181,11 +181,7 @@ export const ProposalList = <T extends { proposalId: string }>({
         </>
       ) : // If loading but no proposals are loaded yet, show placeholders.
       loadingMore ? (
-        <div className="space-y-1">
-          {...Array(20)
-            .fill(0)
-            .map((_, index) => <ProposalLineLoader key={index} />)}
-        </div>
+        <LineLoaders lines={20} />
       ) : (
         <NoContent
           Icon={HowToVoteRounded}

@@ -43,7 +43,7 @@ export const makeProps = (
         ? secondsToWdhms(secondsFromNow, 1) + ' left'
         : formatDate(new Date(Date.now() - secondsFromNow * 1000)),
   },
-  Status: ({ dimmed }) => <ProposalStatus dimmed={dimmed} status={status} />,
+  Status: (props) => <ProposalStatus {...props} status={status} />,
   vote: (
     <ProposalWalletVote
       {...(ProposalWalletVoteStories[
@@ -51,7 +51,6 @@ export const makeProps = (
       ].args as ProposalWalletVoteProps)}
     />
   ),
-  votingOpen: status === 'open',
   LinkWrapper,
 })
 

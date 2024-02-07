@@ -26,7 +26,7 @@ import {
   HomeTab,
   ProposalsTab,
   SubDaosTab,
-  TreasuryAndNftsTab,
+  TreasuryTab,
 } from '../components'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 import { useWidgets } from '../widgets'
@@ -63,7 +63,7 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
       {
         id: DaoTabId.Treasury,
         label: t('title.treasury'),
-        Component: TreasuryAndNftsTab,
+        Component: TreasuryTab,
         Icon: AccountBalanceWalletOutlined,
         IconFilled: AccountBalanceWalletRounded,
       },

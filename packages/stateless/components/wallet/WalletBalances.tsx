@@ -20,7 +20,7 @@ import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE } from '../Pagination'
 import { ButtonPopup } from '../popup'
-import { TooltipInfoIcon } from '../tooltip'
+import { TokenLineHeader } from '../token/TokenLineHeader'
 
 const NFTS_PER_PAGE = 18
 
@@ -80,19 +80,7 @@ export const WalletBalances = <
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 
-            <div className="secondary-text mb-3 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
-              <p>{t('title.token')}</p>
-
-              <p className="text-right">{t('title.total')}</p>
-
-              <div className="hidden flex-row items-center justify-end gap-1 sm:flex">
-                <p className="text-right">{t('title.estUsdValue')}</p>
-                <TooltipInfoIcon
-                  size="xs"
-                  title={t('info.estimatedUsdValueTooltip')}
-                />
-              </div>
-            </div>
+            <TokenLineHeader />
 
             <div className="space-y-1">
               {visibleBalances.map((props, index) => (

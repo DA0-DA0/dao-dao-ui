@@ -21,12 +21,12 @@ import {
   NftCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
-  TreasuryAndNftsTabProps,
+  TreasuryTabProps,
 } from '../components'
 import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
-import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
+import { Default as TreasuryTabStory } from '../components/dao/tabs/TreasuryTab.stories'
 import { DaoDappTabbedHome } from './DaoDappTabbedHome'
 
 export default {
@@ -70,8 +70,8 @@ Default.args = {
       id: DaoTabId.Treasury,
       label: 'Treasury',
       Component: () => (
-        <TreasuryAndNftsTabStory
-          {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps<
+        <TreasuryTabStory
+          {...(TreasuryTabStory.args as TreasuryTabProps<
             TokenCardProps,
             NftCardProps
           >)}
