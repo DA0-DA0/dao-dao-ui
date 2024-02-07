@@ -66,6 +66,7 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
         Component: TreasuryTab,
         Icon: AccountBalanceWalletOutlined,
         IconFilled: AccountBalanceWalletRounded,
+        lazy: true,
       },
       {
         id: DaoTabId.SubDaos,

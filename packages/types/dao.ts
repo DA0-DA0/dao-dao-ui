@@ -436,6 +436,10 @@ export type DaoTab = {
    * Tab icon that shows up in the main DAO tabs.
    */
   IconFilled: ComponentType<{ className: string }>
+  /**
+   * Whether or not to load the tab only once selected. Defaults to false.
+   */
+  lazy?: boolean
 }
 
 export type DaoTabWithComponent = DaoTab & {

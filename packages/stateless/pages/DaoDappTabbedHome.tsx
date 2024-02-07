@@ -27,7 +27,6 @@ export const DaoDappTabbedHome = ({
   const { asPath } = useRouter()
   const daoInfo = useDaoInfoContext()
   const { pageHeaderRef } = useAppContext()
-  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   const tabBarRef = useRef<HTMLDivElement>(null)
   const tabContainerRef = useRef<HTMLDivElement>(null)
@@ -112,12 +111,16 @@ export const DaoDappTabbedHome = ({
       </div>
 
       <div className="z-10 pt-5 pb-6" ref={tabContainerRef}>
-        {/* Don't render a tab unless it is visible. */}
-        {selectedTab && (
-          <SuspenseLoader fallback={<PageLoader size={32} />}>
-            <selectedTab.Component />
-          </SuspenseLoader>
-        )}
+        {tabs.map(({ id, Component, lazy }) => (
+          <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
+            {/* Render tab if it shouldn't lazy load or if it's selected. */}
+            {(!lazy || selectedTabId === id) && (
+              <SuspenseLoader fallback={<PageLoader size={32} />}>
+                <Component />
+              </SuspenseLoader>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   )
