@@ -1,4 +1,5 @@
 import { HowToVoteRounded } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -111,7 +112,7 @@ export const ProposalList = <T extends { proposalId: string }>({
       className="border-t border-border-secondary py-6"
       ref={infiniteScrollRef}
     >
-      <div className="mb-6 flex flex-row items-start justify-between gap-6">
+      <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
         {DiscordNotifierConfigureModal && proposalsExist && (
@@ -139,7 +140,13 @@ export const ProposalList = <T extends { proposalId: string }>({
             />
           )}
 
-          <div className="space-y-4">
+          <div
+            className={clsx(
+              'space-y-4',
+              openProposals.length + daosWithVetoableProposals.length === 0 &&
+                '-mt-3'
+            )}
+          >
             {sections.map(
               ({ title, proposals, total, defaultCollapsed }, index) =>
                 proposals.length > 0 && (
