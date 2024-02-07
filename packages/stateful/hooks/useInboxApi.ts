@@ -116,7 +116,10 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const updateConfig = useCallback(
-    async (data: InboxUpdateConfig, signatureType = 'Save Inbox Config') => {
+    async (
+      data: InboxUpdateConfig,
+      signatureType = 'Save Notification Settings'
+    ) => {
       if (!ready) {
         toast.error(t('error.logInToContinue'))
         return false
@@ -167,17 +170,17 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const loadConfig = useCallback(
-    () => updateConfig({}, 'Load Inbox Config'),
+    () => updateConfig({}, 'Load Notification Settings'),
     [updateConfig]
   )
 
   const resendVerificationEmail = useCallback(
-    () => updateConfig({ resend: true }, 'Resend Inbox Verification Email'),
+    () => updateConfig({ resend: true }, 'Resend Verification Email'),
     [updateConfig]
   )
 
   const verify = useCallback(
-    (code: string) => updateConfig({ verify: code }, 'Verify Inbox Email'),
+    (code: string) => updateConfig({ verify: code }, 'Verify Email'),
     [updateConfig]
   )
 

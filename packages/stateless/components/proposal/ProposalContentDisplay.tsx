@@ -59,7 +59,7 @@ export const ProposalContentDisplay = ({
 
   return (
     <>
-      <div className="mb-8 flex flex-row items-start justify-between gap-6 sm:mb-12 sm:gap-10">
+      <div className="mb-6 flex flex-row items-start justify-between gap-6 sm:mb-8 sm:gap-10">
         <div className="flex min-w-0 grow flex-col gap-4">
           <div
             className={clsx(

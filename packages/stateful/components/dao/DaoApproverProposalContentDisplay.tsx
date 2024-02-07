@@ -117,21 +117,18 @@ export const DaoApproverProposalContentDisplay = ({
     refreshing,
     title: proposalInfo.title,
     innerContentDisplay: <Loader />,
-    approvalContext:
-      !loadingProposalStatus.loading && loadingProposalStatus.data
-        ? {
-            type: ApprovalProposalContextType.Approver,
-            status: loadingProposalStatus.data,
-          }
-        : undefined,
+    approvalContext: !loadingProposalStatus.loading
+      ? {
+          type: ApprovalProposalContextType.Approver,
+          status: loadingProposalStatus.data,
+        }
+      : undefined,
   }
 
   return (
     <DaoProviders info={daoInfo}>
       <ProposalModuleAdapterProvider
-        initialOptions={{
-          coreAddress: daoInfo.coreAddress,
-        }}
+        coreAddress={daoInfo.coreAddress}
         proposalId={
           // Add prefix of target proposal module so it matches.
           `${proposalModuleWithPreProposeApproval.prefix}${preProposeApprovalProposalId}`

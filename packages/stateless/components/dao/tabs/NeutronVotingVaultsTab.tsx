@@ -9,7 +9,7 @@ import {
 
 import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
-import { Loader } from '../../logo'
+import { DaoVotingVaultCardLoader } from '../DaoVotingVaultCard'
 
 export type NeutronVotingVaultsTabProps = {
   totalVotingPower: LoadingDataWithError<number>
@@ -33,7 +33,11 @@ export const NeutronVotingVaultsTab = ({
       </div>
 
       {loadingVaults.loading ? (
-        <Loader />
+        <GridCardContainer>
+          {[...Array(9)].map((_, index) => (
+            <DaoVotingVaultCardLoader key={index} />
+          ))}
+        </GridCardContainer>
       ) : loadingVaults.errored ? (
         <ErrorPage error={loadingVaults.error} />
       ) : totalVotingPower.errored ? (

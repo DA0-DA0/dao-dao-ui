@@ -449,21 +449,23 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
       )
 
       // Load DAOs this DAO has enabled vetoable proposal listing for.
-      const vetoableDaos = get(
-        isDaoSelector({
-          chainId,
-          address: coreAddress,
-        })
-      )
-        ? get(
-            waitForAllSettled([
-              daoVetoableDaosSelector({
-                chainId,
-                coreAddress,
-              }),
-            ])
-          )[0].valueMaybe() || []
-        : []
+      const vetoableDaos =
+        !includeAll &&
+        get(
+          isDaoSelector({
+            chainId,
+            address: coreAddress,
+          })
+        )
+          ? get(
+              waitForAllSettled([
+                daoVetoableDaosSelector({
+                  chainId,
+                  coreAddress,
+                }),
+              ])
+            )[0].valueMaybe() || []
+          : []
 
       const daoVetoableProposalsPerChain = (
         get(

@@ -17,6 +17,7 @@ export const InboxMainItemRenderer = ({
   item,
   checked,
   onCheck,
+  compact,
 }: InboxMainItemRendererProps) => {
   const { t } = useTranslation()
   const { clear: _clear } = useInboxApi()
@@ -26,32 +27,32 @@ export const InboxMainItemRenderer = ({
 
   return Renderer ? (
     <div
-      className={clsx(
-        'flex flex-row items-stretch transition-opacity',
-        checked && 'opacity-30'
-      )}
+      className={clsx('relative transition-opacity', checked && 'opacity-30')}
     >
-      <div className="flex grow flex-row items-stretch">
-        <Renderer clear={clear} data={item.data} item={item} />
-      </div>
+      <Renderer clear={clear} compact={compact} data={item.data} item={item} />
 
-      <Tooltip
-        title={
-          checked ? t('button.keepNotification') : t('button.clearNotification')
-        }
+      <div
+        className="absolute top-0 bottom-0 right-4 flex flex-row items-center"
+        onClick={() => onCheck(item.id)}
       >
-        <div className="shrink-0 border-l border-border-secondary">
+        <Tooltip
+          title={
+            checked
+              ? t('button.keepNotification')
+              : t('button.clearNotification')
+          }
+        >
           <IconButton
             Icon={checked ? RemoveSharp : CloseSharp}
-            className="!h-full !w-10"
-            iconClassName="!h-5 !w-5"
-            noRounding
-            onClick={() => onCheck(item.id)}
-            size="custom"
+            onClick={(e) => {
+              e.stopPropagation()
+              onCheck(item.id)
+            }}
+            size="sm"
             variant="ghost"
           />
-        </div>
-      </Tooltip>
+        </Tooltip>
+      </div>
     </div>
   ) : (
     <WarningCard content={t('error.unknownInboxType')} />

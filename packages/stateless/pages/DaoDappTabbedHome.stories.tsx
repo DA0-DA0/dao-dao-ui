@@ -16,24 +16,17 @@ import { DaoTabId, TokenCardProps } from '@dao-dao/types'
 
 import {
   ButtonLink,
-  DaoInfoBar,
-  DaoInfoBarProps,
   LinkWrapper,
   MembersTabProps,
   NftCardProps,
-  ProfileMemberCard,
-  ProfileMemberCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
-  TreasuryAndNftsTabProps,
+  TreasuryTabProps,
 } from '../components'
-import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
 import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
-import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
-import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
+import { Default as TreasuryTabStory } from '../components/dao/tabs/TreasuryTab.stories'
 import { DaoDappTabbedHome } from './DaoDappTabbedHome'
 
 export default {
@@ -52,7 +45,6 @@ const Template: ComponentStory<typeof DaoDappTabbedHome> = (args) => {
   return (
     <DaoDappTabbedHome
       {...args}
-      daoInfo={useDaoInfoContext()}
       follow={{
         following,
         onFollow: () => setFollowing((p) => !p),
@@ -64,9 +56,6 @@ const Template: ComponentStory<typeof DaoDappTabbedHome> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  DaoInfoBar: () => (
-    <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />
-  ),
   tabs: [
     {
       id: DaoTabId.Proposals,
@@ -75,19 +64,21 @@ Default.args = {
         <ProposalsTabStory {...(ProposalsTabStory.args as ProposalsTabProps)} />
       ),
       Icon: GavelRounded,
+      IconFilled: GavelRounded,
     },
     {
       id: DaoTabId.Treasury,
-      label: 'Treasury & NFTs',
+      label: 'Treasury',
       Component: () => (
-        <TreasuryAndNftsTabStory
-          {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps<
+        <TreasuryTabStory
+          {...(TreasuryTabStory.args as TreasuryTabProps<
             TokenCardProps,
             NftCardProps
           >)}
         />
       ),
       Icon: AccountBalanceRounded,
+      IconFilled: AccountBalanceRounded,
     },
     {
       id: DaoTabId.SubDaos,
@@ -96,6 +87,7 @@ Default.args = {
         <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
       ),
       Icon: EscalatorWarningRounded,
+      IconFilled: EscalatorWarningRounded,
     },
     {
       id: DaoTabId.Members,
@@ -104,15 +96,11 @@ Default.args = {
         <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
       ),
       Icon: PeopleAltRounded,
+      IconFilled: PeopleAltRounded,
     },
   ],
   selectedTabId: DaoTabId.Proposals,
   onSelectTabId: (tabId) => alert(tabId),
-  rightSidebarContent: (
-    <ProfileMemberCard
-      {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
-    />
-  ),
   SuspenseLoader,
   ButtonLink,
   LinkWrapper,

@@ -11,8 +11,8 @@ import { nftCardInfosForKeyAtom } from '@dao-dao/state/recoil'
 import {
   Button,
   ButtonPopup,
-  Loader,
   Modal,
+  NftCardLoader,
   NoContent,
   PAGINATION_MIN_PAGE,
   Pagination,
@@ -156,8 +156,8 @@ export const NftSelectionModal = ({
       contentContainerClassName={
         nfts.errored
           ? 'items-center justify-center gap-4'
-          : !nfts.loading && nfts.data.length > 0
-          ? 'no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3'
+          : nfts.loading || nfts.data.length > 0
+          ? 'no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3'
           : undefined
       }
       footerContent={
@@ -255,7 +255,7 @@ export const NftSelectionModal = ({
       }
     >
       {nfts.loading ? (
-        <Loader />
+        [...Array(6)].map((_, index) => <NftCardLoader key={index} />)
       ) : nfts.errored ? (
         <>
           <WarningRounded className="!h-14 !w-14" />

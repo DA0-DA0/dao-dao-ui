@@ -5,7 +5,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Me } from '@dao-dao/stateful'
-import { MeTabId } from '@dao-dao/types'
+import { AccountTabId } from '@dao-dao/types'
 
 export default Me
 
@@ -24,7 +24,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
       },
     },
     // All tabs.
-    ...Object.values(MeTabId).map((tab) => ({
+    ...Object.values(AccountTabId).map((tab) => ({
       params: {
         tab: [tab],
       },

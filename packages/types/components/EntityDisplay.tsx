@@ -43,7 +43,7 @@ export type EntityDisplayProps = {
   loadingEntity: LoadingData<Entity>
   imageSize?: number
   hideImage?: boolean
-  size?: 'default' | 'lg'
+  size?: 'default' | 'lg' | 'custom'
   className?: string
   textClassName?: string
   noCopy?: boolean

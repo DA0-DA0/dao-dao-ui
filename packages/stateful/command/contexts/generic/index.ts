@@ -1,8 +1,6 @@
 import {
   CommandModalContextMaker,
-  CommandModalContextSection,
   CommandModalContextUseSections,
-  CommandModalDaoInfo,
 } from '@dao-dao/types'
 
 import {
@@ -15,22 +13,19 @@ import { makeGenericDaoContext } from './dao'
 // pages have more specific options (like voting on a proposal).
 export const makeGenericContext: CommandModalContextMaker = (options) => {
   const useSections: CommandModalContextUseSections = (sectionOptions) => {
-    // Open generic DAO context on click.
-    const onChooseDao: CommandModalContextSection<CommandModalDaoInfo>['onChoose'] =
-      (dao) =>
-        options.openContext(
-          makeGenericDaoContext({
-            ...options,
-            dao,
-          })
-        )
-
     const navigationSection = useNavigationSection()
 
     const followingAndFilteredDaosSections =
       useFollowingAndFilteredDaosSections({
         options: sectionOptions,
-        onChoose: onChooseDao,
+        // Open generic DAO context on click.
+        onChoose: (dao) =>
+          options.openContext(
+            makeGenericDaoContext({
+              ...options,
+              dao,
+            })
+          ),
       })
 
     return [navigationSection, ...followingAndFilteredDaosSections]

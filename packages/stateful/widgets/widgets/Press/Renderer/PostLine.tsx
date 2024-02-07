@@ -18,7 +18,7 @@ export const PostLine = ({
 }: PostLineProps) => (
   <div
     className={clsx(
-      'box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-3 px-4 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
+      'box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-3 rounded-lg py-2 px-3 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed md:gap-4 md:py-3 md:px-4',
       !transparentBackground && 'bg-background-tertiary'
     )}
     onClick={onClick}

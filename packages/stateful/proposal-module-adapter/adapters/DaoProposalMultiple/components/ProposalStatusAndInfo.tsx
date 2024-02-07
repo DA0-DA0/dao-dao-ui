@@ -8,7 +8,7 @@ import {
   Tag,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect } from 'react'
+import { ComponentProps, ComponentType, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
@@ -44,23 +44,22 @@ import { ButtonLink } from '../../../../components/ButtonLink'
 import {
   DaoProposalMultipleHooks,
   useAwaitNextBlock,
+  useProposalActionState,
   useProposalPolytoneState,
   useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
-import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
-  useCastVote,
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
-  useLoadingVoteOptions,
   useLoadingVotesInfo,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalVoter } from './ProposalVoter'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -96,11 +95,11 @@ const InnerProposalStatusAndInfo = ({
   proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: { winningChoice, quorumReached, turnoutPercent, isTie },
   depositInfo,
-  onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
   onVetoSuccess,
   openSelfRelayExecute,
+  voter,
   ...props
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
@@ -128,9 +127,6 @@ const InnerProposalStatusAndInfo = ({
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
   const statusKey = getProposalStatusKey(proposal.status)
-
-  const voteOptions = useLoadingVoteOptions()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = DaoProposalMultipleHooks.useExecute({
     contractAddress: proposalModule.address,
@@ -205,9 +201,7 @@ const InnerProposalStatusAndInfo = ({
 
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <EntityDisplay {...props} address={coreAddress} noCopy />
@@ -275,7 +269,7 @@ const InnerProposalStatusAndInfo = ({
               loadingExecutionTxHash.loading ? (
                 <p className={clsx('animate-pulse', props.className)}>...</p>
               ) : loadingExecutionTxHash.data ? (
-                <div className="flex flex-row items-center gap-1">
+                <div className="flex w-full flex-row items-center gap-1 overflow-hidden">
                   <CopyToClipboardUnderline
                     // Will truncate automatically.
                     takeAll
@@ -290,6 +284,7 @@ const InnerProposalStatusAndInfo = ({
                         'REPLACE',
                         loadingExecutionTxHash.data
                       )}
+                      size="sm"
                       variant="ghost"
                     />
                   )}
@@ -388,28 +383,32 @@ const InnerProposalStatusAndInfo = ({
     }
   }
 
+  const Voter = useCallback(
+    (props: ComponentProps<Required<ProposalStatusAndInfoProps>['Voter']>) => (
+      <ProposalVoter
+        {...props}
+        onVoteSuccess={voter.onVoteSuccess}
+        seenAllActionPages={voter.seenAllActionPages}
+      />
+    ),
+    [voter.onVoteSuccess, voter.seenAllActionPages]
+  )
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
+      Voter={
+        loadingWalletVoteInfo &&
+        !loadingWalletVoteInfo.loading &&
+        loadingWalletVoteInfo.data.canVote
+          ? Voter
+          : undefined
+      }
       action={action}
       footer={footer}
       info={info}
       status={status}
       vetoOrEarlyExecute={vetoOrEarlyExecute}
-      vote={
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote &&
-        !voteOptions.loading
-          ? {
-              loading: castingVote,
-              currentVote: loadingWalletVoteInfo.data.vote,
-              onCastVote: castVote,
-              options: voteOptions.data,
-              proposalOpen: statusKey === ProposalStatusEnum.Open,
-            }
-          : undefined
-      }
     />
   )
 }
@@ -425,9 +424,7 @@ const InnerProposalStatusAndInfoLoader = (
   )
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>

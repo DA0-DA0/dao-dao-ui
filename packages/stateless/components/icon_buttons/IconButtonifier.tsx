@@ -32,9 +32,10 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex shrink-0 items-center justify-center transition-all',
+    // Put transparent rings so it animates when a ring appears.
+    'flex shrink-0 items-center justify-center ring-1 ring-inset ring-transparent transition-all',
 
-    focused && 'ring-2 ring-inset ring-border-interactive-focus',
+    focused && '!ring-2 !ring-border-interactive-focus',
 
     // Rounding.
     {
@@ -89,6 +90,14 @@ export const getIconButtonifiedClassNames = ({
       // Disabled
       'text-icon-interactive-disabled': disabled,
     },
+    // Brand variant
+    variant === 'brand' && {
+      // Default
+      'text-text-interactive-active hover:bg-background-button-active hover:text-text-button-primary active:bg-text-interactive-active active:text-text-button-primary':
+        !disabled,
+      // Disabled
+      'bg-background-interactive-active text-text-button-primary': disabled,
+    },
     // None variant
     variant === 'none' && {
       'p-0': true,
@@ -105,18 +114,26 @@ export const IconButtonifiedChildren = ({
   Icon,
   iconClassName,
   size,
-}: Pick<IconButtonifierProps, 'Icon' | 'iconClassName' | 'size'>) => (
-  <Icon
-    className={clsx(
-      // Sizes.
-      {
-        '!h-4 !w-4': size === 'xs',
-        '!h-[1.125rem] !w-[1.125rem]': size === 'sm',
-        '!h-6 !w-6': size === 'default',
-        '!h-7 !w-7': size === 'lg',
-        '!h-[1.875rem] !w-[1.875rem]': size === 'xl',
-      },
-      iconClassName
-    )}
-  />
+  children,
+}: Pick<
+  IconButtonifierProps,
+  'Icon' | 'iconClassName' | 'size' | 'children'
+>) => (
+  <>
+    <Icon
+      className={clsx(
+        // Sizes.
+        {
+          '!h-4 !w-4': size === 'xs',
+          '!h-[1.125rem] !w-[1.125rem]': size === 'sm',
+          '!h-6 !w-6': size === 'default',
+          '!h-7 !w-7': size === 'lg',
+          '!h-[1.875rem] !w-[1.875rem]': size === 'xl',
+        },
+        iconClassName
+      )}
+    />
+
+    {children}
+  </>
 )

@@ -5,7 +5,6 @@ import {
   ThumbUpOutlined,
   WhereToVoteOutlined,
 } from '@mui/icons-material'
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -86,9 +85,7 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => <EntityDisplay {...props} address={coreAddress} />,
     },

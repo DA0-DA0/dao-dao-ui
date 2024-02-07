@@ -26,7 +26,7 @@ export const NewProposalMain = ({
   const actionData = watch('actionData') || []
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <p className="title-text">{t('title.actions')}</p>
 
       {actionsReadOnlyMode ? (
@@ -57,6 +57,6 @@ export const NewProposalMain = ({
           loadedActions={loadedActions}
         />
       )}
-    </>
+    </div>
   )
 }

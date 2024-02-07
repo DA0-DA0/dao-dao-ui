@@ -3,6 +3,7 @@ import {
   AccountType,
   BreadcrumbCrumb,
   ContractVersion,
+  DaoDropdownInfo,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
@@ -110,4 +111,42 @@ export const getFilteredDaoItemsByPrefix = (
 ): [string, string][] =>
   Object.entries(items).flatMap(([key, value]) =>
     key.startsWith(prefix) ? [[key.substring(prefix.length), value]] : []
+  )
+
+/**
+ * Keep SubDAOs in the dropdown that are in the list to keep. This helper
+ * function is used in `followingDaoDropdownInfosSelector`.
+ */
+export const keepSubDaosInDropdown = (
+  daos: DaoDropdownInfo[],
+  keepDaos: string[]
+): DaoDropdownInfo[] =>
+  daos.map((dao) => ({
+    ...dao,
+    subDaos: dao.subDaos
+      ? // Recurse into SubDAOs of SubDAOs.
+        keepSubDaosInDropdown(
+          // Only keep followed SubDAOs.
+          dao.subDaos.filter(({ coreAddress }) =>
+            keepDaos.includes(coreAddress)
+          ),
+          keepDaos
+        )
+      : undefined,
+  }))
+
+/**
+ * Check if a DAO exists as a SubDAO in the list of DAO dropdowns. This helper
+ * function is used in `followingDaoDropdownInfosSelector`.
+ */
+export const subDaoExistsInDropdown = (
+  daos: DaoDropdownInfo[],
+  subDaoAddress: string
+): boolean =>
+  daos.some((dao) =>
+    dao.subDaos?.some(
+      ({ coreAddress, subDaos }) =>
+        coreAddress === subDaoAddress ||
+        (subDaos && subDaoExistsInDropdown(subDaos, subDaoAddress))
+    )
   )

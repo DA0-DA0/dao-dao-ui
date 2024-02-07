@@ -14,12 +14,10 @@ const Template: ComponentStory<typeof StatusDisplay> = (args) => (
 
 export const Open = Template.bind({})
 Open.args = {
-  icon: (
-    <ProposalStatusMap.open.Icon
-      className={`!h-5 !w-5 ${ProposalStatusMap.open.iconClassName}`}
-    />
-  ),
-  label: <p className={ProposalStatusMap.open.textClassName}>Open</p>,
+  Icon: ProposalStatusMap.open.Icon,
+  iconClassName: ProposalStatusMap.open.iconClassName,
+  label: 'Open',
+  labelClassName: ProposalStatusMap.open.textClassName,
 }
 Open.parameters = {
   design: {
@@ -30,33 +28,27 @@ Open.parameters = {
 
 export const Passed = Template.bind({})
 Passed.args = {
-  icon: (
-    <ProposalStatusMap.passed.Icon
-      className={`!h-5 !w-5 ${ProposalStatusMap.passed.iconClassName}`}
-    />
-  ),
-  label: <p className={ProposalStatusMap.passed.textClassName}>Passed</p>,
+  Icon: ProposalStatusMap.passed.Icon,
+  iconClassName: ProposalStatusMap.passed.iconClassName,
+  label: 'Passed',
+  labelClassName: ProposalStatusMap.passed.textClassName,
 }
 Passed.parameters = Open.parameters
 
 export const Rejected = Template.bind({})
 Rejected.args = {
-  icon: (
-    <ProposalStatusMap.rejected.Icon
-      className={`!h-5 !w-5 ${ProposalStatusMap.rejected.iconClassName}`}
-    />
-  ),
-  label: <p className={ProposalStatusMap.rejected.textClassName}>Rejected</p>,
+  Icon: ProposalStatusMap.rejected.Icon,
+  iconClassName: ProposalStatusMap.rejected.iconClassName,
+  label: 'Rejected',
+  labelClassName: ProposalStatusMap.rejected.textClassName,
 }
 Rejected.parameters = Open.parameters
 
 export const Executed = Template.bind({})
 Executed.args = {
-  icon: (
-    <ProposalStatusMap.executed.Icon
-      className={`!h-5 !w-5 ${ProposalStatusMap.executed.iconClassName}`}
-    />
-  ),
-  label: <p className={ProposalStatusMap.executed.textClassName}>Executed</p>,
+  Icon: ProposalStatusMap.executed.Icon,
+  iconClassName: ProposalStatusMap.executed.iconClassName,
+  label: 'Executed',
+  labelClassName: ProposalStatusMap.executed.textClassName,
 }
 Executed.parameters = Open.parameters

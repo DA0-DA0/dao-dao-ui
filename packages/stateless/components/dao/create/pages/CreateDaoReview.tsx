@@ -2,12 +2,12 @@ import cloneDeep from 'lodash.clonedeep'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/types'
+import { CreateDaoContext, DaoInfoCard } from '@dao-dao/types'
 import { parseEncodedMessage, processError } from '@dao-dao/utils'
 
 import { CosmosMessageDisplay } from '../../../CosmosMessageDisplay'
 import { Checkbox } from '../../../inputs/Checkbox'
-import { DaoCreateConfigReviewCard } from '../DaoCreateConfigReviewCard'
+import { DaoInfoCards } from '../../DaoInfoCards'
 
 export const CreateDaoReview = ({
   form: { watch },
@@ -75,107 +75,85 @@ export const CreateDaoReview = ({
 
   const togglePreview = () => setShowingPreview((s) => !s)
 
-  return (
-    <>
-      <p className="title-text mt-9 mb-7 text-text-body">
-        {t('title.governanceConfiguration')}
-      </p>
-
-      <creator.governanceConfig.Review data={creatorData} newDao={newDao} />
-
-      <p className="title-text mt-9 mb-7 text-text-body">
-        {t('title.votingConfiguration')}
-      </p>
-
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {creator.votingConfig.items
-          .concat(creator.votingConfig.advancedItems ?? [])
-          .map(
-            (
-              {
-                onlyDisplayCondition,
+  const reviewCards: DaoInfoCard[] = [
+    ...creator.votingConfig.items
+      .concat(creator.votingConfig.advancedItems ?? [])
+      .flatMap(
+        ({
+          onlyDisplayCondition,
+          Icon,
+          nameI18nKey,
+          tooltipI18nKey,
+          Review,
+        }): DaoInfoCard | [] =>
+          // If has display condition, check it. Otherwise display.
+          onlyDisplayCondition?.(newDao) ?? true
+            ? {
                 Icon,
-                nameI18nKey,
-                tooltipI18nKey,
-                Review,
-                getReviewClassName,
-              },
-              index
-            ) =>
-              // If has display condition, check it. Otherwise display.
-              (onlyDisplayCondition?.(newDao) ?? true) && (
-                <DaoCreateConfigReviewCard
-                  key={index}
-                  Icon={Icon}
-                  name={t(nameI18nKey)}
-                  review={<Review data={creatorData} newDao={newDao} />}
-                  reviewClassName={getReviewClassName?.(creatorData)}
-                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-                />
-              )
-          )}
-        {proposalModuleDaoCreationAdapters.flatMap(
-          (
-            { extraVotingConfig: { items = [], advancedItems = [] } = {} },
-            index
-          ) =>
-            items.concat(advancedItems ?? []).map(
-              (
-                {
-                  onlyDisplayCondition,
-                  Icon,
-                  nameI18nKey,
-                  tooltipI18nKey,
-                  Review,
-                  getReviewClassName,
-                },
-                itemIndex
-              ) =>
-                // If has display condition, check it. Otherwise display.
-                (onlyDisplayCondition?.(newDao) ?? true) && (
-                  <DaoCreateConfigReviewCard
-                    key={`${index}:${itemIndex}`}
-                    Icon={Icon}
-                    name={t(nameI18nKey)}
-                    review={
-                      <Review
-                        data={proposalModuleAdapters[index].data}
-                        newDao={newDao}
-                      />
-                    }
-                    reviewClassName={getReviewClassName?.(
-                      proposalModuleAdapters[index].data
-                    )}
-                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-                  />
-                )
-            )
-        )}
-        {[...commonVotingConfig.items, ...commonVotingConfig.advancedItems].map(
-          (
-            {
+                label: t(nameI18nKey),
+                value: <Review data={creatorData} newDao={newDao} />,
+                tooltip: tooltipI18nKey && t(tooltipI18nKey),
+              }
+            : []
+      ),
+    ...proposalModuleDaoCreationAdapters.flatMap(
+      ({ extraVotingConfig: { items = [], advancedItems = [] } = {} }, index) =>
+        items
+          .concat(advancedItems ?? [])
+          .flatMap(
+            ({
               onlyDisplayCondition,
               Icon,
               nameI18nKey,
               tooltipI18nKey,
               Review,
-              getReviewClassName,
-            },
-            index
-          ) =>
-            // If has display condition, check it. Otherwise display.
-            (onlyDisplayCondition?.(newDao) ?? true) && (
-              <DaoCreateConfigReviewCard
-                key={index}
-                Icon={Icon}
-                name={t(nameI18nKey)}
-                review={<Review data={votingConfig} newDao={newDao} />}
-                reviewClassName={getReviewClassName?.(votingConfig)}
-                tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-              />
-            )
-        )}
-      </div>
+            }): DaoInfoCard | [] =>
+              // If has display condition, check it. Otherwise display.
+              onlyDisplayCondition?.(newDao) ?? true
+                ? {
+                    Icon,
+                    label: t(nameI18nKey),
+                    value: (
+                      <Review
+                        data={proposalModuleAdapters[index].data}
+                        newDao={newDao}
+                      />
+                    ),
+                    tooltip: tooltipI18nKey && t(tooltipI18nKey),
+                  }
+                : []
+          )
+    ),
+    ...[
+      ...commonVotingConfig.items,
+      ...commonVotingConfig.advancedItems,
+    ].flatMap(
+      ({ onlyDisplayCondition, Icon, nameI18nKey, tooltipI18nKey, Review }) =>
+        // If has display condition, check it. Otherwise display.
+        onlyDisplayCondition?.(newDao) ?? true
+          ? {
+              Icon,
+              label: t(nameI18nKey),
+              value: <Review data={votingConfig} newDao={newDao} />,
+              tooltip: tooltipI18nKey && t(tooltipI18nKey),
+            }
+          : []
+    ),
+  ]
+
+  return (
+    <>
+      <p className="header-text mt-4 mb-6 text-text-body md:my-8">
+        {t('title.governanceConfiguration')}
+      </p>
+
+      <creator.governanceConfig.Review data={creatorData} newDao={newDao} />
+
+      <p className="header-text mt-8 mb-6 text-text-body">
+        {t('title.votingConfiguration')}
+      </p>
+
+      <DaoInfoCards cards={reviewCards} />
 
       <div
         className="mt-8 flex flex-row flex-wrap items-center gap-6"

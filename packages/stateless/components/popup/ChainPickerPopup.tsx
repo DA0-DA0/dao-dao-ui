@@ -1,7 +1,8 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
+import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   getConfiguredChains,
@@ -95,12 +96,18 @@ export type ChainPickerPopupProps = {
    * If true, will make the button more like a text header instead.
    */
   headerMode?: boolean
+  /**
+   * Optional class name applied to the selected chain icon.
+   */
+  selectedIconClassName?: string
+  /**
+   * Optional class name applied to the selected chain label.
+   */
+  selectedLabelClassName?: string
 }
 
 /**
- * A form picker that is intended to be used in DAO actions to choose a
- * supported chain to execute a message from. This should include the DAO native
- * chain and current or potential cross-chain (polytone) accounts.
+ * A popup that allows the user to select a chain.
  */
 export const ChainPickerPopup = ({
   chains,
@@ -114,50 +121,57 @@ export const ChainPickerPopup = ({
   noneLabel,
   NoneIcon,
   headerMode,
+  selectedIconClassName,
+  selectedLabelClassName,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
-  const chainIds =
-    chains.type === 'supported'
-      ? getSupportedChains()
-          .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
-          .map(({ chain: { chain_id } }) => chain_id)
-      : chains.type === 'configured'
-      ? getConfiguredChains()
-          .filter(
-            ({ chainId, noGov }) =>
-              !chains.excludeChainIds?.includes(chainId) &&
-              (!chains.onlyGov || !noGov)
-          )
-          .map(({ chain: { chain_id } }) => chain_id)
-      : chains.chainIds
+  const chainOptions = useMemo(() => {
+    const chainIds =
+      chains.type === 'supported'
+        ? getSupportedChains()
+            .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
+            .map(({ chain: { chain_id } }) => chain_id)
+        : chains.type === 'configured'
+        ? getConfiguredChains()
+            .filter(
+              ({ chainId, noGov }) =>
+                !chains.excludeChainIds?.includes(chainId) &&
+                (!chains.onlyGov || !noGov)
+            )
+            .map(({ chain: { chain_id } }) => chain_id)
+        : chains.chainIds
 
-  const chainOptions = chainIds.map(
-    (chainId): FilterableItem => ({
-      key: chainId,
-      label:
-        labelMode === 'chain'
-          ? getDisplayNameForChainId(chainId)
-          : getNativeTokenForChainId(chainId).symbol,
-      iconUrl: toAccessibleImageUrl(
-        (labelMode === 'chain'
-          ? getImageUrlForChainId(chainId)
-          : getNativeTokenForChainId(chainId).imageUrl) ||
-          getFallbackImage(chainId)
-      ),
-      ...commonOptionClassFields,
-    })
-  )
+    const _chainOptions = chainIds.map(
+      (chainId): FilterableItem => ({
+        key: chainId,
+        label:
+          labelMode === 'chain'
+            ? getDisplayNameForChainId(chainId)
+            : getNativeTokenForChainId(chainId).symbol,
+        iconUrl: toAccessibleImageUrl(
+          (labelMode === 'chain'
+            ? getImageUrlForChainId(chainId)
+            : getNativeTokenForChainId(chainId).imageUrl) ||
+            getFallbackImage(chainId)
+        ),
+        ...commonOptionClassFields,
+      })
+    )
 
-  // Add none option to the top.
-  if (showNone) {
-    chainOptions.splice(0, 0, {
-      key: NONE_KEY,
-      label: noneLabel || t('info.none'),
-      Icon: NoneIcon,
-      ...commonOptionClassFields,
-    })
-  }
+    // Add none option to the top.
+    if (showNone) {
+      _chainOptions.splice(0, 0, {
+        key: NONE_KEY,
+        label: noneLabel || t('info.none'),
+        Icon: NoneIcon,
+        ...commonOptionClassFields,
+      })
+    }
+
+    return _chainOptions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, useDeepCompareMemoize([NoneIcon, chains, labelMode, noneLabel, showNone, t]))
 
   const selectedChain = selectedChainId
     ? chainOptions.find(({ key }) => key === selectedChainId)
@@ -186,7 +200,7 @@ export const ChainPickerPopup = ({
           className: buttonClassName,
           contentContainerClassName: clsx(
             'justify-between text-icon-primary',
-            !headerMode && '!gap-4'
+            headerMode ? '!gap-1' : '!gap-4'
           ),
           loading,
           disabled,
@@ -198,15 +212,28 @@ export const ChainPickerPopup = ({
                 {selectedChain
                   ? !!selectedChain.iconUrl && (
                       <div
-                        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+                        className={clsx(
+                          'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
+                          selectedIconClassName
+                        )}
                         style={{
                           backgroundImage: `url(${selectedChain.iconUrl})`,
                         }}
                       />
                     )
-                  : showNone && NoneIcon && <NoneIcon />}
+                  : showNone &&
+                    NoneIcon && (
+                      <NoneIcon
+                        className={clsx('!h-6 !w-6', selectedIconClassName)}
+                      />
+                    )}
 
-                <p className={clsx(!selectedChain && 'text-text-tertiary')}>
+                <p
+                  className={clsx(
+                    !selectedChain && 'text-text-tertiary',
+                    selectedLabelClassName
+                  )}
+                >
                   {selectedChain?.label ||
                     (showNone && noneLabel) ||
                     (labelMode === 'chain'

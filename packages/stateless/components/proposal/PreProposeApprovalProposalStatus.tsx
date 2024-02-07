@@ -1,9 +1,8 @@
 import { PendingOutlined, ThumbDown, ThumbUp } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay } from '@dao-dao/stateless'
+import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import {
   ProposalStatus,
   ProposalStatusKey,
@@ -12,13 +11,14 @@ import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
 export type PreProposeApprovalProposalStatusProps = {
   status: ProposalStatus
-  // Dim
-  dimmed?: boolean
-}
+} & Omit<
+  StatusDisplayProps,
+  'Icon' | 'iconClassName' | 'label' | 'labelClassName'
+>
 
 export const PreProposeApprovalProposalStatus = ({
   status,
-  dimmed = false,
+  ...props
 }: PreProposeApprovalProposalStatusProps) => {
   const { t } = useTranslation()
   const { labelI18nKey, Icon, iconClassName, textClassName } =
@@ -26,24 +26,11 @@ export const PreProposeApprovalProposalStatus = ({
 
   return (
     <StatusDisplay
-      icon={
-        <Icon
-          className={clsx(
-            '!h-5 !w-5 shrink-0',
-            dimmed ? 'text-icon-tertiary' : iconClassName
-          )}
-        />
-      }
-      label={
-        <p
-          className={clsx(
-            'shrink-0 truncate leading-5',
-            dimmed ? 'text-text-tertiary' : textClassName
-          )}
-        >
-          {t(labelI18nKey)}
-        </p>
-      }
+      {...props}
+      Icon={Icon}
+      iconClassName={iconClassName}
+      label={t(labelI18nKey)}
+      labelClassName={textClassName}
     />
   )
 }

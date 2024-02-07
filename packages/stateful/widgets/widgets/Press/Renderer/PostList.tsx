@@ -2,7 +2,7 @@ import { WarningRounded } from '@mui/icons-material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, NoContent } from '@dao-dao/stateless'
+import { LineLoaders, NoContent } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 
 import { Post } from '../types'
@@ -33,7 +33,11 @@ export const PostList = ({
   )
 
   return postsLoading.loading ? (
-    <Loader fill={false} />
+    <LineLoaders
+      className="border-t border-border-secondary pt-6"
+      lines={10}
+      type="post"
+    />
   ) : sortedPosts.length > 0 ? (
     <div className="space-y-1 border-t border-border-secondary pt-6">
       {sortedPosts.map((post, index) => (

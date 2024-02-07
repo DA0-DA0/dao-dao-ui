@@ -1,4 +1,5 @@
 import { asset_lists } from '@chain-registry/assets'
+import { fromBech32 } from '@cosmjs/encoding'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
@@ -79,17 +80,42 @@ export const getNativeIbcUsdc = (chainId: string) =>
 export const isNativeIbcUsdc = (chainId: string, ibcDenom: string): boolean =>
   ibcDenom === getNativeIbcUsdc(chainId)?.denomOrAddress
 
-// Processes symbol and converts into readable format (cut out middle and add
-// ellipses) if long IBC string. Used in `TokenCard` and `TokenDepositModal`.
-export const transformIbcSymbol = (
+// Processes token symbol and converts into readable format (cut out middle and
+// add ellipses) if long IBC or token factory string. Used in `TokenCard`,
+// `TokenLine`, and `TokenDepositModal`.
+export const shortenTokenSymbol = (
   symbol: string
-): { isIbc: boolean; tokenSymbol: string; originalTokenSymbol: string } => {
+): {
+  isShortened: boolean
+  tokenSymbol: string
+  originalTokenSymbol: string
+} => {
   const isIbc = symbol.toLowerCase().startsWith('ibc')
-  // Truncate IBC denominations to prevent overflow.
-  const tokenSymbol = isIbc ? concatAddressStartEnd(symbol, 7, 3) : symbol
+  const isFactory = symbol.toLowerCase().startsWith('factory')
+
+  // Get the bech32 prefix length of the factory token's creator address.
+  let factoryCreatorAddressPrefixLength = 5
+  if (isFactory) {
+    try {
+      factoryCreatorAddressPrefixLength = fromBech32(symbol.split('/')[1])
+        .prefix.length
+    } catch {}
+  }
+
+  // Truncate denominations to prevent overflow.
+  const tokenSymbol = isIbc
+    ? concatAddressStartEnd(symbol, 7, 3)
+    : isFactory
+    ? // Truncate address in middle.
+      `factory/${concatAddressStartEnd(
+        symbol.split('/')[1],
+        factoryCreatorAddressPrefixLength + 3,
+        3
+      )}/${symbol.split('/')[2]}`
+    : symbol
 
   return {
-    isIbc,
+    isShortened: isIbc || isFactory,
     tokenSymbol,
     originalTokenSymbol: symbol,
   }

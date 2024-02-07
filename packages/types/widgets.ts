@@ -38,6 +38,9 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
   id: WidgetId
   // An icon for the widget. Used when `location` is `WidgetLocation.Tab`.
   Icon?: ComponentType<{ className: string }>
+  // A filled icon for the widget. Used when `location` is
+  // `WidgetLocation.Home`.
+  IconFilled?: ComponentType<{ className: string }>
   // The location where the widget is displayed.
   location: WidgetLocation
   // The context in which the widget is visible.

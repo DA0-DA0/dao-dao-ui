@@ -1,7 +1,7 @@
 import TimeAgo from 'react-timeago'
 
 import {
-  ProposalLineLoader,
+  LineLoader,
   ProposalStatus,
   ProposalLine as StatelessProposalLine,
   useTranslatedTimeDeltaFormatter,
@@ -20,7 +20,7 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
 
   return (
     <SuspenseLoader
-      fallback={<ProposalLineLoader />}
+      fallback={<LineLoader type="proposal" />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (
@@ -51,9 +51,7 @@ const InnerProposalLine = ({
 
   return (
     <StatelessProposalLine
-      Status={({ dimmed }) => (
-        <ProposalStatus dimmed={dimmed} status={proposal.status} />
-      )}
+      Status={(props) => <ProposalStatus {...props} status={proposal.status} />}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       timestampDisplay={
@@ -94,7 +92,6 @@ const InnerProposalLine = ({
               />
             )
       }
-      votingOpen={proposal.votingOpen}
       {...props}
     />
   )

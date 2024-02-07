@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { DaoCardProps } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../../hooks'
@@ -7,7 +8,7 @@ import {
   ItemCreatedModal,
   ItemCreatedModalProps,
 } from '../../modals/ItemCreatedModal'
-import { DaoCard, DaoCardProps } from '../DaoCard'
+import { DaoCard } from '../DaoCard'
 
 export type DaoCreatedModalProps = Omit<
   ItemCreatedModalProps<DaoCardProps>,

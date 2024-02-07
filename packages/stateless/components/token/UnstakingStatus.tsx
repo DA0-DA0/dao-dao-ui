@@ -19,12 +19,10 @@ export const UnstakingStatus = ({ status }: UnstakingStatusProps) => {
 
   return (
     <StatusDisplay
-      icon={<Icon className={clsx(iconClassName, 'h-[19px] w-[19px]')} />}
-      label={
-        <p className={clsx('w-10', textClassName)}>
-          {t(`info.unstakingStatus.${status}`)}
-        </p>
-      }
+      Icon={Icon}
+      iconClassName={clsx('!h-[19px] !w-[19px]', iconClassName)}
+      label={t(`info.unstakingStatus.${status}`)}
+      labelClassName={clsx('w-10', textClassName)}
     />
   )
 }

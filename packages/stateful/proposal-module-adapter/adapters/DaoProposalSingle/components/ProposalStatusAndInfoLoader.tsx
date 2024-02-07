@@ -31,9 +31,7 @@ export const ProposalStatusAndInfoLoader = (
   )
   const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <ButtonLink

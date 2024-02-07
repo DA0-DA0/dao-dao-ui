@@ -43,6 +43,8 @@ export const WalletUiWalletList = ({
     (wallet) => wallet.isWalletNotExist
   )
 
+  const showingNotInstalledWallets = notInstalledWallets.length > 0 && !isMobile
+
   const isConnectingTo = (wallet: ChainWalletBase) =>
     current?.isWalletConnecting && current.walletName === wallet.walletName
 
@@ -85,10 +87,10 @@ export const WalletUiWalletList = ({
   )
 
   return (
-    <div className="-m-6 flex flex-col">
+    <div className="flex flex-col">
       {isMobile && mobileWalletsRender}
 
-      {installedExtensionWallets.length + notInstalledWallets.length > 0 && (
+      {(installedExtensionWallets.length > 0 || showingNotInstalledWallets) && (
         <div className="flex flex-col gap-3 border-b border-border-base py-6 px-8">
           {installedExtensionWallets.length > 0 && (
             <>
@@ -119,7 +121,7 @@ export const WalletUiWalletList = ({
             </>
           )}
 
-          {notInstalledWallets.length > 0 && (
+          {showingNotInstalledWallets && (
             <>
               <Collapsible
                 containerClassName="!gap-1"

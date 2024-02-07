@@ -119,6 +119,10 @@ export type TokenCardInfo = {
   lazyInfo: LoadingData<TokenCardLazyInfo>
   // If defined, adds a color indicator.
   color?: string
+  /**
+   * Whether or not to hide the chain icon on tokens.
+   */
+  hideChainIcon?: boolean
 }
 
 export type TokenCardProps = TokenCardInfo & {
@@ -134,6 +138,10 @@ export type TokenCardProps = TokenCardInfo & {
     // Extra sections to add to the action popup.
     extraSections?: ButtonPopupSection[]
   }
+  /**
+   * Whether or not to hide the DAOs governed section.
+   */
+  hideDaosGoverned?: boolean
 }
 
 export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {

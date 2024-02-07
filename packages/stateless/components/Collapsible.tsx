@@ -20,11 +20,15 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       defaultCollapsed = false,
       onExpand,
       indentDropdownSize = 0,
+      noHeaderIndent = false,
       noContentIndent = false,
+      noPlaceholderDot = false,
+      dropdownIconSize = 'sm',
       children,
       containerClassName,
       headerClassName,
       labelClassName,
+      imageClassName,
       labelContainerClassName,
       dropdownContainerClassName,
       contentContainerClassName,
@@ -44,7 +48,10 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
       <>
         {!!imageUrl && (
           <div
-            className="h-6 w-6 overflow-hidden rounded-full bg-cover bg-center"
+            className={clsx(
+              'h-6 w-6 overflow-hidden rounded-full bg-cover bg-center',
+              imageClassName
+            )}
             style={{
               backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
             }}
@@ -68,15 +75,16 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
               key={index}
               // The triangle `IconButton` is w-6 and offset by the container's
               // ml-2, so to center this border beneath the arrow, we need to
-              // include the full offset (ml-2) and half the width (w-3), getting
-              // w-5.
+              // include the full offset (ml-2) and half the width (w-3),
+              // getting w-5.
               className="w-5 shrink-0 border-r border-border-secondary"
             ></div>
           ))}
 
           <div
             className={clsx(
-              'ml-2 flex grow flex-row items-center gap-2 overflow-hidden',
+              'flex grow flex-row items-center gap-2 overflow-hidden',
+              !noHeaderIndent && 'ml-2',
               dropdownContainerClassName
             )}
           >
@@ -85,10 +93,13 @@ export const Collapsible = forwardRef<HTMLDivElement, CollapsibleProps>(
                 <DropdownIconButton
                   className="text-icon-primary"
                   open={expanded}
+                  size={dropdownIconSize}
                   toggle={toggleExpanded}
                 />
               ) : (
-                <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
+                !noPlaceholderDot && (
+                  <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
+                )
               )}
             </div>
 

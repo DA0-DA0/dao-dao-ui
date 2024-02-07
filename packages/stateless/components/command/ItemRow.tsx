@@ -24,7 +24,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           'flex h-9 flex-row items-center gap-2 rounded-md bg-transparent p-3 transition',
           !item.disabled &&
             'cursor-pointer hover:bg-background-interactive-hover',
-          !item.disabled && selected && 'bg-background-interactive-hover',
+          !item.disabled && selected && '!bg-background-interactive-hover',
           item.loading && 'animate-pulse',
           item.className,
           className

@@ -8,7 +8,7 @@ import {
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionKey, MeTransactionForm } from '@dao-dao/types'
+import { AccountTxForm, ActionKey } from '@dao-dao/types'
 
 import { MeTransactionBuilder } from './MeTransactionBuilder'
 
@@ -25,7 +25,7 @@ export default {
 const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
-  const formMethods = useForm<MeTransactionForm>({
+  const formMethods = useForm<AccountTxForm>({
     mode: 'onChange',
     defaultValues: {
       actions: [],

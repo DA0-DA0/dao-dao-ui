@@ -1,14 +1,12 @@
 import clsx from 'clsx'
 
 import { averageColorSelector } from '@dao-dao/state/recoil'
-import { ProfileCardWrapperProps } from '@dao-dao/types/components/ProfileCardWrapper'
+import { ProfileCardWrapperProps } from '@dao-dao/types'
 
 import { useCachedLoadable } from '../../hooks'
 import { CornerGradient } from '../CornerGradient'
 import { ProfileImage } from './ProfileImage'
 import { ProfileNameDisplayAndEditor } from './ProfileNameDisplayAndEditor'
-
-export * from '@dao-dao/types/components/ProfileCardWrapper'
 
 export const ProfileCardWrapper = ({
   children,
@@ -18,6 +16,7 @@ export const ProfileCardWrapper = ({
   compact = false,
   underHeaderComponent,
   childContainerClassName,
+  className,
 }: ProfileCardWrapperProps) => {
   // Get average color of image URL if in compact mode.
   const averageImgColorLoadable = useCachedLoadable(
@@ -36,13 +35,18 @@ export const ProfileCardWrapper = ({
   const canEdit = walletProfileData.profile.nonce >= 0
 
   return (
-    <div className="relative rounded-lg border border-border-primary">
+    <div
+      className={clsx(
+        'relative rounded-lg bg-background-tertiary shadow-dp4',
+        className
+      )}
+    >
       {/* Absolutely positioned, against relative outer-most div (without padding). */}
       {compact && !!averageImgColor && (
         <CornerGradient className="h-36 opacity-50" color={averageImgColor} />
       )}
 
-      <div className="p-6">
+      <div className={clsx(compact ? 'p-4' : 'p-6')}>
         {compact ? (
           <div className="flex flex-row items-stretch gap-3">
             <ProfileImage
@@ -52,7 +56,7 @@ export const ProfileCardWrapper = ({
               size="sm"
             />
 
-            <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex min-w-0 grow flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 compact={compact}
                 updateProfileName={updateProfileName}
@@ -81,14 +85,17 @@ export const ProfileCardWrapper = ({
         )}
       </div>
 
-      <div
-        className={clsx(
-          'flex flex-col items-stretch border-t border-t-border-primary p-6',
-          childContainerClassName
-        )}
-      >
-        {children}
-      </div>
+      {children && (
+        <div
+          className={clsx(
+            'flex flex-col items-stretch border-t border-t-border-primary',
+            compact ? 'p-4' : 'p-6',
+            childContainerClassName
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   )
 }

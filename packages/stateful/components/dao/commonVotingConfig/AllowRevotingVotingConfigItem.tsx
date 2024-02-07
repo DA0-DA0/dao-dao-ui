@@ -39,9 +39,8 @@ export const makeAllowRevotingVotingConfigItem =
     Icon: RecycleEmoji,
     nameI18nKey: 'form.allowRevotingTitle',
     descriptionI18nKey: 'form.allowRevotingDescription',
+    tooltipI18nKey: 'info.revotingTooltip',
     Input: AllowRevotingInput,
     getInputError: ({ allowRevoting } = {}) => allowRevoting,
     Review: AllowRevotingReview,
-    getReviewClassName: ({ allowRevoting }) =>
-      allowRevoting ? 'bg-component-badge-valid' : 'bg-component-badge-error',
   })

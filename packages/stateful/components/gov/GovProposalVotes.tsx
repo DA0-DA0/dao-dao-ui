@@ -10,7 +10,7 @@ import {
   Loader,
   PaginatedProposalVotes,
   ProposalVote,
-  useCachedLoading,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { VoteOption } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
@@ -50,17 +50,23 @@ const InnerGovProposalVotes = ({ proposalId }: GovProposalVotesProps) => {
     })
   )
 
-  const pageVotes = useCachedLoading(
+  const pageVotes = useCachedLoadingWithError(
     govProposalVotesSelector({
       chainId,
       proposalId: Number(proposalId),
       offset: (page - 1) * VOTES_PER_PAGE,
       limit: VOTES_PER_PAGE,
     }),
-    {
-      votes: [],
-      total: 0,
-    }
+    (data) =>
+      data.votes.map(
+        ({ voter, options, staked }): ProposalVote<VoteOption> => ({
+          voterAddress: voter,
+          vote: options.sort((a, b) => Number(b.weight) - Number(a.weight))[0]
+            .option,
+          votingPowerPercent:
+            Number(staked) / Number(BigInt(bondedTokens) / 100n),
+        })
+      )
   )
 
   return (
@@ -75,24 +81,7 @@ const InnerGovProposalVotes = ({ proposalId }: GovProposalVotesProps) => {
         pageSize: VOTES_PER_PAGE,
         total,
       }}
-      votes={
-        pageVotes.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              updating: pageVotes.updating,
-              data: pageVotes.data.votes.map(
-                ({ voter, options, staked }): ProposalVote<VoteOption> => ({
-                  voterAddress: voter,
-                  vote: options.sort(
-                    (a, b) => Number(b.weight) - Number(a.weight)
-                  )[0].option,
-                  votingPowerPercent:
-                    Number(staked) / Number(BigInt(bondedTokens) / 100n),
-                })
-              ),
-            }
-      }
+      votes={pageVotes}
       votingOpen={false}
     />
   )

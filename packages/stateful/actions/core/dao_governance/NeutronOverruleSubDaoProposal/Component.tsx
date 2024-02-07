@@ -2,11 +2,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  InputLabel,
-  ProposalLineLoader,
-  useDaoNavHelpers,
-} from '@dao-dao/stateless'
+import { InputLabel, LineLoader, useDaoNavHelpers } from '@dao-dao/stateless'
 import {
   LoadingData,
   ProposalModule,
@@ -56,7 +52,7 @@ export const NeutronOverruleSubDaoProposalComponent: ActionComponent<
         <InputLabel name={t('title.proposal')} />
 
         {daoProposalModules.loading ? (
-          <ProposalLineLoader />
+          <LineLoader type="proposal" />
         ) : (
           <ProposalLine
             chainId={chainId}

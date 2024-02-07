@@ -16,11 +16,12 @@ import { useButtonPopupSorter, useChain, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { GridCardContainer } from '../GridCardContainer'
 import { DropdownIconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
+import { LineLoaders } from '../LineLoader'
+import { NftCardLoader } from '../NftCard'
 import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE } from '../Pagination'
 import { ButtonPopup } from '../popup'
-import { TooltipInfoIcon } from '../tooltip'
+import { TokenLineHeader } from '../token/TokenLineHeader'
 
 const NFTS_PER_PAGE = 18
 
@@ -72,37 +73,27 @@ export const WalletBalances = <
   return (
     <div className="flex flex-col gap-8">
       <div>
-        {tokens.loading || hiddenTokens.loading ? (
-          <Loader fill={false} />
-        ) : tokens.data.length ? (
+        {tokens.loading || hiddenTokens.loading || tokens.data.length ? (
           <div>
-            <div className="mb-6 -mt-4 flex flex-row justify-end">
+            <div className="mb-6 flex flex-row justify-end">
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 
-            <div className="secondary-text mb-3 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
-              <p>{t('title.token')}</p>
+            <TokenLineHeader />
 
-              <p className="text-right">{t('title.total')}</p>
-
-              <div className="hidden flex-row items-center justify-end gap-1 sm:flex">
-                <p className="text-right">{t('title.estUsdValue')}</p>
-                <TooltipInfoIcon
-                  size="xs"
-                  title={t('info.estimatedUsdValueTooltip')}
-                />
+            {tokens.loading || hiddenTokens.loading ? (
+              <LineLoaders lines={10} type="token" />
+            ) : (
+              <div className="space-y-1">
+                {visibleBalances.map((props, index) => (
+                  <TokenLine
+                    key={props.token.denomOrAddress + index}
+                    transparentBackground={index % 2 !== 0}
+                    {...(props as T)}
+                  />
+                ))}
               </div>
-            </div>
-
-            <div className="space-y-1">
-              {visibleBalances.map((props, index) => (
-                <TokenLine
-                  key={props.token.denomOrAddress + index}
-                  transparentBackground={index % 2 !== 0}
-                  {...(props as T)}
-                />
-              ))}
-            </div>
+            )}
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
@@ -159,15 +150,15 @@ export const WalletBalances = <
               </p>
             </div>
 
-            {nfts.loading ? (
-              <Loader fill={false} />
-            ) : nfts.data.length > 0 ? (
+            {nfts.loading || nfts.data.length > 0 ? (
               <GridCardContainer className="pb-6" ref={infiniteScrollRef}>
-                {nfts.data
-                  .slice(0, nftPage * NFTS_PER_PAGE)
-                  .map((props, index) => (
-                    <NftCard {...(props as N)} key={index} />
-                  ))}
+                {nfts.loading
+                  ? [...Array(3)].map((_, i) => <NftCardLoader key={i} />)
+                  : nfts.data
+                      .slice(0, nftPage * NFTS_PER_PAGE)
+                      .map((props, index) => (
+                        <NftCard {...(props as N)} key={index} />
+                      ))}
               </GridCardContainer>
             ) : (
               <NoContent Icon={Image} body={t('info.noNftsFound')} />

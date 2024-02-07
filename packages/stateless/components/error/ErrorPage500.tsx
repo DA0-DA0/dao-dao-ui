@@ -1,16 +1,20 @@
-import { useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '@dao-dao/stateful'
+import { PageHeaderProps } from '@dao-dao/types'
 
-import { PageHeaderContent } from '../layout'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {
   error: string
+  PageHeaderContent: ComponentType<PageHeaderProps>
 }
 
-export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
+export const ErrorPage500 = ({
+  error,
+  PageHeaderContent,
+}: ErrorPage500Props) => {
   const { t } = useTranslation()
 
   useEffect(() => {

@@ -16,4 +16,8 @@ export type LinkWrapperProps = Omit<
     // If true, will use shallow routing
     // (https://nextjs.org/docs/routing/shallow-routing) for local links.
     shallow?: boolean
+    // If true, will replace the current route
+    // (https://nextjs.org/docs/pages/api-reference/components/link#replace) for
+    // local links.
+    replace?: boolean
   }

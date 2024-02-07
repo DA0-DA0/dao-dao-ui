@@ -26,10 +26,10 @@
       "url": "/?s=pwa"
     },
     {
-      "name": "Inbox",
-      "short_name": "Inbox",
+      "name": "Notifications",
+      "short_name": "Notifications",
       "description": "View notifications",
-      "url": "/inbox?s=pwa"
+      "url": "/notifications?s=pwa"
     },
     {
       "name": "Me",

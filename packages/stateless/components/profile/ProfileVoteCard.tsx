@@ -1,14 +1,12 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ProfileCardWrapperProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
-import {
-  ProfileCardWrapper,
-  ProfileCardWrapperProps,
-} from './ProfileCardWrapper'
+import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileVoteCardProps
   extends Omit<
@@ -39,8 +37,9 @@ export const ProfileVoteCard = ({
       {...wrapperProps}
     >
       <div className="secondary-text flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-1">
           <p>{t('title.votingPower')}</p>
+
           <TooltipInfoIcon
             className="text-icon-secondary"
             size="sm"
@@ -53,7 +52,7 @@ export const ProfileVoteCard = ({
         </p>
       </div>
 
-      <div className="secondary-text mt-3 flex flex-row items-center justify-between">
+      <div className="secondary-text mt-2 flex flex-row items-center justify-between">
         <p>{t('title.vote')}</p>
         {vote}
       </div>

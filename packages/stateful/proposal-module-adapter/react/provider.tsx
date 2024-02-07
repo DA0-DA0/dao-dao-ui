@@ -21,19 +21,18 @@ export type ProposalModuleAdapterProviderProps = {
   proposalModules: ProposalModule[]
   proposalId: string
   children: ReactNode | ReactNode[]
-  initialOptions: Omit<IProposalModuleAdapterInitialOptions, 'chain'>
-}
+} & Omit<IProposalModuleAdapterInitialOptions, 'chain'>
 
 export const ProposalModuleAdapterProvider = ({
+  coreAddress,
   proposalModules,
   proposalId,
   children,
-  initialOptions,
 }: ProposalModuleAdapterProviderProps) => {
   const chain = useChain()
   const { context, commonContext } = useMemo(() => {
     const context = matchAndLoadAdapter(proposalModules, proposalId, {
-      ...initialOptions,
+      coreAddress,
       chain,
     })
     const commonContext = commonContextFromAdapterContext(context)
@@ -41,7 +40,7 @@ export const ProposalModuleAdapterProvider = ({
       context,
       commonContext,
     }
-  }, [chain, initialOptions, proposalId, proposalModules])
+  }, [chain, coreAddress, proposalId, proposalModules])
 
   return (
     <ProposalModuleAdapterCommonContext.Provider value={commonContext}>
@@ -52,25 +51,24 @@ export const ProposalModuleAdapterProvider = ({
   )
 }
 
-export interface ProposalModuleAdapterCommonProviderProps {
+export type ProposalModuleAdapterCommonProviderProps = {
   proposalModule: ProposalModule
   children: ReactNode | ReactNode[]
-  initialOptions: Omit<IProposalModuleAdapterCommonInitialOptions, 'chain'>
-}
+} & Omit<IProposalModuleAdapterCommonInitialOptions, 'chain'>
 
 export const ProposalModuleAdapterCommonProvider = ({
+  coreAddress,
   proposalModule,
   children,
-  initialOptions,
 }: ProposalModuleAdapterCommonProviderProps) => {
   const chain = useChain()
   const context = useMemo(
     () =>
       matchAndLoadCommonContext(proposalModule, {
-        ...initialOptions,
+        coreAddress,
         chain,
       }),
-    [chain, initialOptions, proposalModule]
+    [chain, coreAddress, proposalModule]
   )
 
   return (

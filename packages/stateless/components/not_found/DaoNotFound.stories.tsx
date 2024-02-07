@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { PageHeaderContent } from '@dao-dao/stateful'
+
 import { DaoNotFound } from './DaoNotFound'
 
 export default {
@@ -8,6 +10,10 @@ export default {
   component: DaoNotFound,
 } as ComponentMeta<typeof DaoNotFound>
 
-const Template: ComponentStory<typeof DaoNotFound> = (_args) => <DaoNotFound />
+const Template: ComponentStory<typeof DaoNotFound> = (args) => (
+  <DaoNotFound {...args} />
+)
 
-export const Default = Template.bind({})
+export const Default = Template.bind({
+  PageHeaderContent,
+})
