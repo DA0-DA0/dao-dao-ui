@@ -142,7 +142,7 @@ export const DappNavigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base pb-6 text-lg',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-background-base pb-6 text-lg',
           // If compact, items will manage their own padding so that highlighted
           // rows fill the whole width.
           compact ? 'pl-safe' : 'pr-6 pl-safe-or-[1.5rem]',
