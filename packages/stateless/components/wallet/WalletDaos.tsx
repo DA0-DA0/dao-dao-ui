@@ -1,4 +1,4 @@
-import { BlurOn, WarningRounded } from '@mui/icons-material'
+import { WarningRounded } from '@mui/icons-material'
 import Fuse from 'fuse.js'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,7 +10,7 @@ import { Collapsible } from '../Collapsible'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { SearchBar } from '../inputs'
-import { Loader } from '../logo'
+import { Loader, Logo } from '../logo'
 import { NoContent } from '../NoContent'
 import { ChainPickerPopup } from '../popup'
 
@@ -57,7 +57,7 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
         />
 
         <ChainPickerPopup
-          NoneIcon={BlurOn}
+          NoneIcon={Logo}
           chains={{ type: 'supported' }}
           noneLabel={t('info.allChains')}
           onSelect={setChainId}

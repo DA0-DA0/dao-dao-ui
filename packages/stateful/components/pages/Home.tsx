@@ -1,11 +1,14 @@
-import { BlurOn } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
-import { ChainPickerPopup, Home as StatelessHome } from '@dao-dao/stateless'
+import {
+  ChainPickerPopup,
+  Logo,
+  Home as StatelessHome,
+} from '@dao-dao/stateless'
 import { getSupportedChainConfig, getSupportedChains } from '@dao-dao/utils'
 
 import { useFeed } from '../../feed'
@@ -66,7 +69,7 @@ export const Home = () => {
 
   const chainPicker = (
     <ChainPickerPopup
-      NoneIcon={BlurOn}
+      NoneIcon={Logo}
       chains={{ type: 'supported' }}
       headerMode
       noneLabel={t('info.allChains')}
