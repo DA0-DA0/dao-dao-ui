@@ -58,7 +58,6 @@ export const DaoAccountTreasury = <T extends TokenCardInfo, N extends object>({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* header min-height of 3.5rem standardized across all tabs */}
       <div className="flex grow flex-row items-center justify-between gap-4">
         <div className="-ml-3 flex flex-row items-center gap-2">
           <DropdownIconButton
@@ -85,7 +84,7 @@ export const DaoAccountTreasury = <T extends TokenCardInfo, N extends object>({
           )}
         </div>
 
-        <div className="flex min-w-0 grow flex-row items-stretch justify-between gap-6">
+        <div className="flex min-w-0 grow flex-row items-center justify-between gap-6">
           <CopyToClipboard
             className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono text-xs transition hover:bg-background-secondary"
             iconClassName="text-icon-secondary"
