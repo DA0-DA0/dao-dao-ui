@@ -960,7 +960,7 @@
     "findCategory": "Find a category...",
     "finishedAt": "Finished at",
     "finishesAt": "Finishes at",
-    "followTooltip": "Receive notifications in your inbox about this DAO.",
+    "followTooltip": "Follow this DAO to show it in your feed and receive proposal notifications according to your settings.",
     "forcePublishTooltip": "Ignore form errors and attempt to publish the proposal anyway. The proposal actions will still be simulated on-chain as a final test that the actions are valid.",
     "funded": "Funded",
     "getTokensOn": "Get tokens on {{name}}.",
