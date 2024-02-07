@@ -8,6 +8,7 @@ import {
   CommandModalContextSectionItem,
 } from '@dao-dao/types/command'
 
+import { LineLoaders } from '../LineLoader'
 import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
 import { ItemRow } from './ItemRow'
@@ -66,7 +67,6 @@ export const CommandModalContextView = ({
       }
 
       switch (event.key) {
-        case 'ArrowLeft':
         case 'ArrowUp':
           setSelectedIndex((selection) => {
             let newIndex =
@@ -89,7 +89,6 @@ export const CommandModalContextView = ({
             return newIndex
           })
           break
-        case 'ArrowRight':
         case 'ArrowDown':
           setSelectedIndex((selection) => {
             let newIndex = (selection + 1) % itemsWithSection.length
@@ -159,7 +158,12 @@ export const CommandModalContextView = ({
             sectionIndex
           ) => (
             <Fragment key={sectionIndex}>
-              <div className="flex flex-row justify-between gap-4">
+              <div
+                className={clsx(
+                  'flex flex-row justify-between gap-4',
+                  sectionIndex > 0 && 'mt-3'
+                )}
+              >
                 <p className="link-text h-7 py-1 pl-3 text-text-tertiary">
                   {name}
                 </p>
@@ -193,7 +197,7 @@ export const CommandModalContextView = ({
           )
         )
       ) : itemsLoading ? (
-        <Loader />
+        <LineLoaders lines={5} type="command" />
       ) : (
         <NoContent
           Icon={WarningRounded}

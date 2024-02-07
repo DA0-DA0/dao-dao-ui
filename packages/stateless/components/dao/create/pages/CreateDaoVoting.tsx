@@ -14,7 +14,6 @@ export const CreateDaoVoting = ({
     register,
     watch,
     setValue,
-    control,
   },
   commonVotingConfig: {
     items: commonVotingConfigItems,
@@ -65,7 +64,7 @@ export const CreateDaoVoting = ({
   return (
     <>
       <div className="border-b border-b-border-secondary pb-6">
-        <p className="title-text my-9 text-text-body">
+        <p className="header-text mt-4 mb-6 text-text-body md:my-8">
           {t('title.votingConfiguration')}
         </p>
 
@@ -77,7 +76,6 @@ export const CreateDaoVoting = ({
                 Icon,
                 nameI18nKey,
                 descriptionI18nKey,
-                tooltipI18nKey,
                 Input,
                 getInputError,
               },
@@ -125,7 +123,6 @@ export const CreateDaoVoting = ({
                     />
                   }
                   name={t(nameI18nKey)}
-                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                 />
               )
           )}
@@ -138,7 +135,6 @@ export const CreateDaoVoting = ({
                     Icon,
                     nameI18nKey,
                     descriptionI18nKey,
-                    tooltipI18nKey,
                     Input,
                     getInputError,
                   },
@@ -188,7 +184,6 @@ export const CreateDaoVoting = ({
                         />
                       }
                       name={t(nameI18nKey)}
-                      tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                     />
                   )
               )
@@ -200,7 +195,6 @@ export const CreateDaoVoting = ({
                 Icon,
                 nameI18nKey,
                 descriptionI18nKey,
-                tooltipI18nKey,
                 Input,
                 getInputError,
               },
@@ -236,7 +230,6 @@ export const CreateDaoVoting = ({
                     />
                   }
                   name={t(nameI18nKey)}
-                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                 />
               )
           )}
@@ -306,7 +299,6 @@ export const CreateDaoVoting = ({
                   Icon,
                   nameI18nKey,
                   descriptionI18nKey,
-                  tooltipI18nKey,
                   Input,
                   getInputError,
                 },
@@ -354,7 +346,6 @@ export const CreateDaoVoting = ({
                       />
                     }
                     name={t(nameI18nKey)}
-                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                   />
                 )
             )}
@@ -367,7 +358,6 @@ export const CreateDaoVoting = ({
                       Icon,
                       nameI18nKey,
                       descriptionI18nKey,
-                      tooltipI18nKey,
                       Input,
                       getInputError,
                     },
@@ -419,7 +409,6 @@ export const CreateDaoVoting = ({
                           />
                         }
                         name={t(nameI18nKey)}
-                        tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                       />
                     )
                 )
@@ -431,7 +420,6 @@ export const CreateDaoVoting = ({
                   Icon,
                   nameI18nKey,
                   descriptionI18nKey,
-                  tooltipI18nKey,
                   Input,
                   getInputError,
                 },
@@ -474,7 +462,6 @@ export const CreateDaoVoting = ({
                       />
                     }
                     name={t(nameI18nKey)}
-                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                   />
                 )
             )}

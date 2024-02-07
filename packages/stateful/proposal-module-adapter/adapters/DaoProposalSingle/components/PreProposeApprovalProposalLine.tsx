@@ -1,6 +1,6 @@
 import {
+  LineLoader,
   PreProposeApprovalProposalStatus,
-  ProposalLineLoader,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import {
@@ -21,7 +21,7 @@ export const PreProposeApprovalProposalLine = (
 
   return (
     <SuspenseLoader
-      fallback={<ProposalLineLoader />}
+      fallback={<LineLoader type="proposal" />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (
@@ -47,11 +47,8 @@ const InnerPreProposeApprovalProposalLine = ({
 
   return (
     <StatelessProposalLine
-      Status={({ dimmed }) => (
-        <PreProposeApprovalProposalStatus
-          dimmed={dimmed}
-          status={proposal.status}
-        />
+      Status={(props) => (
+        <PreProposeApprovalProposalStatus {...props} status={proposal.status} />
       )}
       approvalContext={{
         type: ApprovalProposalContextType.Approval,
@@ -62,7 +59,6 @@ const InnerPreProposeApprovalProposalLine = ({
       timestampDisplay={proposal.timestampDisplay}
       title={proposal.msg.title}
       vote={undefined}
-      votingOpen={false}
       {...props}
     />
   )

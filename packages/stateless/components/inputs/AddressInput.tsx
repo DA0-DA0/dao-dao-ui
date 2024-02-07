@@ -147,7 +147,6 @@ export const AddressInput = <
           event.preventDefault()
           inputRef.current?.blur()
           break
-        case 'ArrowLeft':
         case 'ArrowUp':
           event.preventDefault()
           setSelectedEntityIndex((index) =>
@@ -157,7 +156,6 @@ export const AddressInput = <
                 Math.min(index - 1, autofillEntities.entities.length - 1)
           )
           break
-        case 'ArrowRight':
         case 'ArrowDown':
         case 'Tab':
           event.preventDefault()

@@ -52,11 +52,8 @@ export const makeMultipleChoiceVotingConfigItem =
     Icon: NumbersEmoji,
     nameI18nKey: 'form.multipleChoiceTitle',
     descriptionI18nKey: 'form.multipleChoiceDescription',
+    tooltipI18nKey: 'form.multipleChoiceDescription',
     Input: MultipleChoiceInput,
     getInputError: ({ enableMultipleChoice } = {}) => enableMultipleChoice,
     Review: MultipleChoiceReview,
-    getReviewClassName: ({ enableMultipleChoice }) =>
-      enableMultipleChoice
-        ? 'bg-component-badge-valid'
-        : 'bg-component-badge-error',
   })

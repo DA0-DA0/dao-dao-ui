@@ -73,6 +73,7 @@ export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationE
     Icon: BallotDepositEmoji,
     nameI18nKey: 'form.passingThresholdTitle',
     descriptionI18nKey: 'form.passingThresholdWithQuorumDescription',
+    tooltipI18nKey: 'info.passingThresholdTooltip_quorum',
     Input: ThresholdInput,
     getInputError: ({ threshold } = {}) =>
       threshold?.majority || threshold?.value,

@@ -4,10 +4,10 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ActionCardLoader,
   ActionsRenderer,
   Button,
   CosmosMessageDisplay,
-  Loader,
 } from '@dao-dao/stateless'
 import {
   ActionAndData,
@@ -26,7 +26,7 @@ export const PreProposeApprovalInnerContentDisplay = (
 
   return (
     <SuspenseLoader
-      fallback={<Loader />}
+      fallback={<ActionCardLoader />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (

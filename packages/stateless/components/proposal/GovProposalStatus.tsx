@@ -5,22 +5,22 @@ import {
   RemoveCircle,
   Timelapse,
 } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay } from '@dao-dao/stateless'
+import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
-export interface GovProposalStatusProps {
+export type GovProposalStatusProps = {
   status: ProposalStatus
-  // Dim
-  dimmed?: boolean
-}
+} & Omit<
+  StatusDisplayProps,
+  'Icon' | 'iconClassName' | 'label' | 'labelClassName'
+>
 
 export const GovProposalStatus = ({
   status,
-  dimmed = false,
+  ...props
 }: GovProposalStatusProps) => {
   const { t } = useTranslation()
   const { Icon, i18nKey, iconClassName, textClassName } =
@@ -28,24 +28,11 @@ export const GovProposalStatus = ({
 
   return (
     <StatusDisplay
-      icon={
-        <Icon
-          className={clsx(
-            '!h-5 !w-5 shrink-0',
-            dimmed ? 'text-icon-tertiary' : iconClassName
-          )}
-        />
-      }
-      label={
-        <p
-          className={clsx(
-            'shrink-0 truncate leading-5',
-            dimmed ? 'text-text-tertiary' : textClassName
-          )}
-        >
-          {t(`govProposalStatusTitleShort.${i18nKey}`)}
-        </p>
-      }
+      {...props}
+      Icon={Icon}
+      iconClassName={iconClassName}
+      label={t(`govProposalStatusTitleShort.${i18nKey}`)}
+      labelClassName={textClassName}
     />
   )
 }

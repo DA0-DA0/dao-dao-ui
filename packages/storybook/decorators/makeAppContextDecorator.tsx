@@ -13,8 +13,6 @@ export const makeAppContextDecorator: (
   function ResponsiveNavigationContextDecorator(Story) {
     const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
       useState(defaultResponsiveEnabled)
-    const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-      useState(false)
 
     // Page header.
     const [, setPageHeaderSet] = useState(false)
@@ -23,15 +21,6 @@ export const makeAppContextDecorator: (
       if (ref) {
         pageHeaderRef.current = ref
         setPageHeaderSet(true)
-      }
-    }, [])
-    // Right sidebar.
-    const [, setRightSidebarSet] = useState(false)
-    const rightSidebarRef = useRef<HTMLDivElement | null>(null)
-    const setRightSidebarRef = useCallback((ref: HTMLDivElement | null) => {
-      if (ref) {
-        rightSidebarRef.current = ref
-        setRightSidebarSet(true)
       }
     }, [])
 
@@ -43,14 +32,8 @@ export const makeAppContextDecorator: (
             enabled: responsiveNavigationEnabled,
             toggle: () => setResponsiveNavigationEnabled((v) => !v),
           },
-          responsiveRightSidebar: {
-            enabled: responsiveRightSidebarEnabled,
-            toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-          },
           pageHeaderRef,
           setPageHeaderRef,
-          rightSidebarRef,
-          setRightSidebarRef,
           rootCommandContextMaker: makeGenericContext,
           setRootCommandContextMaker: () => {},
           inbox: EMPTY_INBOX,

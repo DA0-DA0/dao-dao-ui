@@ -320,6 +320,7 @@ export const makeProposalDepositVotingConfigItem =
     Icon: MoneyEmoji,
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',
+    tooltipI18nKey: 'info.proposalDepositTooltip',
     Input: ProposalDepositInput,
     getInputError: () => undefined,
     Review: ProposalDepositReview,

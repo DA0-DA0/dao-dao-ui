@@ -21,7 +21,7 @@ Default.args = {
     coreAddress: 'core1',
     name: 'Core 1',
     imageUrl: '/placeholders/1.svg',
-    subdaos: [],
+    subDaos: [],
   },
   LinkWrapper,
 }
@@ -39,7 +39,7 @@ WithSubdaos.args = {
     coreAddress: 'raw',
     name: 'Raw',
     imageUrl: '/placeholders/2.svg',
-    subdaos: [
+    subDaos: [
       {
         chainId: CHAIN_ID,
         coreAddress: 'payroll',
@@ -51,7 +51,7 @@ WithSubdaos.args = {
         coreAddress: 'pool',
         name: 'Pool distribution',
         imageUrl: '/placeholders/4.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'native',

@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -21,12 +22,17 @@ export type ProposalModuleSelectorProps = {
   matchAdapter: (
     contractNameToMatch: string
   ) => ProposalModuleAdapter | undefined
+  /**
+   * Optional class name for the container.
+   */
+  className?: string
 }
 
 export const ProposalModuleSelector = ({
   selected: _selected,
   setSelected,
   matchAdapter,
+  className,
 }: ProposalModuleSelectorProps) => {
   const { t } = useTranslation()
   const { proposalModules } = useDaoInfoContext()
@@ -68,7 +74,12 @@ export const ProposalModuleSelector = ({
   const selected = proposalModules.find((m) => m.address === _selected)
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-x-8 gap-y-4">
+    <div
+      className={clsx(
+        'flex flex-row flex-wrap items-center gap-x-4 gap-y-2',
+        className
+      )}
+    >
       <p className="title-text">{t('title.proposalType')}</p>
 
       <SegmentedControls

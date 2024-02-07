@@ -1,84 +1,73 @@
+import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useCallback } from 'react'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { LogInRequiredPage, Inbox as StatelessInbox } from '@dao-dao/stateless'
 import {
-  LogInRequiredPage,
-  Inbox as StatelessInbox,
-  useAppContext,
-} from '@dao-dao/stateless'
-import { SITE_URL } from '@dao-dao/utils'
+  SITE_URL,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+  UNDO_PAGE_PADDING_TOP_CLASSES,
+} from '@dao-dao/utils'
 
-import { useInboxApi, useWallet } from '../../hooks'
+import { useInboxApiWithUi, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 import { InboxMainItemRenderer } from '../inbox'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
+import { PageHeaderContent } from '../PageHeaderContent'
 
 export const Inbox: NextPage = () => {
   const { t } = useTranslation()
-  const api = useInboxApi()
-  const {
-    asPath,
-    query: { code },
-    isReady,
-    replace,
-  } = useRouter()
+  const { asPath } = useRouter()
   const { isWalletConnected, isWalletConnecting } = useWallet()
 
-  const { inbox } = useAppContext()
-  // Type-check, should always be loaded for dapp.
-  if (!inbox) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  const { ready, verify: doVerify } = api
-
-  const verify = useCallback(async () => {
-    if (ready && isReady) {
-      if (typeof code === 'string') {
-        if (await doVerify(code)) {
-          toast.success(t('info.emailVerified'))
-        }
-      } else {
-        toast.error(t('error.invalidCode'))
-      }
-
-      replace('/inbox/settings', undefined, { shallow: true })
-    }
-  }, [code, isReady, replace, ready, t, doVerify])
+  const inbox = useInboxApiWithUi({
+    mode: 'page',
+  })
 
   return (
     <>
       <NextSeo
-        description={t('info.inboxDescription')}
+        description={t('info.notificationsDescription')}
         openGraph={{
           url: SITE_URL + asPath,
-          title: t('title.inbox'),
-          description: t('info.inboxDescription'),
+          title: t('title.notifications'),
+          description: t('info.notificationsDescription'),
         }}
-        title={t('title.inbox')}
+        title={t('title.notifications')}
       />
 
-      {isWalletConnected ? (
-        <StatelessInbox
-          InboxMainItemRenderer={InboxMainItemRenderer}
-          api={api}
-          connected={isWalletConnected}
-          rightSidebarContent={<ProfileHomeCard />}
-          state={inbox}
-          verify={verify}
-        />
-      ) : (
-        <LogInRequiredPage
-          connectWalletButton={<ConnectWallet />}
-          connecting={isWalletConnecting}
-          rightSidebarContent={<ProfileDisconnectedCard />}
-          title={t('title.inbox')}
-        />
-      )}
+      <PageHeaderContent
+        forceExpandBorderToEdge
+        rightNode={
+          <div className="flex flex-row items-center gap-1 md:gap-2">
+            {inbox.buttons.refresh}
+            {inbox.buttons.clear}
+            {inbox.buttons.settings}
+          </div>
+        }
+        title={t('title.notifications')}
+      />
+
+      <div
+        className={clsx(
+          UNDO_PAGE_PADDING_TOP_CLASSES,
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
+        )}
+      >
+        {isWalletConnected ? (
+          <StatelessInbox
+            InboxMainItemRenderer={InboxMainItemRenderer}
+            connected
+            inbox={inbox}
+          />
+        ) : (
+          <LogInRequiredPage
+            connectWalletButton={<ConnectWallet />}
+            connecting={isWalletConnecting}
+          />
+        )}
+      </div>
     </>
   )
 }

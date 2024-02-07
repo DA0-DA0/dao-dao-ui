@@ -1,5 +1,5 @@
 export * from './useCommonGovernanceTokenInfo'
-export * from './useDaoInfoBarItems'
 export * from './useGovernanceTokenInfo'
-export * from './useProfileNewProposalCardAddresses'
+export * from './useMainDaoInfoCards'
 export * from './useStakingInfo'
+export * from './useVotingModuleRelevantAddresses'

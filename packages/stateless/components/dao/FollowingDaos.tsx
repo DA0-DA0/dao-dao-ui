@@ -6,9 +6,9 @@ import { DaoCardInfo, LoadingData, SortFn, TypedOption } from '@dao-dao/types'
 
 import { useButtonPopupSorter } from '../../hooks'
 import { GridCardContainer } from '../GridCardContainer'
-import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 import { ButtonPopup } from '../popup/ButtonPopup'
+import { DaoCardLoader } from './DaoCard'
 
 export interface FollowingDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
@@ -36,9 +36,9 @@ export const FollowingDaos = ({
   })
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-        <p className="title-text">{t('title.following')}</p>
+        <p className="title-text text-lg">{t('title.following')}</p>
 
         <div className="flex grow flex-row justify-end">
           <ButtonPopup position="left" {...sortButtonPopupProps} />
@@ -46,7 +46,11 @@ export const FollowingDaos = ({
       </div>
 
       {followingDaos.loading || followingDaos.updating ? (
-        <Loader />
+        <GridCardContainer>
+          <DaoCardLoader />
+          <DaoCardLoader />
+          <DaoCardLoader />
+        </GridCardContainer>
       ) : followingDaos.data.length === 0 ? (
         <NoContent
           Icon={DoneOutlineRounded}

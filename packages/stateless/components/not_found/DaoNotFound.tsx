@@ -1,10 +1,16 @@
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { PageHeaderProps } from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { PageHeaderContent } from '../layout'
 
-export const DaoNotFound = () => {
+export type DaoNotFoundProps = {
+  PageHeaderContent: ComponentType<PageHeaderProps>
+}
+
+export const DaoNotFound = ({ PageHeaderContent }: DaoNotFoundProps) => {
   const { t } = useTranslation()
 
   return (

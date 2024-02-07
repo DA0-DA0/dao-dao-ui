@@ -4,13 +4,11 @@ import {
   Default as DappLayoutStory,
   DefaultArgs as DappLayoutStoryArgs,
 } from '@dao-dao/stateless/components/layout/DappLayout.stories'
-import { DappNavigationProps } from '@dao-dao/stateless/components/layout/DappNavigation'
-import { RightSidebarProps } from '@dao-dao/stateless/components/layout/RightSidebar'
+import { DappNavigationProps } from '@dao-dao/types'
 
 export const makeDappLayoutDecorator: (props?: {
   navigationProps?: Partial<DappNavigationProps>
-  rightSidebarProps?: Partial<Omit<RightSidebarProps, 'setContentRef'>>
-}) => DecoratorFn = ({ navigationProps, rightSidebarProps } = {}) =>
+}) => DecoratorFn = ({ navigationProps } = {}) =>
   function DappLayoutDecorator(Story) {
     return (
       <DappLayoutStory
@@ -19,11 +17,6 @@ export const makeDappLayoutDecorator: (props?: {
           // Allow overriding default arguments from the AppLayout story.
           ...DappLayoutStoryArgs.navigationProps,
           ...navigationProps,
-        }}
-        rightSidebarProps={{
-          // Allow overriding default arguments from the AppLayout story.
-          ...DappLayoutStoryArgs.rightSidebarProps,
-          ...rightSidebarProps,
         }}
       >
         <Story />

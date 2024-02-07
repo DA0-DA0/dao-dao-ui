@@ -1,6 +1,8 @@
 import { waitForAll } from 'recoil'
 
 import {
+  DaoCardLoader,
+  GridCardContainer,
   SubDaosTab as StatelessSubDaosTab,
   useCachedLoading,
   useChain,
@@ -25,7 +27,15 @@ export const GovSubDaosTab = () => {
   )
 
   return (
-    <GovActionsProvider>
+    <GovActionsProvider
+      loader={
+        <GridCardContainer>
+          {[...Array(3)].map((_, index) => (
+            <DaoCardLoader key={index} />
+          ))}
+        </GridCardContainer>
+      }
+    >
       <StatelessSubDaosTab
         ButtonLink={ButtonLink}
         DaoCard={DaoCard}

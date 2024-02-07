@@ -1,22 +1,21 @@
 import {
   AccountCircleOutlined,
   Cancel,
-  Check,
-  Close as CloseIcon,
   HourglassTopRounded,
   Key,
   RotateRightOutlined,
-  Texture,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import clsx from 'clsx'
 
+import { ProposalVoterProps } from '@dao-dao/types'
 import { Vote as VoteType } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ButtonLink } from '../buttons'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Logo } from '../logo/Logo'
 import { ProposalStatusAndInfo } from './ProposalStatusAndInfo'
+import { ProposalVoter } from './ProposalVoter'
+import { Default as ProposalVoterStory } from './ProposalVoter.stories'
 
 export default {
   title:
@@ -37,9 +36,7 @@ Default.args = {
   status: 'If the current vote stands, the proposal will pass.',
   info: [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: 'DAO',
       Value: (props) => (
         <ButtonLink
@@ -116,15 +113,10 @@ Close.args = {
 export const Vote = Template.bind({})
 Vote.args = {
   ...Default.args,
-  vote: {
-    loading: false,
-    currentVote: VoteType.Yes,
-    onCastVote: (vote) => alert('vote: ' + vote),
-    options: [
-      { Icon: Check, label: 'Yes', value: VoteType.Yes },
-      { Icon: CloseIcon, label: 'No', value: VoteType.No },
-      { Icon: Texture, label: 'Abstain', value: VoteType.Abstain },
-    ],
-    proposalOpen: true,
-  },
+  Voter: (props) => (
+    <ProposalVoter
+      {...(ProposalVoterStory.args as ProposalVoterProps)}
+      {...props}
+    />
+  ),
 }

@@ -22,7 +22,7 @@ export interface UseFilteredDaosSectionOptions {
   limit?: number
 }
 
-const DEFAULT_LIMIT = 7
+const DEFAULT_LIMIT = 5
 
 export const useFollowingAndFilteredDaosSections = ({
   options,
@@ -97,9 +97,6 @@ export const useFollowingAndFilteredDaosSections = ({
     name: t('title.following'),
     onChoose,
     items: followingDaosLoading.loading ? [] : followingDaosLoading.data,
-    // When a search is active, show above all other sections. This serves to
-    // prioritize the DAOs you follow over all other DAOs you can search.
-    searchOrder: 1,
     loading: followingDaosLoading.loading || !!followingDaosLoading.updating,
   }
 

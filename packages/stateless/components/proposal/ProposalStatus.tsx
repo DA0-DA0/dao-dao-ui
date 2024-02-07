@@ -8,11 +8,10 @@ import {
   ThumbDownOutlined,
   Timelapse,
 } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay } from '@dao-dao/stateless'
+import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import {
   ProposalStatusEnum,
   ProposalStatusKey,
@@ -20,16 +19,14 @@ import {
 } from '@dao-dao/types'
 import { getProposalStatusKey } from '@dao-dao/utils'
 
-export interface ProposalStatusProps {
+export type ProposalStatusProps = {
   status: Status
-  // Dim
-  dimmed?: boolean
-}
+} & Omit<
+  StatusDisplayProps,
+  'Icon' | 'iconClassName' | 'label' | 'labelClassName'
+>
 
-export const ProposalStatus = ({
-  status,
-  dimmed = false,
-}: ProposalStatusProps) => {
+export const ProposalStatus = ({ status, ...props }: ProposalStatusProps) => {
   const { t } = useTranslation()
 
   const key = getProposalStatusKey(status)
@@ -37,24 +34,11 @@ export const ProposalStatus = ({
 
   return (
     <StatusDisplay
-      icon={
-        <Icon
-          className={clsx(
-            '!h-5 !w-5 shrink-0',
-            dimmed ? 'text-icon-tertiary' : iconClassName
-          )}
-        />
-      }
-      label={
-        <p
-          className={clsx(
-            'shrink-0 truncate leading-5',
-            dimmed ? 'text-text-tertiary' : textClassName
-          )}
-        >
-          {t(`proposalStatusTitleShort.${key}`)}
-        </p>
-      }
+      {...props}
+      Icon={Icon}
+      iconClassName={iconClassName}
+      label={t(`proposalStatusTitleShort.${key}`)}
+      labelClassName={textClassName}
     />
   )
 }

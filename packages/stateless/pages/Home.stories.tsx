@@ -3,21 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalLine } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import {
-  DaoCard,
-  IconButtonLink,
-  LinkWrapper,
-  ProfileDisconnectedCard,
-  ProfileDisconnectedCardProps,
-  ProfileHomeCard,
-  ProfileHomeCardProps,
-  SidebarWallet,
-} from '../components'
+import { DaoCard, IconButtonLink, LinkWrapper } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
-import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
-import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
-import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
+import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.stories'
 import { Home } from './Home'
 
 export default {
@@ -61,9 +50,6 @@ Connected.args = {
     ),
     openSearch: () => alert('search'),
   },
-  rightSidebarContent: (
-    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
-  ),
   feedProps: {
     state: {
       loading: false,
@@ -107,13 +93,7 @@ Connected.decorators = [makeDappLayoutDecorator()]
 export const Disconnected = Template.bind({})
 Disconnected.args = {
   ...Connected.args,
-  openSearch: () => alert('search'),
   connected: false,
-  rightSidebarContent: (
-    <ProfileDisconnectedCard
-      {...(ProfileDisconnectedCardStory.args as ProfileDisconnectedCardProps)}
-    />
-  ),
 }
 Disconnected.parameters = {
   ...Connected.parameters,
@@ -126,9 +106,6 @@ Disconnected.decorators = [
   makeDappLayoutDecorator({
     navigationProps: {
       walletConnected: false,
-    },
-    rightSidebarProps: {
-      wallet: <SidebarWallet connected={false} onConnect={() => {}} />,
     },
   }),
 ]

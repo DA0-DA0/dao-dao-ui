@@ -30,7 +30,7 @@ export const ProfileCardMemberInfo = ({
       </p>
     </div>
   ) : (
-    <p className="secondary-text">
+    <p className={clsx(cantVoteOnProposal ? 'caption-text' : 'legend-text')}>
       {t('info.membershipDaoNotMemberInfo', {
         daoName,
         context: cantVoteOnProposal ? 'proposal' : 'dao',

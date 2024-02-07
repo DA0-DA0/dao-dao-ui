@@ -4,7 +4,7 @@
 import type { GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { ErrorPage404 } from '@dao-dao/stateless'
+import { ErrorPage404 } from '@dao-dao/stateful'
 
 export default ErrorPage404
 

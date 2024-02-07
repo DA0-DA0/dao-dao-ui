@@ -1,26 +1,17 @@
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
 
-import { DaoPageMode } from '@dao-dao/types'
 import {
   getDaoPath as _getDaoPath,
   getDaoProposalPath as _getDaoProposalPath,
 } from '@dao-dao/utils'
 
-import { useAppContextIfAvailable } from '../components/layout/AppContext'
+import { useAppContext } from '../components/layout/AppContext'
 
-export const useDaoNavHelpers = (overrideMode?: DaoPageMode) => {
+export const useDaoNavHelpers = () => {
   const router = useRouter()
 
-  // On SDA, some pages, like 404 and discord redirect, render outside the app
-  // layout context. We still want to be able to use these helpers to redirect
-  // to DAO pages, so we allow overriding the mode.
-  const { mode } = useAppContextIfAvailable() ?? {
-    mode: overrideMode,
-  }
-  if (!mode) {
-    throw new Error('No mode available')
-  }
+  const { mode } = useAppContext()
 
   const getDaoPath = useCallback(
     (coreAddress: string, path?: string, params?: Record<string, unknown>) =>

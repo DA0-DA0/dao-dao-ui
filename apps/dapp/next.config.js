@@ -69,6 +69,11 @@ const config = {
       destination: '/',
       permanent: false,
     },
+    {
+      source: '/inbox/:slug*',
+      destination: '/notifications/:slug*',
+      permanent: false,
+    },
     // Redirect legacy multisigs (legacy DAOs redirected in
     // makeGetDaoStaticProps function).
     {

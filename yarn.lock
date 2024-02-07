@@ -22239,6 +22239,11 @@ next-intercept-stdout@^1.0.1:
   dependencies:
     intercept-stdout "^0.1.2"
 
+next-plausible@^3.12.0:
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/next-plausible/-/next-plausible-3.12.0.tgz#b54f344c63bd1bb743ce6ef4e54b39446b0f3840"
+  integrity sha512-SSkEqKQ6PgR8fx3sYfIAT69k2xuCUXO5ngkSS19CjxY97lAoZxsfZpYednxB4zo0mHYv87JzhPynrdBPlCBVHg==
+
 next-seo@^5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/next-seo/-/next-seo-5.4.0.tgz#37a7784b30b3f70cec3fa0d77f9dde5990822d24"

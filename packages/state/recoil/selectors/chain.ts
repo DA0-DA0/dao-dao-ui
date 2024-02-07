@@ -488,7 +488,14 @@ export const neutronIbcTransferFeeSelector = selector<
         }
       }
     } catch (err) {
-      console.error(err)
+      if (err instanceof Error) {
+        console.error(err)
+        return
+      }
+
+      // Rethrow non errors (like promises) since `get` throws a Promise while
+      // the data is still loading.
+      throw err
     }
   },
 })

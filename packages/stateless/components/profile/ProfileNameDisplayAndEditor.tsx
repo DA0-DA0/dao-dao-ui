@@ -22,6 +22,7 @@ export type ProfileNameDisplayAndEditorProps = {
   nameClassName?: string
   // The height of this should match the line-height of the name.
   editingContainerClassName?: string
+  editingClassName?: string
 }
 
 export const ProfileNameDisplayAndEditor = ({
@@ -32,6 +33,7 @@ export const ProfileNameDisplayAndEditor = ({
   nameClassName = '!title-text',
   // h-5 matches the line-height of title-text.
   editingContainerClassName = 'h-5',
+  editingClassName,
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 
@@ -68,12 +70,12 @@ export const ProfileNameDisplayAndEditor = ({
     !walletProfileData.loading && walletProfileData.profile.name === null
 
   return (
-    <div className={className}>
+    <div className={clsx(className, editingName && editingClassName)}>
       {canEdit && editingName !== undefined ? (
         <div
           className={clsx(
-            'relative mb-2',
-            compact ? '' : 'mx-16 flex flex-col items-center',
+            'relative -mt-1 mb-1 flex flex-col items-center',
+            compact ? 'pr-12' : 'min-w-40',
             editingContainerClassName
           )}
         >
@@ -82,7 +84,7 @@ export const ProfileNameDisplayAndEditor = ({
             // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
             autoFocus
             className={clsx(
-              'border-b border-border-primary pb-1',
+              'min-w-full border-b border-border-primary pb-0.5',
               !compact && 'text-center',
               nameClassName
             )}
@@ -97,10 +99,16 @@ export const ProfileNameDisplayAndEditor = ({
                 ? doUpdateName()
                 : undefined
             }
+            size={1}
             value={editingName}
           />
 
-          <div className="absolute top-0 -right-12 bottom-0 flex flex-row items-center gap-1">
+          <div
+            className={clsx(
+              'absolute top-0 bottom-0 flex flex-row items-center gap-1',
+              compact ? 'right-0' : '-right-12'
+            )}
+          >
             {savingName ? (
               <Loader fill={false} size={16} />
             ) : (
@@ -123,6 +131,7 @@ export const ProfileNameDisplayAndEditor = ({
       ) : (
         <Button
           className="group relative"
+          contentContainerClassName={clsx(canEdit && compact && 'pr-6')}
           disabled={!canEdit}
           onClick={() =>
             !walletProfileData.loading &&
@@ -165,7 +174,8 @@ export const ProfileNameDisplayAndEditor = ({
           {canEdit && (
             <Edit
               className={clsx(
-                'absolute -right-6 !h-4 !w-6 pl-2 text-icon-secondary',
+                'absolute !h-4 !w-6 pl-2 text-icon-secondary',
+                compact ? 'right-0' : '-right-6',
                 !noNameSet &&
                   'opacity-0 transition-opacity group-hover:opacity-100'
               )}

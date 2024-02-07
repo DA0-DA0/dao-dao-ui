@@ -1,14 +1,18 @@
+import { useState } from 'react'
+
 import { DaoProposalMultipleSelectors } from '@dao-dao/state'
 import {
+  PaginatedProposalVotes,
   ProposalVote,
-  ProposalVotes as StatelessProposalVotes,
-  useCachedLoadable,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 
 import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { useLoadingProposal } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
+
+const VOTES_PER_PAGE = 20
 
 export const ProposalVotes = () => {
   const {
@@ -22,32 +26,63 @@ export const ProposalVotes = () => {
   const totalPower = loadingProposal.loading
     ? 0
     : Number(loadingProposal.data.total_power)
-  const votesLoadable = useCachedLoadable(
-    DaoProposalMultipleSelectors.listAllVotesSelector({
-      chainId,
-      contractAddress: proposalModuleAddress,
-      proposalId: proposalNumber,
-    })
+
+  const votes = useCachedLoadingWithError(
+    // Don't load votes until proposal is ready so that the `totalPower`
+    // calculation in the transformation function works correctly.
+    loadingProposal.loading
+      ? undefined
+      : DaoProposalMultipleSelectors.listAllVotesSelector({
+          chainId,
+          contractAddress: proposalModuleAddress,
+          proposalId: proposalNumber,
+        }),
+    (data) =>
+      data
+        .map(
+          ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
+            voterAddress: voter,
+            vote,
+            votingPowerPercent:
+              totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
+            rationale,
+            votedAt: votedAt ? new Date(votedAt) : undefined,
+          })
+        )
+        // Sort most recent first.
+        .sort((a, b) =>
+          a.votedAt && b.votedAt
+            ? b.votedAt.getTime() - a.votedAt.getTime()
+            : a.votedAt
+            ? -1
+            : b.votedAt
+            ? 1
+            : 0
+        )
   )
 
+  const [page, setPage] = useState(1)
+
   return (
-    <StatelessProposalVotes
+    <PaginatedProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
+      pagination={{
+        page,
+        setPage,
+        pageSize: VOTES_PER_PAGE,
+        total: votes.loading || votes.errored ? 0 : votes.data.length,
+      }}
       votes={
-        votesLoadable.state !== 'hasValue'
-          ? { loading: true }
+        votes.loading || votes.errored
+          ? votes
           : {
               loading: false,
-              data: votesLoadable.contents.map(
-                ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
-                  voterAddress: voter,
-                  vote,
-                  votingPowerPercent:
-                    totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
-                  rationale,
-                  votedAt: votedAt ? new Date(votedAt) : undefined,
-                })
+              errored: false,
+              updating: votes.updating,
+              data: votes.data.slice(
+                (page - 1) * VOTES_PER_PAGE,
+                page * VOTES_PER_PAGE
               ),
             }
       }

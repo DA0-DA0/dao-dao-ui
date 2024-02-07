@@ -20,24 +20,16 @@ import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
 import { wallets as xdefiWallets } from '@cosmos-kit/xdefi'
 import { assets, chains } from 'chain-registry'
-import {
-  Dispatch,
-  PropsWithChildren,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import { PropsWithChildren, ReactNode, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePrevious } from 'react-use'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   isKeplrMobileWebAtom,
   mountedInBrowserAtom,
+  web3AuthPromptAtom,
 } from '@dao-dao/state/recoil'
-import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ENDPOINTS,
   MAINNET,
@@ -56,20 +48,13 @@ cosmosExtensionMetamaskWallets[0].walletInfo.prettyName =
   'MetaMask (Cosmos Extension)'
 
 export type WalletProviderProps = {
-  // This needs to be provided by the parent component and then passed to the
-  // AppContext that wraps the app. Since the AppContext uses the inbox which
-  // depends on the wallet, we need to pass the setter to the wallet provider so
-  // that the value can be passed to the AppContext, used by the
-  // Web3AuthPromptModal in the respective app layout (DappLayout or SdaLayout).
-  setWeb3AuthPrompt: Dispatch<SetStateAction<Web3AuthPrompt | undefined>>
   children: ReactNode
 }
 
-export const WalletProvider = ({
-  setWeb3AuthPrompt,
-  children,
-}: WalletProviderProps) => {
+export const WalletProvider = ({ children }: WalletProviderProps) => {
   const { t } = useTranslation()
+
+  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
 
   // Google, Apple, Discord, Twitter
   const web3AuthWallets = useMemo(

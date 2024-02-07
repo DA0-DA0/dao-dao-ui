@@ -1,8 +1,9 @@
 import { communityPoolBalancesSelector } from '@dao-dao/state/recoil'
 import {
-  GridCardContainer,
-  Loader,
-  useCachedLoading,
+  ErrorPage,
+  LineLoaders,
+  TokenLineHeader,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { AccountType, TokenCardInfo } from '@dao-dao/types'
@@ -12,22 +13,17 @@ import {
 } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
-import { GovTokenCard } from './GovTokenCard'
+import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {
   const { chain_id: chainId } = useChain()
 
-  const tokenBalances = useCachedLoading(
+  const tokenCardInfos = useCachedLoadingWithError(
     communityPoolBalancesSelector({
       chainId,
     }),
-    []
-  )
-
-  const nativeToken = getNativeTokenForChainId(chainId)
-  const tokenCardInfos: TokenCardInfo[] = tokenBalances.loading
-    ? []
-    : tokenBalances.data
+    (data) =>
+      data
         .map(({ token, balance }): TokenCardInfo => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
@@ -42,7 +38,8 @@ export const GovCommunityPoolTab = () => {
             },
             token,
             isGovernanceToken:
-              nativeToken.denomOrAddress === token.denomOrAddress,
+              getNativeTokenForChainId(token.chainId).denomOrAddress ===
+              token.denomOrAddress,
             unstakedBalance,
             hasStakingInfo: false,
             lazyInfo: { loading: true },
@@ -71,16 +68,38 @@ export const GovCommunityPoolTab = () => {
 
           return 0
         })
+  )
 
-  return tokenCardInfos.length === 0 ? (
-    <Loader className="mt-6" fill={false} />
-  ) : (
-    <GovActionsProvider>
-      <GridCardContainer cardType="wide">
-        {tokenCardInfos.map((props, index) => (
-          <GovTokenCard {...props} key={index} />
-        ))}
-      </GridCardContainer>
+  return (
+    <GovActionsProvider
+      loader={
+        <div>
+          <TokenLineHeader />
+          <LineLoaders lines={10} type="token" />
+        </div>
+      }
+    >
+      {tokenCardInfos.loading ? (
+        <div>
+          <TokenLineHeader />
+          <LineLoaders lines={10} type="token" />
+        </div>
+      ) : tokenCardInfos.errored ? (
+        <ErrorPage error={tokenCardInfos.error} />
+      ) : (
+        <div>
+          <TokenLineHeader />
+
+          {tokenCardInfos.data.map((props, index) => (
+            <GovTokenLine
+              {...props}
+              key={index}
+              hideChainIcon
+              transparentBackground={index % 2 !== 0}
+            />
+          ))}
+        </div>
+      )}
     </GovActionsProvider>
   )
 }

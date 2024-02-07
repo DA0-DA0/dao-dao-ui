@@ -1,4 +1,4 @@
-import { PaidOutlined } from '@mui/icons-material'
+import { HistoryOutlined, HistoryRounded } from '@mui/icons-material'
 
 import {
   Widget,
@@ -11,7 +11,8 @@ import { Renderer } from './Renderer'
 
 export const RetroactiveCompensationWidget: Widget = {
   id: WidgetId.RetroactiveCompensation,
-  Icon: PaidOutlined,
+  Icon: HistoryOutlined,
+  IconFilled: HistoryRounded,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
   Renderer,

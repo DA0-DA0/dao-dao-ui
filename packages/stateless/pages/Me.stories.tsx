@@ -1,26 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { WalletChainSwitcher } from '@dao-dao/stateful'
 import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  MeTransactionBuilderProps,
-  TokenCardProps,
-  WalletBalancesProps,
-} from '@dao-dao/types'
+import { TokenCardProps, WalletBalancesProps } from '@dao-dao/types'
 
-import {
-  NftCardProps,
-  ProfileHomeCard,
-  ProfileHomeCardProps,
-} from '../components'
-import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
+import { NftCardProps } from '../components'
 import { Default as WalletBalancesStory } from '../components/wallet/WalletBalances.stories'
 import { Me } from './Me'
+import { MeTransactionBuilderProps } from './MeTransactionBuilder'
 import { Default as MeTransactionBuilderStory } from './MeTransactionBuilder.stories'
 
 export default {
@@ -37,9 +28,6 @@ const Template: ComponentStory<typeof Me> = (args) => <Me {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  rightSidebarContent: (
-    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
-  ),
   MeBalances: () => (
     <WalletBalancesStory
       {...(WalletBalancesStory.args as WalletBalancesProps<
@@ -55,5 +43,4 @@ Default.args = {
   ),
   MeDaos: () => <div />,
   profileData: WALLET_PROFILE_DATA,
-  ChainSwitcher: WalletChainSwitcher,
 }

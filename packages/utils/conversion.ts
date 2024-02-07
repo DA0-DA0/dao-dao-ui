@@ -172,6 +172,15 @@ export const convertDurationWithUnitsToHumanReadableString = (
     count: value,
   }).toLocaleLowerCase()}`
 
+export const convertDurationToHumanReadableString = (
+  t: TFunction,
+  duration: Duration
+) =>
+  convertDurationWithUnitsToHumanReadableString(
+    t,
+    convertDurationToDurationWithUnits(duration)
+  )
+
 // Convert Recoil loadable into our generic data loader type with a default
 // value on error. See the comment above the LoadingData type for more details.
 export const loadableToLoadingData = <T>(
@@ -238,10 +247,10 @@ export const combineLoadingDataWithErrors = <T>(
 // comment above the LoadingData type for more details.
 export const loadableToLoadingDataWithError = <T>(
   loadable: CachedLoadable<T> | Loadable<T>
-): LoadingDataWithError<T> => {
-  return loadable.state === 'loading' ||
-    // If on server, start by loading to prevent hyration error.
-    typeof window === 'undefined'
+): LoadingDataWithError<T> =>
+  loadable.state === 'loading' ||
+  // If on server, start by loading to prevent hyration error.
+  typeof window === 'undefined'
     ? { loading: true, errored: false }
     : loadable.state === 'hasValue'
     ? {
@@ -259,7 +268,26 @@ export const loadableToLoadingDataWithError = <T>(
           ? loadable.contents
           : new Error(`${loadable.contents}`),
       }
-}
+
+/**
+ * Transform data stored in LoadingDataWithError type into another format.
+ *
+ * @param {LoadingDataWithError<T>} loadingDataWithError Data to convert.
+ * @param {Function} transform Function to transform data from T to U.
+ * @returns {LoadingDataWithError<U>}
+ */
+export const transformLoadingDataWithError = <T, U>(
+  loadingDataWithError: LoadingDataWithError<T>,
+  transform: (data: T) => U
+): LoadingDataWithError<U> =>
+  loadingDataWithError.loading || loadingDataWithError.errored
+    ? loadingDataWithError
+    : {
+        loading: false,
+        errored: false,
+        updating: loadingDataWithError.updating,
+        data: transform(loadingDataWithError.data),
+      }
 
 export const convertExpirationToDate = (
   blocksPerYear: number,

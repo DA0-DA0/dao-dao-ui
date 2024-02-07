@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  transformIbcSymbol,
+  shortenTokenSymbol,
 } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
@@ -50,7 +50,7 @@ export const TokenDepositModal = ({
 
   const min = convertMicroDenomToDenomWithDecimals(1, token.decimals)
 
-  const { tokenSymbol } = transformIbcSymbol(token.symbol)
+  const { tokenSymbol } = shortenTokenSymbol(token.symbol)
 
   return (
     <Modal

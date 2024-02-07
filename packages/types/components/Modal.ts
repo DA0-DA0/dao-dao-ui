@@ -17,4 +17,6 @@ export interface ModalProps {
   contentContainerClassName?: string
   footerContainerClassName?: string
   titleClassName?: string
+  smallCloseButton?: boolean
+  closeButtonClassName?: string
 }

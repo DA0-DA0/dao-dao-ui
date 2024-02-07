@@ -1,18 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   PageHeaderProps,
   SdaLayoutProps,
   SdaNavigationProps,
 } from '@dao-dao/types'
 
-import { ConnectWallet, ConnectWalletProps } from '../wallet'
-import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
-import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 import { SdaLayout } from './SdaLayout'
 import { Default as SdaNavigationStory } from './SdaNavigation.stories'
 
@@ -32,13 +28,6 @@ export const DefaultArgs: SdaLayoutProps = {
         <p>App content</p>
       </div>
     </div>
-  ),
-  rightSidebarProps: RightSidebarStoryArgs,
-  walletProfileData: WALLET_PROFILE_DATA,
-  connect: () => alert('connect'),
-  connected: true,
-  connectWalletButton: (
-    <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
   ),
 }
 

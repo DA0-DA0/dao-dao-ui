@@ -1,6 +1,6 @@
-import { PeopleAltOutlined } from '@mui/icons-material'
+import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
-import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
+import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -17,7 +17,7 @@ import {
   makeUpdateStakingConfigAction,
 } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
-import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
+import { useCommonGovernanceTokenInfo, useMainDaoInfoCards } from './hooks'
 
 export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
@@ -26,14 +26,14 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
-      useProfileNewProposalCardAddresses: () => [],
+      useMainDaoInfoCards,
+      useVotingModuleRelevantAddresses: () => [],
       useCommonGovernanceTokenInfo,
     },
 
     // Components
     components: {
-      DaoInfoBarLoader: DaoInfoBarTokenLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsTokenLoader,
       ProfileCardMemberInfo,
       StakingModal,
 
@@ -43,6 +43,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
           labelI18nKey: 'title.members',
           Component: MembersTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
       ],
     },

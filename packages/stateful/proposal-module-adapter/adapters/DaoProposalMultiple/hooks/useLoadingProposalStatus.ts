@@ -7,7 +7,7 @@ import { useLoadingProposal } from './useLoadingProposal'
 export const useLoadingProposalStatus = () => {
   const loadingProposal = useLoadingProposal()
   return useMemo(
-    (): LoadingData<ProposalStatus | undefined> =>
+    (): LoadingData<ProposalStatus> =>
       loadingProposal.loading
         ? {
             loading: true,

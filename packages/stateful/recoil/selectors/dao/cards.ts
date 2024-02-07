@@ -305,7 +305,7 @@ export const subDaoCardInfosSelector = selectorFamily<
   get:
     ({ coreAddress: contractAddress, chainId }) =>
     ({ get }) => {
-      const subdaos = get(
+      const subDaos = get(
         DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress,
           chainId,
@@ -314,7 +314,7 @@ export const subDaoCardInfosSelector = selectorFamily<
 
       return get(
         waitForAll(
-          subdaos.map(({ chainId, addr }) =>
+          subDaos.map(({ chainId, addr }) =>
             daoCardInfoSelector({
               chainId,
               coreAddress: addr,
@@ -333,7 +333,7 @@ export const subDaoInfosSelector = selectorFamily<
   get:
     ({ coreAddress: contractAddress, chainId }) =>
     ({ get }) => {
-      const subdaos = get(
+      const subDaos = get(
         DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress,
           chainId,
@@ -342,7 +342,7 @@ export const subDaoInfosSelector = selectorFamily<
 
       return get(
         waitForAll(
-          subdaos.map(({ chainId, addr }) =>
+          subDaos.map(({ chainId, addr }) =>
             daoInfoSelector({
               chainId,
               coreAddress: addr,
@@ -393,7 +393,7 @@ export const daoDropdownInfoSelector: (
         coreAddress,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
         name: config.name,
-        subdaos: noSubDaos
+        subDaos: noSubDaos
           ? []
           : get(
               waitForAll(

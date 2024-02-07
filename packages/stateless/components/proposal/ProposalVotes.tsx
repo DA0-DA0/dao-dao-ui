@@ -11,7 +11,10 @@ import { CSVLink } from 'react-csv'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
+import {
+  LoadingDataWithError,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 import {
   formatDateTimeTz,
   formatPercentOf100,
@@ -20,6 +23,7 @@ import {
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../buttons'
+import { Loader } from '../logo'
 import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ProposalVote<Vote extends unknown = any> {
@@ -31,7 +35,7 @@ export interface ProposalVote<Vote extends unknown = any> {
 }
 
 export interface ProposalVotesProps<Vote extends unknown = any> {
-  votes: LoadingData<ProposalVote<Vote>[]>
+  votes: LoadingDataWithError<ProposalVote<Vote>[]>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   VoteDisplay: ComponentType<{ vote: Vote }>
   // Only allows refreshing when voting is open.
@@ -55,21 +59,22 @@ export const ProposalVotes = <Vote extends unknown = any>({
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: true })
 
   const votesLoadingOrUpdating = votes.loading || !!votes.updating
-  const votesWithDate = votes.loading
-    ? []
-    : votes.data.sort(
-        (a, b) =>
-          // Sort descending by date, and those without a date last.
-          (b.votedAt?.getTime() ?? -Infinity) -
-          (a.votedAt?.getTime() ?? -Infinity)
-      )
+  const votesWithDate =
+    votes.loading || votes.errored
+      ? []
+      : votes.data.sort(
+          (a, b) =>
+            // Sort descending by date, and those without a date last.
+            (b.votedAt?.getTime() ?? -Infinity) -
+            (a.votedAt?.getTime() ?? -Infinity)
+        )
 
   // If a new vote is added to existing votes and the window is scrolled to the
   // bottom, scroll to the bottom again to show the new vote.
   const [prevVoteCount, setPrevVoteCount] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const newVoteCount = votes.loading ? 0 : votes.data.length
+    const newVoteCount = votes.loading || votes.errored ? 0 : votes.data.length
     if (
       votes.loading ||
       !containerRef.current ||
@@ -196,6 +201,8 @@ export const ProposalVotes = <Vote extends unknown = any>({
             )
           )}
         </div>
+
+        {votes.loading && <Loader size={32} />}
 
         {footer}
 

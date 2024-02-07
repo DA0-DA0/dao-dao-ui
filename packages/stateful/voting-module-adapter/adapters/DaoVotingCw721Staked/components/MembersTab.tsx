@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import { DaoVotingCw721StakedSelectors } from '@dao-dao/state/recoil'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 
 import {
@@ -18,38 +20,40 @@ export const MembersTab = () => {
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
   const { collectionInfo } = useGovernanceCollectionInfo()
 
-  const topStakers = useRecoilValue(
+  const members = useCachedLoadingWithError(
     DaoVotingCw721StakedSelectors.topStakersSelector({
       chainId,
       contractAddress: votingModuleAddress,
-    })
-  )
-
-  const memberCards: StatefulDaoMemberCardProps[] = (topStakers ?? []).map(
-    ({ address, count, votingPowerPercent }) => ({
-      address,
-      balance: {
-        label: t('title.staked'),
-        unit: '$' + collectionInfo.symbol,
-        value: {
-          loading: false,
-          data: count.toLocaleString(),
-        },
-      },
-      votingPowerPercent: {
-        loading: false,
-        data: votingPowerPercent,
-      },
-    })
+    }),
+    (data) =>
+      data?.map(
+        ({
+          address,
+          count,
+          votingPowerPercent,
+        }): StatefulDaoMemberCardProps => ({
+          address,
+          balance: {
+            label: t('title.staked'),
+            unit: '$' + collectionInfo.symbol,
+            value: {
+              loading: false,
+              data: count.toLocaleString(),
+            },
+          },
+          votingPowerPercent: {
+            loading: false,
+            data: votingPowerPercent,
+          },
+        })
+      ) ?? []
   )
 
   return (
     <StatelessMembersTab
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
-      isMember={false}
-      members={memberCards}
-      membersFailedToLoad={!topStakers}
+      members={members}
       topVoters={{
         show: true,
         EntityDisplay,

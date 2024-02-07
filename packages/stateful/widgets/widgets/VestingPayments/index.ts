@@ -1,4 +1,4 @@
-import { PaidOutlined } from '@mui/icons-material'
+import { PaidOutlined, PaidRounded } from '@mui/icons-material'
 
 import {
   VestingPaymentsWidgetData,
@@ -15,6 +15,7 @@ import { VestingPaymentsEditor as Editor } from './VestingPaymentsEditor'
 export const VestingPaymentsWidget: Widget<VestingPaymentsWidgetData> = {
   id: WidgetId.VestingPayments,
   Icon: PaidOutlined,
+  IconFilled: PaidRounded,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {

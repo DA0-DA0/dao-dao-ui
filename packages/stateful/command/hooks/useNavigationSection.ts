@@ -1,4 +1,4 @@
-import { Add, HomeOutlined, InboxOutlined } from '@mui/icons-material'
+import { Add, HomeOutlined, NotificationsOutlined } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
@@ -20,9 +20,9 @@ export const useNavigationSection = (): CommandModalContextSection => {
         href: '/',
       },
       {
-        name: t('title.inbox'),
-        Icon: InboxOutlined,
-        href: '/inbox',
+        name: t('title.notifications'),
+        Icon: NotificationsOutlined,
+        href: '/notifications',
       },
       {
         name: t('title.createADAO'),

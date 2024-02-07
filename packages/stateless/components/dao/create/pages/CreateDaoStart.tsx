@@ -25,7 +25,7 @@ export const CreateDaoStart = ({
   return (
     <>
       <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
+        <div className="flex flex-col gap-2 border-b border-border-secondary py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <p className="primary-text text-text-body">{t('form.daoName')}</p>
 
           <div className="flex grow flex-col">
@@ -71,7 +71,7 @@ export const CreateDaoStart = ({
         {t('title.chooseAStructure')}
       </p>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {availableCreators.map(
           ({
             id,

@@ -31,11 +31,11 @@ import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
 } from '../recoil'
-import { ConnectWallet } from './ConnectWallet'
+import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
 import { MigrateFollowingModal } from './MigrateFollowingModal'
-import { SidebarWallet } from './SidebarWallet'
+import { DockWallet, SidebarWallet } from './NavWallet'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -78,8 +78,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { connect, isWalletConnected } = useWallet()
-  const { walletHexPublicKey, walletProfileData } = useWalletInfo()
+  const { openView, isWalletConnected } = useWallet()
+  const { walletHexPublicKey } = useWalletInfo()
 
   //! COMMAND MODAL
   // Hide modal when we nav away.
@@ -135,6 +135,11 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             followingDaoDropdownInfosSelector({
               chainId: chain.chain_id,
               walletPublicKey: walletHexPublicKey,
+              // If not compact, remove any SubDAO from the top level that
+              // exists as a SubDAO of another followed DAO at the top level.
+              // When compact, SubDAOs aren't visible, so we should show
+              // followed SubDAOs in the top level.
+              removeTopLevelSubDaos: !compact,
             })
           )
         )
@@ -147,9 +152,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     // governance tab.
     <ChainProvider chainId={chainId}>
       <StatelessDappLayout
-        connect={connect}
-        connectWalletButton={<ConnectWallet variant="secondary" />}
-        connected={isWalletConnected}
+        ButtonLink={ButtonLink}
+        DockWallet={DockWallet}
+        connect={openView}
         navigationProps={{
           walletConnected: isWalletConnected,
           LinkWrapper,
@@ -165,7 +170,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.items.length,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          version: '2.0',
           followingDaos: mountedInBrowser
             ? followingDaoDropdownInfos.loading
               ? { loading: true }
@@ -181,11 +185,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
+          SidebarWallet,
         }}
-        rightSidebarProps={{
-          wallet: <SidebarWallet />,
-        }}
-        walletProfileData={isWalletConnected ? walletProfileData : undefined}
       >
         {children}
 

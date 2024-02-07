@@ -1,10 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  ChainProvider,
-  ProposalLineLoader,
-  WarningCard,
-} from '@dao-dao/stateless'
+import { ChainProvider, LineLoader, WarningCard } from '@dao-dao/stateless'
 import { StatefulProposalLineProps } from '@dao-dao/types'
 
 import {
@@ -23,9 +19,7 @@ export const ProposalLine = ({
 }: StatefulProposalLineProps) => (
   <ChainProvider chainId={chainId}>
     <ProposalModuleAdapterProvider
-      initialOptions={{
-        coreAddress,
-      }}
+      coreAddress={coreAddress}
       proposalId={proposalId}
       proposalModules={proposalModules}
     >
@@ -56,7 +50,7 @@ const InnerProposalLine = ({
   }
 
   return (
-    <SuspenseLoader fallback={<ProposalLineLoader />}>
+    <SuspenseLoader fallback={<LineLoader type="proposal" />}>
       <Component LinkWrapper={LinkWrapper} href={proposalViewUrl} />
     </SuspenseLoader>
   )

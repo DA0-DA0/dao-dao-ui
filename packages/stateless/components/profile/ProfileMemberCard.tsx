@@ -1,12 +1,11 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ProfileCardWrapperProps } from '@dao-dao/types'
+
 import { Button } from '../buttons'
 import { MembershipPill } from './MembershipPill'
-import {
-  ProfileCardWrapper,
-  ProfileCardWrapperProps,
-} from './ProfileCardWrapper'
+import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 // Represents a tranch of tokens that is currently unstaking and will become
 // available at some well-known later date.
@@ -40,12 +39,12 @@ export const ProfileMemberCard = ({
 
   return (
     <ProfileCardWrapper
-      childContainerClassName="p-0 border-t-0"
+      childContainerClassName="!p-0 border-t-0"
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       {...wrapperProps}
     >
       <div className="border-t border-t-border-primary p-6 pb-4">
-        <p className="link-text mb-3">{t('title.yourMembership')}</p>
+        <p className="link-text mb-3">{t('title.membership')}</p>
 
         {membershipInfo}
       </div>

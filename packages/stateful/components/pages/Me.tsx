@@ -32,9 +32,9 @@ import { useQuerySyncedRecoilState } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
-import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { WalletAllConfiguredChainSwitcher } from '../wallet/WalletChainSwitcher'
+import { WalletConfiguredChainSwitcherHeader } from '../wallet/WalletChainSwitcher'
 import { MeBalances } from './MeBalances'
 import { MeDaos } from './MeDaos'
 import { MeTransactionBuilder } from './MeTransactionBuilder'
@@ -111,13 +111,18 @@ export const Me: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={t('info.meDescription')}
+        description={t('info.accountDescription')}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: t('title.me'),
-          description: t('info.meDescription'),
+          title: t('title.account'),
+          description: t('info.accountDescription'),
         }}
-        title={t('title.me')}
+        title={t('title.account')}
+      />
+
+      <PageHeaderContent
+        rightNode={<WalletConfiguredChainSwitcherHeader />}
+        title={t('title.account')}
       />
 
       {!configuredChainConfig ? (
@@ -136,13 +141,11 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessMe
-                ChainSwitcher={WalletAllConfiguredChainSwitcher}
                 MeBalances={MeBalances}
                 MeDaos={MeDaos}
                 MeTransactionBuilder={MeTransactionBuilder}
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
                 profileData={profileData}
-                rightSidebarContent={<ProfileHomeCard />}
                 updateProfileName={updateProfileName}
               />
             </SuspenseLoader>
@@ -152,8 +155,6 @@ export const Me: NextPage = () => {
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
           connecting={isWalletConnecting}
-          rightSidebarContent={<ProfileDisconnectedCard />}
-          title={t('title.me')}
         />
       )}
     </>

@@ -20,7 +20,6 @@ import { useEntity } from '../../hooks'
 import { useProposalModuleAdapterContext } from '../../proposal-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
-import { SuspenseLoader } from '../SuspenseLoader'
 
 export type DaoPreProposeApprovalProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
@@ -99,12 +98,10 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       description={proposalInfo.description}
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
-        <SuspenseLoader fallback={<Loader />}>
-          <PreProposeApprovalInnerContentDisplay
-            actionsForMatching={actionsForMatching}
-            setDuplicateFormData={setDuplicateFormData}
-          />
-        </SuspenseLoader>
+        <PreProposeApprovalInnerContentDisplay
+          actionsForMatching={actionsForMatching}
+          setDuplicateFormData={setDuplicateFormData}
+        />
       }
       onRefresh={refreshProposal}
       refreshing={refreshing}

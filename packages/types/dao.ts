@@ -111,7 +111,14 @@ export type PreProposeModuleApprovalConfig = {
 }
 
 export type PreProposeModuleApproverConfig = {
+  /**
+   * The DAO that needs approval from the approver.
+   */
   approvalDao: string
+  /**
+   * The pre-propose approval contract attached to the proposal module in the
+   * approval DAO.
+   */
   preProposeApprovalContract: string
 }
 
@@ -303,7 +310,6 @@ export interface DaoCreationVotingConfigItem<
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleData>>
   getInputError: (errors?: FieldErrors<ModuleData>) => FieldError | undefined
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleData>>
-  getReviewClassName?: (data: ModuleData) => string
 }
 
 export type DaoCreationCommonVotingConfigItems = {
@@ -426,6 +432,14 @@ export type DaoTab = {
    * Tab icon that shows up in the SDA sidebar.
    */
   Icon: ComponentType<{ className: string }>
+  /**
+   * Tab icon that shows up in the main DAO tabs.
+   */
+  IconFilled: ComponentType<{ className: string }>
+  /**
+   * Whether or not to load the tab only once selected. Defaults to false.
+   */
+  lazy?: boolean
 }
 
 export type DaoTabWithComponent = DaoTab & {
@@ -442,7 +456,10 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
+export type DaoAccountTreasuryInfo<
+  T extends TokenCardInfo,
+  N extends object
+> = {
   account: Account
   tokens: LoadingDataWithError<T[]>
   nfts: LoadingDataWithError<(N & { key: string })[]>

@@ -30,7 +30,7 @@ import {
   DISTRIBUTION_COLORS,
   formatDateTimeTz,
   serializeTokenSource,
-  transformIbcSymbol,
+  shortenTokenSymbol,
 } from '@dao-dao/utils'
 
 import { treasuryValueHistorySelector } from '../recoil'
@@ -132,7 +132,7 @@ export const TreasuryHistoryGraph = ({
               order: 2,
               label:
                 '$' +
-                transformIbcSymbol(token.symbol).tokenSymbol +
+                shortenTokenSymbol(token.symbol).tokenSymbol +
                 ' ' +
                 t('title.value'),
               data: [...values, currentValue],

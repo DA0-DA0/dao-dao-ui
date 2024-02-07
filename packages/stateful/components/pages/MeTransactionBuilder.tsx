@@ -10,14 +10,11 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
 import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
+  MeTransactionBuilderProps,
   MeTransactionBuilder as StatelessMeTransactionBuilder,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import {
-  MeTransactionBuilderProps,
-  MeTransactionForm,
-  MeTransactionSave,
-} from '@dao-dao/types'
+import { AccountTxForm, AccountTxSave } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   KVPK_API_BASE,
@@ -51,7 +48,7 @@ export const MeTransactionBuilder = () => {
     meTransactionAtom(chain.chain_id)
   )
 
-  const formMethods = useForm<MeTransactionForm>({
+  const formMethods = useForm<AccountTxForm>({
     mode: 'onChange',
     // Don't clone every render.
     defaultValues: useMemo(
@@ -144,7 +141,7 @@ export const MeTransactionBuilder = () => {
   )
   const [saving, setSaving] = useState(false)
 
-  const save = async (save: MeTransactionSave) => {
+  const save = async (save: AccountTxSave) => {
     if (!txSavesReady) {
       toast.error(t('error.logInToContinue'))
       return false
@@ -183,7 +180,7 @@ export const MeTransactionBuilder = () => {
 
     return false
   }
-  const deleteSave = async (save: MeTransactionSave) => {
+  const deleteSave = async (save: AccountTxSave) => {
     if (!txSavesReady) {
       toast.error(t('error.logInToContinue'))
       return false

@@ -137,7 +137,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         votingModuleContractName: '',
         proposalModules: [],
         name: chain.pretty_name,
-        description: '',
+        description: overrideDescription ?? '',
         imageUrl: getImageUrlForChainId(chain.chain_id),
         created: null,
         isActive: true,

@@ -17,12 +17,9 @@ import {
   Button,
   ChainProvider,
   CreateDaoPages,
-  DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
   Loader,
-  PageHeaderContent,
-  RightSidebarContent,
   TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
@@ -78,6 +75,7 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import { LinkWrapper } from '../LinkWrapper'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
@@ -634,14 +632,16 @@ export const InnerCreateDaoForm = ({
 
   return (
     <>
-      <RightSidebarContent>
+      {/* <RightSidebarContent>
         <DaoCreateSidebarCard
           // Once created, set pageIndex to 4 to show all checkboxes.
           pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
-      </RightSidebarContent>
+      </RightSidebarContent> */}
+
       <PageHeaderContent
         breadcrumbs={{
+          className: !makingSubDao ? 'hidden md:flex' : undefined,
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
           homeTab: makingSubDao
             ? {
@@ -649,36 +649,35 @@ export const InnerCreateDaoForm = ({
                 sdaLabel: t('title.subDaos'),
               }
             : undefined,
-          current:
-            name.trim() ||
-            (makingSubDao ? t('title.newSubDao') : t('title.newDao')),
+          current: makingSubDao ? t('title.newSubDao') : t('title.newDao'),
         }}
-        className="mx-auto max-w-5xl"
-        gradient
+        centerNode={
+          !makingSubDao && (
+            <WalletChainSwitcher
+              buttonClassName="md:hidden"
+              headerMode
+              selectedLabelClassName="hidden xs:block"
+            />
+          )
+        }
         rightNode={
           !makingSubDao && (
-            <div className="hidden sm:block">
-              <WalletChainSwitcher />
-            </div>
+            <WalletChainSwitcher buttonClassName="hidden md:block" headerMode />
           )
         }
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
-        className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch"
+        className="relative z-[1] flex flex-col items-stretch"
         onSubmit={formOnSubmit}
       >
         {/* Show image selector or DAO header depending on page. */}
         {pageIndex === 0 ? (
           <div className="flex flex-col items-center pb-10">
-            <div className="sm:hidden">
-              <WalletChainSwitcher />
-            </div>
-
             <ImageSelector
               Trans={Trans}
-              className="mt-10"
+              className="md:mt-10"
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
@@ -693,8 +692,8 @@ export const InnerCreateDaoForm = ({
         ) : (
           <DaoHeader
             LinkWrapper={LinkWrapper}
+            className="mb-8 md:mt-4 md:mb-12"
             description={description}
-            established={t('info.today')}
             imageUrl={imageUrl}
             name={name}
             parentDao={parentDao}

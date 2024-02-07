@@ -1,4 +1,4 @@
-import { Add, Inbox } from '@mui/icons-material'
+import { Add, Notifications } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CommandModalContextView } from './CommandModalContextView'
@@ -26,7 +26,7 @@ Default.args = {
         },
         {
           name: 'View inbox',
-          Icon: Inbox,
+          Icon: Notifications,
         },
       ],
     },

@@ -6,7 +6,7 @@ import { Logo } from './Logo'
 
 export const Loader = ({
   fill = true,
-  size = 42,
+  size = 36,
   invert,
   className,
 }: LoaderProps) => (

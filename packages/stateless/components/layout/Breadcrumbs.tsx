@@ -3,9 +3,8 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { BreadcrumbsProps } from '@dao-dao/types/components/Breadcrumbs'
-import { getGovPath, getParentDaoBreadcrumbs } from '@dao-dao/utils'
+import { BreadcrumbsProps, ContractVersion, DaoPageMode } from '@dao-dao/types'
+import { getGovPath } from '@dao-dao/utils'
 
 import {
   useChainContextIfAvailable,
@@ -16,10 +15,7 @@ import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'
 import { Tooltip } from '../tooltip'
-import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
-
-export * from '@dao-dao/types/components/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
@@ -39,46 +35,35 @@ export const Breadcrumbs = ({
 
   const crumbs =
     mode === DaoPageMode.Dapp
-      ? // Special handling for chain governance breadcrumbs.
-        daoInfo?.coreVersion === ContractVersion.Gov && chainContext?.base
-        ? home
-          ? []
-          : [
-              {
-                href: getGovPath(chainContext.base.name, homeTab?.id),
-                label: chainContext.chain.pretty_name,
-              },
-            ]
+      ? home || !daoInfo
+        ? [{ href: '/', label: t('title.home') }]
+        : // Special handling for chain governance breadcrumbs.
+        daoInfo.coreVersion === ContractVersion.Gov && chainContext?.base
+        ? [
+            {
+              href: getGovPath(chainContext.base.name, homeTab?.id),
+              label: chainContext.chain.pretty_name,
+            },
+          ]
         : // Non-chain governance breadcrumbs. Normal DAOs.
           [
-            { href: '/', label: t('title.home') },
-            ...(daoInfo
-              ? [
-                  ...getParentDaoBreadcrumbs(getDaoPath, daoInfo.parentDao),
-                  ...(home
-                    ? []
-                    : [
-                        {
-                          href:
-                            // Link to home tab if available.
-                            getDaoPath(daoInfo.coreAddress, homeTab?.id),
-                          label: daoInfo.name,
-                        },
-                      ]),
-                ]
-              : []),
+            {
+              href:
+                // Link to home tab if available.
+                getDaoPath(daoInfo.coreAddress, homeTab?.id),
+              label: daoInfo.name,
+            },
           ]
+      : // SDA
+      home || !daoInfo
+      ? []
       : [
-          ...(home || !daoInfo
-            ? []
-            : [
-                {
-                  href:
-                    // Link to home tab if available.
-                    getDaoPath(daoInfo.coreAddress, homeTab?.id),
-                  label: homeTab?.sdaLabel || t('title.home'),
-                },
-              ]),
+          {
+            href:
+              // Link to home tab if available.
+              getDaoPath(daoInfo.coreAddress, homeTab?.id),
+            label: homeTab?.sdaLabel || t('title.home'),
+          },
         ]
 
   const hasCrumbs = crumbs.length > 0
@@ -98,7 +83,7 @@ export const Breadcrumbs = ({
           return (
             <div
               key={idx}
-              className="hidden min-w-0 shrink-0 flex-row items-center gap-2 sm:flex"
+              className="hidden min-w-0 shrink-0 flex-row items-center gap-2 md:flex"
             >
               <Tooltip title={firstOrLast ? undefined : label}>
                 <div className="flex min-w-0 flex-row overflow-hidden">
@@ -134,7 +119,7 @@ export const Breadcrumbs = ({
             // since this will overflow its parent. Set min-width to 0 so this
             // cannot overflow its parent, and the child text can truncate.
             className={clsx(
-              'min-w-0 text-text-primary sm:pointer-events-none',
+              'min-w-0 text-text-primary md:pointer-events-none',
               // Disable touch interaction when no crumbs.
               !hasCrumbs && 'pointer-events-none'
             )}
@@ -147,7 +132,7 @@ export const Breadcrumbs = ({
 
             {/* When no crumbs, no dropdown/arrow. */}
             {hasCrumbs && (
-              <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+              <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary md:!hidden" />
             )}
           </Button>
         )}
@@ -157,14 +142,12 @@ export const Breadcrumbs = ({
         className={clsx(
           'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity p-safe',
           responsive && hasCrumbs
-            ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
+            ? 'opacity-100 md:pointer-events-none md:opacity-0'
             : 'pointer-events-none opacity-0'
         )}
         // Close after any click inside this container.
         onClick={() => setResponsive(false)}
       >
-        <TopGradient />
-
         <div
           className="relative"
           style={{

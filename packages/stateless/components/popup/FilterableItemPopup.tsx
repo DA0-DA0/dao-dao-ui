@@ -24,7 +24,7 @@ import { TriggerRenderer } from './Popup'
 
 export interface FilterableItem {
   key: string | number
-  Icon?: ComponentType
+  Icon?: ComponentType<{ className?: string }>
   iconUrl?: string
   iconClassName?: string
   label: ReactNode
@@ -124,7 +124,6 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       }
 
       switch (event.key) {
-        case 'ArrowLeft':
         case 'ArrowUp':
           event.preventDefault()
           setSelectedIndex((index) =>
@@ -134,7 +133,6 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 Math.min(index - 1, filteredData.length - 1)
           )
           break
-        case 'ArrowRight':
         case 'ArrowDown':
         case 'Tab':
           event.preventDefault()
@@ -202,9 +200,11 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       />
 
       <Modal
-        containerClassName="!w-[28rem] !max-w-[96dvw] !h-[36rem] !max-h-[96dvh]"
-        contentContainerClassName="p-3 pt-4"
-        headerContainerClassName="p-4"
+        backdropClassName="!justify-start"
+        closeButtonClassName="md:hidden"
+        containerClassName="!w-[28rem] !h-[36rem] xs:!max-w-[82dvw] mt-[2dvw] xs:mt-[9dvw] md:mt-[18dvh] md:!max-h-[60dvh]"
+        contentContainerClassName="!p-3 !pt-4"
+        headerContainerClassName="!p-4"
         headerContent={
           <SearchBar
             className="!primary-text text-text-body"
@@ -216,8 +216,8 @@ export const FilterableItemPopup = <T extends FilterableItem>({
             {...searchBarProps}
           />
         }
-        hideCloseButton
         onClose={() => setOpen(false)}
+        smallCloseButton
         visible={open}
       >
         <div
@@ -234,7 +234,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 className={clsx(
                   'w-full',
                   selectedIndex === index &&
-                    'bg-background-interactive-selected',
+                    '!bg-background-interactive-selected',
                   item.selected &&
                     'ring-1 ring-inset ring-border-interactive-selected',
                   item.className
@@ -248,7 +248,9 @@ export const FilterableItemPopup = <T extends FilterableItem>({
               >
                 {item.Icon ? (
                   <p className="text-2xl">
-                    <item.Icon />
+                    <item.Icon
+                      className={clsx('!h-7 !w-7', item.iconClassName)}
+                    />
                   </p>
                 ) : item.iconUrl ? (
                   <div
