@@ -85,12 +85,17 @@ export const ProposalLine = ({
           />
         </p>
 
-        <div className="flex flex-row items-start justify-end gap-2">
-          <Status />
-
-          {vote}
-        </div>
+        <Status />
       </div>
+
+      {approvalContext && (
+        <ApprovalBadge
+          className="mt-1 -mb-1"
+          context={approvalContext}
+          size="sm"
+          tooltip
+        />
+      )}
 
       {/* Right padding to make room for status. */}
       <p className="body-text line-clamp-3 mb-2 break-words pr-24">{title}</p>
@@ -104,9 +109,7 @@ export const ProposalLine = ({
           </Tooltip>
         )}
 
-        {approvalContext && (
-          <ApprovalBadge context={approvalContext} size="sm" tooltip />
-        )}
+        {vote}
       </div>
     </div>
   </LinkWrapper>
