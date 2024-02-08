@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   AmountWithTimestamp,
@@ -309,13 +309,16 @@ export const logoUrlSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const logoInfo = get(
-        marketingInfoSelector({
-          contractAddress,
-          chainId,
-          params: [],
-        })
-      ).logo
-      return !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+        // Cw20 on some chains do not support marketing info.
+        waitForAllSettled([
+          marketingInfoSelector({
+            contractAddress,
+            chainId,
+            params: [],
+          }),
+        ])
+      )[0].valueMaybe()?.logo
+      return logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
         ? logoInfo.url
         : undefined
     },
