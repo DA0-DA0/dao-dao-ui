@@ -78,12 +78,11 @@ const InnerApp = ({
 
   return (
     <PlausibleProvider
-      customDomain="https://vis.daodao.zone"
       domain="dao.daodao.zone"
       scriptProps={{
-        src: '/dao/dao.js',
+        src: 'https://vis.daodao.zone/dao/dao.js',
         // @ts-ignore
-        'data-api': '/dao/event',
+        'data-api': 'https://vis.daodao.zone/dao/event',
       }}
       trackOutboundLinks
     >
