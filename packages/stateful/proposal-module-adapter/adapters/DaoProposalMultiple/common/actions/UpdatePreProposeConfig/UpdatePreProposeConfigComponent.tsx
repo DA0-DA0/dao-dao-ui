@@ -29,7 +29,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../../actions'
-import { Trans } from '../../../../../../components/Trans'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
@@ -131,23 +130,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="secondary-text mb-2 max-w-prose">
-        <Trans i18nKey="form.updateProposalSubmissionConfigDescription">
-          This will update the proposal submission configuration for this DAO. A
-          bad configuration can lock the DAO. Take care. If you have questions,
-          please feel free to ask in the{' '}
-          <a
-            className="underline"
-            href="https://discord.gg/sAaGuyW3D2"
-            rel="noreferrer"
-            target="_blank"
-          >
-            DAO DAO Discord
-          </a>
-          .
-        </Trans>
-      </p>
-
       <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">

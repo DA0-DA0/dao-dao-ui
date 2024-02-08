@@ -14,7 +14,6 @@ import {
 import {
   ActionChainContextType,
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   ContractVersion,
@@ -42,7 +41,7 @@ import {
   useActionOptions,
   useMsgExecutesContract,
 } from '../../../../../../actions'
-import { AddressInput, Trans } from '../../../../../../components'
+import { AddressInput } from '../../../../../../components'
 import { useCreateCw1Whitelist } from '../../../../../../hooks'
 import {
   UpdateProposalConfigComponent,
@@ -189,13 +188,12 @@ export const makeUpdateProposalConfigV2ActionMaker = ({
           createCw1WhitelistVetoers,
           creatingCw1WhitelistVetoers,
           AddressInput,
-          Trans,
         }}
       />
     )
   }
 
-  return ({ t, context, chain: { chain_id: chainId } }) => {
+  return ({ t, chain: { chain_id: chainId } }) => {
     if (!version || !versionGte(version, ContractVersion.V2Alpha)) {
       return null
     }
@@ -380,22 +378,18 @@ export const makeUpdateProposalConfigV2ActionMaker = ({
     }
 
     return {
-      key: ActionKey.UpdateProposalSingleConfig,
+      key: ActionKey.UpdateProposalConfig,
       Icon: BallotDepositEmoji,
-      label: t('form.updateVotingConfigTitle', {
+      label: t('proposalModuleLabel.DaoProposalSingle', {
         context:
           // If this is an approver proposal module that approves proposals in
-          // another DAO, specify it.
+          // another DAO, specify that.
           prePropose?.contractName === ContractName.PreProposeApprover
-            ? 'singleChoiceApproval'
-            : // If more than one proposal module, specify which one this is.
-            context.type === ActionContextType.Dao &&
-              context.info.proposalModules.length > 1
-            ? 'singleChoice'
+            ? 'approval'
             : undefined,
       }),
-      description: t('info.updateVotingConfigActionDescription'),
-      notReusable: true,
+      // Not used.
+      description: '',
       Component,
       useDefaults,
       useTransformToCosmos,

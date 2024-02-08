@@ -1,4 +1,4 @@
-import { ProposalModuleAdapter } from '@dao-dao/types'
+import { ContractVersion, ProposalModuleAdapter } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
@@ -7,8 +7,10 @@ import {
 
 import {
   NewProposal,
-  makeActionCategoryMakers,
   depositInfoSelector as makeDepositInfoSelector,
+  makeUpdatePreProposeSingleConfigActionMaker,
+  makeUpdateProposalConfigV1ActionMaker,
+  makeUpdateProposalConfigV2ActionMaker,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -77,7 +79,12 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
           actionData: [],
         }),
         newProposalFormTitleKey: 'title',
-        actionCategoryMakers: makeActionCategoryMakers(options),
+        updateConfigActionMaker: (!options.proposalModule.version ||
+          options.proposalModule.version === ContractVersion.V1
+          ? makeUpdateProposalConfigV1ActionMaker
+          : makeUpdateProposalConfigV2ActionMaker)(options.proposalModule),
+        updatePreProposeConfigActionMaker:
+          makeUpdatePreProposeSingleConfigActionMaker(options.proposalModule),
       },
 
       // Selectors

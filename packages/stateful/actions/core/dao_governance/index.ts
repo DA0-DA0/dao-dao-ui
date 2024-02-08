@@ -9,6 +9,8 @@ import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeManageVetoableDaosAction } from './ManageVetoableDaos'
 import { makeNeutronOverruleSubDaoProposalAction } from './NeutronOverruleSubDaoProposal'
 import { makeSetUpApproverAction } from './SetUpApprover'
+import { makeUpdatePreProposeConfigAction } from './UpdatePreProposeConfig'
+import { makeUpdateProposalConfigAction } from './UpdateProposalConfig'
 import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
 import { makeVetoOrEarlyExecuteDaoProposalAction } from './VetoOrEarlyExecuteDaoProposal'
 
@@ -33,5 +35,7 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     makeManageVetoableDaosAction,
     makeManageSubDaoPauseAction,
     makeNeutronOverruleSubDaoProposalAction,
+    makeUpdateProposalConfigAction,
+    makeUpdatePreProposeConfigAction,
   ],
 })
