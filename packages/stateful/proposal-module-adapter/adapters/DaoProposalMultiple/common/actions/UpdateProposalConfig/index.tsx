@@ -14,7 +14,6 @@ import {
 import {
   ActionChainContextType,
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   Feature,
@@ -42,7 +41,7 @@ import {
   useActionOptions,
   useMsgExecutesContract,
 } from '../../../../../../actions'
-import { AddressInput, Trans } from '../../../../../../components'
+import { AddressInput } from '../../../../../../components'
 import { useCreateCw1Whitelist } from '../../../../../../hooks'
 import {
   UpdateProposalConfigComponent,
@@ -160,13 +159,12 @@ export const makeUpdateProposalConfigActionMaker = ({
           createCw1WhitelistVetoers,
           creatingCw1WhitelistVetoers,
           AddressInput,
-          Trans,
         }}
       />
     )
   }
 
-  return ({ t, context, chain: { chain_id: chainId } }) => {
+  return ({ t, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
         DaoProposalMultipleSelectors.configSelector({
@@ -351,18 +349,11 @@ export const makeUpdateProposalConfigActionMaker = ({
     }
 
     return {
-      key: ActionKey.UpdateProposalMultipleConfig,
+      key: ActionKey.UpdateProposalConfig,
       Icon: BallotDepositEmoji,
-      label: t('form.updateVotingConfigTitle', {
-        context:
-          // If more than one proposal module, specify which one this is.
-          context.type === ActionContextType.Dao &&
-          context.info.proposalModules.length > 1
-            ? 'multipleChoice'
-            : undefined,
-      }),
-      description: t('info.updateVotingConfigActionDescription'),
-      notReusable: true,
+      label: t('proposalModuleLabel.DaoProposalMultiple'),
+      // Not used.
+      description: '',
       Component,
       useDefaults,
       useTransformToCosmos,

@@ -43,7 +43,7 @@ export const NewProposalTitleDescriptionHeader = () => {
             fieldName="description"
             placeholder={t('form.proposalsDescriptionPlaceholder')}
             register={register}
-            rows={5}
+            rows={12}
             validation={[validateRequired]}
           />
           <InputErrorMessage error={errors.description} />

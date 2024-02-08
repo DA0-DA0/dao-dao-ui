@@ -3,7 +3,7 @@ import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { Action, ActionCategoryMaker } from './actions'
+import { Action, ActionCategoryMaker, ActionMaker } from './actions'
 import {
   DaoInfoCard,
   LinkWrapperProps,
@@ -37,7 +37,11 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
     // data each time.
     makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
-    actionCategoryMakers: ActionCategoryMaker[]
+
+    updateConfigActionMaker: ActionMaker
+    updatePreProposeConfigActionMaker?: ActionMaker
+    // Any extra actions added by the proposal module.
+    actionCategoryMakers?: ActionCategoryMaker[]
   }
 
   // Selectors

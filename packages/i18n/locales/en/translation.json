@@ -375,6 +375,7 @@
     "errorOccurredOnPage": "An error occurred on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToFindGovernanceProposal": "Failed to find governance proposal with ID {{id}}.",
+    "failedToFindMatchingProposalModule": "Failed to find matching proposal module.",
     "failedToGetFactoryTokenInfo": "Failed to get factory token info. Please enter a valid factory denom.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid {{tokenType}} contract address.",
     "failedToLoadWidget": "Failed to load widget.",
@@ -715,13 +716,8 @@
     "updateAdminDescription": "This will update the admin for the selected contract. The new admin will have complete control over the contract. Take care.",
     "updateProposalSubmissionConfigDescription": "This will update the proposal submission configuration for this DAO. A bad configuration can lock the DAO. Take care. If you have questions, please feel free to ask in the <2>DAO DAO Discord</2>.",
     "updateProposalSubmissionConfigTitle": "Update Proposal Submission Config",
-    "updateProposalSubmissionConfigTitle_multipleChoice": "Update Multiple Choice Proposal Submission Config",
-    "updateProposalSubmissionConfigTitle_singleChoice": "Update Single Choice Proposal Submission Config",
     "updateVotingConfigDescription": "This will update the voting configuration for this DAO. A bad configuration can lock the DAO or create unexpected voting outcomes. Take care. If you have questions, please feel free to ask in the <2>DAO DAO Discord</2>.",
     "updateVotingConfigTitle": "Update Voting Config",
-    "updateVotingConfigTitle_multipleChoice": "Update Multiple Choice Voting Config",
-    "updateVotingConfigTitle_singleChoice": "Update Single Choice Voting Config",
-    "updateVotingConfigTitle_singleChoiceApproval": "Update Single Choice Approval Voting Config",
     "uploadNewFileQuestion": "Would you like to use a different file?",
     "url": "URL",
     "useCw20": "Use CW20",
@@ -1340,7 +1336,8 @@
   },
   "proposalModuleLabel": {
     "DaoProposalMultiple": "Multiple Choice",
-    "DaoProposalSingle": "Single Choice"
+    "DaoProposalSingle": "Single Choice",
+    "DaoProposalSingle_approval": "Single Choice Approval"
   },
   "proposalStatusTitle": {
     "closed": "Closed",
@@ -1460,6 +1457,7 @@
     "compensation": "Compensation",
     "completed": "Completed",
     "completedCompensationCycles": "Completed compensation cycles",
+    "config": "Config",
     "configuration": "Configuration",
     "configureWalletToContinue": "Configure your wallet to continue",
     "congratsOnDao": "Congrats on your DAO!",

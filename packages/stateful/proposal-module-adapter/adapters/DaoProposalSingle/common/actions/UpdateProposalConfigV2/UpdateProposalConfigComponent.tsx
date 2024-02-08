@@ -26,7 +26,6 @@ import {
   DurationWithUnits,
   Feature,
   ProposalVetoConfig,
-  TransProps,
 } from '@dao-dao/types'
 import {
   isFeatureSupportedByVersion,
@@ -57,7 +56,6 @@ export type UpdateProposalConfigOptions = {
   createCw1WhitelistVetoers: CreateCw1Whitelist
   creatingCw1WhitelistVetoers: boolean
   AddressInput: ComponentType<AddressInputProps<ProposalVetoConfig>>
-  Trans: ComponentType<TransProps>
 }
 
 export const UpdateProposalConfigComponent: ActionComponent<
@@ -71,7 +69,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
     createCw1WhitelistVetoers,
     creatingCw1WhitelistVetoers,
     AddressInput,
-    Trans,
   },
 }) => {
   const { t } = useTranslation()
@@ -101,23 +98,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="secondary-text mb-2 max-w-prose">
-        <Trans i18nKey="form.updateVotingConfigDescription">
-          This will update the voting configuration for this DAO. A bad
-          configuration can lock the DAO or create unexpected voting outcomes.
-          Take care. If you have questions, please feel free to ask in the{' '}
-          <a
-            className="underline"
-            href="https://discord.gg/sAaGuyW3D2"
-            rel="noreferrer"
-            target="_blank"
-          >
-            DAO DAO Discord
-          </a>
-          .
-        </Trans>
-      </p>
-
       <FormSwitchCard
         containerClassName="self-start"
         fieldName={

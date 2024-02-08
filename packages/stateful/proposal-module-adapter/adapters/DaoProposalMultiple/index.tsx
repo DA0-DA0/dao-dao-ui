@@ -7,8 +7,9 @@ import {
 
 import {
   NewProposal,
-  makeActionCategoryMakers,
   depositInfoSelector as makeDepositInfoSelector,
+  makeUpdatePreProposeConfigActionMaker,
+  makeUpdateProposalConfigActionMaker,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -71,7 +72,11 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
           choices: [],
         }),
         newProposalFormTitleKey: 'title',
-        actionCategoryMakers: makeActionCategoryMakers(options),
+        updateConfigActionMaker: makeUpdateProposalConfigActionMaker(
+          options.proposalModule
+        ),
+        updatePreProposeConfigActionMaker:
+          makeUpdatePreProposeConfigActionMaker(options.proposalModule),
       },
 
       // Selectors

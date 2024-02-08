@@ -94,7 +94,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
           matchAndLoadCommon(proposalModule, {
             chain: chainContext.chain,
             coreAddress: info.coreAddress,
-          }).fields.actionCategoryMakers
+          }).fields.actionCategoryMakers || []
       ),
     [chainContext.chain, info.coreAddress, info.proposalModules]
   )
