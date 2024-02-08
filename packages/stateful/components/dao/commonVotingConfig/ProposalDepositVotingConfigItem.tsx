@@ -75,11 +75,7 @@ const ProposalDepositInput = ({
               denomOrAddress: 'NEW_CW20',
             },
           })
-        : genericTokenSelector({
-            chainId,
-            type: TokenType.Native,
-            denomOrAddress: tokenBasedCreatorData.existingTokenDenomOrAddress,
-          })
+        : constSelector(tokenBasedCreatorData.existingToken)
       : constSelector(undefined)
   )
 
