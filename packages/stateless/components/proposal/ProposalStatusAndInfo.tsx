@@ -97,7 +97,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
             <p className="secondary-text w-full">{label}</p>
 
-            <Value className="pl-3 !font-mono !text-sm !font-medium !leading-5 !text-text-body" />
+            <Value className="max-w-full pl-3 !font-mono !text-sm !font-medium !leading-5 !text-text-body" />
           </Fragment>
         ))}
       </div>
