@@ -9,6 +9,7 @@ import {
 
 export enum GovernanceTokenType {
   New,
+  // CW20 or native/token factory
   Existing,
 }
 
@@ -24,7 +25,7 @@ export type CreatorData = {
     symbol: string
     name: string
   }
-  existingTokenDenom: string
+  existingTokenDenomOrAddress: string
   existingToken?: GenericToken & {
     _error?: undefined
   }

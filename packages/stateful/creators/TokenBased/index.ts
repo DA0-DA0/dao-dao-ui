@@ -37,7 +37,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
       symbol: '',
       name: '',
     },
-    existingTokenDenom: '',
+    existingTokenDenomOrAddress: '',
     unstakingDuration: {
       value: 2,
       units: DurationUnits.Weeks,

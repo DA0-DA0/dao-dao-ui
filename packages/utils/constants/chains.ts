@@ -933,6 +933,50 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.OraichainMainnet,
+    name: 'oraichain',
+    mainnet: true,
+    accentColor: '#000000',
+    factoryContractAddress: '',
+    createWithCw20: true,
+    explorerUrlTemplates: {
+      tx: 'https://scan.orai.io/txs/REPLACE',
+      gov: 'https://scan.orai.io/proposals',
+      govProp: 'https://scan.orai.io/proposals/REPLACE',
+      wallet: 'https://scan.orai.io/account/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 9999999,
+      Cw4Group: 9999999, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 9999999,
+
+      // ContractVersion.V240
+      CwPayrollFactory: 9999999,
+      CwTokenSwap: 9999999,
+      CwTokenfactoryIssuer: 9999999,
+      CwVesting: 9999999,
+      DaoCore: 9999999,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 9999999,
+      DaoPreProposeApprover: 9999999,
+      DaoPreProposeMultiple: 9999999,
+      DaoPreProposeSingle: 9999999,
+      DaoProposalMultiple: 9999999,
+      DaoProposalSingle: 9999999,
+      DaoVotingCw4: 9999999,
+      DaoVotingCw721Staked: 9999999,
+      DaoVotingTokenStaked: 9999999,
+
+      // Oraichain uses cw20 DAOs.
+      Cw20Base: 9999999,
+      Cw20Stake: 9999999,
+      DaoVotingCw20Staked: 9999999,
+    },
+    polytone: {},
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
@@ -1172,6 +1216,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.ChihuahuaMainnet]: {
     rpc: 'https://chihuahua-rpc.polkachu.com',
     rest: 'https://chihuahua-api.polkachu.com',
+  },
+  [ChainId.OraichainMainnet]: {
+    rpc: 'https://rpc.orai.io',
+    rest: 'https://lcd.orai.io',
   },
 }
 

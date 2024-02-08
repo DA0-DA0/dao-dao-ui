@@ -78,7 +78,7 @@ const ProposalDepositInput = ({
         : genericTokenSelector({
             chainId,
             type: TokenType.Native,
-            denomOrAddress: tokenBasedCreatorData.existingTokenDenom,
+            denomOrAddress: tokenBasedCreatorData.existingTokenDenomOrAddress,
           })
       : constSelector(undefined)
   )
