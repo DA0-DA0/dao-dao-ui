@@ -159,64 +159,42 @@ export const NftSelectionModal = ({
     <Modal
       {...modalProps}
       containerClassName={clsx('h-full w-full !max-w-3xl', containerClassName)}
-      contentContainerClassName={
-        nfts.errored
-          ? 'items-center justify-center gap-4'
-          : !nfts.loading && nfts.data.length > 0
-          ? 'no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3'
-          : undefined
-      }
       footerContent={
-        <>
-          {unstakingDuration && durationIsNonZero(unstakingDuration) && (
-            <div className="space-y-5 border-b border-border-secondary pb-7">
-              <p className="primary-text text-text-secondary">
-                {t('title.unstakingPeriod') +
-                  `: ${humanReadableDuration(unstakingDuration)}`}
-              </p>
-              <p className="body-text text-text-secondary">
-                {t('info.unstakingMechanics', {
-                  humanReadableTime: humanReadableDuration(unstakingDuration),
-                })}
-              </p>
-            </div>
+        <div
+          className={clsx(
+            'flex flex-row items-center gap-6',
+            // If selectedDisplay is null, it will be hidden, so align button at
+            // the end.
+            selectedDisplay === null ? 'justify-end' : 'justify-between'
           )}
-          <div
-            className={clsx(
-              'flex flex-row items-center gap-6',
-              // If selectedDisplay is null, it will be hidden, so align button at
-              // the end.
-              selectedDisplay === null ? 'justify-end' : 'justify-between'
-            )}
-          >
-            {selectedDisplay !== undefined ? (
-              selectedDisplay
-            ) : (
-              <p>{t('info.numNftsSelected', { count: selectedKeys.length })}</p>
-            )}
+        >
+          {selectedDisplay !== undefined ? (
+            selectedDisplay
+          ) : (
+            <p>{t('info.numNftsSelected', { count: selectedKeys.length })}</p>
+          )}
 
-            <div className="flex flex-row items-stretch gap-2">
-              {secondaryAction && (
-                <Button
-                  loading={secondaryAction.loading}
-                  onClick={secondaryAction.onClick}
-                  variant="secondary"
-                >
-                  {secondaryAction.label}
-                </Button>
-              )}
-
+          <div className="flex flex-row items-stretch gap-2">
+            {secondaryAction && (
               <Button
-                disabled={!allowSelectingNone && selectedKeys.length === 0}
-                loading={action.loading}
-                onClick={action.onClick}
-                variant="primary"
+                loading={secondaryAction.loading}
+                onClick={secondaryAction.onClick}
+                variant="secondary"
               >
-                {action.label}
+                {secondaryAction.label}
               </Button>
-            </div>
+            )}
+
+            <Button
+              disabled={!allowSelectingNone && selectedKeys.length === 0}
+              loading={action.loading}
+              onClick={action.onClick}
+              variant="primary"
+            >
+              {action.label}
+            </Button>
           </div>
-        </>
+        </div>
       }
       headerContent={
         headerDisplay ||
@@ -278,7 +256,7 @@ export const NftSelectionModal = ({
       {nfts.loading ? (
         <Loader />
       ) : nfts.errored ? (
-        <>
+        <div className="items-center justify-center gap-4">
           <WarningRounded className="!h-14 !w-14" />
           <p className="body-text">
             {fallbackError ?? t('error.checkInternetOrTryAgain')}
@@ -286,22 +264,26 @@ export const NftSelectionModal = ({
           <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
             {nfts.error.message}
           </pre>
-        </>
+        </div>
       ) : nfts.data.length > 0 ? (
-        filteredSearchedNfts
-          .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
-          .map(({ item }) => (
-            <LazyNftCard
-              ref={selectedKeys[0] === item.key ? firstSelectedRef : undefined}
-              {...item}
-              key={item.key}
-              checkbox={{
-                checked: selectedKeys.includes(item.key),
-                // Disable toggling if currently staking.
-                onClick: () => !action.loading && onNftClick(item),
-              }}
-            />
-          ))
+        <div className="no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3">
+          {filteredSearchedNfts
+            .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
+            .map(({ item }) => (
+              <LazyNftCard
+                ref={
+                  selectedKeys[0] === item.key ? firstSelectedRef : undefined
+                }
+                {...item}
+                key={item.key}
+                checkbox={{
+                  checked: selectedKeys.includes(item.key),
+                  // Disable toggling if currently staking.
+                  onClick: () => !action.loading && onNftClick(item),
+                }}
+              />
+            ))}
+        </div>
       ) : (
         noneDisplay || (
           <NoContent
@@ -310,6 +292,19 @@ export const NftSelectionModal = ({
             className="grow justify-center"
           />
         )
+      )}
+      {unstakingDuration && durationIsNonZero(unstakingDuration) && (
+        <div className="space-y-5 border-t border-border-secondary pt-7">
+          <p className="primary-text text-text-secondary">
+            {t('title.unstakingPeriod') +
+              `: ${humanReadableDuration(unstakingDuration)}`}
+          </p>
+          <p className="body-text text-text-secondary">
+            {t('info.unstakingMechanics', {
+              humanReadableTime: humanReadableDuration(unstakingDuration),
+            })}
+          </p>
+        </div>
       )}
     </Modal>
   )
