@@ -203,12 +203,14 @@ export const GovernanceConfigurationInput = ({
     initialTreasuryPercent + totalMemberPercent === 100
 
   //! Validate existing governance token.
-  const existingGovernanceTokenIsNative =
-    !!data.existingTokenDenomOrAddress &&
-    isValidNativeTokenDenom(data.existingTokenDenomOrAddress)
   const existingGovernanceTokenIsCw20 =
+    isCw20 &&
     !!data.existingTokenDenomOrAddress &&
     isValidBech32Address(data.existingTokenDenomOrAddress, bech32Prefix)
+  const existingGovernanceTokenIsNative =
+    !isCw20 &&
+    !!data.existingTokenDenomOrAddress &&
+    isValidNativeTokenDenom(data.existingTokenDenomOrAddress)
   const existingGovernanceTokenIsValid =
     existingGovernanceTokenIsNative || existingGovernanceTokenIsCw20
 

@@ -9,16 +9,11 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  makeValidateAddress,
-  makeValidateContractAddress,
-  validateRequired,
-} from '@dao-dao/utils'
+import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react/context'
 
 export interface UpdateAdminOptions {
-  onContractChange: (s: string) => void
   contractAdmin: string | undefined
 }
 
@@ -26,7 +21,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { onContractChange, contractAdmin },
+  options: { contractAdmin },
 }) => {
   const { t } = useTranslation()
   const { address } = useActionOptions()
@@ -46,12 +41,8 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
             disabled={!isCreating}
             error={errors?.contract}
             fieldName={fieldNamePrefix + 'contract'}
-            onChange={(e) => onContractChange(e.target.value)}
             register={register}
-            validation={[
-              validateRequired,
-              makeValidateContractAddress(bech32Prefix),
-            ]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
           <InputErrorMessage error={errors?.tokenAddress} />
         </div>

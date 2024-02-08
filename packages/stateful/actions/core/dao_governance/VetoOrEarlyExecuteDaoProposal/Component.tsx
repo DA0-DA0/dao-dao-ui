@@ -26,7 +26,7 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   getChainForChainId,
-  makeValidateContractAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -159,7 +159,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
                 register={register}
                 validation={[
                   validateRequired,
-                  makeValidateContractAddress(
+                  makeValidateAddress(
                     getChainForChainId(chainId).bech32_prefix
                   ),
                 ]}

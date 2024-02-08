@@ -11,8 +11,8 @@ import {
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigInputProps } from '@dao-dao/types'
 import {
-  isValidContractAddress,
-  makeValidateContractAddress,
+  isValidBech32Address,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -40,10 +40,7 @@ export const GovernanceConfigurationInput = ({
       : undefined
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     existingGovernanceTokenDenomOrAddress &&
-      isValidContractAddress(
-        existingGovernanceTokenDenomOrAddress,
-        bech32Prefix
-      )
+      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
       ? CommonNftSelectors.contractInfoSelector({
           chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
@@ -53,10 +50,7 @@ export const GovernanceConfigurationInput = ({
   )
   const numOfTokensLoadable = useRecoilValueLoadable(
     existingGovernanceTokenDenomOrAddress &&
-      isValidContractAddress(
-        existingGovernanceTokenDenomOrAddress,
-        bech32Prefix
-      )
+      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
       ? CommonNftSelectors.numTokensSelector({
           chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
@@ -115,10 +109,7 @@ export const GovernanceConfigurationInput = ({
               ghost
               placeholder={bech32Prefix + '...'}
               register={register}
-              validation={[
-                validateRequired,
-                makeValidateContractAddress(bech32Prefix),
-              ]}
+              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
             />
             <InputErrorMessage
               error={

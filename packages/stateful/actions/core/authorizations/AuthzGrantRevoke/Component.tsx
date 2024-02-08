@@ -29,7 +29,6 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   getNativeTokenForChainId,
   makeValidateAddress,
-  makeValidateContractAddress,
   makeWasmMessage,
   validateCosmosMsg,
   validateNonNegative,
@@ -282,7 +281,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                 fieldName={(fieldNamePrefix + 'contract') as 'contract'}
                 register={register}
                 type="contract"
-                validation={[makeValidateContractAddress(bech32Prefix)]}
+                validation={[makeValidateAddress(bech32Prefix)]}
               />
               <InputErrorMessage error={errors?.contract} />
             </div>

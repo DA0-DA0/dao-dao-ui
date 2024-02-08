@@ -14,7 +14,7 @@ import { AddressInputProps, StatefulEntityDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { getChainForChainId } from '@dao-dao/utils'
 import {
-  makeValidateContractAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
@@ -95,7 +95,7 @@ export const ManageVetoableDaosComponent: ActionComponent<
                 type="contract"
                 validation={[
                   validateRequired,
-                  makeValidateContractAddress(chain.bech32_prefix),
+                  makeValidateAddress(chain.bech32_prefix),
                 ]}
               />
             </ChainProvider>

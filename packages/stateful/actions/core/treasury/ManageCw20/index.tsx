@@ -25,7 +25,7 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   POLYTONE_CW20_ITEM_KEY_PREFIX,
   getChainForChainId,
-  isValidContractAddress,
+  isValidBech32Address,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -66,7 +66,7 @@ const Component: ActionComponent = (props) => {
   const tokenAddress = watch(fieldNamePrefix + 'address')
 
   const tokenInfoLoadable = useRecoilValueLoadable(
-    tokenAddress && isValidContractAddress(tokenAddress, bech32Prefix)
+    tokenAddress && isValidBech32Address(tokenAddress, bech32Prefix)
       ? Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: tokenAddress,
           chainId,

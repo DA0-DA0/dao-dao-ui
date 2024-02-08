@@ -23,8 +23,8 @@ import {
 import { WidgetEditorProps } from '@dao-dao/types'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  isValidContractAddress,
-  makeValidateContractAddress,
+  isValidBech32Address,
+  makeValidateAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
@@ -49,7 +49,7 @@ export const MintNftEditor = ({
   )
 
   const tokenInfoLoadable = useRecoilValueLoadable(
-    tokenAddress && isValidContractAddress(tokenAddress, bech32Prefix)
+    tokenAddress && isValidBech32Address(tokenAddress, bech32Prefix)
       ? CommonNftSelectors.contractInfoSelector({
           contractAddress: tokenAddress,
           chainId,
@@ -129,7 +129,7 @@ export const MintNftEditor = ({
             type="contract"
             validation={[
               validateRequired,
-              makeValidateContractAddress(bech32Prefix),
+              makeValidateAddress(bech32Prefix),
               // Invalidate field if not a valid token contract.
               () =>
                 tokenInfoLoadable.state !== 'hasError' ||
@@ -164,10 +164,7 @@ export const MintNftEditor = ({
           fieldName={(fieldNamePrefix + 'mint.contract') as 'mint.contract'}
           register={register}
           type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-          ]}
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
         <InputErrorMessage error={errors?.mint?.contract} />
       </div>

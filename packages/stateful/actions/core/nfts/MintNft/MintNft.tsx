@@ -14,7 +14,7 @@ import {
   ActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
-import { getChainForChainId, isValidContractAddress } from '@dao-dao/utils'
+import { getChainForChainId, isValidBech32Address } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { nftCardInfoWithUriSelector } from '../../../../recoil'
@@ -62,7 +62,7 @@ export const MintNft: ActionComponent = (props) => {
   const creatingCollectionInfoLoading = useCachedLoading(
     props.isCreating &&
       contractChosen &&
-      isValidContractAddress(collectionAddress, bech32Prefix)
+      isValidBech32Address(collectionAddress, bech32Prefix)
       ? CommonNftSelectors.contractInfoSelector({
           contractAddress: collectionAddress,
           chainId,

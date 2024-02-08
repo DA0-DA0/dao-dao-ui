@@ -16,7 +16,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
-import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -82,7 +82,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
                 register={register}
                 validation={[
                   validateRequired,
-                  makeValidateContractAddress(bech32Prefix),
+                  makeValidateAddress(bech32Prefix),
                   (value) =>
                     currentSubDaos.every(({ address }) => address !== value) ||
                     t('error.subDaoAlreadyExists'),

@@ -29,13 +29,11 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CHAIN_SUBDAOS,
-  getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
   getSupportedChainConfig,
   isFeatureSupportedByVersion,
-  isValidContractAddress,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -98,9 +96,11 @@ export const daoCardInfoSelector = selectorFamily<
       ) {
         if (
           // If address is a DAO contract.
-          isValidContractAddress(
-            admin,
-            getChainForChainId(chainId).bech32_prefix
+          get(
+            isDaoSelector({
+              address: admin,
+              chainId,
+            })
           )
         ) {
           // Indexer may return `adminInfo`, in which case don't query again. If
@@ -129,14 +129,9 @@ export const daoCardInfoSelector = selectorFamily<
                 }
               }
             }
-          } else if (
-            get(
-              isDaoSelector({
-                address: admin,
-                chainId,
-              })
-            )
-          ) {
+
+            // If indexer didn't return adminInfo, query chain.
+          } else {
             const adminAdmin = get(
               DaoCoreV2Selectors.adminSelector({
                 contractAddress: admin,

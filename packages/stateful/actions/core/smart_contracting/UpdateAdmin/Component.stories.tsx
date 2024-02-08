@@ -31,7 +31,6 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    onContractChange: (contract) => alert('onContractChange: ' + contract),
     contractAdmin: 'contractAdmin',
   },
 }

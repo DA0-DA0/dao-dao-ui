@@ -171,3 +171,14 @@ export const CHAIN_SUBDAOS: Record<string, string[] | undefined> = {
     'juno1mjsgk02jyn72jm2x7fgw72uu9wj7xy0v6pnuj2jd3aq7rgeqg5qq4dnhes',
   ],
 }
+
+/**
+ * Error substrings that indicate a contract is invalid or does not exist.
+ */
+export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
+  'Error parsing into type',
+  'no such contract',
+  'not found: invalid request',
+  'unknown query path',
+  'decoding bech32 failed',
+]

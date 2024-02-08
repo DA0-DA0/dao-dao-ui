@@ -23,8 +23,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   getNativeTokenForChainId,
-  isValidContractAddress,
-  makeValidateContractAddress,
+  isValidBech32Address,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -203,7 +203,7 @@ export const UpdatePreProposeSingleConfigComponent: ActionComponent<
                 depositInfo.type === 'cw20' ? (
                   // If valid cw20 address, show loader since deposit token
                   // hasn't yet loaded.
-                  isValidContractAddress(
+                  isValidBech32Address(
                     depositInfo.denomOrAddress,
                     bech32Prefix
                   ) && !cw20AddressError ? (
@@ -232,7 +232,7 @@ export const UpdatePreProposeSingleConfigComponent: ActionComponent<
                   type="contract"
                   validation={[
                     validateRequired,
-                    makeValidateContractAddress(bech32Prefix),
+                    makeValidateAddress(bech32Prefix),
                     // Invalidate field if additional error is present.
                     () => cw20AddressError || true,
                   ]}

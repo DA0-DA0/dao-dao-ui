@@ -2,11 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import { AdminListResponse } from '@dao-dao/types/contracts/Cw1Whitelist'
-import {
-  ContractName,
-  getChainForChainId,
-  isValidContractAddress,
-} from '@dao-dao/utils'
+import { ContractName } from '@dao-dao/utils'
 
 import { Cw1WhitelistQueryClient } from '../../../contracts/Cw1Whitelist'
 import { cosmWasmClientForChainSelector } from '../chain'
@@ -81,15 +77,6 @@ export const adminsIfCw1Whitelist = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      if (
-        !isValidContractAddress(
-          queryClientParams.contractAddress,
-          getChainForChainId(queryClientParams.chainId).bech32_prefix
-        )
-      ) {
-        return
-      }
-
       if (
         !get(
           isContractSelector({
