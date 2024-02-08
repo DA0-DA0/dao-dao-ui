@@ -26,7 +26,12 @@ import {
   NftSelectionModalProps,
   TypedOption,
 } from '@dao-dao/types'
-import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
+import {
+  durationIsNonZero,
+  getChainForChainId,
+  getDisplayNameForChainId,
+  humanReadableDuration,
+} from '@dao-dao/utils'
 
 import { LazyNftCard } from './LazyNftCard'
 
@@ -50,6 +55,7 @@ export const NftSelectionModal = ({
   selectedDisplay,
   headerDisplay,
   noneDisplay,
+  unstakingDuration,
   ...modalProps
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
@@ -161,41 +167,56 @@ export const NftSelectionModal = ({
           : undefined
       }
       footerContent={
-        <div
-          className={clsx(
-            'flex flex-row items-center gap-6',
-            // If selectedDisplay is null, it will be hidden, so align button at
-            // the end.
-            selectedDisplay === null ? 'justify-end' : 'justify-between'
+        <>
+          {unstakingDuration && durationIsNonZero(unstakingDuration) && (
+            <div className="space-y-5 border-b border-border-secondary pb-7">
+              <p className="primary-text text-text-secondary">
+                {t('title.unstakingPeriod') +
+                  `: ${humanReadableDuration(unstakingDuration)}`}
+              </p>
+              <p className="body-text text-text-secondary">
+                {t('info.unstakingMechanics', {
+                  humanReadableTime: humanReadableDuration(unstakingDuration),
+                })}
+              </p>
+            </div>
           )}
-        >
-          {selectedDisplay !== undefined ? (
-            selectedDisplay
-          ) : (
-            <p>{t('info.numNftsSelected', { count: selectedKeys.length })}</p>
-          )}
-
-          <div className="flex flex-row items-stretch gap-2">
-            {secondaryAction && (
-              <Button
-                loading={secondaryAction.loading}
-                onClick={secondaryAction.onClick}
-                variant="secondary"
-              >
-                {secondaryAction.label}
-              </Button>
+          <div
+            className={clsx(
+              'flex flex-row items-center gap-6',
+              // If selectedDisplay is null, it will be hidden, so align button at
+              // the end.
+              selectedDisplay === null ? 'justify-end' : 'justify-between'
+            )}
+          >
+            {selectedDisplay !== undefined ? (
+              selectedDisplay
+            ) : (
+              <p>{t('info.numNftsSelected', { count: selectedKeys.length })}</p>
             )}
 
-            <Button
-              disabled={!allowSelectingNone && selectedKeys.length === 0}
-              loading={action.loading}
-              onClick={action.onClick}
-              variant="primary"
-            >
-              {action.label}
-            </Button>
+            <div className="flex flex-row items-stretch gap-2">
+              {secondaryAction && (
+                <Button
+                  loading={secondaryAction.loading}
+                  onClick={secondaryAction.onClick}
+                  variant="secondary"
+                >
+                  {secondaryAction.label}
+                </Button>
+              )}
+
+              <Button
+                disabled={!allowSelectingNone && selectedKeys.length === 0}
+                loading={action.loading}
+                onClick={action.onClick}
+                variant="primary"
+              >
+                {action.label}
+              </Button>
+            </div>
           </div>
-        </div>
+        </>
       }
       headerContent={
         headerDisplay ||

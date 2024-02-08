@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
-import { GenericToken } from '.'
+import { Duration, GenericToken } from '.'
 import { ChainId, WithChainId } from './chain'
 import {
   ButtonLinkProps,
@@ -150,4 +150,5 @@ export type NftSelectionModalProps = Omit<ModalProps, 'children' | 'header'> &
     headerDisplay?: ReactNode
     // What displays when there are no NFTs.
     noneDisplay?: ReactNode
+    unstakingDuration?: Duration | null
   }
