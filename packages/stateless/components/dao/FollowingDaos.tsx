@@ -1,4 +1,5 @@
 import { DoneOutlineRounded } from '@mui/icons-material'
+import { TFunction } from 'i18next'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -24,8 +25,8 @@ export const FollowingDaos = ({
   const { t } = useTranslation()
 
   const sortOptions = useMemo(
-    () => getSortOptions(followingDaos.loading ? [] : followingDaos.data),
-    [followingDaos]
+    () => getSortOptions(t, followingDaos.loading ? [] : followingDaos.data),
+    [t, followingDaos]
   )
   const {
     sortedData: sortedFollowingDaos,
@@ -71,23 +72,24 @@ export const FollowingDaos = ({
 }
 
 const getSortOptions = (
+  t: TFunction,
   followingDaos: DaoCardInfo[]
 ): TypedOption<SortFn<DaoCardInfo>>[] => [
   {
-    label: 'Date followed (oldest → newest)',
+    label: t('info.dateFollowedOldestNewest'),
     value: (a, b) => followingDaos.indexOf(a) - followingDaos.indexOf(b),
   },
   {
-    label: 'Date followed (newest → oldest)',
+    label: t('info.dateFollowedNewestOldest'),
     value: (a, b) => followingDaos.indexOf(b) - followingDaos.indexOf(a),
   },
   {
-    label: 'DAO name (A → Z)',
+    label: t('info.daoNameAZ'),
     value: (a, b) =>
       a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleUpperCase()),
   },
   {
-    label: 'DAO name (Z → A)',
+    label: t('info.daoNameZA'),
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleUpperCase()),
   },
