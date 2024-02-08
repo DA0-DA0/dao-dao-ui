@@ -87,7 +87,7 @@ const VetoInput = ({
           createCw1WhitelistVetoers={createCw1WhitelistVetoers}
           creatingCw1WhitelistVetoers={creatingCw1WhitelistVetoers}
           errors={errors?.veto}
-          fieldNamePrefix="veto."
+          fieldNamePrefix={fieldNamePrefix + 'veto.'}
           veto={veto}
         />
       )}
