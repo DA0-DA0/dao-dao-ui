@@ -64,30 +64,33 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
           current: `${t('title.proposal')} ${proposalId}`,
         }}
         rightNode={
-          <Popup
-            popupClassName="min-w-56 max-w-lg p-3"
-            position="left"
-            setOpenRef={setVoteOpenRef}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'animate-fade-in',
-                contentContainerClassName: 'text-base',
-                variant: 'brand_ghost',
-                children: alreadyVoted
-                  ? t('button.changeVote')
-                  : t('title.vote'),
-              },
-            }}
-          >
-            <GovProposalVoter
-              onVoteSuccess={
-                // Close vote popup in case it's open.
-                () => setVoteOpenRef.current?.(false)
-              }
-              proposalId={proposalId}
-            />
-          </Popup>
+          proposal.proposal.status ===
+            ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD && (
+            <Popup
+              popupClassName="min-w-56 max-w-lg p-3"
+              position="left"
+              setOpenRef={setVoteOpenRef}
+              trigger={{
+                type: 'button',
+                props: {
+                  className: 'animate-fade-in',
+                  contentContainerClassName: 'text-base',
+                  variant: 'brand_ghost',
+                  children: alreadyVoted
+                    ? t('button.changeVote')
+                    : t('title.vote'),
+                },
+              }}
+            >
+              <GovProposalVoter
+                onVoteSuccess={
+                  // Close vote popup in case it's open.
+                  () => setVoteOpenRef.current?.(false)
+                }
+                proposalId={proposalId}
+              />
+            </Popup>
+          )
         }
       />
 
