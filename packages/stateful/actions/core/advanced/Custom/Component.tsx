@@ -37,10 +37,6 @@ export const CustomComponent: ActionComponent = ({
         ([type]) =>
           // Only show protobuf message types.
           type.split('.').pop()?.startsWith('Msg') &&
-          // Only show osmosis message types on Osmosis chains.
-          (!type.startsWith('/osmosis') ||
-            chainId === ChainId.OsmosisMainnet ||
-            chainId === ChainId.OsmosisTestnet) &&
           // Only show stargaze message types on Stargaze chains.
           (!type.startsWith('/publicawesome.stargaze') ||
             chainId === ChainId.StargazeMainnet ||
