@@ -141,7 +141,7 @@ const DApp = (props: AppProps) => {
           },
           {
             name: 'apple-mobile-web-app-title',
-            content: 'DAO DAO',
+            content: t('meta.title').replace('meta.title', 'Loading...'),
           },
           {
             name: 'apple-mobile-web-app-capable',
@@ -160,7 +160,7 @@ const DApp = (props: AppProps) => {
         openGraph={{
           url: SITE_URL,
           type: 'website',
-          title: 'DAO DAO',
+          title: t('meta.title').replace('meta.title', 'Loading...'),
           description: t('meta.description').replace(
             'meta.description',
             'Loading...'
