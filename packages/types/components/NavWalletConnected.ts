@@ -19,4 +19,5 @@ export type NavWalletConnectedProps = {
    * small screens, and dock on small screens.
    */
   mode: 'header' | 'sidebar' | 'dock'
-} & Pick<NotificationsProps, 'inbox' | 'InboxMainItemRenderer'>
+} & Partial<Pick<NotificationsProps, 'inbox'>> &
+  Pick<NotificationsProps, 'InboxMainItemRenderer'>

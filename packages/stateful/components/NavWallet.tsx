@@ -15,9 +15,15 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
-  const inbox = useInboxApiWithUi({
-    mode: 'popup',
-  })
+
+  // Ignore errors loading inbox because the SDA does not have an inbox.
+  let inbox
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    inbox = useInboxApiWithUi({
+      mode: 'popup',
+    })
+  } catch {}
 
   return (
     <SuspenseLoader

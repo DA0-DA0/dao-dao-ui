@@ -113,7 +113,7 @@ export const NavWalletConnected = ({
       {mode !== 'dock' && (
         <>
           {/* Notification popup */}
-          {appMode === DaoPageMode.Dapp && inbox && (
+          {appMode === DaoPageMode.Dapp && inbox && notificationsProps.inbox && (
             <Popup
               popupClassName="min-w-72 max-w-lg max-h-[48rem]"
               position={mode === 'sidebar' ? 'wide' : 'left'}
@@ -151,6 +151,7 @@ export const NavWalletConnected = ({
                 {...notificationsProps}
                 className="no-scrollbar overflow-y-auto"
                 compact
+                inbox={notificationsProps.inbox}
               />
             </Popup>
           )}
