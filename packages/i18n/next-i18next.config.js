@@ -18,6 +18,7 @@ const config = {
       'zh-tw',
     ],
     defaultLocale: 'en',
+    localeDetection: false,
   },
   lowerCaseLng: true,
   localePath: path.resolve(__dirname, '../../packages/i18n/locales'),
