@@ -20,16 +20,14 @@ import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo } from '../../hooks'
 import {
-  MigrateToOsmosisTokenFactoryIssuerComponent,
-  MigrateToOsmosisTokenFactoryIssuerData,
+  MigrateMigalooV4TokenFactoryComponent,
+  MigrateMigalooV4TokenFactoryData,
 } from './Component'
 
-const useDefaults: UseDefaults<
-  MigrateToOsmosisTokenFactoryIssuerData
-> = () => ({})
+const useDefaults: UseDefaults<MigrateMigalooV4TokenFactoryData> = () => ({})
 
-export const makeMigrateToOsmosisTokenFactoryIssuerAction: ActionMaker<
-  MigrateToOsmosisTokenFactoryIssuerData
+export const makeMigrateMigalooV4TokenFactoryAction: ActionMaker<
+  MigrateMigalooV4TokenFactoryData
 > = ({ t, chainContext }) => {
   // Only Migaloo DAOs need to migrate.
   if (
@@ -40,7 +38,7 @@ export const makeMigrateToOsmosisTokenFactoryIssuerAction: ActionMaker<
   }
 
   const useTransformToCosmos: UseTransformToCosmos<
-    MigrateToOsmosisTokenFactoryIssuerData
+    MigrateMigalooV4TokenFactoryData
   > = () => {
     const { tokenFactoryIssuerAddress } = useGovernanceTokenInfo()
 
@@ -61,7 +59,7 @@ export const makeMigrateToOsmosisTokenFactoryIssuerAction: ActionMaker<
   }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<
-    MigrateToOsmosisTokenFactoryIssuerData
+    MigrateMigalooV4TokenFactoryData
   > = (msg: Record<string, any>) => {
     const { tokenFactoryIssuerAddress } = useGovernanceTokenInfo()
 
@@ -114,14 +112,16 @@ export const makeMigrateToOsmosisTokenFactoryIssuerAction: ActionMaker<
   }
 
   return {
-    key: ActionKey.MigrateToOsmosisTokenFactoryIssuer,
+    key: ActionKey.MigrateMigalooV4TokenFactory,
     Icon: PufferfishEmoji,
     label: t('title.migrateTokenFactoryModule'),
     description: t('info.migrateTokenFactoryModuleDescription'),
-    Component: MigrateToOsmosisTokenFactoryIssuerComponent,
+    Component: MigrateMigalooV4TokenFactoryComponent,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
     useHideFromPicker,
+    // Show at the top.
+    order: 1000,
   }
 }

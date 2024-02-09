@@ -1,4 +1,4 @@
-# MigrateToOsmosisTokenFactoryIssuer
+# MigrateMigalooV4TokenFactory
 
 Migrate `cw-tokenfactory-issuer` from the CosmWasm x/tokenfactory implementation
 to Osmosis's x/tokenfactory. Migaloo is migrating tokenfactory modules, so this
@@ -11,7 +11,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`migrateToOsmosisTokenFactoryIssuer`
+`migrateMigalooV4TokenFactory`
 
 ### Data format
 
