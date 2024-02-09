@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  makeMigrateToOsmosisTokenFactoryIssuerAction,
   makeMintAction,
   makeUpdateMinterAllowanceAction,
   makeUpdateStakingConfigAction,
@@ -58,6 +59,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
             makeMintAction,
             makeUpdateMinterAllowanceAction,
             makeUpdateStakingConfigAction,
+            makeMigrateToOsmosisTokenFactoryIssuerAction,
           ],
         }),
       ],

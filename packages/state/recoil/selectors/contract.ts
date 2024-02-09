@@ -1,4 +1,4 @@
-import { CodeDetails } from '@cosmjs/cosmwasm-stargate'
+import { CodeDetails, Contract } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
@@ -58,23 +58,28 @@ export const contractInstantiateTimeSelector = selectorFamily<
     },
 })
 
+export const contractDetailsSelector = selectorFamily<
+  Contract,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contractDetails',
+  get:
+    ({ contractAddress, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      return await client.getContract(contractAddress)
+    },
+})
+
 export const contractAdminSelector = selectorFamily<
   string | undefined,
   WithChainId<{ contractAddress: string }>
 >({
   key: 'contractAdmin',
   get:
-    ({ contractAddress, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-
-      try {
-        const contract = await client.getContract(contractAddress)
-        return contract.admin
-      } catch (_) {
-        return undefined
-      }
-    },
+    (params) =>
+    ({ get }) =>
+      get(contractDetailsSelector(params))?.admin,
 })
 
 export const codeDetailsSelector = selectorFamily<

@@ -81,6 +81,7 @@ export enum ActionKey {
   ManageSubDaoPause = 'manageSubDaoPause',
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
+  MigrateToOsmosisTokenFactoryIssuer = 'migrateToOsmosisTokenFactoryIssuer',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
