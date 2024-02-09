@@ -67,6 +67,7 @@ import {
   MsgUpdateAdmin,
 } from '../protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { Any } from '../protobuf/codegen/google/protobuf/any'
+import { UploadCosmWasmPoolCodeAndWhiteListProposal } from '../protobuf/codegen/osmosis/cosmwasmpool/v1beta1/gov'
 import { isCosmWasmStargateMsg } from './cw'
 
 // Convert CosmWasm message to its encoded protobuf equivalent.
@@ -551,9 +552,10 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
+  [ParameterChangeProposal.typeUrl, ParameterChangeProposal as GeneratedType],
   [
-    '/cosmos.params.v1beta1.ParameterChangeProposal',
-    ParameterChangeProposal as GeneratedType,
+    UploadCosmWasmPoolCodeAndWhiteListProposal.typeUrl,
+    UploadCosmWasmPoolCodeAndWhiteListProposal as GeneratedType,
   ],
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
