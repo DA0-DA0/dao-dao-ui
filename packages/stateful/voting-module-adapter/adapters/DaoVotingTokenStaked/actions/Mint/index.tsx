@@ -1,8 +1,13 @@
 import { useCallback } from 'react'
 
-import { DaoVotingTokenStakedSelectors } from '@dao-dao/state/recoil'
-import { HerbEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
+  DaoVotingTokenStakedSelectors,
+  contractDetailsSelector,
+} from '@dao-dao/state/recoil'
+import { HerbEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
+import {
+  ActionChainContextType,
   ActionComponent,
   ActionKey,
   ActionMaker,
@@ -18,6 +23,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { AddressInput } from '../../../../../components/AddressInput'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo } from '../../hooks'
@@ -108,6 +114,7 @@ const Component: ActionComponent = (props) => {
 // Only show in picker if using cw-tokenfactory-issuer contract.
 const useHideFromPicker: UseHideFromPicker = () => {
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainContext } = useActionOptions()
 
   const tfIssuer = useCachedLoadable(
     DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector({
@@ -115,8 +122,25 @@ const useHideFromPicker: UseHideFromPicker = () => {
       chainId,
     })
   )
+  const tfIssuerContract = useCachedLoadable(
+    tfIssuer.state === 'hasValue' && tfIssuer.contents
+      ? contractDetailsSelector({
+          contractAddress: tfIssuer.contents,
+          chainId,
+        })
+      : undefined
+  )
 
-  return tfIssuer.state !== 'hasValue' || !tfIssuer.contents
+  return (
+    tfIssuer.state !== 'hasValue' ||
+    !tfIssuer.contents ||
+    // Disallow minting on Miagloo if cw-tokenfactory-issuer is on old version.
+    (chainContext.chainId === ChainId.MigalooMainnet &&
+      chainContext.type === ActionChainContextType.Supported &&
+      (tfIssuerContract.state !== 'hasValue' ||
+        tfIssuerContract.contents.codeId ===
+          chainContext.config.codeIds.CwTokenfactoryIssuerCosmWasm))
+  )
 }
 
 export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
