@@ -83,7 +83,7 @@ export const TokenLine = <T extends TokenCardInfo>(
           </Tooltip>
 
           <p className="title-text truncate text-sm md:text-base">
-            ${tokenSymbol}
+            {tokenSymbol}
           </p>
 
           {color && (
