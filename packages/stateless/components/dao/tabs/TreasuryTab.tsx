@@ -1,114 +1,132 @@
-import { ComponentType, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   AccountType,
-  DaoAccountTreasuryInfo,
+  ButtonLinkProps,
   DaoFiatDepositModalProps,
   LoadingData,
+  LoadingDataWithError,
   LoadingNfts,
   LoadingTokens,
   TokenCardInfo,
-  TokenType,
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
-import { areAccountsEqual, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getDisplayNameForChainId, serializeTokenSource } from '@dao-dao/utils'
 
-import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
-import { LineLoaders } from '../../LineLoader'
-import { TooltipInfoIcon } from '../../tooltip'
 import {
-  DaoAccountTreasury,
-  DaoAccountTreasuryProps,
-} from '../DaoAccountTreasury'
+  useButtonPopupSorter,
+  useDaoInfoContext,
+  useSupportedChainContext,
+  useTokenSortOptions,
+} from '../../../hooks'
+import { ErrorPage } from '../../error'
+import { LineLoaders } from '../../LineLoader'
+import { NftSection } from '../../nft/NftSection'
+import { ButtonPopup } from '../../popup'
+import { TokenLineHeader } from '../../token'
+import { Tooltip, TooltipInfoIcon } from '../../tooltip'
+import { WarningCard } from '../../WarningCard'
 
 export type TreasuryTabProps<T extends TokenCardInfo, N extends object> = {
   connected: boolean
   tokens: LoadingTokens<T>
   nfts: LoadingData<LoadingNfts<N & { key: string }>>
-  createCrossChainAccountPrefillHref: string
+  /**
+   * Create cross-chain account proposal prefill URL. If undefined, this means
+   * the action cannot be used, most likely because all accounts are already
+   * created.
+   */
+  createCrossChainAccountHref: string | undefined
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
-} & Omit<
-  DaoAccountTreasuryProps<T, N>,
-  'treasury' | 'setDepositFiatChainId' | 'tokenSourceColorMap'
->
+  TokenLine: ComponentType<T>
+  NftCard: ComponentType<N>
+  ButtonLink: ComponentType<ButtonLinkProps>
+}
 
 export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
   connected,
   tokens,
   nfts,
+  createCrossChainAccountHref,
   FiatDepositModal,
   TreasuryHistoryGraph,
-  ...props
+  TokenLine,
+  NftCard,
+  ButtonLink,
 }: TreasuryTabProps<T, N>) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
   } = useSupportedChainContext()
-  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress } = useDaoInfoContext()
 
-  // Tokens and NFTs on the various Polytone-supported chains.
-  const treasuries = accounts.map((account): DaoAccountTreasuryInfo<T, N> => {
-    const chainTokens = tokens[account.chainId]
-    // NFTs are only loaded for main account on a chain.
-    const chainNfts =
-      !nfts.loading &&
-      (account.type === AccountType.Native ||
-        account.type === AccountType.Polytone)
-        ? nfts.data[account.chainId]
-        : undefined
+  // Combine chain tokens into loadable, lazily. Load all that are ready.
+  const allTokens = useMemo((): LoadingDataWithError<T[]> => {
+    const chainTokens = Object.values(tokens)
+    return chainTokens.every((l) => l?.loading)
+      ? {
+          loading: true,
+          errored: false,
+        }
+      : chainTokens.every((l) => l?.errored)
+      ? {
+          loading: false,
+          errored: true,
+          // First error.
+          error:
+            // Type-check, will always be defined.
+            (chainTokens[0]?.errored && chainTokens[0].error) || new Error(),
+        }
+      : {
+          loading: false,
+          errored: false,
+          updating: chainTokens.some(
+            (l) => l && !l.loading && !l.errored && l.updating
+          ),
+          data: chainTokens.flatMap((l) =>
+            l && !l.loading && !l.errored ? l.data : []
+          ),
+        }
+  }, [tokens])
 
-    return {
-      account,
-      tokens: !chainTokens
-        ? { loading: false, errored: false, data: [] }
-        : chainTokens.loading || chainTokens.errored
-        ? chainTokens
-        : {
-            loading: false,
-            errored: false,
-            updating: chainTokens.updating,
-            data: chainTokens.data
-              .filter(({ owner }) => areAccountsEqual(owner, account))
-              // Sort governance token first, then native currency, then by
-              // balance.
-              .sort((a, b) => {
-                const aValue = a.isGovernanceToken
-                  ? -2
-                  : a.token.type === TokenType.Native &&
-                    a.token.denomOrAddress ===
-                      getNativeTokenForChainId(account.chainId).denomOrAddress
-                  ? -1
-                  : a.lazyInfo.loading
-                  ? a.unstakedBalance
-                  : a.lazyInfo.data.totalBalance
-                const bValue = b.isGovernanceToken
-                  ? -2
-                  : b.token.type === TokenType.Native &&
-                    b.token.denomOrAddress ===
-                      getNativeTokenForChainId(account.chainId).denomOrAddress
-                  ? -1
-                  : b.lazyInfo.loading
-                  ? b.unstakedBalance
-                  : b.lazyInfo.data.totalBalance
-
-                // Put smaller value first if either is negative (prioritized
-                // token), otherwise sort balances descending.
-                return aValue < 0 || bValue < 0
-                  ? aValue - bValue
-                  : bValue - aValue
-              }),
-          },
-      nfts: nfts.loading
-        ? { loading: true, errored: false }
-        : !chainNfts
-        ? { loading: false, errored: false, data: [] }
-        : chainNfts.loading || chainNfts.errored
-        ? chainNfts
-        : chainNfts,
+  // Combine chain tokens into loadable, lazily. Load all that are ready.
+  const allNfts = useMemo((): LoadingDataWithError<N[]> => {
+    if (nfts.loading) {
+      return {
+        loading: true,
+        errored: false,
+      }
     }
-  })
+
+    const chainNfts = Object.values(nfts.data)
+
+    return chainNfts.every((l) => l?.loading)
+      ? {
+          loading: true,
+          errored: false,
+        }
+      : chainNfts.every((l) => l?.errored)
+      ? {
+          loading: false,
+          errored: true,
+          // First error.
+          error:
+            // Type-check, will always be defined.
+            (chainNfts[0]?.errored && chainNfts[0].error) || new Error(),
+        }
+      : {
+          loading: false,
+          errored: false,
+          updating: chainNfts.some(
+            (l) => l && (l.loading || (!l.errored && l.updating))
+          ),
+          data: chainNfts.flatMap((l) =>
+            l && !l.loading && !l.errored ? l.data : []
+          ),
+        }
+  }, [nfts])
 
   const [depositFiatChainId, setDepositFiatChainId] = useState<
     string | undefined
@@ -119,12 +137,21 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
     Record<string, string>
   >({})
 
+  const tokenSortOptions = useTokenSortOptions()
+  const {
+    sortedData: sortedTokens,
+    buttonPopupProps: sortTokenButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: allTokens.loading || allTokens.errored ? undefined : allTokens.data,
+    options: tokenSortOptions,
+  })
+
   return (
     <>
       <TreasuryHistoryGraph
         address={coreAddress}
         chainId={daoChainId}
-        className="mb-12 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
+        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
         graphClassName="max-h-[20rem]"
         header={
           <div className="flex flex-row items-center justify-center gap-1">
@@ -136,27 +163,70 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         registerTokenColors={setTokenSourceColorMap}
       />
 
-      {
-        // If there is nothing loaded, `every` returns true and shows loading.
-        Object.values(tokens).every(
-          (chainTokens) => chainTokens?.loading || chainTokens?.errored
-        ) ? (
-          <LineLoaders lines={20} type="token" />
+      <div className="mb-6 flex flex-row justify-end">
+        <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
+      </div>
+
+      {allTokens.loading ? (
+        <div>
+          <TokenLineHeader />
+          <LineLoaders lines={7} type="token" />
+        </div>
+      ) : allTokens.errored ? (
+        <ErrorPage error={allTokens.error} />
+      ) : (
+        <div>
+          <TokenLineHeader />
+
+          {sortedTokens.map((props, index) => (
+            <TokenLine
+              {...props}
+              key={index}
+              color={tokenSourceColorMap[serializeTokenSource(props.token)]}
+              transparentBackground={index % 2 !== 0}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-row justify-end">
+        <Tooltip
+          title={
+            createCrossChainAccountHref
+              ? undefined
+              : t('error.allCrossChainAccountsCreated')
+          }
+        >
+          <ButtonLink
+            disabled={!createCrossChainAccountHref}
+            href={createCrossChainAccountHref}
+            variant="secondary"
+          >
+            {t('button.createCrossChainAccount')}
+          </ButtonLink>
+        </Tooltip>
+      </div>
+
+      {/* Show chain token load errors. */}
+      {Object.entries(tokens).flatMap(([chainId, l]) =>
+        l && l.errored ? (
+          <WarningCard
+            key={chainId}
+            className="mt-6"
+            content={t('error.loadingChainTokens', {
+              chain: getDisplayNameForChainId(chainId),
+            })}
+          >
+            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+              {l.error instanceof Error ? l.error.message : l.error}
+            </pre>
+          </WarningCard>
         ) : (
-          <div className="mt-2 flex flex-col gap-6 md:mt-0 md:gap-8">
-            {treasuries.map((treasury) => (
-              <DaoAccountTreasury
-                key={treasury.account.address}
-                connected={connected}
-                setDepositFiatChainId={setDepositFiatChainId}
-                tokenSourceColorMap={tokenSourceColorMap}
-                treasury={treasury}
-                {...props}
-              />
-            ))}
-          </div>
+          []
         )
-      }
+      )}
+
+      <NftSection NftCard={NftCard} className="mt-10" nfts={allNfts} />
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal

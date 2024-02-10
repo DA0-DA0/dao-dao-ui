@@ -8,7 +8,7 @@ import { getNftKey } from '@dao-dao/utils'
 import { NftCard, NftCardProps } from './NftCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / NftCard',
+  title: 'DAO DAO / packages / stateless / components / nft / NftCard',
   component: NftCard,
   excludeStories: ['makeProps', 'makeLazyInfo'],
 } as ComponentMeta<typeof NftCard>

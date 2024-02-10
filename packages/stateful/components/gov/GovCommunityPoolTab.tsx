@@ -126,7 +126,7 @@ export const GovCommunityPoolTab = () => {
     sortedData: sortedTokens,
     buttonPopupProps: sortTokenButtonPopupProps,
   } = useButtonPopupSorter({
-    data: tokens.loading || tokens.errored ? [] : tokens.data,
+    data: tokens.loading || tokens.errored ? undefined : tokens.data,
     options: tokenSortOptions,
   })
 
@@ -135,7 +135,7 @@ export const GovCommunityPoolTab = () => {
       <TreasuryHistoryGraph
         address={COMMUNITY_POOL_ADDRESS_PLACEHOLDER}
         chainId={chainId}
-        className="mb-8 hidden rounded-md bg-background-tertiary p-6 md:flex"
+        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
         graphClassName="max-h-[20rem]"
         header={
           <div className="flex flex-row items-center justify-center gap-1">

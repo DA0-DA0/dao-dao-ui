@@ -7,7 +7,7 @@ import { LoadingData } from '@dao-dao/types'
 
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownProps } from '../../inputs/Dropdown'
-import { NftCardLoader } from '../../NftCard'
+import { NftCardLoader } from '../../nft/NftCard'
 import { NoContent } from '../../NoContent'
 import { Pagination } from '../../Pagination'
 

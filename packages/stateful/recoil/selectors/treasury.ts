@@ -30,8 +30,11 @@ import {
   convertMicroDenomToDenomWithDecimals,
   deserializeTokenSource,
   getNativeTokenForChainId,
+  loadableToLoadingData,
   serializeTokenSource,
 } from '@dao-dao/utils'
+
+import { tokenCardLazyInfoSelector } from './token'
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
@@ -152,14 +155,27 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                   stakedBalance.contents.amount !== '0'
               }
 
+              const lazyInfo = get(
+                noWait(
+                  tokenCardLazyInfoSelector({
+                    owner: account.address,
+                    token,
+                    unstakedBalance,
+                  })
+                )
+              )
+
               return {
                 owner: account,
                 token,
                 isGovernanceToken,
                 unstakedBalance,
                 hasStakingInfo,
-
-                lazyInfo: { loading: true },
+                lazyInfo: loadableToLoadingData(lazyInfo, {
+                  usdUnitPrice: undefined,
+                  stakingInfo: undefined,
+                  totalBalance: unstakedBalance,
+                }),
               }
             }
           )

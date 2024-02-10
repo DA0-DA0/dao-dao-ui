@@ -32,7 +32,7 @@ export const FollowingDaos = ({
     sortedData: sortedFollowingDaos,
     buttonPopupProps: sortButtonPopupProps,
   } = useButtonPopupSorter({
-    data: followingDaos.loading ? [] : followingDaos.data,
+    data: followingDaos.loading ? undefined : followingDaos.data,
     options: sortOptions,
   })
 

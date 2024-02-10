@@ -92,7 +92,7 @@ export const WalletBalances = ({
           ),
         }
 
-  const nfts = useCachedLoading(
+  const nfts = useCachedLoadingWithError(
     address
       ? allWalletNftsSelector([
           {
@@ -100,8 +100,7 @@ export const WalletBalances = ({
             walletAddress: address,
           },
         ])
-      : undefined,
-    []
+      : undefined
   )
 
   const hiddenTokens = useCachedLoading(
