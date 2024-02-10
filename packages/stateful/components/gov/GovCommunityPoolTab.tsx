@@ -1,22 +1,28 @@
 import { useTranslation } from 'react-i18next'
+import { waitForAny } from 'recoil'
 
 import { communityPoolBalancesSelector } from '@dao-dao/state/recoil'
 import {
+  ButtonPopup,
   ErrorPage,
   LineLoaders,
   TokenLineHeader,
   TooltipInfoIcon,
+  useButtonPopupSorter,
   useCachedLoadingWithError,
   useChain,
+  useTokenSortOptions,
 } from '@dao-dao/stateless'
-import { AccountType, TokenCardInfo } from '@dao-dao/types'
+import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
+import { tokenCardLazyInfoSelector } from '../../recoil'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { GovTokenLine } from './GovTokenLine'
 
@@ -30,18 +36,14 @@ export const GovCommunityPoolTab = () => {
     }),
     (data) =>
       data
-        .map(({ token, balance }): TokenCardInfo => {
+        .map(({ owner, token, balance }): TokenCardInfo => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
             token.decimals
           )
 
           return {
-            owner: {
-              type: AccountType.Native,
-              address: '',
-              chainId: token.chainId,
-            },
+            owner,
             token,
             isGovernanceToken:
               getNativeTokenForChainId(token.chainId).denomOrAddress ===
@@ -76,6 +78,58 @@ export const GovCommunityPoolTab = () => {
         })
   )
 
+  // Load separately so they cache separately.
+  const tokenLazyInfos = useCachedLoadingWithError(
+    !tokenCardInfos.loading && !tokenCardInfos.errored
+      ? waitForAny(
+          tokenCardInfos.data.map(({ owner, token, unstakedBalance }) =>
+            tokenCardLazyInfoSelector({
+              owner: owner.address,
+              token,
+              unstakedBalance,
+            })
+          )
+        )
+      : undefined
+  )
+
+  const tokens: LoadingDataWithError<TokenCardInfo[]> =
+    tokenCardInfos.loading || tokenCardInfos.errored
+      ? tokenCardInfos
+      : {
+          loading: false,
+          errored: false,
+          updating:
+            tokenCardInfos.updating ||
+            (!tokenLazyInfos.loading &&
+              !tokenLazyInfos.errored &&
+              tokenLazyInfos.updating),
+          data: tokenCardInfos.data.map(
+            (token, i): TokenCardInfo => ({
+              ...token,
+              lazyInfo:
+                tokenLazyInfos.loading ||
+                tokenLazyInfos.errored ||
+                tokenCardInfos.data.length !== tokenLazyInfos.data.length
+                  ? { loading: true }
+                  : loadableToLoadingData(tokenLazyInfos.data[i], {
+                      usdUnitPrice: undefined,
+                      stakingInfo: undefined,
+                      totalBalance: token.unstakedBalance,
+                    }),
+            })
+          ),
+        }
+
+  const tokenSortOptions = useTokenSortOptions()
+  const {
+    sortedData: sortedTokens,
+    buttonPopupProps: sortTokenButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: tokens.loading || tokens.errored ? [] : tokens.data,
+    options: tokenSortOptions,
+  })
+
   return (
     <>
       <TreasuryHistoryGraph
@@ -92,6 +146,10 @@ export const GovCommunityPoolTab = () => {
         }
       />
 
+      <div className="mb-6 flex flex-row justify-end">
+        <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
+      </div>
+
       <GovActionsProvider
         loader={
           <div>
@@ -100,18 +158,18 @@ export const GovCommunityPoolTab = () => {
           </div>
         }
       >
-        {tokenCardInfos.loading ? (
+        {tokens.loading ? (
           <div>
             <TokenLineHeader />
             <LineLoaders lines={10} type="token" />
           </div>
-        ) : tokenCardInfos.errored ? (
-          <ErrorPage error={tokenCardInfos.error} />
+        ) : tokens.errored ? (
+          <ErrorPage error={tokens.error} />
         ) : (
           <div>
             <TokenLineHeader />
 
-            {tokenCardInfos.data.map((props, index) => (
+            {sortedTokens.map((props, index) => (
               <GovTokenLine
                 {...props}
                 key={index}

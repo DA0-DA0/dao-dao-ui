@@ -5,15 +5,19 @@ import { useTranslation } from 'react-i18next'
 
 import {
   LazyNftCardInfo,
-  SortFn,
   TokenCardInfo,
-  TypedOption,
   WalletBalancesProps,
 } from '@dao-dao/types'
 import { getDisplayNameForChainId } from '@dao-dao/utils'
 
-import { useButtonPopupSorter, useChain, useInfiniteScroll } from '../../hooks'
+import {
+  useButtonPopupSorter,
+  useChain,
+  useInfiniteScroll,
+  useTokenSortOptions,
+} from '../../hooks'
 import { Button } from '../buttons'
+import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { DropdownIconButton } from '../icon_buttons'
 import { LineLoaders } from '../LineLoader'
@@ -38,11 +42,12 @@ export const WalletBalances = <
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
+  const tokenSortOptions = useTokenSortOptions()
   const {
     sortedData: sortedTokens,
     buttonPopupProps: sortTokenButtonPopupProps,
   } = useButtonPopupSorter({
-    data: tokens.loading ? [] : tokens.data,
+    data: tokens.loading || tokens.errored ? [] : tokens.data,
     options: tokenSortOptions,
   })
 
@@ -73,7 +78,9 @@ export const WalletBalances = <
   return (
     <div className="flex flex-col gap-8">
       <div>
-        {tokens.loading || hiddenTokens.loading || tokens.data.length ? (
+        {tokens.loading ||
+        hiddenTokens.loading ||
+        (!tokens.errored && tokens.data.length > 0) ? (
           <div>
             <div className="mb-6 flex flex-row justify-end">
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
@@ -95,6 +102,8 @@ export const WalletBalances = <
               </div>
             )}
           </div>
+        ) : tokens.errored ? (
+          <ErrorPage error={tokens.error} />
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
         )}
@@ -170,68 +179,3 @@ export const WalletBalances = <
     </div>
   )
 }
-
-const tokenSortOptions: TypedOption<
-  SortFn<Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>>
->[] = [
-  {
-    label: 'Highest USD value',
-    value: (a, b) => {
-      // If loading or no price, show at bottom.
-      const aPrice =
-        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
-          ? -Infinity
-          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice =
-        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
-          ? -Infinity
-          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
-
-      // If prices are equal, sort alphabetically by symbol.
-      return aPrice === bPrice
-        ? a.token.symbol
-            .toLocaleLowerCase()
-            .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : aPrice > bPrice
-        ? -1
-        : 1
-    },
-  },
-  {
-    label: 'Lowest USD value',
-    value: (a, b) => {
-      // If loading or no price, show at bottom.
-      const aPrice =
-        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
-          ? -Infinity
-          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
-      const bPrice =
-        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
-          ? -Infinity
-          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
-
-      // If prices are equal, sort alphabetically by symbol.
-      return aPrice === bPrice
-        ? a.token.symbol
-            .toLocaleLowerCase()
-            .localeCompare(b.token.symbol.toLocaleLowerCase())
-        : aPrice > bPrice
-        ? 1
-        : -1
-    },
-  },
-  {
-    label: 'A → Z',
-    value: (a, b) =>
-      a.token.symbol
-        .toLocaleLowerCase()
-        .localeCompare(b.token.symbol.toLocaleLowerCase()),
-  },
-  {
-    label: 'Z → A',
-    value: (a, b) =>
-      b.token.symbol
-        .toLocaleLowerCase()
-        .localeCompare(a.token.symbol.toLocaleLowerCase()),
-  },
-]

@@ -21,6 +21,7 @@ export const Default = Template.bind({})
 Default.args = {
   tokens: {
     loading: false,
+    errored: false,
     data: [makeTokenCardProps(true), makeTokenCardProps()],
   },
   hiddenTokens: {
@@ -43,7 +44,10 @@ Default.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  tokens: { loading: true },
+  tokens: {
+    loading: true,
+    errored: false,
+  },
   hiddenTokens: { loading: true },
   TokenLine: WalletTokenLine,
   nfts: { loading: true },
