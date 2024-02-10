@@ -109,8 +109,8 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
           data: {
             toAdd: msg.wasm.execute.msg.update_sub_daos.to_add,
             toRemove: msg.wasm.execute.msg.update_sub_daos.to_remove.map(
-              (addr: string) => ({
-                addr,
+              (address: string) => ({
+                address,
               })
             ),
           },
