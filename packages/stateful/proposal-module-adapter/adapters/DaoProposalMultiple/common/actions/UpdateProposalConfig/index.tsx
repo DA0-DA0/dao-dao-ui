@@ -284,24 +284,16 @@ export const makeUpdateProposalConfigActionMaker = ({
         msg,
         DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
         {
-          wasm: {
-            execute: {
-              contract_addr: {},
-              funds: {},
-              msg: {
-                update_config: {
-                  allow_revoting: {},
-                  close_proposal_on_execution_failure: {},
-                  dao: {},
-                  max_voting_period: {},
-                  min_voting_period: {},
-                  only_members_execute: {},
-                  voting_strategy: {
-                    single_choice: {
-                      quorum: {},
-                    },
-                  },
-                },
+          update_config: {
+            allow_revoting: {},
+            close_proposal_on_execution_failure: {},
+            dao: {},
+            max_voting_period: {},
+            min_voting_period: {},
+            only_members_execute: {},
+            voting_strategy: {
+              single_choice: {
+                quorum: {},
               },
             },
           },

@@ -297,17 +297,9 @@ export const makeUpdatePreProposeConfigActionMaker =
         msg,
         DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
         {
-          wasm: {
-            execute: {
-              contract_addr: {},
-              funds: {},
-              msg: {
-                update_config: {
-                  deposit_info: {},
-                  open_proposal_submission: {},
-                },
-              },
-            },
+          update_config: {
+            deposit_info: {},
+            open_proposal_submission: {},
           },
         }
       )
