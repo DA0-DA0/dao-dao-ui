@@ -1002,8 +1002,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://rest.elgafar-1.stargaze-apis.com',
   },
   [ChainId.NeutronMainnet]: {
-    rpc: 'https://rpc-kralum.neutron-1.neutron.org',
-    rest: 'https://rest-kralum.neutron-1.neutron.org',
+    rpc: 'https://rpc-lb.neutron.org',
+    rest: 'https://rest-lb.neutron.org',
   },
   [ChainId.CosmosHubMainnet]: {
     rpc: 'https://cosmos-rpc.polkachu.com',

@@ -7,6 +7,7 @@ import {
 import { ActionKey, LazyNftCardInfo, TokenCardInfo } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
+import { useActionForKey } from '../../../actions'
 import { useWallet } from '../../../hooks'
 import {
   lazyNftCardInfosForDaoSelector,
@@ -17,6 +18,7 @@ import {
   useCw721CommonGovernanceTokenInfoIfExists,
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
+import { ButtonLink } from '../../ButtonLink'
 import { LazyNftCard } from '../../nft'
 import { TreasuryHistoryGraph } from '../../TreasuryHistoryGraph'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
@@ -52,31 +54,40 @@ export const TreasuryTab = () => {
     {}
   )
 
+  const createCrossChainAccountAction = useActionForKey(
+    ActionKey.CreateCrossChainAccount
+  )
+  const createCrossChainAccountActionDefaults =
+    createCrossChainAccountAction?.useDefaults()
   const createCrossChainAccountPrefill = getDaoProposalSinglePrefill({
-    actions: [
-      {
-        actionKey: ActionKey.CreateCrossChainAccount,
-        data: {
-          chainId: 'CHAIN_ID',
-        },
-      },
-    ],
+    actions: createCrossChainAccountAction
+      ? [
+          {
+            actionKey: createCrossChainAccountAction.key,
+            data: createCrossChainAccountActionDefaults,
+          },
+        ]
+      : [],
   })
 
   return (
     <StatelessTreasuryTab<TokenCardInfo, LazyNftCardInfo>
+      ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
       NftCard={LazyNftCard}
       TokenLine={DaoTokenLine}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       connected={isWalletConnected}
-      createCrossChainAccountPrefillHref={getDaoProposalPath(
-        daoInfo.coreAddress,
-        'create',
-        {
-          prefill: createCrossChainAccountPrefill,
-        }
-      )}
+      createCrossChainAccountHref={
+        // Only show create cross-chain account button if we can use the action
+        // (i.e. chains are missing and can be created).
+        createCrossChainAccountAction &&
+        !createCrossChainAccountAction.hideFromPicker
+          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+              prefill: createCrossChainAccountPrefill,
+            })
+          : undefined
+      }
       nfts={nfts}
       tokens={tokens.loading ? {} : tokens.data}
     />

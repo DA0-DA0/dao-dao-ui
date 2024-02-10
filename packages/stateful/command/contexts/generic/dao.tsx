@@ -23,7 +23,7 @@ import {
   CommandModalContextWrapper,
   CommandModalDaoInfo,
 } from '@dao-dao/types/command'
-import { getChainForChainId, getFallbackImage } from '@dao-dao/utils'
+import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
 import { DaoProvidersWithoutInfo } from '../../../components'
 import { useDaoTabs, useFollowingDaos } from '../../../hooks'
@@ -139,10 +139,10 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name:
             copied === chainId
               ? t('info.copiedDaoChainAddress', {
-                  chain: getChainForChainId(chainId).pretty_name,
+                  chain: getDisplayNameForChainId(chainId),
                 })
               : t('button.copyDaoChainAddress', {
-                  chain: getChainForChainId(chainId).pretty_name,
+                  chain: getDisplayNameForChainId(chainId),
                 }),
           Icon: copied === chainId ? Check : CopyAll,
           onChoose: () => {

@@ -16,6 +16,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   deserializeTokenSource,
   getTokenForChainIdAndDenom,
@@ -29,7 +30,10 @@ import {
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import { queryWalletIndexerSelector } from './indexer'
+import {
+  queryGenericIndexerSelector,
+  queryWalletIndexerSelector,
+} from './indexer'
 import { allNftUsdValueSelector } from './nft'
 import { genericTokenSelector, usdPriceSelector } from './token'
 
@@ -313,24 +317,37 @@ export const historicalBalancesSelector = selectorFamily<
       intervalMs,
     }) =>
     ({ get }) => {
+      const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
+
       const id = get(refreshWalletBalancesIdAtom(address))
 
       const [nativeBalanceSnapshots, cw20BalanceSnapshots] = get(
         waitForAll([
           !filter || filter === TokenType.Native
-            ? queryWalletIndexerSelector({
-                id,
-                chainId,
-                walletAddress: address,
-                formula: 'bank/balances',
-                times: {
-                  startUnixMs: startTimeUnixMs,
-                  endUnixMs: endTimeUnixMs,
-                  stepMs: intervalMs,
-                },
-              })
+            ? isCommunityPool
+              ? queryGenericIndexerSelector({
+                  id,
+                  chainId,
+                  formula: 'communityPool/balances',
+                  times: {
+                    startUnixMs: startTimeUnixMs,
+                    endUnixMs: endTimeUnixMs,
+                    stepMs: intervalMs,
+                  },
+                })
+              : queryWalletIndexerSelector({
+                  id,
+                  chainId,
+                  walletAddress: address,
+                  formula: 'bank/balances',
+                  times: {
+                    startUnixMs: startTimeUnixMs,
+                    endUnixMs: endTimeUnixMs,
+                    stepMs: intervalMs,
+                  },
+                })
             : constSelector([]),
-          !filter || filter === TokenType.Cw20
+          (!filter || filter === TokenType.Cw20) && !isCommunityPool
             ? queryWalletIndexerSelector({
                 id,
                 chainId,
@@ -420,7 +437,15 @@ export const historicalBalancesSelector = selectorFamily<
           [Number(at || blockTimeUnixMs)]: Object.entries(value).reduce(
             (acc, [denom, balance]) => [
               ...acc,
-              ...((balance ? [[denom, balance!]] : []) as [string, string][]),
+              ...((balance
+                ? [
+                    [
+                      denom,
+                      // Community pool tokens have decimals. Truncte.
+                      balance!.split('.')[0],
+                    ],
+                  ]
+                : []) as [string, string][]),
             ],
             [] as [string, string][]
           ),

@@ -291,7 +291,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 </div>
 
                 {item.rightNode ? (
-                  <div className="flex grow flex-row items-center justify-end">
+                  <div className="flex shrink-0 grow flex-row items-center justify-end self-stretch">
                     {item.rightNode}
                   </div>
                 ) : (

@@ -52,6 +52,7 @@ import {
 } from '@dao-dao/utils/protobuf'
 import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
+import { DecCoin } from '@dao-dao/utils/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
   ProposalStatus,
   TallyResult,
@@ -1236,9 +1237,28 @@ export const communityPoolBalancesSelector = selectorFamily<
   get:
     ({ chainId }) =>
     async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
+      let pool: DecCoin[]
 
-      const { pool } = await client.distribution.v1beta1.communityPool()
+      const poolMap: Record<string, string> | undefined = get(
+        queryGenericIndexerSelector({
+          chainId,
+          formula: 'communityPool/balances',
+        })
+      )
+      if (poolMap) {
+        pool = Object.entries(poolMap).map(
+          ([denom, amount]): DecCoin => ({
+            denom,
+            amount,
+          })
+        )
+
+        // Fallback to querying chain if indexer failed.
+      } else {
+        const client = get(cosmosRpcClientForChainSelector(chainId))
+        pool = (await client.distribution.v1beta1.communityPool()).pool
+      }
+
       const tokens = get(
         waitForAll(
           pool.map(({ denom }) =>

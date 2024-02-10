@@ -1,21 +1,33 @@
+import { useTranslation } from 'react-i18next'
+import { waitForAny } from 'recoil'
+
 import { communityPoolBalancesSelector } from '@dao-dao/state/recoil'
 import {
+  ButtonPopup,
   ErrorPage,
   LineLoaders,
   TokenLineHeader,
+  TooltipInfoIcon,
+  useButtonPopupSorter,
   useCachedLoadingWithError,
   useChain,
+  useTokenSortOptions,
 } from '@dao-dao/stateless'
-import { AccountType, TokenCardInfo } from '@dao-dao/types'
+import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
 import {
+  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
+import { tokenCardLazyInfoSelector } from '../../recoil'
+import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {
+  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
   const tokenCardInfos = useCachedLoadingWithError(
@@ -24,18 +36,14 @@ export const GovCommunityPoolTab = () => {
     }),
     (data) =>
       data
-        .map(({ token, balance }): TokenCardInfo => {
+        .map(({ owner, token, balance }): TokenCardInfo => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
             token.decimals
           )
 
           return {
-            owner: {
-              type: AccountType.Native,
-              address: '',
-              chainId: token.chainId,
-            },
+            owner,
             token,
             isGovernanceToken:
               getNativeTokenForChainId(token.chainId).denomOrAddress ===
@@ -70,36 +78,108 @@ export const GovCommunityPoolTab = () => {
         })
   )
 
-  return (
-    <GovActionsProvider
-      loader={
-        <div>
-          <TokenLineHeader />
-          <LineLoaders lines={10} type="token" />
-        </div>
-      }
-    >
-      {tokenCardInfos.loading ? (
-        <div>
-          <TokenLineHeader />
-          <LineLoaders lines={10} type="token" />
-        </div>
-      ) : tokenCardInfos.errored ? (
-        <ErrorPage error={tokenCardInfos.error} />
-      ) : (
-        <div>
-          <TokenLineHeader />
+  // Load separately so they cache separately.
+  const tokenLazyInfos = useCachedLoadingWithError(
+    !tokenCardInfos.loading && !tokenCardInfos.errored
+      ? waitForAny(
+          tokenCardInfos.data.map(({ owner, token, unstakedBalance }) =>
+            tokenCardLazyInfoSelector({
+              owner: owner.address,
+              token,
+              unstakedBalance,
+            })
+          )
+        )
+      : undefined
+  )
 
-          {tokenCardInfos.data.map((props, index) => (
-            <GovTokenLine
-              {...props}
-              key={index}
-              hideChainIcon
-              transparentBackground={index % 2 !== 0}
-            />
-          ))}
-        </div>
-      )}
-    </GovActionsProvider>
+  const tokens: LoadingDataWithError<TokenCardInfo[]> =
+    tokenCardInfos.loading || tokenCardInfos.errored
+      ? tokenCardInfos
+      : {
+          loading: false,
+          errored: false,
+          updating:
+            tokenCardInfos.updating ||
+            (!tokenLazyInfos.loading &&
+              !tokenLazyInfos.errored &&
+              tokenLazyInfos.updating),
+          data: tokenCardInfos.data.map(
+            (token, i): TokenCardInfo => ({
+              ...token,
+              lazyInfo:
+                tokenLazyInfos.loading ||
+                tokenLazyInfos.errored ||
+                tokenCardInfos.data.length !== tokenLazyInfos.data.length
+                  ? { loading: true }
+                  : loadableToLoadingData(tokenLazyInfos.data[i], {
+                      usdUnitPrice: undefined,
+                      stakingInfo: undefined,
+                      totalBalance: token.unstakedBalance,
+                    }),
+            })
+          ),
+        }
+
+  const tokenSortOptions = useTokenSortOptions()
+  const {
+    sortedData: sortedTokens,
+    buttonPopupProps: sortTokenButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: tokens.loading || tokens.errored ? undefined : tokens.data,
+    options: tokenSortOptions,
+  })
+
+  return (
+    <>
+      <TreasuryHistoryGraph
+        address={COMMUNITY_POOL_ADDRESS_PLACEHOLDER}
+        chainId={chainId}
+        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
+        graphClassName="max-h-[20rem]"
+        header={
+          <div className="flex flex-row items-center justify-center gap-1">
+            <p className="title-text">{t('title.treasuryValue')}</p>
+
+            <TooltipInfoIcon size="sm" title={t('info.treasuryValueTooltip')} />
+          </div>
+        }
+      />
+
+      <div className="mb-6 flex flex-row justify-end">
+        <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
+      </div>
+
+      <GovActionsProvider
+        loader={
+          <div>
+            <TokenLineHeader />
+            <LineLoaders lines={10} type="token" />
+          </div>
+        }
+      >
+        {tokens.loading ? (
+          <div className="space-y-1">
+            <TokenLineHeader />
+            <LineLoaders lines={10} type="token" />
+          </div>
+        ) : tokens.errored ? (
+          <ErrorPage error={tokens.error} />
+        ) : (
+          <div className="space-y-1">
+            <TokenLineHeader />
+
+            {sortedTokens.map((props, index) => (
+              <GovTokenLine
+                {...props}
+                key={index}
+                hideChainIcon
+                transparentBackground={index % 2 !== 0}
+              />
+            ))}
+          </div>
+        )}
+      </GovActionsProvider>
+    </>
   )
 }

@@ -11,7 +11,7 @@ import {
   DaoVotingNativeStakedAdapterId,
 } from '@dao-dao/utils'
 
-import { makeMintAction } from './actions'
+import { makeMintAction, makeUpdateStakingConfigAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import { useCommonGovernanceTokenInfo, useMainDaoInfoCards } from './hooks'
 
@@ -50,7 +50,7 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
         () => ({
           // Add to DAO Governance category.
           key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeMintAction],
+          actionMakers: [makeMintAction, makeUpdateStakingConfigAction],
         }),
       ],
     },

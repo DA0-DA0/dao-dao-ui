@@ -10,7 +10,12 @@ import { ButtonPopupProps, SortFn, TypedOption } from '@dao-dao/types'
 import { ButtonLink } from '../components'
 
 type UseButtonPopupSorterOptions<T> = {
-  data: T[]
+  /**
+   * The data to sort. If undefined, returns empty array. This is useful when
+   * data is not yet ready, and passing an empty array would cause the useMemo
+   * to run every time.
+   */
+  data?: T[]
   options: TypedOption<SortFn<T>>[]
   initialIndex?: number
 }
@@ -35,7 +40,8 @@ export const useButtonPopupSorter = <T extends unknown>({
 
   const sortedData = useMemo(
     // Copy data since sort mutates.
-    () => (selectedOption ? [...data].sort(selectedOption.value) : data),
+    () =>
+      !data ? [] : selectedOption ? [...data].sort(selectedOption.value) : data,
     [data, selectedOption]
   )
 

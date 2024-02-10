@@ -12,7 +12,11 @@ import {
   GovProposalActionDisplayProps,
   GovProposalVersion,
 } from '@dao-dao/types'
-import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
+import {
+  decodeMessages,
+  decodeRawDataForDisplay,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
 import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
@@ -34,7 +38,7 @@ export const GovProposalActionDisplay = (
       key={
         // Make sure to re-render when the content changes, so the action hooks
         // are called the same number of times.
-        JSON.stringify(props.content)
+        JSON.stringify(props.content.title + props.content.description)
       }
       {...props}
     />
@@ -81,6 +85,34 @@ const InnerGovProposalActionDisplay = ({
       ? content.decodedContent
       : content.legacyContent[0]
 
+  let decodedNonText =
+    decodedContent && decodedContent.$typeUrl !== TextProposal.typeUrl
+      ? decodeRawDataForDisplay({
+          ...decodedContent,
+          title: undefined,
+          description: undefined,
+        })
+      : undefined
+  if (
+    objectMatchesStructure(decodedNonText, {
+      typeUrl: {},
+      value: {},
+    }) &&
+    decodedNonText.value instanceof Uint8Array &&
+    decodedNonText.value.length > 1000
+  ) {
+    decodedNonText.value = '[TOO LARGE TO SHOW]'
+  } else if (
+    objectMatchesStructure(decodedNonText, {
+      typeUrl: {},
+      value: {
+        wasmByteCode: {},
+      },
+    })
+  ) {
+    decodedNonText.value.wasmByteCode = '[TOO LARGE TO SHOW]'
+  }
+
   return (
     <>
       {decodedContent &&
@@ -95,25 +127,12 @@ const InnerGovProposalActionDisplay = ({
               recipient={decodedContent.recipient}
             />
           </div>
-        ) : decodedContent.$typeUrl !== TextProposal.typeUrl ? (
+        ) : decodedNonText ? (
           <div className="space-y-3">
             <p className="text-text-tertiary">{t('title.rawData')}</p>
 
             <CosmosMessageDisplay
-              value={JSON.stringify(
-                decodeRawDataForDisplay({
-                  ...decodedContent,
-                  title: undefined,
-                  description: undefined,
-                  wasmByteCode:
-                    'wasmByteCode' in decodedContent &&
-                    decodedContent.wasmByteCode
-                      ? '[TOO LARGE TO SHOW]'
-                      : undefined,
-                }),
-                undefined,
-                2
-              )}
+              value={JSON.stringify(decodedNonText, undefined, 2)}
             />
           </div>
         ) : null)}

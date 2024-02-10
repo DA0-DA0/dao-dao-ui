@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { HorizontalNftCard } from './HorizontalNftCard'
-import { makeProps } from './NftCard.stories'
+import { makeProps } from './nft/NftCard.stories'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / HorizontalNftCard',

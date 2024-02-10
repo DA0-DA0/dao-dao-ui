@@ -26,16 +26,16 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { AudioPlayer } from './AudioPlayer'
-import { Button } from './buttons'
-import { CopyToClipboardUnderline } from './CopyToClipboard'
-import { Checkbox } from './inputs'
-import { LinkWrapper } from './LinkWrapper'
-import { MarkdownRenderer } from './MarkdownRenderer'
-import { ButtonPopup } from './popup/ButtonPopup'
-import { TokenAmountDisplay } from './token'
-import { TooltipInfoIcon } from './tooltip/TooltipInfoIcon'
-import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
+import { AudioPlayer } from '../AudioPlayer'
+import { Button } from '../buttons'
+import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { Checkbox } from '../inputs'
+import { LinkWrapper } from '../LinkWrapper'
+import { MarkdownRenderer } from '../MarkdownRenderer'
+import { ButtonPopup } from '../popup/ButtonPopup'
+import { TokenAmountDisplay } from '../token'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
+import { TooltipLikeDisplay } from '../tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
   hideCollection?: boolean
