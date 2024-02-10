@@ -56,6 +56,7 @@ export const ChainGovernanceHome = () => {
       Component: GovCommunityPoolTab,
       Icon: AccountBalanceWalletOutlined,
       IconFilled: AccountBalanceWalletRounded,
+      lazy: true,
     },
     // If SubDAOs exist, show them.
     ...(CHAIN_SUBDAOS[chainId]?.length
