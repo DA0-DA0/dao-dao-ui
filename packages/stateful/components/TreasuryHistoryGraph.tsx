@@ -73,7 +73,7 @@ export const TreasuryHistoryGraph = ({
   // If in a DAO, this should load the DAO's governance token info. Undefined if
   // not in a DAO or fails to load for some reason.
   const governanceTokenInfo =
-    useVotingModuleAdapterContextIfAvailable()?.adapter.hooks.useCommonGovernanceTokenInfo?.()
+    useVotingModuleAdapterContextIfAvailable()?.adapter?.hooks?.useCommonGovernanceTokenInfo?.()
 
   const treasuryValueHistory = useCachedLoadingWithError(
     treasuryValueHistorySelector({

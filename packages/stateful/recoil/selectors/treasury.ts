@@ -5,6 +5,7 @@ import {
   OsmosisHistoricalPriceChartPrecision,
   accountsSelector,
   allBalancesSelector,
+  communityPoolBalancesSelector,
   genericTokenBalancesSelector,
   historicalBalancesByTokenSelector,
   historicalBalancesSelector,
@@ -16,6 +17,7 @@ import {
 } from '@dao-dao/state'
 import {
   Account,
+  AccountType,
   GenericToken,
   GenericTokenSource,
   LoadingTokens,
@@ -24,6 +26,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   deserializeTokenSource,
   getNativeTokenForChainId,
@@ -231,12 +234,22 @@ export const treasuryValueHistorySelector = selectorFamily<
       cw20GovernanceTokenAddress,
     }) =>
     ({ get }) => {
-      let allAccounts = get(
-        accountsSelector({
-          chainId: nativeChainId,
-          address,
-        })
-      )
+      const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
+
+      let allAccounts: Account[] = isCommunityPool
+        ? [
+            {
+              type: AccountType.Native,
+              chainId: nativeChainId,
+              address,
+            },
+          ]
+        : get(
+            accountsSelector({
+              chainId: nativeChainId,
+              address,
+            })
+          )
 
       // Filter by account fields.
       if (filter?.account) {
@@ -313,17 +326,23 @@ export const treasuryValueHistorySelector = selectorFamily<
       ).flat()
 
       // Current balances.
-      const currentBalances = get(
-        allBalancesSelector({
-          chainId: nativeChainId,
-          address: address,
-          nativeGovernanceTokenDenom,
-          cw20GovernanceTokenAddress,
-          // Don't include staked in current value since we don't have staked
-          // history, which makes the graph spike at the end.
-          ignoreStaked: true,
-        })
-      )
+      const currentBalances = isCommunityPool
+        ? get(
+            communityPoolBalancesSelector({
+              chainId: nativeChainId,
+            })
+          )
+        : get(
+            allBalancesSelector({
+              chainId: nativeChainId,
+              address,
+              nativeGovernanceTokenDenom,
+              cw20GovernanceTokenAddress,
+              // Don't include staked in current value since we don't have
+              // staked history, which makes the graph spike at the end.
+              ignoreStaked: true,
+            })
+          )
 
       const tokens = [
         ...currentBalances.map(({ token }) => token),
