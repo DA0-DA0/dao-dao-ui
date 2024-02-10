@@ -37,13 +37,12 @@ import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/Neut
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
-import { LoadingDataWithError } from './misc'
 import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken, TokenCardInfo } from './token'
+import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -454,15 +453,6 @@ export enum DaoPageMode {
 export type DaoWebSocketChannelInfo = {
   chainId: string
   coreAddress: string
-}
-
-export type DaoAccountTreasuryInfo<
-  T extends TokenCardInfo,
-  N extends object
-> = {
-  account: Account
-  tokens: LoadingDataWithError<T[]>
-  nfts: LoadingDataWithError<(N & { key: string })[]>
 }
 
 export type DaoApp = {

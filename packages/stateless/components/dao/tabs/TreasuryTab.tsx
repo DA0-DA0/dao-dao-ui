@@ -1,4 +1,6 @@
+import { CopyAll } from '@mui/icons-material'
 import { ComponentType, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -12,7 +14,12 @@ import {
   TokenCardInfo,
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
-import { getDisplayNameForChainId, serializeTokenSource } from '@dao-dao/utils'
+import {
+  concatAddressStartEnd,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+  serializeTokenSource,
+} from '@dao-dao/utils'
 
 import {
   useButtonPopupSorter,
@@ -23,7 +30,7 @@ import {
 import { ErrorPage } from '../../error'
 import { LineLoaders } from '../../LineLoader'
 import { NftSection } from '../../nft/NftSection'
-import { ButtonPopup } from '../../popup'
+import { ButtonPopup, FilterableItemPopup } from '../../popup'
 import { TokenLineHeader } from '../../token'
 import { Tooltip, TooltipInfoIcon } from '../../tooltip'
 import { WarningCard } from '../../WarningCard'
@@ -60,7 +67,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
   const {
     chain: { chain_id: currentChainId },
   } = useSupportedChainContext()
-  const { chainId: daoChainId, coreAddress } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
 
   // Combine chain tokens into loadable, lazily. Load all that are ready.
   const allTokens = useMemo((): LoadingDataWithError<T[]> => {
@@ -148,10 +155,57 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
+      {/* header min-height of 3.5rem standardized across all tabs */}
+      <div className="mb-6 flex min-h-[3.5rem] flex-row items-center justify-between gap-8 border-b border-border-secondary pb-6">
+        <p className="title-text text-text-body">{t('title.treasury')}</p>
+
+        <FilterableItemPopup
+          filterableItemKeys={FILTERABLE_KEYS}
+          items={accounts.map(({ chainId, address, type }) => ({
+            key: chainId + address,
+            label: getDisplayNameForChainId(chainId),
+            iconUrl: getImageUrlForChainId(chainId),
+            description: concatAddressStartEnd(address, 10, 6),
+            rightNode: (
+              <p className="caption-text self-end md:self-center">
+                {t(`accountTypeLabel.${type}`)}
+              </p>
+            ),
+            iconClassName: '!h-8 !w-8',
+            contentContainerClassName: '!gap-4',
+            chainId,
+            address,
+          }))}
+          onSelect={({ chainId, address }) => {
+            navigator.clipboard.writeText(address)
+            toast.success(
+              t('info.copiedDaoChainAddress', {
+                chain: getDisplayNameForChainId(chainId),
+              })
+            )
+          }}
+          searchPlaceholder={t('info.searchForAccount')}
+          trigger={{
+            type: 'button',
+            props: {
+              className: 'self-start',
+              variant: 'primary',
+              contentContainerClassName: '!gap-1',
+              children: (
+                <>
+                  <CopyAll className="!h-4 !w-4" />
+                  {t('button.copyAnAddress')}
+                </>
+              ),
+            },
+          }}
+        />
+      </div>
+
       <TreasuryHistoryGraph
         address={coreAddress}
         chainId={daoChainId}
-        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
+        className="mb-8 hidden rounded-md bg-background-tertiary p-6 md:flex"
         graphClassName="max-h-[20rem]"
         header={
           <div className="flex flex-row items-center justify-center gap-1">
@@ -163,19 +217,21 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         registerTokenColors={setTokenSourceColorMap}
       />
 
-      <div className="mb-6 flex flex-row justify-end">
+      <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <p className="title-text">{t('title.tokens')}</p>
+
         <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
       </div>
 
       {allTokens.loading ? (
-        <div>
+        <div className="space-y-1">
           <TokenLineHeader />
           <LineLoaders lines={7} type="token" />
         </div>
       ) : allTokens.errored ? (
         <ErrorPage error={allTokens.error} />
       ) : (
-        <div>
+        <div className="space-y-1">
           <TokenLineHeader />
 
           {sortedTokens.map((props, index) => (
@@ -243,3 +299,5 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
     </>
   )
 }
+
+const FILTERABLE_KEYS = ['label', 'chainId', 'address']

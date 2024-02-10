@@ -159,14 +159,14 @@ export const GovCommunityPoolTab = () => {
         }
       >
         {tokens.loading ? (
-          <div>
+          <div className="space-y-1">
             <TokenLineHeader />
             <LineLoaders lines={10} type="token" />
           </div>
         ) : tokens.errored ? (
           <ErrorPage error={tokens.error} />
         ) : (
-          <div>
+          <div className="space-y-1">
             <TokenLineHeader />
 
             {sortedTokens.map((props, index) => (

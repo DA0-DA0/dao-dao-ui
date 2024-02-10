@@ -1,4 +1,10 @@
 {
+  "accountTypeLabel": {
+    "ica": "ICA",
+    "native": "Native",
+    "polytone": "Cross-chain",
+    "valence": "Valence"
+  },
   "actionCategory": {
     "advancedDescription": "Execute custom actions and bulk import actions.",
     "advancedLabel": "Advanced",
@@ -87,6 +93,7 @@
     "copy": "Copy",
     "copyAddress": "Copy address",
     "copyAddressToClipboard": "Copy address to clipboard",
+    "copyAnAddress": "Copy an address",
     "copyDaoAddress": "Copy DAO address",
     "copyDaoChainAddress": "Copy {{chain}} address",
     "copyIdToClipboard": "Copy ID to clipboard",
@@ -1178,6 +1185,7 @@
     "saveTransactionDescription": "Save this transaction so you can reuse it later. Using an existing name will overwrite the previous save.",
     "searchDaosPlaceholder": "Find a DAO...",
     "searchDraftPlaceholder": "Find a draft...",
+    "searchForAccount": "Search for an account...",
     "searchForChain": "Search for a chain...",
     "searchForToken": "Search for a token...",
     "searchForWidget": "Search for a widget...",
@@ -1720,6 +1728,7 @@
     "title": "Title",
     "token": "Token",
     "tokenSwap": "Token Swap",
+    "tokens": "Tokens",
     "topAbsolute": "Top {{count}}",
     "topPercent": "Top {{percent}}%",
     "topStakers": "Top Stakers",
