@@ -169,7 +169,7 @@ export const GovCommunityPoolTab = () => {
           <div className="space-y-1">
             <TokenLineHeader />
 
-            {sortedTokens.map((props, index) => (
+            {sortedTokens.map((props: TokenCardInfo, index) => (
               <GovTokenLine
                 {...props}
                 key={index}

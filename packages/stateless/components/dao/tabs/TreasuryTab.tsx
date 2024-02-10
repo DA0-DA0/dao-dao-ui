@@ -234,7 +234,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         <div className="space-y-1">
           <TokenLineHeader />
 
-          {sortedTokens.map((props, index) => (
+          {sortedTokens.map((props: T, index) => (
             <TokenLine
               {...props}
               key={index}
