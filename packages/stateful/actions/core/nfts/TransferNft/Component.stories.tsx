@@ -4,7 +4,7 @@ import { AddressInput } from '@dao-dao/stateless'
 import {
   makeLazyInfo as makeLazyNftInfo,
   makeProps as makeNftCardProps,
-} from '@dao-dao/stateless/components/NftCard.stories'
+} from '@dao-dao/stateless/components/nft/NftCard.stories'
 import {
   ReactHookFormDecorator,
   makeDaoInfo,
