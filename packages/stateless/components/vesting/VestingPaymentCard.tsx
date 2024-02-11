@@ -512,6 +512,18 @@ export const VestingPaymentCard = ({
               />
             </div>
           </div>
+
+          {canWithdraw && (
+            <Button
+              center
+              className="mt-2"
+              loading={withdrawing}
+              onClick={onWithdraw}
+              variant="brand"
+            >
+              {t('button.withdrawAvailableBalance')}
+            </Button>
+          )}
         </div>
 
         {!lazyInfo.loading &&
@@ -609,6 +621,18 @@ export const VestingPaymentCard = ({
                   symbol={token.symbol}
                 />
               </div>
+
+              {onClaim && canClaimStakingRewards && (
+                <Button
+                  center
+                  className="mt-2"
+                  loading={claiming}
+                  onClick={onClaim}
+                  variant="brand"
+                >
+                  {t('button.claimStakingRewards')}
+                </Button>
+              )}
             </div>
           )}
 
