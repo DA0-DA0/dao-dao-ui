@@ -72,7 +72,6 @@ export const DaoDropdown = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 dao={dao}
-                defaultCollapsed
                 indent={indent + 1}
               />
             ))}
