@@ -109,7 +109,7 @@ export const ProfileCardMemberInfoTokens = ({
   // the time of proposal creation. Show proposal-specific message when in a
   // proposal.
   return cantVoteOnProposal ? (
-    <p className="legend-text">
+    <p className="legend-text break-all">
       {t('info.tokenDaoNotMemberInfo', {
         context: 'proposal',
         tokenSymbol: loadingTokens.loading
@@ -124,7 +124,7 @@ export const ProfileCardMemberInfoTokens = ({
     <>
       <div className="secondary-text space-y-3">
         {!isMember && (
-          <p className="secondary-text mb-4 text-text-body">
+          <p className="secondary-text mb-4 break-all text-text-body">
             {t('info.tokenDaoNotMemberInfo', {
               context: 'dao',
               tokenSymbol: loadingTokens.loading
@@ -137,12 +137,12 @@ export const ProfileCardMemberInfoTokens = ({
           </p>
         )}
 
-        <div className="flex flex-row items-start justify-between">
+        <div className="flex flex-row items-start justify-between gap-6">
           <p>{t('title.balances')}</p>
 
           <div
             className={clsx(
-              'flex items-end gap-1',
+              'flex min-w-0 items-end gap-1',
               // If can't vote on proposal or has staked tokens, show staked
               // tokens first since it is most relevant. Otherwise, show
               // unstaked tokens first.

@@ -429,7 +429,10 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
       }
 
       return {
-        symbol: displayDenom.denom,
+        // If factory denom, extract symbol at the end.
+        symbol: displayDenom.denom.startsWith('factory/')
+          ? displayDenom.denom.split('/').pop()!
+          : displayDenom.denom,
         decimals: displayDenom.exponent,
       }
     },
