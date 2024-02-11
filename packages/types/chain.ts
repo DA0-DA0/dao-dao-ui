@@ -113,15 +113,6 @@ export type SupportedChainConfig = BaseChainConfig & {
     network: string
   }
   /**
-   * MeiliSearch index identifiers.
-   */
-  indexes: {
-    /**
-     * DAO search index
-     */
-    search: string
-  }
-  /**
    * Code IDs stored on this chain that are used throughout the UI.
    */
   codeIds: CodeIdConfig

@@ -20,9 +20,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     kado: {
       network: 'JUNO',
     },
-    indexes: {
-      search: 'daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/juno/tx/REPLACE',
       gov: 'https://ping.pub/juno/gov',
@@ -181,9 +178,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
     kado: {
       network: 'OSMOSIS',
-    },
-    indexes: {
-      search: 'osmosis_daos',
     },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/osmosis/tx/REPLACE',
@@ -359,9 +353,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#000000',
     factoryContractAddress:
       'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
-    indexes: {
-      search: 'neutron_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/neutron/tx/REPLACE',
       gov: 'https://ping.pub/neutron/gov',
@@ -495,9 +486,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#8ac3cc',
     factoryContractAddress:
       'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
-    indexes: {
-      search: 'stargaze_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/stargaze/tx/REPLACE',
       gov: 'https://ping.pub/stargaze/gov',
@@ -648,9 +636,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#3ccd64',
     factoryContractAddress:
       'migaloo19q77nmuaq3mnwecnxu7cfj6y6nd4jzw9x20v6xm66lmhqlvxwrkscaefz8',
-    indexes: {
-      search: 'migaloo_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://inbloc.org/migaloo/transactions/REPLACE',
       gov: 'https://inbloc.org/migaloo/governance',
@@ -783,9 +768,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#f74a49',
     factoryContractAddress:
       'juno1dacj3j6pwr7jx0jeu99qdc4a2ylc2rxp4v3zap54sfrl3ntrhe8qkjfpku',
-    indexes: {
-      search: 'testnet_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
       gov: 'https://testnet.ping.pub/juno/gov',
@@ -834,9 +816,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#5604e8',
     factoryContractAddress:
       'osmo1v5k3527dt2vt67848h8jk0az9dyl8sunsqaapznf2j9tm4arxxfs7gwa0n',
-    indexes: {
-      search: 'osmosis_testnet_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/osmosis/tx/REPLACE',
       gov: 'https://testnet.ping.pub/osmosis/gov',
@@ -881,9 +860,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#8ac3cc',
     factoryContractAddress:
       'stars1ajrde5kky0c3xspjthqncxd72qmyu5trfsspn6ndk892gyqwakzsdjmegx',
-    indexes: {
-      search: 'stargaze_testnet_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
       gov: 'https://testnet.ping.pub/stargaze/gov',
@@ -926,9 +902,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#3ccd64',
     factoryContractAddress:
       'migaloo1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqvk723g',
-    indexes: {
-      search: 'migaloo_testnet_daos',
-    },
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/migaloo/tx/REPLACE',
       gov: 'https://testnet.ping.pub/migaloo/gov',
