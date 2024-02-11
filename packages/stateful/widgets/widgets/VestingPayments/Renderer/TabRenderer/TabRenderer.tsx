@@ -23,6 +23,8 @@ import {
   WidgetId,
 } from '@dao-dao/types'
 
+import { useWallet } from '../../../../../hooks'
+
 export interface TabRendererProps {
   vestingPaymentsLoading: LoadingDataWithError<VestingInfo[]>
   isMember: boolean
@@ -47,6 +49,7 @@ export const TabRenderer = ({
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
+  const { address: walletAddress } = useWallet()
 
   const openVestingContract =
     daoSubpathComponents[0] === WidgetId.VestingPayments
@@ -77,7 +80,20 @@ export const TabRenderer = ({
   const activeVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []
-      : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
+      : vestingPaymentsLoading.data
+          .filter(({ completed }) => !completed)
+          .sort((a, b) => {
+            // Sort the payments for the current wallet at the top.
+            if (!walletAddress) {
+              return 0
+            }
+
+            const aIsRecipient = a.vest.recipient === walletAddress
+            const bIsRecipient = b.vest.recipient === walletAddress
+
+            return aIsRecipient === bIsRecipient ? 0 : aIsRecipient ? -1 : 1
+          })
+
   // Vesting payments that have been funded or canceled and fully claimed.
   const completedVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
