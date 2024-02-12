@@ -1,0 +1,37 @@
+syntax = "proto3";
+package alliance.alliance;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/terra-money/alliance/x/alliance/types";
+
+message Params {
+  option (gogoproto.equal)            = true;
+  google.protobuf.Duration reward_delay_time = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  // Time interval between consecutive applications of `take_rate`
+  google.protobuf.Duration take_rate_claim_interval = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  // Last application of `take_rate` on assets
+  google.protobuf.Timestamp last_take_rate_claim_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+message RewardHistory {
+  option (gogoproto.equal)            = true;
+  string denom = 1;
+  string index = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+}

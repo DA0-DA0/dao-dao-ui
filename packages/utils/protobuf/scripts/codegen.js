@@ -101,6 +101,7 @@ telescope({
           'regen.ecocredit.v1',
           'regen.ecocredit.v1alpha1',
           'regen.intertx.v1',
+          'alliance.alliance',
         ],
       },
       // excluded: {

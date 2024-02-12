@@ -1,88 +1,88 @@
-import * as _216 from "./stargaze/alloc/v1beta1/genesis";
-import * as _217 from "./stargaze/alloc/v1beta1/params";
-import * as _218 from "./stargaze/alloc/v1beta1/query";
-import * as _219 from "./stargaze/alloc/v1beta1/tx";
-import * as _220 from "./stargaze/cron/v1/cron";
-import * as _221 from "./stargaze/cron/v1/genesis";
-import * as _222 from "./stargaze/cron/v1/proposal";
-import * as _223 from "./stargaze/cron/v1/query";
-import * as _224 from "./stargaze/cron/v1/tx";
-import * as _225 from "./stargaze/globalfee/v1/genesis";
-import * as _226 from "./stargaze/globalfee/v1/globalfee";
-import * as _227 from "./stargaze/globalfee/v1/proposal";
-import * as _228 from "./stargaze/globalfee/v1/query";
-import * as _229 from "./stargaze/globalfee/v1/tx";
-import * as _230 from "./stargaze/mint/v1beta1/genesis";
-import * as _231 from "./stargaze/mint/v1beta1/mint";
-import * as _232 from "./stargaze/mint/v1beta1/query";
-import * as _233 from "./stargaze/mint/v1beta1/tx";
-import * as _425 from "./stargaze/alloc/v1beta1/tx.amino";
-import * as _426 from "./stargaze/cron/v1/tx.amino";
-import * as _427 from "./stargaze/globalfee/v1/tx.amino";
-import * as _428 from "./stargaze/alloc/v1beta1/tx.registry";
-import * as _429 from "./stargaze/cron/v1/tx.registry";
-import * as _430 from "./stargaze/globalfee/v1/tx.registry";
-import * as _431 from "./stargaze/alloc/v1beta1/query.rpc.Query";
-import * as _432 from "./stargaze/cron/v1/query.rpc.Query";
-import * as _433 from "./stargaze/globalfee/v1/query.rpc.Query";
-import * as _434 from "./stargaze/mint/v1beta1/query.rpc.Query";
-import * as _435 from "./stargaze/alloc/v1beta1/tx.rpc.msg";
-import * as _436 from "./stargaze/cron/v1/tx.rpc.msg";
-import * as _437 from "./stargaze/globalfee/v1/tx.rpc.msg";
-import * as _475 from "./rpc.query";
-import * as _476 from "./rpc.tx";
+import * as _226 from "./stargaze/alloc/v1beta1/genesis";
+import * as _227 from "./stargaze/alloc/v1beta1/params";
+import * as _228 from "./stargaze/alloc/v1beta1/query";
+import * as _229 from "./stargaze/alloc/v1beta1/tx";
+import * as _230 from "./stargaze/cron/v1/cron";
+import * as _231 from "./stargaze/cron/v1/genesis";
+import * as _232 from "./stargaze/cron/v1/proposal";
+import * as _233 from "./stargaze/cron/v1/query";
+import * as _234 from "./stargaze/cron/v1/tx";
+import * as _235 from "./stargaze/globalfee/v1/genesis";
+import * as _236 from "./stargaze/globalfee/v1/globalfee";
+import * as _237 from "./stargaze/globalfee/v1/proposal";
+import * as _238 from "./stargaze/globalfee/v1/query";
+import * as _239 from "./stargaze/globalfee/v1/tx";
+import * as _240 from "./stargaze/mint/v1beta1/genesis";
+import * as _241 from "./stargaze/mint/v1beta1/mint";
+import * as _242 from "./stargaze/mint/v1beta1/query";
+import * as _243 from "./stargaze/mint/v1beta1/tx";
+import * as _439 from "./stargaze/alloc/v1beta1/tx.amino";
+import * as _440 from "./stargaze/cron/v1/tx.amino";
+import * as _441 from "./stargaze/globalfee/v1/tx.amino";
+import * as _442 from "./stargaze/alloc/v1beta1/tx.registry";
+import * as _443 from "./stargaze/cron/v1/tx.registry";
+import * as _444 from "./stargaze/globalfee/v1/tx.registry";
+import * as _445 from "./stargaze/alloc/v1beta1/query.rpc.Query";
+import * as _446 from "./stargaze/cron/v1/query.rpc.Query";
+import * as _447 from "./stargaze/globalfee/v1/query.rpc.Query";
+import * as _448 from "./stargaze/mint/v1beta1/query.rpc.Query";
+import * as _449 from "./stargaze/alloc/v1beta1/tx.rpc.msg";
+import * as _450 from "./stargaze/cron/v1/tx.rpc.msg";
+import * as _451 from "./stargaze/globalfee/v1/tx.rpc.msg";
+import * as _491 from "./rpc.query";
+import * as _492 from "./rpc.tx";
 export namespace publicawesome {
   export namespace stargaze {
     export namespace alloc {
       export const v1beta1 = {
-        ..._216,
-        ..._217,
-        ..._218,
-        ..._219,
-        ..._425,
-        ..._428,
-        ..._431,
-        ..._435
-      };
-    }
-    export namespace cron {
-      export const v1 = {
-        ..._220,
-        ..._221,
-        ..._222,
-        ..._223,
-        ..._224,
-        ..._426,
-        ..._429,
-        ..._432,
-        ..._436
-      };
-    }
-    export namespace globalfee {
-      export const v1 = {
-        ..._225,
         ..._226,
         ..._227,
         ..._228,
         ..._229,
-        ..._427,
-        ..._430,
-        ..._433,
-        ..._437
+        ..._439,
+        ..._442,
+        ..._445,
+        ..._449
       };
     }
-    export namespace mint {
-      export const v1beta1 = {
+    export namespace cron {
+      export const v1 = {
         ..._230,
         ..._231,
         ..._232,
         ..._233,
-        ..._434
+        ..._234,
+        ..._440,
+        ..._443,
+        ..._446,
+        ..._450
+      };
+    }
+    export namespace globalfee {
+      export const v1 = {
+        ..._235,
+        ..._236,
+        ..._237,
+        ..._238,
+        ..._239,
+        ..._441,
+        ..._444,
+        ..._447,
+        ..._451
+      };
+    }
+    export namespace mint {
+      export const v1beta1 = {
+        ..._240,
+        ..._241,
+        ..._242,
+        ..._243,
+        ..._448
       };
     }
   }
   export const ClientFactory = {
-    ..._475,
-    ..._476
+    ..._491,
+    ..._492
   };
 }

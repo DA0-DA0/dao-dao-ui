@@ -24,6 +24,8 @@ import {
 import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import {
+  allianceAminoConverters,
+  allianceProtoRegistry,
   cosmosAminoConverters,
   cosmosProtoRegistry,
   cosmwasmAminoConverters,
@@ -44,6 +46,11 @@ import {
   publicawesomeAminoConverters as stargazeAminoConverters,
   publicawesomeProtoRegistry as stargazeProtoRegistry,
 } from '../protobuf'
+import {
+  MsgCreateAllianceProposal,
+  MsgDeleteAllianceProposal,
+  MsgUpdateAllianceProposal,
+} from '../protobuf/codegen/alliance/alliance/gov'
 import { MsgSend } from '../protobuf/codegen/cosmos/bank/v1beta1/tx'
 import {
   MsgSetWithdrawAddress,
@@ -549,6 +556,7 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...gaiaProtoRegistry,
   ...neutronProtoRegistry,
   ...regenProtoRegistry,
+  ...allianceProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
@@ -556,6 +564,19 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   [
     UploadCosmWasmPoolCodeAndWhiteListProposal.typeUrl,
     UploadCosmWasmPoolCodeAndWhiteListProposal as GeneratedType,
+  ],
+  // alliance.alliance
+  [
+    MsgCreateAllianceProposal.typeUrl,
+    MsgCreateAllianceProposal as GeneratedType,
+  ],
+  [
+    MsgUpdateAllianceProposal.typeUrl,
+    MsgUpdateAllianceProposal as GeneratedType,
+  ],
+  [
+    MsgDeleteAllianceProposal.typeUrl,
+    MsgDeleteAllianceProposal as GeneratedType,
   ],
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
@@ -570,6 +591,7 @@ export const aminoTypes = new AminoTypes({
   ...gaiaAminoConverters,
   ...neutronAminoConverters,
   ...regenAminoConverters,
+  ...allianceAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
