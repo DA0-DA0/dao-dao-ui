@@ -69,6 +69,7 @@ export enum ChainId {
   MigalooTestnet = 'narwhal-2',
   NobleMainnet = 'noble-1',
   KujiraMainnet = 'kaiyo-1',
+  ChihuahuaMainnet = 'chihuahua-1',
 }
 
 export type BaseChainConfig = {

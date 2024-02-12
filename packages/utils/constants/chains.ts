@@ -759,6 +759,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // terra
         // remoteClient: '07-tendermint-105',
       },
+      [ChainId.ChihuahuaMainnet]: {
+        // migaloo
+        note: 'migaloo1ezyangwcudgx7vq664g8zqtnrtl6nsvup9yfulewynlx2dru99ls54hxdn',
+        // migaloo
+        listener:
+          'migaloo1jm58dy8ymmnffdgm3t8clye56qhdmw7g7jgsnarcnzk66jzdcyvqjxj0gn',
+        // chihuahua
+        voice:
+          'chihuahua1ppjcxp24dw0s6nx94hsnlutxmsqqvds66u968w29x8xuwmw0gntqkcvtq0',
+        // migaloo
+        localConnection: 'connection-21',
+        // chihuahua
+        remoteConnection: 'connection-81',
+        // migaloo
+        localChannel: 'channel-111',
+        // chihuahua
+        remoteChannel: 'channel-80',
+        // migaloo
+        // localClient: '07-tendermint-21',
+        // chihuahua
+        // remoteClient: '07-tendermint-126',
+      },
     },
   },
   {
@@ -997,6 +1019,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.KujiraMainnet]: {
     rpc: 'https://kujira-rpc.polkachu.com',
     rest: 'https://kujira-api.polkachu.com',
+  },
+  [ChainId.ChihuahuaMainnet]: {
+    rpc: 'https://chihuahua-rpc.polkachu.com',
+    rest: 'https://chihuahua-api.polkachu.com',
   },
 }
 
