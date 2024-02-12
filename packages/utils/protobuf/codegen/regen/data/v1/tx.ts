@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph } from "./types";
+import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph, ContentHash_GraphAmino, ContentHash_GraphSDKType } from "./types";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { toTimestamp, fromTimestamp } from "../../../helpers";
