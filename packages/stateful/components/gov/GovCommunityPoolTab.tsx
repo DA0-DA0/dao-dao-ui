@@ -16,6 +16,7 @@ import {
 import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
+  chainIsIndexed,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -132,19 +133,25 @@ export const GovCommunityPoolTab = () => {
 
   return (
     <>
-      <TreasuryHistoryGraph
-        address={COMMUNITY_POOL_ADDRESS_PLACEHOLDER}
-        chainId={chainId}
-        className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
-        graphClassName="max-h-[20rem]"
-        header={
-          <div className="flex flex-row items-center justify-center gap-1">
-            <p className="title-text">{t('title.treasuryValue')}</p>
+      {/* Only have history data for indexed chains. */}
+      {chainIsIndexed(chainId) && (
+        <TreasuryHistoryGraph
+          address={COMMUNITY_POOL_ADDRESS_PLACEHOLDER}
+          chainId={chainId}
+          className="mb-8 mt-4 hidden rounded-md bg-background-tertiary p-6 md:flex"
+          graphClassName="max-h-[20rem]"
+          header={
+            <div className="flex flex-row items-center justify-center gap-1">
+              <p className="title-text">{t('title.treasuryValue')}</p>
 
-            <TooltipInfoIcon size="sm" title={t('info.treasuryValueTooltip')} />
-          </div>
-        }
-      />
+              <TooltipInfoIcon
+                size="sm"
+                title={t('info.treasuryValueTooltip')}
+              />
+            </div>
+          }
+        />
+      )}
 
       <div className="mb-6 flex flex-row justify-end">
         <ButtonPopup position="left" {...sortTokenButtonPopupProps} />

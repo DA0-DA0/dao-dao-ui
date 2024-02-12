@@ -495,6 +495,14 @@ export const getSupportedChains = ({
     ...config,
   }))
 
+/**
+ * Whether or not we index this chain.
+ */
+export const chainIsIndexed = (chainId: string): boolean =>
+  SUPPORTED_CHAINS.some(
+    (config) => config.chainId === chainId && !config.noIndexer
+  )
+
 // Validates whether the address is for the current chain. If so, return
 // undefined. If not, return the correct subdomain.
 export const getChainIdForAddress = (address: string): string => {
