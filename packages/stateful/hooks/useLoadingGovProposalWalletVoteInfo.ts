@@ -1,3 +1,5 @@
+import { constSelector } from 'recoil'
+
 import { govProposalVoteSelector } from '@dao-dao/state'
 import { useCachedLoading, useConfiguredChainContext } from '@dao-dao/stateless'
 import { GovProposalWalletVoteInfo, LoadingData } from '@dao-dao/types'
@@ -19,21 +21,22 @@ export const useLoadingGovProposalWalletVoteInfo = (
           proposalId: Number(proposalId),
           voter,
         })
-      : undefined,
+      : constSelector(undefined),
     undefined
   )
 
   const walletVoteInfo: LoadingData<GovProposalWalletVoteInfo> =
-    loadingWalletVote.loading || !loadingWalletVote.data
+    loadingWalletVote.loading
       ? {
           loading: true,
         }
       : {
           loading: false,
+          updating: loadingWalletVote.updating,
           data: {
             vote:
               // If no votes, return undefined to indicate has not voted.
-              loadingWalletVote.data.length === 0
+              !loadingWalletVote.data || loadingWalletVote.data.length === 0
                 ? undefined
                 : loadingWalletVote.data.sort(
                     (a, b) => Number(b.weight) - Number(a.weight)
