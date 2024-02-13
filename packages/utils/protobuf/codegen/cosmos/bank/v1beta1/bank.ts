@@ -930,7 +930,9 @@ export const Metadata = {
   },
   toAmino(message: Metadata, useInterfaces: boolean = false): MetadataAmino {
     const obj: any = {};
-    obj.description = message.description;
+    if (message.description) {
+      obj.description = message.description;
+    }
     if (message.denomUnits) {
       obj.denom_units = message.denomUnits.map(e => e ? DenomUnit.toAmino(e, useInterfaces) : undefined);
     } else {
@@ -940,8 +942,12 @@ export const Metadata = {
     obj.display = message.display;
     obj.name = message.name;
     obj.symbol = message.symbol;
-    obj.uri = message.uri;
-    obj.uri_hash = message.uriHash;
+    if (message.uri) {
+      obj.uri = message.uri;
+    }
+    if (message.uriHash) {
+      obj.uri_hash = message.uriHash;
+    }
     return obj;
   },
   fromAminoMsg(object: MetadataAminoMsg): Metadata {

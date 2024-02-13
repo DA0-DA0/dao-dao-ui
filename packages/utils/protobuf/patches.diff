@@ -27,6 +27,36 @@ index c04740c22..98853e53d 100644
      } else {
        obj.msgs = [];
      }
+diff --git b/packages/utils/protobuf/codegen/cosmos/bank/v1beta1/bank.ts a/packages/utils/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
+index 9eb780900..70b01f2fc 100644
+--- b/packages/utils/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
++++ a/packages/utils/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
+@@ -930,7 +930,9 @@ export const Metadata = {
+   },
+   toAmino(message: Metadata, useInterfaces: boolean = false): MetadataAmino {
+     const obj: any = {};
+-    obj.description = message.description;
++    if (message.description) {
++      obj.description = message.description;
++    }
+     if (message.denomUnits) {
+       obj.denom_units = message.denomUnits.map(e => e ? DenomUnit.toAmino(e, useInterfaces) : undefined);
+     } else {
+@@ -940,8 +942,12 @@ export const Metadata = {
+     obj.display = message.display;
+     obj.name = message.name;
+     obj.symbol = message.symbol;
+-    obj.uri = message.uri;
+-    obj.uri_hash = message.uriHash;
++    if (message.uri) {
++      obj.uri = message.uri;
++    }
++    if (message.uriHash) {
++      obj.uri_hash = message.uriHash;
++    }
+     return obj;
+   },
+   fromAminoMsg(object: MetadataAminoMsg): Metadata {
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 index 6c5cc594d..99099f81a 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
