@@ -49,6 +49,8 @@ export type GenericTokenBalance = {
   isGovernanceToken?: boolean
   // Whether or not this is staked.
   staked?: boolean
+  // Whether or not this is unstaking.
+  unstaking?: boolean
 }
 
 export type GenericTokenBalanceWithOwner = GenericTokenBalance & {

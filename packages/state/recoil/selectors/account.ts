@@ -27,6 +27,7 @@ import {
   genericTokenBalanceSelector,
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
+  genericTokenUndelegatingBalancesSelector,
 } from './token'
 
 // Get accounts controlled by this address, including its native chain, all
@@ -150,7 +151,7 @@ export const allBalancesSelector = selectorFamily<
       GenericToken,
       'chainId' | 'type' | 'denomOrAddress'
     >[]
-    // Ignore staked tokens.
+    // Ignore staked and unstaking tokens.
     ignoreStaked?: boolean
   }>
 >({
@@ -214,7 +215,14 @@ export const allBalancesSelector = selectorFamily<
               (!filter || filter === TokenType.Native) && !ignoreStaked
                 ? genericTokenDelegatedBalanceSelector({
                     chainId,
-                    walletAddress: address,
+                    address,
+                  })
+                : constSelector(undefined),
+              // Native unstaking
+              (!filter || filter === TokenType.Native) && !ignoreStaked
+                ? genericTokenUndelegatingBalancesSelector({
+                    chainId,
+                    address,
                   })
                 : constSelector(undefined),
             ])
@@ -238,18 +246,14 @@ export const allBalancesSelector = selectorFamily<
 
         // Native staked
         const stakedBalance = accountBalances[index][2].valueMaybe()
+        // Native unstaking
+        const unstakingBalances = accountBalances[index][3].valueMaybe()
 
         const balances = [
           ...unstakedBalances,
           ...additionalUnstakedBalances,
-          ...(stakedBalance
-            ? [
-                {
-                  ...stakedBalance,
-                  staked: true,
-                },
-              ]
-            : []),
+          ...(stakedBalance ? [stakedBalance] : []),
+          ...(unstakingBalances ?? []),
         ]
 
         return balances.map(

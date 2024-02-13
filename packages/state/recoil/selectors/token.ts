@@ -1,4 +1,9 @@
-import { selectorFamily, waitForAllSettled, waitForAny } from 'recoil'
+import {
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+  waitForAny,
+} from 'recoil'
 
 import {
   Account,
@@ -27,6 +32,7 @@ import {
   nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
+  nativeDelegationInfoSelector,
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
@@ -366,17 +372,17 @@ export const genericTokenBalanceSelector = selectorFamily<
 export const genericTokenDelegatedBalanceSelector = selectorFamily<
   GenericTokenBalance,
   WithChainId<{
-    walletAddress: string
+    address: string
   }>
 >({
   key: 'genericTokenDelegatedBalance',
   get:
-    ({ walletAddress, chainId }) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
       const { denom, amount: balance } = get(
         nativeDelegatedBalanceSelector({
           chainId,
-          address: walletAddress,
+          address,
         })
       )
       const token = get(
@@ -390,7 +396,62 @@ export const genericTokenDelegatedBalanceSelector = selectorFamily<
       return {
         token,
         balance,
+        staked: true,
       }
+    },
+})
+
+export const genericTokenUndelegatingBalancesSelector = selectorFamily<
+  GenericTokenBalance[],
+  WithChainId<{
+    address: string
+  }>
+>({
+  key: 'genericTokenUndelegatingBalances',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const { unbondingDelegations } = get(nativeDelegationInfoSelector(params))
+
+      const tokens = get(
+        waitForAll(
+          unbondingDelegations.map(({ balance }) =>
+            genericTokenSelector({
+              type: TokenType.Native,
+              denomOrAddress: balance.denom,
+              chainId: params.chainId,
+            })
+          )
+        )
+      )
+
+      const tokenBalances = tokens.map(
+        (token, index): GenericTokenBalance => ({
+          token,
+          balance: unbondingDelegations[index].balance.amount,
+        })
+      )
+
+      const uniqueTokens = tokenBalances.reduce((acc, { token, balance }) => {
+        let existing = acc.find(
+          (t) => t.token.denomOrAddress === token.denomOrAddress
+        )
+        if (!existing) {
+          existing = {
+            token,
+            balance,
+            unstaking: true,
+          }
+          acc.push(existing)
+        }
+        existing.balance = (
+          BigInt(existing.balance) + BigInt(balance)
+        ).toString()
+
+        return acc
+      }, [] as GenericTokenBalance[])
+
+      return uniqueTokens
     },
 })
 
