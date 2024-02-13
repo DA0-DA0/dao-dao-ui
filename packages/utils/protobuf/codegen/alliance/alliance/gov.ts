@@ -4,6 +4,7 @@ import { RewardWeightRange, RewardWeightRangeAmino, RewardWeightRangeSDKType } f
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { Decimal } from "@cosmjs/math";
 export interface MsgCreateAllianceProposal {
+  $typeUrl?: "/alliance.alliance.MsgCreateAllianceProposal";
   /** the title of the update proposal */
   title: string;
   /** the description of the proposal */
@@ -58,6 +59,7 @@ export interface MsgCreateAllianceProposalAminoMsg {
   value: MsgCreateAllianceProposalAmino;
 }
 export interface MsgCreateAllianceProposalSDKType {
+  $typeUrl?: "/alliance.alliance.MsgCreateAllianceProposal";
   title: string;
   description: string;
   denom: string;
@@ -68,6 +70,7 @@ export interface MsgCreateAllianceProposalSDKType {
   reward_weight_range: RewardWeightRangeSDKType | undefined;
 }
 export interface MsgUpdateAllianceProposal {
+  $typeUrl?: "/alliance.alliance.MsgUpdateAllianceProposal";
   /** the title of the update proposal */
   title: string;
   /** the description of the proposal */
@@ -114,6 +117,7 @@ export interface MsgUpdateAllianceProposalAminoMsg {
   value: MsgUpdateAllianceProposalAmino;
 }
 export interface MsgUpdateAllianceProposalSDKType {
+  $typeUrl?: "/alliance.alliance.MsgUpdateAllianceProposal";
   title: string;
   description: string;
   denom: string;
@@ -124,6 +128,7 @@ export interface MsgUpdateAllianceProposalSDKType {
   reward_weight_range: RewardWeightRangeSDKType | undefined;
 }
 export interface MsgDeleteAllianceProposal {
+  $typeUrl?: "/alliance.alliance.MsgDeleteAllianceProposal";
   /** the title of the update proposal */
   title: string;
   /** the description of the proposal */
@@ -146,12 +151,14 @@ export interface MsgDeleteAllianceProposalAminoMsg {
   value: MsgDeleteAllianceProposalAmino;
 }
 export interface MsgDeleteAllianceProposalSDKType {
+  $typeUrl?: "/alliance.alliance.MsgDeleteAllianceProposal";
   title: string;
   description: string;
   denom: string;
 }
 function createBaseMsgCreateAllianceProposal(): MsgCreateAllianceProposal {
   return {
+    $typeUrl: "/alliance.alliance.MsgCreateAllianceProposal",
     title: "",
     description: "",
     denom: "",
@@ -299,6 +306,7 @@ export const MsgCreateAllianceProposal = {
 };
 function createBaseMsgUpdateAllianceProposal(): MsgUpdateAllianceProposal {
   return {
+    $typeUrl: "/alliance.alliance.MsgUpdateAllianceProposal",
     title: "",
     description: "",
     denom: "",
@@ -446,6 +454,7 @@ export const MsgUpdateAllianceProposal = {
 };
 function createBaseMsgDeleteAllianceProposal(): MsgDeleteAllianceProposal {
   return {
+    $typeUrl: "/alliance.alliance.MsgDeleteAllianceProposal",
     title: "",
     description: "",
     denom: ""

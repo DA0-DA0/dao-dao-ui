@@ -2,6 +2,7 @@ syntax = "proto3";
 package alliance.alliance;
 
 import "alliance/alliance/alliance.proto";
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 
@@ -10,6 +11,7 @@ option go_package = "github.com/terra-money/alliance/x/alliance/types";
 message MsgCreateAllianceProposal {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
     
     // the title of the update proposal
     string title = 1;
@@ -50,6 +52,7 @@ message MsgCreateAllianceProposal {
 message MsgUpdateAllianceProposal {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
 
     // the title of the update proposal
     string title = 1;
@@ -89,6 +92,7 @@ message MsgUpdateAllianceProposal {
 message MsgDeleteAllianceProposal {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
     
     // the title of the update proposal
     string title = 1;

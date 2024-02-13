@@ -28,7 +28,7 @@ index c04740c22..98853e53d 100644
        obj.msgs = [];
      }
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 77d8f28c8..a50ee67e9 100644
+index 6c5cc594d..99099f81a 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/utils/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,7 @@
@@ -38,9 +38,9 @@ index 77d8f28c8..a50ee67e9 100644
 -import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType, voteOptionFromJSON } from "./gov";
 +import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
  import { Timestamp } from "../../../google/protobuf/timestamp";
+ import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
- import { TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "../v1beta1/gov";
-@@ -21,6 +21,7 @@ import { AllowDenomProposal, AllowDenomProposalProtoMsg, AllowDenomProposalSDKTy
+@@ -22,6 +22,7 @@ import { AllowDenomProposal, AllowDenomProposalProtoMsg, AllowDenomProposalSDKTy
  import { CreditTypeProposal, CreditTypeProposalProtoMsg, CreditTypeProposalSDKType } from "../../../regen/ecocredit/v1/types";
  import { BinaryReader, BinaryWriter } from "../../../binary";
  import { toTimestamp, fromTimestamp } from "../../../helpers";
@@ -48,7 +48,7 @@ index 77d8f28c8..a50ee67e9 100644
  /**
   * MsgSubmitProposal defines an sdk.Msg type that supports submitting arbitrary
   * proposal Content.
-@@ -576,7 +577,7 @@ export const MsgSubmitProposal = {
+@@ -577,7 +578,7 @@ export const MsgSubmitProposal = {
    },
    fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
      const message = createBaseMsgSubmitProposal();
@@ -57,7 +57,7 @@ index 77d8f28c8..a50ee67e9 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -597,10 +598,8 @@ export const MsgSubmitProposal = {
+@@ -598,10 +599,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
@@ -70,7 +70,7 @@ index 77d8f28c8..a50ee67e9 100644
      }
      if (message.initialDeposit) {
        obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
-@@ -611,7 +610,9 @@ export const MsgSubmitProposal = {
+@@ -612,7 +611,9 @@ export const MsgSubmitProposal = {
      obj.metadata = message.metadata;
      obj.title = message.title;
      obj.summary = message.summary;
@@ -81,7 +81,7 @@ index 77d8f28c8..a50ee67e9 100644
      return obj;
    },
    fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-@@ -910,7 +911,7 @@ export const MsgVote = {
+@@ -911,7 +912,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
@@ -91,7 +91,7 @@ index 77d8f28c8..a50ee67e9 100644
      if (object.metadata !== undefined && object.metadata !== null) {
        message.metadata = object.metadata;
 diff --git b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-index 27a0730a2..2989a1f86 100644
+index 0a7aa8cc5..2451cbfd8 100644
 --- b/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 +++ a/packages/utils/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 @@ -1,7 +1,7 @@
@@ -100,10 +100,10 @@ index 27a0730a2..2989a1f86 100644
  import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 -import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType, voteOptionFromJSON } from "./gov";
 +import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "./gov";
+ import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
  import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
- import { SoftwareUpgradeProposal, SoftwareUpgradeProposalProtoMsg, SoftwareUpgradeProposalSDKType, CancelSoftwareUpgradeProposal, CancelSoftwareUpgradeProposalProtoMsg, CancelSoftwareUpgradeProposalSDKType } from "../../upgrade/v1beta1/upgrade";
-@@ -470,7 +470,7 @@ export const MsgVote = {
+@@ -471,7 +471,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
