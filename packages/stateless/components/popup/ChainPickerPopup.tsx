@@ -169,17 +169,18 @@ export const ChainPickerPopup = ({
       })
     }
 
-    return _chainOptions
+    return _chainOptions.map((option) => ({
+      ...option,
+      selected: !selectedChainId
+        ? showNone && option.key === NONE_KEY
+        : option.key === selectedChainId,
+    }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, useDeepCompareMemoize([NoneIcon, chains, labelMode, noneLabel, showNone, t]))
+  }, useDeepCompareMemoize([NoneIcon, chains, labelMode, noneLabel, showNone, t, selectedChainId]))
 
   const selectedChain = selectedChainId
     ? chainOptions.find(({ key }) => key === selectedChainId)
     : undefined
-
-  if (selectedChain) {
-    selectedChain.selected = true
-  }
 
   return (
     <FilterableItemPopup
