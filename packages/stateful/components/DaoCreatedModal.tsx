@@ -5,17 +5,13 @@ import {
 } from '@dao-dao/stateless'
 
 import { useFollowingDaos } from '../hooks'
-import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 
 export type StatefulDaoCreatedModalProps = Omit<
   DaoCreatedModalProps,
   'itemProps'
 > & {
-  itemProps: Omit<
-    DaoCreatedModalProps['itemProps'],
-    'follow' | 'LinkWrapper' | 'IconButtonLink'
-  >
+  itemProps: Omit<DaoCreatedModalProps['itemProps'], 'follow' | 'LinkWrapper'>
 }
 
 export const DaoCreatedModal = ({
@@ -42,7 +38,6 @@ export const DaoCreatedModal = ({
           },
 
           LinkWrapper,
-          IconButtonLink,
         }}
       />
     </ChainProvider>

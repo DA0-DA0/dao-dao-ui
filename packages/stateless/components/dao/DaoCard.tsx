@@ -34,7 +34,6 @@ export const DaoCard = ({
   onMouseOver,
   onMouseLeave,
   LinkWrapper,
-  IconButtonLink,
   follow,
 }: DaoCardProps) => {
   const { t } = useTranslation()

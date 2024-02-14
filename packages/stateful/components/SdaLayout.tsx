@@ -17,7 +17,6 @@ import {
 
 import { useAutoRefreshData, useDaoTabs } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
-import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { SidebarWallet } from './NavWallet'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -70,7 +69,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
               hide: true,
             },
             LinkWrapper,
-            IconButtonLink,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),

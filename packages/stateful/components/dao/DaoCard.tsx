@@ -6,7 +6,6 @@ import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 
 import { useFollowingDaos, useWallet } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
-import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
@@ -30,7 +29,6 @@ export const DaoCard = (props: DaoCardInfo) => {
   return (
     <StatelessDaoCard
       {...props}
-      IconButtonLink={IconButtonLink}
       LinkWrapper={LinkWrapper}
       follow={{
         following: isFollowing(props.coreAddress),

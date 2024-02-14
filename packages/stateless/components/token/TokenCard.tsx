@@ -40,7 +40,6 @@ export const TokenCard = ({
   onClaim,
   ButtonLink,
   actions,
-  hideDaosGoverned,
   EntityDisplay,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -394,8 +393,7 @@ export const TokenCard = ({
           </div>
         )}
 
-        {!hideDaosGoverned &&
-          !lazyInfo.loading &&
+        {!lazyInfo.loading &&
           !!lazyInfo.data.daosGoverned?.length &&
           // Only show DAOs if there are more than 1 or if the only DAO in the
           // list is the current DAO. This prevents the DAO's governance token

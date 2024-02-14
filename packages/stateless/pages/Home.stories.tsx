@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalLine } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { DaoCard, IconButtonLink, LinkWrapper } from '../components'
+import { DaoCard, LinkWrapper } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
 import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.stories'
@@ -23,7 +23,6 @@ Connected.args = {
     Component: (props) => (
       <DaoCard
         {...props}
-        IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
         follow={{
           following: true,
@@ -39,7 +38,6 @@ Connected.args = {
     DaoCard: (props) => (
       <DaoCard
         {...props}
-        IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
         follow={{
           following: true,
