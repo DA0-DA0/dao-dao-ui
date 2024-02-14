@@ -216,7 +216,7 @@ export const ButtonifiedChildren = ({
           // container of the loading element above takes over touches if this
           // is not relative; adding relative puts them in the same stacking
           // context.
-          'relative flex h-full flex-row items-center gap-2 break-all',
+          'relative flex h-full flex-row items-center gap-2',
           center && 'justify-center',
           {
             invisible: loadingLoader,
