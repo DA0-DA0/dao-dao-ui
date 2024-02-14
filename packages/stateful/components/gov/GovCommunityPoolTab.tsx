@@ -179,7 +179,7 @@ export const GovCommunityPoolTab = () => {
             {sortedTokens.map((props: TokenCardInfo, index) => (
               <GovTokenLine
                 {...props}
-                key={index}
+                key={props.token.chainId + props.token.denomOrAddress}
                 hideChainIcon
                 transparentBackground={index % 2 !== 0}
               />

@@ -70,7 +70,9 @@ export const WalletBalances = <
               <div className="space-y-1">
                 {visibleBalances.map((props, index) => (
                   <TokenLine
-                    key={props.token.denomOrAddress + index}
+                    key={
+                      props.token.chainId + props.token.denomOrAddress + index
+                    }
                     transparentBackground={index % 2 !== 0}
                     {...(props as T)}
                   />
@@ -105,7 +107,7 @@ export const WalletBalances = <
             <div className={clsx('space-y-1', !showingHidden && 'hidden')}>
               {hiddenBalances.map((props, index) => (
                 <TokenLine
-                  key={props.token.denomOrAddress + index}
+                  key={props.token.chainId + props.token.denomOrAddress + index}
                   transparentBackground={index % 2 !== 0}
                   {...(props as T)}
                 />
