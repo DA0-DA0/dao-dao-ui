@@ -31,6 +31,10 @@ export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
 // The key for the item in the DAO core contract that contains the accent color.
 export const DAO_CORE_ACCENT_ITEM_KEY = 'accent'
 
+// The key for the item in the DAO core contract that enables the memo field on
+// execute.
+export const DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY = 'allow_memo_on_execute'
+
 // Me balances page
 export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
 

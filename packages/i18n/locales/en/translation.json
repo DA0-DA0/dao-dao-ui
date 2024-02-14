@@ -1023,6 +1023,7 @@
     "membersTooltip": "The number of members in the DAO.",
     "membershipDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, existing members must vote to add you.",
     "membershipDaoNotMemberInfo_proposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it.",
+    "memoPlaceholder": "Enter a memo (optional)...",
     "migrateFollowingDescription": "Followed DAOs require a migration to a new storage mechanism.",
     "migrateSmartContractActionDescription": "Migrate a CosmWasm contract to a new code ID.",
     "minimumOutputRequiredDescription_dao": "Before the proposal is passed and executed, the swap price will fluctuate. If the price drops and no longer satisfies this minimum output required, the swap will not occur.",
