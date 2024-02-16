@@ -8,6 +8,7 @@
     "test": "jest",
     "protobuf:codegen": "node protobuf/scripts/codegen.js",
     "protobuf:patch": "git apply protobuf/patches.diff",
+    "protobuf:patch:update": "cd protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
     "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
