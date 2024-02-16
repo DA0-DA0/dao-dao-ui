@@ -427,6 +427,13 @@ export const TreasuryHistoryGraph = ({
         selected={range}
         tabs={[
           {
+            label: 'H',
+            value: TokenPriceHistoryRange.Hour,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'hour',
+            }),
+          },
+          {
             label: 'D',
             value: TokenPriceHistoryRange.Day,
             tooltip: t('info.priceHistoryRange', {

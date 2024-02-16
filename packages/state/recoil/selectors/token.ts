@@ -17,7 +17,6 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  COINGECKO_API_BASE,
   MAINNET,
   getChainForChainId,
   getChainForChainName,
@@ -39,6 +38,7 @@ import {
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
+import { querySnapperSelector } from './indexer'
 import { osmosisUsdPriceSelector } from './osmosis'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
@@ -206,25 +206,27 @@ export const coinGeckoUsdPriceSelector = selectorFamily<
         return
       }
 
-      // TODO(coingecko): move query and API key to cloudflare worker
       try {
-        const {
-          market_data: {
-            current_price: { usd },
-          },
-        }: { market_data: { current_price: { usd: number } } } = await (
-          await fetch(
-            COINGECKO_API_BASE +
-              `/coins/${asset.coingeckoID}?x_cg_demo_api_key=CG-2kpMwLzH6oMgx1zJ5G8P7eeQ&localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=fals`
-          )
-        ).json()
+        const usdPrice: number = get(
+          querySnapperSelector({
+            query: 'coingecko-price',
+            args: {
+              id: asset.coingeckoID,
+            },
+          })
+        )
 
         return {
           token,
-          usdPrice: usd,
+          usdPrice,
           timestamp: new Date(),
         }
-      } catch {
+      } catch (err) {
+        // recoil's `get` throws a promise while loading
+        if (err instanceof Promise) {
+          throw err
+        }
+
         return undefined
       }
     },
@@ -683,26 +685,27 @@ export const historicalUsdPriceSelector = selectorFamily<
         return
       }
 
-      const now = Date.now()
-
-      // TODO(coingecko): move query and API key to cloudflare worker
       try {
-        const { prices }: { prices: [number, number][] } = await (
-          await fetch(
-            COINGECKO_API_BASE +
-              `/coins/${
-                asset.coingeckoID
-              }/market_chart/range?x_cg_demo_api_key=CG-2kpMwLzH6oMgx1zJ5G8P7eeQ&vs_currency=usd&from=${(
-                BigInt(now - range) / BigInt(1000)
-              ).toString()}&to=${(BigInt(now) / BigInt(1000)).toString()}`
-          )
-        ).json()
+        const prices: [number, number][] = get(
+          querySnapperSelector({
+            query: 'coingecko-price-history',
+            args: {
+              id: asset.coingeckoID,
+              range,
+            },
+          })
+        )
 
         return prices.map(([timestamp, amount]) => ({
           timestamp: new Date(timestamp),
           amount,
         }))
-      } catch {
+      } catch (err) {
+        // recoil's `get` throws a promise while loading
+        if (err instanceof Promise) {
+          throw err
+        }
+
         return undefined
       }
     },

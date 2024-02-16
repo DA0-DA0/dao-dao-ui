@@ -185,8 +185,9 @@ export type AmountWithTimestamp = {
 }
 
 export enum TokenPriceHistoryRange {
-  Year = 365 * 24 * 60 * 60 * 1000,
-  Month = 30 * 24 * 60 * 60 * 1000,
-  Week = 7 * 24 * 60 * 60 * 1000,
-  Day = 24 * 60 * 60 * 1000,
+  Year = 'year',
+  Month = 'month',
+  Week = 'week',
+  Day = 'day',
+  Hour = 'hour',
 }

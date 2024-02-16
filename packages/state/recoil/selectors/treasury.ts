@@ -12,6 +12,7 @@ import {
   AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
+  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
@@ -30,10 +31,7 @@ import {
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import {
-  queryGenericIndexerSelector,
-  queryWalletIndexerSelector,
-} from './indexer'
+import { querySnapperSelector } from './indexer'
 import { allNftUsdValueSelector } from './nft'
 import { genericTokenSelector, usdPriceSelector } from './token'
 
@@ -293,9 +291,7 @@ export const communityPoolTvlSelector = selectorFamily<
 export type HistoricalBalancesOptions = WithChainId<{
   address: string
   filter?: TokenType
-  startTimeUnixMs: number
-  endTimeUnixMs?: number
-  intervalMs?: number
+  range: TokenPriceHistoryRange
 }>
 
 // Get historical token balances from the indexer.
@@ -308,14 +304,7 @@ export const historicalBalancesSelector = selectorFamily<
 >({
   key: 'historicalBalances',
   get:
-    ({
-      chainId,
-      address,
-      filter,
-      startTimeUnixMs,
-      endTimeUnixMs,
-      intervalMs,
-    }) =>
+    ({ chainId, address, filter, range }) =>
     ({ get }) => {
       const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
 
@@ -325,38 +314,32 @@ export const historicalBalancesSelector = selectorFamily<
         waitForAll([
           !filter || filter === TokenType.Native
             ? isCommunityPool
-              ? queryGenericIndexerSelector({
+              ? querySnapperSelector({
                   id,
-                  chainId,
-                  formula: 'communityPool/balances',
-                  times: {
-                    startUnixMs: startTimeUnixMs,
-                    endUnixMs: endTimeUnixMs,
-                    stepMs: intervalMs,
+                  query: 'daodao-community-pool-history',
+                  args: {
+                    chainId,
+                    range,
                   },
                 })
-              : queryWalletIndexerSelector({
+              : querySnapperSelector({
                   id,
-                  chainId,
-                  walletAddress: address,
-                  formula: 'bank/balances',
-                  times: {
-                    startUnixMs: startTimeUnixMs,
-                    endUnixMs: endTimeUnixMs,
-                    stepMs: intervalMs,
+                  query: 'daodao-bank-balances-history',
+                  args: {
+                    chainId,
+                    address,
+                    range,
                   },
                 })
             : constSelector([]),
           (!filter || filter === TokenType.Cw20) && !isCommunityPool
-            ? queryWalletIndexerSelector({
+            ? querySnapperSelector({
                 id,
-                chainId,
-                walletAddress: address,
-                formula: 'tokens/list',
-                times: {
-                  startUnixMs: startTimeUnixMs,
-                  endUnixMs: endTimeUnixMs,
-                  stepMs: intervalMs,
+                query: 'daodao-cw20-balances-history',
+                args: {
+                  chainId,
+                  address,
+                  range,
                 },
               })
             : constSelector([]),

@@ -203,18 +203,6 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
 
 const ACCOUNT_FILTER_PROPERTIES = ['type', 'chainId', 'address'] as const
 
-// The interval of data returned from CoinGecko at these ranges.
-// https://www.coingecko.com/api/documentation
-const tokenPriceHistoryRangeInterval: Record<TokenPriceHistoryRange, number> = {
-  // Daily.
-  [TokenPriceHistoryRange.Year]: 24 * 60 * 60 * 1000,
-  // Hourly.
-  [TokenPriceHistoryRange.Month]: 60 * 60 * 1000,
-  [TokenPriceHistoryRange.Week]: 60 * 60 * 1000,
-  // Every 5 minutes.
-  [TokenPriceHistoryRange.Day]: 5 * 60 * 1000,
-}
-
 export const treasuryValueHistorySelector = selectorFamily<
   {
     timestamps: Date[]
@@ -289,12 +277,6 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       }
 
-      const startTime = new Date(Date.now() - range)
-      const intervalMs = tokenPriceHistoryRangeInterval[range]
-      // Snap to beginning.
-      startTime.setHours(0, 0, 0, 0)
-      const startTimeUnixMs = startTime.getTime()
-
       // Historical balances.
       const historicalBalancesByTimestamp = get(
         waitForAll(
@@ -302,8 +284,7 @@ export const treasuryValueHistorySelector = selectorFamily<
             historicalBalancesSelector({
               chainId,
               address,
-              startTimeUnixMs,
-              intervalMs,
+              range,
             })
           )
         )
@@ -330,8 +311,7 @@ export const treasuryValueHistorySelector = selectorFamily<
             historicalBalancesByTokenSelector({
               chainId,
               address,
-              startTimeUnixMs,
-              intervalMs,
+              range,
             })
           )
         )
