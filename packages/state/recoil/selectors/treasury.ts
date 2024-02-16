@@ -11,7 +11,6 @@ import {
 import {
   AmountWithTimestamp,
   GenericToken,
-  GenericTokenBalance,
   TokenPriceHistoryRange,
   TokenType,
   WithChainId,
@@ -297,8 +296,14 @@ export type HistoricalBalancesOptions = WithChainId<{
 // Get historical token balances from the indexer.
 export const historicalBalancesSelector = selectorFamily<
   {
-    timestamp: Date
-    balances: GenericTokenBalance[]
+    token: GenericToken
+    balances: {
+      timestamp: Date
+      // undefined balance means this token was not detected at this timestamp.
+      // This means the indexer does not have historical data at this time,
+      // which is not the same as a balance of '0'.
+      balance: string | undefined
+    }[]
   }[],
   HistoricalBalancesOptions
 >({
@@ -347,7 +352,6 @@ export const historicalBalancesSelector = selectorFamily<
       ) as [
         (
           | {
-              at?: string
               // Map of denom to balance.
               value: Record<string, string | undefined>
               blockHeight: number
@@ -357,7 +361,6 @@ export const historicalBalancesSelector = selectorFamily<
         ),
         (
           | {
-              at?: string
               // List of contract addresses and balances.
               value: { contractAddress: string; balance: string }[]
               blockHeight: number
@@ -389,7 +392,7 @@ export const historicalBalancesSelector = selectorFamily<
         ),
       ])
 
-      // Map of denomOrAddress to token.
+      // Get generic tokens for all sources.
       const tokens = get(
         waitForAll(
           uniqueTokenSources.map((tokenSource) => {
@@ -403,140 +406,42 @@ export const historicalBalancesSelector = selectorFamily<
             })
           })
         )
-      ).reduce(
-        (acc, token) => ({
-          ...acc,
-          [token.denomOrAddress]: token,
-        }),
-        {} as Record<string, GenericToken>
       )
 
-      // Group snapshots by timestamp.
-      const nativeBalanceSnapshotsByTimestamp = (
-        nativeBalanceSnapshots || []
-      ).reduce(
-        (acc, { at, blockTimeUnixMs, value }) => ({
-          ...acc,
-          [Number(at || blockTimeUnixMs)]: Object.entries(value).reduce(
-            (acc, [denom, balance]) => [
-              ...acc,
-              ...((balance
-                ? [
-                    [
-                      denom,
-                      // Community pool tokens have decimals. Truncte.
-                      balance!.split('.')[0],
-                    ],
-                  ]
-                : []) as [string, string][]),
-            ],
-            [] as [string, string][]
-          ),
-        }),
-        {} as Record<number, [string, string][] | undefined>
-      )
-      const cw20BalanceSnapshotsByTimestamp = (
-        cw20BalanceSnapshots || []
-      ).reduce(
-        (acc, { at, blockTimeUnixMs, value }) => ({
-          ...acc,
-          [Number(at || blockTimeUnixMs)]: value.map(
-            ({ contractAddress, balance }): [string, string] => [
-              contractAddress,
-              balance,
-            ]
-          ),
-        }),
-        {} as Record<number, [string, string][] | undefined>
-      )
+      return tokens.map((token) => {
+        const balances =
+          token.type === TokenType.Native
+            ? (nativeBalanceSnapshots || []).flatMap(
+                ({ value, blockTimeUnixMs }) => {
+                  const balance = value[token.denomOrAddress]
+                  return balance
+                    ? {
+                        timestamp: new Date(blockTimeUnixMs),
+                        balance,
+                      }
+                    : []
+                }
+              )
+            : (cw20BalanceSnapshots || []).flatMap(
+                ({ value, blockTimeUnixMs }) => {
+                  const balance = value.find(
+                    ({ contractAddress }) =>
+                      contractAddress === token.denomOrAddress
+                  )?.balance
 
-      const timestamps = uniq([
-        ...Object.keys(nativeBalanceSnapshotsByTimestamp).map((key) =>
-          Number(key)
-        ),
-        ...Object.keys(cw20BalanceSnapshotsByTimestamp).map((key) =>
-          Number(key)
-        ),
-      ])
+                  return balance
+                    ? {
+                        timestamp: new Date(blockTimeUnixMs),
+                        balance,
+                      }
+                    : []
+                }
+              )
 
-      return timestamps
-        .map((timestamp) => {
-          const native = nativeBalanceSnapshotsByTimestamp[timestamp] || []
-          const cw20 = cw20BalanceSnapshotsByTimestamp[timestamp] || []
-
-          return {
-            timestamp: new Date(timestamp),
-            balances: [...native, ...cw20].map(([denomOrAddress, balance]) => ({
-              token: tokens[denomOrAddress],
-              balance,
-            })),
-          }
-        })
-        .filter(({ balances }) => balances.length)
-    },
-})
-
-// Get historical balances from the indexer grouped by token.
-export const historicalBalancesByTokenSelector = selectorFamily<
-  {
-    token: GenericToken
-    balances: {
-      timestamp: Date
-      // undefined balance means this token was not detected at this timestamp.
-      // This means the indexer does not have historical data at this time,
-      // which is not the same as a balance of '0'.
-      balance: string | undefined
-    }[]
-  }[],
-  HistoricalBalancesOptions
->({
-  key: 'historicalNativeBalancesByToken',
-  get:
-    (options) =>
-    ({ get }) => {
-      const historicalBalances = get(historicalBalancesSelector(options))
-
-      // Get all unique token sources.
-      const tokenSources = uniq(
-        historicalBalances.flatMap(({ balances }) =>
-          balances.map(({ token }) => serializeTokenSource(token))
-        )
-      ).map(deserializeTokenSource)
-
-      // Map of denomOrAddress to token.
-      const tokens = get(
-        waitForAll(
-          tokenSources.map(({ chainId, type, denomOrAddress }) =>
-            genericTokenSelector({
-              chainId,
-              type,
-              denomOrAddress,
-            })
-          )
-        )
-      ).reduce(
-        (acc, token) => ({
-          ...acc,
-          [token.denomOrAddress]: token,
-        }),
-        {} as Record<string, GenericToken>
-      )
-
-      return tokenSources.map((tokenSource) => ({
-        token: tokens[tokenSource.denomOrAddress],
-        balances: historicalBalances.flatMap(({ timestamp, balances }) => {
-          const { balance } =
-            balances.find(
-              ({ token }) =>
-                serializeTokenSource(token) ===
-                serializeTokenSource(tokenSource)
-            ) ?? {}
-
-          return {
-            timestamp,
-            balance,
-          }
-        }),
-      }))
+        return {
+          token,
+          balances,
+        }
+      })
     },
 })

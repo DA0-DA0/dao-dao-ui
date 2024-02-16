@@ -6,7 +6,6 @@ import {
   allBalancesSelector,
   communityPoolBalancesSelector,
   genericTokenBalancesSelector,
-  historicalBalancesByTokenSelector,
   historicalBalancesSelector,
   historicalUsdPriceSelector,
   nativeDelegatedBalanceSelector,
@@ -278,37 +277,10 @@ export const treasuryValueHistorySelector = selectorFamily<
       }
 
       // Historical balances.
-      const historicalBalancesByTimestamp = get(
+      const historicalBalances = get(
         waitForAll(
           allAccounts.map(({ chainId, address }) =>
             historicalBalancesSelector({
-              chainId,
-              address,
-              range,
-            })
-          )
-        )
-      )
-      // Get all unique timestamps.
-      let timestamps = uniq(
-        historicalBalancesByTimestamp.flatMap((balancesByTimestamp) =>
-          balancesByTimestamp
-            .map(({ timestamp }) => timestamp.getTime())
-            // Remove last timestamp since we replace it with current balance.
-            // Remove from each one individually like this (instead of after the
-            // sort below) since the last timestamp will be different for each
-            // account depending on when the query finished. Each is already
-            // sorted internally, so no need to sort before slicing.
-            .slice(0, -1)
-        )
-      )
-        .map((timestamp) => new Date(timestamp))
-        .sort((a, b) => a.getTime() - b.getTime())
-
-      const historicalBalancesByToken = get(
-        waitForAll(
-          allAccounts.map(({ chainId, address }) =>
-            historicalBalancesByTokenSelector({
               chainId,
               address,
               range,
@@ -338,7 +310,7 @@ export const treasuryValueHistorySelector = selectorFamily<
 
       const tokens = [
         ...currentBalances.map(({ token }) => token),
-        ...historicalBalancesByToken.map(({ token }) => token),
+        ...historicalBalances.map(({ token }) => token),
       ].filter(
         (token) =>
           // Can only compute price if token decimals loaded correctly.
@@ -383,6 +355,11 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       )
 
+      // Get timestamps based on first valid historical prices query. They all
+      // have the same range, so just use the first one.
+      const validHistoricalPrices = allHistoricalUsdPrices.find(Boolean) || []
+      let timestamps = validHistoricalPrices.map(({ timestamp }) => timestamp)
+
       // Group tokens by unique ID and add balances at same timestamps.
       const tokensWithValues = uniqueTokenSources.reduce(
         (acc, source, index) => {
@@ -399,20 +376,43 @@ export const treasuryValueHistorySelector = selectorFamily<
             return acc
           }
 
-          // Flattened list of historical balances across all accounts.
-          // Timestamps will likely be duplicated.
-          const historical = historicalBalancesByToken
+          // Get historical balances for this token in all accounts.
+          const tokenHistorical = historicalBalances
             .filter(
               ({ token }) => serializeTokenSource(token.source) === source
             )
-            .flatMap(({ balances }) => balances)
+            .map(({ balances }) => balances)
 
           // Sum up historical balances per timestamp.
           const values = timestamps.map((timestamp) => {
-            const balances = historical.filter(
-              ({ timestamp: balanceTimestamp }) =>
-                balanceTimestamp.getTime() === timestamp.getTime()
-            )
+            // For each account, find the most recent balance at or before this
+            // timestamp.
+            const balances = tokenHistorical.flatMap((balances) => {
+              if (balances.length === 0) {
+                return []
+              }
+
+              // Since they are ascending, get the first balance that is
+              // after this timestamp, and then choose the one before.
+              const nextIndex = balances.findIndex(
+                ({ timestamp: balanceTimestamp }) =>
+                  balanceTimestamp > timestamp
+              )
+
+              // If the first balance is after this timestamp, no balance at
+              // this timestamp.
+              if (nextIndex === 0) {
+                return []
+              }
+
+              // If no balances are after this timestamp, use the last balance.
+              if (nextIndex === -1) {
+                return balances[balances.length - 1].balance
+              }
+
+              // Use the balance before the next one.
+              return balances[nextIndex - 1].balance
+            })
 
             // Sum up the balances for this timestamp, unless they are all
             // undefined, in which case return null. This is to indicate that
@@ -420,7 +420,7 @@ export const treasuryValueHistorySelector = selectorFamily<
             // thus should not show up in the graph. If any have a balance,
             // show it.
             const totalBalance = balances.reduce(
-              (acc, { balance }) =>
+              (acc, balance) =>
                 acc === null && !balance
                   ? null
                   : (acc || 0n) + BigInt(balance || 0),
@@ -431,7 +431,8 @@ export const treasuryValueHistorySelector = selectorFamily<
               return null
             }
 
-            // Find the first price after this timestamp.
+            // Since prices are ascending, get the first price that is after
+            // this timestamp, and then choose the one before.
             let firstPriceAfterIndex = historicalUsdPrices.findIndex(
               (historical) => historical.timestamp > timestamp
             )

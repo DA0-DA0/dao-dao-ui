@@ -407,7 +407,7 @@ export const TreasuryHistoryGraph = ({
                     <div className="flex shrink-0 flex-col items-end gap-1 text-right font-mono">
                       <p className="primary-text leading-4">
                         $
-                        {value.toLocaleString(undefined, {
+                        {value?.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
