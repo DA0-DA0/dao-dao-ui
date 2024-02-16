@@ -78,6 +78,27 @@ export const genericTokenSelector = selectorFamily<
           imageUrl: skipAsset.logoURI || getFallbackImage(denomOrAddress),
           source,
         }
+      } else if (source.chainId !== chainId) {
+        // If Skip API does not have the info, check if Skip API has the source
+        // if it's different. This has happened before when Skip does not have
+        // an IBC asset that we were able to reverse engineer the source for.
+        const skipSourceAsset = get(skipAssetSelector(source))
+
+        if (skipSourceAsset) {
+          return {
+            chainId,
+            type,
+            denomOrAddress,
+            symbol:
+              skipSourceAsset.recommendedSymbol ||
+              skipSourceAsset.symbol ||
+              skipSourceAsset.denom,
+            decimals: skipSourceAsset.decimals || 0,
+            imageUrl:
+              skipSourceAsset.logoURI || getFallbackImage(denomOrAddress),
+            source,
+          }
+        }
       }
 
       let tokenInfo =
