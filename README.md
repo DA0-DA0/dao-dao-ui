@@ -11,7 +11,7 @@ contracts](https://github.com/DA0-DA0/dao-contracts), enabling users to:
 All without having to code!
 
 You can find more info in our [documentation](https://docs.daodao.zone). Join
-the [DAO DAO Discord](https://discord.gg/sAaGuyW3D2) if you're interested in
+the [DAO DAO Discord](https://discord.daodao.zone) if you're interested in
 becoming a contributor.
 
 ## Development

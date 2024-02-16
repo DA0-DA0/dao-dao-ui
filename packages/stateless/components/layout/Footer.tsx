@@ -17,19 +17,19 @@ export const Footer = () => {
         name={t('title.documentation')}
       />
       <FooterItem
-        Icon={GithubIcon}
-        href="https://github.com/DA0-DA0"
-        name={t('title.github')}
-      />
-      <FooterItem
         Icon={Twitter}
         href="https://twitter.com/DA0_DA0"
         name={t('title.twitter')}
       />
       <FooterItem
         Icon={DiscordIcon}
-        href="https://discord.gg/sAaGuyW3D2"
+        href="https://discord.daodao.zone"
         name={t('title.discord')}
+      />
+      <FooterItem
+        Icon={GithubIcon}
+        href="https://github.com/DA0-DA0"
+        name={t('title.github')}
       />
     </div>
   )

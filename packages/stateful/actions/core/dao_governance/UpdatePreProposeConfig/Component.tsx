@@ -58,7 +58,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
           please feel free to ask in the{' '}
           <a
             className="underline"
-            href="https://discord.gg/sAaGuyW3D2"
+            href="https://discord.daodao.zone"
             rel="noreferrer"
             target="_blank"
           >
