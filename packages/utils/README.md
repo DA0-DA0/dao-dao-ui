@@ -24,22 +24,22 @@ To update the patch file when new changes are made:
 
 2. Run:
 
-    ```bash
-    yarn protobuf:patch:update
-    ```
+   ```bash
+   yarn protobuf:patch:update
+   ```
 
-    This will regenerate the protobufs, undoing all patches. Then, it records
-    the reverse diff between the committed changes and the regenerated protobufs
-    (since we want to undo the current changes). Lastly, it reapplies the latest
-    patches, and all changes should be made. If this works, only the
-    `patches.diff` file should have changes.
+   This will regenerate the protobufs, undoing all patches. Then, it records
+   the reverse diff between the committed changes and the regenerated protobufs
+   (since we want to undo the current changes). Lastly, it reapplies the latest
+   patches, and all changes should be made. If this works, only the
+   `patches.diff` file should have changes.
 
 3. Update the previous commit with the new patches.
 
-    ```bash
-    git add protobuf/patches.diff
-    git commit --amend
-    ```
+   ```bash
+   git add protobuf/patches.diff
+   git commit --amend
+   ```
 
 ## Miscellaneous
 
