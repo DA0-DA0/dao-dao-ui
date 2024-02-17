@@ -1,38 +1,21 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
-import uniq from 'lodash.uniq'
-import {
-  constSelector,
-  selectorFamily,
-  waitForAll,
-  waitForAllSettled,
-} from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
+import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
-  AmountWithTimestamp,
-  GenericToken,
-  TokenPriceHistoryRange,
-  TokenType,
-  WithChainId,
-} from '@dao-dao/types'
-import {
-  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
-  deserializeTokenSource,
   getTokenForChainIdAndDenom,
-  serializeTokenSource,
 } from '@dao-dao/utils'
 
-import { refreshWalletBalancesIdAtom } from '../atoms'
 import { allBalancesSelector } from './account'
 import {
   blockHeightTimestampSafeSelector,
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import { querySnapperSelector } from './indexer'
 import { allNftUsdValueSelector } from './nft'
-import { genericTokenSelector, usdPriceSelector } from './token'
+import { usdPriceSelector } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{
   address: string
@@ -284,164 +267,5 @@ export const communityPoolTvlSelector = selectorFamily<
         amount,
         timestamp,
       }
-    },
-})
-
-export type HistoricalBalancesOptions = WithChainId<{
-  address: string
-  filter?: TokenType
-  range: TokenPriceHistoryRange
-}>
-
-// Get historical token balances from the indexer.
-export const historicalBalancesSelector = selectorFamily<
-  {
-    token: GenericToken
-    balances: {
-      timestamp: Date
-      // undefined balance means this token was not detected at this timestamp.
-      // This means the indexer does not have historical data at this time,
-      // which is not the same as a balance of '0'.
-      balance: string | undefined
-    }[]
-  }[],
-  HistoricalBalancesOptions
->({
-  key: 'historicalBalances',
-  get:
-    ({ chainId, address, filter, range }) =>
-    ({ get }) => {
-      const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
-
-      const id = get(refreshWalletBalancesIdAtom(address))
-
-      const [nativeBalanceSnapshots, cw20BalanceSnapshots] = get(
-        waitForAll([
-          !filter || filter === TokenType.Native
-            ? isCommunityPool
-              ? querySnapperSelector({
-                  id,
-                  query: 'daodao-community-pool-history',
-                  args: {
-                    chainId,
-                    range,
-                  },
-                })
-              : querySnapperSelector({
-                  id,
-                  query: 'daodao-bank-balances-history',
-                  args: {
-                    chainId,
-                    address,
-                    range,
-                  },
-                })
-            : constSelector([]),
-          (!filter || filter === TokenType.Cw20) && !isCommunityPool
-            ? querySnapperSelector({
-                id,
-                query: 'daodao-cw20-balances-history',
-                args: {
-                  chainId,
-                  address,
-                  range,
-                },
-              })
-            : constSelector([]),
-        ])
-      ) as [
-        (
-          | {
-              // Map of denom to balance.
-              value: Record<string, string | undefined>
-              blockHeight: number
-              blockTimeUnixMs: number
-            }[]
-          | null
-        ),
-        (
-          | {
-              // List of contract addresses and balances.
-              value: { contractAddress: string; balance: string }[]
-              blockHeight: number
-              blockTimeUnixMs: number
-            }[]
-          | null
-        )
-      ]
-
-      // Get all unique token sources.
-      const uniqueTokenSources = uniq([
-        ...(nativeBalanceSnapshots || []).flatMap(({ value }) =>
-          Object.keys(value).map((denomOrAddress) =>
-            serializeTokenSource({
-              chainId,
-              type: TokenType.Native,
-              denomOrAddress,
-            })
-          )
-        ),
-        ...(cw20BalanceSnapshots || []).flatMap(({ value }) =>
-          value.map(({ contractAddress }) =>
-            serializeTokenSource({
-              chainId,
-              type: TokenType.Cw20,
-              denomOrAddress: contractAddress,
-            })
-          )
-        ),
-      ])
-
-      // Get generic tokens for all sources.
-      const tokens = get(
-        waitForAll(
-          uniqueTokenSources.map((tokenSource) => {
-            const { chainId, type, denomOrAddress } =
-              deserializeTokenSource(tokenSource)
-
-            return genericTokenSelector({
-              chainId,
-              type,
-              denomOrAddress,
-            })
-          })
-        )
-      )
-
-      return tokens.map((token) => {
-        const balances =
-          token.type === TokenType.Native
-            ? (nativeBalanceSnapshots || []).flatMap(
-                ({ value, blockTimeUnixMs }) => {
-                  const balance = value[token.denomOrAddress]
-                  return balance
-                    ? {
-                        timestamp: new Date(blockTimeUnixMs),
-                        balance,
-                      }
-                    : []
-                }
-              )
-            : (cw20BalanceSnapshots || []).flatMap(
-                ({ value, blockTimeUnixMs }) => {
-                  const balance = value.find(
-                    ({ contractAddress }) =>
-                      contractAddress === token.denomOrAddress
-                  )?.balance
-
-                  return balance
-                    ? {
-                        timestamp: new Date(blockTimeUnixMs),
-                        balance,
-                      }
-                    : []
-                }
-              )
-
-        return {
-          token,
-          balances,
-        }
-      })
     },
 })

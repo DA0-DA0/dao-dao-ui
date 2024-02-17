@@ -26,7 +26,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   TokenPriceHistoryRange,
-  TokenType,
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
 import {
@@ -37,7 +36,6 @@ import {
 } from '@dao-dao/utils'
 
 import { treasuryValueHistorySelector } from '../recoil'
-import { useVotingModuleAdapterContextIfAvailable } from '../voting-module-adapter/react/context'
 
 import 'chartjs-adapter-date-fns'
 
@@ -74,11 +72,6 @@ export const TreasuryHistoryGraph = ({
     TokenPriceHistoryRange.Month
   )
 
-  // If in a DAO, this should load the DAO's governance token info. Undefined if
-  // not in a DAO or fails to load for some reason.
-  const governanceTokenInfo =
-    useVotingModuleAdapterContextIfAvailable()?.adapter?.hooks?.useCommonGovernanceTokenInfo?.()
-
   const treasuryValueHistory = useCachedLoadingWithError(
     treasuryValueHistorySelector({
       chainId,
@@ -91,15 +84,6 @@ export const TreasuryHistoryGraph = ({
           address: account.address,
         },
       },
-      // Provide governance tokens if in a DAO, to ensure they are loaded.
-      nativeGovernanceTokenDenom:
-        governanceTokenInfo?.type === TokenType.Native
-          ? governanceTokenInfo.denomOrAddress
-          : undefined,
-      cw20GovernanceTokenAddress:
-        governanceTokenInfo?.type === TokenType.Cw20
-          ? governanceTokenInfo.denomOrAddress
-          : undefined,
     })
   )
 
@@ -124,41 +108,34 @@ export const TreasuryHistoryGraph = ({
   const tokenValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
-      : treasuryValueHistory.data.tokens.flatMap(
-          ({ token, values, currentValue }) => {
-            // If all values are null/0, do not include this token.
-            if (!values.every((d) => !d) && !currentValue) {
-              return []
-            }
-
-            return {
-              token,
-              order: 2,
-              label:
-                '$' +
-                shortenTokenSymbol(token.symbol).tokenSymbol +
-                ' ' +
-                t('title.value'),
-              data: [...values, currentValue],
-              borderColor: tokenColors[serializeTokenSource(token)],
-              backgroundColor: tokenColors[serializeTokenSource(token)],
-              borderWidth: 2.5,
-            }
+      : treasuryValueHistory.data.tokens.flatMap(({ token, values }) => {
+          // If all values are null/0, do not include this token.
+          if (!values.some((d) => d)) {
+            return []
           }
-        )
+
+          return {
+            order: 2,
+            label:
+              '$' +
+              shortenTokenSymbol(token.symbol).tokenSymbol +
+              ' ' +
+              t('title.value'),
+            data: values,
+            borderColor: tokenColors[serializeTokenSource(token)],
+            backgroundColor: tokenColors[serializeTokenSource(token)],
+            borderWidth: 2.5,
+          }
+        })
 
   const totalValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
       : [
           {
-            token: undefined,
             order: 1,
             label: t('title.totalValue'),
-            data: [
-              ...treasuryValueHistory.data.total.values,
-              treasuryValueHistory.data.total.currentValue,
-            ],
+            data: treasuryValueHistory.data.totals,
             borderColor: brandColor,
             backgroundColor: brandColor,
             borderWidth: 5,
@@ -170,9 +147,7 @@ export const TreasuryHistoryGraph = ({
 
     pointRadius:
       ('pointRadius' in data ? Number((data as any).pointRadius) : undefined) ??
-      // If there is only one data point (current value), show a point since
-      // there is no line. Otherwise, if there is a line, hide the points.
-      (data.data.length === 1 ? 1 : 0),
+      0,
     pointHitRadius:
       ('pointHitRadius' in data
         ? Number((data as any).pointHitRadius)
@@ -208,12 +183,9 @@ export const TreasuryHistoryGraph = ({
             labels:
               treasuryValueHistory.loading || treasuryValueHistory.errored
                 ? []
-                : [
-                    ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                      timestamp.getTime()
-                    ),
-                    Date.now(),
-                  ],
+                : treasuryValueHistory.data.timestamps.map((timestamp) =>
+                    timestamp.getTime()
+                  ),
             datasets,
           }}
           options={{

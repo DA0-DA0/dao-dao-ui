@@ -40,7 +40,7 @@ export const skipAssetSelector = selectorFamily<
       get(
         querySnapperSelector({
           query: 'skip-asset',
-          args: {
+          parameters: {
             chainId,
             denom: denomOrAddress,
             cw20: (type === TokenType.Cw20).toString(),

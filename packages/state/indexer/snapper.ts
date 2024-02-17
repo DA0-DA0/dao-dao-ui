@@ -2,16 +2,16 @@ import { SNAPPER_API_BASE } from '@dao-dao/utils'
 
 export type QuerySnapperOptions = {
   query: string
-  args?: Record<string, any>
+  parameters?: Record<string, any>
 }
 
 export const querySnapper = async <T = any>({
   query,
-  args,
+  parameters,
 }: QuerySnapperOptions): Promise<T | undefined> => {
   // Filter out undefined args.
-  if (args) {
-    args = Object.entries(args).reduce((acc, [key, value]) => {
+  if (parameters) {
+    parameters = Object.entries(parameters).reduce((acc, [key, value]) => {
       if (value !== undefined) {
         acc[key] = value
       }
@@ -19,7 +19,7 @@ export const querySnapper = async <T = any>({
     }, {} as Record<string, any>)
   }
 
-  const params = new URLSearchParams(args)
+  const params = new URLSearchParams(parameters)
 
   const url = `${SNAPPER_API_BASE}/q/${query}?${params.toString()}`
   const response = await fetch(url)
@@ -32,5 +32,16 @@ export const querySnapper = async <T = any>({
     )
   }
 
-  return await response.json()
+  // Return undefined and do not attempt to parse body if no content.
+  if (response.status === 204) {
+    return
+  }
+
+  try {
+    const text = await response.text()
+    return text ? JSON.parse(text) : undefined
+  } catch (err) {
+    console.error(err)
+    // Return undefined
+  }
 }

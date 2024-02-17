@@ -53,7 +53,7 @@ export const genericTokenSelector = selectorFamily<
     ({ type, denomOrAddress, chainId }) =>
     ({ get }) => {
       const source = get(
-        sourceChainAndDenomSelector({
+        genericTokenSourceSelector({
           type,
           chainId,
           denomOrAddress,
@@ -205,30 +205,22 @@ export const coinGeckoUsdPriceSelector = selectorFamily<
       if (!asset?.coingeckoID) {
         return
       }
+      const usdPrice: number | undefined = get(
+        querySnapperSelector({
+          query: 'coingecko-price',
+          parameters: {
+            id: asset.coingeckoID,
+          },
+        })
+      )
 
-      try {
-        const usdPrice: number = get(
-          querySnapperSelector({
-            query: 'coingecko-price',
-            args: {
-              id: asset.coingeckoID,
-            },
-          })
-        )
-
-        return {
-          token,
-          usdPrice,
-          timestamp: new Date(),
-        }
-      } catch (err) {
-        // recoil's `get` throws a promise while loading
-        if (err instanceof Promise) {
-          throw err
-        }
-
-        return undefined
-      }
+      return usdPrice !== undefined
+        ? {
+            token,
+            usdPrice,
+            timestamp: new Date(),
+          }
+        : undefined
     },
 })
 
@@ -572,11 +564,11 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 
 // Resolve a denom on a chain to its source chain and base denom. If an IBC
 // asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
-export const sourceChainAndDenomSelector = selectorFamily<
+export const genericTokenSourceSelector = selectorFamily<
   GenericTokenSource,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
-  key: 'sourceChainAndDenom',
+  key: 'genericTokenSource',
   get:
     ({ chainId, type, denomOrAddress }) =>
     async ({ get }) => {
@@ -689,7 +681,7 @@ export const historicalUsdPriceSelector = selectorFamily<
         const prices: [number, number][] = get(
           querySnapperSelector({
             query: 'coingecko-price-history',
-            args: {
+            parameters: {
               id: asset.coingeckoID,
               range,
             },

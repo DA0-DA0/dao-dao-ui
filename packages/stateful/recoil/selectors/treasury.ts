@@ -1,15 +1,14 @@
+import { Asset as SkipAsset } from '@skip-router/core'
 import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
   accountsSelector,
-  allBalancesSelector,
-  communityPoolBalancesSelector,
   genericTokenBalancesSelector,
-  historicalBalancesSelector,
-  historicalUsdPriceSelector,
+  genericTokenSelector,
+  genericTokenSourceSelector,
   nativeDelegatedBalanceSelector,
-  usdPriceSelector,
+  querySnapperSelector,
 } from '@dao-dao/state'
 import {
   Account,
@@ -26,9 +25,11 @@ import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   deserializeTokenSource,
+  findValueAtTimestamp,
   getNativeTokenForChainId,
   loadableToLoadingData,
   serializeTokenSource,
+  tokensEqual,
 } from '@dao-dao/utils'
 
 import { tokenCardLazyInfoSelector } from './token'
@@ -209,15 +210,9 @@ export const treasuryValueHistorySelector = selectorFamily<
       token: GenericToken
       // Value at each timestamp.
       values: (number | null)[]
-      // Current value.
-      currentValue: number
     }[]
-    total: {
-      // Total value at each timestamp.
-      values: (number | null)[]
-      // Current total.
-      currentValue: number
-    }
+    // Total value at each timestamp.
+    totals: (number | null)[]
   },
   WithChainId<{
     address: string
@@ -228,24 +223,11 @@ export const treasuryValueHistorySelector = selectorFamily<
       // If defined, only show these tokens.
       tokens?: GenericTokenSource[]
     }
-    // If account is a DAO, set this to the denom of its native governance
-    // token.
-    nativeGovernanceTokenDenom?: string
-    // If account is a DAO, set this to the address of its cw20 governance
-    // token.
-    cw20GovernanceTokenAddress?: string
   }>
 >({
   key: 'treasuryValueHistory',
   get:
-    ({
-      chainId: nativeChainId,
-      address,
-      range,
-      filter,
-      nativeGovernanceTokenDenom,
-      cw20GovernanceTokenAddress,
-    }) =>
+    ({ chainId: nativeChainId, address, range, filter }) =>
     ({ get }) => {
       const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
 
@@ -276,258 +258,124 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       }
 
-      // Historical balances.
+      // Value history for all accounts.
       const historicalBalances = get(
         waitForAll(
           allAccounts.map(({ chainId, address }) =>
-            historicalBalancesSelector({
-              chainId,
-              address,
-              range,
+            querySnapperSelector({
+              query: 'daodao-value-history',
+              parameters: {
+                chainId,
+                address,
+                range,
+              },
             })
           )
         )
-      ).flat()
-
-      // Current balances.
-      const currentBalances = isCommunityPool
-        ? get(
-            communityPoolBalancesSelector({
-              chainId: nativeChainId,
-            })
-          )
-        : get(
-            allBalancesSelector({
-              chainId: nativeChainId,
-              address,
-              nativeGovernanceTokenDenom,
-              cw20GovernanceTokenAddress,
-              // Don't include staked in current value since we don't have
-              // staked history, which makes the graph spike at the end.
-              ignoreStaked: true,
-            })
-          )
-
-      const tokens = [
-        ...currentBalances.map(({ token }) => token),
-        ...historicalBalances.map(({ token }) => token),
-      ].filter(
-        (token) =>
-          // Can only compute price if token decimals loaded correctly.
-          token.decimals > 0 &&
-          // Filter by tokens.
-          (!filter?.tokens ||
-            filter.tokens.some(
-              (source) =>
-                serializeTokenSource(source) === serializeTokenSource(token)
-            ))
-      )
-
-      // Unique token sources.
-      const uniqueTokenSources = uniq(
-        tokens.map(({ source }) => serializeTokenSource(source))
-      )
-      const tokenSources = uniqueTokenSources.map(deserializeTokenSource)
-
-      // Get historical token prices for unique tokens.
-      const allHistoricalUsdPrices = get(
-        waitForAll(
-          tokenSources.map(({ chainId, type, denomOrAddress }) =>
-            historicalUsdPriceSelector({
-              chainId,
-              type,
-              denomOrAddress,
-              range,
-            })
-          )
-        )
-      )
-      // Get current token prices for unique tokens.
-      const allCurrentUsdPrices = get(
-        waitForAll(
-          tokenSources.map(({ chainId, type, denomOrAddress }) =>
-            usdPriceSelector({
-              chainId,
-              type,
-              denomOrAddress,
-            })
-          )
-        )
-      )
-
-      // Get timestamps based on first valid historical prices query. They all
-      // have the same range, so just use the first one.
-      const validHistoricalPrices = allHistoricalUsdPrices.find(Boolean) || []
-      let timestamps = validHistoricalPrices.map(({ timestamp }) => timestamp)
-
-      // Group tokens by unique ID and add balances at same timestamps.
-      const tokensWithValues = uniqueTokenSources.reduce(
-        (acc, source, index) => {
-          const token = tokens.find(
-            (token) =>
-              serializeTokenSource(token.source) === source &&
-              token.symbol &&
-              token.decimals
-          )
-          const historicalUsdPrices = allHistoricalUsdPrices[index]
-          const currentUsdPrice = allCurrentUsdPrices[index]?.usdPrice
-          // If no token, decimals, nor prices, skip.
-          if (!token?.decimals || !historicalUsdPrices || !currentUsdPrice) {
-            return acc
-          }
-
-          // Get historical balances for this token in all accounts.
-          const tokenHistorical = historicalBalances
-            .filter(
-              ({ token }) => serializeTokenSource(token.source) === source
-            )
-            .map(({ balances }) => balances)
-
-          // Sum up historical balances per timestamp.
-          const values = timestamps.map((timestamp) => {
-            // For each account, find the most recent balance at or before this
-            // timestamp.
-            const balances = tokenHistorical.flatMap((balances) => {
-              if (balances.length === 0) {
-                return []
-              }
-
-              // Since they are ascending, get the first balance that is
-              // after this timestamp, and then choose the one before.
-              const nextIndex = balances.findIndex(
-                ({ timestamp: balanceTimestamp }) =>
-                  balanceTimestamp > timestamp
-              )
-
-              // If the first balance is after this timestamp, no balance at
-              // this timestamp.
-              if (nextIndex === 0) {
-                return []
-              }
-
-              // If no balances are after this timestamp, use the last balance.
-              if (nextIndex === -1) {
-                return balances[balances.length - 1].balance
-              }
-
-              // Use the balance before the next one.
-              return balances[nextIndex - 1].balance
-            })
-
-            // Sum up the balances for this timestamp, unless they are all
-            // undefined, in which case return null. This is to indicate that
-            // the indexer has no data on this timestamp from any account and
-            // thus should not show up in the graph. If any have a balance,
-            // show it.
-            const totalBalance = balances.reduce(
-              (acc, balance) =>
-                acc === null && !balance
-                  ? null
-                  : (acc || 0n) + BigInt(balance || 0),
-              null as bigint | null
-            )
-
-            if (totalBalance === null) {
-              return null
-            }
-
-            // Since prices are ascending, get the first price that is after
-            // this timestamp, and then choose the one before.
-            let firstPriceAfterIndex = historicalUsdPrices.findIndex(
-              (historical) => historical.timestamp > timestamp
-            )
-            // If all prices are before this timestamp, use the last one if it's
-            // within the last day.
-            if (firstPriceAfterIndex === -1) {
-              const lastPrice =
-                historicalUsdPrices[historicalUsdPrices.length - 1]
-              if (
-                timestamp.getTime() - lastPrice.timestamp.getTime() <
-                24 * 60 * 60 * 1000
-              ) {
-                firstPriceAfterIndex = historicalUsdPrices.length - 1
-              }
-            }
-            // If all prices are after this timestamp, use the second one if
-            // it's within the next day so we check the first two.
-            if (firstPriceAfterIndex === 0) {
-              const firstPrice = historicalUsdPrices[0]
-              if (
-                firstPrice.timestamp.getTime() - timestamp.getTime() <
-                24 * 60 * 60 * 1000
-              ) {
-                firstPriceAfterIndex = 1
-              }
-            }
-            // If price is not found or is still the first one, no value for
-            // this timestamp.
-            if (firstPriceAfterIndex <= 0) {
-              return null
-            }
-
-            // Get the closest price for this timestamp by choosing the closer
-            // price of the two surrounding it.
-            const priceBefore = historicalUsdPrices[firstPriceAfterIndex - 1]
-            const priceAfter = historicalUsdPrices[firstPriceAfterIndex]
-            const usdPrice = (
-              Math.abs(priceBefore.timestamp.getTime() - timestamp.getTime()) <
-              Math.abs(priceAfter.timestamp.getTime() - timestamp.getTime())
-                ? priceBefore
-                : priceAfter
-            ).amount
-
-            return (
-              usdPrice *
-              convertMicroDenomToDenomWithDecimals(
-                totalBalance.toString(),
-                token.decimals
-              )
-            )
-          })
-
-          // Sum up current balances.
-          const currentBalance = currentBalances
-            .filter(
-              ({ token }) => serializeTokenSource(token.source) === source
-            )
-            .reduce((acc, { balance }) => acc + BigInt(balance), 0n)
-          const currentValue =
-            currentUsdPrice *
-            convertMicroDenomToDenomWithDecimals(
-              currentBalance.toString(),
-              token.decimals
-            )
-
-          return [
-            ...acc,
-            {
-              token,
-              values,
-              currentValue,
-            },
-          ]
-        },
-        [] as {
-          token: GenericToken
-          // Value at each timestamp.
-          values: (number | null)[]
-          // Current value.
-          currentValue: number
+      ) as {
+        assets: SkipAsset[]
+        snapshots: {
+          timestamp: number
+          values: {
+            price?: number
+            balance?: string
+            value?: number
+          }[]
+          totalValue: number
         }[]
+      }[]
+
+      const historicalBalanceTokenSources = get(
+        waitForAll(
+          historicalBalances.map(({ assets }) =>
+            waitForAll(
+              assets.map(({ chainID, denom, isCW20, tokenContract }) =>
+                genericTokenSourceSelector({
+                  chainId: chainID,
+                  type: isCW20 ? TokenType.Cw20 : TokenType.Native,
+                  denomOrAddress: (isCW20 && tokenContract) || denom,
+                })
+              )
+            )
+          )
+        )
       )
+
+      // All queries have similar timestamps since they use the same range
+      // (though they may have been cached at different times), so choose the
+      // one with the most timestamps available.
+      const oldestAccount = historicalBalances.reduce((acc, asset) =>
+        asset.snapshots.length > acc.snapshots.length ? acc : asset
+      )
+      let timestamps =
+        oldestAccount?.snapshots.map(({ timestamp }) => timestamp) || []
+
+      // Get unique tokens across all accounts.
+      const uniqueTokenSources = uniq(
+        historicalBalanceTokenSources.flatMap((sources) =>
+          sources.map((source) => serializeTokenSource(source))
+        )
+      ).map((tokenSource) => deserializeTokenSource(tokenSource))
+      // These are loaded/cached above, so this `get` should be instant.
+      const uniqueTokens = get(
+        waitForAll(
+          uniqueTokenSources.map((source) => genericTokenSelector(source))
+        )
+      )
+
+      const tokensWithValues = uniqueTokens.map((token) => {
+        // Get the snapshots of this token at each timestamp for each account.
+        const accountTokenSnapshots = historicalBalances.map(
+          ({ snapshots }, index) => {
+            // Get the index of this token in the snapshots for this account's
+            // historical balances.
+            const snapshotTokenIndex = historicalBalanceTokenSources[
+              index
+            ].findIndex((snapshotTokenSource) =>
+              tokensEqual(snapshotTokenSource, token)
+            )
+
+            if (snapshotTokenIndex === -1) {
+              return []
+            }
+
+            // Extract this token's value at each timestamp.
+            return snapshots.map(({ timestamp, values }) => ({
+              timestamp,
+              value: values[snapshotTokenIndex].value,
+            }))
+          }
+        )
+
+        const values = timestamps.map((timestamp) => {
+          // Get the account values at this timestamp for each account.
+          const accountValues = accountTokenSnapshots.map(
+            (snapshots) => findValueAtTimestamp(snapshots, timestamp)?.value
+          )
+
+          // Sum the values at this timestamp. If all are undefined, return null
+          // to indicate there's no data for this timestamp.
+          return accountValues.reduce(
+            (acc, value) =>
+              acc === null && value === undefined
+                ? null
+                : (acc || 0) + (value || 0),
+            null as number | null
+          )
+        })
+
+        return {
+          token,
+          values,
+        }
+      })
 
       // Sum up the values at each timestamp, ignoring null values.
-      let totalValues = timestamps.map((_, index) =>
+      let totals = timestamps.map((_, index) =>
         tokensWithValues.reduce(
           (acc, { values }) => acc + (values[index] || 0),
           0
         )
-      )
-
-      // Sum up the current value of each token.
-      const totalCurrentValue = tokensWithValues.reduce(
-        (acc, { currentValue }) => acc + currentValue,
-        0
       )
 
       // Remove timestamps at the front that have no data for all tokens.
@@ -539,23 +387,21 @@ export const treasuryValueHistorySelector = selectorFamily<
 
       // If no non-null timestamps, remove all.
       if (firstNonNullTimestamp === -1) {
-        firstNonNullTimestamp = totalValues.length
+        firstNonNullTimestamp = totals.length
       }
+
       if (firstNonNullTimestamp > 0) {
         timestamps = timestamps.slice(firstNonNullTimestamp)
         tokensWithValues.forEach(
-          (data) => (data.values = data.values.splice(firstNonNullTimestamp))
+          (data) => (data.values = data.values.slice(firstNonNullTimestamp))
         )
-        totalValues = totalValues.slice(firstNonNullTimestamp)
+        totals = totals.slice(firstNonNullTimestamp)
       }
 
       return {
-        timestamps,
+        timestamps: timestamps.map((timestamp) => new Date(timestamp)),
         tokens: tokensWithValues,
-        total: {
-          values: totalValues,
-          currentValue: totalCurrentValue,
-        },
+        totals,
       }
     },
 })
