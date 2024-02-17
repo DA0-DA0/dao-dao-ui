@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
+  Loader,
   SegmentedControls,
   WarningCard,
   useCachedLoadingWithError,
@@ -154,14 +155,7 @@ export const TreasuryHistoryGraph = ({
   const tooltipRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col gap-4',
-        (treasuryValueHistory.loading || treasuryValueHistory.updating) &&
-          'animate-pulse',
-        className
-      )}
-    >
+    <div className={clsx('flex flex-col gap-4', className)}>
       {header}
 
       <div
@@ -296,8 +290,14 @@ export const TreasuryHistoryGraph = ({
           }}
         />
 
-        {treasuryValueHistory.errored && (
-          <div className="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+        {treasuryValueHistory.loading || treasuryValueHistory.updating ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
+            <div className="flex flex-col items-center rounded-md bg-component-tooltip-glass p-4 backdrop-blur-sm">
+              <Loader size={32} />
+            </div>
+          </div>
+        ) : treasuryValueHistory.errored ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
             <WarningCard
               className="bg-background-primary"
               content={
@@ -307,7 +307,14 @@ export const TreasuryHistoryGraph = ({
               }
             />
           </div>
-        )}
+        ) : treasuryValueHistory.data.timestamps.length === 0 ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
+            <WarningCard
+              className="bg-background-primary"
+              content={t('error.noTreasuryHistory')}
+            />
+          </div>
+        ) : null}
 
         {tooltipData && tooltipFirstDataPoint !== undefined && (
           <div
