@@ -142,17 +142,7 @@ export const TreasuryHistoryGraph = ({
           },
         ]
 
-  const datasets = [...tokenValues, ...totalValues].map((data) => ({
-    ...data,
-
-    pointRadius:
-      ('pointRadius' in data ? Number((data as any).pointRadius) : undefined) ??
-      0,
-    pointHitRadius:
-      ('pointHitRadius' in data
-        ? Number((data as any).pointHitRadius)
-        : undefined) ?? 10,
-  }))
+  const datasets = [...tokenValues, ...totalValues]
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
   // Contains information on the data point that is currently hovered. Can be
@@ -192,6 +182,13 @@ export const TreasuryHistoryGraph = ({
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            elements: {
+              point: {
+                radius: 0,
+                hoverRadius: 0,
+                hitRadius: 0,
+              },
+            },
             plugins: {
               title: {
                 display: false,
