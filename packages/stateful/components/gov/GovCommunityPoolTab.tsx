@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { waitForAny } from 'recoil'
 
 import { communityPoolBalancesSelector } from '@dao-dao/state/recoil'
@@ -7,7 +6,6 @@ import {
   ErrorPage,
   LineLoaders,
   TokenLineHeader,
-  TooltipInfoIcon,
   useButtonPopupSorter,
   useCachedLoadingWithError,
   useChain,
@@ -15,8 +13,6 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
 import {
-  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  chainIsIndexed,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -24,11 +20,9 @@ import {
 
 import { GovActionsProvider } from '../../actions'
 import { tokenCardLazyInfoSelector } from '../../recoil'
-import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {
-  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
   const tokenCardInfos = useCachedLoadingWithError(
@@ -133,8 +127,9 @@ export const GovCommunityPoolTab = () => {
 
   return (
     <>
+      {/* TODO: commenting out for now since this query is very heavy */}
       {/* Only have history data for indexed chains. */}
-      {chainIsIndexed(chainId) && (
+      {/* {chainIsIndexed(chainId) && (
         <TreasuryHistoryGraph
           address={COMMUNITY_POOL_ADDRESS_PLACEHOLDER}
           chainId={chainId}
@@ -151,7 +146,7 @@ export const GovCommunityPoolTab = () => {
             </div>
           }
         />
-      )}
+      )} */}
 
       <div className="mb-6 flex flex-row justify-end">
         <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
