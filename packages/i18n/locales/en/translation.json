@@ -93,7 +93,6 @@
     "copy": "Copy",
     "copyAddress": "Copy address",
     "copyAddressToClipboard": "Copy address to clipboard",
-    "copyAnAddress": "Copy an address",
     "copyDaoAddress": "Copy DAO address",
     "copyDaoChainAddress": "Copy {{chain}} address",
     "copyIdToClipboard": "Copy ID to clipboard",
