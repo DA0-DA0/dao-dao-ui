@@ -7,10 +7,12 @@ import {
 
 import {
   Account,
+  AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
   GenericTokenSource,
   GenericTokenWithUsdPrice,
+  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
@@ -36,6 +38,7 @@ import {
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
+import { querySnapperSelector } from './indexer'
 import { osmosisUsdPriceSelector } from './osmosis'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
@@ -50,7 +53,7 @@ export const genericTokenSelector = selectorFamily<
     ({ type, denomOrAddress, chainId }) =>
     ({ get }) => {
       const source = get(
-        sourceChainAndDenomSelector({
+        genericTokenSourceSelector({
           type,
           chainId,
           denomOrAddress,
@@ -183,7 +186,46 @@ export const genericTokenSelector = selectorFamily<
     },
 })
 
+export const coinGeckoUsdPriceSelector = selectorFamily<
+  GenericTokenWithUsdPrice | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+>({
+  key: 'coinGeckoUsdPrice',
+  get:
+    (params) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      const token = get(genericTokenSelector(params))
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(skipAssetSelector(params))
+      if (!asset?.coingeckoID) {
+        return
+      }
+      const usdPrice: number | undefined = get(
+        querySnapperSelector({
+          query: 'coingecko-price',
+          parameters: {
+            id: asset.coingeckoID,
+          },
+        })
+      )
+
+      return usdPrice !== undefined
+        ? {
+            token,
+            usdPrice,
+            timestamp: new Date(),
+          }
+        : undefined
+    },
+})
+
 const priceSelectors = [
+  coinGeckoUsdPriceSelector,
   osmosisUsdPriceSelector,
   astroportUsdPriceSelector,
   whiteWhaleUsdPriceSelector,
@@ -522,11 +564,11 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 
 // Resolve a denom on a chain to its source chain and base denom. If an IBC
 // asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
-export const sourceChainAndDenomSelector = selectorFamily<
+export const genericTokenSourceSelector = selectorFamily<
   GenericTokenSource,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
-  key: 'sourceChainAndDenom',
+  key: 'genericTokenSource',
   get:
     ({ chainId, type, denomOrAddress }) =>
     async ({ get }) => {
@@ -604,6 +646,59 @@ export const sourceChainAndDenomSelector = selectorFamily<
           sourceType === TokenType.Cw20
             ? sourceDenom.replace(/^cw20:/, '')
             : sourceDenom,
+      }
+    },
+})
+
+export const historicalUsdPriceSelector = selectorFamily<
+  AmountWithTimestamp[] | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'> & {
+    range: TokenPriceHistoryRange
+  }
+>({
+  key: 'historicalUsdPrice',
+  get:
+    ({ chainId, type, denomOrAddress, range }) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(
+        skipAssetSelector({
+          type,
+          chainId,
+          denomOrAddress,
+        })
+      )
+
+      if (!asset?.coingeckoID) {
+        return
+      }
+
+      try {
+        const prices: [number, number][] = get(
+          querySnapperSelector({
+            query: 'coingecko-price-history',
+            parameters: {
+              id: asset.coingeckoID,
+              range,
+            },
+          })
+        )
+
+        return prices.map(([timestamp, amount]) => ({
+          timestamp: new Date(timestamp),
+          amount,
+        }))
+      } catch (err) {
+        // recoil's `get` throws a promise while loading
+        if (err instanceof Promise) {
+          throw err
+        }
+
+        return undefined
       }
     },
 })

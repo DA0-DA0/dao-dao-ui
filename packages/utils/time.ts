@@ -41,3 +41,31 @@ export const dateToWdhms = (date: Date, numUnits = 2) =>
 // Converts number in seconds to time format mm:ss. Clock format.
 export const secondsToMmSs = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${`0${Math.floor(seconds % 60)}`.slice(-2)}`
+
+/**
+ * Get the most recent value at or before the given timestamp.
+ *
+ * @param data An array of values sorted by timestamp in ascending order.
+ * @param timestamp The timestamp to find the value at or before.
+ * @returns The most recent value at or before the given timestamp.
+ */
+export const findValueAtTimestamp = <Value extends { timestamp: number }>(
+  data: Value[],
+  timestamp: number
+): Value | undefined => {
+  // Find the most recent value at or before this timestamp. Since they are
+  // ascending, get the first one after the timestamp, and then choose the one
+  // before.
+  const nextIndex = data.findIndex(
+    ({ timestamp: dataTimestamp }) => dataTimestamp > timestamp
+  )
+
+  // If there is no value after this timestamp, use the last value.
+  return nextIndex === -1
+    ? data[data.length - 1]
+    : // If the first value is after this timestamp, there is no matching item.
+    nextIndex === 0
+    ? undefined
+    : // Otherwise just use the previous value.
+      data[nextIndex - 1]
+}

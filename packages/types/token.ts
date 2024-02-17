@@ -183,3 +183,10 @@ export type AmountWithTimestamp = {
   amount: number
   timestamp: Date
 }
+
+export enum TokenPriceHistoryRange {
+  Year = 'year',
+  Month = 'month',
+  Week = 'week',
+  Day = 'day',
+}

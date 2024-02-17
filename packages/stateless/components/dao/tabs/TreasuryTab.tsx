@@ -194,7 +194,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
               children: (
                 <>
                   <CopyAll className="!h-4 !w-4" />
-                  {t('button.copyAnAddress')}
+                  {t('button.copyAddress')}
                 </>
               ),
             },

@@ -70,6 +70,9 @@ export const WHITE_WHALE_PRICES_API =
 export const ASTROPORT_PRICES_API =
   'https://api.astroport.fi/api/tokens/DENOM?chainId=neutron-1'
 
+// Snapper API
+export const SNAPPER_API_BASE = 'https://snapper.daodao.zone'
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
