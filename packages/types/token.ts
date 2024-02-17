@@ -189,5 +189,4 @@ export enum TokenPriceHistoryRange {
   Month = 'month',
   Week = 'week',
   Day = 'day',
-  Hour = 'hour',
 }
