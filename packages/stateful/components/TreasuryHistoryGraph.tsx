@@ -299,19 +299,21 @@ export const TreasuryHistoryGraph = ({
         ) : treasuryValueHistory.errored ? (
           <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
             <WarningCard
-              className="bg-background-primary"
+              className="max-w-lg bg-background-primary"
               content={
                 treasuryValueHistory.error instanceof Error
                   ? treasuryValueHistory.error.message
                   : `${treasuryValueHistory.error}`
               }
+              textClassName="break-words"
             />
           </div>
         ) : treasuryValueHistory.data.timestamps.length === 0 ? (
           <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
             <WarningCard
-              className="bg-background-primary"
+              className="max-w-lg bg-background-primary"
               content={t('error.noTreasuryHistory')}
+              textClassName="break-words"
             />
           </div>
         ) : null}
