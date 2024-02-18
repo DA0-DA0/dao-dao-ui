@@ -445,7 +445,7 @@
     "noNftsSelected": "No NFTs selected.",
     "noSingleChoiceProposalModule": "The DAO does not have a single choice proposal module.",
     "noSingleChoiceProposalModuleAppsDisabled": "The DAO does not have a recognizable single choice proposal module, so Apps cannot be used at this time.",
-    "noTreasuryHistory": "No history found. Try sending some tokens to the treasury.",
+    "noTreasuryHistory": "No history found. Try sending some tokens to the treasury, or check back later.",
     "noValidatorFound": "No validator found.",
     "noValidatorSelected": "No validator selected.",
     "noVestingContractSelected": "No vesting contract selected.",
