@@ -50,7 +50,7 @@
     "useExistingToken": "Utiliser un jeton existant"
   },
   "commandBar": {
-    "home": "Acceuil",
+    "home": "Accueil",
     "navigateDao": "Naviguer vers le DAO",
     "prompt": "Que recherchez-vous ?"
   },
@@ -214,7 +214,7 @@
     "configureWalletModalExplanation": "Vous avez installé Keplr, mais il semble que vous n'ayez pas configuré de portefeuille. Pour continuer, ouvrez l'extension Keplr et configurez un portefeuille.\n Pour ouvrir l'extension Keplr, appuyez sur l'icône puzzle en haut à droite de votre navigateur, puis sur le bouton Keplr. Une fois que vous avez fait cela, une nouvelle page s'ouvrira où vous pourrez créer un nouveau compte. Configurez votre portefeuille pour continuer",
     "connectWalletToViewUnstaking": "Connectez votre portefeuille pour voir les jetons en cours déstake",
     "connectWalletToViewVote": "Connectez votre portefeuille pour voir votre vote.",
-    "considerReturningHome": "Envisagez de revenir à l'acceuil",
+    "considerReturningHome": "Envisagez de revenir à l'accueil",
     "copyWalletAddressTooltip": "Copier l'adresse du portefeuille",
     "couldHaveMoreVotingPower": "Vous pourriez avoir plus de pouvoir de vote.",
     "creatingDao": "Création du DAO...",
@@ -363,7 +363,7 @@
     "feedback": "Commentaires",
     "governanceToken": "Jeton de gouvernance",
     "history": "Historique",
-    "home": "Acceuil",
+    "home": "Accueil",
     "info": "Info",
     "instantiateSmartContract": "Instancier le Smart Contract",
     "manageMembers": "Gérer les membres",
