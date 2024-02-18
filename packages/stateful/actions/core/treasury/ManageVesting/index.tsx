@@ -876,7 +876,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
               ? new Date(
                   // nanoseconds => milliseconds
                   Number(instantiateMsg.start_time) / 1e6
-                ).toLocaleString()
+                ).toISOString()
               : '',
             title: instantiateMsg.title,
             amount: convertMicroDenomToDenomWithDecimals(
