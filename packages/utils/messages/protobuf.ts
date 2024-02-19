@@ -752,25 +752,32 @@ export const decodeGovProposal = async (
     govProposal.proposal.summary ||
     legacyContent.find((content) => content?.description)?.description ||
     ''
-  // If metadata is a URL, try to fetch metadata.
-  if (
-    govProposal.proposal.metadata &&
-    isValidUrl(govProposal.proposal.metadata, true)
-  ) {
-    try {
-      const res = await fetch(
-        transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)
-      )
-      const json = await res.json()
-      if (objectMatchesStructure(json, { title: {} })) {
-        title = json.title
-      }
-      if (objectMatchesStructure(json, { details: {} })) {
-        description = json.details
-      } else if (objectMatchesStructure(json, { description: {} })) {
-        description = json.description
-      }
-    } catch {}
+  if (govProposal.proposal.metadata) {
+    let metadata
+    // If metadata is a URL, try to fetch metadata.
+    if (isValidUrl(govProposal.proposal.metadata, true)) {
+      try {
+        const res = await fetch(
+          transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)
+        )
+        metadata = await res.json()
+      } catch {}
+
+      // If metadata is a JSON object, use it.
+    } else {
+      try {
+        metadata = JSON.parse(govProposal.proposal.metadata)
+      } catch {}
+    }
+
+    if (objectMatchesStructure(metadata, { title: {} })) {
+      title = metadata.title
+    }
+    if (objectMatchesStructure(metadata, { details: {} })) {
+      description = metadata.details
+    } else if (objectMatchesStructure(metadata, { description: {} })) {
+      description = metadata.description
+    }
   }
 
   return {
