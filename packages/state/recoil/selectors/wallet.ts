@@ -55,15 +55,15 @@ export const walletCw20BalancesSelector = selectorFamily<
     },
 })
 
-export const walletTokenStakedDenomsSelector = selectorFamily<
+export const walletTokenDaoStakedDenomsSelector = selectorFamily<
   readonly string[],
   WithChainId<{ walletAddress: string }>
 >({
-  key: 'walletTokenStakedDenoms',
+  key: 'walletTokenDaoStakedDenoms',
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
-      // Get the DAO's that the wallet is a member of
+      // Get the DAOs that the wallet is a member of
       const daos = get(
         queryWalletIndexerSelector({
           chainId,
@@ -96,11 +96,7 @@ export const walletTokenStakedDenomsSelector = selectorFamily<
         )
       )
 
-      if (
-        !votingModules ||
-        !Array.isArray(votingModules) ||
-        votingModules.length === 0
-      ) {
+      if (votingModules.length === 0) {
         return []
       }
 
