@@ -109,7 +109,7 @@ export const ProfileCardMemberInfoTokens = ({
   // the time of proposal creation. Show proposal-specific message when in a
   // proposal.
   return cantVoteOnProposal ? (
-    <p className="legend-text break-all">
+    <p className="legend-text break-words">
       {t('info.tokenDaoNotMemberInfo', {
         context: 'proposal',
         tokenSymbol: loadingTokens.loading
@@ -124,7 +124,7 @@ export const ProfileCardMemberInfoTokens = ({
     <>
       <div className="secondary-text space-y-3">
         {!isMember && (
-          <p className="secondary-text mb-4 break-all text-text-body">
+          <p className="secondary-text mb-4 break-words text-text-body">
             {t('info.tokenDaoNotMemberInfo', {
               context: 'dao',
               tokenSymbol: loadingTokens.loading
