@@ -124,6 +124,7 @@ export const queryValidatorIndexerSelector = selectorFamily<
         })
       ),
 })
+
 export const queryWalletIndexerSelector = selectorFamily<
   any,
   Omit<QueryIndexerParams, 'type' | 'address'> & {
