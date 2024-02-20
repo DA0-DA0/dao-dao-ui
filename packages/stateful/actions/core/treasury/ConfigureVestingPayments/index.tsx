@@ -85,7 +85,9 @@ export const makeConfigureVestingPaymentsAction: ActionMaker<
     label: vestingEnabled
       ? t('title.configureVestingPayments')
       : t('title.enableVestingPayments'),
-    description: t('widgetDescription.vesting'),
+    description: vestingEnabled
+      ? t('info.configureVestingPaymentsDescription')
+      : t('widgetDescription.vesting'),
     keywords: ['payroll'],
     notReusable: true,
     Component,
