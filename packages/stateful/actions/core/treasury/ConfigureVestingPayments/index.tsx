@@ -49,8 +49,7 @@ export const makeConfigureVestingPaymentsAction: ActionMaker<
 
     return decoded.match &&
       decoded.data.mode === 'set' &&
-      decoded.data.id === WidgetId.VestingPayments &&
-      typeof decoded.data.values.factory === 'string'
+      decoded.data.id === WidgetId.VestingPayments
       ? {
           match: true,
           data: decoded.data.values as VestingPaymentsWidgetData,
