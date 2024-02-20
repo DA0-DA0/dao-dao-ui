@@ -627,6 +627,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // kujira
         remoteChannel: 'channel-135',
       },
+      [ChainId.TerraMainnet]: {
+        // stargaze
+        note: 'stars1c8xqrx3es7nlzfx94hpsx94tu9mlxpdqv3338m039z0v4zltsl7qg7aglq',
+        // stargaze
+        listener:
+          'stars1qd4hzjx8ugvkt5mtds9hxdm4c7hanfakgt80zrszyr9ccannq9zqg0t9tw',
+        // terra
+        voice:
+          'terra1xezqw7jhu87ux2g7f2d27hlwt4u3qa8726j833323rrum82jgesq8ux30x',
+        // stargaze
+        localConnection: 'connection-275',
+        // terra
+        remoteConnection: 'connection-408',
+        // stargaze
+        localChannel: 'channel-284',
+        // terra
+        remoteChannel: 'channel-383',
+      },
     },
   },
   {
