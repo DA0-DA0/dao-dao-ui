@@ -954,7 +954,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     chainId: ChainId.OraichainMainnet,
     name: 'oraichain',
     mainnet: true,
-    accentColor: '#000000',
+    overrideChainImageUrl: '/chains/oraichain.svg',
+    accentColor: '#ffffff',
     factoryContractAddress:
       'orai1jwuyup67xem5tecj2pt098y23h5032f66zvj709p7mgz4vgyjx3qua5r5g',
     createWithCw20: true,
