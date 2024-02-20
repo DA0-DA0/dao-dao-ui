@@ -5,7 +5,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 
 import { VestingPaymentsEditor } from '../../../../widgets/widgets/VestingPayments/VestingPaymentsEditor'
 
-export const EnableVestingPaymentsComponent: ActionComponent<
+export const ConfigureVestingPaymentsComponent: ActionComponent<
   undefined,
   VestingPaymentsWidgetData
 > = (props) => {

@@ -8,7 +8,7 @@ import { ChainId, WalletProfileData } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
-import { ChainLogo } from '../ChainLogo'
+import { ChainLogo } from '../chain/ChainLogo'
 import { IconButton } from '../icon_buttons'
 import { TextInput } from '../inputs'
 import { Loader } from '../logo'

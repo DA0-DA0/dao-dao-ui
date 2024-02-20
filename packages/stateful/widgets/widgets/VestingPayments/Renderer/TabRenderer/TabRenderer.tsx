@@ -3,6 +3,7 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainProvider,
   DropdownIconButton,
   ErrorPage,
   LineLoaders,
@@ -230,7 +231,7 @@ export const TabRenderer = ({
                   {vestingPaymentsNeedingSlashRegistration.map(
                     (props, index) => (
                       <VestingPaymentLine
-                        key={index}
+                        key={props.chainId + props.vestingContractAddress}
                         EntityDisplay={EntityDisplay}
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
@@ -251,7 +252,7 @@ export const TabRenderer = ({
 
                 {activeVestingPayments.map((props, index) => (
                   <VestingPaymentLine
-                    key={index}
+                    key={props.chainId + props.vestingContractAddress}
                     EntityDisplay={EntityDisplay}
                     onClick={() => {
                       setVestingPaymentModalOpen(true)
@@ -297,7 +298,7 @@ export const TabRenderer = ({
 
                     {completedVestingPayments.map((props, index) => (
                       <VestingPaymentLine
-                        key={index}
+                        key={props.chainId + props.vestingContractAddress}
                         EntityDisplay={EntityDisplay}
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
@@ -331,7 +332,9 @@ export const TabRenderer = ({
         visible={vestingPaymentModalOpen && !!openVestingPayment}
       >
         {openVestingPayment ? (
-          <VestingPaymentCard {...openVestingPayment} />
+          <ChainProvider chainId={openVestingPayment.chainId}>
+            <VestingPaymentCard {...openVestingPayment} />
+          </ChainProvider>
         ) : (
           <Loader />
         )}

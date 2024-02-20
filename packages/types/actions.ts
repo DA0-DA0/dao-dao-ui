@@ -56,7 +56,7 @@ export enum ActionKey {
   GovernanceProposal = 'governanceProposal',
   GovernanceDeposit = 'governanceDeposit',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
-  EnableVestingPayments = 'enableVestingPayments',
+  ConfigureVestingPayments = 'configureVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',

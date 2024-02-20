@@ -1,7 +1,7 @@
 import { GenericToken } from '@dao-dao/types'
 import { Vest } from '@dao-dao/types/contracts/CwVesting'
 
-export enum VestingPaymentsWidgetVersion {
+export enum VestingContractVersion {
   /**
    * Version 1 supports vesting payment owner different from factory owner.
    */
@@ -13,25 +13,55 @@ export enum VestingPaymentsWidgetVersion {
 }
 
 /**
- * The latest version of the vesting payments widget. This is used to check if
- * an update is needed.
+ * The latest version of the vesting contract used by the vesting payments
+ * widget.
  */
-export const LATEST_VESTING_PAYMENTS_WIDGET_VERSION =
-  VestingPaymentsWidgetVersion.V2
+export const LATEST_VESTING_CONTRACT_VERSION = VestingContractVersion.V2
 
 export type VestingPaymentsWidgetData = {
-  factory: string
-  // Versioning was created after the widget was created, so it may be
-  // undefined. If undefined, assume it supports none of the versioned features.
-  version?: VestingPaymentsWidgetVersion
-  // In case the vesting factory is updated, keep a list of the old factories so
-  // we still show their vesting payments.
+  /**
+   * A map of chain ID to current factory on that chain. This replaces the
+   * single `factory` and allows for multiple chains. Old versions should be
+   * added to the `oldFactories` list.
+   */
+  factories?: Record<
+    string,
+    {
+      address: string
+      version: VestingContractVersion
+    }
+  >
+  /**
+   * Pre-interchain vesting used this field as the only factory. The factories
+   * array above is now used instead and takes precedence. This factory, if
+   * defined, is on the same chain as the DAO.
+   */
+  factory?: string
+  /**
+   * Versioning was created after the widget was created, so it may be
+   * undefined. If undefined, assume it supports none of the versioned features.
+   * This is part of the old single factory, before the factories map which
+   * allows for multiple chains.
+   */
+  version?: VestingContractVersion
+  /**
+   * In case the vesting factory is updated, keep a list of the old factories so
+   * we still show their vesting payments.
+   */
   oldFactories?: OldVestingPaymentFactory[]
 }
 
 export type OldVestingPaymentFactory = {
+  /**
+   * Chain ID was added later. If undefined, assume it is the same as the DAO.
+   */
+  chainId?: string
   address: string
-  version?: VestingPaymentsWidgetVersion
+  /**
+   * Versioning was created after the widget was created, so it may be
+   * undefined. If undefined, assume it supports none of the versioned features.
+   */
+  version?: VestingContractVersion
 }
 
 export type VestingValidatorSlash = {
@@ -58,6 +88,7 @@ export type VestingValidatorWithSlashes = {
 }
 
 export type VestingInfo = {
+  chainId: string
   vestingContractAddress: string
   vest: Vest
   token: GenericToken

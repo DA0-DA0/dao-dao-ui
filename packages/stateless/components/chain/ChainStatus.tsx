@@ -2,10 +2,10 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ChainStatusProps } from '@dao-dao/types'
-import { formatDateTimeTz, getDisplayNameForChainId } from '@dao-dao/utils'
+import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { ChainLogo } from './ChainLogo'
-import { ErrorPage } from './error'
+import { ErrorPage } from '../error'
+import { ChainLabel } from './ChainLabel'
 
 export const ChainStatus = ({ chainId, upStatus }: ChainStatusProps) => {
   const { t } = useTranslation()
@@ -16,14 +16,7 @@ export const ChainStatus = ({ chainId, upStatus }: ChainStatusProps) => {
       className="flex flex-col gap-3 rounded-md bg-background-tertiary p-3 xs:gap-4 xs:p-4"
     >
       <div className="flex flex-row items-start justify-between gap-x-4 gap-y-2">
-        <div className="flex flex-row items-center gap-2 xs:gap-3">
-          <ChainLogo chainId={chainId} className="xs:hidden" size={22} />
-          <ChainLogo chainId={chainId} className="hidden xs:block" size={28} />
-
-          <p className="title-text xs:header-text">
-            {getDisplayNameForChainId(chainId)}
-          </p>
-        </div>
+        <ChainLabel chainId={chainId} header />
 
         <div
           className={clsx(

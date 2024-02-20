@@ -7,7 +7,7 @@ import {
   maybeGetNativeTokenForChainId,
 } from '@dao-dao/utils'
 
-import { ChainContext } from '../hooks/useChainContext'
+import { ChainContext } from '../../hooks/useChainContext'
 
 export type ChainProviderProps = {
   chainId: string

@@ -7,7 +7,7 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { TokenType, VestingPaymentsWidgetVersion } from '@dao-dao/types'
+import { AccountType, TokenType, VestingContractVersion } from '@dao-dao/types'
 
 import { EntityDisplay } from '../../../../components'
 import { BeginVesting } from './BeginVesting'
@@ -39,7 +39,7 @@ Default.args = {
   options: {
     widgetData: {
       factory: 'factory',
-      version: VestingPaymentsWidgetVersion.V1,
+      version: VestingContractVersion.V1,
     },
     tokens: [
       {
@@ -57,6 +57,11 @@ Default.args = {
           },
         },
         balance: '1248281239056',
+        owner: {
+          type: AccountType.Native,
+          chainId: CHAIN_ID,
+          address: 'owner',
+        },
       },
       {
         token: {
@@ -73,9 +78,18 @@ Default.args = {
           },
         },
         balance: '19023827587124',
+        owner: {
+          type: AccountType.Native,
+          chainId: CHAIN_ID,
+          address: 'owner',
+        },
       },
     ],
-    vestingFactoryOwner: { loading: false, data: undefined },
+    preV1VestingFactoryOwner: {
+      loading: false,
+      errored: false,
+      data: undefined,
+    },
     AddressInput,
     EntityDisplay,
     createCw1WhitelistOwners: async () => {

@@ -17,8 +17,7 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const {
     chain: { chain_name: currentChainName } = { chain_name: undefined },
   } = useChainContextIfAvailable() ?? {}
-  const firstSupportedChainName = getSupportedChains()[0].chain.chain_name
-  const chainName = currentChainName || firstSupportedChainName
+  const chainName = currentChainName || getSupportedChains()[0].chain.chain_name
 
   const { getWalletRepo } = useManager()
 

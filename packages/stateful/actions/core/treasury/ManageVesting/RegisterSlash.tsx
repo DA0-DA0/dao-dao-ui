@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLink,
+  ChainProvider,
   InputErrorMessage,
   InputThemedText,
   Loader,
@@ -14,6 +15,7 @@ import {
 import {
   ActionComponent,
   LoadingData,
+  LoadingDataWithError,
   StatefulEntityDisplayProps,
   TransProps,
   VestingInfo,
@@ -21,12 +23,14 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react/context'
 
 export type RegisterSlashData = {
+  chainId: string
   address: string
   validator: string
   time: string
@@ -35,7 +39,7 @@ export type RegisterSlashData = {
 }
 
 export type RegisterSlashOptions = {
-  vestingInfos: LoadingData<VestingInfo[]>
+  vestingInfos: LoadingDataWithError<VestingInfo[]>
   selectedVest: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   Trans: ComponentType<TransProps>
@@ -48,27 +52,40 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
   options: { vestingInfos, selectedVest, EntityDisplay, Trans },
 }) => {
   const { t } = useTranslation()
-  const { address } = useActionOptions()
+  const options = useActionOptions()
 
-  const { setValue } = useFormContext<RegisterSlashData>()
+  const { watch, setValue } = useFormContext<RegisterSlashData>()
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
 
   // Only vesting contracts with unregistered slashes where the owner is set.
-  const registerableVests = vestingInfos.loading
-    ? undefined
-    : vestingInfos.data.filter(
-        ({ owner, hasUnregisteredSlashes }) =>
-          owner &&
-          (owner.address === address ||
-            (owner.isCw1Whitelist &&
-              owner.cw1WhitelistAdmins.includes(address))) &&
-          hasUnregisteredSlashes
-      )
+  const registerableVests =
+    vestingInfos.loading || vestingInfos.errored
+      ? undefined
+      : vestingInfos.data.filter(
+          ({ chainId, owner, hasUnregisteredSlashes }) => {
+            const chainAddress = getChainAddressForActionOptions(
+              options,
+              chainId
+            )
+
+            return (
+              owner &&
+              chainAddress &&
+              (owner.address === chainAddress ||
+                (owner.isCw1Whitelist &&
+                  owner.cw1WhitelistAdmins.includes(chainAddress))) &&
+              hasUnregisteredSlashes
+            )
+          }
+        )
 
   const onSelectSlash = (
+    chainId: string,
     address: string,
     validator: string,
     { timeMs, unregisteredAmount, duringUnbonding }: VestingValidatorSlash
   ) => {
+    setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
     setValue((fieldNamePrefix + 'address') as 'address', address)
     setValue((fieldNamePrefix + 'validator') as 'validator', validator)
     // Milliseconds to nanoseconds.
@@ -85,7 +102,7 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
   }
 
   return (
-    <>
+    <ChainProvider chainId={chainId}>
       <div className="flex flex-col gap-2">
         <div className="body-text mb-4 max-w-prose">
           <Trans i18nKey="info.registerSlashVestingExplanation">
@@ -114,13 +131,18 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
             <div className="flex flex-wrap gap-2">
               {registerableVests.map((info) => (
                 <RenderVest
-                  key={info.vestingContractAddress}
+                  key={info.chainId + info.vestingContractAddress}
                   EntityDisplay={EntityDisplay}
                   fieldNamePrefix={fieldNamePrefix}
                   info={info}
                   isCreating={isCreating}
                   onSelectSlash={(validator, slash) =>
-                    onSelectSlash(info.vestingContractAddress, validator, slash)
+                    onSelectSlash(
+                      info.chainId,
+                      info.vestingContractAddress,
+                      validator,
+                      slash
+                    )
                   }
                 />
               ))}
@@ -151,7 +173,7 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
           <InputErrorMessage error={errors?.address} />
         )}
       </div>
-    </>
+    </ChainProvider>
   )
 }
 
@@ -165,16 +187,13 @@ type RenderVestProps = {
 }
 
 const RenderVest = ({
-  info: { vestingContractAddress, vest, slashes },
+  info: { chainId, vestingContractAddress, vest, slashes },
   isCreating,
   fieldNamePrefix,
   onSelectSlash,
   EntityDisplay,
 }: RenderVestProps) => {
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
   const nativeToken = getNativeTokenForChainId(chainId)
 
   const { watch } = useFormContext()

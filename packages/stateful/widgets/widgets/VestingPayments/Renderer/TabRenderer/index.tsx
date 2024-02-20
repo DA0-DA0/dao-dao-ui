@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import {
-  useCachedLoadable,
+  useCachedLoadingWithError,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -13,10 +13,7 @@ import {
   VestingPaymentsWidgetData,
   WidgetRendererProps,
 } from '@dao-dao/types'
-import {
-  getDaoProposalSinglePrefill,
-  loadableToLoadingDataWithError,
-} from '@dao-dao/utils'
+import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../../../actions'
 import {
@@ -30,9 +27,9 @@ import { vestingInfosForFactorySelector } from '../../../../../recoil'
 import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 
 export const TabRenderer = ({
-  variables: { factory, oldFactories },
+  variables: { factories, factory, oldFactories },
 }: WidgetRendererProps<VestingPaymentsWidgetData>) => {
-  const { chain_id: chainId } = useChain()
+  const { chain_id: defaultChainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
@@ -46,14 +43,40 @@ export const TabRenderer = ({
     return () => clearInterval(interval)
   }, [setRefresh])
 
-  const vestingPaymentsLoading = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      vestingInfosForFactorySelector({
-        factory,
-        oldFactories,
-        chainId,
-      })
-    )
+  const vestingPaymentsLoading = useCachedLoadingWithError(
+    waitForAll([
+      // Factory or factory list depending on version.
+      ...(factories
+        ? Object.entries(factories).map(([chainId, { address }]) => ({
+            chainId,
+            address,
+          }))
+        : factory
+        ? [
+            {
+              chainId: defaultChainId,
+              address: factory,
+            },
+          ]
+        : // Should never happen.
+          []
+      ).map(({ chainId, address }) =>
+        vestingInfosForFactorySelector({
+          chainId,
+          factory: address,
+        })
+      ),
+
+      // Old factories.
+      ...(oldFactories || []).map(({ address }) =>
+        vestingInfosForFactorySelector({
+          chainId: defaultChainId,
+          factory: address,
+        })
+      ),
+    ]),
+    // Combine all vesting infos into one list across chains.
+    (data) => data.flat()
   )
 
   const vestingAction = useActionForKey(ActionKey.ManageVesting)
@@ -94,6 +117,7 @@ export const TabRenderer = ({
               prefill: getDaoProposalSinglePrefill({
                 actions: vestingPaymentsNeedingSlashRegistration.flatMap(
                   ({
+                    chainId,
                     vestingContractAddress,
                     slashes: validatorsWithSlashes,
                   }) =>
@@ -107,6 +131,7 @@ export const TabRenderer = ({
                               ...vestingActionDefaults,
                               mode: 'registerSlash',
                               registerSlash: {
+                                chainId,
                                 address: vestingContractAddress,
                                 validator: validatorOperatorAddress,
                                 // Milliseconds to nanoseconds.

@@ -7,7 +7,7 @@ import { makeUpgradeV1ToV2Action } from './dao_governance/UpgradeV1ToV2'
 import { makeExecuteAction } from './smart_contracting/Execute'
 import { makeInstantiateAction } from './smart_contracting/Instantiate'
 import { makeCommunityPoolSpendAction } from './treasury/CommunityPoolSpend'
-import { makeEnableVestingPaymentsAction } from './treasury/EnableVestingPayments'
+import { makeConfigureVestingPaymentsAction } from './treasury/ConfigureVestingPayments'
 import { makeManageStakingAction } from './treasury/ManageStaking'
 import { makeManageVestingAction } from './treasury/ManageVesting'
 import { makeSpendAction } from './treasury/Spend'
@@ -27,6 +27,6 @@ export const makeCommonlyUsedCategory: ActionCategoryMaker = ({ t }) => ({
     makeGovernanceVoteAction,
     makeExecuteAction,
     makeInstantiateAction,
-    makeEnableVestingPaymentsAction,
+    makeConfigureVestingPaymentsAction,
   ],
 })
