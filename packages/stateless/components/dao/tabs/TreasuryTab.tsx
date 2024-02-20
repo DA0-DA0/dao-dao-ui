@@ -238,7 +238,9 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
             <TokenLine
               {...props}
               key={
-                props.token.chainId + props.owner + props.token.denomOrAddress
+                props.token.chainId +
+                props.owner.address +
+                props.token.denomOrAddress
               }
               color={tokenSourceColorMap[serializeTokenSource(props.token)]}
               transparentBackground={index % 2 !== 0}
