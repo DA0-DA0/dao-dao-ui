@@ -1,7 +1,12 @@
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { CopyToClipboard, TokenSwapStatus } from '@dao-dao/stateless'
+import {
+  CopyToClipboard,
+  TokenSwapStatus,
+  WarningCard,
+} from '@dao-dao/stateless'
 import { ActionComponent, TokenSwapStatusProps } from '@dao-dao/types'
 
 export type ExistingTokenSwapOptions = {
@@ -14,6 +19,7 @@ export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
   fieldNamePrefix,
   options: { tokenSwapStatusProps, status },
 }) => {
+  const { t } = useTranslation()
   const { watch } = useFormContext()
 
   const tokenSwapContractAddress = watch(
@@ -33,6 +39,11 @@ export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
         className="max-w-full self-center"
         takeAll
         value={tokenSwapContractAddress}
+      />
+
+      <WarningCard
+        className="max-w-2xl self-center"
+        content={t('info.tokenSwapWarning')}
       />
     </>
   )

@@ -1242,6 +1242,7 @@
     "tokenStaked": "${{tokenSymbol}} staked",
     "tokenSwapDescription": "Create a new token swap that completes when both parties have paid their tokens or fund an existing one.",
     "tokenSwapExplanation": "To perform a token swap, one DAO must first create it, configuring the number of tokens each party must contribute. Then, both DAOs must add their funds. Once both DAOs have added their funds to the swap, the swap will be performed immediately.",
+    "tokenSwapWarning": "DO NOT SEND TOKENS DIRECTLY TO THE CONTRACT—THEY WILL BE LOST. The counterparty must use the same Token Swap action to perform the swap.",
     "token_one": "token",
     "token_other": "tokens",
     "tokens": "tokens",
