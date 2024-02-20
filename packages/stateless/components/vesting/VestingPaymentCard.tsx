@@ -64,6 +64,11 @@ export type VestingPaymentCardProps = {
   // Defined if using a Cw20 token.
   cw20Address?: string
 
+  /**
+   * Whether or not a wallet is connected.
+   */
+  isWalletConnected: boolean
+
   onWithdraw: () => void
   withdrawing: boolean
 
@@ -95,6 +100,7 @@ export const VestingPaymentCard = ({
   steps,
   canceled,
   cw20Address,
+  isWalletConnected,
   onWithdraw,
   withdrawing,
   canClaimStakingRewards,
@@ -137,8 +143,9 @@ export const VestingPaymentCard = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
-  // Can only withdraw if there is a distributable amount.
-  const canWithdraw = distributableAmount > 0
+  // Can only withdraw if there is a distributable amount and a wallet is
+  // connected.
+  const canWithdraw = isWalletConnected && distributableAmount > 0
 
   const recipientIsDao =
     !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao

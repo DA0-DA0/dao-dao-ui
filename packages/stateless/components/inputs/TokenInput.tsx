@@ -16,7 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ChainLogo } from '../ChainLogo'
+import { ChainLogo } from '../chain/ChainLogo'
 import { FilterableItemPopup } from '../popup'
 import { Tooltip } from '../tooltip'
 import { NumberInput } from './NumberInput'

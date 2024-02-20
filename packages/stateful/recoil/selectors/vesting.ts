@@ -13,7 +13,6 @@ import {
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
 import {
-  OldVestingPaymentFactory,
   TokenType,
   VestingInfo,
   VestingStep,
@@ -99,33 +98,25 @@ export const vestingFactoryOwnerSelector = selectorFamily<
 
 export const vestingInfosForFactorySelector = selectorFamily<
   VestingInfo[],
-  WithChainId<{ factory: string; oldFactories?: OldVestingPaymentFactory[] }>
+  WithChainId<{ factory: string }>
 >({
   key: 'vestingInfosForFactory',
   get:
-    ({ chainId, factory, oldFactories }) =>
+    ({ chainId, factory }) =>
     ({ get }) => {
       const vestingPaymentContracts = get(
-        waitForAll([
-          CwPayrollFactorySelectors.allVestingContractsSelector({
-            contractAddress: factory,
-            chainId,
-          }),
-          ...(oldFactories?.map(({ address }) =>
-            CwPayrollFactorySelectors.allVestingContractsSelector({
-              contractAddress: address,
-              chainId,
-            })
-          ) ?? []),
-        ])
-      ).flat()
+        CwPayrollFactorySelectors.allVestingContractsSelector({
+          chainId,
+          contractAddress: factory,
+        })
+      )
 
       return get(
         waitForAll(
           vestingPaymentContracts.map(({ contract }) =>
             vestingInfoSelector({
-              vestingContractAddress: contract,
               chainId,
+              vestingContractAddress: contract,
             })
           )
         )
@@ -381,6 +372,7 @@ export const vestingInfoSelector = selectorFamily<
       const endDate = new Date(steps[steps.length - 1].timestamp)
 
       return {
+        chainId,
         vestingContractAddress,
         vest,
         token,

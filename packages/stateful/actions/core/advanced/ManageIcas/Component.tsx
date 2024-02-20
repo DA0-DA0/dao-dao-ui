@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ChainLogo,
+  ChainLabel,
   IbcDestinationChainPicker,
   InputErrorMessage,
   InputLabel,
@@ -10,7 +10,6 @@ import {
   SegmentedControlsTitle,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -92,15 +91,7 @@ export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
               fieldName={(fieldNamePrefix + 'chainId') as 'chainId'}
               options={currentlyEnabled.map((registeredChainId) => ({
                 value: registeredChainId,
-                display: (
-                  <div className="flex flex-row items-center gap-2">
-                    <ChainLogo chainId={registeredChainId} />
-
-                    <p className="primary-text">
-                      {getDisplayNameForChainId(registeredChainId)}
-                    </p>
-                  </div>
-                ),
+                display: <ChainLabel chainId={registeredChainId} />,
               }))}
               setValue={setValue}
               watch={watch}

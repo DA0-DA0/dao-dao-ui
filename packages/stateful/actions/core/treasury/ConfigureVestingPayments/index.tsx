@@ -1,11 +1,8 @@
+import cloneDeep from 'lodash.clonedeep'
 import { useCallback } from 'react'
 
 import { SuitAndTieEmoji } from '@dao-dao/stateless'
-import {
-  LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
-  VestingPaymentsWidgetData,
-  WidgetId,
-} from '@dao-dao/types'
+import { VestingPaymentsWidgetData, WidgetId } from '@dao-dao/types'
 import {
   ActionContextType,
   ActionKey,
@@ -16,15 +13,10 @@ import {
 } from '@dao-dao/types/actions'
 import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
 
+import { useWidgets } from '../../../../widgets'
 import { makeManageWidgetsAction } from '../../dao_appearance/ManageWidgets'
-import { EnableVestingPaymentsComponent as Component } from './Component'
-
-const useDefaults: UseDefaults<VestingPaymentsWidgetData> = () => ({
-  factory: '',
-  version: LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
-})
-
-export const makeEnableVestingPaymentsAction: ActionMaker<
+import { ConfigureVestingPaymentsComponent as Component } from './Component'
+export const makeConfigureVestingPaymentsAction: ActionMaker<
   VestingPaymentsWidgetData
 > = (options) => {
   const { t, context } = options
@@ -34,6 +26,22 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     return null
   }
 
+  const useDefaults: UseDefaults<VestingPaymentsWidgetData> = () => {
+    // Attempt to load existing widget data.
+    const loadingExistingWidgets = useWidgets()
+    const widget = loadingExistingWidgets.loading
+      ? undefined
+      : loadingExistingWidgets.data.find(
+          ({ widget: { id } }) => id === WidgetId.VestingPayments
+        )
+
+    return widget
+      ? cloneDeep(widget.daoWidget.values)
+      : {
+          factories: {},
+        }
+  }
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<VestingPaymentsWidgetData> = (
     msg: Record<string, any>
   ) => {
@@ -41,8 +49,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
 
     return decoded.match &&
       decoded.data.mode === 'set' &&
-      decoded.data.id === WidgetId.VestingPayments &&
-      typeof decoded.data.values.factory === 'string'
+      decoded.data.id === WidgetId.VestingPayments
       ? {
           match: true,
           data: decoded.data.values as VestingPaymentsWidgetData,
@@ -68,22 +75,23 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     )
   }
 
+  const vestingEnabled =
+    !!context.info.items[DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments]
+
   return {
-    key: ActionKey.EnableVestingPayments,
+    key: ActionKey.ConfigureVestingPayments,
     Icon: SuitAndTieEmoji,
-    label: t('title.enableVestingPayments'),
-    description: t('widgetDescription.vesting'),
+    label: vestingEnabled
+      ? t('title.configureVestingPayments')
+      : t('title.enableVestingPayments'),
+    description: vestingEnabled
+      ? t('info.configureVestingPaymentsDescription')
+      : t('widgetDescription.vesting'),
     keywords: ['payroll'],
     notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow using this action if the DAO already has vesting payments
-    // enabled.
-    hideFromPicker:
-      !!context.info.items[
-        DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments
-      ],
   }
 }

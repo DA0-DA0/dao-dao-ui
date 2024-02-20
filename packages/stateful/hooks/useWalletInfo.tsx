@@ -27,6 +27,7 @@ export type UseWalletInfoOptions = {
 }
 
 export type UseWalletInfoReturn = {
+  isWalletConnected: boolean
   walletAddress: string | undefined
   walletHexPublicKey: string | undefined
   walletBalance: number | undefined
@@ -52,6 +53,7 @@ export const useWalletInfo = ({
     chain: walletChain,
     address,
     hexPublicKey,
+    isWalletConnected,
   } = useWallet({
     chainId,
     loadAccount: true,
@@ -254,6 +256,7 @@ export const useWalletInfo = ({
   )
 
   return {
+    isWalletConnected,
     walletAddress: address,
     walletHexPublicKey: hexPublicKey.loading ? undefined : hexPublicKey.data,
     walletBalance,

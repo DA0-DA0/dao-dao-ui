@@ -42,7 +42,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { refreshBalances } = useWalletInfo()
+  const { isWalletConnected, refreshBalances } = useWalletInfo()
 
   const {
     vestingContractAddress,
@@ -238,6 +238,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           token.decimals
         )}
         endDate={endDate}
+        isWalletConnected={isWalletConnected}
         lazyInfo={lazyInfoLoading}
         onAddToken={onAddToken}
         onClaim={onClaim}

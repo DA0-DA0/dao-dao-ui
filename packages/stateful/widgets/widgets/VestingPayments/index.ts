@@ -1,8 +1,8 @@
 import { PaidOutlined, PaidRounded } from '@mui/icons-material'
 
 import {
+  LATEST_VESTING_CONTRACT_VERSION,
   VestingPaymentsWidgetData,
-  VestingPaymentsWidgetVersion,
   Widget,
   WidgetId,
   WidgetLocation,
@@ -19,8 +19,8 @@ export const VestingPaymentsWidget: Widget<VestingPaymentsWidgetData> = {
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
-    factory: '',
-    version: VestingPaymentsWidgetVersion.V1,
+    factories: {},
+    version: LATEST_VESTING_CONTRACT_VERSION,
   },
   Renderer,
   Editor,
