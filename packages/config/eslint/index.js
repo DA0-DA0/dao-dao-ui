@@ -24,6 +24,12 @@ const eslintConfig = {
     'no-unused-vars': ['off'],
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
     'tailwindcss/classnames-order': ['warn'],
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     eqeqeq: ['error'],
   },
   overrides: [

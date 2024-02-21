@@ -3,6 +3,7 @@ import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
 import {
+  noWait,
   selector,
   selectorFamily,
   waitForAll,
@@ -78,6 +79,7 @@ import {
   queryValidatorIndexerSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
+import { walletTokenDaoStakedDenomsSelector } from './wallet'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -342,14 +344,35 @@ export const nativeBalancesSelector = selectorFamily<
       const balances = [
         ...get(justNativeBalancesSelector({ address, chainId })),
       ]
-      // Add native denom if not present.
       const nativeToken = getNativeTokenForChainId(chainId)
-      if (!balances.some(({ denom }) => denom === nativeToken.denomOrAddress)) {
+      const stakedDenoms =
+        get(
+          noWait(
+            walletTokenDaoStakedDenomsSelector({
+              walletAddress: address,
+              chainId,
+            })
+          )
+        ).valueMaybe() || []
+
+      const uniqueDenoms = new Set(balances.map(({ denom }) => denom))
+
+      // Add native denom if not present.
+      if (!uniqueDenoms.has(nativeToken.denomOrAddress)) {
         balances.push({
           amount: '0',
           denom: nativeToken.denomOrAddress,
         })
+        uniqueDenoms.add(nativeToken.denomOrAddress)
       }
+
+      // Add denoms staked to DAOs if not present.
+      stakedDenoms.forEach((denom) => {
+        if (!uniqueDenoms.has(denom)) {
+          balances.push({ amount: '0', denom })
+          uniqueDenoms.add(denom)
+        }
+      })
 
       const tokenLoadables = get(
         waitForAny(
