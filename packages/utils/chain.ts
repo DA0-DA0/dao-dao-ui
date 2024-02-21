@@ -95,6 +95,11 @@ export const cosmosValidatorToValidator = ({
 })
 
 export const getImageUrlForChainId = (chainId: string): string => {
+  const overrideUrl = getConfiguredChainConfig(chainId)?.overrideChainImageUrl
+  if (overrideUrl) {
+    return overrideUrl
+  }
+
   //Chain logo is sometimes larger and not square.
   const { logo_URIs, images } = maybeGetChainForChainId(chainId) ?? {}
   const chainImageUrl =
