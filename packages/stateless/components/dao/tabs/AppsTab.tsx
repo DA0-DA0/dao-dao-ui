@@ -131,7 +131,11 @@ const InnerAppsTab = ({
               )}
 
               <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
-                {platform && <p className="caption-text">{platform}</p>}
+                {platform && (
+                  <p className="caption-text text-color-light-transparent">
+                    {platform}
+                  </p>
+                )}
 
                 <p className="primary-text break-words text-color-light">
                   {isCustom ? t('title.custom') : name}

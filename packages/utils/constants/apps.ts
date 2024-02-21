@@ -52,6 +52,11 @@ export const DAO_APPS: DaoApp[] = [
     imageUrl: '/apps/pilot.png',
     url: 'https://pilot.kujira.network',
   },
+  {
+    name: 'Kleomedes',
+    imageUrl: '/apps/kleomedes.png',
+    url: 'https://dashboard.kleomed.es',
+  },
 
   // Must be last for index matching. Enables custom URL input.
   {

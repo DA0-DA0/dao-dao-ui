@@ -81,6 +81,7 @@ input[type='number']::-webkit-outer-spin-button {
     --color-black: rgb(var(--black));
     --color-dark: rgb(var(--dark));
     --color-light: rgb(var(--light));
+    --color-light-transparent: rgba(var(--light), 0.5);
     --color-white: rgb(var(--white));
     --color-brand: rgb(var(--brand));
     --color-active: rgb(var(--active));
