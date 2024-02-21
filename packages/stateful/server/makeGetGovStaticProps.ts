@@ -28,6 +28,7 @@ import {
   getImageUrlForChainId,
   getRpcForChainId,
   processError,
+  retry,
 } from '@dao-dao/utils'
 import { cosmos } from '@dao-dao/utils/protobuf'
 
@@ -236,11 +237,15 @@ export const makeGetGovProposalStaticProps = ({
       // Fallback to querying chain if indexer failed.
       if (!proposal) {
         try {
-          const client = (
-            await cosmos.ClientFactory.createRPCQueryClient({
-              rpcEndpoint: getRpcForChainId(chain.chain_id),
-            })
-          ).cosmos
+          const client = await retry(
+            10,
+            async (attempt) =>
+              (
+                await cosmos.ClientFactory.createRPCQueryClient({
+                  rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
+                })
+              ).cosmos
+          )
           const cosmosSdkVersion =
             (
               await client.base.tendermint.v1beta1.getNodeInfo()
