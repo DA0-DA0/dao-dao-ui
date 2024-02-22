@@ -31,6 +31,7 @@ export const AddressInput = <
   EntityDisplay,
   autofillEntities,
   placeholder,
+  hideEntity,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
@@ -50,6 +51,7 @@ export const AddressInput = <
   const formValue = watch?.(fieldName)
 
   const showEntity =
+    !hideEntity &&
     EntityDisplay &&
     !!formValue &&
     isValidBech32Address(formValue, bech32Prefix)

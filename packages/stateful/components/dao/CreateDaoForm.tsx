@@ -81,6 +81,7 @@ import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
 import { WalletChainSwitcher } from '../wallet'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
+import { ImportMultisigModal } from './ImportMultisigModal'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -625,7 +626,9 @@ export const InnerCreateDaoForm = ({
     availableCreators,
     creator,
     proposalModuleDaoCreationAdapters,
+    makeDefaultNewDao,
     SuspenseLoader,
+    ImportMultisigModal,
   }
 
   const Page = CreateDaoPages[pageIndex]

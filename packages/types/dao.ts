@@ -17,6 +17,7 @@ import { SupportedChainConfig, WithChainId } from './chain'
 import {
   DaoCardProps,
   DaoDropdownInfo,
+  StatefulImportMultisigModalProps,
   SuspenseLoaderProps,
 } from './components'
 import {
@@ -215,7 +216,9 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
+  makeDefaultNewDao: (chainId: string) => NewDao
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  ImportMultisigModal: ComponentType<StatefulImportMultisigModalProps>
 }
 
 export interface NewDao<

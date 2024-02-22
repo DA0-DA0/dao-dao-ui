@@ -71,3 +71,25 @@ export type AccountTxSave = AccountTxForm & {
   name: string
   description?: string
 }
+
+/**
+ * The details that describe a cryptographic multisig.
+ */
+export type CryptographicMultisigDetails = {
+  /**
+   * The multisig's chain ID.
+   */
+  chainId: string
+  /**
+   * The multisig's address.
+   */
+  address: string
+  /**
+   * The member addresses of the multisig.
+   */
+  addresses: string[]
+  /**
+   * The number of members that must sign a transaction for it to be valid.
+   */
+  threshold: number
+}

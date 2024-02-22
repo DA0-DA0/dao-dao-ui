@@ -6,7 +6,7 @@ import { SuccessToast } from './SuccessToast'
 
 export const ToastNotifications = () => (
   <Toaster
-    position="bottom-right"
+    position="top-right"
     // Looks better when positoned against the bottom of the screen. This makes
     // new toasts stack on top of existing toasts, like cards.
     reverseOrder
