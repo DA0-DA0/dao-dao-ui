@@ -22,27 +22,26 @@ import {
   CreateProposal,
   PageLoader,
   ProposalModuleSelector,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
+  DaoTabId,
   ProposalDraft,
   ProposalModule,
   ProposalPrefill,
 } from '@dao-dao/types'
 import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
-import { useWallet } from '../../hooks/useWallet'
 import {
   ProposalModuleAdapterCommonProvider,
-  matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
-import { ProfileDisconnectedCard, ProfileNewProposalCard } from '../profile'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const CreateDaoProposal = () => {
   const daoInfo = useDaoInfoContext()
@@ -67,9 +66,7 @@ export const CreateDaoProposal = () => {
 
   return (
     <ProposalModuleAdapterCommonProvider
-      initialOptions={{
-        coreAddress: daoInfo.coreAddress,
-      }}
+      coreAddress={daoInfo.coreAddress}
       proposalModule={selectedProposalModule}
     >
       <InnerCreateDaoProposal
@@ -92,7 +89,6 @@ const InnerCreateDaoProposal = ({
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useDaoNavHelpers()
   const daoInfo = useDaoInfoContext()
-  const { isWalletConnected } = useWallet()
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
@@ -335,79 +331,48 @@ const InnerCreateDaoProposal = ({
   )
 
   return (
-    <FormProvider {...formMethods}>
-      <CreateProposal
-        clear={clear}
-        newProposal={
-          <SuspenseLoader
-            fallback={<PageLoader />}
-            forceFallback={!prefillChecked}
-          >
-            <NewProposal
-              deleteDraft={deleteDraft}
-              draft={draft}
-              draftSaving={draftSaving}
-              drafts={drafts}
-              loadDraft={loadDraft}
-              onCreateSuccess={onCreateSuccess}
-              proposalModuleSelector={
-                daoInfo.proposalModules.length > 1 && (
-                  <div className="my-2">
-                    <ProposalModuleSelector
-                      matchAdapter={matchProposalModuleAdapter}
-                      selected={selectedProposalModule.address}
-                      setSelected={setSelectedProposalModule}
-                    />
-                  </div>
-                )
-              }
-              saveDraft={saveDraft}
-              unloadDraft={unloadDraft}
-            />
-          </SuspenseLoader>
-        }
-        rightSidebarContent={
-          isWalletConnected ? (
-            <ProfileNewProposalCard />
-          ) : (
-            <ProfileDisconnectedCard />
-          )
-        }
+    <>
+      <PageHeaderContent
+        breadcrumbs={{
+          homeTab: {
+            id: DaoTabId.Proposals,
+            sdaLabel: t('title.proposals'),
+          },
+          current: t('title.createProposal'),
+        }}
       />
 
-      <SuspenseLoader fallback={null}>
-        <PreloadAllNewProposalCardInfoLines />
-      </SuspenseLoader>
-    </FormProvider>
+      <FormProvider {...formMethods}>
+        <CreateProposal
+          clear={clear}
+          newProposal={
+            <SuspenseLoader
+              fallback={<PageLoader />}
+              forceFallback={!prefillChecked}
+            >
+              <NewProposal
+                ProposalDaoInfoCards={ProposalDaoInfoCards}
+                deleteDraft={deleteDraft}
+                draft={draft}
+                draftSaving={draftSaving}
+                drafts={drafts}
+                loadDraft={loadDraft}
+                onCreateSuccess={onCreateSuccess}
+                proposalModuleSelector={
+                  <ProposalModuleSelector
+                    className="my-2"
+                    matchAdapter={matchProposalModuleAdapter}
+                    selected={selectedProposalModule.address}
+                    setSelected={setSelectedProposalModule}
+                  />
+                }
+                saveDraft={saveDraft}
+                unloadDraft={unloadDraft}
+              />
+            </SuspenseLoader>
+          }
+        />
+      </FormProvider>
+    </>
   )
-}
-
-/**
- * Preload new proposal card info lines for all proposal modules so the card
- * doesn't suspend when we switch proposal modules.
- */
-const PreloadAllNewProposalCardInfoLines = () => {
-  const chain = useChain()
-  const { coreAddress, proposalModules } = useDaoInfoContext()
-
-  // Pre-load all proposal card info lines for all proposal module adapters so
-  // the page doesn't suspend when we switch proposal modules.
-  const proposalModuleHooks = useMemo(
-    () =>
-      proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain,
-            coreAddress,
-          }).hooks.useProfileNewProposalCardInfoLines
-      ),
-    [chain, coreAddress, proposalModules]
-  )
-  // Proposal modules stay constant, so we can safely ignore the warning.
-  proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useProfileNewProposalCardInfoLines()
-  )
-
-  return null
 }

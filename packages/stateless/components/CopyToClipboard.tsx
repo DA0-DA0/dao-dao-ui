@@ -19,6 +19,7 @@ export const CopyToClipboard = ({
   className = 'font-mono text-xs',
   textClassName,
   iconClassName,
+  iconSize = 'default',
   onCopy,
   tooltip,
   noCopy,
@@ -58,7 +59,15 @@ export const CopyToClipboard = ({
         }
         type="button"
       >
-        <Icon className={clsx('!h-[18px] !w-[18px]', iconClassName)} />
+        <Icon
+          className={clsx(
+            {
+              '!h-4 !w-4': iconSize === 'sm',
+              '!h-[18px] !w-[18px]': iconSize === 'default',
+            },
+            iconClassName
+          )}
+        />
 
         <span
           className={clsx(

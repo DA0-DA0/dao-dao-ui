@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 
-import { ChainEmoji } from '@dao-dao/stateless'
+import { chainSupportsIcaControllerSelector } from '@dao-dao/state/recoil'
+import { ChainEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -9,6 +10,7 @@ import {
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
@@ -54,6 +56,7 @@ const Component: ActionComponent = (props) => {
 export const makeManageIcasAction: ActionMaker<ManageIcasData> = ({
   t,
   address,
+  chain: { chain_id: sourceChainId },
   context,
 }) => {
   // Only DAOs.
@@ -134,6 +137,17 @@ export const makeManageIcasAction: ActionMaker<ManageIcasData> = ({
     return { match: false }
   }
 
+  // Hide from picker if chain does not support ICA controller.
+  const useHideFromPicker: UseHideFromPicker = () => {
+    const supported = useCachedLoadingWithError(
+      chainSupportsIcaControllerSelector({
+        chainId: sourceChainId,
+      })
+    )
+
+    return supported.loading || supported.errored || !supported.data
+  }
+
   return {
     key: ActionKey.ManageIcas,
     Icon: ChainEmoji,
@@ -143,5 +157,6 @@ export const makeManageIcasAction: ActionMaker<ManageIcasData> = ({
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    useHideFromPicker,
   }
 }

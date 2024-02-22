@@ -6,6 +6,7 @@ import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
 import { appWithTranslation } from 'next-i18next'
+import PlausibleProvider from 'next-plausible'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
@@ -17,7 +18,6 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
-  web3AuthPromptAtom,
 } from '@dao-dao/state'
 import {
   AppContextProvider,
@@ -44,8 +44,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
-  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
-
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
@@ -71,27 +69,37 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   }, [navigatingToHref, setNavigatingToHref])
 
   return (
-    <ThemeProvider
-      theme={theme}
-      themeChangeCount={themeChangeCount}
-      updateTheme={setTheme}
+    <PlausibleProvider
+      domain="daodao.zone"
+      scriptProps={{
+        src: 'https://vis.daodao.zone/dao/dao.js',
+        // @ts-ignore
+        'data-api': 'https://vis.daodao.zone/dao/event',
+      }}
+      trackOutboundLinks
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
-          {/* AppContextProvider uses wallet context via the inbox. */}
-          <AppContextProvider mode={DaoPageMode.Dapp}>
-            <DappLayout>
-              <Component {...pageProps} />
-            </DappLayout>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ThemeProvider
+        theme={theme}
+        themeChangeCount={themeChangeCount}
+        updateTheme={setTheme}
+      >
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : (
+          <WalletProvider>
+            {/* AppContextProvider uses wallet context via the inbox. */}
+            <AppContextProvider mode={DaoPageMode.Dapp}>
+              <DappLayout>
+                <Component {...pageProps} />
+              </DappLayout>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
-    </ThemeProvider>
+        <ToastNotifications />
+      </ThemeProvider>
+    </PlausibleProvider>
   )
 }
 
@@ -133,7 +141,7 @@ const DApp = (props: AppProps) => {
           },
           {
             name: 'apple-mobile-web-app-title',
-            content: 'DAO DAO',
+            content: t('meta.title').replace('meta.title', 'Loading...'),
           },
           {
             name: 'apple-mobile-web-app-capable',
@@ -152,7 +160,7 @@ const DApp = (props: AppProps) => {
         openGraph={{
           url: SITE_URL,
           type: 'website',
-          title: 'DAO DAO',
+          title: t('meta.title').replace('meta.title', 'Loading...'),
           description: t('meta.description').replace(
             'meta.description',
             'Loading...'

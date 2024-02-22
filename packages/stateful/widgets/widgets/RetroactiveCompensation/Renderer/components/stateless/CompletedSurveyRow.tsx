@@ -70,7 +70,7 @@ export const CompletedSurveyRow = ({
       </div>
 
       {/* Mobile */}
-      <div className="flex flex-col justify-between gap-2 rounded-md p-4 text-sm sm:hidden">
+      <div className="flex h-20 flex-col justify-between gap-2 rounded-md p-4 text-sm sm:hidden">
         <div className="flex flex-row items-start justify-between gap-3">
           <p className="body-text break-words">{name}</p>
           {!!proposalId && (

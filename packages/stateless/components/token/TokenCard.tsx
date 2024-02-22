@@ -14,8 +14,8 @@ import {
   getFallbackImage,
   isNativeIbcUsdc,
   secondsToWdhms,
+  shortenTokenSymbol,
   toAccessibleImageUrl,
-  transformIbcSymbol,
 } from '@dao-dao/utils'
 
 import { useAddToken, useDaoInfoContextIfAvailable } from '../../hooks'
@@ -75,7 +75,7 @@ export const TokenCard = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
-  const { isIbc, tokenSymbol, originalTokenSymbol } = transformIbcSymbol(
+  const { isShortened, tokenSymbol, originalTokenSymbol } = shortenTokenSymbol(
     token.symbol
   )
 
@@ -155,12 +155,13 @@ export const TokenCard = ({
             </div>
 
             {/* Titles */}
-            <div className="flex flex-col gap-1">
+            <div className="flex min-w-0 flex-col gap-1">
               <div className="flex flex-row items-center gap-2">
-                {/* We're dealing with an IBC token we don't know about. Instead of showing a long hash, allow the user to copy it. */}
-                {isIbc ? (
+                {/* We're dealing with a token that is too long (IBC or factory probably). Instead of showing a long hash, allow the user to copy it. */}
+                {isShortened ? (
                   <CopyToClipboard
                     className="title-text"
+                    label={tokenSymbol}
                     takeStartEnd={{
                       start: 7,
                       end: 3,
@@ -168,7 +169,7 @@ export const TokenCard = ({
                     value={originalTokenSymbol}
                   />
                 ) : (
-                  <p className="title-text">${tokenSymbol}</p>
+                  <p className="title-text min-w-0 truncate">${tokenSymbol}</p>
                 )}
 
                 {color && (
@@ -215,7 +216,7 @@ export const TokenCard = ({
               <p className="link-text">{t('info.totalHoldings')}</p>
 
               {/* leading-5 to match link-text's line-height. */}
-              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+              <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={lazyInfo.data.totalBalance}
@@ -254,7 +255,7 @@ export const TokenCard = ({
             lazyInfo.data.totalBalance !== unstakedBalance) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
-              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+              <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={unstakedBalance}

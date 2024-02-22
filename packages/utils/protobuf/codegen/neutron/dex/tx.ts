@@ -1123,7 +1123,7 @@ export const MsgPlaceLimitOrder = {
     obj.token_out = message.tokenOut;
     obj.tick_index_in_to_out = message.tickIndexInToOut ? message.tickIndexInToOut.toString() : undefined;
     obj.amount_in = message.amountIn;
-    obj.order_type = limitOrderTypeToJSON(message.orderType);
+    obj.order_type = message.orderType;
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
     obj.max_amount_out = message.maxAmountOut;
     return obj;

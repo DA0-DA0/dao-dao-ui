@@ -111,7 +111,7 @@ export const useStakingInfo = ({
   )
 
   return {
-    stakingContractAddress: '',
+    stakingContractAddress: votingModuleAddress,
     unstakingDuration: config.unstaking_duration ?? undefined,
     refreshTotals,
     /// Optional

@@ -3,7 +3,9 @@ import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageRe
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Gauge, GaugeAmino, GaugeSDKType } from "./gauge";
 import { Duration, DurationAmino, DurationSDKType } from "../../google/protobuf/duration";
+import { Group, GroupAmino, GroupSDKType, GroupsWithGauge, GroupsWithGaugeAmino, GroupsWithGaugeSDKType } from "./group";
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { Decimal } from "@cosmjs/math";
 export interface ModuleToDistributeCoinsRequest {}
 export interface ModuleToDistributeCoinsRequestProtoMsg {
   typeUrl: "/osmosis.incentives.ModuleToDistributeCoinsRequest";
@@ -334,7 +336,7 @@ export interface RewardsEstRequestSDKType {
 }
 export interface RewardsEstResponse {
   /**
-   * Estimated coin rewards that will be recieved at provided address
+   * Estimated coin rewards that will be received at provided address
    * from specified locks between current time and end epoch
    */
   coins: Coin[];
@@ -345,7 +347,7 @@ export interface RewardsEstResponseProtoMsg {
 }
 export interface RewardsEstResponseAmino {
   /**
-   * Estimated coin rewards that will be recieved at provided address
+   * Estimated coin rewards that will be received at provided address
    * from specified locks between current time and end epoch
    */
   coins?: CoinAmino[];
@@ -369,7 +371,7 @@ export interface QueryLockableDurationsRequestAminoMsg {
 }
 export interface QueryLockableDurationsRequestSDKType {}
 export interface QueryLockableDurationsResponse {
-  /** Time durations that users can lock coins for in order to recieve rewards */
+  /** Time durations that users can lock coins for in order to receive rewards */
   lockableDurations: Duration[];
 }
 export interface QueryLockableDurationsResponseProtoMsg {
@@ -377,7 +379,7 @@ export interface QueryLockableDurationsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryLockableDurationsResponseAmino {
-  /** Time durations that users can lock coins for in order to recieve rewards */
+  /** Time durations that users can lock coins for in order to receive rewards */
   lockable_durations?: DurationAmino[];
 }
 export interface QueryLockableDurationsResponseAminoMsg {
@@ -386,6 +388,178 @@ export interface QueryLockableDurationsResponseAminoMsg {
 }
 export interface QueryLockableDurationsResponseSDKType {
   lockable_durations: DurationSDKType[];
+}
+export interface QueryAllGroupsRequest {}
+export interface QueryAllGroupsRequestProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsRequest";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsRequestAmino {}
+export interface QueryAllGroupsRequestAminoMsg {
+  type: "osmosis/incentives/query-all-groups-request";
+  value: QueryAllGroupsRequestAmino;
+}
+export interface QueryAllGroupsRequestSDKType {}
+export interface QueryAllGroupsResponse {
+  groups: Group[];
+}
+export interface QueryAllGroupsResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsResponse";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsResponseAmino {
+  groups?: GroupAmino[];
+}
+export interface QueryAllGroupsResponseAminoMsg {
+  type: "osmosis/incentives/query-all-groups-response";
+  value: QueryAllGroupsResponseAmino;
+}
+export interface QueryAllGroupsResponseSDKType {
+  groups: GroupSDKType[];
+}
+export interface QueryAllGroupsGaugesRequest {}
+export interface QueryAllGroupsGaugesRequestProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesRequest";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsGaugesRequestAmino {}
+export interface QueryAllGroupsGaugesRequestAminoMsg {
+  type: "osmosis/incentives/query-all-groups-gauges-request";
+  value: QueryAllGroupsGaugesRequestAmino;
+}
+export interface QueryAllGroupsGaugesRequestSDKType {}
+export interface QueryAllGroupsGaugesResponse {
+  gauges: Gauge[];
+}
+export interface QueryAllGroupsGaugesResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesResponse";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsGaugesResponseAmino {
+  gauges?: GaugeAmino[];
+}
+export interface QueryAllGroupsGaugesResponseAminoMsg {
+  type: "osmosis/incentives/query-all-groups-gauges-response";
+  value: QueryAllGroupsGaugesResponseAmino;
+}
+export interface QueryAllGroupsGaugesResponseSDKType {
+  gauges: GaugeSDKType[];
+}
+export interface QueryAllGroupsWithGaugeRequest {}
+export interface QueryAllGroupsWithGaugeRequestProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeRequest";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsWithGaugeRequestAmino {}
+export interface QueryAllGroupsWithGaugeRequestAminoMsg {
+  type: "osmosis/incentives/query-all-groups-with-gauge-request";
+  value: QueryAllGroupsWithGaugeRequestAmino;
+}
+export interface QueryAllGroupsWithGaugeRequestSDKType {}
+export interface QueryAllGroupsWithGaugeResponse {
+  groupsWithGauge: GroupsWithGauge[];
+}
+export interface QueryAllGroupsWithGaugeResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeResponse";
+  value: Uint8Array;
+}
+export interface QueryAllGroupsWithGaugeResponseAmino {
+  groups_with_gauge?: GroupsWithGaugeAmino[];
+}
+export interface QueryAllGroupsWithGaugeResponseAminoMsg {
+  type: "osmosis/incentives/query-all-groups-with-gauge-response";
+  value: QueryAllGroupsWithGaugeResponseAmino;
+}
+export interface QueryAllGroupsWithGaugeResponseSDKType {
+  groups_with_gauge: GroupsWithGaugeSDKType[];
+}
+export interface QueryGroupByGroupGaugeIDRequest {
+  id: bigint;
+}
+export interface QueryGroupByGroupGaugeIDRequestProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDRequest";
+  value: Uint8Array;
+}
+export interface QueryGroupByGroupGaugeIDRequestAmino {
+  id?: string;
+}
+export interface QueryGroupByGroupGaugeIDRequestAminoMsg {
+  type: "osmosis/incentives/query-group-by-group-gauge-id-request";
+  value: QueryGroupByGroupGaugeIDRequestAmino;
+}
+export interface QueryGroupByGroupGaugeIDRequestSDKType {
+  id: bigint;
+}
+export interface QueryGroupByGroupGaugeIDResponse {
+  group: Group | undefined;
+}
+export interface QueryGroupByGroupGaugeIDResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDResponse";
+  value: Uint8Array;
+}
+export interface QueryGroupByGroupGaugeIDResponseAmino {
+  group?: GroupAmino | undefined;
+}
+export interface QueryGroupByGroupGaugeIDResponseAminoMsg {
+  type: "osmosis/incentives/query-group-by-group-gauge-id-response";
+  value: QueryGroupByGroupGaugeIDResponseAmino;
+}
+export interface QueryGroupByGroupGaugeIDResponseSDKType {
+  group: GroupSDKType | undefined;
+}
+export interface QueryCurrentWeightByGroupGaugeIDRequest {
+  groupGaugeId: bigint;
+}
+export interface QueryCurrentWeightByGroupGaugeIDRequestProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDRequest";
+  value: Uint8Array;
+}
+export interface QueryCurrentWeightByGroupGaugeIDRequestAmino {
+  group_gauge_id?: string;
+}
+export interface QueryCurrentWeightByGroupGaugeIDRequestAminoMsg {
+  type: "osmosis/incentives/query-current-weight-by-group-gauge-id-request";
+  value: QueryCurrentWeightByGroupGaugeIDRequestAmino;
+}
+export interface QueryCurrentWeightByGroupGaugeIDRequestSDKType {
+  group_gauge_id: bigint;
+}
+export interface QueryCurrentWeightByGroupGaugeIDResponse {
+  gaugeWeight: GaugeWeight[];
+}
+export interface QueryCurrentWeightByGroupGaugeIDResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDResponse";
+  value: Uint8Array;
+}
+export interface QueryCurrentWeightByGroupGaugeIDResponseAmino {
+  gauge_weight?: GaugeWeightAmino[];
+}
+export interface QueryCurrentWeightByGroupGaugeIDResponseAminoMsg {
+  type: "osmosis/incentives/query-current-weight-by-group-gauge-id-response";
+  value: QueryCurrentWeightByGroupGaugeIDResponseAmino;
+}
+export interface QueryCurrentWeightByGroupGaugeIDResponseSDKType {
+  gauge_weight: GaugeWeightSDKType[];
+}
+export interface GaugeWeight {
+  gaugeId: bigint;
+  weightRatio: string;
+}
+export interface GaugeWeightProtoMsg {
+  typeUrl: "/osmosis.incentives.GaugeWeight";
+  value: Uint8Array;
+}
+export interface GaugeWeightAmino {
+  gauge_id?: string;
+  weight_ratio?: string;
+}
+export interface GaugeWeightAminoMsg {
+  type: "osmosis/incentives/gauge-weight";
+  value: GaugeWeightAmino;
+}
+export interface GaugeWeightSDKType {
+  gauge_id: bigint;
+  weight_ratio: string;
 }
 function createBaseModuleToDistributeCoinsRequest(): ModuleToDistributeCoinsRequest {
   return {};
@@ -1735,6 +1909,746 @@ export const QueryLockableDurationsResponse = {
     return {
       typeUrl: "/osmosis.incentives.QueryLockableDurationsResponse",
       value: QueryLockableDurationsResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsRequest(): QueryAllGroupsRequest {
+  return {};
+}
+export const QueryAllGroupsRequest = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsRequest",
+  encode(_: QueryAllGroupsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryAllGroupsRequest>): QueryAllGroupsRequest {
+    const message = createBaseQueryAllGroupsRequest();
+    return message;
+  },
+  fromAmino(_: QueryAllGroupsRequestAmino): QueryAllGroupsRequest {
+    const message = createBaseQueryAllGroupsRequest();
+    return message;
+  },
+  toAmino(_: QueryAllGroupsRequest, useInterfaces: boolean = false): QueryAllGroupsRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsRequestAminoMsg): QueryAllGroupsRequest {
+    return QueryAllGroupsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsRequest, useInterfaces: boolean = false): QueryAllGroupsRequestAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-request",
+      value: QueryAllGroupsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsRequestProtoMsg, useInterfaces: boolean = false): QueryAllGroupsRequest {
+    return QueryAllGroupsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsRequest): Uint8Array {
+    return QueryAllGroupsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsRequest): QueryAllGroupsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsRequest",
+      value: QueryAllGroupsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsResponse(): QueryAllGroupsResponse {
+  return {
+    groups: []
+  };
+}
+export const QueryAllGroupsResponse = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsResponse",
+  encode(message: QueryAllGroupsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.groups) {
+      Group.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.groups.push(Group.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryAllGroupsResponse>): QueryAllGroupsResponse {
+    const message = createBaseQueryAllGroupsResponse();
+    message.groups = object.groups?.map(e => Group.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: QueryAllGroupsResponseAmino): QueryAllGroupsResponse {
+    const message = createBaseQueryAllGroupsResponse();
+    message.groups = object.groups?.map(e => Group.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: QueryAllGroupsResponse, useInterfaces: boolean = false): QueryAllGroupsResponseAmino {
+    const obj: any = {};
+    if (message.groups) {
+      obj.groups = message.groups.map(e => e ? Group.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.groups = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsResponseAminoMsg): QueryAllGroupsResponse {
+    return QueryAllGroupsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsResponse, useInterfaces: boolean = false): QueryAllGroupsResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-response",
+      value: QueryAllGroupsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsResponseProtoMsg, useInterfaces: boolean = false): QueryAllGroupsResponse {
+    return QueryAllGroupsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsResponse): Uint8Array {
+    return QueryAllGroupsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsResponse): QueryAllGroupsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsResponse",
+      value: QueryAllGroupsResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsGaugesRequest(): QueryAllGroupsGaugesRequest {
+  return {};
+}
+export const QueryAllGroupsGaugesRequest = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesRequest",
+  encode(_: QueryAllGroupsGaugesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsGaugesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsGaugesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryAllGroupsGaugesRequest>): QueryAllGroupsGaugesRequest {
+    const message = createBaseQueryAllGroupsGaugesRequest();
+    return message;
+  },
+  fromAmino(_: QueryAllGroupsGaugesRequestAmino): QueryAllGroupsGaugesRequest {
+    const message = createBaseQueryAllGroupsGaugesRequest();
+    return message;
+  },
+  toAmino(_: QueryAllGroupsGaugesRequest, useInterfaces: boolean = false): QueryAllGroupsGaugesRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsGaugesRequestAminoMsg): QueryAllGroupsGaugesRequest {
+    return QueryAllGroupsGaugesRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsGaugesRequest, useInterfaces: boolean = false): QueryAllGroupsGaugesRequestAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-gauges-request",
+      value: QueryAllGroupsGaugesRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsGaugesRequestProtoMsg, useInterfaces: boolean = false): QueryAllGroupsGaugesRequest {
+    return QueryAllGroupsGaugesRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsGaugesRequest): Uint8Array {
+    return QueryAllGroupsGaugesRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsGaugesRequest): QueryAllGroupsGaugesRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesRequest",
+      value: QueryAllGroupsGaugesRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsGaugesResponse(): QueryAllGroupsGaugesResponse {
+  return {
+    gauges: []
+  };
+}
+export const QueryAllGroupsGaugesResponse = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesResponse",
+  encode(message: QueryAllGroupsGaugesResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.gauges) {
+      Gauge.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsGaugesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsGaugesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.gauges.push(Gauge.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryAllGroupsGaugesResponse>): QueryAllGroupsGaugesResponse {
+    const message = createBaseQueryAllGroupsGaugesResponse();
+    message.gauges = object.gauges?.map(e => Gauge.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: QueryAllGroupsGaugesResponseAmino): QueryAllGroupsGaugesResponse {
+    const message = createBaseQueryAllGroupsGaugesResponse();
+    message.gauges = object.gauges?.map(e => Gauge.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: QueryAllGroupsGaugesResponse, useInterfaces: boolean = false): QueryAllGroupsGaugesResponseAmino {
+    const obj: any = {};
+    if (message.gauges) {
+      obj.gauges = message.gauges.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.gauges = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsGaugesResponseAminoMsg): QueryAllGroupsGaugesResponse {
+    return QueryAllGroupsGaugesResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsGaugesResponse, useInterfaces: boolean = false): QueryAllGroupsGaugesResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-gauges-response",
+      value: QueryAllGroupsGaugesResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsGaugesResponseProtoMsg, useInterfaces: boolean = false): QueryAllGroupsGaugesResponse {
+    return QueryAllGroupsGaugesResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsGaugesResponse): Uint8Array {
+    return QueryAllGroupsGaugesResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsGaugesResponse): QueryAllGroupsGaugesResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsGaugesResponse",
+      value: QueryAllGroupsGaugesResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsWithGaugeRequest(): QueryAllGroupsWithGaugeRequest {
+  return {};
+}
+export const QueryAllGroupsWithGaugeRequest = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeRequest",
+  encode(_: QueryAllGroupsWithGaugeRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsWithGaugeRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsWithGaugeRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryAllGroupsWithGaugeRequest>): QueryAllGroupsWithGaugeRequest {
+    const message = createBaseQueryAllGroupsWithGaugeRequest();
+    return message;
+  },
+  fromAmino(_: QueryAllGroupsWithGaugeRequestAmino): QueryAllGroupsWithGaugeRequest {
+    const message = createBaseQueryAllGroupsWithGaugeRequest();
+    return message;
+  },
+  toAmino(_: QueryAllGroupsWithGaugeRequest, useInterfaces: boolean = false): QueryAllGroupsWithGaugeRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsWithGaugeRequestAminoMsg): QueryAllGroupsWithGaugeRequest {
+    return QueryAllGroupsWithGaugeRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsWithGaugeRequest, useInterfaces: boolean = false): QueryAllGroupsWithGaugeRequestAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-with-gauge-request",
+      value: QueryAllGroupsWithGaugeRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsWithGaugeRequestProtoMsg, useInterfaces: boolean = false): QueryAllGroupsWithGaugeRequest {
+    return QueryAllGroupsWithGaugeRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsWithGaugeRequest): Uint8Array {
+    return QueryAllGroupsWithGaugeRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsWithGaugeRequest): QueryAllGroupsWithGaugeRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeRequest",
+      value: QueryAllGroupsWithGaugeRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllGroupsWithGaugeResponse(): QueryAllGroupsWithGaugeResponse {
+  return {
+    groupsWithGauge: []
+  };
+}
+export const QueryAllGroupsWithGaugeResponse = {
+  typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeResponse",
+  encode(message: QueryAllGroupsWithGaugeResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.groupsWithGauge) {
+      GroupsWithGauge.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllGroupsWithGaugeResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllGroupsWithGaugeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.groupsWithGauge.push(GroupsWithGauge.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryAllGroupsWithGaugeResponse>): QueryAllGroupsWithGaugeResponse {
+    const message = createBaseQueryAllGroupsWithGaugeResponse();
+    message.groupsWithGauge = object.groupsWithGauge?.map(e => GroupsWithGauge.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: QueryAllGroupsWithGaugeResponseAmino): QueryAllGroupsWithGaugeResponse {
+    const message = createBaseQueryAllGroupsWithGaugeResponse();
+    message.groupsWithGauge = object.groups_with_gauge?.map(e => GroupsWithGauge.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: QueryAllGroupsWithGaugeResponse, useInterfaces: boolean = false): QueryAllGroupsWithGaugeResponseAmino {
+    const obj: any = {};
+    if (message.groupsWithGauge) {
+      obj.groups_with_gauge = message.groupsWithGauge.map(e => e ? GroupsWithGauge.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.groups_with_gauge = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllGroupsWithGaugeResponseAminoMsg): QueryAllGroupsWithGaugeResponse {
+    return QueryAllGroupsWithGaugeResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllGroupsWithGaugeResponse, useInterfaces: boolean = false): QueryAllGroupsWithGaugeResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/query-all-groups-with-gauge-response",
+      value: QueryAllGroupsWithGaugeResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllGroupsWithGaugeResponseProtoMsg, useInterfaces: boolean = false): QueryAllGroupsWithGaugeResponse {
+    return QueryAllGroupsWithGaugeResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllGroupsWithGaugeResponse): Uint8Array {
+    return QueryAllGroupsWithGaugeResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllGroupsWithGaugeResponse): QueryAllGroupsWithGaugeResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryAllGroupsWithGaugeResponse",
+      value: QueryAllGroupsWithGaugeResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryGroupByGroupGaugeIDRequest(): QueryGroupByGroupGaugeIDRequest {
+  return {
+    id: BigInt(0)
+  };
+}
+export const QueryGroupByGroupGaugeIDRequest = {
+  typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDRequest",
+  encode(message: QueryGroupByGroupGaugeIDRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.id !== BigInt(0)) {
+      writer.uint32(8).uint64(message.id);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGroupByGroupGaugeIDRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryGroupByGroupGaugeIDRequest>): QueryGroupByGroupGaugeIDRequest {
+    const message = createBaseQueryGroupByGroupGaugeIDRequest();
+    message.id = object.id !== undefined && object.id !== null ? BigInt(object.id.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: QueryGroupByGroupGaugeIDRequestAmino): QueryGroupByGroupGaugeIDRequest {
+    const message = createBaseQueryGroupByGroupGaugeIDRequest();
+    if (object.id !== undefined && object.id !== null) {
+      message.id = BigInt(object.id);
+    }
+    return message;
+  },
+  toAmino(message: QueryGroupByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDRequestAmino {
+    const obj: any = {};
+    obj.id = message.id ? message.id.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryGroupByGroupGaugeIDRequestAminoMsg): QueryGroupByGroupGaugeIDRequest {
+    return QueryGroupByGroupGaugeIDRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryGroupByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDRequestAminoMsg {
+    return {
+      type: "osmosis/incentives/query-group-by-group-gauge-id-request",
+      value: QueryGroupByGroupGaugeIDRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryGroupByGroupGaugeIDRequestProtoMsg, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDRequest {
+    return QueryGroupByGroupGaugeIDRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryGroupByGroupGaugeIDRequest): Uint8Array {
+    return QueryGroupByGroupGaugeIDRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryGroupByGroupGaugeIDRequest): QueryGroupByGroupGaugeIDRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDRequest",
+      value: QueryGroupByGroupGaugeIDRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryGroupByGroupGaugeIDResponse(): QueryGroupByGroupGaugeIDResponse {
+  return {
+    group: Group.fromPartial({})
+  };
+}
+export const QueryGroupByGroupGaugeIDResponse = {
+  typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDResponse",
+  encode(message: QueryGroupByGroupGaugeIDResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.group !== undefined) {
+      Group.encode(message.group, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGroupByGroupGaugeIDResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.group = Group.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryGroupByGroupGaugeIDResponse>): QueryGroupByGroupGaugeIDResponse {
+    const message = createBaseQueryGroupByGroupGaugeIDResponse();
+    message.group = object.group !== undefined && object.group !== null ? Group.fromPartial(object.group) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryGroupByGroupGaugeIDResponseAmino): QueryGroupByGroupGaugeIDResponse {
+    const message = createBaseQueryGroupByGroupGaugeIDResponse();
+    if (object.group !== undefined && object.group !== null) {
+      message.group = Group.fromAmino(object.group);
+    }
+    return message;
+  },
+  toAmino(message: QueryGroupByGroupGaugeIDResponse, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDResponseAmino {
+    const obj: any = {};
+    obj.group = message.group ? Group.toAmino(message.group, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryGroupByGroupGaugeIDResponseAminoMsg): QueryGroupByGroupGaugeIDResponse {
+    return QueryGroupByGroupGaugeIDResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryGroupByGroupGaugeIDResponse, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/query-group-by-group-gauge-id-response",
+      value: QueryGroupByGroupGaugeIDResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryGroupByGroupGaugeIDResponseProtoMsg, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDResponse {
+    return QueryGroupByGroupGaugeIDResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryGroupByGroupGaugeIDResponse): Uint8Array {
+    return QueryGroupByGroupGaugeIDResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryGroupByGroupGaugeIDResponse): QueryGroupByGroupGaugeIDResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryGroupByGroupGaugeIDResponse",
+      value: QueryGroupByGroupGaugeIDResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryCurrentWeightByGroupGaugeIDRequest(): QueryCurrentWeightByGroupGaugeIDRequest {
+  return {
+    groupGaugeId: BigInt(0)
+  };
+}
+export const QueryCurrentWeightByGroupGaugeIDRequest = {
+  typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDRequest",
+  encode(message: QueryCurrentWeightByGroupGaugeIDRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.groupGaugeId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.groupGaugeId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.groupGaugeId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryCurrentWeightByGroupGaugeIDRequest>): QueryCurrentWeightByGroupGaugeIDRequest {
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDRequest();
+    message.groupGaugeId = object.groupGaugeId !== undefined && object.groupGaugeId !== null ? BigInt(object.groupGaugeId.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: QueryCurrentWeightByGroupGaugeIDRequestAmino): QueryCurrentWeightByGroupGaugeIDRequest {
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDRequest();
+    if (object.group_gauge_id !== undefined && object.group_gauge_id !== null) {
+      message.groupGaugeId = BigInt(object.group_gauge_id);
+    }
+    return message;
+  },
+  toAmino(message: QueryCurrentWeightByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDRequestAmino {
+    const obj: any = {};
+    obj.group_gauge_id = message.groupGaugeId ? message.groupGaugeId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryCurrentWeightByGroupGaugeIDRequestAminoMsg): QueryCurrentWeightByGroupGaugeIDRequest {
+    return QueryCurrentWeightByGroupGaugeIDRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryCurrentWeightByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDRequestAminoMsg {
+    return {
+      type: "osmosis/incentives/query-current-weight-by-group-gauge-id-request",
+      value: QueryCurrentWeightByGroupGaugeIDRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryCurrentWeightByGroupGaugeIDRequestProtoMsg, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDRequest {
+    return QueryCurrentWeightByGroupGaugeIDRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryCurrentWeightByGroupGaugeIDRequest): Uint8Array {
+    return QueryCurrentWeightByGroupGaugeIDRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryCurrentWeightByGroupGaugeIDRequest): QueryCurrentWeightByGroupGaugeIDRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDRequest",
+      value: QueryCurrentWeightByGroupGaugeIDRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryCurrentWeightByGroupGaugeIDResponse(): QueryCurrentWeightByGroupGaugeIDResponse {
+  return {
+    gaugeWeight: []
+  };
+}
+export const QueryCurrentWeightByGroupGaugeIDResponse = {
+  typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDResponse",
+  encode(message: QueryCurrentWeightByGroupGaugeIDResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.gaugeWeight) {
+      GaugeWeight.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.gaugeWeight.push(GaugeWeight.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryCurrentWeightByGroupGaugeIDResponse>): QueryCurrentWeightByGroupGaugeIDResponse {
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDResponse();
+    message.gaugeWeight = object.gaugeWeight?.map(e => GaugeWeight.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: QueryCurrentWeightByGroupGaugeIDResponseAmino): QueryCurrentWeightByGroupGaugeIDResponse {
+    const message = createBaseQueryCurrentWeightByGroupGaugeIDResponse();
+    message.gaugeWeight = object.gauge_weight?.map(e => GaugeWeight.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: QueryCurrentWeightByGroupGaugeIDResponse, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDResponseAmino {
+    const obj: any = {};
+    if (message.gaugeWeight) {
+      obj.gauge_weight = message.gaugeWeight.map(e => e ? GaugeWeight.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.gauge_weight = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: QueryCurrentWeightByGroupGaugeIDResponseAminoMsg): QueryCurrentWeightByGroupGaugeIDResponse {
+    return QueryCurrentWeightByGroupGaugeIDResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryCurrentWeightByGroupGaugeIDResponse, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/query-current-weight-by-group-gauge-id-response",
+      value: QueryCurrentWeightByGroupGaugeIDResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryCurrentWeightByGroupGaugeIDResponseProtoMsg, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDResponse {
+    return QueryCurrentWeightByGroupGaugeIDResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryCurrentWeightByGroupGaugeIDResponse): Uint8Array {
+    return QueryCurrentWeightByGroupGaugeIDResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryCurrentWeightByGroupGaugeIDResponse): QueryCurrentWeightByGroupGaugeIDResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.QueryCurrentWeightByGroupGaugeIDResponse",
+      value: QueryCurrentWeightByGroupGaugeIDResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseGaugeWeight(): GaugeWeight {
+  return {
+    gaugeId: BigInt(0),
+    weightRatio: ""
+  };
+}
+export const GaugeWeight = {
+  typeUrl: "/osmosis.incentives.GaugeWeight",
+  encode(message: GaugeWeight, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.gaugeId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.gaugeId);
+    }
+    if (message.weightRatio !== "") {
+      writer.uint32(18).string(Decimal.fromUserInput(message.weightRatio, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GaugeWeight {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGaugeWeight();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.gaugeId = reader.uint64();
+          break;
+        case 2:
+          message.weightRatio = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<GaugeWeight>): GaugeWeight {
+    const message = createBaseGaugeWeight();
+    message.gaugeId = object.gaugeId !== undefined && object.gaugeId !== null ? BigInt(object.gaugeId.toString()) : BigInt(0);
+    message.weightRatio = object.weightRatio ?? "";
+    return message;
+  },
+  fromAmino(object: GaugeWeightAmino): GaugeWeight {
+    const message = createBaseGaugeWeight();
+    if (object.gauge_id !== undefined && object.gauge_id !== null) {
+      message.gaugeId = BigInt(object.gauge_id);
+    }
+    if (object.weight_ratio !== undefined && object.weight_ratio !== null) {
+      message.weightRatio = object.weight_ratio;
+    }
+    return message;
+  },
+  toAmino(message: GaugeWeight, useInterfaces: boolean = false): GaugeWeightAmino {
+    const obj: any = {};
+    obj.gauge_id = message.gaugeId ? message.gaugeId.toString() : undefined;
+    obj.weight_ratio = message.weightRatio;
+    return obj;
+  },
+  fromAminoMsg(object: GaugeWeightAminoMsg): GaugeWeight {
+    return GaugeWeight.fromAmino(object.value);
+  },
+  toAminoMsg(message: GaugeWeight, useInterfaces: boolean = false): GaugeWeightAminoMsg {
+    return {
+      type: "osmosis/incentives/gauge-weight",
+      value: GaugeWeight.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: GaugeWeightProtoMsg, useInterfaces: boolean = false): GaugeWeight {
+    return GaugeWeight.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: GaugeWeight): Uint8Array {
+    return GaugeWeight.encode(message).finish();
+  },
+  toProtoMsg(message: GaugeWeight): GaugeWeightProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.GaugeWeight",
+      value: GaugeWeight.encode(message).finish()
     };
   }
 };

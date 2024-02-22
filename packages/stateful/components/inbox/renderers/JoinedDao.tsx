@@ -23,6 +23,7 @@ export const JoinedDaoRenderer = ({
   item,
   data: { chainId, dao },
   clear,
+  compact,
 }: InboxItemRendererProps<InboxItemTypeJoinedDaoData>) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
@@ -35,19 +36,30 @@ export const JoinedDaoRenderer = ({
   const [loadingFollowing, setLoadingFollowing] = useState(false)
 
   const timestamp = item.timestamp && new Date(item.timestamp)
+  const timestampDisplay = timestamp && (
+    <Tooltip title={formatDateTimeTz(timestamp)}>
+      <p className="legend-text mt-0.5 inline-block text-text-quaternary">
+        {timestamp < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) ? (
+          formatDate(timestamp)
+        ) : (
+          <TimeAgo date={timestamp} formatter={timestampFormatter} />
+        )}
+      </p>
+    </Tooltip>
+  )
 
   return (
-    <div className="flex grow flex-row items-end justify-between">
+    <div className="relative flex grow flex-row items-end justify-between">
       <ButtonLink
-        className="!p-0 !ring-0"
+        className="!p-0 !pr-28 !ring-0"
         containerClassName="grow"
         href={getDaoPath(dao)}
         loadingVariant="pulse"
         noRounding
         variant="ghost"
       >
-        <div className="flex grow flex-col gap-2 px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex flex-row items-start gap-1">
+        <div className="flex min-w-0 grow flex-col gap-1 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex flex-row items-start gap-2">
             <ChainProvider chainId={chainId}>
               <EntityDisplay
                 address={dao}
@@ -59,47 +71,35 @@ export const JoinedDaoRenderer = ({
               />
             </ChainProvider>
 
-            {timestamp && (
-              <Tooltip title={formatDateTimeTz(timestamp)}>
-                <p className="legend-text mt-0.5 inline-block text-text-quaternary">
-                  {/* eslint-disable-next-line i18next/no-literal-string */}
-                  {'• '}
-                  {timestamp <
-                  new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) ? (
-                    formatDate(timestamp)
-                  ) : (
-                    <TimeAgo date={timestamp} formatter={timestampFormatter} />
-                  )}
-                </p>
-              </Tooltip>
-            )}
+            {!compact && timestampDisplay}
           </div>
 
-          <p className="secondary-text ml-10 -mt-4 break-words text-text-tertiary">
+          <p className="secondary-text ml-10 -mt-3 break-words text-text-tertiary">
             {t('info.addedToDaoFollowPrompt')}
           </p>
+
+          {compact && <div className="ml-10">{timestampDisplay}</div>}
         </div>
       </ButtonLink>
 
-      <Button
-        center
-        className="h-full shrink-0 border-l border-border-secondary !px-4 !ring-0"
-        disabled={updatingFollowing}
-        loading={updatingFollowing && loadingFollowing}
-        loadingVariant="pulse"
-        noRounding
-        onClick={() => {
-          setLoadingFollowing(true)
-          setFollowing(dao).then((success) => {
-            if (success) {
-              clear()
-            }
-          })
-        }}
-        variant="ghost"
-      >
-        {t('button.follow')}
-      </Button>
+      <div className="absolute top-0 bottom-0 right-12 flex flex-row items-center">
+        <Button
+          disabled={updatingFollowing}
+          loading={updatingFollowing && loadingFollowing}
+          onClick={(e) => {
+            e.stopPropagation()
+            setLoadingFollowing(true)
+            setFollowing(dao).then((success) => {
+              if (success) {
+                clear()
+              }
+            })
+          }}
+          variant="ghost"
+        >
+          {t('button.follow')}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
 export * from './useCommonGovernanceTokenInfo'
-export * from './useDaoInfoBarItems'
 export * from './useGovernanceTokenInfo'
+export * from './useMainDaoInfoCards'
 export * from './useStakingInfo'

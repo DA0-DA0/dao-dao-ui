@@ -1,11 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { SidebarWallet } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
+import { DappNavigationProps } from '@dao-dao/types'
 
 import { LinkWrapper } from '../LinkWrapper'
-import { DappNavigation, DappNavigationProps } from './DappNavigation'
+import { DappNavigation } from './DappNavigation'
 
 export default {
   title:
@@ -30,7 +32,6 @@ export const DefaultArgs: DappNavigationProps = {
     data: 5,
   },
   setCommandModalVisible: () => alert('command!'),
-  version: '2.0',
   followingDaos: {
     loading: false,
     data: [
@@ -45,7 +46,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -57,7 +58,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',
@@ -79,7 +80,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -91,7 +92,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution super duper long name',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',
@@ -113,7 +114,7 @@ export const DefaultArgs: DappNavigationProps = {
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
-        subdaos: [
+        subDaos: [
           {
             chainId: CHAIN_ID,
             coreAddress: 'payroll',
@@ -125,7 +126,7 @@ export const DefaultArgs: DappNavigationProps = {
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
-            subdaos: [
+            subDaos: [
               {
                 chainId: CHAIN_ID,
                 coreAddress: 'native',
@@ -154,6 +155,7 @@ export const DefaultArgs: DappNavigationProps = {
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
   LinkWrapper,
+  SidebarWallet,
 }
 
 export const Default = Template.bind({})
@@ -169,7 +171,6 @@ export const Loading = Template.bind({})
 Loading.args = {
   ...DefaultArgs,
   inboxCount: { loading: true },
-  tokenPrices: { loading: true },
   followingDaos: { loading: true },
 }
 Loading.parameters = Default.parameters

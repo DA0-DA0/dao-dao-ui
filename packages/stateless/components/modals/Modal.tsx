@@ -40,6 +40,8 @@ export const Modal = ({
   contentContainerClassName,
   footerContainerClassName,
   titleClassName,
+  smallCloseButton,
+  closeButtonClassName,
 }: ModalProps) => {
   // Close modal on escape, only listening if visible.
   useEffect(() => {
@@ -62,7 +64,7 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'hd-screen wd-screen fixed top-0 left-0 z-40 flex items-center justify-center backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe-or-4',
+            'hd-screen wd-screen fixed top-0 left-0 z-40 flex flex-col items-center justify-center backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe-or-4',
             visible ? 'opacity-100' : 'pointer-events-none opacity-0',
             onClose && 'cursor-pointer',
             backdropClassName
@@ -88,9 +90,14 @@ export const Modal = ({
               <IconButton
                 Icon={Close}
                 circular
-                className="absolute top-2 right-2 z-50"
+                className={clsx(
+                  'absolute z-50',
+                  smallCloseButton ? 'top-1 right-1' : 'top-2 right-2',
+                  closeButtonClassName
+                )}
                 iconClassName="text-icon-tertiary"
                 onClick={onClose}
+                size={smallCloseButton ? 'sm' : undefined}
                 variant="ghost"
               />
             )}

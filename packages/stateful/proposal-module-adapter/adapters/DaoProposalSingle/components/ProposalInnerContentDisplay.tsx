@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
+  ActionCardLoader,
   ActionsRenderer,
   Button,
   CosmosMessageDisplay,
-  Loader,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -37,7 +37,7 @@ export const ProposalInnerContentDisplay = (
 
   return (
     <SuspenseLoader
-      fallback={<Loader />}
+      fallback={<ActionCardLoader />}
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (

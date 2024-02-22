@@ -8,32 +8,14 @@ import {
 } from '@skip-router/core'
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
-import { GenericToken, TokenType, WithChainId } from '@dao-dao/types'
+import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { skipClient } from '../../skip'
+import { querySnapperSelector } from './indexer'
 
 export const skipChainsSelector = selector<SkipChain[]>({
   key: 'skipChains',
   get: async () => await skipClient.chains(),
-})
-
-/**
- * Get the assets on a specific chain.
- */
-export const skipChainAssetsSelector = selectorFamily<
-  SkipAsset[],
-  WithChainId<{}>
->({
-  key: 'skipChainAssets',
-  get:
-    ({ chainId }) =>
-    async () =>
-      (
-        await skipClient.assets({
-          chainID: chainId,
-          includeCW20Assets: true,
-        })
-      )[chainId] || [],
 })
 
 export const skipChainSelector = selectorFamily<SkipChain | undefined, string>({
@@ -55,10 +37,15 @@ export const skipAssetSelector = selectorFamily<
   get:
     ({ chainId, type, denomOrAddress }) =>
     ({ get }) =>
-      get(skipChainAssetsSelector({ chainId })).find((asset) =>
-        type === TokenType.Cw20
-          ? asset.isCW20 && asset.tokenContract === denomOrAddress
-          : asset.denom === denomOrAddress
+      get(
+        querySnapperSelector({
+          query: 'skip-asset',
+          parameters: {
+            chainId,
+            denom: denomOrAddress,
+            cw20: (type === TokenType.Cw20).toString(),
+          },
+        })
       ),
 })
 

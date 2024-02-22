@@ -1,2 +1,2 @@
-export * from './DaoInfoBarLoader'
+export * from './MainDaoInfoCardsLoader'
 export * from './ProfileCardMemberInfo'

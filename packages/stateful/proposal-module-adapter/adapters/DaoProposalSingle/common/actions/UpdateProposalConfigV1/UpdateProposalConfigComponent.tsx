@@ -26,8 +26,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { Trans } from '../../../../../../components/Trans'
-
 export type UpdateProposalConfigData = {
   onlyMembersExecute: boolean
 
@@ -91,23 +89,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="secondary-text mb-2 max-w-prose">
-        <Trans i18nKey="form.updateVotingConfigDescription">
-          This will update the voting configuration for this DAO. A bad
-          configuration can lock the DAO or create unexpected voting outcomes.
-          Take care. If you have questions, please feel free to ask in the{' '}
-          <a
-            className="underline"
-            href="https://discord.gg/sAaGuyW3D2"
-            rel="noreferrer"
-            target="_blank"
-          >
-            DAO DAO Discord
-          </a>
-          .
-        </Trans>
-      </p>
-
       <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
         {/* If governance token info, allow specifying deposit. */}
         {commonGovernanceTokenInfo && (

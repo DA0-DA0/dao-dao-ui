@@ -2,18 +2,22 @@
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "./gov";
+import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
 import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
 import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
 import { SoftwareUpgradeProposal, SoftwareUpgradeProposalProtoMsg, SoftwareUpgradeProposalSDKType, CancelSoftwareUpgradeProposal, CancelSoftwareUpgradeProposalProtoMsg, CancelSoftwareUpgradeProposalSDKType } from "../../upgrade/v1beta1/upgrade";
 import { StoreCodeProposal, StoreCodeProposalProtoMsg, StoreCodeProposalSDKType, InstantiateContractProposal, InstantiateContractProposalProtoMsg, InstantiateContractProposalSDKType, InstantiateContract2Proposal, InstantiateContract2ProposalProtoMsg, InstantiateContract2ProposalSDKType, MigrateContractProposal, MigrateContractProposalProtoMsg, MigrateContractProposalSDKType, SudoContractProposal, SudoContractProposalProtoMsg, SudoContractProposalSDKType, ExecuteContractProposal, ExecuteContractProposalProtoMsg, ExecuteContractProposalSDKType, UpdateAdminProposal, UpdateAdminProposalProtoMsg, UpdateAdminProposalSDKType, ClearAdminProposal, ClearAdminProposalProtoMsg, ClearAdminProposalSDKType, PinCodesProposal, PinCodesProposalProtoMsg, PinCodesProposalSDKType, UnpinCodesProposal, UnpinCodesProposalProtoMsg, UnpinCodesProposalSDKType, UpdateInstantiateConfigProposal, UpdateInstantiateConfigProposalProtoMsg, UpdateInstantiateConfigProposalSDKType, StoreAndInstantiateContractProposal, StoreAndInstantiateContractProposalProtoMsg, StoreAndInstantiateContractProposalSDKType } from "../../../cosmwasm/wasm/v1/proposal";
 import { ClientUpdateProposal, ClientUpdateProposalProtoMsg, ClientUpdateProposalSDKType, UpgradeProposal, UpgradeProposalProtoMsg, UpgradeProposalSDKType } from "../../../ibc/core/client/v1/client";
 import { ReplaceMigrationRecordsProposal, ReplaceMigrationRecordsProposalProtoMsg, ReplaceMigrationRecordsProposalSDKType, UpdateMigrationRecordsProposal, UpdateMigrationRecordsProposalProtoMsg, UpdateMigrationRecordsProposalSDKType, CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal, CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg, CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType, SetScalingFactorControllerProposal, SetScalingFactorControllerProposalProtoMsg, SetScalingFactorControllerProposalSDKType } from "../../../osmosis/gamm/v1beta1/gov";
+import { CreateGroupsProposal, CreateGroupsProposalProtoMsg, CreateGroupsProposalSDKType } from "../../../osmosis/incentives/gov";
 import { ReplacePoolIncentivesProposal, ReplacePoolIncentivesProposalProtoMsg, ReplacePoolIncentivesProposalSDKType, UpdatePoolIncentivesProposal, UpdatePoolIncentivesProposalProtoMsg, UpdatePoolIncentivesProposalSDKType } from "../../../osmosis/pool-incentives/v1beta1/gov";
 import { SetProtoRevEnabledProposal, SetProtoRevEnabledProposalProtoMsg, SetProtoRevEnabledProposalSDKType, SetProtoRevAdminAccountProposal, SetProtoRevAdminAccountProposalProtoMsg, SetProtoRevAdminAccountProposalSDKType } from "../../../osmosis/protorev/v1beta1/gov";
 import { SetSuperfluidAssetsProposal, SetSuperfluidAssetsProposalProtoMsg, SetSuperfluidAssetsProposalSDKType, RemoveSuperfluidAssetsProposal, RemoveSuperfluidAssetsProposalProtoMsg, RemoveSuperfluidAssetsProposalSDKType, UpdateUnpoolWhiteListProposal, UpdateUnpoolWhiteListProposalProtoMsg, UpdateUnpoolWhiteListProposalSDKType } from "../../../osmosis/superfluid/v1beta1/gov";
 import { UpdateFeeTokenProposal, UpdateFeeTokenProposalProtoMsg, UpdateFeeTokenProposalSDKType } from "../../../osmosis/txfees/v1beta1/gov";
 import { PromoteToPrivilegedContractProposal, PromoteToPrivilegedContractProposalProtoMsg, PromoteToPrivilegedContractProposalSDKType, DemotePrivilegedContractProposal, DemotePrivilegedContractProposalProtoMsg, DemotePrivilegedContractProposalSDKType } from "../../../publicawesome/stargaze/cron/v1/proposal";
 import { SetCodeAuthorizationProposal, SetCodeAuthorizationProposalProtoMsg, SetCodeAuthorizationProposalSDKType, RemoveCodeAuthorizationProposal, RemoveCodeAuthorizationProposalProtoMsg, RemoveCodeAuthorizationProposalSDKType, SetContractAuthorizationProposal, SetContractAuthorizationProposalProtoMsg, SetContractAuthorizationProposalSDKType, RemoveContractAuthorizationProposal, RemoveContractAuthorizationProposalProtoMsg, RemoveContractAuthorizationProposalSDKType } from "../../../publicawesome/stargaze/globalfee/v1/proposal";
+import { AllowDenomProposal, AllowDenomProposalProtoMsg, AllowDenomProposalSDKType } from "../../../regen/ecocredit/marketplace/v1/types";
+import { CreditTypeProposal, CreditTypeProposalProtoMsg, CreditTypeProposalSDKType } from "../../../regen/ecocredit/v1/types";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /**
  * MsgSubmitProposal defines an sdk.Msg type that supports submitting arbitrary
@@ -21,7 +25,7 @@ import { BinaryReader, BinaryWriter } from "../../../binary";
  */
 export interface MsgSubmitProposal {
   /** content is the proposal's content. */
-  content?: (CommunityPoolSpendProposal & CommunityPoolSpendProposalWithDeposit & TextProposal & ParameterChangeProposal & SoftwareUpgradeProposal & CancelSoftwareUpgradeProposal & StoreCodeProposal & InstantiateContractProposal & InstantiateContract2Proposal & MigrateContractProposal & SudoContractProposal & ExecuteContractProposal & UpdateAdminProposal & ClearAdminProposal & PinCodesProposal & UnpinCodesProposal & UpdateInstantiateConfigProposal & StoreAndInstantiateContractProposal & ClientUpdateProposal & UpgradeProposal & ReplaceMigrationRecordsProposal & UpdateMigrationRecordsProposal & CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal & SetScalingFactorControllerProposal & ReplacePoolIncentivesProposal & UpdatePoolIncentivesProposal & SetProtoRevEnabledProposal & SetProtoRevAdminAccountProposal & SetSuperfluidAssetsProposal & RemoveSuperfluidAssetsProposal & UpdateUnpoolWhiteListProposal & UpdateFeeTokenProposal & PromoteToPrivilegedContractProposal & DemotePrivilegedContractProposal & SetCodeAuthorizationProposal & RemoveCodeAuthorizationProposal & SetContractAuthorizationProposal & RemoveContractAuthorizationProposal & Any) | undefined;
+  content?: (MsgCreateAllianceProposal & MsgUpdateAllianceProposal & MsgDeleteAllianceProposal & CommunityPoolSpendProposal & CommunityPoolSpendProposalWithDeposit & TextProposal & ParameterChangeProposal & SoftwareUpgradeProposal & CancelSoftwareUpgradeProposal & StoreCodeProposal & InstantiateContractProposal & InstantiateContract2Proposal & MigrateContractProposal & SudoContractProposal & ExecuteContractProposal & UpdateAdminProposal & ClearAdminProposal & PinCodesProposal & UnpinCodesProposal & UpdateInstantiateConfigProposal & StoreAndInstantiateContractProposal & ClientUpdateProposal & UpgradeProposal & ReplaceMigrationRecordsProposal & UpdateMigrationRecordsProposal & CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal & SetScalingFactorControllerProposal & CreateGroupsProposal & ReplacePoolIncentivesProposal & UpdatePoolIncentivesProposal & SetProtoRevEnabledProposal & SetProtoRevAdminAccountProposal & SetSuperfluidAssetsProposal & RemoveSuperfluidAssetsProposal & UpdateUnpoolWhiteListProposal & UpdateFeeTokenProposal & PromoteToPrivilegedContractProposal & DemotePrivilegedContractProposal & SetCodeAuthorizationProposal & RemoveCodeAuthorizationProposal & SetContractAuthorizationProposal & RemoveContractAuthorizationProposal & AllowDenomProposal & CreditTypeProposal & Any) | undefined;
   /** initial_deposit is the deposit value that must be paid at proposal submission. */
   initialDeposit: Coin[];
   /** proposer is the account address of the proposer. */
@@ -32,7 +36,7 @@ export interface MsgSubmitProposalProtoMsg {
   value: Uint8Array;
 }
 export type MsgSubmitProposalEncoded = Omit<MsgSubmitProposal, "content"> & {
-  /** content is the proposal's content. */content?: CommunityPoolSpendProposalProtoMsg | CommunityPoolSpendProposalWithDepositProtoMsg | TextProposalProtoMsg | ParameterChangeProposalProtoMsg | SoftwareUpgradeProposalProtoMsg | CancelSoftwareUpgradeProposalProtoMsg | StoreCodeProposalProtoMsg | InstantiateContractProposalProtoMsg | InstantiateContract2ProposalProtoMsg | MigrateContractProposalProtoMsg | SudoContractProposalProtoMsg | ExecuteContractProposalProtoMsg | UpdateAdminProposalProtoMsg | ClearAdminProposalProtoMsg | PinCodesProposalProtoMsg | UnpinCodesProposalProtoMsg | UpdateInstantiateConfigProposalProtoMsg | StoreAndInstantiateContractProposalProtoMsg | ClientUpdateProposalProtoMsg | UpgradeProposalProtoMsg | ReplaceMigrationRecordsProposalProtoMsg | UpdateMigrationRecordsProposalProtoMsg | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg | SetScalingFactorControllerProposalProtoMsg | ReplacePoolIncentivesProposalProtoMsg | UpdatePoolIncentivesProposalProtoMsg | SetProtoRevEnabledProposalProtoMsg | SetProtoRevAdminAccountProposalProtoMsg | SetSuperfluidAssetsProposalProtoMsg | RemoveSuperfluidAssetsProposalProtoMsg | UpdateUnpoolWhiteListProposalProtoMsg | UpdateFeeTokenProposalProtoMsg | PromoteToPrivilegedContractProposalProtoMsg | DemotePrivilegedContractProposalProtoMsg | SetCodeAuthorizationProposalProtoMsg | RemoveCodeAuthorizationProposalProtoMsg | SetContractAuthorizationProposalProtoMsg | RemoveContractAuthorizationProposalProtoMsg | AnyProtoMsg | undefined;
+  /** content is the proposal's content. */content?: MsgCreateAllianceProposalProtoMsg | MsgUpdateAllianceProposalProtoMsg | MsgDeleteAllianceProposalProtoMsg | CommunityPoolSpendProposalProtoMsg | CommunityPoolSpendProposalWithDepositProtoMsg | TextProposalProtoMsg | ParameterChangeProposalProtoMsg | SoftwareUpgradeProposalProtoMsg | CancelSoftwareUpgradeProposalProtoMsg | StoreCodeProposalProtoMsg | InstantiateContractProposalProtoMsg | InstantiateContract2ProposalProtoMsg | MigrateContractProposalProtoMsg | SudoContractProposalProtoMsg | ExecuteContractProposalProtoMsg | UpdateAdminProposalProtoMsg | ClearAdminProposalProtoMsg | PinCodesProposalProtoMsg | UnpinCodesProposalProtoMsg | UpdateInstantiateConfigProposalProtoMsg | StoreAndInstantiateContractProposalProtoMsg | ClientUpdateProposalProtoMsg | UpgradeProposalProtoMsg | ReplaceMigrationRecordsProposalProtoMsg | UpdateMigrationRecordsProposalProtoMsg | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg | SetScalingFactorControllerProposalProtoMsg | CreateGroupsProposalProtoMsg | ReplacePoolIncentivesProposalProtoMsg | UpdatePoolIncentivesProposalProtoMsg | SetProtoRevEnabledProposalProtoMsg | SetProtoRevAdminAccountProposalProtoMsg | SetSuperfluidAssetsProposalProtoMsg | RemoveSuperfluidAssetsProposalProtoMsg | UpdateUnpoolWhiteListProposalProtoMsg | UpdateFeeTokenProposalProtoMsg | PromoteToPrivilegedContractProposalProtoMsg | DemotePrivilegedContractProposalProtoMsg | SetCodeAuthorizationProposalProtoMsg | RemoveCodeAuthorizationProposalProtoMsg | SetContractAuthorizationProposalProtoMsg | RemoveContractAuthorizationProposalProtoMsg | AllowDenomProposalProtoMsg | CreditTypeProposalProtoMsg | AnyProtoMsg | undefined;
 };
 /**
  * MsgSubmitProposal defines an sdk.Msg type that supports submitting arbitrary
@@ -55,7 +59,7 @@ export interface MsgSubmitProposalAminoMsg {
  * proposal Content.
  */
 export interface MsgSubmitProposalSDKType {
-  content?: CommunityPoolSpendProposalSDKType | CommunityPoolSpendProposalWithDepositSDKType | TextProposalSDKType | ParameterChangeProposalSDKType | SoftwareUpgradeProposalSDKType | CancelSoftwareUpgradeProposalSDKType | StoreCodeProposalSDKType | InstantiateContractProposalSDKType | InstantiateContract2ProposalSDKType | MigrateContractProposalSDKType | SudoContractProposalSDKType | ExecuteContractProposalSDKType | UpdateAdminProposalSDKType | ClearAdminProposalSDKType | PinCodesProposalSDKType | UnpinCodesProposalSDKType | UpdateInstantiateConfigProposalSDKType | StoreAndInstantiateContractProposalSDKType | ClientUpdateProposalSDKType | UpgradeProposalSDKType | ReplaceMigrationRecordsProposalSDKType | UpdateMigrationRecordsProposalSDKType | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType | SetScalingFactorControllerProposalSDKType | ReplacePoolIncentivesProposalSDKType | UpdatePoolIncentivesProposalSDKType | SetProtoRevEnabledProposalSDKType | SetProtoRevAdminAccountProposalSDKType | SetSuperfluidAssetsProposalSDKType | RemoveSuperfluidAssetsProposalSDKType | UpdateUnpoolWhiteListProposalSDKType | UpdateFeeTokenProposalSDKType | PromoteToPrivilegedContractProposalSDKType | DemotePrivilegedContractProposalSDKType | SetCodeAuthorizationProposalSDKType | RemoveCodeAuthorizationProposalSDKType | SetContractAuthorizationProposalSDKType | RemoveContractAuthorizationProposalSDKType | AnySDKType | undefined;
+  content?: MsgCreateAllianceProposalSDKType | MsgUpdateAllianceProposalSDKType | MsgDeleteAllianceProposalSDKType | CommunityPoolSpendProposalSDKType | CommunityPoolSpendProposalWithDepositSDKType | TextProposalSDKType | ParameterChangeProposalSDKType | SoftwareUpgradeProposalSDKType | CancelSoftwareUpgradeProposalSDKType | StoreCodeProposalSDKType | InstantiateContractProposalSDKType | InstantiateContract2ProposalSDKType | MigrateContractProposalSDKType | SudoContractProposalSDKType | ExecuteContractProposalSDKType | UpdateAdminProposalSDKType | ClearAdminProposalSDKType | PinCodesProposalSDKType | UnpinCodesProposalSDKType | UpdateInstantiateConfigProposalSDKType | StoreAndInstantiateContractProposalSDKType | ClientUpdateProposalSDKType | UpgradeProposalSDKType | ReplaceMigrationRecordsProposalSDKType | UpdateMigrationRecordsProposalSDKType | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType | SetScalingFactorControllerProposalSDKType | CreateGroupsProposalSDKType | ReplacePoolIncentivesProposalSDKType | UpdatePoolIncentivesProposalSDKType | SetProtoRevEnabledProposalSDKType | SetProtoRevAdminAccountProposalSDKType | SetSuperfluidAssetsProposalSDKType | RemoveSuperfluidAssetsProposalSDKType | UpdateUnpoolWhiteListProposalSDKType | UpdateFeeTokenProposalSDKType | PromoteToPrivilegedContractProposalSDKType | DemotePrivilegedContractProposalSDKType | SetCodeAuthorizationProposalSDKType | RemoveCodeAuthorizationProposalSDKType | SetContractAuthorizationProposalSDKType | RemoveContractAuthorizationProposalSDKType | AllowDenomProposalSDKType | CreditTypeProposalSDKType | AnySDKType | undefined;
   initial_deposit: CoinSDKType[];
   proposer: string;
 }
@@ -858,10 +862,16 @@ export const MsgDepositResponse = {
     };
   }
 };
-export const Cosmos_govv1beta1Content_InterfaceDecoder = (input: BinaryReader | Uint8Array): CommunityPoolSpendProposal | CommunityPoolSpendProposalWithDeposit | TextProposal | ParameterChangeProposal | SoftwareUpgradeProposal | CancelSoftwareUpgradeProposal | StoreCodeProposal | InstantiateContractProposal | InstantiateContract2Proposal | MigrateContractProposal | SudoContractProposal | ExecuteContractProposal | UpdateAdminProposal | ClearAdminProposal | PinCodesProposal | UnpinCodesProposal | UpdateInstantiateConfigProposal | StoreAndInstantiateContractProposal | ClientUpdateProposal | UpgradeProposal | ReplaceMigrationRecordsProposal | UpdateMigrationRecordsProposal | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal | SetScalingFactorControllerProposal | ReplacePoolIncentivesProposal | UpdatePoolIncentivesProposal | SetProtoRevEnabledProposal | SetProtoRevAdminAccountProposal | SetSuperfluidAssetsProposal | RemoveSuperfluidAssetsProposal | UpdateUnpoolWhiteListProposal | UpdateFeeTokenProposal | PromoteToPrivilegedContractProposal | DemotePrivilegedContractProposal | SetCodeAuthorizationProposal | RemoveCodeAuthorizationProposal | SetContractAuthorizationProposal | RemoveContractAuthorizationProposal | Any => {
+export const Cosmos_govv1beta1Content_InterfaceDecoder = (input: BinaryReader | Uint8Array): MsgCreateAllianceProposal | MsgUpdateAllianceProposal | MsgDeleteAllianceProposal | CommunityPoolSpendProposal | CommunityPoolSpendProposalWithDeposit | TextProposal | ParameterChangeProposal | SoftwareUpgradeProposal | CancelSoftwareUpgradeProposal | StoreCodeProposal | InstantiateContractProposal | InstantiateContract2Proposal | MigrateContractProposal | SudoContractProposal | ExecuteContractProposal | UpdateAdminProposal | ClearAdminProposal | PinCodesProposal | UnpinCodesProposal | UpdateInstantiateConfigProposal | StoreAndInstantiateContractProposal | ClientUpdateProposal | UpgradeProposal | ReplaceMigrationRecordsProposal | UpdateMigrationRecordsProposal | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal | SetScalingFactorControllerProposal | CreateGroupsProposal | ReplacePoolIncentivesProposal | UpdatePoolIncentivesProposal | SetProtoRevEnabledProposal | SetProtoRevAdminAccountProposal | SetSuperfluidAssetsProposal | RemoveSuperfluidAssetsProposal | UpdateUnpoolWhiteListProposal | UpdateFeeTokenProposal | PromoteToPrivilegedContractProposal | DemotePrivilegedContractProposal | SetCodeAuthorizationProposal | RemoveCodeAuthorizationProposal | SetContractAuthorizationProposal | RemoveContractAuthorizationProposal | AllowDenomProposal | CreditTypeProposal | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
+    case "/alliance.alliance.MsgCreateAllianceProposal":
+      return MsgCreateAllianceProposal.decode(data.value, undefined, true);
+    case "/alliance.alliance.MsgUpdateAllianceProposal":
+      return MsgUpdateAllianceProposal.decode(data.value, undefined, true);
+    case "/alliance.alliance.MsgDeleteAllianceProposal":
+      return MsgDeleteAllianceProposal.decode(data.value, undefined, true);
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
       return CommunityPoolSpendProposal.decode(data.value, undefined, true);
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit":
@@ -910,6 +920,8 @@ export const Cosmos_govv1beta1Content_InterfaceDecoder = (input: BinaryReader | 
       return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal":
       return SetScalingFactorControllerProposal.decode(data.value, undefined, true);
+    case "/osmosis.incentives.CreateGroupsProposal":
+      return CreateGroupsProposal.decode(data.value, undefined, true);
     case "/osmosis.poolincentives.v1beta1.ReplacePoolIncentivesProposal":
       return ReplacePoolIncentivesProposal.decode(data.value, undefined, true);
     case "/osmosis.poolincentives.v1beta1.UpdatePoolIncentivesProposal":
@@ -938,12 +950,31 @@ export const Cosmos_govv1beta1Content_InterfaceDecoder = (input: BinaryReader | 
       return SetContractAuthorizationProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal":
       return RemoveContractAuthorizationProposal.decode(data.value, undefined, true);
+    case "/regen.ecocredit.marketplace.v1.AllowDenomProposal":
+      return AllowDenomProposal.decode(data.value, undefined, true);
+    case "/regen.ecocredit.v1.CreditTypeProposal":
+      return CreditTypeProposal.decode(data.value, undefined, true);
     default:
       return data;
   }
 };
 export const Cosmos_govv1beta1Content_FromAmino = (content: AnyAmino) => {
   switch (content.type) {
+    case "/alliance.alliance.MsgCreateAllianceProposal":
+      return Any.fromPartial({
+        typeUrl: "/alliance.alliance.MsgCreateAllianceProposal",
+        value: MsgCreateAllianceProposal.encode(MsgCreateAllianceProposal.fromPartial(MsgCreateAllianceProposal.fromAmino(content.value))).finish()
+      });
+    case "/alliance.alliance.MsgUpdateAllianceProposal":
+      return Any.fromPartial({
+        typeUrl: "/alliance.alliance.MsgUpdateAllianceProposal",
+        value: MsgUpdateAllianceProposal.encode(MsgUpdateAllianceProposal.fromPartial(MsgUpdateAllianceProposal.fromAmino(content.value))).finish()
+      });
+    case "/alliance.alliance.MsgDeleteAllianceProposal":
+      return Any.fromPartial({
+        typeUrl: "/alliance.alliance.MsgDeleteAllianceProposal",
+        value: MsgDeleteAllianceProposal.encode(MsgDeleteAllianceProposal.fromPartial(MsgDeleteAllianceProposal.fromAmino(content.value))).finish()
+      });
     case "cosmos-sdk/CommunityPoolSpendProposal":
       return Any.fromPartial({
         typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
@@ -1064,6 +1095,11 @@ export const Cosmos_govv1beta1Content_FromAmino = (content: AnyAmino) => {
         typeUrl: "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal",
         value: SetScalingFactorControllerProposal.encode(SetScalingFactorControllerProposal.fromPartial(SetScalingFactorControllerProposal.fromAmino(content.value))).finish()
       });
+    case "osmosis/incentives/create-groups-proposal":
+      return Any.fromPartial({
+        typeUrl: "/osmosis.incentives.CreateGroupsProposal",
+        value: CreateGroupsProposal.encode(CreateGroupsProposal.fromPartial(CreateGroupsProposal.fromAmino(content.value))).finish()
+      });
     case "osmosis/ReplacePoolIncentivesProposal":
       return Any.fromPartial({
         typeUrl: "/osmosis.poolincentives.v1beta1.ReplacePoolIncentivesProposal",
@@ -1134,12 +1170,37 @@ export const Cosmos_govv1beta1Content_FromAmino = (content: AnyAmino) => {
         typeUrl: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal",
         value: RemoveContractAuthorizationProposal.encode(RemoveContractAuthorizationProposal.fromPartial(RemoveContractAuthorizationProposal.fromAmino(content.value))).finish()
       });
+    case "/regen.ecocredit.marketplace.v1.AllowDenomProposal":
+      return Any.fromPartial({
+        typeUrl: "/regen.ecocredit.marketplace.v1.AllowDenomProposal",
+        value: AllowDenomProposal.encode(AllowDenomProposal.fromPartial(AllowDenomProposal.fromAmino(content.value))).finish()
+      });
+    case "/regen.ecocredit.v1.CreditTypeProposal":
+      return Any.fromPartial({
+        typeUrl: "/regen.ecocredit.v1.CreditTypeProposal",
+        value: CreditTypeProposal.encode(CreditTypeProposal.fromPartial(CreditTypeProposal.fromAmino(content.value))).finish()
+      });
     default:
       return Any.fromAmino(content);
   }
 };
 export const Cosmos_govv1beta1Content_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
+    case "/alliance.alliance.MsgCreateAllianceProposal":
+      return {
+        type: "/alliance.alliance.MsgCreateAllianceProposal",
+        value: MsgCreateAllianceProposal.toAmino(MsgCreateAllianceProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/alliance.alliance.MsgUpdateAllianceProposal":
+      return {
+        type: "/alliance.alliance.MsgUpdateAllianceProposal",
+        value: MsgUpdateAllianceProposal.toAmino(MsgUpdateAllianceProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/alliance.alliance.MsgDeleteAllianceProposal":
+      return {
+        type: "/alliance.alliance.MsgDeleteAllianceProposal",
+        value: MsgDeleteAllianceProposal.toAmino(MsgDeleteAllianceProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
       return {
         type: "cosmos-sdk/CommunityPoolSpendProposal",
@@ -1260,6 +1321,11 @@ export const Cosmos_govv1beta1Content_ToAmino = (content: Any, useInterfaces: bo
         type: "osmosis/SetScalingFactorControllerProposal",
         value: SetScalingFactorControllerProposal.toAmino(SetScalingFactorControllerProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
+    case "/osmosis.incentives.CreateGroupsProposal":
+      return {
+        type: "osmosis/incentives/create-groups-proposal",
+        value: CreateGroupsProposal.toAmino(CreateGroupsProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
     case "/osmosis.poolincentives.v1beta1.ReplacePoolIncentivesProposal":
       return {
         type: "osmosis/ReplacePoolIncentivesProposal",
@@ -1329,6 +1395,16 @@ export const Cosmos_govv1beta1Content_ToAmino = (content: Any, useInterfaces: bo
       return {
         type: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal",
         value: RemoveContractAuthorizationProposal.toAmino(RemoveContractAuthorizationProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/regen.ecocredit.marketplace.v1.AllowDenomProposal":
+      return {
+        type: "/regen.ecocredit.marketplace.v1.AllowDenomProposal",
+        value: AllowDenomProposal.toAmino(AllowDenomProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/regen.ecocredit.v1.CreditTypeProposal":
+      return {
+        type: "/regen.ecocredit.v1.CreditTypeProposal",
+        value: CreditTypeProposal.toAmino(CreditTypeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
       return Any.toAmino(content, useInterfaces);

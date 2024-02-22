@@ -2,8 +2,8 @@ import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
 import { makeCommunityPoolDepositAction } from './CommunityPoolDeposit'
 import { makeCommunityPoolSpendAction } from './CommunityPoolSpend'
+import { makeConfigureVestingPaymentsAction } from './ConfigureVestingPayments'
 import { makeEnableRetroactiveCompensationAction } from './EnableRetroactiveCompensation'
-import { makeEnableVestingPaymentsAction } from './EnableVestingPayments'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageStakingAction } from './ManageStaking'
 import { makeManageVestingAction } from './ManageVesting'
@@ -31,7 +31,7 @@ export const makeTreasuryActionCategory: ActionCategoryMaker = ({
     makeManageCw20Action,
     makePerformTokenSwapAction,
     makeWithdrawTokenSwapAction,
-    makeEnableVestingPaymentsAction,
+    makeConfigureVestingPaymentsAction,
     makeEnableRetroactiveCompensationAction,
     makeCommunityPoolSpendAction,
     makeCommunityPoolDepositAction,

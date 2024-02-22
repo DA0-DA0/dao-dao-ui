@@ -1,12 +1,18 @@
 import { ComponentType } from 'react'
-import { waitForAllSettled } from 'recoil'
+import { waitForAny } from 'recoil'
 
 import {
   WalletBalances as StatelessWalletBalances,
   useCachedLoading,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
-import { LazyNftCardInfo, LoadingData, TokenCardInfo } from '@dao-dao/types'
+import {
+  LazyNftCardInfo,
+  LoadingData,
+  LoadingDataWithError,
+  TokenCardInfo,
+} from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
@@ -34,25 +40,20 @@ export const WalletBalances = ({
 }: WalletBalancesProps) => {
   const { chain_id: chainId } = useChain()
 
-  const tokensWithoutLazyInfo = useCachedLoading(
+  const tokensWithoutLazyInfo = useCachedLoadingWithError(
     address
       ? walletTokenCardInfosSelector({
           chainId,
           walletAddress: address,
         })
-      : undefined,
-    []
+      : undefined
   )
 
-  const flattenedTokensWithoutLazyInfo = tokensWithoutLazyInfo.loading
-    ? []
-    : tokensWithoutLazyInfo.data
-
   // Load separately so they cache separately.
-  const tokenLazyInfos = useCachedLoading(
-    !tokensWithoutLazyInfo.loading && address
-      ? waitForAllSettled(
-          flattenedTokensWithoutLazyInfo.map(({ token, unstakedBalance }) =>
+  const tokenLazyInfos = useCachedLoadingWithError(
+    !tokensWithoutLazyInfo.loading && !tokensWithoutLazyInfo.errored && address
+      ? waitForAny(
+          tokensWithoutLazyInfo.data.map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
               owner: address,
               token,
@@ -60,33 +61,38 @@ export const WalletBalances = ({
             })
           )
         )
-      : undefined,
-    []
+      : undefined
   )
 
-  const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
-      ? {
-          loading: true,
-        }
+  const tokens: LoadingDataWithError<TokenCardInfo[]> =
+    tokensWithoutLazyInfo.loading || tokensWithoutLazyInfo.errored
+      ? tokensWithoutLazyInfo
       : {
           loading: false,
-          data: flattenedTokensWithoutLazyInfo.map((token, i) => ({
-            ...token,
-            lazyInfo:
-              tokenLazyInfos.loading ||
-              flattenedTokensWithoutLazyInfo.length !==
-                tokenLazyInfos.data.length
-                ? { loading: true }
-                : loadableToLoadingData(tokenLazyInfos.data[i], {
-                    usdUnitPrice: undefined,
-                    stakingInfo: undefined,
-                    totalBalance: token.unstakedBalance,
-                  }),
-          })),
+          errored: false,
+          updating:
+            tokensWithoutLazyInfo.updating ||
+            (!tokenLazyInfos.loading &&
+              !tokenLazyInfos.errored &&
+              tokenLazyInfos.updating),
+          data: tokensWithoutLazyInfo.data.map(
+            (token, i): TokenCardInfo => ({
+              ...token,
+              lazyInfo:
+                tokenLazyInfos.loading ||
+                tokenLazyInfos.errored ||
+                tokensWithoutLazyInfo.data.length !== tokenLazyInfos.data.length
+                  ? { loading: true }
+                  : loadableToLoadingData(tokenLazyInfos.data[i], {
+                      usdUnitPrice: undefined,
+                      stakingInfo: undefined,
+                      totalBalance: token.unstakedBalance,
+                    }),
+            })
+          ),
         }
 
-  const nfts = useCachedLoading(
+  const nfts = useCachedLoadingWithError(
     address
       ? allWalletNftsSelector([
           {
@@ -94,8 +100,7 @@ export const WalletBalances = ({
             walletAddress: address,
           },
         ])
-      : undefined,
-    []
+      : undefined
   )
 
   const hiddenTokens = useCachedLoading(

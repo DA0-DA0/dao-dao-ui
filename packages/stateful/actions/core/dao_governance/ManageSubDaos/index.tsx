@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
+import { AddressInput, EntityDisplay } from '../../../../components'
 import { useActionOptions } from '../../../react'
 import {
   ManageSubDaosData,
@@ -50,6 +50,7 @@ const Component: ActionComponent = (props) => {
       options={{
         currentSubDaos,
         AddressInput,
+        EntityDisplay,
       }}
     />
   )
@@ -109,8 +110,8 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
           data: {
             toAdd: msg.wasm.execute.msg.update_sub_daos.to_add,
             toRemove: msg.wasm.execute.msg.update_sub_daos.to_remove.map(
-              (addr: string) => ({
-                addr,
+              (address: string) => ({
+                address,
               })
             ),
           },

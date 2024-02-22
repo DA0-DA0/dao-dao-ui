@@ -27,10 +27,10 @@ import { Row } from './Row'
 // bottom, so the user can toggle between compact and not compact mode when it
 // is not forced.
 const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
-// Width of `sm` tailwind selector. Don't change this without changing all of
-// the `sm:` tailwind class media queries since they are set based on when it is
+// Width of `md` tailwind selector. Don't change this without changing all of
+// the `md:` tailwind class media queries since they are set based on when it is
 // in responsive mobile mode.
-const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 640
+const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 768
 
 // Force off when in responsive mobile mode since it displays full width when
 // open and we can show all details. Force on when larger than mobile but still
@@ -46,11 +46,11 @@ const DAPP_URL_PREFIX = `https://${MAINNET ? '' : 'testnet.'}daodao.zone`
 
 export const SdaNavigation = ({
   tabs,
-  version,
   compact,
   setCompact,
   mountedInBrowser,
   LinkWrapper,
+  SidebarWallet,
 }: SdaNavigationProps) => {
   const daoInfo = useDaoInfoContext()
   const { t } = useTranslation()
@@ -64,7 +64,6 @@ export const SdaNavigation = ({
       enabled: responsiveEnabled,
       toggle: toggleResponsive,
     },
-    responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
 
   // Get the path to the DAO page on main DAO DAO.
@@ -104,7 +103,7 @@ export const SdaNavigation = ({
       {/* Layer underneath that allows closing the responsive navigation by tapping on visible parts of the page. */}
       {responsiveEnabled && (
         <div
-          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer sm:hidden"
+          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer md:hidden"
           onClick={() => responsiveEnabled && toggleResponsive()}
         ></div>
       )}
@@ -112,21 +111,16 @@ export const SdaNavigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base pb-6 text-lg',
-          // If compact, items will manager their own padding so that
-          // highlighted rows fill the whole width.
-          !compact && 'px-6',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-background-base pb-6 text-lg',
+          // If compact, items will manage their own padding so that highlighted
+          // rows fill the whole width.
+          compact ? 'pl-safe' : 'pr-6 pl-safe-or-[1.5rem]',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90dvw] shadow-dp8 transition-all pt-safe',
+          'absolute top-0 bottom-0 z-20 w-[96dvw] max-w-sm shadow-dp8 transition-all duration-200 pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
-          compact ? 'sm:w-min' : 'sm:w-[264px]',
-
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
-          responsiveRightSidebarEnabled
-            ? 'opacity-30 2xl:opacity-100'
-            : 'opacity-100'
+          'md:relative md:left-0 md:pt-0 md:shadow-none md:transition-[padding-left]',
+          compact ? 'md:w-min' : 'md:w-72'
         )}
       >
         <PageHeader
@@ -135,7 +129,7 @@ export const SdaNavigation = ({
               className={clsx(
                 'flex flex-row items-center gap-2 overflow-hidden',
                 // Make room for rightNode switch button.
-                daoDaoPath && !compact && 'px-12 sm:pl-0'
+                daoDaoPath && !compact && 'px-12 md:pl-0'
               )}
               href={getDaoPath(daoInfo.coreAddress)}
             >
@@ -158,6 +152,8 @@ export const SdaNavigation = ({
           forceCenter={compact}
           noBorder={compact}
         />
+
+        <SidebarWallet />
 
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {
@@ -220,29 +216,17 @@ export const SdaNavigation = ({
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
-          {!compact && (
-            <div className="caption-text space-y-3 font-mono">
-              <p className="pl-[10px]">
-                {t('info.daodaoWithVersion', { version })}
-              </p>
-
-              <Footer />
-            </div>
-          )}
+          {!compact && <Footer />}
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-4 flex shrink-0 gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
-            {compact ? (
-              <Tooltip title={t('button.toggleTheme')}>
-                <ThemeToggle compact />
-              </Tooltip>
-            ) : (
+            <Tooltip title={t('button.toggleTheme')}>
               <ThemeToggle />
-            )}
+            </Tooltip>
 
             <IconButton
               Icon={

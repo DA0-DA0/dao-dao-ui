@@ -1,5 +1,5 @@
 import uniq from 'lodash.uniq'
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   Cw1WhitelistSelectors,
@@ -13,7 +13,6 @@ import {
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
 import {
-  OldVestingPaymentFactory,
   TokenType,
   VestingInfo,
   VestingStep,
@@ -99,33 +98,25 @@ export const vestingFactoryOwnerSelector = selectorFamily<
 
 export const vestingInfosForFactorySelector = selectorFamily<
   VestingInfo[],
-  WithChainId<{ factory: string; oldFactories?: OldVestingPaymentFactory[] }>
+  WithChainId<{ factory: string }>
 >({
   key: 'vestingInfosForFactory',
   get:
-    ({ chainId, factory, oldFactories }) =>
+    ({ chainId, factory }) =>
     ({ get }) => {
       const vestingPaymentContracts = get(
-        waitForAll([
-          CwPayrollFactorySelectors.allVestingContractsSelector({
-            contractAddress: factory,
-            chainId,
-          }),
-          ...(oldFactories?.map(({ address }) =>
-            CwPayrollFactorySelectors.allVestingContractsSelector({
-              contractAddress: address,
-              chainId,
-            })
-          ) ?? []),
-        ])
-      ).flat()
+        CwPayrollFactorySelectors.allVestingContractsSelector({
+          chainId,
+          contractAddress: factory,
+        })
+      )
 
       return get(
         waitForAll(
           vestingPaymentContracts.map(({ contract }) =>
             vestingInfoSelector({
-              vestingContractAddress: contract,
               chainId,
+              vestingContractAddress: contract,
             })
           )
         )
@@ -152,7 +143,7 @@ export const vestingInfoSelector = selectorFamily<
         { owner },
         stakeHistory,
         unbondingDurationSeconds,
-        actualDelegationInfo,
+        [actualDelegationInfoLoadable],
       ] = get(
         waitForAll([
           CwVestingSelectors.infoSelector({
@@ -188,10 +179,14 @@ export const vestingInfoSelector = selectorFamily<
             contractAddress: vestingContractAddress,
             chainId,
           }),
-          nativeDelegationInfoSelector({
-            address: vestingContractAddress,
-            chainId,
-          }),
+          // This fails to load on chains without staking support, like Neutron.
+          // If so, it's fine, we know nothing is staked.
+          waitForAllSettled([
+            nativeDelegationInfoSelector({
+              address: vestingContractAddress,
+              chainId,
+            }),
+          ]),
         ])
       )
 
@@ -266,6 +261,21 @@ export const vestingInfoSelector = selectorFamily<
           slashes.reduce((acc, { amount }) => acc + BigInt(amount), BigInt(0)),
         BigInt(0)
       )
+
+      // This errors on chains without staking support, like Neutron. If so,
+      // it's fine, we know nothing is staked.
+      if (
+        actualDelegationInfoLoadable.state === 'hasError' &&
+        (!(actualDelegationInfoLoadable.contents instanceof Error) ||
+          !actualDelegationInfoLoadable.contents.message.includes(
+            'unknown query path'
+          ))
+      ) {
+        throw actualDelegationInfoLoadable.contents
+      }
+
+      // Should always have loaded here.
+      const actualDelegationInfo = actualDelegationInfoLoadable.valueMaybe()
 
       const actualStaked =
         actualDelegationInfo?.delegations.reduce(
@@ -362,6 +372,7 @@ export const vestingInfoSelector = selectorFamily<
       const endDate = new Date(steps[steps.length - 1].timestamp)
 
       return {
+        chainId,
         vestingContractAddress,
         vest,
         token,

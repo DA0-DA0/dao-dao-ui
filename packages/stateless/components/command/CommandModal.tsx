@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -30,29 +31,41 @@ export const CommandModal = ({
 
   return (
     <Modal
-      containerClassName="!w-[36rem] sm:!max-w-[82dvw] !absolute top-[20dvh] !max-h-[60dvh]"
-      contentContainerClassName="p-3 pt-4"
-      headerContainerClassName="p-4"
+      backdropClassName="!justify-start"
+      closeButtonClassName="md:hidden"
+      containerClassName="!w-[36rem] xs:!max-w-[82dvw] mt-[2dvw] xs:mt-[9dvw] md:mt-[18dvh] !max-h-[60dvh] min-h-96"
+      contentContainerClassName="!p-3 !pt-4"
+      headerContainerClassName="!p-4 relative !gap-0"
       headerContent={
-        <div className="flex h-8 flex-row items-stretch gap-4">
-          {/* Don't show the root context. */}
-          {contexts.slice(1).map((context, index) => (
-            <ContextPill
-              key={index}
-              imageUrl={context.imageUrl}
-              name={context.name}
-              // Only the most recent context can go back. Sliced off the first
-              // one, so add one to the current index before comparing.
-              onClose={
-                index + 1 === contexts.length - 1
-                  ? closeCurrentContext
-                  : undefined
-              }
-            />
-          ))}
+        <>
+          <div
+            className={clsx(
+              '-ml-1 flex flex-row flex-wrap items-center gap-x-2 gap-y-1 transition-all',
+              contexts.length > 1 ? 'max-h-12 overflow-y-auto' : 'max-h-0'
+            )}
+          >
+            {/* Don't show the root context. */}
+            {contexts.slice(1).map((context, index) => (
+              <ContextPill
+                key={index}
+                className="mb-1"
+                imageUrl={context.imageUrl}
+                name={context.name}
+                onClose={
+                  // Only the most recent context can go back. Sliced off the
+                  // first one, so add one to the current index before
+                  // comparing.
+                  index + 1 === contexts.length - 1
+                    ? closeCurrentContext
+                    : undefined
+                }
+                size="sm"
+              />
+            ))}
+          </div>
 
           <SearchBar
-            className="!primary-text leading-8 text-text-body"
+            className="!primary-text relative h-8 leading-8 text-text-body"
             containerClassName="grow"
             ghost
             hideIcon
@@ -77,10 +90,10 @@ export const CommandModal = ({
             ref={searchBarRef}
             value={filter}
           />
-        </div>
+        </>
       }
-      hideCloseButton
       onClose={() => setVisible(false)}
+      smallCloseButton
       visible={visible}
     >
       {children}

@@ -6,6 +6,7 @@ import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
 import { appWithTranslation } from 'next-i18next'
+import PlausibleProvider from 'next-plausible'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
@@ -17,7 +18,6 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
-  web3AuthPromptAtom,
 } from '@dao-dao/state'
 import {
   AppContextProvider,
@@ -52,8 +52,6 @@ const InnerApp = ({
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
-  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
-
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
@@ -79,36 +77,52 @@ const InnerApp = ({
   }, [navigatingToHref, setNavigatingToHref])
 
   return (
-    <ThemeProvider
-      theme={theme}
-      themeChangeCount={themeChangeCount}
-      updateTheme={setTheme}
+    <PlausibleProvider
+      domain="dao.daodao.zone"
+      scriptProps={{
+        src: 'https://vis.daodao.zone/dao/dao.js',
+        // @ts-ignore
+        'data-api': 'https://vis.daodao.zone/dao/event',
+      }}
+      trackOutboundLinks
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : router.pathname === '/discord' ||
-        router.pathname === '/404' ||
-        router.pathname === '/500' ||
-        router.pathname === '/_error' ? (
-        <Component {...pageProps} />
-      ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
-          {/* AppContextProvider uses wallet context via the inbox. */}
-          <AppContextProvider mode={DaoPageMode.Sda}>
-            {/* All non-error/discord redirect SDA pages are a DAO page. */}
-            <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-              {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
-              <SdaLayout>
-                <Component {...pageProps} />
-              </SdaLayout>
-            </DaoPageWrapper>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ThemeProvider
+        theme={theme}
+        themeChangeCount={themeChangeCount}
+        updateTheme={setTheme}
+      >
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : // These are not DAO pages.
+        router.pathname === '/discord' ||
+          router.pathname === '/404' ||
+          router.pathname === '/500' ||
+          router.pathname === '/_error' ? (
+          <WalletProvider>
+            {/* AppContextProvider uses wallet context via the inbox. */}
+            <AppContextProvider mode={DaoPageMode.Sda}>
+              <Component {...pageProps} />
+            </AppContextProvider>
+          </WalletProvider>
+        ) : (
+          <WalletProvider>
+            {/* AppContextProvider uses wallet context via the inbox. */}
+            <AppContextProvider mode={DaoPageMode.Sda}>
+              {/* All non-error/discord redirect SDA pages are a DAO page. */}
+              <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+                {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+                <SdaLayout>
+                  <Component {...pageProps} />
+                </SdaLayout>
+              </DaoPageWrapper>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
-    </ThemeProvider>
+        <ToastNotifications />
+      </ThemeProvider>
+    </PlausibleProvider>
   )
 }
 

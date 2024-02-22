@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import {
-  Loader,
   ProposalContentDisplay,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -17,7 +16,6 @@ import { useEntity } from '../../hooks'
 import { useProposalModuleAdapterContext } from '../../proposal-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
-import { SuspenseLoader } from '../SuspenseLoader'
 
 export type DaoProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
@@ -81,13 +79,11 @@ export const DaoProposalContentDisplay = ({
       description={proposalInfo.description}
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
-        <SuspenseLoader fallback={<Loader />}>
-          <ProposalInnerContentDisplay
-            actionsForMatching={actionsForMatching}
-            setDuplicateFormData={setDuplicateFormData}
-            setSeenAllActionPages={setSeenAllActionPages}
-          />
-        </SuspenseLoader>
+        <ProposalInnerContentDisplay
+          actionsForMatching={actionsForMatching}
+          setDuplicateFormData={setDuplicateFormData}
+          setSeenAllActionPages={setSeenAllActionPages}
+        />
       }
       onRefresh={refreshProposal}
       refreshing={refreshing}

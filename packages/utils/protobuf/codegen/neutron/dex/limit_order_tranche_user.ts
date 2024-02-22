@@ -1,5 +1,5 @@
 import { TradePairID, TradePairIDAmino, TradePairIDSDKType } from "./trade_pair_id";
-import { LimitOrderType, limitOrderTypeFromJSON, limitOrderTypeToJSON } from "./tx";
+import { LimitOrderType, limitOrderTypeFromJSON } from "./tx";
 import { BinaryReader, BinaryWriter } from "../../binary";
 export interface LimitOrderTrancheUser {
   tradePairId?: TradePairID | undefined;
@@ -167,7 +167,7 @@ export const LimitOrderTrancheUser = {
     obj.shares_owned = message.sharesOwned;
     obj.shares_withdrawn = message.sharesWithdrawn;
     obj.shares_cancelled = message.sharesCancelled;
-    obj.order_type = limitOrderTypeToJSON(message.orderType);
+    obj.order_type = message.orderType;
     return obj;
   },
   fromAminoMsg(object: LimitOrderTrancheUserAminoMsg): LimitOrderTrancheUser {

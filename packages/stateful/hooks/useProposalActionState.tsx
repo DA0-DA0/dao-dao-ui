@@ -9,6 +9,7 @@ import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
 import {
   ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
+  TextInput,
   useConfiguredChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -17,8 +18,12 @@ import {
   ProposalStatusEnum,
   ProposalStatusKey,
 } from '@dao-dao/types'
-import { processError } from '@dao-dao/utils'
+import {
+  DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY,
+  processError,
+} from '@dao-dao/utils'
 
+import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
 import { UseProposalPolytoneStateReturn } from './useProposalPolytoneState'
@@ -28,7 +33,12 @@ export type UseProposalActionStateOptions = {
   polytoneState: UseProposalPolytoneStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
-  executeProposal: (options: { proposalId: number }) => Promise<ExecuteResult>
+  executeProposal: (
+    options: { proposalId: number },
+    // No need.
+    fee?: undefined,
+    memo?: string | undefined
+  ) => Promise<ExecuteResult>
   closeProposal: (options: { proposalId: number }) => Promise<ExecuteResult>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
@@ -57,7 +67,7 @@ export const useProposalActionState = ({
   const {
     chain: { chain_id: chainId },
   } = useConfiguredChainContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, items } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { isWalletConnected } = useWallet()
   const { isMember = false } = useMembership({
@@ -78,6 +88,11 @@ export const useProposalActionState = ({
     setActionLoading(false)
   }, [statusKey])
 
+  // If enabled, the user will be shown an input field to enter a memo for the
+  // execution transaction.
+  const allowMemoOnExecute = !!items[DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY]
+  const [memo, setMemo] = useState('')
+
   const onExecute = useCallback(async () => {
     if (!isWalletConnected) {
       return
@@ -85,9 +100,13 @@ export const useProposalActionState = ({
 
     setActionLoading(true)
     try {
-      await executeProposal({
-        proposalId: proposalNumber,
-      })
+      await executeProposal(
+        {
+          proposalId: proposalNumber,
+        },
+        undefined,
+        allowMemoOnExecute && memo ? memo : undefined
+      )
 
       await onExecuteSuccess()
     } catch (err) {
@@ -99,7 +118,14 @@ export const useProposalActionState = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
+  }, [
+    isWalletConnected,
+    executeProposal,
+    proposalNumber,
+    allowMemoOnExecute,
+    memo,
+    onExecuteSuccess,
+  ])
 
   const onClose = useCallback(async () => {
     if (!isWalletConnected) {
@@ -125,6 +151,11 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
 
+  const showPolytone =
+    !polytoneState.loading &&
+    statusKey === ProposalStatusEnum.Executed &&
+    polytoneState.data.hasPolytoneMessages
+
   return {
     action:
       statusKey === ProposalStatusEnum.Passed &&
@@ -139,6 +170,13 @@ export const useProposalActionState = ({
             doAction: polytoneState.data.needsSelfRelay
               ? polytoneState.data.openPolytoneRelay
               : onExecute,
+            header: allowMemoOnExecute ? (
+              <TextInput
+                onChange={(e) => setMemo(e.target.value)}
+                placeholder={t('info.memoPlaceholder')}
+                value={memo}
+              />
+            ) : undefined,
           }
         : statusKey === ProposalStatusEnum.Rejected
         ? {
@@ -161,10 +199,14 @@ export const useProposalActionState = ({
             description: t('error.polytoneExecutedNoRelay'),
           }
         : undefined,
-    footer: !polytoneState.loading &&
-      statusKey === ProposalStatusEnum.Executed &&
-      polytoneState.data.hasPolytoneMessages && (
-        <ProposalCrossChainRelayStatus state={polytoneState.data} />
-      ),
+    footer: (showPolytone || isWalletConnected) && (
+      <div className="flex flex-col gap-6">
+        {showPolytone && (
+          <ProposalCrossChainRelayStatus state={polytoneState.data} />
+        )}
+
+        {isWalletConnected && <ProfileProposalCard />}
+      </div>
+    ),
   }
 }

@@ -11,6 +11,7 @@ export interface CopyToClipboardProps {
   className?: string
   textClassName?: string
   iconClassName?: string
+  iconSize?: 'sm' | 'default'
   onCopy?: () => void
   tooltip?: string
   noCopy?: boolean

@@ -2,7 +2,10 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
+import {
+  chainSupportsIcaControllerSelector,
+  icaRemoteAddressSelector,
+} from '@dao-dao/state/recoil'
 import {
   Button,
   ChainProvider,
@@ -20,6 +23,7 @@ import {
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
@@ -276,6 +280,17 @@ export const makeIcaExecuteAction: ActionMaker<IcaExecuteData> = ({
     }
   }
 
+  // Hide from picker if chain does not support ICA controller.
+  const useHideFromPicker: UseHideFromPicker = () => {
+    const supported = useCachedLoadingWithError(
+      chainSupportsIcaControllerSelector({
+        chainId: sourceChainId,
+      })
+    )
+
+    return supported.loading || supported.errored || !supported.data
+  }
+
   return {
     key: ActionKey.IcaExecute,
     Icon: RocketShipEmoji,
@@ -285,5 +300,6 @@ export const makeIcaExecuteAction: ActionMaker<IcaExecuteData> = ({
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    useHideFromPicker,
   }
 }

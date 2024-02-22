@@ -102,6 +102,7 @@ export const makeActiveThresholdVotingConfigItem =
     Icon: FilmSlateEmoji,
     nameI18nKey: 'title.activeThreshold',
     descriptionI18nKey: 'info.activeThresholdDescription',
+    tooltipI18nKey: 'info.activeThresholdDescription',
     Input: ActiveThresholdInput,
     getInputError: ({ activeThreshold } = {}) =>
       activeThreshold?.type || activeThreshold?.value,

@@ -52,7 +52,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
     // Size and rounding of container and children.
     const sizingRoundingClassNames = clsx(
       {
-        'h-8 w-8 rounded-full': size === 'xs',
+        'h-6 w-6 rounded-full': size === 'xs',
         'h-10 w-10 rounded-xl': size === 'sm',
         'h-16 w-16 rounded-2xl': size === 'lg',
         'h-24 w-24 rounded-full': size === 'xl',
@@ -67,11 +67,10 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         className={clsx(
           // Center icon.
           'relative flex shrink-0 items-center justify-center border border-transparent',
-          (!imageUrl || loadingImage) && 'border-border-interactive-disabled',
+          (!imageUrl || loadingImage) && '!border-border-interactive-disabled',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
-          loadingImage &&
-            'animate-pulse border border-border-interactive-disabled',
+          loadingImage && 'animate-pulse !border-border-interactive-disabled',
           // Make clickable for onClick and onEdit.
           (onClick || onEdit) && 'cursor-pointer',
           // Enable group events for onEdit.
@@ -119,7 +118,9 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
             )}
             onClick={onEdit}
           >
-            <Edit className="!h-2/5 !w-2/5 text-icon-primary" />
+            {!loadingImage && (
+              <Edit className="!h-2/5 !w-2/5 text-icon-primary" />
+            )}
           </div>
         )}
       </div>

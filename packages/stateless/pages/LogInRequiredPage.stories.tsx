@@ -4,14 +4,9 @@ import {
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { ConnectWalletProps } from '@dao-dao/types'
 
-import {
-  ConnectWallet,
-  ConnectWalletProps,
-  ProfileDisconnectedCard,
-  ProfileDisconnectedCardProps,
-} from '../components'
-import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
+import { ConnectWallet } from '../components'
 import { Default as ConnectWalletStory } from '../components/wallet/ConnectWallet.stories'
 import { LogInRequiredPage } from './LogInRequiredPage'
 
@@ -27,12 +22,6 @@ const Template: ComponentStory<typeof LogInRequiredPage> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  title: 'Some page',
-  rightSidebarContent: (
-    <ProfileDisconnectedCard
-      {...(ProfileDisconnectedCardStory.args as ProfileDisconnectedCardProps)}
-    />
-  ),
   connectWalletButton: (
     <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
   ),

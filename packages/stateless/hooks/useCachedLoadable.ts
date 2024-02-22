@@ -10,6 +10,7 @@ import {
 import {
   loadableToLoadingData,
   loadableToLoadingDataWithError,
+  transformLoadingDataWithError,
 } from '@dao-dao/utils'
 
 const constSelectorRegex = /^__constant__selectorFamily\/(.+)\/\d+$/
@@ -154,11 +155,28 @@ export const useCachedLoadable = <T extends unknown>(
 // comment above the LoadingData types.
 
 // Convert to LoadingDataWithError for convenience, memoized.
-export const useCachedLoadingWithError = <T extends unknown>(
-  recoilValue: RecoilValue<T> | undefined
-): LoadingDataWithError<T> => {
+export const useCachedLoadingWithError = <
+  T extends unknown,
+  U extends unknown = T
+>(
+  recoilValue: RecoilValue<T> | undefined,
+  /**
+   * Optional function to transform the data.
+   */
+  transform?: (data: T) => U
+): LoadingDataWithError<U> => {
   const loadable = useCachedLoadable(recoilValue)
-  return useMemo(() => loadableToLoadingDataWithError(loadable), [loadable])
+
+  const transformRef = useRef(transform)
+  transformRef.current = transform
+
+  return useMemo(() => {
+    const data = loadableToLoadingDataWithError(loadable)
+    if (transformRef.current) {
+      return transformLoadingDataWithError(data, transformRef.current)
+    }
+    return data as LoadingDataWithError<U>
+  }, [loadable])
 }
 
 // Convert to LoadingData for convenience, memoized.

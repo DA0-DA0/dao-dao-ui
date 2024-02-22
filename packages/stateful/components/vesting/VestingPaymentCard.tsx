@@ -14,7 +14,7 @@ import {
   useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, EntityType, VestingInfo } from '@dao-dao/types'
+import { ActionKey, ChainId, EntityType, VestingInfo } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
@@ -42,7 +42,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { refreshBalances } = useWalletInfo()
+  const { isWalletConnected, refreshBalances } = useWalletInfo()
 
   const {
     vestingContractAddress,
@@ -205,7 +205,10 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
 
   const recipientIsWallet = vest.recipient === walletAddress
   const canManageStaking =
+    // Neutron does not support staking.
+    chainId !== ChainId.NeutronMainnet &&
     (recipientIsWallet || recipientIsDao) &&
+    // Vested token is native token of chain.
     token.denomOrAddress === getNativeTokenForChainId(chainId).denomOrAddress
 
   const [showStakingModal, setShowStakingModal] = useState(false)
@@ -235,6 +238,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           token.decimals
         )}
         endDate={endDate}
+        isWalletConnected={isWalletConnected}
         lazyInfo={lazyInfoLoading}
         onAddToken={onAddToken}
         onClaim={onClaim}

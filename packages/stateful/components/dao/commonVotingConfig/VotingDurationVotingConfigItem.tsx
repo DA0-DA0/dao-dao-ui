@@ -78,6 +78,7 @@ export const makeVotingDurationVotingConfigItem =
     Icon: HourglassEmoji,
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
+    tooltipI18nKey: 'info.votingDurationTooltip',
     Input: VotingDurationInput,
     getInputError: ({ votingDuration } = {}) =>
       votingDuration?.value || votingDuration?.units,

@@ -44,6 +44,7 @@ export const makeProposalSubmissionPolicyVotingConfigItem =
     Icon: LockWithPenEmoji,
     nameI18nKey: 'form.proposalSubmissionPolicyTitle',
     descriptionI18nKey: 'form.proposalSubmissionPolicyDescription',
+    tooltipI18nKey: 'info.creationPolicyTooltip',
     Input: ProposalSubmissionPolicyVotingConfigItemInput,
     getInputError: ({ anyoneCanPropose } = {}) => anyoneCanPropose,
     Review: ProposalSubmissionPolicyVotingConfigItemReview,

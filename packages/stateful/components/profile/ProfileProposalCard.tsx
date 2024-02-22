@@ -19,7 +19,6 @@ import {
 } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { ProfileDisconnectedCard } from './ProfileDisconnectedCard'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>
@@ -89,9 +88,9 @@ export const ProfileProposalCard = () => {
   // This card should only display when a wallet is connected. The wallet vote
   // info hook returns undefined when there is no wallet connected. If we are
   // here and there is no wallet connected, something is probably just loading,
-  // maybe the wallet is reconnecting. It is safe to return a loader.
+  // maybe the wallet is reconnecting.
   if (!loadingWalletVoteInfo || loadingWalletVoteInfo.loading) {
-    return <ProfileDisconnectedCard className="animate-pulse" />
+    return null
   }
 
   const { vote, couldVote, canVote, votingPowerPercent } =

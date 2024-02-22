@@ -11,9 +11,7 @@ export const makeProposalModuleAdapterDecorator: (
 
     return (
       <ProposalModuleAdapterProvider
-        initialOptions={{
-          coreAddress,
-        }}
+        coreAddress={coreAddress}
         proposalId={proposalId}
         proposalModules={proposalModules}
       >

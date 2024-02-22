@@ -51,5 +51,8 @@ export type TokenInputProps<
   readOnly?: boolean
   required?: boolean
   containerClassName?: string
+  /**
+   * Optionally show the chain image over the token image.
+   */
   showChainImage?: boolean
 }

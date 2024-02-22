@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
@@ -18,8 +17,8 @@ import { useVotingModuleAdapter } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
-import { DaoInfoBar } from '../DaoInfoBar'
 import { DaoWidgets } from '../DaoWidgets'
+import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
@@ -69,24 +68,18 @@ export const HomeTab = () => {
         )
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       {mode === DaoPageMode.Sda && (
         <DaoSplashHeader
           ButtonLink={ButtonLink}
-          DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
         />
       )}
 
-      <div
-        className={clsx(
-          'mt-4 w-full rounded-md bg-background-secondary p-6',
-          isWalletConnected ? 'max-w-md' : 'max-w-xs'
-        )}
-      >
-        <p className="title-text mb-4">{t('title.yourMembership')}</p>
+      <p className="title-text mt-2">{t('title.membership')}</p>
 
+      <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
         {isWalletConnected ? (
           <ProfileCardMemberInfo
             maxGovernanceTokenDeposit={
@@ -96,9 +89,17 @@ export const HomeTab = () => {
             }
           />
         ) : (
-          <ConnectWallet center className="mt-6 w-full" />
+          <>
+            <p className="body-text mb-3">{t('info.logInToViewMembership')}</p>
+
+            <ConnectWallet size="md" />
+          </>
         )}
       </div>
+
+      <p className="title-text mt-4">{t('title.details')}</p>
+
+      <MainDaoInfoCards />
 
       <DaoWidgets />
     </div>

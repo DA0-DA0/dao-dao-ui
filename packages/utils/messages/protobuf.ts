@@ -15,13 +15,17 @@ import {
   StargateMsg,
 } from '@dao-dao/types'
 
+import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
 import { processError } from '../error'
 import {
   cwVoteOptionToGovVoteOption,
   govVoteOptionToCwVoteOption,
 } from '../gov'
+import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import {
+  allianceAminoConverters,
+  allianceProtoRegistry,
   cosmosAminoConverters,
   cosmosProtoRegistry,
   cosmwasmAminoConverters,
@@ -37,9 +41,16 @@ import {
   neutronProtoRegistry,
   osmosisAminoConverters,
   osmosisProtoRegistry,
+  regenAminoConverters,
+  regenProtoRegistry,
   publicawesomeAminoConverters as stargazeAminoConverters,
   publicawesomeProtoRegistry as stargazeProtoRegistry,
 } from '../protobuf'
+import {
+  MsgCreateAllianceProposal,
+  MsgDeleteAllianceProposal,
+  MsgUpdateAllianceProposal,
+} from '../protobuf/codegen/alliance/alliance/gov'
 import { MsgSend } from '../protobuf/codegen/cosmos/bank/v1beta1/tx'
 import {
   MsgSetWithdrawAddress,
@@ -63,6 +74,7 @@ import {
   MsgUpdateAdmin,
 } from '../protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { Any } from '../protobuf/codegen/google/protobuf/any'
+import { UploadCosmWasmPoolCodeAndWhiteListProposal } from '../protobuf/codegen/osmosis/cosmwasmpool/v1beta1/gov'
 import { isCosmWasmStargateMsg } from './cw'
 
 // Convert CosmWasm message to its encoded protobuf equivalent.
@@ -543,12 +555,28 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
   ...neutronProtoRegistry,
+  ...regenProtoRegistry,
+  ...allianceProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
+  [ParameterChangeProposal.typeUrl, ParameterChangeProposal as GeneratedType],
   [
-    '/cosmos.params.v1beta1.ParameterChangeProposal',
-    ParameterChangeProposal as GeneratedType,
+    UploadCosmWasmPoolCodeAndWhiteListProposal.typeUrl,
+    UploadCosmWasmPoolCodeAndWhiteListProposal as GeneratedType,
+  ],
+  // alliance.alliance
+  [
+    MsgCreateAllianceProposal.typeUrl,
+    MsgCreateAllianceProposal as GeneratedType,
+  ],
+  [
+    MsgUpdateAllianceProposal.typeUrl,
+    MsgUpdateAllianceProposal as GeneratedType,
+  ],
+  [
+    MsgDeleteAllianceProposal.typeUrl,
+    MsgDeleteAllianceProposal as GeneratedType,
   ],
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
@@ -562,6 +590,8 @@ export const aminoTypes = new AminoTypes({
   ...stargazeAminoConverters,
   ...gaiaAminoConverters,
   ...neutronAminoConverters,
+  ...regenAminoConverters,
+  ...allianceAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
@@ -670,9 +700,9 @@ export const decodeGovProposalV1Messages = (
   })
 
 // Decode governance proposal content using a protobuf.
-export const decodeGovProposal = (
+export const decodeGovProposal = async (
   govProposal: GovProposal
-): GovProposalWithDecodedContent => {
+): Promise<GovProposalWithDecodedContent> => {
   if (govProposal.version === GovProposalVersion.V1_BETA_1) {
     let title = govProposal.proposal.content?.title || ''
     let description = govProposal.proposal.content?.description || ''
@@ -710,10 +740,50 @@ export const decodeGovProposal = (
       (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
     )
 
+  let title =
+    govProposal.proposal.title ||
+    legacyContent.find((content) => content?.title)?.title ||
+    legacyContent[0]?.typeUrl ||
+    (decodedMessages[0] &&
+      'stargate' in decodedMessages[0] &&
+      decodedMessages[0].stargate.type_url.split('.').pop()) ||
+    '<no title>'
+  let description =
+    govProposal.proposal.summary ||
+    legacyContent.find((content) => content?.description)?.description ||
+    ''
+  if (govProposal.proposal.metadata) {
+    let metadata
+    // If metadata is a URL, try to fetch metadata.
+    if (isValidUrl(govProposal.proposal.metadata, true)) {
+      try {
+        const res = await fetch(
+          transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)
+        )
+        metadata = await res.json()
+      } catch {}
+
+      // If metadata is a JSON object, use it.
+    } else {
+      try {
+        metadata = JSON.parse(govProposal.proposal.metadata)
+      } catch {}
+    }
+
+    if (objectMatchesStructure(metadata, { title: {} })) {
+      title = metadata.title
+    }
+    if (objectMatchesStructure(metadata, { details: {} })) {
+      description = metadata.details
+    } else if (objectMatchesStructure(metadata, { description: {} })) {
+      description = metadata.description
+    }
+  }
+
   return {
     ...govProposal,
-    title: govProposal.proposal.title,
-    description: govProposal.proposal.summary,
+    title,
+    description,
     decodedMessages,
     legacyContent,
   }

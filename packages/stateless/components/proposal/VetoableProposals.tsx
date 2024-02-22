@@ -60,7 +60,7 @@ export const VetoableProposals = <T extends { proposalId: string }>({
             key={dao.chainId + dao.coreAddress}
             LinkWrapper={LinkWrapper}
             dao={dao}
-            showSubdaos={false}
+            showSubDaos={false}
           >
             <div className="mt-2 space-y-1 pl-6">
               {proposals.map((props) => (

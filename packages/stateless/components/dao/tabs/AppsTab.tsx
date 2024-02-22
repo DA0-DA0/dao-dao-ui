@@ -103,7 +103,7 @@ const InnerAppsTab = ({
           fullScreen && 'px-safe-offset-4'
         )}
       >
-        {DAO_APPS.map(({ name, imageUrl, url: appUrl }, index) => {
+        {DAO_APPS.map(({ platform, name, imageUrl, url: appUrl }, index) => {
           const isCustom = !appUrl
           const selected = index === selectedAppIndex
 
@@ -130,7 +130,13 @@ const InnerAppsTab = ({
                 ></div>
               )}
 
-              <div className="relative z-10 flex w-32 items-center justify-center p-4">
+              <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
+                {platform && (
+                  <p className="caption-text text-color-light-transparent">
+                    {platform}
+                  </p>
+                )}
+
                 <p className="primary-text break-words text-color-light">
                   {isCustom ? t('title.custom') : name}
                 </p>

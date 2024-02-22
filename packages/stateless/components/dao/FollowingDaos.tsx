@@ -1,4 +1,5 @@
 import { DoneOutlineRounded } from '@mui/icons-material'
+import { TFunction } from 'i18next'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -6,9 +7,9 @@ import { DaoCardInfo, LoadingData, SortFn, TypedOption } from '@dao-dao/types'
 
 import { useButtonPopupSorter } from '../../hooks'
 import { GridCardContainer } from '../GridCardContainer'
-import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 import { ButtonPopup } from '../popup/ButtonPopup'
+import { DaoCardLoader } from './DaoCard'
 
 export interface FollowingDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
@@ -24,21 +25,21 @@ export const FollowingDaos = ({
   const { t } = useTranslation()
 
   const sortOptions = useMemo(
-    () => getSortOptions(followingDaos.loading ? [] : followingDaos.data),
-    [followingDaos]
+    () => getSortOptions(t, followingDaos.loading ? [] : followingDaos.data),
+    [t, followingDaos]
   )
   const {
     sortedData: sortedFollowingDaos,
     buttonPopupProps: sortButtonPopupProps,
   } = useButtonPopupSorter({
-    data: followingDaos.loading ? [] : followingDaos.data,
+    data: followingDaos.loading ? undefined : followingDaos.data,
     options: sortOptions,
   })
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-        <p className="title-text">{t('title.following')}</p>
+        <p className="title-text text-lg">{t('title.following')}</p>
 
         <div className="flex grow flex-row justify-end">
           <ButtonPopup position="left" {...sortButtonPopupProps} />
@@ -46,7 +47,11 @@ export const FollowingDaos = ({
       </div>
 
       {followingDaos.loading || followingDaos.updating ? (
-        <Loader />
+        <GridCardContainer>
+          <DaoCardLoader />
+          <DaoCardLoader />
+          <DaoCardLoader />
+        </GridCardContainer>
       ) : followingDaos.data.length === 0 ? (
         <NoContent
           Icon={DoneOutlineRounded}
@@ -67,23 +72,24 @@ export const FollowingDaos = ({
 }
 
 const getSortOptions = (
+  t: TFunction,
   followingDaos: DaoCardInfo[]
 ): TypedOption<SortFn<DaoCardInfo>>[] => [
   {
-    label: 'Date followed (oldest → newest)',
+    label: t('info.dateFollowedOldestNewest'),
     value: (a, b) => followingDaos.indexOf(a) - followingDaos.indexOf(b),
   },
   {
-    label: 'Date followed (newest → oldest)',
+    label: t('info.dateFollowedNewestOldest'),
     value: (a, b) => followingDaos.indexOf(b) - followingDaos.indexOf(a),
   },
   {
-    label: 'DAO name (A → Z)',
+    label: t('info.daoNameAZ'),
     value: (a, b) =>
       a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleUpperCase()),
   },
   {
-    label: 'DAO name (Z → A)',
+    label: t('info.daoNameZA'),
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleUpperCase()),
   },

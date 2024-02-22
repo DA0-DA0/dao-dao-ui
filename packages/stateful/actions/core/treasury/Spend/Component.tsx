@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ChainLabel,
   ChainLogo,
   ChainProvider,
   FormSwitchCard,
@@ -549,13 +550,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               <div className="flex flex-row items-center gap-3">
                 {ibcPath.data.map((chainId, index) => (
                   <>
-                    <div className="flex flex-row items-center gap-2">
-                      <ChainLogo chainId={chainId} />
-
-                      <p className="primary-text">
-                        {getDisplayNameForChainId(chainId)}
-                      </p>
-                    </div>
+                    <ChainLabel chainId={chainId} />
 
                     {index !== ibcPath.data.length - 1 && (
                       <ArrowRightAltRounded className="!h-5 !w-5 text-text-secondary" />

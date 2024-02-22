@@ -28,6 +28,35 @@ export const DAO_APPS: DaoApp[] = [
       ? 'https://studio.stargaze.zone'
       : 'https://studio.publicawesome.dev',
   },
+  {
+    name: 'FIN',
+    platform: 'Kujira',
+    imageUrl: '/apps/fin.png',
+    url: 'https://fin.kujira.network',
+  },
+  {
+    name: 'BOW',
+    platform: 'Kujira',
+    imageUrl: '/apps/bow.png',
+    url: 'https://bow.kujira.network',
+  },
+  {
+    name: 'GHOST',
+    platform: 'Kujira',
+    imageUrl: '/apps/ghost.png',
+    url: 'https://ghost.kujira.network',
+  },
+  {
+    name: 'PILOT',
+    platform: 'Kujira',
+    imageUrl: '/apps/pilot.png',
+    url: 'https://pilot.kujira.network',
+  },
+  {
+    name: 'Kleomedes',
+    imageUrl: '/apps/kleomedes.png',
+    url: 'https://dashboard.kleomed.es',
+  },
 
   // Must be last for index matching. Enables custom URL input.
   {

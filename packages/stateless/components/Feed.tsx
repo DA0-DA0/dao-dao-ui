@@ -32,10 +32,9 @@ export const Feed = ({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-start justify-between gap-x-8">
-        <div className="flex flex-col gap-2">
-          <p className="title-text">{t('title.feed')}</p>
-
-          <p className="caption-text italic">{t('info.feedDescription')}</p>
+        <div className="flex flex-col gap-1">
+          <p className="title-text text-lg">{t('title.feed')}</p>
+          <p className="caption-text">{t('info.feedDescription')}</p>
         </div>
 
         <IconButton
@@ -71,9 +70,10 @@ export const Feed = ({
                 LinkWrapper,
               }}
               noContentIndent
+              noHeaderIndent
             >
               {items.length ? (
-                <div className="flex flex-col gap-2 px-2 md:gap-1">
+                <div className="flex flex-col gap-2 md:gap-1">
                   {items.map(({ Renderer, props }, index) => (
                     <Renderer key={index} {...props} />
                   ))}

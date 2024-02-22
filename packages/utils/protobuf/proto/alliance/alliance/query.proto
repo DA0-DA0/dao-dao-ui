@@ -1,0 +1,339 @@
+syntax = "proto3";
+package alliance.alliance;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "alliance/alliance/params.proto";
+import "alliance/alliance/alliance.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "alliance/alliance/delegations.proto";
+import "alliance/alliance/unbonding.proto";
+import "alliance/alliance/redelegations.proto";
+
+option go_package = "github.com/terra-money/alliance/x/alliance/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/terra/alliances/params";
+  }
+
+  // Query paginated alliances
+  rpc Alliances(QueryAlliancesRequest) returns (QueryAlliancesResponse) {
+    option (google.api.http).get = "/terra/alliances";
+  }
+
+  // Query a specific alliance by ibc hash
+  // @deprecated: this endpoint will be replaced for by the encoded version
+  // of the denom e.g.: GET:/terra/alliances/ibc%2Falliance
+  rpc IBCAlliance(QueryIBCAllianceRequest) returns (QueryAllianceResponse) {
+    // Deprecated. Please use the default endpoint 
+    // with the encoded denom e.g from ibc/alliance to ibc%2Falliance
+    option deprecated = true;
+    option (google.api.http).get = "/terra/alliances/ibc/{hash}";
+  }
+
+  // Query all paginated alliance delegations
+  rpc AllAlliancesDelegations(QueryAllAlliancesDelegationsRequest) returns (QueryAlliancesDelegationsResponse) {
+    option (google.api.http).get = "/terra/alliances/delegations";
+  }
+
+  // Query alliance validator
+  rpc AllianceValidator(QueryAllianceValidatorRequest) returns (QueryAllianceValidatorResponse) {
+    option (google.api.http).get = "/terra/alliances/validators/{validator_addr}";
+  }
+
+  // Query all paginated alliance validators
+  rpc AllAllianceValidators(QueryAllAllianceValidatorsRequest) returns (QueryAllianceValidatorsResponse) {
+    option (google.api.http).get = "/terra/alliances/validators";
+  }
+
+  // Query all paginated alliance delegations for a delegator addr
+  rpc AlliancesDelegation(QueryAlliancesDelegationsRequest) returns (QueryAlliancesDelegationsResponse) {
+    option (google.api.http).get = "/terra/alliances/delegations/{delegator_addr}";
+  }
+
+  // Query all paginated alliance delegations for a delegator addr and validator_addr
+  rpc AlliancesDelegationByValidator(QueryAlliancesDelegationByValidatorRequest) returns (QueryAlliancesDelegationsResponse) {
+    option (google.api.http).get = "/terra/alliances/delegations/{delegator_addr}/{validator_addr}";
+  }
+
+  // Query a delegation to an alliance by delegator addr, validator_addr and denom
+  rpc AllianceDelegation(QueryAllianceDelegationRequest) returns (QueryAllianceDelegationResponse) {
+    option (google.api.http).get = "/terra/alliances/delegations/{delegator_addr}/{validator_addr}/{denom}";
+  }
+
+  // Query a delegation to an alliance by delegator addr, validator_addr and denom
+  // @deprecated: this endpoint will be replaced for by the encoded version
+  // of the denom e.g.: GET:/terra/alliances/terradr1231/terravaloper41234/ibc%2Falliance
+  rpc IBCAllianceDelegation(QueryIBCAllianceDelegationRequest) returns (QueryAllianceDelegationResponse) {
+    // Deprecated. Please use the default endpoint 
+    // with the encoded denom e.g from ibc/alliance to ibc%2Falliance
+    option deprecated = true;
+    option (google.api.http).get = "/terra/alliances/delegations/{delegator_addr}/{validator_addr}/ibc/{hash}";
+  }
+
+  // Query for rewards by delegator addr, validator_addr and denom
+  rpc AllianceDelegationRewards(QueryAllianceDelegationRewardsRequest) returns (QueryAllianceDelegationRewardsResponse) {
+    option (google.api.http).get = "/terra/alliances/rewards/{delegator_addr}/{validator_addr}/{denom}";
+  }
+  // Query for rewards by delegator addr, validator_addr and denom
+  // @deprecated: this endpoint will be replaced for by the encoded version
+  // of the denom e.g.: GET:/terra/alliances/terradr1231/terravaloper41234/ibc%2Falliance
+  rpc IBCAllianceDelegationRewards(QueryIBCAllianceDelegationRewardsRequest) returns (QueryAllianceDelegationRewardsResponse) {
+    // Deprecated. Please use the default endpoint 
+    // with the encoded denom e.g from ibc/alliance to ibc%2Falliance
+    option deprecated = true;
+    option (google.api.http).get = "/terra/alliances/rewards/{delegator_addr}/{validator_addr}/ibc/{hash}";
+  }
+
+  // Query for rewards by delegator addr, validator_addr and denom
+  rpc AllianceUnbondingsByDenomAndDelegator(QueryAllianceUnbondingsByDenomAndDelegatorRequest) returns (QueryAllianceUnbondingsByDenomAndDelegatorResponse) {
+    option (google.api.http).get = "/terra/alliances/unbondings/{denom}/{delegator_addr}";
+  }
+
+  // Query for rewards by delegator addr, validator_addr and denom
+  rpc AllianceUnbondings(QueryAllianceUnbondingsRequest) returns (QueryAllianceUnbondingsResponse) {
+    option (google.api.http).get = "/terra/alliances/unbondings/{denom}/{delegator_addr}/{validator_addr}";
+  }
+
+  // Query redelegations by denom and delegator address
+  rpc AllianceRedelegations(QueryAllianceRedelegationsRequest) returns (QueryAllianceRedelegationsResponse) {
+    option (google.api.http).get = "/terra/alliances/redelegations/{denom}/{delegator_addr}";
+  }
+
+  // Query a specific alliance by denom
+  rpc Alliance(QueryAllianceRequest) returns (QueryAllianceResponse) {
+    option (google.api.http).get = "/terra/alliances/{denom}";
+  }
+}
+
+// Params
+message QueryParamsRequest { }
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// Alliances
+message QueryAlliancesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+
+}
+message QueryAlliancesResponse {
+  repeated AllianceAsset alliances = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// Alliance
+message QueryAllianceRequest {
+  string denom = 1;
+}
+
+message QueryAllianceResponse {
+  AllianceAsset alliance = 1;
+}
+
+message QueryIBCAllianceRequest {
+  // Deprecated. Please use the default endpoint 
+  // with the encoded denom e.g from 
+  option deprecated = true;
+  string hash = 1;
+}
+
+message QueryAllianceValidatorRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string validator_addr = 1;
+}
+
+message QueryAllAllianceValidatorsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAlliancesDelegationsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// AlliancesDelegation
+message QueryAlliancesDelegationsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// AlliancesDelegationByValidator
+message QueryAlliancesDelegationByValidatorRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr  = 1;
+  string validator_addr  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// DelegationResponse is equivalent to Delegation except that it contains a
+// balance in addition to shares which is more suitable for client responses.
+message DelegationResponse {
+  option (gogoproto.equal) = false;
+
+  Delegation delegation = 1 [(gogoproto.nullable) = false];
+
+  cosmos.base.v1beta1.Coin balance = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryAlliancesDelegationsResponse {
+  repeated DelegationResponse delegations = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// AllianceDelegation
+message QueryAllianceDelegationRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr  = 1;
+  string validator_addr  = 2;
+  string denom           = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryIBCAllianceDelegationRequest {
+  // Deprecated. Please use the default endpoint 
+  // with the encoded denom e.g from 
+  option deprecated = true;
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr  = 1;
+  string validator_addr  = 2;
+  string hash            = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryAllianceDelegationResponse {
+  DelegationResponse delegation = 1 [(gogoproto.nullable) = false];
+}
+
+// AllianceDelegation
+message QueryAllianceDelegationRewardsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr  = 1;
+  string validator_addr  = 2;
+  string denom           = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryIBCAllianceDelegationRewardsRequest {
+  // Deprecated. Please use the default endpoint 
+  // with the encoded denom e.g from 
+  option deprecated = true;
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_addr  = 1;
+  string validator_addr  = 2;
+  string hash            = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryAllianceDelegationRewardsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated cosmos.base.v1beta1.Coin rewards = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message QueryAllianceValidatorResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string validator_addr = 1;
+  repeated cosmos.base.v1beta1.DecCoin total_delegation_shares = 2 [
+    (gogoproto.nullable)   = false
+  ];
+  repeated cosmos.base.v1beta1.DecCoin validator_shares = 3 [
+    (gogoproto.nullable)   = false
+  ];
+  repeated cosmos.base.v1beta1.DecCoin total_staked = 4 [
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message QueryAllianceValidatorsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated QueryAllianceValidatorResponse validators = 1 [
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// AllianceDelegation
+message QueryAllianceUnbondingsByDenomAndDelegatorRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string denom           = 1;
+  string delegator_addr  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryAllianceUnbondingsByDenomAndDelegatorResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated UnbondingDelegation unbondings = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllianceUnbondingsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string denom           = 1;
+  string delegator_addr  = 2;
+  string validator_addr  = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryAllianceUnbondingsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated UnbondingDelegation unbondings = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// Redelegations
+message QueryAllianceRedelegationsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string denom           = 1;
+  string delegator_addr  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryAllianceRedelegationsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated RedelegationEntry redelegations = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

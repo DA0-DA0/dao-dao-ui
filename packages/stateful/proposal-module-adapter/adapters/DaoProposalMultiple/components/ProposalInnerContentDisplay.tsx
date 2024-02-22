@@ -29,13 +29,19 @@ import { MultipleChoiceOptionViewer } from './MultipleChoiceOptionViewer'
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<NewProposalForm>
 ) => {
+  const { t } = useTranslation()
   const loadingProposal = useLoadingProposal()
   const loadingVoteOptions = useLoadingVoteOptions()
   const loadingVotesInfo = useLoadingVotesInfo()
 
   return (
     <SuspenseLoader
-      fallback={<Loader />}
+      fallback={
+        <div className="flex flex-row items-center gap-4">
+          <p className="title-text">{t('title.voteOptions')}</p>
+          <Loader fill={false} size={22} />
+        </div>
+      }
       forceFallback={
         loadingProposal.loading ||
         loadingVoteOptions.loading ||

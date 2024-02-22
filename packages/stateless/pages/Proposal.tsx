@@ -1,29 +1,26 @@
+import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import { DaoTabId } from '@dao-dao/types'
-
-import { PageHeaderContent, RightSidebarContent } from '../components'
+import {
+  PAGE_PADDING_BOTTOM_CLASSES,
+  PAGE_PADDING_HORIZONTAL_CLASSES,
+  PAGE_PADDING_LEFT_CLASS,
+  PAGE_PADDING_TOP_CLASSES,
+} from '@dao-dao/utils'
 
 export type ProposalProps = {
-  id: string
   voteTally: ReactNode
   votesCast: ReactNode
-  ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
   contentDisplay: ReactNode
-  rightSidebarContent: ReactNode
+  ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
 }
 
 export const Proposal = ({
-  id,
   voteTally,
   votesCast,
-  ProposalStatusAndInfo,
   contentDisplay,
-  rightSidebarContent,
+  ProposalStatusAndInfo,
 }: ProposalProps) => {
-  const { t } = useTranslation()
-
   // Scroll to hash manually if available since this component and thus the
   // desired target anchor text won't be ready right when the page renders.
   useEffect(() => {
@@ -44,38 +41,39 @@ export const Proposal = ({
   }, [])
 
   return (
-    <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          homeTab: {
-            id: DaoTabId.Proposals,
-            sdaLabel: t('title.proposals'),
-          },
-          current: `${t('title.proposal')} ${id}`,
-        }}
-        className="mx-auto max-w-5xl"
-      />
-
-      {/* Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so we can add those to our scrollable view instead. Also set height to full height of parent and some overflow to account for extended margins. */}
-      <div className="relative mx-auto -mt-10 -mb-6 h-[calc(100%+4rem)] max-w-5xl">
-        <div className="absolute top-10 left-0 z-[2] hidden w-[18rem] mdlg:block">
+    // Undo page container padding so we can add those to our scrollable view
+    // instead. Also set height to full height of parent and some overflow to
+    // account for extended margins.
+    <div className="absolute top-0 left-0 right-0 bottom-0">
+      <div className="absolute top-0 left-0 z-[2] hidden w-[18rem] mdlg:block">
+        <div
+          className={clsx(PAGE_PADDING_TOP_CLASSES, PAGE_PADDING_LEFT_CLASS)}
+        >
           <ProposalStatusAndInfo inline={false} />
         </div>
-
-        {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
-        <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
-          <div className="mb-9">{contentDisplay}</div>
-
-          <div className="mdlg:hidden">
-            <ProposalStatusAndInfo inline />
-          </div>
-
-          <div className="mt-3">{voteTally}</div>
-
-          <div className="mt-10 mb-12">{votesCast}</div>
-        </div>
       </div>
-    </>
+
+      {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
+      <div
+        className={clsx(
+          // On mdlg size, add left padding to account for ProposalStatusAndInfo
+          // component floating to the left.
+          'no-scrollbar absolute top-0 right-0 left-0 bottom-0 z-[1] overflow-y-auto mdlg:pl-[21rem]',
+          PAGE_PADDING_TOP_CLASSES,
+          PAGE_PADDING_BOTTOM_CLASSES,
+          PAGE_PADDING_HORIZONTAL_CLASSES
+        )}
+      >
+        <div className="mb-9">{contentDisplay}</div>
+
+        <div className="mb-3 mdlg:hidden">
+          <ProposalStatusAndInfo inline />
+        </div>
+
+        <div>{voteTally}</div>
+
+        <div className="mt-8">{votesCast}</div>
+      </div>
+    </div>
   )
 }

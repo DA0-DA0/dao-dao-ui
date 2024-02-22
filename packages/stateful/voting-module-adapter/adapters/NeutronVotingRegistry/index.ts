@@ -1,4 +1,4 @@
-import { PeopleAltOutlined } from '@mui/icons-material'
+import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
 import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 import {
@@ -6,8 +6,9 @@ import {
   NeutronVotingRegistryAdapterId,
 } from '@dao-dao/utils'
 
-import { DaoInfoBarLoader, ProfileCardMemberInfo } from './components'
+import { MainDaoInfoCardsLoader, ProfileCardMemberInfo } from './components'
 import { VaultsTab } from './components/VaultsTab'
+import { useMainDaoInfoCards } from './hooks'
 
 export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
   id: NeutronVotingRegistryAdapterId,
@@ -16,8 +17,8 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems: () => [],
-      useProfileNewProposalCardAddresses: () => [],
+      useMainDaoInfoCards,
+      useVotingModuleRelevantAddresses: () => [],
     },
 
     // Components
@@ -28,10 +29,11 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
           labelI18nKey: 'title.votingVaults',
           Component: VaultsTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
       ],
 
-      DaoInfoBarLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsLoader,
       ProfileCardMemberInfo,
     },
 

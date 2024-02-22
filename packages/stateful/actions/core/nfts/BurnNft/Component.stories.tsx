@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import {
   makeLazyInfo,
   makeProps as makeNftCardProps,
-} from '@dao-dao/stateless/components/NftCard.stories'
+} from '@dao-dao/stateless/components/nft/NftCard.stories'
 import {
   ReactHookFormDecorator,
   makeDaoInfo,

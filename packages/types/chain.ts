@@ -69,6 +69,7 @@ export enum ChainId {
   MigalooTestnet = 'narwhal-2',
   NobleMainnet = 'noble-1',
   KujiraMainnet = 'kaiyo-1',
+  ChihuahuaMainnet = 'chihuahua-1',
 }
 
 export type BaseChainConfig = {
@@ -111,15 +112,6 @@ export type SupportedChainConfig = BaseChainConfig & {
      * The Kado network identifier.
      */
     network: string
-  }
-  /**
-   * MeiliSearch index identifiers.
-   */
-  indexes: {
-    /**
-     * DAO search index
-     */
-    search: string
   }
   /**
    * Code IDs stored on this chain that are used throughout the UI.

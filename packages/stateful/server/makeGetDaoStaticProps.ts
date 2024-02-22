@@ -56,6 +56,7 @@ import {
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
+  retry,
 } from '@dao-dao/utils'
 import { cosmos } from '@dao-dao/utils/protobuf'
 
@@ -499,11 +500,15 @@ const loadParentDaoInfo = async (
 
   try {
     // Check if address is chain module account.
-    const cosmosClient = (
-      await cosmos.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(chainId),
-      })
-    ).cosmos
+    const cosmosClient = await retry(
+      10,
+      async (attempt) =>
+        (
+          await cosmos.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).cosmos
+    )
     // If chain module gov account...
     if (await addressIsModule(cosmosClient, potentialParentAddress, 'gov')) {
       const chainConfig = getSupportedChainConfig(chainId)
@@ -589,7 +594,11 @@ const daoCoreDumpState = async (
   // Prevent cycles by ensuring admin has not already been seen.
   previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
-  const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
+  const cwClient = await retry(
+    10,
+    async (attempt) =>
+      await cosmWasmClientRouter.connect(getRpcForChainId(chainId, attempt - 1))
+  )
 
   try {
     const indexerDumpedState = await queryIndexer<IndexerDumpState>({

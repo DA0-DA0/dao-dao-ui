@@ -1,4 +1,4 @@
-import { PeopleAltOutlined } from '@mui/icons-material'
+import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
 import {
   ActionCategoryKey,
@@ -12,11 +12,11 @@ import {
 
 import { makeManageMembersAction } from './actions'
 import {
-  DaoInfoBarLoader,
+  MainDaoInfoCardsLoader,
   MembersTab,
   ProfileCardMemberInfo,
 } from './components'
-import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
+import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   id: DaoVotingCw4AdapterId,
@@ -25,8 +25,8 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
-      useProfileNewProposalCardAddresses,
+      useMainDaoInfoCards,
+      useVotingModuleRelevantAddresses,
     },
 
     // Components
@@ -37,10 +37,11 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
           labelI18nKey: 'title.members',
           Component: MembersTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
       ],
 
-      DaoInfoBarLoader,
+      MainDaoInfoCardsLoader,
       ProfileCardMemberInfo,
     },
 

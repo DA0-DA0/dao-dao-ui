@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
-import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/NftCard.stories'
+import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/nft/NftCard.stories'
 import {
   CHAIN_ID,
   makeDaoInfo,

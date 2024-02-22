@@ -1,11 +1,18 @@
-import { selectorFamily, waitForAllSettled, waitForAny } from 'recoil'
+import {
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+  waitForAny,
+} from 'recoil'
 
 import {
   Account,
+  AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
   GenericTokenSource,
   GenericTokenWithUsdPrice,
+  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
@@ -27,9 +34,11 @@ import {
   nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
+  nativeDelegationInfoSelector,
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
+import { querySnapperSelector } from './indexer'
 import { osmosisUsdPriceSelector } from './osmosis'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
@@ -44,7 +53,7 @@ export const genericTokenSelector = selectorFamily<
     ({ type, denomOrAddress, chainId }) =>
     ({ get }) => {
       const source = get(
-        sourceChainAndDenomSelector({
+        genericTokenSourceSelector({
           type,
           chainId,
           denomOrAddress,
@@ -71,6 +80,27 @@ export const genericTokenSelector = selectorFamily<
           decimals: skipAsset.decimals || 0,
           imageUrl: skipAsset.logoURI || getFallbackImage(denomOrAddress),
           source,
+        }
+      } else if (source.chainId !== chainId) {
+        // If Skip API does not have the info, check if Skip API has the source
+        // if it's different. This has happened before when Skip does not have
+        // an IBC asset that we were able to reverse engineer the source for.
+        const skipSourceAsset = get(skipAssetSelector(source))
+
+        if (skipSourceAsset) {
+          return {
+            chainId,
+            type,
+            denomOrAddress,
+            symbol:
+              skipSourceAsset.recommendedSymbol ||
+              skipSourceAsset.symbol ||
+              skipSourceAsset.denom,
+            decimals: skipSourceAsset.decimals || 0,
+            imageUrl:
+              skipSourceAsset.logoURI || getFallbackImage(denomOrAddress),
+            source,
+          }
         }
       }
 
@@ -156,7 +186,46 @@ export const genericTokenSelector = selectorFamily<
     },
 })
 
+export const coinGeckoUsdPriceSelector = selectorFamily<
+  GenericTokenWithUsdPrice | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+>({
+  key: 'coinGeckoUsdPrice',
+  get:
+    (params) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      const token = get(genericTokenSelector(params))
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(skipAssetSelector(params))
+      if (!asset?.coingeckoID) {
+        return
+      }
+      const usdPrice: number | undefined = get(
+        querySnapperSelector({
+          query: 'coingecko-price',
+          parameters: {
+            id: asset.coingeckoID,
+          },
+        })
+      )
+
+      return usdPrice !== undefined
+        ? {
+            token,
+            usdPrice,
+            timestamp: new Date(),
+          }
+        : undefined
+    },
+})
+
 const priceSelectors = [
+  coinGeckoUsdPriceSelector,
   osmosisUsdPriceSelector,
   astroportUsdPriceSelector,
   whiteWhaleUsdPriceSelector,
@@ -366,17 +435,17 @@ export const genericTokenBalanceSelector = selectorFamily<
 export const genericTokenDelegatedBalanceSelector = selectorFamily<
   GenericTokenBalance,
   WithChainId<{
-    walletAddress: string
+    address: string
   }>
 >({
   key: 'genericTokenDelegatedBalance',
   get:
-    ({ walletAddress, chainId }) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
       const { denom, amount: balance } = get(
         nativeDelegatedBalanceSelector({
           chainId,
-          address: walletAddress,
+          address,
         })
       )
       const token = get(
@@ -390,7 +459,62 @@ export const genericTokenDelegatedBalanceSelector = selectorFamily<
       return {
         token,
         balance,
+        staked: true,
       }
+    },
+})
+
+export const genericTokenUndelegatingBalancesSelector = selectorFamily<
+  GenericTokenBalance[],
+  WithChainId<{
+    address: string
+  }>
+>({
+  key: 'genericTokenUndelegatingBalances',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const { unbondingDelegations } = get(nativeDelegationInfoSelector(params))
+
+      const tokens = get(
+        waitForAll(
+          unbondingDelegations.map(({ balance }) =>
+            genericTokenSelector({
+              type: TokenType.Native,
+              denomOrAddress: balance.denom,
+              chainId: params.chainId,
+            })
+          )
+        )
+      )
+
+      const tokenBalances = tokens.map(
+        (token, index): GenericTokenBalance => ({
+          token,
+          balance: unbondingDelegations[index].balance.amount,
+        })
+      )
+
+      const uniqueTokens = tokenBalances.reduce((acc, { token, balance }) => {
+        let existing = acc.find(
+          (t) => t.token.denomOrAddress === token.denomOrAddress
+        )
+        if (!existing) {
+          existing = {
+            token,
+            balance,
+            unstaking: true,
+          }
+          acc.push(existing)
+        }
+        existing.balance = (
+          BigInt(existing.balance) + BigInt(balance)
+        ).toString()
+
+        return acc
+      }, [] as GenericTokenBalance[])
+
+      return uniqueTokens
     },
 })
 
@@ -429,7 +553,10 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
       }
 
       return {
-        symbol: displayDenom.denom,
+        // If factory denom, extract symbol at the end.
+        symbol: displayDenom.denom.startsWith('factory/')
+          ? displayDenom.denom.split('/').pop()!
+          : displayDenom.denom,
         decimals: displayDenom.exponent,
       }
     },
@@ -437,11 +564,11 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 
 // Resolve a denom on a chain to its source chain and base denom. If an IBC
 // asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
-export const sourceChainAndDenomSelector = selectorFamily<
+export const genericTokenSourceSelector = selectorFamily<
   GenericTokenSource,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
-  key: 'sourceChainAndDenom',
+  key: 'genericTokenSource',
   get:
     ({ chainId, type, denomOrAddress }) =>
     async ({ get }) => {
@@ -519,6 +646,59 @@ export const sourceChainAndDenomSelector = selectorFamily<
           sourceType === TokenType.Cw20
             ? sourceDenom.replace(/^cw20:/, '')
             : sourceDenom,
+      }
+    },
+})
+
+export const historicalUsdPriceSelector = selectorFamily<
+  AmountWithTimestamp[] | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'> & {
+    range: TokenPriceHistoryRange
+  }
+>({
+  key: 'historicalUsdPrice',
+  get:
+    ({ chainId, type, denomOrAddress, range }) =>
+    async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      // Resolve Skip asset to retrieve coingecko ID.
+      const asset = get(
+        skipAssetSelector({
+          type,
+          chainId,
+          denomOrAddress,
+        })
+      )
+
+      if (!asset?.coingeckoID) {
+        return
+      }
+
+      try {
+        const prices: [number, number][] = get(
+          querySnapperSelector({
+            query: 'coingecko-price-history',
+            parameters: {
+              id: asset.coingeckoID,
+              range,
+            },
+          })
+        )
+
+        return prices.map(([timestamp, amount]) => ({
+          timestamp: new Date(timestamp),
+          amount,
+        }))
+      } catch (err) {
+        // recoil's `get` throws a promise while loading
+        if (err instanceof Promise) {
+          throw err
+        }
+
+        return undefined
       }
     },
 })

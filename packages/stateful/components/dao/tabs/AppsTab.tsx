@@ -56,6 +56,7 @@ import { useProposalModuleAdapterCommonContext } from '../../../proposal-module-
 import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
 import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
+import { ProposalDaoInfoCards } from '../ProposalDaoInfoCards'
 
 export const AppsTab = () => {
   const { t } = useTranslation()
@@ -305,9 +306,7 @@ export const AppsTab = () => {
 
       {msgs && (
         <ProposalModuleAdapterCommonProvider
-          initialOptions={{
-            coreAddress: coreAddress,
-          }}
+          coreAddress={coreAddress}
           proposalModule={singleChoiceProposalModule}
         >
           <ActionMatcherAndProposer
@@ -547,6 +546,7 @@ const ActionMatcherAndProposer = ({
       <FormProvider {...formMethods}>
         <SuspenseLoader fallback={<Loader />}>
           <NewProposal
+            ProposalDaoInfoCards={ProposalDaoInfoCards}
             actionsReadOnlyMode
             deleteDraft={deleteDraft}
             draft={draft}

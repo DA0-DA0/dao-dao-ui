@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  chainSupportsIcaControllerSelector,
   chainSupportsIcaHostSelector,
   icaRemoteAddressSelector,
 } from '@dao-dao/state/recoil'
@@ -13,6 +14,7 @@ import {
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
@@ -180,6 +182,17 @@ export const makeCreateIcaAction: ActionMaker<CreateIcaData> = ({
     }
   }
 
+  // Hide from picker if chain does not support ICA controller.
+  const useHideFromPicker: UseHideFromPicker = () => {
+    const supported = useCachedLoadingWithError(
+      chainSupportsIcaControllerSelector({
+        chainId: sourceChainId,
+      })
+    )
+
+    return supported.loading || supported.errored || !supported.data
+  }
+
   return {
     key: ActionKey.CreateIca,
     Icon: ChainEmoji,
@@ -189,5 +202,6 @@ export const makeCreateIcaAction: ActionMaker<CreateIcaData> = ({
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    useHideFromPicker,
   }
 }

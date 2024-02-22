@@ -18,23 +18,25 @@ import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
-import { OsmosisHistoricalPriceChartPrecision } from '@dao-dao/state/recoil'
 import {
+  Loader,
   SegmentedControls,
   WarningCard,
   useCachedLoadingWithError,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { TokenType, TreasuryHistoryGraphProps } from '@dao-dao/types'
+import {
+  TokenPriceHistoryRange,
+  TreasuryHistoryGraphProps,
+} from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTimeTz,
   serializeTokenSource,
-  transformIbcSymbol,
+  shortenTokenSymbol,
 } from '@dao-dao/utils'
 
 import { treasuryValueHistorySelector } from '../recoil'
-import { useVotingModuleAdapterContextIfAvailable } from '../voting-module-adapter/react/context'
 
 import 'chartjs-adapter-date-fns'
 
@@ -67,19 +69,15 @@ export const TreasuryHistoryGraph = ({
   const brandColor = useNamedThemeColor('text-brand')
   const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
-  const [precision, setPrecision] =
-    useState<OsmosisHistoricalPriceChartPrecision>('hour')
-
-  // If in a DAO, this should load the DAO's governance token info. Undefined if
-  // not in a DAO or fails to load for some reason.
-  const governanceTokenInfo =
-    useVotingModuleAdapterContextIfAvailable()?.adapter.hooks.useCommonGovernanceTokenInfo?.()
+  const [range, setRange] = useState<TokenPriceHistoryRange>(
+    TokenPriceHistoryRange.Month
+  )
 
   const treasuryValueHistory = useCachedLoadingWithError(
     treasuryValueHistorySelector({
       chainId,
       address,
-      precision,
+      range,
       filter: account && {
         account: {
           type: account.type,
@@ -87,15 +85,6 @@ export const TreasuryHistoryGraph = ({
           address: account.address,
         },
       },
-      // Provide governance tokens if in a DAO, to ensure they are loaded.
-      nativeGovernanceTokenDenom:
-        governanceTokenInfo?.type === TokenType.Native
-          ? governanceTokenInfo.denomOrAddress
-          : undefined,
-      cw20GovernanceTokenAddress:
-        governanceTokenInfo?.type === TokenType.Cw20
-          ? governanceTokenInfo.denomOrAddress
-          : undefined,
     })
   )
 
@@ -120,60 +109,41 @@ export const TreasuryHistoryGraph = ({
   const tokenValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
-      : treasuryValueHistory.data.tokens.flatMap(
-          ({ token, values, currentValue }) => {
-            // If all values are null/0, do not include this token.
-            if (!values.every((d) => !d) && !currentValue) {
-              return []
-            }
-
-            return {
-              token,
-              order: 2,
-              label:
-                '$' +
-                transformIbcSymbol(token.symbol).tokenSymbol +
-                ' ' +
-                t('title.value'),
-              data: [...values, currentValue],
-              borderColor: tokenColors[serializeTokenSource(token)],
-              backgroundColor: tokenColors[serializeTokenSource(token)],
-              borderWidth: 2.5,
-            }
+      : treasuryValueHistory.data.tokens.flatMap(({ token, values }) => {
+          // If all values are null/0, do not include this token.
+          if (!values.some((d) => d)) {
+            return []
           }
-        )
+
+          return {
+            order: 2,
+            label:
+              '$' +
+              shortenTokenSymbol(token.symbol).tokenSymbol +
+              ' ' +
+              t('title.value'),
+            data: values,
+            borderColor: tokenColors[serializeTokenSource(token)],
+            backgroundColor: tokenColors[serializeTokenSource(token)],
+            borderWidth: 2.5,
+          }
+        })
 
   const totalValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
       : [
           {
-            token: undefined,
             order: 1,
             label: t('title.totalValue'),
-            data: [
-              ...treasuryValueHistory.data.total.values,
-              treasuryValueHistory.data.total.currentValue,
-            ],
+            data: treasuryValueHistory.data.totals,
             borderColor: brandColor,
             backgroundColor: brandColor,
             borderWidth: 5,
           },
         ]
 
-  const datasets = [...tokenValues, ...totalValues].map((data) => ({
-    ...data,
-
-    pointRadius:
-      ('pointRadius' in data ? Number((data as any).pointRadius) : undefined) ??
-      // If there is only one data point (current value), show a point since
-      // there is no line. Otherwise, if there is a line, hide the points.
-      (data.data.length === 1 ? 1 : 0),
-    pointHitRadius:
-      ('pointHitRadius' in data
-        ? Number((data as any).pointHitRadius)
-        : undefined) ?? 10,
-  }))
+  const datasets = [...tokenValues, ...totalValues]
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
   // Contains information on the data point that is currently hovered. Can be
@@ -185,14 +155,7 @@ export const TreasuryHistoryGraph = ({
   const tooltipRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col gap-4',
-        (treasuryValueHistory.loading || treasuryValueHistory.updating) &&
-          'animate-pulse',
-        className
-      )}
-    >
+    <div className={clsx('flex flex-col gap-4', className)}>
       {header}
 
       <div
@@ -204,18 +167,22 @@ export const TreasuryHistoryGraph = ({
             labels:
               treasuryValueHistory.loading || treasuryValueHistory.errored
                 ? []
-                : [
-                    ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                      timestamp.getTime()
-                    ),
-                    Date.now(),
-                  ],
+                : treasuryValueHistory.data.timestamps.map((timestamp) =>
+                    timestamp.getTime()
+                  ),
             datasets,
           }}
           options={{
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            elements: {
+              point: {
+                radius: 0,
+                hoverRadius: 0,
+                hitRadius: 0,
+              },
+            },
             plugins: {
               title: {
                 display: false,
@@ -323,18 +290,33 @@ export const TreasuryHistoryGraph = ({
           }}
         />
 
-        {treasuryValueHistory.errored && (
-          <div className="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+        {treasuryValueHistory.loading || treasuryValueHistory.updating ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
+            <div className="flex flex-col items-center rounded-md bg-component-tooltip-glass p-4 backdrop-blur-sm">
+              <Loader size={32} />
+            </div>
+          </div>
+        ) : treasuryValueHistory.errored ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
             <WarningCard
-              className="bg-background-primary"
+              className="max-w-lg bg-background-primary"
               content={
                 treasuryValueHistory.error instanceof Error
                   ? treasuryValueHistory.error.message
                   : `${treasuryValueHistory.error}`
               }
+              textClassName="break-words"
             />
           </div>
-        )}
+        ) : treasuryValueHistory.data.timestamps.length === 0 ? (
+          <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
+            <WarningCard
+              className="max-w-lg bg-background-primary"
+              content={t('error.noTreasuryHistory')}
+              textClassName="break-words"
+            />
+          </div>
+        ) : null}
 
         {tooltipData && tooltipFirstDataPoint !== undefined && (
           <div
@@ -403,7 +385,7 @@ export const TreasuryHistoryGraph = ({
                     <div className="flex shrink-0 flex-col items-end gap-1 text-right font-mono">
                       <p className="primary-text leading-4">
                         $
-                        {value.toLocaleString(undefined, {
+                        {value?.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -417,30 +399,37 @@ export const TreasuryHistoryGraph = ({
         )}
       </div>
 
-      <SegmentedControls<OsmosisHistoricalPriceChartPrecision>
+      <SegmentedControls<TokenPriceHistoryRange>
         className="self-end"
-        onSelect={(value) => setPrecision(value)}
-        selected={precision}
+        onSelect={(value) => setRange(value)}
+        selected={range}
         tabs={[
           {
-            label: 'M',
-            value: 'fiveminutes',
-            tooltip: t('info.priceHistoryPrecision', {
-              context: 'fiveminutes',
-            }),
-          },
-          {
-            label: 'H',
-            value: 'hour',
-            tooltip: t('info.priceHistoryPrecision', {
-              context: 'hour',
-            }),
-          },
-          {
             label: 'D',
-            value: 'day',
-            tooltip: t('info.priceHistoryPrecision', {
+            value: TokenPriceHistoryRange.Day,
+            tooltip: t('info.priceHistoryRange', {
               context: 'day',
+            }),
+          },
+          {
+            label: 'W',
+            value: TokenPriceHistoryRange.Week,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'week',
+            }),
+          },
+          {
+            label: 'M',
+            value: TokenPriceHistoryRange.Month,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'month',
+            }),
+          },
+          {
+            label: 'Y',
+            value: TokenPriceHistoryRange.Year,
+            tooltip: t('info.priceHistoryRange', {
+              context: 'year',
             }),
           },
         ]}

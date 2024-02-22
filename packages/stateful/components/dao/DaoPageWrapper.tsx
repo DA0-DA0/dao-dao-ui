@@ -8,6 +8,7 @@ import {
   DaoNotFound,
   ErrorPage500,
   PageLoader,
+  useAppContext,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
@@ -16,9 +17,14 @@ import {
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
-import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
+import {
+  getFallbackImage,
+  transformIpfsUrlToHttpsIfNecessary,
+} from '@dao-dao/utils'
 
+import { makeDaoContext, makeGenericContext } from '../../command'
 import { daoInfoSelector } from '../../recoil'
+import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoProviders } from './DaoProviders'
 
@@ -48,6 +54,7 @@ export const DaoPageWrapper = ({
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
   const { setAccentColor, theme } = useThemeContext()
+  const { setRootCommandContextMaker } = useAppContext()
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Update walletChainId to whatever the current DAO is so the right address
@@ -113,16 +120,48 @@ export const DaoPageWrapper = ({
       : undefined
   )
 
+  // Use the loading info once it's loaded, otherwise fallback to info from
+  // static props.
+  const loadedInfo =
+    !loadingDaoInfo.loading && !loadingDaoInfo.errored
+      ? loadingDaoInfo.data
+      : info
+
   // Set icon for the page from info if setIcon is present.
   useEffect(() => {
     if (setIcon) {
       setIcon(
-        info?.imageUrl
-          ? transformIpfsUrlToHttpsIfNecessary(info.imageUrl)
+        loadedInfo?.imageUrl
+          ? transformIpfsUrlToHttpsIfNecessary(loadedInfo.imageUrl)
           : undefined
       )
     }
-  }, [setIcon, info?.imageUrl])
+  }, [setIcon, loadedInfo?.imageUrl])
+
+  // On load, set DAO context for command modal.
+  useEffect(() => {
+    if (setRootCommandContextMaker && loadedInfo) {
+      setRootCommandContextMaker((options) =>
+        makeDaoContext({
+          ...options,
+          dao: {
+            chainId: loadedInfo.chainId,
+            coreAddress: loadedInfo.coreAddress,
+            name: loadedInfo.name,
+            imageUrl:
+              loadedInfo.imageUrl || getFallbackImage(loadedInfo.coreAddress),
+          },
+        })
+      )
+    }
+
+    // Unset on unmount.
+    return () => {
+      if (setRootCommandContextMaker) {
+        setRootCommandContextMaker(makeGenericContext)
+      }
+    }
+  }, [loadedInfo, setRootCommandContextMaker])
 
   return (
     <>
@@ -144,25 +183,17 @@ export const DaoPageWrapper = ({
 
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
-        {info ? (
-          <DaoProviders
-            info={
-              // Use the loading info once it's loaded, otherwise fallback to
-              // info from static props.
-              !loadingDaoInfo.loading && !loadingDaoInfo.errored
-                ? loadingDaoInfo.data
-                : info
-            }
-          >
+        {loadedInfo ? (
+          <DaoProviders info={loadedInfo}>
             {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}
             </SuspenseLoader>
           </DaoProviders>
         ) : error ? (
-          <ErrorPage500 error={error} />
+          <ErrorPage500 PageHeaderContent={PageHeaderContent} error={error} />
         ) : (
-          <DaoNotFound />
+          <DaoNotFound PageHeaderContent={PageHeaderContent} />
         )}
       </SuspenseLoader>
     </>

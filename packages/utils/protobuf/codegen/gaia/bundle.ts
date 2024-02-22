@@ -1,26 +1,26 @@
-import * as _70 from "./globalfee/v1beta1/genesis";
-import * as _71 from "./globalfee/v1beta1/query";
-import * as _72 from "./globalfee/v1beta1/tx";
-import * as _295 from "./globalfee/v1beta1/tx.amino";
-import * as _296 from "./globalfee/v1beta1/tx.registry";
-import * as _297 from "./globalfee/v1beta1/query.rpc.Query";
-import * as _298 from "./globalfee/v1beta1/tx.rpc.msg";
-import * as _413 from "./rpc.query";
-import * as _414 from "./rpc.tx";
+import * as _81 from "./globalfee/v1beta1/genesis";
+import * as _82 from "./globalfee/v1beta1/query";
+import * as _83 from "./globalfee/v1beta1/tx";
+import * as _339 from "./globalfee/v1beta1/tx.amino";
+import * as _340 from "./globalfee/v1beta1/tx.registry";
+import * as _341 from "./globalfee/v1beta1/query.rpc.Query";
+import * as _342 from "./globalfee/v1beta1/tx.rpc.msg";
+import * as _481 from "./rpc.query";
+import * as _482 from "./rpc.tx";
 export namespace gaia {
   export namespace globalfee {
     export const v1beta1 = {
-      ..._70,
-      ..._71,
-      ..._72,
-      ..._295,
-      ..._296,
-      ..._297,
-      ..._298
+      ..._81,
+      ..._82,
+      ..._83,
+      ..._339,
+      ..._340,
+      ..._341,
+      ..._342
     };
   }
   export const ClientFactory = {
-    ..._413,
-    ..._414
+    ..._481,
+    ..._482
   };
 }

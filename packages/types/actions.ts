@@ -26,7 +26,6 @@ export enum ActionCategoryKey {
   Advanced = 'advanced',
 }
 
-// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
 export enum ActionKey {
   Spend = 'spend',
   CommunityPoolSpend = 'communityPoolSpend',
@@ -57,7 +56,7 @@ export enum ActionKey {
   GovernanceProposal = 'governanceProposal',
   GovernanceDeposit = 'governanceDeposit',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
-  EnableVestingPayments = 'enableVestingPayments',
+  ConfigureVestingPayments = 'configureVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
@@ -79,12 +78,8 @@ export enum ActionKey {
   ManageVetoableDaos = 'manageVetoableDaos',
   UploadCode = 'uploadCode',
   ManageSubDaoPause = 'manageSubDaoPause',
-  // DaoProposalSingle
-  UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
-  UpdateProposalSingleConfig = 'updateProposalSingleConfig',
-  // DaoProposalMultiple
-  UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
-  UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
+  UpdatePreProposeConfig = 'updatePreProposeConfig',
+  UpdateProposalConfig = 'updateProposalConfig',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',

@@ -1,6 +1,10 @@
-import { ImageRounded, PeopleAltOutlined } from '@mui/icons-material'
+import {
+  ImageRounded,
+  PeopleAltOutlined,
+  PeopleAltRounded,
+} from '@mui/icons-material'
 
-import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
+import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -16,8 +20,8 @@ import {
 } from './components'
 import {
   useCommonGovernanceTokenInfo,
-  useDaoInfoBarItems,
-  useProfileNewProposalCardAddresses,
+  useMainDaoInfoCards,
+  useVotingModuleRelevantAddresses,
 } from './hooks'
 
 export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
@@ -27,8 +31,8 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useDaoInfoBarItems,
-      useProfileNewProposalCardAddresses,
+      useMainDaoInfoCards,
+      useVotingModuleRelevantAddresses,
       useCommonGovernanceTokenInfo,
     },
 
@@ -40,16 +44,18 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
           labelI18nKey: 'title.members',
           Component: MembersTab,
           Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
         },
         {
           id: DaoTabId.Collection,
           labelI18nKey: 'title.nftCollection',
           Component: NftCollectionTab,
           Icon: ImageRounded,
+          IconFilled: ImageRounded,
         },
       ],
 
-      DaoInfoBarLoader: DaoInfoBarTokenLoader,
+      MainDaoInfoCardsLoader: MainDaoInfoCardsTokenLoader,
       ProfileCardMemberInfo,
     },
 

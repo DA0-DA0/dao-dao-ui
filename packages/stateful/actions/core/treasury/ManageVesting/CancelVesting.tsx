@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ChainProvider,
   InputErrorMessage,
   Loader,
   TokenAmountDisplay,
@@ -11,22 +12,25 @@ import {
 import {
   ActionComponent,
   LoadingData,
+  LoadingDataWithError,
   StatefulEntityDisplayProps,
   VestingInfo,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
+  getChainAddressForActionOptions,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react/context'
+import { useActionOptions } from '../../../react'
 
 export type CancelVestingData = {
+  chainId: string
   address: string
 }
 
 export type CancelVestingOptions = {
-  vestingInfos: LoadingData<VestingInfo[]>
+  vestingInfos: LoadingDataWithError<VestingInfo[]>
   cancelledVestingContract: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   VestingPaymentCard: ComponentType<VestingInfo>
@@ -44,29 +48,40 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   },
 }) => {
   const { t } = useTranslation()
-  const { address } = useActionOptions()
+  const options = useActionOptions()
 
   const { watch, setValue } = useFormContext()
+  const watchChainId = watch(fieldNamePrefix + 'chainId')
   const watchAddress = watch(fieldNamePrefix + 'address')
 
   // The only vesting contracts that can be cancelled:
   //   - have not finished vesting
   //   - have not been cancelled
-  //   - are cancellable by the current address
-  const cancellableVestingContracts = vestingInfos.loading
-    ? undefined
-    : vestingInfos.data.filter(
-        ({ owner, vested, total, vest: { status } }) =>
-          owner &&
-          (owner.address === address ||
-            (owner.isCw1Whitelist &&
-              owner.cw1WhitelistAdmins.includes(address))) &&
-          vested !== total &&
-          !(typeof status === 'object' && 'canceled' in status)
-      )
+  //   - are cancellable by the current entity
+  const cancellableVestingContracts =
+    vestingInfos.loading || vestingInfos.errored
+      ? undefined
+      : vestingInfos.data.filter(
+          ({ chainId, owner, vested, total, vest: { status } }) => {
+            const chainAddress = getChainAddressForActionOptions(
+              options,
+              chainId
+            )
+
+            return (
+              owner &&
+              chainAddress &&
+              (owner.address === chainAddress ||
+                (owner.isCw1Whitelist &&
+                  owner.cw1WhitelistAdmins.includes(chainAddress))) &&
+              vested !== total &&
+              !(typeof status === 'object' && 'canceled' in status)
+            )
+          }
+        )
 
   return (
-    <>
+    <ChainProvider chainId={watchChainId}>
       <div className="flex flex-col gap-2">
         {isCreating ? (
           !cancellableVestingContracts ? (
@@ -75,6 +90,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
             <div className="flex flex-wrap gap-2">
               {cancellableVestingContracts.map(
                 ({
+                  chainId,
                   vestingContractAddress,
                   vest,
                   token,
@@ -83,14 +99,18 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                   endDate,
                 }) => (
                   <Button
-                    key={vestingContractAddress}
-                    onClick={() =>
+                    key={chainId + vestingContractAddress}
+                    onClick={() => {
+                      setValue(fieldNamePrefix + 'chainId', chainId)
                       setValue(
                         fieldNamePrefix + 'address',
                         vestingContractAddress
                       )
+                    }}
+                    pressed={
+                      watchChainId === chainId &&
+                      watchAddress === vestingContractAddress
                     }
-                    pressed={watchAddress === vestingContractAddress}
                     variant="secondary"
                   >
                     <div className="grid auto-rows-auto grid-cols-[auto_1fr] items-center justify-items-start gap-y-2 gap-x-4 p-2">
@@ -141,6 +161,6 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
           <InputErrorMessage error={errors?.address} />
         )}
       </div>
-    </>
+    </ChainProvider>
   )
 }

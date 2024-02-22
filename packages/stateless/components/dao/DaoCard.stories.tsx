@@ -1,11 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
-import { ContractVersion } from '@dao-dao/types'
+import { ContractVersion, DaoCardProps } from '@dao-dao/types'
 
-import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
-import { DaoCard, DaoCardProps } from './DaoCard'
+import { DaoCard } from './DaoCard'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / dao / DaoCard',
@@ -62,7 +61,6 @@ export const makeProps = (id = 1): DaoCardProps => ({
 
   showIsMember: true,
   LinkWrapper,
-  IconButtonLink,
 })
 
 export const Default = Template.bind({})

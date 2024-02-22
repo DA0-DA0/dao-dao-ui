@@ -1,48 +1,62 @@
+import {
+  GroupRounded,
+  ReceiptRounded,
+  WalletRounded,
+} from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MeProps, MeTab, MeTabId } from '@dao-dao/types'
-
 import {
-  PageHeaderContent,
-  RightSidebarContent,
-  SegmentedControls,
-  WalletProfileHeader,
-} from '../components'
+  AccountTab,
+  AccountTabId,
+  WalletProfileHeaderProps,
+} from '@dao-dao/types'
+
+import { CopyableAddress, TabBar, WalletProfileHeader } from '../components'
+
+export type MeProps = {
+  MeBalances: ComponentType
+  MeTransactionBuilder: ComponentType
+  MeDaos: ComponentType
+} & Pick<
+  WalletProfileHeaderProps,
+  'openProfileNftUpdate' | 'profileData' | 'updateProfileName'
+>
 
 export const Me = ({
-  rightSidebarContent,
   MeBalances,
   MeTransactionBuilder,
   MeDaos,
-  ChainSwitcher,
   ...headerProps
 }: MeProps) => {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const tabs: MeTab[] = [
+  const tabs: AccountTab[] = [
     {
-      id: MeTabId.Balances,
+      id: AccountTabId.Balances,
       label: t('title.balances'),
+      Icon: WalletRounded,
       Component: MeBalances,
     },
     {
-      id: MeTabId.Daos,
+      id: AccountTabId.Daos,
       label: t('title.daos'),
+      Icon: GroupRounded,
       Component: MeDaos,
     },
     {
-      id: MeTabId.TransactionBuilder,
+      id: AccountTabId.TransactionBuilder,
       label: t('title.transactionBuilder'),
+      Icon: ReceiptRounded,
       Component: MeTransactionBuilder,
     },
   ]
 
   // Pre-fetch tabs.
   useEffect(() => {
-    Object.values(MeTabId).forEach((tab) => {
+    Object.values(AccountTabId).forEach((tab) => {
       router.prefetch(`/me/${tab}`)
     })
   }, [router])
@@ -56,51 +70,26 @@ export const Me = ({
     // will render any invalid tabs (not in the `getStaticPaths` function) with
     // a 404 page.
     tabPath && tabs.some(({ id }) => id === tabPath)
-      ? (tabPath as MeTabId)
+      ? (tabPath as AccountTabId)
       : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
-  const tabSelector = (
-    <div className="flex flex-row items-center justify-center">
-      <SegmentedControls
+  return (
+    <div className="flex flex-col items-stretch gap-6">
+      <WalletProfileHeader editable {...headerProps}>
+        <CopyableAddress address={headerProps.profileData.address} />
+      </WalletProfileHeader>
+
+      <TabBar
         onSelect={(tab) =>
           router.replace(`/me/${tab}`, undefined, { shallow: true })
         }
-        selected={selectedTabId}
-        tabs={tabs.map(({ id, label }) => ({
-          label,
-          value: id,
-        }))}
+        selectedTabId={selectedTabId}
+        tabs={tabs}
       />
+
+      {/* Don't render a tab unless it is visible. */}
+      {selectedTab && <selectedTab.Component />}
     </div>
-  )
-
-  return (
-    <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        gradient
-        rightNode={<div className="hidden sm:block">{tabSelector}</div>}
-        title={t('title.me')}
-      />
-
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
-        <WalletProfileHeader editable {...headerProps} />
-
-        <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-end sm:justify-between sm:gap-0">
-          <div>
-            <div className="sm:hidden">{tabSelector}</div>
-            <p className="header-text hidden sm:block">{selectedTab?.label}</p>
-          </div>
-
-          {(selectedTabId === MeTabId.Balances ||
-            selectedTabId === MeTabId.TransactionBuilder) && <ChainSwitcher />}
-        </div>
-
-        {/* Don't render a tab unless it is visible. */}
-        {selectedTab && <selectedTab.Component />}
-      </div>
-    </>
   )
 }

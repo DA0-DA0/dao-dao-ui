@@ -22,11 +22,11 @@ import {
   LoadedActions,
 } from '@dao-dao/types/actions'
 
+import { useDaoInfoContextIfAvailable } from '../../hooks'
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { Tooltip } from '../tooltip'
-import { ActionCard } from './ActionCard'
+import { ActionCard, ActionCardLoader } from './ActionCard'
 import { ActionLibrary } from './ActionLibrary'
 import { ACTIONS_PER_PAGE } from './ActionsRenderer'
 
@@ -63,6 +63,8 @@ export const ActionsEditor = ({
   const { watch } = useFormContext<{
     actionData: ActionKeyAndData[]
   }>()
+
+  const isDao = !!useDaoInfoContextIfAvailable()
 
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
@@ -140,8 +142,10 @@ export const ActionsEditor = ({
           ))}
         </div>
       ) : (
-        <p className="secondary-text -mt-3 italic">
-          {t('info.noActionsAdded')}
+        <p className="secondary-text -mt-3 max-w-prose italic">
+          {t('info.noActionsAdded', {
+            context: isDao ? 'dao' : undefined,
+          })}
         </p>
       )}
 
@@ -285,7 +289,7 @@ export const ActionEditor = ({
                 }}
               >
                 <div className="flex min-w-0 grow flex-col gap-4">
-                  <SuspenseLoader fallback={<Loader size={36} />}>
+                  <SuspenseLoader fallback={<ActionCardLoader />}>
                     <action.Component
                       addAction={addAction}
                       allActionsWithData={actionData}

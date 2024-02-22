@@ -49,6 +49,8 @@ export type GenericTokenBalance = {
   isGovernanceToken?: boolean
   // Whether or not this is staked.
   staked?: boolean
+  // Whether or not this is unstaking.
+  unstaking?: boolean
 }
 
 export type GenericTokenBalanceWithOwner = GenericTokenBalance & {
@@ -119,6 +121,10 @@ export type TokenCardInfo = {
   lazyInfo: LoadingData<TokenCardLazyInfo>
   // If defined, adds a color indicator.
   color?: string
+  /**
+   * Whether or not to hide the chain icon on tokens.
+   */
+  hideChainIcon?: boolean
 }
 
 export type TokenCardProps = TokenCardInfo & {
@@ -176,4 +182,11 @@ export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
 export type AmountWithTimestamp = {
   amount: number
   timestamp: Date
+}
+
+export enum TokenPriceHistoryRange {
+  Year = 'year',
+  Month = 'month',
+  Week = 'week',
+  Day = 'day',
 }

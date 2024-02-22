@@ -1,15 +1,21 @@
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ContractVersion, DaoTabId } from '@dao-dao/types'
+import { ContractVersion, DaoTabId, PageHeaderProps } from '@dao-dao/types'
 import { getGovPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext } from '../../hooks'
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { PageHeaderContent } from '../layout'
 
-export const ProposalNotFound = () => {
+export type ProposalNotFoundProps = {
+  PageHeaderContent: ComponentType<PageHeaderProps>
+}
+
+export const ProposalNotFound = ({
+  PageHeaderContent,
+}: ProposalNotFoundProps) => {
   const { t } = useTranslation()
   const { coreVersion, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()

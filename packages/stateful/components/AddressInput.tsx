@@ -89,10 +89,10 @@ export const AddressInput = <
       ...(searchDaosLoadable.state === 'hasValue'
         ? searchDaosLoadable.contents.flatMap((loadable) =>
             loadable.state === 'hasValue'
-              ? loadable.contents.map(({ chainId, contractAddress }) =>
+              ? loadable.contents.map(({ chainId, id: address }) =>
                   entitySelector({
                     chainId,
-                    address: contractAddress,
+                    address,
                   })
                 )
               : []

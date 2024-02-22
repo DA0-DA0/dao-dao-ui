@@ -154,7 +154,7 @@ well as other common info instead of needing to manually pass them around.
 Example:
 
 <details>
-<summary>`DaoVotingCw4/hooks/useDaoInfoBarItems.ts`</summary>
+<summary>`DaoVotingCw4/hooks/useMainDaoInfoCards.ts`</summary>
 
 ```tsx
 import { PeopleAltOutlined } from '@mui/icons-material'
@@ -169,7 +169,7 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 import { useVotingModule } from './useVotingModule'
 
-export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
+export const useMainDaoInfoCards = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
   // USE HOOK TO GET `coreAddress` FROM OPTIONS:
   const { coreAddress } = useVotingModuleAdapterOptions()

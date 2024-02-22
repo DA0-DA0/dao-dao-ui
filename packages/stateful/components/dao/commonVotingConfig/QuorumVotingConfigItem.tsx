@@ -68,6 +68,7 @@ export const makeQuorumVotingConfigItem =
     Icon: MegaphoneEmoji,
     nameI18nKey: 'form.quorumTitle',
     descriptionI18nKey: 'form.quorumDescription',
+    tooltipI18nKey: 'info.quorumTooltip_single',
     Input: QuorumInput,
     getInputError: ({ quorum } = {}) => quorum?.majority || quorum?.value,
     Review: QuorumReview,

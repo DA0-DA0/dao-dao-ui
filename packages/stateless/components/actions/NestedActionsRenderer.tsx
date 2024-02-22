@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/types'
 import { decodeMessages } from '@dao-dao/utils'
 
-import { Loader } from '../logo'
+import { ActionCardLoader } from './ActionCard'
 import { ActionsRenderer } from './ActionsRenderer'
 
 export type NestedActionsRendererProps = {
@@ -53,7 +53,7 @@ export const NestedActionsRenderer = ({
   return (
     <>
       {actionsForMatching.length === 0 ? (
-        <Loader />
+        <ActionCardLoader />
       ) : (
         <ActionsRenderer
           SuspenseLoader={SuspenseLoader}

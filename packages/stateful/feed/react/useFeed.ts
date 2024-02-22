@@ -13,13 +13,30 @@ export type UseFeedOptions = {
 }
 
 export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
-  const sources = getSources().map(({ Renderer, useData }) => ({
+  const sources = getSources().map(({ id, Renderer, useData }) => ({
+    id,
     Renderer,
     // Safe to disable since `getSources` is constant. The hooks are always
     // called in the same order.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     data: useData(filter),
   }))
+
+  // Memoize sources since the reference will change on every render. Update it
+  // when loading or refreshing changes.
+  const memoizedSources = useMemo(
+    () => sources,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      sources
+        .map(
+          ({ id, data: { loading, refreshing } }) =>
+            `${id}${loading}${refreshing}`
+        )
+        .join(','),
+    ]
+  )
 
   // Refresh all input sources.
   const refresh = () => sources.map(({ data: { refresh } }) => refresh())
@@ -38,7 +55,7 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
     useMemo(() => {
       // Flatten items so we can sort them with respect to each other. This also
       // serves to filter out any DAOs with no items.
-      const itemsWithDao = sources
+      const itemsWithDao = memoizedSources
         .flatMap(({ Renderer, data: { daosWithItems } }) =>
           daosWithItems.flatMap(({ chainId, coreAddress, items }) =>
             items.map((item) => ({
@@ -98,7 +115,7 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
         totalItemCount: itemsWithDao.length,
         sourceDaosWithItems: sortedCombinedDaosWithItems,
       }
-    }, [sources])
+    }, [memoizedSources])
 
   // Get DAO configs for all DAOs found.
   const daoConfigs = useCachedLoadable(
@@ -140,7 +157,7 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
       .filter(
         (daoWithItems): daoWithItems is FeedDaoWithItems => !!daoWithItems
       )
-  }, [daoConfigs.state, daoConfigs.contents, sourceDaosWithItems])
+  }, [daoConfigs, sourceDaosWithItems])
 
   return {
     loading: sources.some(({ data: { loading } }) => loading),

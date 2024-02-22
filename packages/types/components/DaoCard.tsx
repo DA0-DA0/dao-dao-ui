@@ -2,7 +2,6 @@ import { ComponentType } from 'react'
 
 import { DaoParentInfo, PolytoneProxies } from '../dao'
 import { LoadingData } from '../misc'
-import { IconButtonLinkProps } from './IconButtonLink'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
@@ -40,7 +39,6 @@ export interface DaoCardProps extends DaoCardInfo {
   onMouseOver?: () => void
   onMouseLeave?: () => void
   LinkWrapper: ComponentType<LinkWrapperProps>
-  IconButtonLink: ComponentType<IconButtonLinkProps>
   follow: { hide: true } | ({ hide?: false } & FollowState)
 }
 

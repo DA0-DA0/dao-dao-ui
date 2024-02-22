@@ -1,17 +1,15 @@
 import { Menu } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
+import {
+  PAGE_HEADER_HEIGHT_CLASSES,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+} from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
-import { PageLoader } from '../logo'
-import { TopGradient } from '../TopGradient'
-import { useAppContext, useAppContextIfAvailable } from './AppContext'
+import { useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
-
-export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-16 sm:h-20'
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
@@ -22,129 +20,94 @@ export const PageHeader = ({
   forceCenter = false,
   centerNode,
   rightNode,
-  gradient,
-  expandBorderToEdge = false,
+  forceExpandBorderToEdge = false,
+  titleClassName,
 }: PageHeaderProps) => {
-  const { toggle } = useAppContext().responsiveNavigation
-
-  // Intelligently move gradient to match scroll of page.
-  const [scrollableScrollTop, setScrollableScrollTop] = useState(0)
-  useEffect(() => {
-    if (typeof document === 'undefined' || !gradient) {
-      return
-    }
-
-    const gradientScrollElement = document.getElementById(
-      'main-content-scrollable'
-    )
-    if (!gradientScrollElement) {
-      return
-    }
-
-    // Prevent gradient from moving down on the page, happens during mobile
-    // browser scroll bounce. Only allow negative offsets to hide gradient
-    // upward as page is scrolled down.
-    const onScroll = () =>
-      setScrollableScrollTop(Math.max(gradientScrollElement.scrollTop, 0))
-
-    // Initialize with correct value.
-    onScroll()
-
-    gradientScrollElement.addEventListener('scroll', onScroll)
-    return () => gradientScrollElement.removeEventListener('scroll', onScroll)
-  }, [gradient])
+  const toggle = useAppContextIfAvailable()?.responsiveNavigation.toggle
 
   return (
-    <div className={clsx('relative', expandBorderToEdge && '-mx-6')}>
-      {gradient && (
-        <TopGradient
-          style={{
-            top: -scrollableScrollTop,
-          }}
-        />
+    <div
+      className={clsx(
+        'relative',
+        // Undo container horizontal padding so border stretches to the edge on
+        // small screens.
+        UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+        // On large screens, don't undo container padding so there's a small gap
+        // (unless force expand is on).
+        !forceExpandBorderToEdge && 'md:mx-0'
       )}
-
+    >
       <div
         className={clsx(
-          'relative',
-          expandBorderToEdge && 'px-4',
-          PAGE_HEADER_HEIGHT_CLASS_NAMES,
+          // Add padding to title content on small screens since the container
+          // padding is undone above in the container.
+          'relative px-4',
+          PAGE_HEADER_HEIGHT_CLASSES,
+          // On large screens, no need to add padding since the normal page
+          // padding is in effect (unless force expand is on).
+          !forceExpandBorderToEdge && 'md:px-0',
+          // Add bottom border.
+          !noBorder && 'border-b border-border-secondary',
           className
         )}
       >
         <div
           className={clsx(
             'relative flex h-full w-full flex-row items-center justify-center',
-            !forceCenter && 'sm:justify-start',
+            !forceCenter && 'md:justify-start',
             // When showing title or breadcrumbs, add padding. The `sm`
             // breakpoint is when the UI switches from responsive to desktop
             // mode.
             (title || breadcrumbs) && [
-              expandBorderToEdge ? 'px-8' : 'px-12',
+              'px-24',
+              !forceExpandBorderToEdge && 'md:px-28',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
-              !forceCenter && 'sm:pl-0',
+              !forceCenter && 'md:pl-0',
             ]
           )}
         >
-          {title ? (
-            <p className="header-text truncate leading-[5rem]">{title}</p>
-          ) : breadcrumbs ? (
-            <Breadcrumbs {...breadcrumbs} />
-          ) : (
-            centerNode
+          {!!title && (
+            <p
+              className={clsx(
+                'header-text truncate text-lg leading-[5rem] sm:text-xl',
+                titleClassName
+              )}
+            >
+              {title}
+            </p>
           )}
+
+          {!!breadcrumbs && <Breadcrumbs {...breadcrumbs} />}
+
+          {centerNode}
         </div>
 
         {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
         <div
           className={clsx(
-            'absolute top-0 bottom-0 flex flex-col justify-center',
-            expandBorderToEdge ? 'left-2' : '-left-2'
+            'absolute top-0 bottom-0 left-2 flex flex-row items-center justify-start gap-1 md:hidden',
+            !forceExpandBorderToEdge && 'md:-left-2'
           )}
         >
           <IconButton
             Icon={Menu}
-            className="!outline-none sm:hidden"
+            className="!outline-none"
             onClick={toggle}
             variant="ghost"
           />
         </div>
 
-        <div className="absolute top-0 right-0 bottom-0 flex flex-col justify-center">
+        <div
+          className={clsx(
+            // Match container padding since this is absolutely positioned.
+            'absolute top-0 bottom-0 right-4 flex flex-row items-stretch justify-end',
+            !forceExpandBorderToEdge && 'md:right-0'
+          )}
+        >
           {rightNode}
         </div>
-
-        {/* Use div for border so we can set absolute positioning and padding. */}
-        {!noBorder && (
-          <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
-        )}
       </div>
     </div>
-  )
-}
-
-// This is a portal that inserts a PageHeader wherever the AppContext's
-// `pageHeaderRef` is placed. This is handled by the layout components. See the
-// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
-// how this works.
-//
-// If not in an AppContext, this component will render a PageHeader normally
-// instead of using the portal.
-export const PageHeaderContent = (props: PageHeaderProps) => {
-  const appContext = useAppContextIfAvailable()
-
-  // If app context is available, but the page header ref is not, render nothing
-  // until the ref is available. If not in an app context, render the element
-  // directly. The direct render is useful when outside the AppContext, such as
-  // error pages in the SDA.
-  return appContext ? (
-    appContext.pageHeaderRef.current ? (
-      createPortal(<PageHeader {...props} />, appContext.pageHeaderRef.current)
-    ) : (
-      <PageLoader className="absolute top-0 right-0 bottom-0 left-0 z-50 bg-background-base" />
-    )
-  ) : (
-    <PageHeader {...props} />
   )
 }

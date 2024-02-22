@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeLazyInfo as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
+import { makeLazyInfo as makeNftCardProps } from '@dao-dao/stateless/components/nft/NftCard.stories'
 
 import { NftSelectionModal } from './NftSelectionModal'
 

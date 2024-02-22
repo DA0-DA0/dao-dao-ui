@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
@@ -21,16 +21,12 @@ export const proposalModuleAdapterSelector = selectorFamily<
     ({ get }) =>
       getAdapters().find(({ contractNames }) =>
         get(
-          waitForAll(
-            contractNames.map((contractName) =>
-              isContractSelector({
-                contractAddress: proposalModuleAddress,
-                chainId,
-                name: contractName,
-              })
-            )
-          )
-        ).some(Boolean)
+          isContractSelector({
+            contractAddress: proposalModuleAddress,
+            chainId,
+            names: contractNames,
+          })
+        )
       ),
 })
 

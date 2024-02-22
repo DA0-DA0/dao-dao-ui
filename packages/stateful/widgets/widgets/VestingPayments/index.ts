@@ -1,8 +1,8 @@
-import { PaidOutlined } from '@mui/icons-material'
+import { PaidOutlined, PaidRounded } from '@mui/icons-material'
 
 import {
+  LATEST_VESTING_CONTRACT_VERSION,
   VestingPaymentsWidgetData,
-  VestingPaymentsWidgetVersion,
   Widget,
   WidgetId,
   WidgetLocation,
@@ -15,11 +15,12 @@ import { VestingPaymentsEditor as Editor } from './VestingPaymentsEditor'
 export const VestingPaymentsWidget: Widget<VestingPaymentsWidgetData> = {
   id: WidgetId.VestingPayments,
   Icon: PaidOutlined,
+  IconFilled: PaidRounded,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
-    factory: '',
-    version: VestingPaymentsWidgetVersion.V1,
+    factories: {},
+    version: LATEST_VESTING_CONTRACT_VERSION,
   },
   Renderer,
   Editor,

@@ -37,13 +37,12 @@ import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/Neut
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
-import { LoadingDataWithError } from './misc'
 import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken, TokenCardInfo } from './token'
+import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -111,7 +110,14 @@ export type PreProposeModuleApprovalConfig = {
 }
 
 export type PreProposeModuleApproverConfig = {
+  /**
+   * The DAO that needs approval from the approver.
+   */
   approvalDao: string
+  /**
+   * The pre-propose approval contract attached to the proposal module in the
+   * approval DAO.
+   */
   preProposeApprovalContract: string
 }
 
@@ -303,7 +309,6 @@ export interface DaoCreationVotingConfigItem<
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleData>>
   getInputError: (errors?: FieldErrors<ModuleData>) => FieldError | undefined
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleData>>
-  getReviewClassName?: (data: ModuleData) => string
 }
 
 export type DaoCreationCommonVotingConfigItems = {
@@ -426,6 +431,14 @@ export type DaoTab = {
    * Tab icon that shows up in the SDA sidebar.
    */
   Icon: ComponentType<{ className: string }>
+  /**
+   * Tab icon that shows up in the main DAO tabs.
+   */
+  IconFilled: ComponentType<{ className: string }>
+  /**
+   * Whether or not to load the tab only once selected. Defaults to false.
+   */
+  lazy?: boolean
 }
 
 export type DaoTabWithComponent = DaoTab & {
@@ -442,15 +455,22 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
-  account: Account
-  tokens: LoadingDataWithError<T[]>
-  nfts: LoadingDataWithError<(N & { key: string })[]>
-}
-
 export type DaoApp = {
+  /**
+   * App name.
+   */
   name: string
+  /**
+   * Optional platform name to show above the app name dimmed.
+   */
+  platform?: string
+  /**
+   * Thumbnail image.
+   */
   imageUrl: string
+  /**
+   * App URL.
+   */
   url: string
 }
 

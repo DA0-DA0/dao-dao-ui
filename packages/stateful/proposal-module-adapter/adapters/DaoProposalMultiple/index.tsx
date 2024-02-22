@@ -7,9 +7,9 @@ import {
 
 import {
   NewProposal,
-  makeActionCategoryMakers,
   depositInfoSelector as makeDepositInfoSelector,
-  makeUseProfileNewProposalCardInfoLines,
+  makeUpdatePreProposeConfigActionMaker,
+  makeUpdateProposalConfigActionMaker,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -20,6 +20,7 @@ import {
   ProposalLine,
   ProposalStatusAndInfo,
   ProposalVoteTally,
+  ProposalVoter,
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
@@ -35,6 +36,7 @@ import {
   useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
+  useProposalDaoInfoCards,
   useProposalRefreshers,
 } from './hooks'
 import { DaoCreationExtraVotingConfig, NewProposalForm } from './types'
@@ -70,7 +72,11 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
           choices: [],
         }),
         newProposalFormTitleKey: 'title',
-        actionCategoryMakers: makeActionCategoryMakers(options),
+        updateConfigActionMaker: makeUpdateProposalConfigActionMaker(
+          options.proposalModule
+        ),
+        updatePreProposeConfigActionMaker:
+          makeUpdatePreProposeConfigActionMaker(options.proposalModule),
       },
 
       // Selectors
@@ -95,11 +101,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
       // Hooks
       hooks: {
-        useProfileNewProposalCardInfoLines:
-          makeUseProfileNewProposalCardInfoLines({
-            options,
-            depositInfoSelector,
-          }),
+        useProposalDaoInfoCards,
       },
 
       // Components
@@ -140,6 +142,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
     // Components
     components: {
       ProposalStatusAndInfo,
+      ProposalVoter,
       ProposalInnerContentDisplay,
       ProposalWalletVote,
       ProposalVotes,

@@ -102,6 +102,7 @@ export const NewProposal = <
   simulationBypassExpiration,
   proposalModuleSelector,
   actionsReadOnlyMode,
+  ProposalDaoInfoCards,
 }: NewProposalProps<FormData, ProposalData>) => {
   const { t } = useTranslation()
 
@@ -230,6 +231,10 @@ export const NewProposal = <
       <Header />
 
       {!actionsReadOnlyMode && proposalModuleSelector}
+
+      <div className="-mt-4 mb-2">
+        <ProposalDaoInfoCards />
+      </div>
 
       <Main actionsReadOnlyMode={actionsReadOnlyMode} />
 

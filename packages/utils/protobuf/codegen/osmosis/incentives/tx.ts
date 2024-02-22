@@ -150,6 +150,68 @@ export interface MsgAddToGaugeResponseAminoMsg {
   value: MsgAddToGaugeResponseAmino;
 }
 export interface MsgAddToGaugeResponseSDKType {}
+/** MsgCreateGroup creates a group to distribute rewards to a group of pools */
+export interface MsgCreateGroup {
+  /** coins are the provided coins that the group will distribute */
+  coins: Coin[];
+  /**
+   * num_epochs_paid_over is the number of epochs distribution will be completed
+   * in. 0 means it's perpetual
+   */
+  numEpochsPaidOver: bigint;
+  /** owner is the group owner's address */
+  owner: string;
+  /** pool_ids are the IDs of pools that the group is comprised of */
+  poolIds: bigint[];
+}
+export interface MsgCreateGroupProtoMsg {
+  typeUrl: "/osmosis.incentives.MsgCreateGroup";
+  value: Uint8Array;
+}
+/** MsgCreateGroup creates a group to distribute rewards to a group of pools */
+export interface MsgCreateGroupAmino {
+  /** coins are the provided coins that the group will distribute */
+  coins?: CoinAmino[];
+  /**
+   * num_epochs_paid_over is the number of epochs distribution will be completed
+   * in. 0 means it's perpetual
+   */
+  num_epochs_paid_over?: string;
+  /** owner is the group owner's address */
+  owner?: string;
+  /** pool_ids are the IDs of pools that the group is comprised of */
+  pool_ids?: string[];
+}
+export interface MsgCreateGroupAminoMsg {
+  type: "osmosis/incentives/create-group";
+  value: MsgCreateGroupAmino;
+}
+/** MsgCreateGroup creates a group to distribute rewards to a group of pools */
+export interface MsgCreateGroupSDKType {
+  coins: CoinSDKType[];
+  num_epochs_paid_over: bigint;
+  owner: string;
+  pool_ids: bigint[];
+}
+export interface MsgCreateGroupResponse {
+  /** group_id is the ID of the group that is created from this msg */
+  groupId: bigint;
+}
+export interface MsgCreateGroupResponseProtoMsg {
+  typeUrl: "/osmosis.incentives.MsgCreateGroupResponse";
+  value: Uint8Array;
+}
+export interface MsgCreateGroupResponseAmino {
+  /** group_id is the ID of the group that is created from this msg */
+  group_id?: string;
+}
+export interface MsgCreateGroupResponseAminoMsg {
+  type: "osmosis/incentives/create-group-response";
+  value: MsgCreateGroupResponseAmino;
+}
+export interface MsgCreateGroupResponseSDKType {
+  group_id: bigint;
+}
 function createBaseMsgCreateGauge(): MsgCreateGauge {
   return {
     isPerpetual: false,
@@ -497,6 +559,193 @@ export const MsgAddToGaugeResponse = {
     return {
       typeUrl: "/osmosis.incentives.MsgAddToGaugeResponse",
       value: MsgAddToGaugeResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseMsgCreateGroup(): MsgCreateGroup {
+  return {
+    coins: [],
+    numEpochsPaidOver: BigInt(0),
+    owner: "",
+    poolIds: []
+  };
+}
+export const MsgCreateGroup = {
+  typeUrl: "/osmosis.incentives.MsgCreateGroup",
+  encode(message: MsgCreateGroup, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.coins) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.numEpochsPaidOver !== BigInt(0)) {
+      writer.uint32(16).uint64(message.numEpochsPaidOver);
+    }
+    if (message.owner !== "") {
+      writer.uint32(26).string(message.owner);
+    }
+    writer.uint32(34).fork();
+    for (const v of message.poolIds) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateGroup {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCreateGroup();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.coins.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        case 2:
+          message.numEpochsPaidOver = reader.uint64();
+          break;
+        case 3:
+          message.owner = reader.string();
+          break;
+        case 4:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.poolIds.push(reader.uint64());
+            }
+          } else {
+            message.poolIds.push(reader.uint64());
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgCreateGroup>): MsgCreateGroup {
+    const message = createBaseMsgCreateGroup();
+    message.coins = object.coins?.map(e => Coin.fromPartial(e)) || [];
+    message.numEpochsPaidOver = object.numEpochsPaidOver !== undefined && object.numEpochsPaidOver !== null ? BigInt(object.numEpochsPaidOver.toString()) : BigInt(0);
+    message.owner = object.owner ?? "";
+    message.poolIds = object.poolIds?.map(e => BigInt(e.toString())) || [];
+    return message;
+  },
+  fromAmino(object: MsgCreateGroupAmino): MsgCreateGroup {
+    const message = createBaseMsgCreateGroup();
+    message.coins = object.coins?.map(e => Coin.fromAmino(e)) || [];
+    if (object.num_epochs_paid_over !== undefined && object.num_epochs_paid_over !== null) {
+      message.numEpochsPaidOver = BigInt(object.num_epochs_paid_over);
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    }
+    message.poolIds = object.pool_ids?.map(e => BigInt(e)) || [];
+    return message;
+  },
+  toAmino(message: MsgCreateGroup, useInterfaces: boolean = false): MsgCreateGroupAmino {
+    const obj: any = {};
+    if (message.coins) {
+      obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.coins = [];
+    }
+    obj.num_epochs_paid_over = message.numEpochsPaidOver ? message.numEpochsPaidOver.toString() : undefined;
+    obj.owner = message.owner;
+    if (message.poolIds) {
+      obj.pool_ids = message.poolIds.map(e => e.toString());
+    } else {
+      obj.pool_ids = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: MsgCreateGroupAminoMsg): MsgCreateGroup {
+    return MsgCreateGroup.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgCreateGroup, useInterfaces: boolean = false): MsgCreateGroupAminoMsg {
+    return {
+      type: "osmosis/incentives/create-group",
+      value: MsgCreateGroup.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: MsgCreateGroupProtoMsg, useInterfaces: boolean = false): MsgCreateGroup {
+    return MsgCreateGroup.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: MsgCreateGroup): Uint8Array {
+    return MsgCreateGroup.encode(message).finish();
+  },
+  toProtoMsg(message: MsgCreateGroup): MsgCreateGroupProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.MsgCreateGroup",
+      value: MsgCreateGroup.encode(message).finish()
+    };
+  }
+};
+function createBaseMsgCreateGroupResponse(): MsgCreateGroupResponse {
+  return {
+    groupId: BigInt(0)
+  };
+}
+export const MsgCreateGroupResponse = {
+  typeUrl: "/osmosis.incentives.MsgCreateGroupResponse",
+  encode(message: MsgCreateGroupResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.groupId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.groupId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateGroupResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCreateGroupResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.groupId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgCreateGroupResponse>): MsgCreateGroupResponse {
+    const message = createBaseMsgCreateGroupResponse();
+    message.groupId = object.groupId !== undefined && object.groupId !== null ? BigInt(object.groupId.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: MsgCreateGroupResponseAmino): MsgCreateGroupResponse {
+    const message = createBaseMsgCreateGroupResponse();
+    if (object.group_id !== undefined && object.group_id !== null) {
+      message.groupId = BigInt(object.group_id);
+    }
+    return message;
+  },
+  toAmino(message: MsgCreateGroupResponse, useInterfaces: boolean = false): MsgCreateGroupResponseAmino {
+    const obj: any = {};
+    obj.group_id = message.groupId ? message.groupId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: MsgCreateGroupResponseAminoMsg): MsgCreateGroupResponse {
+    return MsgCreateGroupResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgCreateGroupResponse, useInterfaces: boolean = false): MsgCreateGroupResponseAminoMsg {
+    return {
+      type: "osmosis/incentives/create-group-response",
+      value: MsgCreateGroupResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: MsgCreateGroupResponseProtoMsg, useInterfaces: boolean = false): MsgCreateGroupResponse {
+    return MsgCreateGroupResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: MsgCreateGroupResponse): Uint8Array {
+    return MsgCreateGroupResponse.encode(message).finish();
+  },
+  toProtoMsg(message: MsgCreateGroupResponse): MsgCreateGroupResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.incentives.MsgCreateGroupResponse",
+      value: MsgCreateGroupResponse.encode(message).finish()
     };
   }
 };

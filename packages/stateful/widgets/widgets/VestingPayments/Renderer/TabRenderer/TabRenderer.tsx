@@ -3,8 +3,10 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainProvider,
   DropdownIconButton,
   ErrorPage,
+  LineLoaders,
   Loader,
   Modal,
   NoContent,
@@ -21,6 +23,8 @@ import {
   VestingInfo,
   WidgetId,
 } from '@dao-dao/types'
+
+import { useWallet } from '../../../../../hooks'
 
 export interface TabRendererProps {
   vestingPaymentsLoading: LoadingDataWithError<VestingInfo[]>
@@ -46,6 +50,7 @@ export const TabRenderer = ({
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
+  const { address: walletAddress } = useWallet()
 
   const openVestingContract =
     daoSubpathComponents[0] === WidgetId.VestingPayments
@@ -76,7 +81,20 @@ export const TabRenderer = ({
   const activeVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []
-      : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
+      : vestingPaymentsLoading.data
+          .filter(({ completed }) => !completed)
+          .sort((a, b) => {
+            // Sort the payments for the current wallet at the top.
+            if (!walletAddress) {
+              return 0
+            }
+
+            const aIsRecipient = a.vest.recipient === walletAddress
+            const bIsRecipient = b.vest.recipient === walletAddress
+
+            return aIsRecipient === bIsRecipient ? 0 : aIsRecipient ? -1 : 1
+          })
+
   // Vesting payments that have been funded or canceled and fully claimed.
   const completedVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
@@ -146,7 +164,10 @@ export const TabRenderer = ({
               }
             >
               <Add className="!h-4 !w-4" />
-              {t('button.newVestingPayment')}
+              <span className="hidden md:inline">
+                {t('button.newVestingPayment')}
+              </span>
+              <span className="md:hidden">{t('button.new')}</span>
             </ButtonLink>
           </Tooltip>
         )}
@@ -154,7 +175,11 @@ export const TabRenderer = ({
 
       <div className="mb-9">
         {vestingPaymentsLoading.loading ? (
-          <Loader fill={false} />
+          <div className="border-t border-border-secondary pt-6">
+            <ActiveVestingPaymentLineHeader />
+
+            <LineLoaders lines={20} type="vesting" />
+          </div>
         ) : vestingPaymentsLoading.errored ? (
           <ErrorPage error={vestingPaymentsLoading.error} />
         ) : vestingPaymentsLoading.data.length ? (
@@ -206,7 +231,7 @@ export const TabRenderer = ({
                   {vestingPaymentsNeedingSlashRegistration.map(
                     (props, index) => (
                       <VestingPaymentLine
-                        key={index}
+                        key={props.chainId + props.vestingContractAddress}
                         EntityDisplay={EntityDisplay}
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
@@ -223,18 +248,11 @@ export const TabRenderer = ({
 
             {activeVestingPayments.length > 0 && (
               <div className="space-y-1">
-                <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">
-                  <p>{t('title.recipient')}</p>
-                  <p className="hidden md:block">{t('title.start')}</p>
-                  <p className="hidden md:block">{t('title.end')}</p>
-                  <p className="text-right">
-                    {t('title.vestedOfTotalPayment')}
-                  </p>
-                </div>
+                <ActiveVestingPaymentLineHeader />
 
                 {activeVestingPayments.map((props, index) => (
                   <VestingPaymentLine
-                    key={index}
+                    key={props.chainId + props.vestingContractAddress}
                     EntityDisplay={EntityDisplay}
                     onClick={() => {
                       setVestingPaymentModalOpen(true)
@@ -280,7 +298,7 @@ export const TabRenderer = ({
 
                     {completedVestingPayments.map((props, index) => (
                       <VestingPaymentLine
-                        key={index}
+                        key={props.chainId + props.vestingContractAddress}
                         EntityDisplay={EntityDisplay}
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
@@ -314,11 +332,26 @@ export const TabRenderer = ({
         visible={vestingPaymentModalOpen && !!openVestingPayment}
       >
         {openVestingPayment ? (
-          <VestingPaymentCard {...openVestingPayment} />
+          <ChainProvider chainId={openVestingPayment.chainId}>
+            <VestingPaymentCard {...openVestingPayment} />
+          </ChainProvider>
         ) : (
           <Loader />
         )}
       </Modal>
+    </div>
+  )
+}
+
+const ActiveVestingPaymentLineHeader = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">
+      <p>{t('title.recipient')}</p>
+      <p className="hidden md:block">{t('title.start')}</p>
+      <p className="hidden md:block">{t('title.end')}</p>
+      <p className="text-right">{t('title.vestedOfTotalPayment')}</p>
     </div>
   )
 }

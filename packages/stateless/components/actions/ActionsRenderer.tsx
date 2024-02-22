@@ -8,9 +8,8 @@ import { SuspenseLoaderProps } from '@dao-dao/types'
 import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
 
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
-import { ActionCard } from './ActionCard'
+import { ActionCard, ActionCardLoader } from './ActionCard'
 
 export const ACTIONS_PER_PAGE = 20
 
@@ -251,7 +250,7 @@ export const ActionRenderer = ({
             dataIndex < maxIndex && (
               <Fragment key={index}>
                 <div className="flex flex-col gap-4 px-6">
-                  <SuspenseLoader fallback={<Loader size={36} />}>
+                  <SuspenseLoader fallback={<ActionCardLoader />}>
                     <action.Component
                       allActionsWithData={allActionsWithData}
                       data={data}

@@ -1,169 +1,127 @@
-import { ArrowOutwardRounded } from '@mui/icons-material'
-import { useRef } from 'react'
-import { useTranslation } from 'react-i18next'
+import clsx from 'clsx'
+import { useRouter } from 'next/router'
+import { useEffect, useRef } from 'react'
 
+import { DaoDappTabbedHomeProps } from '@dao-dao/types'
 import {
-  ContractVersion,
-  DaoDappTabbedHomeProps,
-  DaoPageMode,
-} from '@dao-dao/types'
-import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
+  PAGE_PADDING_HORIZONTAL_CLASSES,
+  UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+  UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
+  getScrollableAncestor,
+} from '@dao-dao/utils'
 
-import {
-  IconButtonLink,
-  Loader,
-  PageHeaderContent,
-  RightSidebarContent,
-  SegmentedControls,
-  Tooltip,
-} from '../components'
+import { PageLoader, TabBar, useAppContext } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useChainContext } from '../hooks'
-import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
-
-const SDA_URL_PREFIX = `https://dao.${MAINNET ? '' : 'testnet.'}daodao.zone`
+import { useDaoInfoContext } from '../hooks'
 
 export const DaoDappTabbedHome = ({
-  daoInfo,
   follow,
-  DaoInfoBar,
-  rightSidebarContent,
   SuspenseLoader,
   ButtonLink,
   LinkWrapper,
   tabs,
   selectedTabId,
   onSelectTabId,
-  breadcrumbsOverride,
   parentProposalRecognizeSubDaoHref,
 }: DaoDappTabbedHomeProps) => {
-  const { t } = useTranslation()
-  const { config: chainConfig } = useChainContext()
+  const { asPath } = useRouter()
+  const daoInfo = useDaoInfoContext()
+  const { pageHeaderRef } = useAppContext()
 
-  const {
-    getDaoPath,
-    router: { asPath },
-  } = useDaoNavHelpers()
-  // Swap the DAO path prefixes instead of just rebuilding the path to preserve
-  // any additional info (such as query params).
-  const singleDaoPath = asPath.replace(
-    getDaoPath(''),
-    baseGetDaoPath(DaoPageMode.Sda, '')
-  )
-
+  const tabBarRef = useRef<HTMLDivElement>(null)
   const tabContainerRef = useRef<HTMLDivElement>(null)
 
-  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
+  // On tab bar change, scroll to top of tabs the user has scrolled down past
+  // them such that they are stuck at the top.
+  useEffect(() => {
+    if (
+      !tabBarRef.current?.parentElement ||
+      !tabContainerRef.current ||
+      !pageHeaderRef.current
+    ) {
+      return
+    }
+
+    const scrollableParent = tabBarRef.current?.parentElement
+      ? getScrollableAncestor(tabBarRef.current.parentElement)
+      : undefined
+    if (!scrollableParent) {
+      return
+    }
+
+    const tabBarRect = tabBarRef.current.getBoundingClientRect()
+    const pageHeaderRect = pageHeaderRef.current.getBoundingClientRect()
+
+    // Tab bar sticks right below page header when the page is scrolled down. We
+    // want to scroll to the top of the tab when a user is selected, only once
+    // already scrolled such that the tabs are sticky.
+    if (pageHeaderRect.bottom < tabBarRect.top) {
+      return
+    }
+
+    const scrollableParentPaddingTop =
+      Number(
+        window.getComputedStyle(scrollableParent).paddingTop.replace('px', '')
+      ) || 0
+
+    scrollableParent.scrollTo({
+      top:
+        tabContainerRef.current.offsetTop +
+        scrollableParentPaddingTop -
+        tabBarRect.height,
+      behavior: 'smooth',
+    })
+
+    // Only toggle on route change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asPath])
 
   return (
-    <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        breadcrumbs={{
-          home: true,
-          override: !!breadcrumbsOverride,
-          current: breadcrumbsOverride || daoInfo.name,
-        }}
-        className="mx-auto max-w-5xl"
-        gradient
-        rightNode={
-          daoInfo.coreVersion === ContractVersion.Gov ? (
-            chainConfig?.explorerUrlTemplates?.gov ? (
-              // Go to governance page of chain explorer.
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={chainConfig.explorerUrlTemplates.gov}
-                variant="ghost"
-              />
-            ) : undefined
-          ) : (
-            // Go to SDA.
-            <Tooltip title={t('button.viewDaosPage')}>
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={SDA_URL_PREFIX + singleDaoPath}
-                variant="ghost"
-              />
-            </Tooltip>
-          )
-        }
-      />
-
-      <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
+    <div className="relative z-[1] flex flex-col items-stretch">
+      <div className="mb-4">
         <DaoSplashHeader
           ButtonLink={ButtonLink}
-          DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
           follow={follow}
           parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         />
-
-        <div className="h-[1px] bg-border-base" />
-
-        <div
-          className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2"
-          ref={tabContainerRef}
-        >
-          <SegmentedControls
-            className="mx-auto hidden w-max max-w-full mdlg:grid"
-            moreTabs={
-              tabs.length > 4
-                ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
-                : undefined
-            }
-            onSelect={onSelectTabId}
-            selected={selectedTabId}
-            tabs={tabs
-              .slice(0, 4)
-              .map(({ id, label }) => ({ label, value: id }))}
-          />
-
-          <SegmentedControls
-            className="mx-auto mdlg:hidden"
-            noWrap
-            onSelect={(tabId, e) => {
-              onSelectTabId(tabId)
-
-              // Scroll tab to horizontal center.
-              if (tabContainerRef.current) {
-                const containerRect =
-                  tabContainerRef.current.getBoundingClientRect()
-                const containerCenter = containerRect.width / 2
-
-                const tabRect = e.currentTarget.getBoundingClientRect()
-                // The scrollable container may be offset from the left of the
-                // screen by the nav sidebar. Thus, to center the tab
-                // horizontally in the container, we need to subtract the
-                // container's left offset. `getBoundingClientRect` is relative
-                // to the whole window, but the scroll position is relative to
-                // the container itself, so we need the center of the container.
-                const tabCenter =
-                  tabRect.left + tabRect.width / 2 - containerRect.left
-
-                tabContainerRef.current.scrollTo({
-                  left:
-                    tabContainerRef.current.scrollLeft +
-                    tabCenter -
-                    containerCenter,
-                  behavior: 'smooth',
-                })
-              }
-            }}
-            selected={selectedTabId}
-            tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
-          />
-        </div>
-
-        <div className="mt-2 border-t border-border-secondary py-6">
-          {/* Don't render a tab unless it is visible. */}
-          {selectedTab && (
-            <SuspenseLoader fallback={<Loader />}>
-              <selectedTab.Component />
-            </SuspenseLoader>
-          )}
-        </div>
       </div>
-    </>
+
+      <div
+        className={clsx(
+          // Stick to the top when the tab content scrolls down. Use higher z
+          // index to make sure this stays above tab content.
+          'sticky z-20 flex flex-col items-stretch bg-background-base',
+          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+          PAGE_PADDING_HORIZONTAL_CLASSES
+        )}
+      >
+        <TabBar
+          onSelect={onSelectTabId}
+          ref={tabBarRef}
+          selectedTabId={selectedTabId}
+          tabs={tabs.map(({ id, label, IconFilled }) => ({
+            id,
+            label,
+            Icon: IconFilled,
+          }))}
+        />
+      </div>
+
+      <div className="z-10 pt-5 pb-6" ref={tabContainerRef}>
+        {tabs.map(({ id, Component, lazy }) => (
+          <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
+            {/* Render tab if it shouldn't lazy load or if it's selected. */}
+            {(!lazy || selectedTabId === id) && (
+              <SuspenseLoader fallback={<PageLoader size={32} />}>
+                <Component />
+              </SuspenseLoader>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

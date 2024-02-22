@@ -10,6 +10,10 @@ export type UseTrackDropdownOptions = {
   right?: null | ((rect: DOMRect) => number)
   // Default: rect.width
   width?: null | ((rect: DOMRect) => number)
+  /**
+   * Padding pixels between the edge of the popup and the window. Default: 32.
+   */
+  padding?: number
 }
 
 // This hook tracks the rect of an element on the page and positions a dropdown
@@ -23,12 +27,13 @@ export const useTrackDropdown = ({
   left,
   right = null,
   width,
+  padding = 32,
 }: UseTrackDropdownOptions = {}) => {
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
 
   const updateRect = () => {
-    if (!dropdownRef.current) {
+    if (!trackRef.current || !dropdownRef.current) {
       return
     }
 
@@ -38,20 +43,58 @@ export const useTrackDropdown = ({
     // use it to fix the position. On desktop browsers, this should be 0.
     const topOffset = document.body.getBoundingClientRect().top ?? 0
 
-    const rect = trackRef.current?.getBoundingClientRect()
-    if (rect) {
-      dropdownRef.current.style.top = `${
-        (top?.(rect) ?? rect.bottom) - topOffset
-      }px`
-      if (left !== null) {
-        dropdownRef.current.style.left = `${left?.(rect) ?? rect.left}px`
-      }
-      if (right !== null) {
-        dropdownRef.current.style.right = `${right?.(rect) ?? rect.width}px`
-      }
-      if (width !== null) {
-        dropdownRef.current.style.width = `${width?.(rect) ?? rect.width}px`
-      }
+    const rect = trackRef.current.getBoundingClientRect()
+
+    const dropdownTop = (top?.(rect) ?? rect.bottom) - topOffset
+    dropdownRef.current.style.top = `${dropdownTop}px`
+
+    // Unset since this may have been set by a previous constraint (below),
+    // and we want to make sure to re-run the contraints fresh.
+    dropdownRef.current.style.left = ''
+    dropdownRef.current.style.right = ''
+    dropdownRef.current.style.bottom = ''
+
+    let dropdownLeft: number | undefined
+    if (left !== null) {
+      dropdownLeft = Math.max(padding, left?.(rect) ?? rect.left)
+      dropdownRef.current.style.left = `${dropdownLeft}px`
+    }
+
+    let dropdownRight: number | undefined
+    if (right !== null) {
+      dropdownRight = Math.max(padding, right?.(rect) ?? rect.width)
+      dropdownRef.current.style.right = `${dropdownRight}px`
+    }
+
+    if (width !== null) {
+      dropdownRef.current.style.width = `${width?.(rect) ?? rect.width}px`
+    }
+
+    // Apply edge constraints. Since we cap the left and right values at the
+    // minimum padding, we only need to check if the opposite side plus the
+    // width will cause an overflow.
+    const dropdownRect = dropdownRef.current.getBoundingClientRect()
+    const paddingPixels = `${padding}px`
+
+    // If dropdown is past the left edge of the screen, set the left.
+    if (
+      dropdownRight &&
+      window.innerWidth - dropdownRight - dropdownRect.width < padding
+    ) {
+      dropdownRef.current.style.left = paddingPixels
+    }
+
+    // If dropdown is past the right edge of the screen, set the right.
+    if (
+      dropdownLeft &&
+      dropdownLeft + dropdownRect.width > window.innerWidth - padding
+    ) {
+      dropdownRef.current.style.right = paddingPixels
+    }
+
+    // If dropdown is past the bottom of the screen, set the bottom.
+    if (dropdownTop + dropdownRect.height > window.innerHeight - padding) {
+      dropdownRef.current.style.bottom = paddingPixels
     }
   }
 
@@ -65,17 +108,17 @@ export const useTrackDropdown = ({
     // event happens, not just when the window is scrolled. The actual
     // scrollable container is some parent element.
     window.addEventListener('scroll', updateRectRef.current, true)
-    window.addEventListener('resize', updateRectRef.current, true)
+    // window.addEventListener('resize', updateRectRef.current, true)
 
     return () => {
       window.removeEventListener('scroll', updateRectRef.current)
-      window.removeEventListener('resize', updateRectRef.current)
+      // window.removeEventListener('resize', updateRectRef.current)
     }
   }, [])
 
-  // Trigger state change when element is set so the effect below runs.
+  // Trigger state change when elements are set so the effects run.
   const [dropdownReady, setDropdownReady] = useState(false)
-  const [trackReady, setElementReady] = useState(false)
+  const [trackReady, setTrackReady] = useState(false)
 
   // Update the rect when both elements are ready.
   useEffect(() => {
@@ -94,7 +137,7 @@ export const useTrackDropdown = ({
     observer.observe(trackRef.current)
 
     // Update on a timer to catch other changes.
-    const timer = setInterval(updateRectRef.current, 250)
+    const timer = setInterval(updateRectRef.current, 1000)
 
     return () => {
       observer.disconnect()
@@ -112,7 +155,7 @@ export const useTrackDropdown = ({
   // ResizeObserver when the ref is ready.
   const onTrackRef = useCallback((element: HTMLDivElement | null) => {
     trackRef.current = element
-    setElementReady(!!element)
+    setTrackReady(!!element)
   }, [])
 
   return {

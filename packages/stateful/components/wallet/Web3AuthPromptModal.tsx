@@ -65,7 +65,7 @@ export const Web3AuthPromptModal = () => {
   return (
     <Modal
       backdropClassName="!z-[100]"
-      containerClassName="!w-[48rem] !max-w-[90dvw]"
+      containerClassName="!w-[48rem]"
       footerContainerClassName="flex flex-row gap-4 justify-between"
       footerContent={
         <>

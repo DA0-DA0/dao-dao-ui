@@ -41,7 +41,12 @@ export type WalletActionsProviderProps = ActionsProviderProps & {
   address?: string
 }
 
-export type GovActionsProviderProps = ActionsProviderProps
+export type GovActionsProviderProps = ActionsProviderProps & {
+  /**
+   * Optionally override loader node.
+   */
+  loader?: ReactNode
+}
 
 // Make sure this re-renders when the options change. You can do this by setting
 // a `key` on this component or one of its ancestors. See DaoPageWrapper.tsx
@@ -89,7 +94,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
           matchAndLoadCommon(proposalModule, {
             chain: chainContext.chain,
             coreAddress: info.coreAddress,
-          }).fields.actionCategoryMakers
+          }).fields.actionCategoryMakers || []
       ),
     [chainContext.chain, info.coreAddress, info.proposalModules]
   )
@@ -211,7 +216,10 @@ export const WalletActionsProvider = ({
   )
 }
 
-export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
+export const GovActionsProvider = ({
+  loader,
+  children,
+}: GovActionsProviderProps) => {
   const { chain_id: chainId } = useChain()
   const govDataLoading = useCachedLoadingWithError(
     waitForAll([
@@ -226,7 +234,7 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
   )
 
   return govDataLoading.loading ? (
-    <PageLoader />
+    <>{loader || <PageLoader />}</>
   ) : govDataLoading.errored ? (
     <ErrorPage error={govDataLoading.error} />
   ) : (

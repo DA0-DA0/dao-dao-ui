@@ -2,7 +2,7 @@ import { coins } from '@cosmjs/amino'
 import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import {
   Cw1WhitelistSelectors,
@@ -15,19 +15,20 @@ import {
   SegmentedControls,
   useCachedLoadable,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
+  CosmosMsgForEmpty,
   DurationUnits,
   DurationWithUnits,
   SegmentedControlsProps,
   TokenType,
   TypedOption,
+  VestingContractVersion,
   VestingPaymentsWidgetData,
-  VestingPaymentsWidgetVersion,
   WidgetId,
 } from '@dao-dao/types'
 import {
-  ActionChainContextType,
   ActionComponent,
   ActionComponentProps,
   ActionContextType,
@@ -49,11 +50,14 @@ import {
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
   decodeCw1WhitelistExecuteMsg,
+  decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
+  getChainAddressForActionOptions,
+  getDisplayNameForChainId,
   getNativeTokenForChainId,
-  isValidContractAddress,
-  loadableToLoadingData,
+  isValidBech32Address,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -70,7 +74,6 @@ import {
   vestingFactoryOwnerSelector,
   vestingInfoSelector,
   vestingInfosOwnedBySelector,
-  vestingPaymentsOwnedBySelector,
 } from '../../../../recoil/selectors/vesting'
 import { useWidget } from '../../../../widgets'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
@@ -99,6 +102,40 @@ const instantiateStructure = {
   label: {},
 }
 
+/**
+ * Get the vesting infos owned by (and thus can be canceled by) the current
+ * entity executing an action. These may or may not have been created by the
+ * current entity, since someone can set another entity as an owner/canceler of
+ * a vesting contract.
+ */
+const useVestingInfosOwnedByEntity = () => {
+  const {
+    context,
+    address: nativeAddress,
+    chain: { chain_id: nativeChainId },
+  } = useActionOptions()
+
+  return useCachedLoadingWithError(
+    waitForAll(
+      context.type === ActionContextType.Dao
+        ? // Get vesting infos owned by any of the DAO's accounts.
+          context.info.accounts.map(({ chainId, address }) =>
+            vestingInfosOwnedBySelector({
+              address,
+              chainId,
+            })
+          )
+        : [
+            vestingInfosOwnedBySelector({
+              address: nativeAddress,
+              chainId: nativeChainId,
+            }),
+          ]
+    ),
+    (data) => data.flat()
+  )
+}
+
 const Component: ComponentType<
   ActionComponentProps<undefined, ManageVestingData> & {
     widgetData?: VestingPaymentsWidgetData
@@ -106,20 +143,23 @@ const Component: ComponentType<
 > = ({ widgetData, ...props }) => {
   const { t } = useTranslation()
   const {
-    address,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-    chainContext,
+    chain: { chain_id: nativeChainId },
   } = useActionOptions()
-
-  // Type-check to ensure we can access code IDs. Guaranteed by the DAO check in
-  // the maker function below.
-  if (chainContext.type !== ActionChainContextType.Supported) {
-    throw new Error('Unsupported chain context')
-  }
 
   const { setValue, watch, setError, clearErrors, trigger } =
     useFormContext<ManageVestingData>()
   const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
+  const selectedChainId =
+    mode === 'begin'
+      ? watch((props.fieldNamePrefix + 'begin.chainId') as 'begin.chainId')
+      : mode === 'registerSlash'
+      ? watch(
+          (props.fieldNamePrefix +
+            'registerSlash.chainId') as 'registerSlash.chainId'
+        )
+      : mode === 'cancel'
+      ? watch((props.fieldNamePrefix + 'cancel.chainId') as 'cancel.chainId')
+      : undefined
   const selectedAddress =
     mode === 'registerSlash'
       ? watch(
@@ -139,35 +179,26 @@ const Component: ComponentType<
 
   const tokenBalances = useTokenBalances()
 
-  const vestingFactoryOwner = loadableToLoadingData(
-    useCachedLoadable(
-      widgetData
-        ? vestingFactoryOwnerSelector({
-            factory: widgetData.factory,
-            chainId,
-          })
-        : undefined
-    ),
-    undefined
+  // Only used on pre-v1 vesting widgets.
+  const preV1VestingFactoryOwner = useCachedLoadingWithError(
+    widgetData && !widgetData.version && widgetData.factory
+      ? vestingFactoryOwnerSelector({
+          factory: widgetData.factory,
+          chainId: nativeChainId,
+        })
+      : undefined
   )
 
-  const vestingInfos = loadableToLoadingData(
-    useCachedLoadable(
-      vestingInfosOwnedBySelector({
-        address,
-        chainId,
-      })
-    ),
-    []
-  )
+  const vestingInfos = useVestingInfosOwnedByEntity()
 
   const selectedVest = useCachedLoading(
     !props.isCreating &&
       (mode === 'registerSlash' || mode === 'cancel') &&
-      selectedAddress
+      selectedAddress &&
+      selectedChainId
       ? vestingInfoSelector({
           vestingContractAddress: selectedAddress,
-          chainId,
+          chainId: selectedChainId,
         })
       : constSelector(undefined),
     undefined
@@ -198,10 +229,7 @@ const Component: ComponentType<
       )
     }
 
-    if (
-      !selectedAddress ||
-      !isValidContractAddress(selectedAddress, bech32Prefix)
-    ) {
+    if (!selectedAddress || !isValidBech32Address(selectedAddress)) {
       setError(
         (props.fieldNamePrefix + `${mode}.address`) as `${typeof mode}.address`,
         {
@@ -214,15 +242,7 @@ const Component: ComponentType<
         (props.fieldNamePrefix + `${mode}.address`) as `${typeof mode}.address`
       )
     }
-  }, [
-    setError,
-    clearErrors,
-    props.fieldNamePrefix,
-    t,
-    mode,
-    selectedAddress,
-    bech32Prefix,
-  ])
+  }, [setError, clearErrors, props.fieldNamePrefix, t, mode, selectedAddress])
 
   const tabs: SegmentedControlsProps<ManageVestingData['mode']>['tabs'] = [
     // Only allow beginning a vest if widget is setup.
@@ -320,12 +340,8 @@ const Component: ComponentType<
           fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
           options={{
             widgetData,
-            tokens: tokenBalances.loading
-              ? []
-              : tokenBalances.data.filter(
-                  ({ token }) => token.chainId === chainId
-                ),
-            vestingFactoryOwner,
+            tokens: tokenBalances.loading ? [] : tokenBalances.data,
+            preV1VestingFactoryOwner,
             AddressInput,
             EntityDisplay,
             createCw1WhitelistOwners,
@@ -374,12 +390,16 @@ const WalletComponent: ActionComponent<undefined, ManageVestingData> = (
   props
 ) => <Component {...props} />
 
-export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
-  t,
-  address,
-  context,
-  chain: { chain_id: chainId },
-}) => {
+export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
+  options
+) => {
+  const {
+    t,
+    context,
+    address: nativeAddress,
+    chain: { chain_id: nativeChainId },
+  } = options
+
   // Only available in DAO and wallet contexts.
   if (
     context.type !== ActionContextType.Dao &&
@@ -402,6 +422,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
         // Cannot use begin if no widget setup, so default to cancel.
         mode: hasWidgetData ? 'begin' : 'cancel',
         begin: {
+          chainId,
           amount: 1,
           denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
           recipient: '',
@@ -429,9 +450,11 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
           ],
         },
         cancel: {
+          chainId,
           address: '',
         },
         registerSlash: {
+          chainId,
           address: '',
           validator: '',
           time: '',
@@ -441,48 +464,99 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
       }
     }
 
-  const makeUseTransformToCosmos =
-    (
-      widgetData?: VestingPaymentsWidgetData
-    ): UseTransformToCosmos<ManageVestingData> =>
-    () => {
+  const makeUseTransformToCosmos = (
+    widgetData?: VestingPaymentsWidgetData
+  ): UseTransformToCosmos<ManageVestingData> => {
+    // Potential chains and owner addresses that the current entity can create a
+    // new vesting contract from.
+    const possibleVestingSources = widgetData?.factories
+      ? Object.entries(widgetData.factories).map(
+          ([chainId, { address: factory, version }]) => ({
+            chainId,
+            owner: getChainAddressForActionOptions(options, chainId),
+            factory,
+            version,
+          })
+
+          // If the factories are undefined, this DAO is using an old version of
+          // the vesting widget which only allows a single factory on the same
+          // chain as the DAO. If widget data is undefined, this is being used
+          // by a wallet.
+        )
+      : [
+          {
+            chainId: nativeChainId,
+            owner: nativeAddress,
+            factory: widgetData?.factory,
+            version: widgetData?.version,
+          },
+        ]
+
+    return () => {
       const loadingTokenBalances = useTokenBalances()
 
-      const vestingFactoryOwner = useCachedLoading(
-        widgetData
+      // Pre-v1 vesting widgets use the factory owner as the vesting owner.
+      const preV1VestingFactoryOwner = useCachedLoading(
+        widgetData?.factory && !widgetData.version
           ? vestingFactoryOwnerSelector({
               factory: widgetData.factory,
-              chainId,
+              chainId: nativeChainId,
             })
-          : undefined,
+          : constSelector(undefined),
         undefined
       )
 
+      // Get the native unbonding duration for each chain that a vesting
+      // contract may be created from.
       const nativeUnstakingDurationSecondsLoadable = useRecoilValueLoadable(
-        nativeUnstakingDurationSecondsSelector({
-          chainId,
-        })
+        waitForAll(
+          possibleVestingSources.map(({ chainId }) =>
+            nativeUnstakingDurationSecondsSelector({
+              chainId,
+            })
+          )
+        )
       )
 
-      const loadingVestingInfos = useCachedLoading(
-        vestingInfosOwnedBySelector({
-          address,
-          chainId,
-        }),
-        []
-      )
+      // Load all vesting infos owned by the current entity. These may or may
+      // not have been created by the current entity, since someone can set
+      // another entity as an owner/canceller of a vesting contract.
+      const loadingVestingInfos = useVestingInfosOwnedByEntity()
 
       return useCallback(
         ({ mode, begin, registerSlash, cancel }: ManageVestingData) => {
+          let chainId: string
+          let cosmosMsg: CosmosMsgForEmpty
+
           // Can only begin a vest if there is widget data available.
           if (mode === 'begin' && widgetData) {
             if (
               loadingTokenBalances.loading ||
-              vestingFactoryOwner.loading ||
+              preV1VestingFactoryOwner.loading ||
               nativeUnstakingDurationSecondsLoadable.state !== 'hasValue'
             ) {
               return
             }
+
+            const vestingSourceIndex = possibleVestingSources.findIndex(
+              ({ chainId }) => chainId === begin.chainId
+            )
+            if (
+              vestingSourceIndex === -1 ||
+              possibleVestingSources.length !==
+                nativeUnstakingDurationSecondsLoadable.contents.length
+            ) {
+              throw new Error(
+                t('error.noChainVestingManager', {
+                  chain: getDisplayNameForChainId(begin.chainId),
+                })
+              )
+            }
+            const vestingSource = possibleVestingSources[vestingSourceIndex]
+            const nativeUnstakingDurationSeconds =
+              nativeUnstakingDurationSecondsLoadable.contents[
+                vestingSourceIndex
+              ]
 
             const token = loadingTokenBalances.data.find(
               ({ token }) => token.denomOrAddress === begin.denomOrAddress
@@ -512,21 +586,25 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                       cw20: token.denomOrAddress,
                     },
               description: begin.description || undefined,
-              // Widgets prior to V1 use the factory owner.
-              owner: !widgetData.version
-                ? vestingFactoryOwner.data
-                : // V1 and later can set the owner.
-                widgetData.version >= VestingPaymentsWidgetVersion.V1
-                ? begin.ownerMode === 'none'
-                  ? undefined
-                  : begin.ownerMode === 'me'
-                  ? address
-                  : begin.ownerMode === 'other'
-                  ? begin.otherOwner
-                  : begin.ownerMode === 'many'
-                  ? begin.manyOwnersCw1WhitelistContract
-                  : address
-                : address,
+              owner:
+                // Widgets prior to V1 use the factory owner.
+                !vestingSource.version
+                  ? // Default to empty string if undefined so that it errors. This should never error.
+                    preV1VestingFactoryOwner.data || ''
+                  : // V1 and later can set the owner, or no widget data (when used by a wallet).
+                  !widgetData ||
+                    (vestingSource.version &&
+                      vestingSource.version >= VestingContractVersion.V1)
+                  ? begin.ownerMode === 'none'
+                    ? undefined
+                    : begin.ownerMode === 'me'
+                    ? vestingSource.owner
+                    : begin.ownerMode === 'other'
+                    ? begin.otherOwner
+                    : begin.ownerMode === 'many'
+                    ? begin.manyOwnersCw1WhitelistContract
+                    : vestingSource.owner
+                  : vestingSource.owner,
               recipient: begin.recipient,
               schedule:
                 begin.steps.length === 1
@@ -589,8 +667,8 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
               unbonding_duration_seconds:
                 token.type === TokenType.Native &&
                 token.denomOrAddress ===
-                  getNativeTokenForChainId(chainId).denomOrAddress
-                  ? nativeUnstakingDurationSecondsLoadable.contents
+                  getNativeTokenForChainId(begin.chainId).denomOrAddress
+                  ? nativeUnstakingDurationSeconds
                   : 0,
               vesting_duration_seconds: vestingDurationSeconds,
             }
@@ -601,10 +679,11 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
             }
 
             if (token.type === TokenType.Native) {
-              return makeWasmMessage({
+              chainId = begin.chainId
+              cosmosMsg = makeWasmMessage({
                 wasm: {
                   execute: {
-                    contract_addr: widgetData.factory,
+                    contract_addr: vestingSource.factory,
                     funds: coins(total, token.denomOrAddress),
                     msg: {
                       instantiate_native_payroll_contract: msg,
@@ -613,8 +692,9 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                 },
               })
             } else if (token.type === TokenType.Cw20) {
+              chainId = begin.chainId
               // Execute CW20 send message.
-              return makeWasmMessage({
+              cosmosMsg = makeWasmMessage({
                 wasm: {
                   execute: {
                     contract_addr: token.denomOrAddress,
@@ -622,7 +702,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                     msg: {
                       send: {
                         amount: total,
-                        contract: widgetData.factory,
+                        contract: vestingSource.factory,
                         msg: encodeMessageAsBase64({
                           instantiate_payroll_contract: msg,
                         }),
@@ -631,10 +711,14 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                   },
                 },
               })
+            } else {
+              throw new Error(t('error.unexpectedError'))
             }
           } else if (mode === 'cancel' || mode === 'registerSlash') {
             if (loadingVestingInfos.loading) {
               return
+            } else if (loadingVestingInfos.errored) {
+              throw loadingVestingInfos.error
             }
 
             const contractAddress =
@@ -669,33 +753,52 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
               },
             })
 
-            return vestingInfo.owner?.isCw1Whitelist &&
-              vestingInfo.owner.cw1WhitelistAdmins.includes(address)
-              ? // Wrap in cw1-whitelist execute.
-                makeWasmMessage({
-                  wasm: {
-                    execute: {
-                      contract_addr: vestingInfo.owner.address,
-                      funds: [],
-                      msg: {
-                        execute: {
-                          msgs: [msg],
+            const cancelRegisterSlashChainId =
+              mode === 'cancel' ? cancel.chainId : registerSlash.chainId
+            const from = getChainAddressForActionOptions(
+              options,
+              cancelRegisterSlashChainId
+            )
+
+            chainId = cancelRegisterSlashChainId
+            cosmosMsg =
+              vestingInfo.owner?.isCw1Whitelist &&
+              from &&
+              vestingInfo.owner.cw1WhitelistAdmins.includes(from)
+                ? // Wrap in cw1-whitelist execute.
+                  makeWasmMessage({
+                    wasm: {
+                      execute: {
+                        contract_addr: vestingInfo.owner.address,
+                        funds: [],
+                        msg: {
+                          execute: {
+                            msgs: [msg],
+                          },
                         },
                       },
                     },
-                  },
-                })
-              : msg
+                  })
+                : msg
+          } else {
+            throw new Error(t('error.unexpectedError'))
           }
+
+          return maybeMakePolytoneExecuteMessage(
+            nativeChainId,
+            chainId,
+            cosmosMsg
+          )
         },
         [
           loadingTokenBalances,
           nativeUnstakingDurationSecondsLoadable,
-          vestingFactoryOwner,
+          preV1VestingFactoryOwner,
           loadingVestingInfos,
         ]
       )
     }
+  }
 
   // Only check if widget exists in DAOs.
   const useDefaults: UseDefaults<ManageVestingData> =
@@ -722,6 +825,12 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
     msg: Record<string, any>
   ) => {
+    let chainId = nativeChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
     // If this is a cw1-whitelist execute msg, check msg inside of it.
     const decodedCw1Whitelist = decodeCw1WhitelistExecuteMsg(msg, 'one')
     if (decodedCw1Whitelist) {
@@ -729,10 +838,6 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
     }
 
     const defaults = useDefaults() as ManageVestingData
-    const {
-      address,
-      chain: { chain_id: chainId },
-    } = useActionOptions()
 
     const isNativeBegin =
       objectMatchesStructure(msg, {
@@ -857,7 +962,8 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
     if (isBegin && token && instantiateMsg) {
       const ownerMode = !instantiateMsg.owner
         ? 'none'
-        : instantiateMsg.owner === address
+        : instantiateMsg.owner ===
+          getChainAddressForActionOptions(options, chainId)
         ? 'me'
         : cw1WhitelistAdminsLoadable.contents
         ? 'many'
@@ -869,6 +975,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
           ...defaults,
           mode: 'begin',
           begin: {
+            chainId,
             denomOrAddress: token.denomOrAddress,
             description: instantiateMsg.description || undefined,
             recipient: instantiateMsg.recipient,
@@ -876,7 +983,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
               ? new Date(
                   // nanoseconds => milliseconds
                   Number(instantiateMsg.start_time) / 1e6
-                ).toLocaleString()
+                ).toISOString()
               : '',
             title: instantiateMsg.title,
             amount: convertMicroDenomToDenomWithDecimals(
@@ -963,6 +1070,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
           ...defaults,
           mode: 'registerSlash',
           registerSlash: {
+            chainId,
             address: msg.wasm.execute.contract_addr,
             validator: msg.wasm.execute.msg.register_slash.validator,
             time: msg.wasm.execute.msg.register_slash.time,
@@ -979,6 +1087,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
           ...defaults,
           mode: 'cancel',
           cancel: {
+            chainId,
             address: msg.wasm.execute.contract_addr,
           },
         },
@@ -995,31 +1104,21 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
       ? // For a DAO, check if the widget is enabled or if it owns any payments.
         () => {
           const hasWidget = useWidget(WidgetId.VestingPayments)
-          const ownedVestingPaymentsLoading = useCachedLoading(
-            vestingPaymentsOwnedBySelector({
-              chainId,
-              address,
-            }),
-            undefined
-          )
+          const ownedVestingPaymentsLoading = useVestingInfosOwnedByEntity()
           const ownsVestingPayments =
             !ownedVestingPaymentsLoading.loading &&
-            !!ownedVestingPaymentsLoading.data?.length
+            !ownedVestingPaymentsLoading.errored &&
+            !!ownedVestingPaymentsLoading.data.length
 
           return !hasWidget && !ownsVestingPayments
         }
       : // For a non-DAO, just check if address owns any payments.
         () => {
-          const ownedVestingPaymentsLoading = useCachedLoading(
-            vestingPaymentsOwnedBySelector({
-              chainId,
-              address,
-            }),
-            undefined
-          )
+          const ownedVestingPaymentsLoading = useVestingInfosOwnedByEntity()
           const ownsVestingPayments =
             !ownedVestingPaymentsLoading.loading &&
-            !!ownedVestingPaymentsLoading.data?.length
+            !ownedVestingPaymentsLoading.errored &&
+            !!ownedVestingPaymentsLoading.data.length
 
           return !ownsVestingPayments
         }

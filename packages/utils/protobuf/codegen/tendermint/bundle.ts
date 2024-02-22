@@ -1,32 +1,32 @@
-import * as _234 from "./abci/types";
-import * as _235 from "./crypto/keys";
-import * as _236 from "./crypto/proof";
-import * as _237 from "./p2p/types";
-import * as _238 from "./types/block";
-import * as _239 from "./types/evidence";
-import * as _240 from "./types/params";
-import * as _241 from "./types/types";
-import * as _242 from "./types/validator";
-import * as _243 from "./version/types";
+import * as _274 from "./abci/types";
+import * as _275 from "./crypto/keys";
+import * as _276 from "./crypto/proof";
+import * as _277 from "./p2p/types";
+import * as _278 from "./types/block";
+import * as _279 from "./types/evidence";
+import * as _280 from "./types/params";
+import * as _281 from "./types/types";
+import * as _282 from "./types/validator";
+import * as _283 from "./version/types";
 export namespace tendermint {
   export const abci = {
-    ..._234
+    ..._274
   };
   export const crypto = {
-    ..._235,
-    ..._236
+    ..._275,
+    ..._276
   };
   export const p2p = {
-    ..._237
+    ..._277
   };
   export const types = {
-    ..._238,
-    ..._239,
-    ..._240,
-    ..._241,
-    ..._242
+    ..._278,
+    ..._279,
+    ..._280,
+    ..._281,
+    ..._282
   };
   export const version = {
-    ..._243
+    ..._283
   };
 }

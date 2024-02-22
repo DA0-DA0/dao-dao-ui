@@ -5,7 +5,7 @@ render even with an unsupported voting module.
 
 ## Layout
 
-| Location                             | Summary                                                                                                                       |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| [index.tsx](./index.tsx)             | Adapter definition.                                                                                                           |
-| [Placeholder.tsx](./Placeholder.tsx) | A component that links to the DAO DAO [Discord](https://discord.gg/sAaGuyW3D2), displayed in the profile card in the sidebar. |
+| Location                             | Summary                                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| [index.tsx](./index.tsx)             | Adapter definition.                                                                                                         |
+| [Placeholder.tsx](./Placeholder.tsx) | A component that links to the DAO DAO [Discord](https://discord.daodao.zone), displayed in the profile card in the sidebar. |

@@ -3,6 +3,7 @@ import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
 import {
+  noWait,
   selector,
   selectorFamily,
   waitForAll,
@@ -31,6 +32,7 @@ import {
 import {
   addressIsModule,
   cosmWasmClientRouter,
+  cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
   decodeGovProposal,
@@ -51,6 +53,7 @@ import {
 } from '@dao-dao/utils/protobuf'
 import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
+import { DecCoin } from '@dao-dao/utils/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
   ProposalStatus,
   TallyResult,
@@ -76,6 +79,7 @@ import {
   queryValidatorIndexerSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
+import { walletTokenDaoStakedDenomsSelector } from './wallet'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -273,20 +277,31 @@ export const cosmosSdkVersionSelector = selectorFamily<string, WithChainId<{}>>(
 )
 
 /**
- * A chain supports the v1 gov module if it uses Cosmos SDK v0.47 or higher.
+ * A chain supports the v1 gov module if it uses Cosmos SDK v0.46 or higher.
  */
 export const chainSupportsV1GovModuleSelector = selectorFamily<
   boolean,
-  WithChainId<{}>
+  WithChainId<{
+    // Whether or not v0.47 or higher is required. V1 gov is supported by
+    // v0.46+, but some other things, like unified gov params, are supported
+    // only on v0.47+.
+    require47?: boolean
+  }>
 >({
   key: 'chainSupportsV1GovModule',
   get:
-    (params) =>
+    ({ require47, ...params }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(params.chainId))
       const version = get(cosmosSdkVersionSelector(params))
 
-      if (!cosmosSdkVersionIs47OrHigher(version)) {
+      if (
+        !(
+          require47
+            ? cosmosSdkVersionIs47OrHigher
+            : cosmosSdkVersionIs46OrHigher
+        )(version)
+      ) {
         return false
       }
 
@@ -329,14 +344,35 @@ export const nativeBalancesSelector = selectorFamily<
       const balances = [
         ...get(justNativeBalancesSelector({ address, chainId })),
       ]
-      // Add native denom if not present.
       const nativeToken = getNativeTokenForChainId(chainId)
-      if (!balances.some(({ denom }) => denom === nativeToken.denomOrAddress)) {
+      const stakedDenoms =
+        get(
+          noWait(
+            walletTokenDaoStakedDenomsSelector({
+              walletAddress: address,
+              chainId,
+            })
+          )
+        ).valueMaybe() || []
+
+      const uniqueDenoms = new Set(balances.map(({ denom }) => denom))
+
+      // Add native denom if not present.
+      if (!uniqueDenoms.has(nativeToken.denomOrAddress)) {
         balances.push({
           amount: '0',
           denom: nativeToken.denomOrAddress,
         })
+        uniqueDenoms.add(nativeToken.denomOrAddress)
       }
+
+      // Add denoms staked to DAOs if not present.
+      stakedDenoms.forEach((denom) => {
+        if (!uniqueDenoms.has(denom)) {
+          balances.push({ amount: '0', denom })
+          uniqueDenoms.add(denom)
+        }
+      })
 
       const tokenLoadables = get(
         waitForAny(
@@ -476,7 +512,14 @@ export const neutronIbcTransferFeeSelector = selector<
         }
       }
     } catch (err) {
-      console.error(err)
+      if (err instanceof Error) {
+        console.error(err)
+        return
+      }
+
+      // Rethrow non errors (like promises) since `get` throws a Promise while
+      // the data is still loading.
+      throw err
     }
   },
 })
@@ -631,9 +674,26 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
   get:
     ({ chainId }) =>
     async ({ get }) => {
+      // Neutron does not have staking.
+      if (chainId === ChainId.NeutronMainnet) {
+        return 0
+      }
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const { params } = await client.staking.v1beta1.params()
-      return Number(params?.unbondingTime?.seconds ?? -1)
+      try {
+        const { params } = await client.staking.v1beta1.params()
+        return Number(params?.unbondingTime?.seconds ?? -1)
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          return 0
+        }
+
+        // Rethrow other errors.
+        throw err
+      }
     },
 })
 
@@ -782,7 +842,7 @@ export const govProposalsSelector = selectorFamily<
         }
       }
 
-      const proposals = [
+      const proposals = await Promise.all([
         ...(v1Beta1Proposals || []).map((proposal) =>
           decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
@@ -797,7 +857,7 @@ export const govProposalsSelector = selectorFamily<
             proposal,
           })
         ),
-      ]
+      ])
 
       return {
         proposals,
@@ -836,13 +896,13 @@ export const govProposalSelector = selectorFamily<
 
       if (indexerProposal) {
         if (indexerProposal.version === GovProposalVersion.V1) {
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
           })
         } else {
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal: ProposalV1Beta1.decode(fromBase64(indexerProposal.data)),
@@ -865,7 +925,7 @@ export const govProposalSelector = selectorFamily<
             throw new Error('Proposal not found')
           }
 
-          return decodeGovProposal({
+          return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: proposal,
@@ -891,7 +951,7 @@ export const govProposalSelector = selectorFamily<
         throw new Error('Proposal not found')
       }
 
-      return decodeGovProposal({
+      return await decodeGovProposal({
         version: GovProposalVersion.V1_BETA_1,
         id: BigInt(proposalId),
         proposal: proposal,
@@ -1015,9 +1075,11 @@ export const govParamsSelector = selectorFamily<AllGovParams, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
+      const supportsUnifiedV1GovParams = get(
+        chainSupportsV1GovModuleSelector({ chainId, require47: true })
+      )
 
-      if (supportsV1Gov) {
+      if (supportsUnifiedV1GovParams) {
         try {
           const { params } = await client.gov.v1.params({
             // Does not matter.
@@ -1198,9 +1260,28 @@ export const communityPoolBalancesSelector = selectorFamily<
   get:
     ({ chainId }) =>
     async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
+      let pool: DecCoin[]
 
-      const { pool } = await client.distribution.v1beta1.communityPool()
+      const poolMap: Record<string, string> | undefined = get(
+        queryGenericIndexerSelector({
+          chainId,
+          formula: 'communityPool/balances',
+        })
+      )
+      if (poolMap) {
+        pool = Object.entries(poolMap).map(
+          ([denom, amount]): DecCoin => ({
+            denom,
+            amount,
+          })
+        )
+
+        // Fallback to querying chain if indexer failed.
+      } else {
+        const client = get(cosmosRpcClientForChainSelector(chainId))
+        pool = (await client.distribution.v1beta1.communityPool()).pool
+      }
+
       const tokens = get(
         waitForAll(
           pool.map(({ denom }) =>

@@ -75,7 +75,7 @@ export const Row = ({
             >
               <Icon className="!h-8 !w-8" />
               {showBadge && (
-                <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+                <div className="absolute -top-[0.1rem] right-0 h-1.5 w-1.5 animate-fade-in rounded-full bg-icon-interactive-active"></div>
               )}
             </div>
           </Tooltip>
@@ -89,7 +89,7 @@ export const Row = ({
       <RowWrapper LinkWrapper={LinkWrapper} href={href} shallow={shallow}>
         <div
           className={clsx(
-            'body-text flex flex-row items-center gap-4 p-2',
+            'body-text flex flex-row items-center gap-4 p-3 md:gap-3 md:p-2',
             {
               'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
                 onClick || href,
@@ -100,14 +100,14 @@ export const Row = ({
           )}
           onClick={onClick}
         >
-          <div className="relative flex h-6 w-6 items-center justify-center">
-            <Icon className="!h-6 !w-6" />
+          <div className="relative flex h-8 w-8 items-center justify-center md:h-6 md:w-6">
+            <Icon className="!h-8 !w-8 md:!h-6 md:!w-6" />
             {showBadge && (
-              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 animate-fade-in rounded-full bg-icon-interactive-active"></div>
             )}
           </div>
 
-          <p className="grow">{label}</p>
+          <p className="grow text-base md:text-sm">{label}</p>
 
           {/* Override expand button with loader. */}
           {loading ? (

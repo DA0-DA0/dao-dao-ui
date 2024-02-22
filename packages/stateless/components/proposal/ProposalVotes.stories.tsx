@@ -26,6 +26,7 @@ const Template: ComponentStory<typeof ProposalVotes<Vote>> = (args) => (
 export const makeProps = (): ProposalVotesProps<Vote> => ({
   votes: {
     loading: false,
+    errored: false,
     data: [...Array(10)].map(() => ({
       voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
       // 25% chance of No, 75% chance of Yes
@@ -66,5 +67,5 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...makeProps(),
-  votes: { loading: true },
+  votes: { loading: true, errored: false },
 }

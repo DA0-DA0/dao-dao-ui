@@ -135,14 +135,17 @@ export const tokenCardLazyInfoSelector = selectorFamily<
             denomOrAddress: token.denomOrAddress,
             walletAddress: owner,
           })
-        ).map(({ stakedBalance, ...rest }) => ({
-          ...rest,
-          // Convert to expected denom.
-          stakedBalance: convertMicroDenomToDenomWithDecimals(
-            stakedBalance,
-            token.decimals
-          ),
-        }))
+        )
+          // Only include DAOs this owner has staked with.
+          .filter(({ stakedBalance }) => stakedBalance > 0)
+          .map(({ stakedBalance, ...rest }) => ({
+            ...rest,
+            // Convert to expected denom.
+            stakedBalance: convertMicroDenomToDenomWithDecimals(
+              stakedBalance,
+              token.decimals
+            ),
+          }))
       }
 
       const totalBalance =

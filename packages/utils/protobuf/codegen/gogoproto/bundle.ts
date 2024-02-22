@@ -1,4 +1,4 @@
-import * as _73 from "./gogo";
+import * as _84 from "./gogo";
 export const gogoproto = {
-  ..._73
+  ..._84
 };

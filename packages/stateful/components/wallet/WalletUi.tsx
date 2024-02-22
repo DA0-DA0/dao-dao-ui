@@ -1,6 +1,7 @@
 import { AssetList } from '@chain-registry/types'
 import { State, WalletModalProps, convertChain } from '@cosmos-kit/core'
 import { useManager } from '@cosmos-kit/react-lite'
+import clsx from 'clsx'
 import uniq from 'lodash.uniq'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -79,7 +80,12 @@ export const WalletUi = (props: WalletModalProps) => {
   return (
     <Modal
       backdropClassName="z-[41]"
-      containerClassName="!w-[24rem] !max-w-[90dvw]"
+      containerClassName="!w-[24rem]"
+      contentContainerClassName={clsx(
+        // When showing wallet list, remove padding as it has its own horizontal
+        // borders and thus needs to manage its own padding.
+        !showWalletConnectQr && !isWalletConnected && '!p-0'
+      )}
       footerContent={
         isWalletError && errorMessage ? (
           <WarningCard

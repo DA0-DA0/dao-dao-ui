@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
+  LoadingDataWithError,
   StatefulDaoMemberCardProps,
   StatefulEntityDisplayProps,
   TypedOption,
@@ -13,18 +14,27 @@ import {
 
 import { useQuerySyncedState } from '../../../hooks'
 import { Button } from '../../buttons'
+import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown } from '../../inputs/Dropdown'
+import { Loader } from '../../logo'
 import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
+import { Tooltip } from '../../tooltip'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VotingPowerDistribution } from '../../VotingPowerDistribution'
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
-  members: StatefulDaoMemberCardProps[]
-  membersFailedToLoad: boolean
-  isMember: boolean
+  members: LoadingDataWithError<StatefulDaoMemberCardProps[]>
+  /**
+   * URL to add a new member. Probably a prefilled proposal URL.
+   */
   addMemberHref?: string
+  /**
+   * If the add member URL is set, then the button will be shown. If not a
+   * member, the button will disabled but still visible.
+   */
+  isMember?: boolean
   ButtonLink: ComponentType<ButtonLinkProps>
   // If defined, will show the top voter distribution.
   topVoters:
@@ -50,7 +60,6 @@ const MEMBERS_PER_PAGE = 100
 export const MembersTab = ({
   DaoMemberCard,
   members,
-  membersFailedToLoad,
   isMember,
   addMemberHref,
   ButtonLink,
@@ -91,15 +100,16 @@ export const MembersTab = ({
   )
 
   // If anyone's voting power is still loading, can't yet show the top members.
-  const sortedMembers = members.some(
-    (member) => member.votingPowerPercent.loading
-  )
-    ? []
-    : members.sort(
-        (a, b) =>
-          (b.votingPowerPercent.loading ? 0 : b.votingPowerPercent.data) -
-          (a.votingPowerPercent.loading ? 0 : a.votingPowerPercent.data)
-      )
+  const sortedMembers =
+    members.loading || members.errored
+      ? []
+      : members.data.some((member) => member.votingPowerPercent.loading)
+      ? []
+      : members.data.sort(
+          (a, b) =>
+            (b.votingPowerPercent.loading ? 0 : b.votingPowerPercent.data) -
+            (a.votingPowerPercent.loading ? 0 : a.votingPowerPercent.data)
+        )
 
   // Get members that hold the top voting power.
   const topMemberUpperIndex =
@@ -126,37 +136,58 @@ export const MembersTab = ({
       (member.votingPowerPercent.loading ? 0 : member.votingPowerPercent.data),
     0
   )
-  const otherVotingPowerPercent = members
-    .slice(topMemberUpperIndex)
-    .reduce(
-      (acc, member) =>
-        acc +
-        (member.votingPowerPercent.loading
-          ? 0
-          : member.votingPowerPercent.data),
-      0
-    )
+  const otherVotingPowerPercent =
+    members.loading || members.errored
+      ? 0
+      : members.data
+          .slice(topMemberUpperIndex)
+          .reduce(
+            (acc, member) =>
+              acc +
+              (member.votingPowerPercent.loading
+                ? 0
+                : member.votingPowerPercent.data),
+            0
+          )
 
   return (
     <>
       {/* header min-height of 3.5rem standardized across all tabs */}
       {addMemberHref && (
-        <div className="mb-6 flex min-h-[3.5rem] flex-row items-center justify-between gap-8 border-b border-b-border-secondary pb-6">
+        <div className="mb-6 flex min-h-[3.5rem] flex-row items-center justify-between gap-6 border-b border-b-border-secondary pb-6">
           <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
             <p className="title-text text-text-body">{t('title.newMember')}</p>
             <p className="secondary-text">{t('info.newMemberExplanation')}</p>
           </div>
 
-          <ButtonLink
-            className="shrink-0"
-            disabled={!isMember}
-            href={addMemberHref}
-          >
-            <Add className="!h-4 !w-4" />
-            {t('button.addMembers')}
-          </ButtonLink>
+          <Tooltip title={t('error.mustBeMemberToAddMember')}>
+            <ButtonLink
+              className="shrink-0"
+              disabled={!isMember}
+              href={addMemberHref}
+            >
+              <Add className="!h-4 !w-4" />
+              <span className="hidden md:inline">{t('button.addMembers')}</span>
+              <span className="md:hidden">{t('button.add')}</span>
+            </ButtonLink>
+          </Tooltip>
         </div>
       )}
+
+      <div
+        className={clsx(
+          'pb-6',
+          // header min-height of 3.5rem standardized across all tabs if add
+          // members header is not showing at the top
+          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center'
+        )}
+      >
+        <p className="title-text text-text-body">
+          {members.loading || members.errored
+            ? t('title.members')
+            : t('title.numMembers', { count: members.data.length })}
+        </p>
+      </div>
 
       {topVoters.show && topMembers.length > 0 && (
         <div className="mb-6 flex flex-col items-stretch rounded-lg bg-background-tertiary">
@@ -210,28 +241,14 @@ export const MembersTab = ({
         </div>
       )}
 
-      <div
-        className={clsx(
-          'pb-6',
-          // header min-height of 3.5rem standardized across all tabs if add
-          // members header is not showing at the top
-          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center'
-        )}
-      >
-        <p className="title-text text-text-body">
-          {membersFailedToLoad
-            ? t('error.failedToLoadMembersTitle')
-            : t('title.numMembers', { count: members.length })}
-        </p>
-      </div>
-      {membersFailedToLoad ? (
-        <p className="secondary-text">
-          {t('error.failedToLoadMembersDescription')}
-        </p>
-      ) : members.length ? (
+      {members.loading ? (
+        <Loader />
+      ) : members.errored ? (
+        <ErrorPage error={members.error} />
+      ) : members.data.length ? (
         <>
           <GridCardContainer>
-            {members
+            {members.data
               .slice(
                 (membersPage - 1) * MEMBERS_PER_PAGE,
                 membersPage * MEMBERS_PER_PAGE
@@ -246,40 +263,50 @@ export const MembersTab = ({
             page={membersPage}
             pageSize={MEMBERS_PER_PAGE}
             setPage={setMembersPage}
-            total={members.length}
+            total={members.data.length}
           />
         </>
       ) : (
         <p className="secondary-text">{t('error.noMembers')}</p>
       )}
-      <Button
-        className="caption-text mt-6 italic"
-        disabled={false}
-        onClick={() => csvLinkRef.current?.click()}
-        variant="none"
-      >
-        {t('button.downloadMembersCsv')}
-      </Button>
-      <CSVLink
-        className="hidden"
-        data={[
-          [
-            'Member',
-            members.length
-              ? members[0].balance.label +
-                (members[0].balance.unit ? ` (${members[0].balance.unit})` : '')
-              : 'Balance',
-            'Voting power',
-          ],
-          ...members.map(({ address, balance, votingPowerPercent }) => [
-            address,
-            balance.value.loading ? '...' : balance.value.data,
-            votingPowerPercent.loading ? '...' : votingPowerPercent.data,
-          ]),
-        ]}
-        filename="members.csv"
-        ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
-      />
+
+      {!members.loading && !members.errored && members.data.length > 0 && (
+        <>
+          <Button
+            className="caption-text mt-6 italic"
+            disabled={false}
+            onClick={() => csvLinkRef.current?.click()}
+            variant="none"
+          >
+            {t('button.downloadMembersCsv')}
+          </Button>
+
+          <CSVLink
+            className="hidden"
+            data={[
+              [
+                'Member',
+                members.data.length
+                  ? members.data[0].balance.label +
+                    (members.data[0].balance.unit
+                      ? ` (${members.data[0].balance.unit})`
+                      : '')
+                  : 'Balance',
+                'Voting power',
+              ],
+              ...members.data.map(
+                ({ address, balance, votingPowerPercent }) => [
+                  address,
+                  balance.value.loading ? '...' : balance.value.data,
+                  votingPowerPercent.loading ? '...' : votingPowerPercent.data,
+                ]
+              ),
+            ]}
+            filename="members.csv"
+            ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
+          />
+        </>
+      )}
     </>
   )
 }

@@ -8,10 +8,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
-  ContractVersion,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -116,15 +114,9 @@ const Component: ActionComponent = (props) => {
 
 export const makeUpdateProposalConfigV1ActionMaker =
   ({
-    version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, address, context, chain: { chain_id: chainId } }) => {
-    // Only v1.
-    if (!version || version !== ContractVersion.V1) {
-      return null
-    }
-
+  ({ t, address, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
         CwProposalSingleV1Selectors.configSelector({
@@ -310,18 +302,11 @@ export const makeUpdateProposalConfigV1ActionMaker =
     }
 
     return {
-      key: ActionKey.UpdateProposalSingleConfig,
+      key: ActionKey.UpdateProposalConfig,
       Icon: BallotDepositEmoji,
-      label: t('form.updateVotingConfigTitle', {
-        context:
-          // If more than one proposal module, specify which one this is.
-          context.type === ActionContextType.Dao &&
-          context.info.proposalModules.length > 1
-            ? 'singleChoice'
-            : undefined,
-      }),
-      description: t('info.updateVotingConfigActionDescription'),
-      notReusable: true,
+      label: t('proposalModuleLabel.DaoProposalSingle'),
+      // Not used.
+      description: '',
       Component,
       useDefaults,
       useTransformToCosmos,

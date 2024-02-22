@@ -23,10 +23,11 @@ export const loadMeilisearchClient = async (): Promise<MeiliSearch> => {
 
 export type DaoSearchResult = {
   chainId: string
-  contractAddress: string
-  codeId: number
-  blockHeight: number
-  blockTimeUnixMicro: number
+  id: string
+  block: {
+    height: string
+    timeUnixMs: string
+  }
   value: IndexerDumpState
 }
 
@@ -48,7 +49,7 @@ export const searchDaos = async ({
   if (!config) {
     return []
   }
-  const index = client.index(config.indexes.search)
+  const index = client.index(chainId + '_daos')
 
   const results = await index.search<Omit<DaoSearchResult, 'chainId'>>(query, {
     limit,
@@ -57,13 +58,13 @@ export const searchDaos = async ({
       `NOT value.config.name IN ["${INACTIVE_DAO_NAMES.join('", "')}"]`,
       ...(exclude?.length
         ? // Exclude DAOs that are in the exclude list.
-          [`NOT contractAddress IN ["${exclude.join('", "')}"]`]
+          [`NOT id IN ["${exclude.join('", "')}"]`]
         : []),
     ]
       .map((filter) => `(${filter})`)
       .join(' AND '),
     // Most recent at the top.
-    sort: ['blockHeight:desc', 'value.proposalCount:desc'],
+    sort: ['block.height:desc', 'value.proposalCount:desc'],
   })
 
   return results.hits.map((hit) => ({

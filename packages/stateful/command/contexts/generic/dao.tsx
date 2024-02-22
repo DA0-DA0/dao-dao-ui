@@ -23,7 +23,7 @@ import {
   CommandModalContextWrapper,
   CommandModalDaoInfo,
 } from '@dao-dao/types/command'
-import { getChainForChainId, getFallbackImage } from '@dao-dao/utils'
+import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
 import { DaoProvidersWithoutInfo } from '../../../components'
 import { useDaoTabs, useFollowingDaos } from '../../../hooks'
@@ -31,7 +31,15 @@ import { subDaoInfosSelector } from '../../../recoil'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
-}> = ({ dao: { chainId, coreAddress, name, imageUrl }, ...options }) => {
+  /**
+   * Whether or not this context is being used on a DAO page. Defaults to false.
+   */
+  onDaoPage?: boolean
+}> = ({
+  dao: { chainId, coreAddress, name, imageUrl },
+  onDaoPage,
+  ...options
+}) => {
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
@@ -103,17 +111,22 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
         }
       },
       items: [
-        {
-          name: t('button.goToDaoPage'),
-          Icon: HomeOutlined,
-          href: daoPageHref,
-          loading: navigatingToHref === daoPageHref,
-        },
+        ...(!onDaoPage
+          ? [
+              {
+                name: t('button.goToDaoPage'),
+                Icon: HomeOutlined,
+                href: daoPageHref,
+                loading: navigatingToHref === daoPageHref,
+              },
+            ]
+          : []),
         {
           name: t('button.createAProposal'),
           Icon: InboxOutlined,
           href: createProposalHref,
           loading: navigatingToHref === createProposalHref,
+          keywords: ['new'],
         },
         {
           name: following ? t('button.unfollow') : t('button.follow'),
@@ -126,10 +139,10 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name:
             copied === chainId
               ? t('info.copiedDaoChainAddress', {
-                  chain: getChainForChainId(chainId).pretty_name,
+                  chain: getDisplayNameForChainId(chainId),
                 })
               : t('button.copyDaoChainAddress', {
-                  chain: getChainForChainId(chainId).pretty_name,
+                  chain: getDisplayNameForChainId(chainId),
                 }),
           Icon: copied === chainId ? Check : CopyAll,
           onChoose: () => {
@@ -193,7 +206,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           ),
     }
 
-    return [actionsSection, pagesSection, subDaosSection]
+    return onDaoPage
+      ? [pagesSection, actionsSection, subDaosSection]
+      : [actionsSection, pagesSection, subDaosSection]
   }
 
   const Wrapper: CommandModalContextWrapper = ({ children }) => (

@@ -8,7 +8,7 @@ import {
   ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { ComponentProps, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
@@ -47,24 +47,23 @@ import {
   CwProposalSingleV1Hooks,
   DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
+  useProposalActionState,
   useProposalPolytoneState,
   useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
-import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
-  useCastVote,
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
-  useLoadingVoteOptions,
   useLoadingVotesInfo,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
 import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
+import { ProposalVoter } from './ProposalVoter'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -112,11 +111,11 @@ const InnerProposalStatusAndInfo = ({
     turnoutYesPercent,
   },
   depositInfo,
-  onVoteSuccess,
   onExecuteSuccess,
   onVetoSuccess,
   onCloseSuccess,
   openSelfRelayExecute,
+  voter,
   ...props
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
@@ -175,9 +174,6 @@ const InnerProposalStatusAndInfo = ({
   const statusKey = getProposalStatusKey(proposal.status)
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
-
-  const voteOptions = useLoadingVoteOptions()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V1
@@ -259,9 +255,7 @@ const InnerProposalStatusAndInfo = ({
 
   const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
         <EntityDisplay {...props} address={coreAddress} noCopy />
@@ -365,7 +359,7 @@ const InnerProposalStatusAndInfo = ({
               loadingExecutionTxHash.loading ? (
                 <p className={clsx('animate-pulse', props.className)}>...</p>
               ) : loadingExecutionTxHash.data ? (
-                <div className="flex flex-row items-center gap-1">
+                <div className="flex w-full flex-row items-center gap-1 overflow-hidden">
                   <CopyToClipboardUnderline
                     // Will truncate automatically.
                     takeAll
@@ -380,6 +374,7 @@ const InnerProposalStatusAndInfo = ({
                         'REPLACE',
                         loadingExecutionTxHash.data
                       )}
+                      size="sm"
                       variant="ghost"
                     />
                   )}
@@ -487,28 +482,32 @@ const InnerProposalStatusAndInfo = ({
     }
   }
 
+  const Voter = useCallback(
+    (props: ComponentProps<Required<ProposalStatusAndInfoProps>['Voter']>) => (
+      <ProposalVoter
+        {...props}
+        onVoteSuccess={voter.onVoteSuccess}
+        seenAllActionPages={voter.seenAllActionPages}
+      />
+    ),
+    [voter.onVoteSuccess, voter.seenAllActionPages]
+  )
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
+      Voter={
+        loadingWalletVoteInfo &&
+        !loadingWalletVoteInfo.loading &&
+        loadingWalletVoteInfo.data.canVote
+          ? Voter
+          : undefined
+      }
       action={action}
       footer={footer}
       info={info}
       status={status}
       vetoOrEarlyExecute={vetoOrEarlyExecute}
-      vote={
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote &&
-        !voteOptions.loading
-          ? {
-              loading: castingVote,
-              currentVote: loadingWalletVoteInfo.data.vote,
-              onCastVote: castVote,
-              options: voteOptions.data,
-              proposalOpen: statusKey === ProposalStatusEnum.Open,
-            }
-          : undefined
-      }
     />
   )
 }

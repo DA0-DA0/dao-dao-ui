@@ -16,9 +16,8 @@ export interface ProposalLineProps {
   proposalNumber: number
   title: string
   timestampDisplay: ProposalTimestampInfo['display']
-  Status: ComponentType<{ dimmed?: boolean }>
+  Status: ComponentType
   vote: ReactNode
-  votingOpen: boolean
   href: string
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
@@ -32,7 +31,6 @@ export const ProposalLine = ({
   timestampDisplay,
   Status,
   vote,
-  votingOpen,
   href,
   className,
   LinkWrapper,
@@ -78,62 +76,41 @@ export const ProposalLine = ({
     </div>
 
     {/* Mobile */}
-    <div className="flex min-h-[9.5rem] flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row flex-wrap items-start justify-between gap-2">
-          <p className="caption-text font-mono">
-            <ProposalIdDisplay
-              proposalNumber={proposalNumber}
-              proposalPrefix={proposalPrefix}
-            />
-          </p>
+    <div className="flex flex-col justify-between gap-2 rounded-md p-3 text-sm md:hidden">
+      <div className="-mb-1 flex flex-row items-start justify-between">
+        <p className="font-mono text-sm text-text-tertiary">
+          <ProposalIdDisplay
+            proposalNumber={proposalNumber}
+            proposalPrefix={proposalPrefix}
+          />
+        </p>
 
-          {approvalContext && (
-            <ApprovalBadge context={approvalContext} size="sm" tooltip />
-          )}
-        </div>
-
-        <p className="body-text line-clamp-2 break-words">{title}</p>
+        <Status />
       </div>
 
-      <div className="flex flex-row items-center justify-between gap-6">
-        <div className="flex flex-row items-center gap-2">
-          <Status dimmed />
+      {approvalContext && (
+        <ApprovalBadge
+          className="mt-1 -mb-1"
+          context={approvalContext}
+          size="sm"
+          tooltip
+        />
+      )}
 
-          {timestampDisplay && (
-            <Tooltip title={timestampDisplay.tooltip}>
-              <p
-                className={clsx(
-                  'link-text break-words text-center font-mono leading-5 text-text-tertiary',
-                  // Hide timestamp on small screens when voting is closed.
-                  !votingOpen && 'hidden xs:inline-block'
-                )}
-              >
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                <span className="mr-2 inline-block">–</span>
-                {timestampDisplay.content}
-              </p>
-            </Tooltip>
-          )}
-        </div>
+      {/* Right padding to make room for status. */}
+      <p className="body-text line-clamp-3 mb-2 break-words pr-24">{title}</p>
+
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        {timestampDisplay && (
+          <Tooltip title={timestampDisplay.tooltip}>
+            <p className="link-text break-words text-center font-mono font-normal text-text-tertiary">
+              {timestampDisplay.content}
+            </p>
+          </Tooltip>
+        )}
 
         {vote}
       </div>
     </div>
   </LinkWrapper>
-)
-
-export const ProposalLineLoader = () => (
-  <>
-    <ProposalLineLoaderDesktop />
-    <ProposalLineLoaderMobile />
-  </>
-)
-
-const ProposalLineLoaderDesktop = () => (
-  <div className="hidden h-12 animate-pulse rounded-md bg-background-primary md:block"></div>
-)
-
-const ProposalLineLoaderMobile = () => (
-  <div className="h-[9.5rem] animate-pulse rounded-md bg-background-primary md:hidden"></div>
 )

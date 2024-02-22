@@ -1,15 +1,27 @@
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
-import { WalletProfileData } from '../profile'
+import { ButtonLinkProps } from './Buttonifier'
 import { DappNavigationProps } from './DappNavigation'
-import { RightSidebarProps } from './RightSidebar'
 
-export interface DappLayoutProps {
+export type DappLayoutProps = {
+  /**
+   * Props for the DappNavigation component.
+   */
   navigationProps: DappNavigationProps
-  children: ReactNode
-  rightSidebarProps: RightSidebarProps
-  walletProfileData?: WalletProfileData
+  /**
+   * Function to initiate the connection process.
+   */
   connect: () => void
-  connected: boolean
-  connectWalletButton: ReactNode
+  /**
+   * DockWallet stateful component.
+   */
+  DockWallet: ComponentType
+  /**
+   * ButtonLink stateful component.
+   */
+  ButtonLink: ComponentType<ButtonLinkProps>
+  /**
+   * App content.
+   */
+  children: ReactNode
 }

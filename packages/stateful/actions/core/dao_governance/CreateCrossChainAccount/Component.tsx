@@ -68,7 +68,7 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
           />
         ) : (
           <p className="text-text-interactive-error">
-            {t('info.allAccountsCreated')}
+            {t('info.allCrossChainAccountsCreated')}
           </p>
         )
       ) : (

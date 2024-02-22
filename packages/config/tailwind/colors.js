@@ -4,6 +4,7 @@ const colors = [
   'color-black',
   'color-dark',
   'color-light',
+  'color-light-transparent',
   'color-white',
   'color-brand',
   'color-active',

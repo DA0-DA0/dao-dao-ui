@@ -7,6 +7,7 @@ import {
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { SidebarWallet } from '@dao-dao/stateful'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 import { DaoTabId, SdaNavigationProps } from '@dao-dao/types'
 
@@ -34,28 +35,32 @@ export const DefaultArgs: SdaNavigationProps = {
       id: DaoTabId.Proposals,
       label: 'Proposals',
       Icon: GavelRounded,
+      IconFilled: GavelRounded,
     },
     {
       id: DaoTabId.Treasury,
-      label: 'Treasury & NFTs',
+      label: 'Treasury',
       Icon: AccountBalanceRounded,
+      IconFilled: AccountBalanceRounded,
     },
     {
       id: DaoTabId.SubDaos,
       label: 'SubDAOs',
       Icon: EscalatorWarningRounded,
+      IconFilled: EscalatorWarningRounded,
     },
     {
       id: DaoTabId.Members,
       label: 'Members',
       Icon: PeopleAltRounded,
+      IconFilled: PeopleAltRounded,
     },
   ],
-  version: '2.0',
   compact: false,
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
   LinkWrapper,
+  SidebarWallet,
 }
 
 export const Default = Template.bind({})

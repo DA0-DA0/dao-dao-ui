@@ -31,8 +31,8 @@ export const GovProposalLine = (props: GovProposalLineProps) => {
   return (
     <StatelessProposalLine
       LinkWrapper={LinkWrapper}
-      Status={({ dimmed }) => (
-        <GovProposalStatus dimmed={dimmed} status={proposal.proposal.status} />
+      Status={(props) => (
+        <GovProposalStatus {...props} status={proposal.proposal.status} />
       )}
       href={getGovProposalPath(name, proposalId)}
       proposalNumber={Number(proposalId)}
@@ -58,10 +58,6 @@ export const GovProposalLine = (props: GovProposalLineProps) => {
             vote={loadingWalletVoteInfo.data.vote?.[0].option}
           />
         )
-      }
-      votingOpen={
-        proposal.proposal.status ===
-        ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
       }
     />
   )

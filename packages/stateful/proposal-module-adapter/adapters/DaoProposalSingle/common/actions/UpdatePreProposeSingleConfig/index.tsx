@@ -10,7 +10,6 @@ import {
 import { GearEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   DepositRefundPolicy,
@@ -125,7 +124,7 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
   ({
     prePropose,
   }: ProposalModule): ActionMaker<UpdatePreProposeSingleConfigData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+  ({ t, chain: { chain_id: chainId } }) => {
     // Only when pre propose is used.
     if (
       !prePropose ||
@@ -391,18 +390,11 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
     }
 
     return {
-      key: ActionKey.UpdatePreProposeSingleConfig,
+      key: ActionKey.UpdatePreProposeConfig,
       Icon: GearEmoji,
-      label: t('form.updateProposalSubmissionConfigTitle', {
-        context:
-          // If more than one proposal module, specify which one this is.
-          context.type === ActionContextType.Dao &&
-          context.info.proposalModules.length > 1
-            ? 'singleChoice'
-            : undefined,
-      }),
-      description: t('info.updateProposalSubmissionConfigActionDescription'),
-      notReusable: true,
+      label: t('proposalModuleLabel.DaoProposalSingle'),
+      // Not used.
+      description: '',
       Component,
       useDefaults,
       useTransformToCosmos,

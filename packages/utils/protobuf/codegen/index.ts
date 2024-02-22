@@ -4,6 +4,8 @@
   * and run the transpile command or yarn proto command to regenerate this bundle.
   */
  
+export * from "./alliance/bundle";
+export * from "./alliance/client";
 export * from "./amino/bundle";
 export * from "./cosmos_proto/bundle";
 export * from "./cosmos/bundle";
@@ -24,6 +26,8 @@ export * from "./osmosis/bundle";
 export * from "./osmosis/client";
 export * from "./publicawesome/bundle";
 export * from "./publicawesome/client";
+export * from "./regen/bundle";
+export * from "./regen/client";
 export * from "./noble/bundle";
 export * from "./tendermint/bundle";
 export * from "./varint";

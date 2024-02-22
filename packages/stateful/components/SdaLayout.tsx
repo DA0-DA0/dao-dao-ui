@@ -15,17 +15,10 @@ import {
   SdaLayout as StatelessSdaLayout,
 } from '@dao-dao/stateless'
 
-import {
-  useAutoRefreshData,
-  useDaoTabs,
-  useWallet,
-  useWalletInfo,
-} from '../hooks'
+import { useAutoRefreshData, useDaoTabs } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
-import { ConnectWallet } from './ConnectWallet'
-import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
-import { SidebarWallet } from './SidebarWallet'
+import { SidebarWallet } from './NavWallet'
 import { SuspenseLoader } from './SuspenseLoader'
 import { WalletModals } from './wallet'
 
@@ -38,9 +31,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
-  const { connect, isWalletConnected } = useWallet()
-  const { walletProfileData } = useWalletInfo()
-
   //! Auto refresh various data used across the UI
   useAutoRefreshData()
 
@@ -52,21 +42,14 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <StatelessSdaLayout
-      connect={connect}
-      connectWalletButton={<ConnectWallet variant="secondary" />}
-      connected={isWalletConnected}
       navigationProps={{
         tabs: loadingTabs.loading ? [] : loadingTabs.data,
         LinkWrapper,
-        version: '2.0',
         compact,
         setCompact,
         mountedInBrowser,
+        SidebarWallet,
       }}
-      rightSidebarProps={{
-        wallet: <SidebarWallet />,
-      }}
-      walletProfileData={isWalletConnected ? walletProfileData : undefined}
     >
       <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>
 
@@ -86,7 +69,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
               hide: true,
             },
             LinkWrapper,
-            IconButtonLink,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),

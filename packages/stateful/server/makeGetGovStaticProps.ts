@@ -21,13 +21,14 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   SITE_URL,
-  cosmosSdkVersionIs47OrHigher,
+  cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getConfiguredChains,
   getGovProposalPath,
   getImageUrlForChainId,
   getRpcForChainId,
   processError,
+  retry,
 } from '@dao-dao/utils'
 import { cosmos } from '@dao-dao/utils/protobuf'
 
@@ -137,7 +138,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         votingModuleContractName: '',
         proposalModules: [],
         name: chain.pretty_name,
-        description: '',
+        description: overrideDescription ?? '',
         imageUrl: getImageUrlForChainId(chain.chain_id),
         created: null,
         isActive: true,
@@ -212,13 +213,13 @@ export const makeGetGovProposalStaticProps = ({
 
         if (indexerProposal) {
           if (indexerProposal.version === GovProposalVersion.V1) {
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1,
               id: BigInt(proposalId),
               proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
             })
           } else {
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1_BETA_1,
               id: BigInt(proposalId),
               proposal: ProposalV1Beta1.decode(
@@ -236,17 +237,21 @@ export const makeGetGovProposalStaticProps = ({
       // Fallback to querying chain if indexer failed.
       if (!proposal) {
         try {
-          const client = (
-            await cosmos.ClientFactory.createRPCQueryClient({
-              rpcEndpoint: getRpcForChainId(chain.chain_id),
-            })
-          ).cosmos
+          const client = await retry(
+            10,
+            async (attempt) =>
+              (
+                await cosmos.ClientFactory.createRPCQueryClient({
+                  rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
+                })
+              ).cosmos
+          )
           const cosmosSdkVersion =
             (
               await client.base.tendermint.v1beta1.getNodeInfo()
             ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
 
-          if (cosmosSdkVersionIs47OrHigher(cosmosSdkVersion)) {
+          if (cosmosSdkVersionIs46OrHigher(cosmosSdkVersion)) {
             try {
               const proposalV1 = (
                 await client.gov.v1.proposal({
@@ -257,7 +262,7 @@ export const makeGetGovProposalStaticProps = ({
                 throw new Error('NOT_FOUND')
               }
 
-              proposal = decodeGovProposal({
+              proposal = await decodeGovProposal({
                 version: GovProposalVersion.V1,
                 id: BigInt(proposalId),
                 proposal: proposalV1,
@@ -284,7 +289,7 @@ export const makeGetGovProposalStaticProps = ({
               throw new Error('NOT_FOUND')
             }
 
-            proposal = decodeGovProposal({
+            proposal = await decodeGovProposal({
               version: GovProposalVersion.V1_BETA_1,
               id: BigInt(proposalId),
               proposal: proposalV1Beta1,

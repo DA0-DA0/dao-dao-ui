@@ -198,6 +198,7 @@ export const DiscordNotifierConfigureModal = () => {
               ? NotificationsActiveRounded
               : NotificationsNoneRounded
           }
+          className="animate-fade-in"
           iconClassName="!w-5 !h-5"
           onClick={() => setVisible(true)}
           variant="secondary"

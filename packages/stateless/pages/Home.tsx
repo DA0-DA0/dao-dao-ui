@@ -1,20 +1,16 @@
-import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DaoCardInfo } from '@dao-dao/types'
+import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
+
 import {
-  DaoCardInfo,
   Feed,
   FeedProps,
   FollowingDaos,
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
-  IconButton,
-  PageHeaderContent,
-  RightSidebarContent,
-  Tooltip,
 } from '../components'
 
 export type HomeProps = {
@@ -23,59 +19,39 @@ export type HomeProps = {
     'Component' | 'items'
   >
   followingDaosProps: FollowingDaosProps
-  rightSidebarContent: ReactNode
   feedProps: FeedProps
   connected: boolean
-  openSearch: () => void
 }
 
-const maxWidth = 'mx-auto w-full max-w-5xl'
 // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
 const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
 export const Home = ({
   featuredDaosProps,
-  rightSidebarContent,
   followingDaosProps,
   feedProps,
   connected,
-  openSearch,
 }: HomeProps) => {
   const { t } = useTranslation()
 
   return (
     <>
-      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className={maxWidth}
-        rightNode={
-          <Tooltip title={t('title.search')}>
-            <IconButton Icon={Search} onClick={openSearch} variant="none" />
-          </Tooltip>
-        }
-        title={t('title.home')}
-      />
-
       {/* Feed and Following DAOs*/}
       {connected && (
         <>
-          <div className={clsx('mb-8', maxWidth)}>
+          <div className="mb-8 w-full">
             <Feed {...feedProps} />
           </div>
 
-          <div className={maxWidth}>
-            <FollowingDaos {...followingDaosProps} />
-          </div>
+          <FollowingDaos {...followingDaosProps} />
 
           {/* Divider */}
-          <div
-            className={clsx('my-10 h-[1px] bg-border-secondary', maxWidth)}
-          ></div>
+          <div className="my-10 h-[1px] w-full bg-border-secondary"></div>
         </>
       )}
 
-      <div className="flex flex-col items-center gap-8">
-        <p className={clsx('title-text', maxWidth)}>
+      <div className="flex flex-col items-center gap-4">
+        <p className="title-text self-start text-lg">
           {t('title.featuredDaos')}
         </p>
 
@@ -85,10 +61,9 @@ export const Home = ({
           // Margin offsets container padding.
           containerClassName={clsx(
             'self-stretch px-[1px]',
-            !featuredDaosProps.items.loading &&
-              featuredDaosProps.items.data.length === 0
-              ? maxWidth
-              : '-mx-6'
+            (featuredDaosProps.items.loading ||
+              featuredDaosProps.items.data.length > 0) &&
+              UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
           )}
           itemClassName="w-64"
           shadowClassName={widthOfSidePadding}

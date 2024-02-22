@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../HorizontalScroller.stories'
-import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard } from './DaoCard'
 import { FollowingDaos } from './FollowingDaos'
@@ -21,7 +20,6 @@ const Template: ComponentStory<typeof FollowingDaos> = (args) => {
       DaoCard={(props) => (
         <DaoCard
           {...props}
-          IconButtonLink={IconButtonLink}
           LinkWrapper={LinkWrapper}
           follow={{
             following: following.includes(props.coreAddress),

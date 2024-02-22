@@ -18,10 +18,12 @@ import {
 import {
   DaoSearchResult,
   QueryIndexerOptions,
+  QuerySnapperOptions,
   SearchDaosOptions,
   loadMeilisearchClient,
   queryIndexer,
   queryIndexerUpStatus,
+  querySnapper,
   searchDaos,
 } from '../../indexer'
 import {
@@ -122,6 +124,7 @@ export const queryValidatorIndexerSelector = selectorFamily<
         })
       ),
 })
+
 export const queryWalletIndexerSelector = selectorFamily<
   any,
   Omit<QueryIndexerParams, 'type' | 'address'> & {
@@ -139,6 +142,16 @@ export const queryWalletIndexerSelector = selectorFamily<
           ...params,
         })
       ),
+})
+
+export type QuerySnapperParams = QuerySnapperOptions & {
+  // Refresh by changing this value.
+  id?: number
+}
+
+export const querySnapperSelector = selectorFamily<any, QuerySnapperParams>({
+  key: 'querySnapper',
+  get: (options) => async () => await querySnapper(options),
 })
 
 export const searchDaosSelector = selectorFamily<

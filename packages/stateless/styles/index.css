@@ -81,6 +81,7 @@ input[type='number']::-webkit-outer-spin-button {
     --color-black: rgb(var(--black));
     --color-dark: rgb(var(--dark));
     --color-light: rgb(var(--light));
+    --color-light-transparent: rgba(var(--light), 0.5);
     --color-white: rgb(var(--white));
     --color-brand: rgb(var(--brand));
     --color-active: rgb(var(--active));
@@ -169,7 +170,7 @@ input[type='number']::-webkit-outer-spin-button {
     --component-modal: rgba(var(--white), 1);
     --component-dropdown: rgba(var(--white), 1);
     --component-tooltip: rgba(15, 15, 16, 1);
-    --component-tooltip-glass: rgba(15, 15, 16, 0.5);
+    --component-tooltip-glass: rgba(15, 15, 16, 0.7);
     --component-toast: rgba(12, 12, 13, 1);
     --component-widget: rgba(var(--light), 0.2);
     --component-pill: rgba(var(--brand), 0.8);
