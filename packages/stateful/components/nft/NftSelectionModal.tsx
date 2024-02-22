@@ -28,10 +28,9 @@ import {
   TypedOption,
 } from '@dao-dao/types'
 import {
-  durationIsNonZero,
+  convertDurationToHumanReadableString,
   getChainForChainId,
   getDisplayNameForChainId,
-  humanReadableDuration,
 } from '@dao-dao/utils'
 
 import { LazyNftCard } from './LazyNftCard'
@@ -210,21 +209,32 @@ export const NftSelectionModal = ({
         nfts.errored ||
         nfts.data.length > 0 ? (
           <div className="mt-4 flex flex-col gap-4">
+            {unstakingDuration &&
+              ('height' in unstakingDuration
+                ? unstakingDuration.height
+                : unstakingDuration.time) > 0 && (
+                <div className="flex flex-row items-center gap-1">
+                  <p className="secondary-text">
+                    {t('title.unstakingPeriod') +
+                      `: ${convertDurationToHumanReadableString(
+                        t,
+                        unstakingDuration
+                      )}`}
+                  </p>
+                  <TooltipInfoIcon
+                    size="xs"
+                    title={t('info.unstakingMechanics', {
+                      humanReadableTime: convertDurationToHumanReadableString(
+                        t,
+                        unstakingDuration
+                      ),
+                    })}
+                  />
+                </div>
+              )}
+
             {headerDisplay}
-            {unstakingDuration && durationIsNonZero(unstakingDuration) && (
-              <div className="flex flex-row items-center gap-1">
-                <p className="secondary-text">
-                  {t('title.unstakingPeriod') +
-                    `: ${humanReadableDuration(unstakingDuration)}`}
-                </p>
-                <TooltipInfoIcon
-                  size="xs"
-                  title={t('info.unstakingMechanics', {
-                    humanReadableTime: humanReadableDuration(unstakingDuration),
-                  })}
-                />
-              </div>
-            )}
+
             <SearchBar
               autoFocus={modalProps.visible}
               placeholder={t('info.searchNftsPlaceholder')}
