@@ -6,6 +6,20 @@ export const SITE_IMAGE = '/social.jpg'
 export const SITE_TITLE = 'DAO DAO'
 export const DEFAULT_SITE_DESCRIPTION =
   'Create a DAO to manage your community, protocol, or entire blockchain in just a few clicks. We support multisig, token-based, and NFT-based DAOs that can be as simple or complex as you want. Set up SubDAOs, manage interchain assets, and interact with dApps across the Cosmos.'
+export const CREATE_PAGE_TITLE = 'Create a DAO'
+export const CREATE_PAGE_DESCRIPTION =
+  'Create a new project, protocol, organization, or community—organized any way you can imagine.'
+export const ACCOUNT_PAGE_TITLE = 'Account: ADDRESS'
+export const ACCOUNT_PAGE_DESCRIPTION =
+  'View tokens and NFTs for the account with address ADDRESS.'
+export const NOTIFICATIONS_PAGE_TITLE = 'Notifications'
+export const NOTIFICATIONS_PAGE_DESCRIPTION =
+  'View notifications in your followed DAOs.'
+export const ME_PAGE_TITLE = 'Account'
+export const ME_PAGE_DESCRIPTION =
+  'View your tokens, NFTs, and DAOs, or execute transactions from your wallet.'
+export const STATUS_PAGE_TITLE = 'Status'
+export const STATUS_PAGE_DESCRIPTION = "Check the status of DAO DAO's services."
 
 // 3 days
 export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60

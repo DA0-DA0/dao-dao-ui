@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 
 import { LogInRequiredPage, Inbox as StatelessInbox } from '@dao-dao/stateless'
 import {
+  NOTIFICATIONS_PAGE_DESCRIPTION,
+  NOTIFICATIONS_PAGE_TITLE,
   SITE_URL,
   UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES,
@@ -28,13 +30,13 @@ export const Inbox: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={t('info.notificationsDescription')}
+        description={NOTIFICATIONS_PAGE_DESCRIPTION}
         openGraph={{
           url: SITE_URL + asPath,
-          title: t('title.notifications'),
-          description: t('info.notificationsDescription'),
+          title: NOTIFICATIONS_PAGE_TITLE,
+          description: NOTIFICATIONS_PAGE_DESCRIPTION,
         }}
-        title={t('title.notifications')}
+        title={NOTIFICATIONS_PAGE_TITLE}
       />
 
       <PageHeaderContent

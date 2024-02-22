@@ -811,7 +811,6 @@
   },
   "info": {
     "abstainVote": "bad",
-    "accountDescription": "bad bad bad bad bad bad bad bad bad bad bad bad",
     "accountPageDescription": "bad bad bad bad bad bad bad bad bad bad",
     "actionLibraryDescription": "bad bad bad bad bad bad bad bad bad",
     "actionPageWarning": "bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad",
@@ -881,7 +880,6 @@
     "copiedToClipboard": "bad bad bad",
     "copyWalletAddressTooltip": "bad bad bad",
     "count": "bad",
-    "createADaoDescription": "bad bad bad bad bad bad bad bad bad bad bad bad",
     "createCrossChainAccountDescription": "bad bad bad bad bad bad bad bad bad",
     "createCrossChainAccountExplanation": "bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad",
     "createDaoFeesExplanation": "bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad",
@@ -1065,7 +1063,6 @@
     "notMet": "bad bad",
     "nothingFound": "bad bad",
     "nothingHereYet": "bad bad bad",
-    "notificationsDescription": "bad bad bad",
     "notificationsInInbox_one": "bad bad bad bad bad bad bad",
     "notificationsInInbox_other": "bad bad bad bad bad bad bad",
     "numContributors_one": "bad bad",

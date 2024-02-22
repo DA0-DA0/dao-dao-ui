@@ -21,6 +21,8 @@ import {
 } from '@dao-dao/stateless'
 import { Theme } from '@dao-dao/types'
 import {
+  ME_PAGE_DESCRIPTION,
+  ME_PAGE_TITLE,
   SITE_URL,
   getConfiguredChainConfig,
   getConfiguredChains,
@@ -111,13 +113,13 @@ export const Me: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={t('info.accountDescription')}
+        description={ME_PAGE_DESCRIPTION}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: t('title.account'),
-          description: t('info.accountDescription'),
+          title: ME_PAGE_TITLE,
+          description: ME_PAGE_DESCRIPTION,
         }}
-        title={t('title.account')}
+        title={ME_PAGE_TITLE}
       />
 
       <PageHeaderContent

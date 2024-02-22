@@ -11,7 +11,6 @@ import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
@@ -132,8 +131,6 @@ const InnerApp = ({
 }
 
 const Sda = (props: AppProps<DaoPageWrapperProps>) => {
-  const { t } = useTranslation()
-
   const [icon, setIcon] = useState<string>()
 
   return (
@@ -170,19 +167,12 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
             content: '#111213',
           },
         ]}
-        description={t('meta.description').replace(
-          // eslint-disable-next-line i18next/no-literal-string
-          'meta.description',
-          DEFAULT_SITE_DESCRIPTION
-        )}
+        description={DEFAULT_SITE_DESCRIPTION}
         openGraph={{
           url: SITE_URL,
           type: 'website',
           title: SITE_TITLE,
-          description: t('meta.description').replace(
-            'meta.description',
-            DEFAULT_SITE_DESCRIPTION
-          ),
+          description: DEFAULT_SITE_DESCRIPTION,
           images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
         }}
         title={SITE_TITLE}

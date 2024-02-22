@@ -11,7 +11,6 @@ import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
@@ -108,81 +107,70 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const DApp = (props: AppProps) => {
-  const { t } = useTranslation()
+const DApp = (props: AppProps) => (
+  <>
+    <DefaultSeo
+      additionalLinkTags={[
+        {
+          href: '/apple-touch-icon.png',
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          type: 'image/png',
+        },
+        {
+          href: '/site.webmanifest',
+          rel: 'manifest',
+        },
+        {
+          href: '/yin_yang.png',
+          rel: 'icon',
+        },
+      ]}
+      additionalMetaTags={[
+        {
+          name: 'viewport',
+          content:
+            'width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
+        },
+        {
+          name: 'msapplication-TileColor',
+          content: '#151617',
+        },
+        {
+          name: 'theme-color',
+          content: '#151617',
+        },
+        {
+          name: 'apple-mobile-web-app-title',
+          content: SITE_TITLE,
+        },
+        {
+          name: 'apple-mobile-web-app-capable',
+          content: 'yes',
+        },
+        {
+          name: 'apple-mobile-web-app-status-bar-style',
+          content: 'black-translucent',
+        },
+      ]}
+      description={DEFAULT_SITE_DESCRIPTION}
+      openGraph={{
+        url: SITE_URL,
+        type: 'website',
+        title: SITE_TITLE,
+        description: DEFAULT_SITE_DESCRIPTION,
+        images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
+      }}
+      title={SITE_TITLE}
+      twitter={{
+        cardType: 'summary_large_image',
+      }}
+    />
 
-  return (
-    <>
-      <DefaultSeo
-        additionalLinkTags={[
-          {
-            href: '/apple-touch-icon.png',
-            rel: 'apple-touch-icon',
-            sizes: '180x180',
-            type: 'image/png',
-          },
-          {
-            href: '/site.webmanifest',
-            rel: 'manifest',
-          },
-          {
-            href: '/yin_yang.png',
-            rel: 'icon',
-          },
-        ]}
-        additionalMetaTags={[
-          {
-            name: 'viewport',
-            content:
-              'width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
-          },
-          {
-            name: 'msapplication-TileColor',
-            content: '#151617',
-          },
-          {
-            name: 'theme-color',
-            content: '#151617',
-          },
-          {
-            name: 'apple-mobile-web-app-title',
-            content: SITE_TITLE,
-          },
-          {
-            name: 'apple-mobile-web-app-capable',
-            content: 'yes',
-          },
-          {
-            name: 'apple-mobile-web-app-status-bar-style',
-            content: 'black-translucent',
-          },
-        ]}
-        description={t('meta.description').replace(
-          // eslint-disable-next-line i18next/no-literal-string
-          'meta.description',
-          DEFAULT_SITE_DESCRIPTION
-        )}
-        openGraph={{
-          url: SITE_URL,
-          type: 'website',
-          title: SITE_TITLE,
-          description: t('meta.description').replace(
-            'meta.description',
-            DEFAULT_SITE_DESCRIPTION
-          ),
-          images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
-        }}
-        title={SITE_TITLE}
-        twitter={{
-          cardType: 'summary_large_image',
-        }}
-      />
-
-      <RecoilRoot>
-        <InnerApp {...props} />
-      </RecoilRoot>
-    </>
-  )
-}
+    <RecoilRoot>
+      <InnerApp {...props} />
+    </RecoilRoot>
+  </>
+)
 
 export default appWithTranslation(DApp)
