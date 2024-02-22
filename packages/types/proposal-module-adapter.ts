@@ -347,8 +347,13 @@ export type ProposalVoteOption<Vote> = {
 }
 
 export type PercentOrMajorityValue = {
+  /**
+   * Whether or not to use majority instead of percent.
+   */
   majority: boolean
-  // Will be used when `majority` is false.
+  /**
+   * The percent to use when `majority` is false.
+   */
   value: number
 }
 

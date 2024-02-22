@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep'
 import { atom, atomFamily } from 'recoil'
 
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
@@ -30,19 +31,21 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
   imageUrl: undefined,
   creator: {
     id: MembershipBasedCreatorId,
-    data: MembershipBasedCreator.defaultConfig,
+    data: cloneDeep(MembershipBasedCreator.defaultConfig),
   },
   // Default to single and multiple choice proposal configuration.
   proposalModuleAdapters: [
     {
       id: DaoProposalSingleAdapterId,
-      data:
-        DaoProposalSingleAdapter.daoCreation.extraVotingConfig?.default ?? {},
+      data: cloneDeep(
+        DaoProposalSingleAdapter.daoCreation.extraVotingConfig?.default ?? {}
+      ),
     },
     {
       id: DaoProposalMultipleAdapterId,
-      data:
-        DaoProposalMultipleAdapter.daoCreation.extraVotingConfig?.default ?? {},
+      data: cloneDeep(
+        DaoProposalMultipleAdapter.daoCreation.extraVotingConfig?.default ?? {}
+      ),
     },
   ],
   votingConfig: {

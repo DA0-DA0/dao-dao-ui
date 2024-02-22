@@ -1,13 +1,6 @@
-import {
-  ContractVersion,
-  DaoCreationGetInstantiateInfo,
-  PercentOrMajorityValue,
-} from '@dao-dao/types'
+import { ContractVersion, DaoCreationGetInstantiateInfo } from '@dao-dao/types'
 import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
-import {
-  InstantiateMsg as DaoProposalMultipleInstantiateMsg,
-  PercentageThreshold,
-} from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { InstantiateMsg as DaoProposalMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
@@ -18,6 +11,7 @@ import {
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import { DaoCreationExtraVotingConfig } from '../types'
+import { convertPercentOrMajorityValueToPercentageThreshold } from '../utils'
 import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
@@ -136,9 +130,3 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     }),
   }
 }
-
-const convertPercentOrMajorityValueToPercentageThreshold = ({
-  majority,
-  value,
-}: PercentOrMajorityValue): PercentageThreshold =>
-  majority ? { majority: {} } : { percent: (value / 100).toFixed(2) }

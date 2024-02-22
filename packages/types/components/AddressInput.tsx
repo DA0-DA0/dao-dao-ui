@@ -36,4 +36,8 @@ export interface AddressInputProps<
     entities: Entity[]
     loading: boolean
   }
+  /**
+   * Optionally hide the entity from showing on the right.
+   */
+  hideEntity?: boolean
 }

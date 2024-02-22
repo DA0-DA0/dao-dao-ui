@@ -44,6 +44,8 @@ telescope({
           'cosmos.base.query.v1beta1',
           'cosmos.base.tendermint.v1beta1',
           'cosmos.crypto.ed25519',
+          'cosmos.crypto.multisig',
+          'cosmos.crypto.secp256k1',
           'cosmos.distribution.v1beta1',
           'cosmos.gov.v1',
           'cosmos.gov.v1beta1',

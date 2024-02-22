@@ -24,6 +24,15 @@ export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
 }
 
 export type DaoCreationExtraVotingConfig = {
+  /**
+   * Whether or not the single choice config should use a quorum.
+   */
+  quorumEnabled: boolean
+  /**
+   * The configured threshold. If quorum is enabled, this threshold only applies
+   * to the voters who turnout on a proposal. If quorum is disabled, this is an
+   * absolute threshold of all possible voters.
+   */
   threshold: PercentOrMajorityValue
 }
 
