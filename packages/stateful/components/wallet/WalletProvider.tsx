@@ -33,6 +33,7 @@ import {
 import {
   CHAIN_ENDPOINTS,
   MAINNET,
+  SITE_TITLE,
   SITE_URL,
   WEB3AUTH_CLIENT_ID,
   getChainForChainId,
@@ -176,7 +177,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           projectId: '2021db728d55be8401efaf25f4e534cd',
           relayUrl: 'wss://relay.walletconnect.org',
           metadata: {
-            name: t('meta.title'),
+            name: SITE_TITLE,
             description: t('meta.description'),
             url: SITE_URL,
             icons: ['https://daodao.zone/daodao.png'],

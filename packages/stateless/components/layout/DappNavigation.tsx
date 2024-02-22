@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types'
-import { getGovPath } from '@dao-dao/utils'
+import { SITE_TITLE, getGovPath } from '@dao-dao/utils'
 
 import { useConfiguredChainContext, usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
@@ -158,7 +158,7 @@ export const DappNavigation = ({
           centerNode={
             <LinkWrapper className="flex flex-row items-center gap-2" href="/">
               <Logo size={28} />
-              {!compact && <p className="header-text">{t('meta.title')}</p>}
+              {!compact && <p className="header-text">{SITE_TITLE}</p>}
             </LinkWrapper>
           }
           forceCenter={compact}

@@ -33,7 +33,12 @@ import {
   ToastNotifications,
 } from '@dao-dao/stateless'
 import { DaoPageMode } from '@dao-dao/types'
-import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  SITE_IMAGE,
+  SITE_TITLE,
+  SITE_URL,
+} from '@dao-dao/utils'
 
 const InnerApp = ({
   Component,
@@ -173,15 +178,14 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
         openGraph={{
           url: SITE_URL,
           type: 'website',
-          title: t('meta.title').replace('meta.title', 'Loading...'),
+          title: SITE_TITLE,
           description: t('meta.description').replace(
             'meta.description',
-            'Loading...'
+            DEFAULT_SITE_DESCRIPTION
           ),
           images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
         }}
-        // eslint-disable-next-line i18next/no-literal-string
-        title={t('meta.title').replace('meta.title', 'Loading...')}
+        title={SITE_TITLE}
         twitter={{
           cardType: 'summary_large_image',
         }}

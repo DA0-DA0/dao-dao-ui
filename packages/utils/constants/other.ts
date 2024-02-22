@@ -3,6 +3,9 @@
 import { ChainId } from '@dao-dao/types'
 
 export const SITE_IMAGE = '/social.jpg'
+export const SITE_TITLE = 'DAO DAO'
+export const DEFAULT_SITE_DESCRIPTION =
+  'Create a DAO to manage your community, protocol, or entire blockchain in just a few clicks. We support multisig, token-based, and NFT-based DAOs that can be as simple or complex as you want. Set up SubDAOs, manage interchain assets, and interact with dApps across the Cosmos.'
 
 // 3 days
 export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
