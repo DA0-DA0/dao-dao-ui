@@ -802,6 +802,137 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.TerraMainnet,
+    name: 'terra',
+    mainnet: true,
+    overrideChainImageUrl: '/chains/terra.png',
+    accentColor: '#113da5',
+    factoryContractAddress:
+      'terra1a6m80fzww958qljatddgdj4xpj29effyshkh6rek8thmfzprd3ssw6wz2f',
+    explorerUrlTemplates: {
+      tx: 'https://finder.terra.money/mainnet/tx/REPLACE',
+      gov: 'https://ping.pub/terra/gov',
+      govProp: 'https://ping.pub/terra/gov/REPLACE',
+      wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 2627,
+      Cw4Group: 2628, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 2629,
+
+      // ContractVersion.V240
+      CwPayrollFactory: 2631,
+      CwTokenSwap: 2632,
+      CwTokenfactoryIssuer: 2633,
+      CwVesting: 2634,
+      DaoCore: 2635,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 2637,
+      DaoPreProposeApprover: 2638,
+      DaoPreProposeMultiple: 2639,
+      DaoPreProposeSingle: 2640,
+      DaoProposalMultiple: 2641,
+      DaoProposalSingle: 2642,
+      DaoVotingCw4: 2643,
+      DaoVotingCw721Staked: 2644,
+      DaoVotingTokenStaked: 2645,
+    },
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // terra
+        note: 'terra1dfwrwcjmsnprmr9938sg3d2885vm84cg2jfxtznf7kr59nrrxdtsdgnqu8',
+        // terra
+        listener:
+          'terra1eqk2urjf0yvtpeaqu0r9zhkzptau9ulmwypjt6f3e7ktwtha48gsu3x2ee',
+        // juno
+        voice:
+          'juno1ct0klhzska7h2k74m0pjlyr0u20mm8d3h4antq5fqeqfvavhc2gqcgw847',
+        // terra
+        localConnection: 'connection-6',
+        // juno
+        remoteConnection: 'connection-128',
+        // terra
+        localChannel: 'channel-385',
+        // juno
+        remoteChannel: 'channel-520',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // terra
+        note: 'terra13wdx8mgcj73ltfgfq2mazwrryxadzcmwy0l2xmllpgs03hq0q8lqqyy2kn',
+        // terra
+        listener:
+          'terra1hudgkhufhp7a20jnk8vvc2x6l8f55tpx7tr8wkqq996zjv9v3yqqcpyaar',
+        // osmosis
+        voice:
+          'osmo1j3dzaqvaqa6navmz89rdmjrnztvgh5xma25wxchv6f3aj48jg6uqmxkhfu',
+        // terra
+        localConnection: 'connection-3',
+        // osmosis
+        remoteConnection: 'connection-1536',
+        // terra
+        localChannel: 'channel-386',
+        // osmosis
+        remoteChannel: 'channel-21185',
+      },
+      [ChainId.StargazeMainnet]: {
+        // terra
+        note: 'terra1ts8j0cwnykrh39nc97mxmzesvnukyru3uua3hych0s345a0wz32qhklzfw',
+        // terra
+        listener:
+          'terra1z4qyl5t3wtv7006chg3ar8hpyzuqsuyj5uqujhskplwtun28ucss23uap7',
+        // stargaze
+        voice:
+          'stars1457shfac8965ju277wwukf4qfvf24uqzrjdmw8j5w0xwhp8zps0qal9ure',
+        // terra
+        localConnection: 'connection-408',
+        // stargaze
+        remoteConnection: 'connection-275',
+        // terra
+        localChannel: 'channel-387',
+        // stargaze
+        remoteChannel: 'channel-285',
+      },
+      [ChainId.NeutronMainnet]: {
+        // terra
+        note: 'terra1eumwktcszm8p5p3apuxq4mrk008rx8sakntq68a5x6l6my33jl2qfvsfge',
+        // terra
+        listener:
+          'terra1hu8esz9yhfrhj2eyq70refpmmdem95my2rpc2d896nt2a3p34s0qf5chle',
+        // neutron
+        voice:
+          'neutron1dsxy6h7cfnrguqe09ym599wk09a9zpyzw6r6yttrkquqffp06l6sfptpfp',
+        // terra
+        localConnection: 'connection-192',
+        // neutron
+        remoteConnection: 'connection-9',
+        // terra
+        localChannel: 'channel-388',
+        // neutron
+        remoteChannel: 'channel-994',
+      },
+      [ChainId.MigalooMainnet]: {
+        // terra
+        note: 'terra1pmdg4yq0ew57fdpwckcsey5jw60tth49cm2vpw0r5l6zj368xvhshjurcl',
+        // terra
+        listener:
+          'terra1xftzcyz2s2t0d35985j0w0csqffzczxfm5k3gw6dgd34etw88sxqz6t03k',
+        // migaloo
+        voice:
+          'migaloo1ruw9ptkcdrj80npzuhzkryr5uxdf0nxw8w77eytwkvcmuh7al7gs0yaqpe',
+        // terra
+        localConnection: 'connection-93',
+        // migaloo
+        remoteConnection: 'connection-0',
+        // terra
+        localChannel: 'channel-389',
+        // migaloo
+        remoteChannel: 'channel-112',
+      },
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,

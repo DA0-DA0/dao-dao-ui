@@ -73,24 +73,47 @@ export enum ChainId {
 }
 
 export type BaseChainConfig = {
+  /**
+   * Chain ID.
+   */
   chainId: string
-  // Unique name among chain configs with the same `mainnet` flag. This is used
-  // to identify the chain in the native governance UI.
+  /**
+   * Unique name among chain configs with the same `mainnet` flag. This is used
+   * to identify the chain in the native governance UI.
+   */
   name: string
+  /**
+   * Whether or not this should be shown on the mainnet UI. If not, it will be
+   * shown in the testnet UI.
+   */
   mainnet: boolean
+  /**
+   * An accent color for using in the UI.
+   */
   accentColor: string
-  // Set to true if the chain does not support CosmWasm. If undefined, assumed
-  // to be false.
+  /**
+   * Set to true if the chain does not support CosmWasm. If undefined, assumed
+   * to be false.
+   */
   noCosmWasm?: boolean
-  // Set to true if the chain does not have a gov module so that it doesn't
-  // appear in the gov UI. If undefined, assumed to be false.
+  /**
+   * Set to true if the chain does not have a gov module so that it doesn't
+   * appear in the gov UI. If undefined, assumed to be false.
+   */
   noGov?: boolean
+  /**
+   * Chain explorer URL templates for various external links.
+   */
   explorerUrlTemplates?: {
     tx?: string
     gov?: string
     govProp?: string
     wallet?: string
   }
+  /**
+   * If defined, overrides the default chain image.
+   */
+  overrideChainImageUrl?: string
 }
 
 export type ConfiguredChain = BaseChainConfig & {
@@ -117,6 +140,11 @@ export type SupportedChainConfig = BaseChainConfig & {
    * Code IDs stored on this chain that are used throughout the UI.
    */
   codeIds: CodeIdConfig
+  /**
+   * Whether or not to create DAOs with CW20s. The alternative is to use token
+   * factory native tokens. Defaults to false.
+   */
+  createWithCw20?: boolean
   /**
    * Whether or not this chain has an indexer.
    */
@@ -159,7 +187,9 @@ export type CodeIdConfig = {
   DaoVotingCw4: number
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
-  // v2.1.0 and below, for migrating v1 to v2 DAOs
+
+  // For migrating v1 to v2 DAOs, and some chains use CW20s.
+  Cw20Base?: number
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
 }
