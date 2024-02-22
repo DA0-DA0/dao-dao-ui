@@ -17,6 +17,7 @@ import {
   PAGINATION_MIN_PAGE,
   Pagination,
   SearchBar,
+  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { useButtonPopupFilter, useSearchFilter } from '@dao-dao/stateless/hooks'
 import {
@@ -159,6 +160,13 @@ export const NftSelectionModal = ({
     <Modal
       {...modalProps}
       containerClassName={clsx('h-full w-full !max-w-3xl', containerClassName)}
+      contentContainerClassName={
+        nfts.errored
+          ? 'items-center justify-center gap-4'
+          : !nfts.loading && nfts.data.length > 0
+          ? 'no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3'
+          : undefined
+      }
       footerContent={
         <div
           className={clsx(
@@ -203,7 +211,20 @@ export const NftSelectionModal = ({
         nfts.data.length > 0 ? (
           <div className="mt-4 flex flex-col gap-4">
             {headerDisplay}
-
+            {unstakingDuration && durationIsNonZero(unstakingDuration) && (
+              <div className="flex flex-row items-center gap-1">
+                <p className="secondary-text">
+                  {t('title.unstakingPeriod') +
+                    `: ${humanReadableDuration(unstakingDuration)}`}
+                </p>
+                <TooltipInfoIcon
+                  size="xs"
+                  title={t('info.unstakingMechanics', {
+                    humanReadableTime: humanReadableDuration(unstakingDuration),
+                  })}
+                />
+              </div>
+            )}
             <SearchBar
               autoFocus={modalProps.visible}
               placeholder={t('info.searchNftsPlaceholder')}
@@ -256,7 +277,7 @@ export const NftSelectionModal = ({
       {nfts.loading ? (
         <Loader />
       ) : nfts.errored ? (
-        <div className="items-center justify-center gap-4">
+        <>
           <WarningRounded className="!h-14 !w-14" />
           <p className="body-text">
             {fallbackError ?? t('error.checkInternetOrTryAgain')}
@@ -264,26 +285,22 @@ export const NftSelectionModal = ({
           <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
             {nfts.error.message}
           </pre>
-        </div>
+        </>
       ) : nfts.data.length > 0 ? (
-        <div className="no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3">
-          {filteredSearchedNfts
-            .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
-            .map(({ item }) => (
-              <LazyNftCard
-                ref={
-                  selectedKeys[0] === item.key ? firstSelectedRef : undefined
-                }
-                {...item}
-                key={item.key}
-                checkbox={{
-                  checked: selectedKeys.includes(item.key),
-                  // Disable toggling if currently staking.
-                  onClick: () => !action.loading && onNftClick(item),
-                }}
-              />
-            ))}
-        </div>
+        filteredSearchedNfts
+          .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
+          .map(({ item }) => (
+            <LazyNftCard
+              ref={selectedKeys[0] === item.key ? firstSelectedRef : undefined}
+              {...item}
+              key={item.key}
+              checkbox={{
+                checked: selectedKeys.includes(item.key),
+                // Disable toggling if currently staking.
+                onClick: () => !action.loading && onNftClick(item),
+              }}
+            />
+          ))
       ) : (
         noneDisplay || (
           <NoContent
@@ -292,19 +309,6 @@ export const NftSelectionModal = ({
             className="grow justify-center"
           />
         )
-      )}
-      {unstakingDuration && durationIsNonZero(unstakingDuration) && (
-        <div className="space-y-5 border-t border-border-secondary pt-7">
-          <p className="primary-text text-text-secondary">
-            {t('title.unstakingPeriod') +
-              `: ${humanReadableDuration(unstakingDuration)}`}
-          </p>
-          <p className="body-text text-text-secondary">
-            {t('info.unstakingMechanics', {
-              humanReadableTime: humanReadableDuration(unstakingDuration),
-            })}
-          </p>
-        </div>
       )}
     </Modal>
   )
