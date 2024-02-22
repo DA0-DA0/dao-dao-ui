@@ -173,7 +173,7 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
         description={t('meta.description').replace(
           // eslint-disable-next-line i18next/no-literal-string
           'meta.description',
-          'Loading...'
+          DEFAULT_SITE_DESCRIPTION
         )}
         openGraph={{
           url: SITE_URL,
