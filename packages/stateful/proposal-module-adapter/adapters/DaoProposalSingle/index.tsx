@@ -196,6 +196,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   daoCreation: {
     extraVotingConfig: {
       default: {
+        quorumEnabled: true,
         threshold: {
           majority: true,
           value: 67,

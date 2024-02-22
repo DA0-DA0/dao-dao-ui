@@ -36,7 +36,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { threshold },
+  { quorumEnabled, threshold },
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -115,13 +115,20 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         },
       },
     },
-    threshold: {
-      threshold_quorum: {
-        quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
-        threshold:
-          convertPercentOrMajorityValueToPercentageThreshold(threshold),
-      },
-    },
+    threshold: quorumEnabled
+      ? {
+          threshold_quorum: {
+            quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
+            threshold:
+              convertPercentOrMajorityValueToPercentageThreshold(threshold),
+          },
+        }
+      : {
+          absolute_percentage: {
+            percentage:
+              convertPercentOrMajorityValueToPercentageThreshold(threshold),
+          },
+        },
     veto: convertVetoConfigToCosmos(veto),
   }
 

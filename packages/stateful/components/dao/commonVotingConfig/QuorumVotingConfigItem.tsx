@@ -67,8 +67,8 @@ export const makeQuorumVotingConfigItem =
   (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithQuorum> => ({
     Icon: MegaphoneEmoji,
     nameI18nKey: 'form.quorumTitle',
-    descriptionI18nKey: 'form.quorumDescription',
-    tooltipI18nKey: 'info.quorumTooltip_single',
+    descriptionI18nKey: 'form.quorumDescription_create',
+    tooltipI18nKey: 'info.quorumTooltip_multiple',
     Input: QuorumInput,
     getInputError: ({ quorum } = {}) => quorum?.majority || quorum?.value,
     Review: QuorumReview,

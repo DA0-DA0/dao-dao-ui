@@ -92,7 +92,13 @@ export const CreateDaoReview = ({
                 Icon,
                 label: t(nameI18nKey),
                 value: <Review data={creatorData} newDao={newDao} />,
-                tooltip: tooltipI18nKey && t(tooltipI18nKey),
+                tooltip:
+                  tooltipI18nKey &&
+                  t(
+                    typeof tooltipI18nKey === 'string'
+                      ? tooltipI18nKey
+                      : tooltipI18nKey(creatorData)
+                  ),
               }
             : []
       ),
@@ -119,7 +125,13 @@ export const CreateDaoReview = ({
                         newDao={newDao}
                       />
                     ),
-                    tooltip: tooltipI18nKey && t(tooltipI18nKey),
+                    tooltip:
+                      tooltipI18nKey &&
+                      t(
+                        typeof tooltipI18nKey === 'string'
+                          ? tooltipI18nKey
+                          : tooltipI18nKey(proposalModuleAdapters[index].data)
+                      ),
                   }
                 : []
           )
@@ -135,7 +147,13 @@ export const CreateDaoReview = ({
               Icon,
               label: t(nameI18nKey),
               value: <Review data={votingConfig} newDao={newDao} />,
-              tooltip: tooltipI18nKey && t(tooltipI18nKey),
+              tooltip:
+                tooltipI18nKey &&
+                t(
+                  typeof tooltipI18nKey === 'string'
+                    ? tooltipI18nKey
+                    : tooltipI18nKey(votingConfig)
+                ),
             }
           : []
     ),
@@ -153,7 +171,7 @@ export const CreateDaoReview = ({
         {t('title.votingConfiguration')}
       </p>
 
-      <DaoInfoCards cards={reviewCards} />
+      <DaoInfoCards cards={reviewCards} wrap />
 
       <div
         className="mt-8 flex flex-row flex-wrap items-center gap-6"

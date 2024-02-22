@@ -305,7 +305,7 @@ export interface DaoCreationVotingConfigItem<
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
-  tooltipI18nKey?: string
+  tooltipI18nKey?: string | ((data: ModuleData) => string)
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleData>>
   getInputError: (errors?: FieldErrors<ModuleData>) => FieldError | undefined
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleData>>
