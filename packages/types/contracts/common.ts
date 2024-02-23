@@ -135,7 +135,7 @@ export type StargateMsg = {
 /**
  * The message types of the wasm module.
  *
- * See hhttps://github.com/CosmWasm/wasmd/blob/v0.29.0/x/wasm/types/tx.pb.go
+ * See https://github.com/CosmWasm/wasmd/blob/v0.29.0/x/wasm/types/tx.pb.go
  */
 export type WasmMsg =
   | {

@@ -29,6 +29,10 @@ export interface CodeMirrorInputProps<
   error?: FieldError
   readOnly?: boolean
   required?: boolean
+  /**
+   * Optionally transform value when displaying.
+   */
+  transform?: (value: any) => string
 }
 
 export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
@@ -37,6 +41,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   validation,
   readOnly = false,
   required,
+  transform,
 }: CodeMirrorInputProps<T, U>) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -73,7 +78,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
           onBlur={(_instance, _event) => onBlur()}
           options={cmOptions}
           ref={ref}
-          value={value}
+          value={transform ? transform(value) : value}
         />
       )}
       rules={{ required: required && 'Required', validate: validate }}

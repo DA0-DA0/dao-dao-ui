@@ -15,6 +15,7 @@ import {
   PROTOBUF_TYPES,
   makeStargateMessage,
   makeWasmMessage,
+  objectMatchesStructure,
   validateCosmosMsg,
 } from '@dao-dao/utils'
 
@@ -89,6 +90,7 @@ export const CustomComponent: ActionComponent = ({
         error={errors?.message}
         fieldName={(fieldNamePrefix + 'message') as 'message'}
         readOnly={!isCreating}
+        transform={isCreating ? undefined : transformLongKeys}
         validation={[
           (v: string) => {
             let msg
@@ -143,3 +145,39 @@ export const CustomComponent: ActionComponent = ({
 }
 
 const FILTERABLE_KEYS = ['label']
+
+// Some messages contain really large data that should not be shown in the UI.
+const transformLongKeys = (value: any): string => {
+  try {
+    const obj = JSON.parse(value)
+
+    if (
+      objectMatchesStructure(obj, {
+        stargate: {
+          typeUrl: {},
+          value: {},
+        },
+      }) &&
+      obj.stargate.value instanceof Uint8Array &&
+      obj.stargate.value.length > 1000
+    ) {
+      obj.stargate.value = '[TOO LARGE TO SHOW]'
+    } else if (
+      objectMatchesStructure(obj, {
+        stargate: {
+          typeUrl: {},
+          value: {
+            wasmByteCode: {},
+          },
+        },
+      })
+    ) {
+      obj.stargate.value.wasmByteCode = '[TOO LARGE TO SHOW]'
+    }
+
+    return JSON.stringify(obj, null, 2)
+  } catch (err) {
+    console.log(err)
+    return value
+  }
+}
