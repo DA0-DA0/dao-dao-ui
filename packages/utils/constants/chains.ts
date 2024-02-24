@@ -990,8 +990,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 1564,
 
       // Oraichain uses cw20 DAOs.
-      // TODO(oraichain)
-      Cw20Base: 9999999,
+      Cw20Base: 1595, // v1.1.2
       Cw20Stake: 1565,
       DaoVotingCw20Staked: 1566,
     },
