@@ -134,14 +134,16 @@ export const WalletUi = (props: WalletModalProps) => {
                 ...getSupportedChains().map(({ chainId }) => chainId),
                 wallet.chainId,
                 mainWalletChainId,
-              ]).map((chainId) =>
-                convertChain(
-                  getChainForChainId(chainId),
-                  [maybeGetAssetListForChainId(chainId)].filter(
-                    (al): al is AssetList => !!al
+              ])
+                .filter(Boolean)
+                .map((chainId) =>
+                  convertChain(
+                    getChainForChainId(chainId),
+                    [maybeGetAssetListForChainId(chainId)].filter(
+                      (al): al is AssetList => !!al
+                    )
                   )
                 )
-              )
 
               await Promise.allSettled(
                 chainRecords.map(
@@ -151,6 +153,11 @@ export const WalletUi = (props: WalletModalProps) => {
                       .catch(console.error)
                 )
               )
+
+              if (wallet.isWalletNotExist) {
+                toast.error(`${wallet.walletPrettyName} is not installed.`)
+                return
+              }
 
               await Promise.all([
                 // If main wallet repo not connected or is the same chain,
