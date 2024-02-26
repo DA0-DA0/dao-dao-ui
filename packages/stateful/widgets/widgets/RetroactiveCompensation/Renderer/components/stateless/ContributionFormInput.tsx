@@ -1,45 +1,56 @@
-import {
-  FormState,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from 'react-hook-form'
+import { Close } from '@mui/icons-material'
+import { ComponentType } from 'react'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   Checkbox,
+  IconButton,
+  ImageUploadInput,
   InputErrorMessage,
   InputLabel,
   RangeInput,
   TextAreaInput,
 } from '@dao-dao/stateless'
-import { validateRequired } from '@dao-dao/utils'
+import { TransProps } from '@dao-dao/types'
+import {
+  transformIpfsUrlToHttpsIfNecessary,
+  validateRequired,
+} from '@dao-dao/utils'
 
-import { Survey } from '../../types'
-
-export type ContributionFormData = {
-  contribution: string
-  ratings: (number | null)[]
-}
+import { ContributionFormData, Survey } from '../../types'
 
 export type ContributionFormInputProps = {
   survey: Survey
-  register: UseFormRegister<ContributionFormData>
-  watch: UseFormWatch<ContributionFormData>
-  setValue: UseFormSetValue<ContributionFormData>
-  errors: FormState<ContributionFormData>['errors']
   thirdPerson?: boolean
+  Trans: ComponentType<TransProps>
 }
 
 export const ContributionFormInput = ({
   survey,
-  register,
-  watch,
-  setValue,
-  errors,
   thirdPerson,
+  Trans,
 }: ContributionFormInputProps) => {
   const { t } = useTranslation()
+
+  const {
+    control,
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext<ContributionFormData>()
+
+  const {
+    fields: imageFields,
+    append: appendImage,
+    remove: removeImage,
+  } = useFieldArray({
+    control,
+    name: 'images',
+  })
+  const images = watch('images')
 
   const ratings = watch('ratings', [])
   const allRatingsAbstain = ratings.every((rating) => rating === null)
@@ -66,6 +77,41 @@ export const ContributionFormInput = ({
           validation={[validateRequired]}
         />
         <InputErrorMessage error={errors.contribution} />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {imageFields.map(({ id }, index) => (
+          <div key={id} className="flex flex-row items-center gap-2">
+            {images?.[index].url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                alt={images[index].url}
+                className="min-w-24 min-h-24 max-w-80 h-auto max-h-80 w-auto"
+                src={transformIpfsUrlToHttpsIfNecessary(images[index].url!)}
+              />
+            ) : (
+              <ImageUploadInput
+                Trans={Trans}
+                onChange={(url) => setValue(`images.${index}.url`, url)}
+              />
+            )}
+
+            <IconButton
+              Icon={Close}
+              onClick={() => removeImage(index)}
+              size="sm"
+              variant="ghost"
+            />
+          </div>
+        ))}
+
+        <Button
+          className="self-start"
+          onClick={() => appendImage({})}
+          variant="secondary"
+        >
+          {t('button.addImage')}
+        </Button>
       </div>
 
       <div className="mt-2 flex flex-col gap-4">

@@ -16,13 +16,15 @@ import {
   ConnectWallet,
   EntityDisplay,
   SuspenseLoader,
+  Trans,
 } from '../../../../../../components'
 import { useEntity, useWallet } from '../../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
+import { ContributionFormData } from '../../types'
+import { prepareContributionFormData } from '../../utils'
 import { ContributionForm as StatelessContributionForm } from '../stateless/ContributionForm'
-import { ContributionFormData } from '../stateless/ContributionFormInput'
 
 export const ContributionForm = () => {
   const { t } = useTranslation()
@@ -57,7 +59,10 @@ export const ContributionForm = () => {
       setLoading(true)
 
       try {
-        await postRequest(`/${coreAddress}/contribution`, data)
+        await postRequest(
+          `/${coreAddress}/contribution`,
+          prepareContributionFormData(data)
+        )
         toast.success(t('success.contributionSubmitted'))
         // Reload status on success.
         setRefreshStatus((id) => id + 1)
@@ -114,6 +119,7 @@ export const ContributionForm = () => {
                 loadingEntity={walletEntity}
               />
             )}
+            Trans={Trans}
             connected={isWalletConnected}
             loading={loading || statusLoadable.updating}
             loadingEntity={walletEntity}

@@ -143,3 +143,11 @@ export type CompletedSurvey = Omit<Survey, 'status'> & {
 export interface StatefulOpenSurveySectionProps {
   status: Status
 }
+
+export type ContributionFormData = {
+  contribution: string
+  images?: {
+    url?: string
+  }[]
+  ratings: (number | null)[]
+}

@@ -4,7 +4,11 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { AddressInput, EntityDisplay } from '../../../../../../components'
+import {
+  AddressInput,
+  EntityDisplay,
+  Trans,
+} from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
 import { RatingForm } from './RatingForm'
 
@@ -58,6 +62,7 @@ Default.args = {
   loadingSubmit: false,
   EntityDisplay,
   AddressInput,
+  Trans,
   tokenPrices: [
     {
       token: {

@@ -2,6 +2,7 @@ import {
   AnyToken,
   Attribute,
   ContributionCompensation,
+  ContributionFormData,
   ContributionRating,
 } from './types'
 
@@ -101,4 +102,25 @@ export const computeCompensation = (
   )
 
   return compensationPerContribution
+}
+
+/**
+ * Prepare contribution form data by combining text and images into the
+ * contribution text and removing the images.
+ */
+export const prepareContributionFormData = <D extends ContributionFormData>(
+  data: D
+): D => {
+  const formData: D = {
+    ...data,
+    // Add Markdown image lines to bottom of contribution if they exist.
+    contribution: [
+      data.contribution,
+      data.images?.flatMap(({ url }) => `![${url}](${url})` || []).join('\n'),
+    ]
+      .filter(Boolean)
+      .join('\n\n'),
+  }
+  delete formData.images
+  return formData
 }

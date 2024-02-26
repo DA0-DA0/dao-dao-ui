@@ -6,6 +6,7 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType, TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
+import { Trans } from '../../../../../../components'
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'
 
@@ -116,4 +117,5 @@ Default.args = {
     />
   ),
   ConnectWallet: () => <ConnectWalletStory {...ConnectWalletStory.args} />,
+  Trans,
 }

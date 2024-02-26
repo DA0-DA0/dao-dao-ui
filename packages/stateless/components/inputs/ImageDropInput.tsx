@@ -4,6 +4,7 @@ import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
+import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { FileDropInput, FileDropInputProps } from './FileDropInput'
 
@@ -56,7 +57,15 @@ export const ImageDropInput = ({
       hideText={!!image}
       loading={loading}
       onSelect={onSelect}
-      style={image ? { backgroundImage: `url(${image})` } : undefined}
+      style={
+        image
+          ? {
+              backgroundImage: `url(${transformIpfsUrlToHttpsIfNecessary(
+                image
+              )})`,
+            }
+          : undefined
+      }
     />
   )
 }

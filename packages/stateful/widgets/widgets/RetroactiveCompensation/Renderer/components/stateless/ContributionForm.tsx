@@ -1,17 +1,19 @@
 import { Publish } from '@mui/icons-material'
 import { ComponentType } from 'react'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Loader, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
-import { Entity, GenericTokenWithUsdPrice, LoadingData } from '@dao-dao/types'
+import {
+  Entity,
+  GenericTokenWithUsdPrice,
+  LoadingData,
+  TransProps,
+} from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { Status, SurveyStatus } from '../../types'
-import {
-  ContributionFormData,
-  ContributionFormInput,
-} from './ContributionFormInput'
+import { ContributionFormData, Status, SurveyStatus } from '../../types'
+import { ContributionFormInput } from './ContributionFormInput'
 
 export interface ContributionFormProps {
   connected: boolean
@@ -22,6 +24,7 @@ export interface ContributionFormProps {
   tokenPrices: GenericTokenWithUsdPrice[]
   EntityDisplay: ComponentType
   ConnectWallet: ComponentType
+  Trans: ComponentType<TransProps>
 }
 
 export const ContributionForm = ({
@@ -36,18 +39,34 @@ export const ContributionForm = ({
   loadingEntity,
   EntityDisplay,
   ConnectWallet,
+  Trans,
 }: ContributionFormProps) => {
   const { t } = useTranslation()
 
-  const {
-    register,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ContributionFormData>({
+  let defaultContribution = existingContribution || ''
+  // Pull images out of the contribution text.
+  const defaultImages = defaultContribution
+    ? defaultContribution
+        .split('\n\n')
+        .pop()
+        ?.split('\n')
+        .map((part) =>
+          part.startsWith('![') ? part.split('](')[1].slice(0, -1) : undefined
+        )
+        .flatMap((url) => (url ? { url } : []))
+    : []
+  // If images were found, remove them from the text.
+  if (defaultImages?.length) {
+    defaultContribution = defaultContribution
+      .split('\n\n')
+      .slice(0, -1)
+      .join('\n\n')
+  }
+
+  const formMethods = useForm<ContributionFormData>({
     defaultValues: {
-      contribution: existingContribution || '',
+      contribution: defaultContribution,
+      images: defaultImages,
       ratings: contributionSelfRatings || survey.attributes.map(() => null),
     },
   })
@@ -71,7 +90,7 @@ export const ContributionForm = ({
   return (
     <form
       className="flex grow flex-col gap-6"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={formMethods.handleSubmit(onSubmit)}
     >
       {/* Hidden on small screens. Moves below so it is centered with the column. */}
       <div className="hidden max-w-prose space-y-1 break-words lg:block">
@@ -110,13 +129,9 @@ export const ContributionForm = ({
                 )}
               </div>
 
-              <ContributionFormInput
-                errors={errors}
-                register={register}
-                setValue={setValue}
-                survey={survey}
-                watch={watch}
-              />
+              <FormProvider {...formMethods}>
+                <ContributionFormInput Trans={Trans} survey={survey} />
+              </FormProvider>
 
               {contributed && (
                 <p className="caption-text self-end text-right text-text-interactive-valid">
