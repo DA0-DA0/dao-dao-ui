@@ -721,6 +721,8 @@ export const govProposalsSelector = selectorFamily<
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
+      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
+
       let v1Proposals: ProposalV1[] | undefined
       let v1Beta1Proposals: ProposalV1Beta1[] | undefined
       let total = 0
@@ -728,7 +730,6 @@ export const govProposalsSelector = selectorFamily<
       // Try to load from indexer first.
       const indexerProposals: {
         id: string
-        version: string
         data: string
       }[] =
         get(
@@ -743,29 +744,31 @@ export const govProposalsSelector = selectorFamily<
         )?.proposals ?? []
 
       if (indexerProposals.length) {
-        v1Proposals = indexerProposals
-          .filter(({ version }) => version === GovProposalVersion.V1)
-          .flatMap(({ data }): ProposalV1 | [] => {
-            try {
-              return ProposalV1.decode(fromBase64(data))
-            } catch {
-              return []
+        if (supportsV1Gov) {
+          v1Proposals = indexerProposals.flatMap(
+            ({ data }): ProposalV1 | [] => {
+              try {
+                return ProposalV1.decode(fromBase64(data))
+              } catch {
+                return []
+              }
             }
-          })
-        v1Beta1Proposals = indexerProposals
-          .filter(({ version }) => version === GovProposalVersion.V1_BETA_1)
-          .flatMap(({ data }): ProposalV1Beta1 | [] => {
-            try {
-              return ProposalV1Beta1.decode(fromBase64(data))
-            } catch {
-              return []
+          )
+        } else {
+          v1Beta1Proposals = indexerProposals.flatMap(
+            ({ data }): ProposalV1Beta1 | [] => {
+              try {
+                return ProposalV1Beta1.decode(fromBase64(data))
+              } catch {
+                return []
+              }
             }
-          })
+          )
+        }
 
         // Fallback to querying chain if indexer failed.
       } else {
         const client = get(cosmosRpcClientForChainSelector(chainId))
-        const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
         if (supportsV1Gov) {
           try {
             if (limit === undefined && offset === undefined) {
@@ -877,6 +880,8 @@ export const govProposalSelector = selectorFamily<
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
+      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
+
       // Try to load from indexer first.
       const indexerProposal:
         | {
@@ -895,7 +900,7 @@ export const govProposalSelector = selectorFamily<
       )
 
       if (indexerProposal) {
-        if (indexerProposal.version === GovProposalVersion.V1) {
+        if (supportsV1Gov) {
           return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
@@ -912,7 +917,6 @@ export const govProposalSelector = selectorFamily<
 
       // Fallback to querying chain if indexer failed.
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
       if (supportsV1Gov) {
         try {

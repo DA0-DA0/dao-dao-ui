@@ -193,13 +193,27 @@ export const makeGetGovProposalStaticProps = ({
       const url =
         SITE_URL + getGovProposalPath(params.chain as string, proposalId)
 
+      const client = await retry(
+        10,
+        async (attempt) =>
+          (
+            await cosmos.ClientFactory.createRPCQueryClient({
+              rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
+            })
+          ).cosmos
+      )
+      const cosmosSdkVersion =
+        (
+          await client.base.tendermint.v1beta1.getNodeInfo()
+        ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
+      const supportsV1Gov = cosmosSdkVersionIs46OrHigher(cosmosSdkVersion)
+
       let proposal: GovProposalWithDecodedContent | null = null
       try {
         // Try to load from indexer first.
         const indexerProposal:
           | {
               id: string
-              version: string
               data: string
             }
           | undefined = await queryIndexer({
@@ -212,7 +226,7 @@ export const makeGetGovProposalStaticProps = ({
         })
 
         if (indexerProposal) {
-          if (indexerProposal.version === GovProposalVersion.V1) {
+          if (supportsV1Gov) {
             proposal = await decodeGovProposal({
               version: GovProposalVersion.V1,
               id: BigInt(proposalId),
@@ -237,21 +251,7 @@ export const makeGetGovProposalStaticProps = ({
       // Fallback to querying chain if indexer failed.
       if (!proposal) {
         try {
-          const client = await retry(
-            10,
-            async (attempt) =>
-              (
-                await cosmos.ClientFactory.createRPCQueryClient({
-                  rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
-                })
-              ).cosmos
-          )
-          const cosmosSdkVersion =
-            (
-              await client.base.tendermint.v1beta1.getNodeInfo()
-            ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
-
-          if (cosmosSdkVersionIs46OrHigher(cosmosSdkVersion)) {
+          if (supportsV1Gov) {
             try {
               const proposalV1 = (
                 await client.gov.v1.proposal({
