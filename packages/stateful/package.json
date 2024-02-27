@@ -9,11 +9,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@confio/relayer": "^0.10.0",
-    "@cosmjs/cosmwasm-stargate": "^0.31.0",
-    "@cosmjs/encoding": "^0.31.0",
-    "@cosmjs/proto-signing": "^0.31.0",
-    "@cosmjs/stargate": "^0.31.0",
+    "@confio/relayer": "^0.11.3",
+    "@cosmjs/cosmwasm-stargate": "^0.32.1",
+    "@cosmjs/encoding": "^0.32.1",
+    "@cosmjs/proto-signing": "^0.32.1",
+    "@cosmjs/stargate": "^0.32.1",
     "@cosmos-kit/coin98": "^2.5.2",
     "@cosmos-kit/compass": "^2.5.2",
     "@cosmos-kit/core": "^2.7.12",
@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.17.1",
-    "@cosmjs/amino": "^0.31.0",
+    "@cosmjs/amino": "^0.32.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@storybook/react": "^6.5.10",

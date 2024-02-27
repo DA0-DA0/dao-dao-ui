@@ -110,7 +110,7 @@ export const useProposalPolytoneState = ({
               packet.destinationPort === portId &&
               packet.destinationChannel === channelId
           )
-          .map((packet) => packet.sequence.toInt())
+          .map((packet) => Number(packet.sequence))
 
         return ibcUnreceivedPacketsSelector({
           chainId: dstChainId,
@@ -133,7 +133,7 @@ export const useProposalPolytoneState = ({
             (packet) =>
               packet.sourcePort === portId && packet.sourceChannel === channelId
           )
-          .map((packet) => packet.sequence.toInt())
+          .map((packet) => Number(packet.sequence))
 
         return ibcUnreceivedAcksSelector({
           chainId: srcChainId,

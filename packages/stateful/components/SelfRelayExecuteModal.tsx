@@ -20,7 +20,6 @@ import { useChains } from '@cosmos-kit/react-lite'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
-import Long from 'long'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -472,7 +471,6 @@ export const SelfRelayExecuteModal = ({
       expiration.setFullYear(expiration.getFullYear() + 10)
       // Encoder needs a whole number of seconds.
       expiration.setMilliseconds(0)
-      const expirationTimestamp = toTimestamp(expiration)
 
       await relayer.client.sign.signAndBroadcast(
         relayer.relayerAddress,
@@ -491,12 +489,7 @@ export const SelfRelayExecuteModal = ({
                     ),
                   })
                 ),
-                expiration: {
-                  seconds: Long.fromString(
-                    expirationTimestamp.seconds.toString()
-                  ),
-                  nanos: expirationTimestamp.nanos,
-                },
+                expiration: toTimestamp(expiration),
               },
             } as MsgGrantEncoder,
           },
@@ -601,7 +594,7 @@ export const SelfRelayExecuteModal = ({
           return
         }
         const packetSequences = thesePackets.map(({ packet }) =>
-          packet.sequence.toNumber()
+          Number(packet.sequence)
         )
 
         setRelaying({
@@ -629,7 +622,7 @@ export const SelfRelayExecuteModal = ({
               )
 
             const packetsNeedingRelay = thesePackets.filter(({ packet }) =>
-              unrelayedPackets.sequences.some((seq) => seq.eq(packet.sequence))
+              unrelayedPackets.sequences.some((seq) => seq === packet.sequence)
             )
 
             // Relay only the packets that need relaying.
@@ -709,13 +702,13 @@ export const SelfRelayExecuteModal = ({
                 sourcePort,
                 sourceChannel,
                 allAcks.map(({ originalPacket }) =>
-                  originalPacket.sequence.toNumber()
+                  Number(originalPacket.sequence)
                 )
               )
 
             const acksNeedingRelay = allAcks.filter(({ originalPacket }) =>
-              unrelayedAcks.sequences.some((seq) =>
-                seq.eq(originalPacket.sequence)
+              unrelayedAcks.sequences.some(
+                (seq) => seq === originalPacket.sequence
               )
             )
 
