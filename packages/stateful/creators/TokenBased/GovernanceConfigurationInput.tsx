@@ -350,7 +350,7 @@ export const GovernanceConfigurationInput = ({
               <div className="flex flex-col items-stretch sm:flex-row">
                 {/* TODO(tokenfactory-image): add back in once token factory  supports URI metadata */}
                 {isCw20 && (
-                  <div className="flex flex-col items-center gap-5 py-6 px-10">
+                  <div className="flex flex-col items-center gap-5 border-b border-border-secondary py-6 px-10 sm:border-r sm:border-b-0">
                     <InputLabel name={t('form.image')} />
                     <ImageSelector
                       Trans={Trans}
@@ -363,7 +363,7 @@ export const GovernanceConfigurationInput = ({
                     />
                   </div>
                 )}
-                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-x">
+                <div className="flex flex-col gap-5 border-b border-border-secondary py-6 px-8 sm:border-b-0 sm:border-r">
                   <InputLabel name={t('form.symbol')} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-center gap-2">
