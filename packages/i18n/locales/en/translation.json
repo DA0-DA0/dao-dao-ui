@@ -988,6 +988,7 @@
     "icaExecuteDescription": "Execute an action from an ICA account on another chain.",
     "icaExperimental": "ICA is experimental and not properly supported by many chains. Only use this if you know what you are doing.",
     "icaHostSupported": "ICA is supported on this chain. Use at your own risk.",
+    "importCryptographicMultisigDescription": "Easily configure a DAO with the members and voting threshold of a cryptographic multisig by importing it from any Cosmos chain below.",
     "inactiveDaoTooltip": "This DAO has no proposals and may be inactive or a duplicate.",
     "inactiveDaosTooltip": "These DAOs have no proposals and may be inactive or duplicates.",
     "inboxConfigPreferencesDescription": "Choose where you want to receive notifications. Website notifications appear here on the Inbox page.",

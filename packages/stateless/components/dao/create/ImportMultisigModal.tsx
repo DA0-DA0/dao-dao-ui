@@ -41,6 +41,7 @@ export const ImportMultisigModal = ({
       contentContainerClassName="gap-4"
       header={{
         title: t('title.importCryptographicMultisig'),
+        subtitle: t('info.importCryptographicMultisigDescription'),
       }}
     >
       <div className="space-y-1">
