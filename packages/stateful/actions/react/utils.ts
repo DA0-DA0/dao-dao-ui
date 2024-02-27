@@ -20,6 +20,8 @@ export const actionKeyToMatchOrder = (key: ActionKey) =>
       ActionKey.ManageCw721,
       // Many actions are more specific item management actions.
       ActionKey.ManageStorageItems,
+      // Some actions are instantiate actions.
+      ActionKey.Instantiate,
       // The upgrade action (and likely future upgrade actions) are a specific
       // migrate action, so this needs to be after all those.
       ActionKey.Migrate,
