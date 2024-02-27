@@ -740,7 +740,7 @@ export const govProposalsSelector = selectorFamily<
               offset,
             },
           })
-        ) ?? []
+        )?.proposals ?? []
 
       if (indexerProposals.length) {
         v1Proposals = indexerProposals
