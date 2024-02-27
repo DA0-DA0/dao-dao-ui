@@ -12,7 +12,6 @@ import { walletChainIdAtom } from '@dao-dao/state'
 import { Modal, WarningCard } from '@dao-dao/stateless'
 import {
   getChainForChainId,
-  getSupportedChains,
   maybeGetAssetListForChainId,
   maybeGetChainForChainId,
   processError,
@@ -129,12 +128,8 @@ export const WalletUi = (props: WalletModalProps) => {
 
             // Connect to wallet.
             try {
-              // Ensure supported chains are added before connecting.
-              const chainRecords = uniq([
-                ...getSupportedChains().map(({ chainId }) => chainId),
-                wallet.chainId,
-                mainWalletChainId,
-              ])
+              // Ensure chains are added before connecting.
+              const chainRecords = uniq([wallet.chainId, mainWalletChainId])
                 .filter(Boolean)
                 .map((chainId) =>
                   convertChain(
