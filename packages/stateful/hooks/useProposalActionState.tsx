@@ -14,12 +14,15 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   LoadingData,
+  PreProposeModuleType,
   ProposalStatusEnum,
   ProposalStatusKey,
 } from '@dao-dao/types'
 import {
   DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY,
+  NEUTRON_GOVERNANCE_DAO,
   processError,
 } from '@dao-dao/utils'
 
@@ -178,7 +181,14 @@ export const useProposalActionState = ({
               />
             ) : undefined,
           }
-        : statusKey === ProposalStatusEnum.Rejected
+        : statusKey === ProposalStatusEnum.Rejected &&
+          // Don't show for Neutron overrule proposals.
+          !(
+            chainId === ChainId.NeutronMainnet &&
+            coreAddress === NEUTRON_GOVERNANCE_DAO &&
+            proposalModule.prePropose?.type ===
+              PreProposeModuleType.NeutronOverruleSingle
+          )
         ? {
             label: t('button.close'),
             Icon: CancelOutlined,
