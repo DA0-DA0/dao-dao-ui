@@ -1,7 +1,7 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { ProfileSearchHit, WithChainId } from '@dao-dao/types'
-import { PFPK_API_BASE, getChainForChainId, processError } from '@dao-dao/utils'
+import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
 
@@ -21,8 +21,7 @@ export const searchProfilesByNamePrefixSelector = selectorFamily<
       let hits: ProfileSearchHit[] = []
       try {
         const response = await fetch(
-          PFPK_API_BASE +
-            `/search/${getChainForChainId(chainId).bech32_prefix}/${namePrefix}`
+          PFPK_API_BASE + `/search/${chainId}/${namePrefix}`
         )
         if (response.ok) {
           const { profiles: _hits } = (await response.json()) as {

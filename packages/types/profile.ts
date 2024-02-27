@@ -7,6 +7,10 @@ export interface PfpkWalletProfile {
     tokenId: string
     collectionAddress: string
   } | null
+  /**
+   * Map chain ID to hex public key.
+   */
+  chains?: Record<string, string>
 }
 
 export type WalletProfileNameSource = 'pfpk' | 'stargaze'
