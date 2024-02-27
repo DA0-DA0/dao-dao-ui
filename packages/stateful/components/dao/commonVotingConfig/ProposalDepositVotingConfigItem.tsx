@@ -34,8 +34,8 @@ import {
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
-  isValidContractAddress,
-  makeValidateContractAddress,
+  isValidBech32Address,
+  makeValidateAddress,
 } from '@dao-dao/utils'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
@@ -75,18 +75,14 @@ const ProposalDepositInput = ({
               denomOrAddress: 'NEW_CW20',
             },
           })
-        : genericTokenSelector({
-            chainId,
-            type: TokenType.Native,
-            denomOrAddress: tokenBasedCreatorData.existingTokenDenom,
-          })
+        : constSelector(tokenBasedCreatorData.existingToken)
       : constSelector(undefined)
   )
 
   const tokenLoadable = useCachedLoadable(
     type === 'cw20' &&
       denomOrAddress &&
-      isValidContractAddress(denomOrAddress, bech32Prefix)
+      isValidBech32Address(denomOrAddress, bech32Prefix)
       ? genericTokenSelector({
           chainId,
           type: TokenType.Cw20,
@@ -238,7 +234,7 @@ const ProposalDepositInput = ({
               selectedToken={selectedToken}
               tokenFallback={
                 type === 'cw20'
-                  ? !isValidContractAddress(denomOrAddress, bech32Prefix)
+                  ? !isValidBech32Address(denomOrAddress, bech32Prefix)
                     ? t('form.cw20Token')
                     : tokenLoadable.state === 'loading' && <Loader size={24} />
                   : undefined
@@ -259,7 +255,7 @@ const ProposalDepositInput = ({
                 placeholder={t('form.tokenAddress')}
                 register={register}
                 type="contract"
-                validation={[makeValidateContractAddress(bech32Prefix)]}
+                validation={[makeValidateAddress(bech32Prefix)]}
               />
 
               <InputErrorMessage

@@ -4,9 +4,11 @@ import { selectorFamily } from 'recoil'
 
 import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
 import {
+  ContractName,
   DAO_CORE_CONTRACT_NAMES,
+  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   getChainForChainId,
-  isValidContractAddress,
+  isValidBech32Address,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -161,7 +163,16 @@ export const isContractSelector = selectorFamily<
   key: 'isContract',
   get:
     ({ contractAddress, chainId, ...nameOrNames }) =>
-    async ({ get }) => {
+    ({ get }) => {
+      if (
+        !isValidBech32Address(
+          contractAddress,
+          getChainForChainId(chainId).bech32_prefix
+        )
+      ) {
+        return false
+      }
+
       try {
         // All InfoResponses are the same, so just use core's.
         const {
@@ -177,13 +188,11 @@ export const isContractSelector = selectorFamily<
           ? contract.includes(nameOrNames.name)
           : nameOrNames.names.some((name) => contract.includes(name))
       } catch (err) {
-        // Invalid query enum info variant, different contract.
         if (
           err instanceof Error &&
-          (err.message.includes('Error parsing into type') ||
-            err.message.includes('no such contract') ||
-            err.message.includes('not found: invalid request') ||
-            err.message.includes('unknown query path'))
+          INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
+            (err as Error).message.includes(substring)
+          )
         ) {
           console.error(err)
           return false
@@ -203,10 +212,6 @@ export const isDaoSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     ({ get }) =>
-      isValidContractAddress(
-        address,
-        getChainForChainId(chainId).bech32_prefix
-      ) &&
       get(
         isContractSelector({
           contractAddress: address,
@@ -224,15 +229,11 @@ export const isPolytoneProxySelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     ({ get }) =>
-      isValidContractAddress(
-        address,
-        getChainForChainId(chainId).bech32_prefix
-      ) &&
       get(
         isContractSelector({
           contractAddress: address,
           chainId,
-          name: 'polytone-proxy',
+          name: ContractName.PolytoneProxy,
         })
       ),
 })

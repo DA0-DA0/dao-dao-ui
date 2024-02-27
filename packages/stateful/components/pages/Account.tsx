@@ -23,7 +23,7 @@ import {
   ACCOUNT_PAGE_TITLE,
   SITE_URL,
   getConfiguredChains,
-  isValidWalletAddress,
+  isValidBech32Address,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -41,7 +41,7 @@ export const Account: NextPage = () => {
 
   const validAddress =
     typeof address === 'string' && address
-      ? isValidWalletAddress(address)
+      ? isValidBech32Address(address)
       : false
 
   if (!validAddress) {

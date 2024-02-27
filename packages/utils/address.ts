@@ -5,11 +5,6 @@ export const isValidWalletAddress = (
   prefix?: string
 ): boolean => isValidBech32Address(address, prefix, 20)
 
-export const isValidContractAddress = (
-  address: string,
-  prefix: string
-): boolean => isValidBech32Address(address, prefix, 32)
-
 export const isValidValidatorAddress = (
   address: string,
   prefix: string

@@ -344,6 +344,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // kujira
         remoteChannel: 'channel-146',
       },
+      [ChainId.OraichainMainnet]: {
+        // osmosis
+        note: 'osmo1heyensqmjxare0u3vms5q52czw4j6lwfszyhsfyjmqw54j6n2tnq9l0yh4',
+        // osmosis
+        listener:
+          'osmo128t3k4gfenvxegdjft9r8ctely99drl4hgcvdrgcmlfhlla6ftuqydl0w4',
+        // oraichain
+        voice:
+          'orai16wexpcgt9wn88yuu8mdln7lx2l85ygj594jxm9aufjn6qwny49vs6mvcq4',
+        // osmosis
+        localConnection: 'connection-1464',
+        // oraichain
+        remoteConnection: 'connection-21',
+        // osmosis
+        localChannel: 'channel-20861',
+        // oraichain
+        remoteChannel: 'channel-214',
+      },
     },
   },
   {
@@ -933,6 +951,71 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.OraichainMainnet,
+    name: 'oraichain',
+    mainnet: true,
+    overrideChainImageUrl: '/chains/oraichain.svg',
+    accentColor: '#ffffff',
+    factoryContractAddress:
+      'orai1jwuyup67xem5tecj2pt098y23h5032f66zvj709p7mgz4vgyjx3qua5r5g',
+    createWithCw20: true,
+    explorerUrlTemplates: {
+      tx: 'https://scan.orai.io/txs/REPLACE',
+      gov: 'https://scan.orai.io/proposals',
+      govProp: 'https://scan.orai.io/proposals/REPLACE',
+      wallet: 'https://scan.orai.io/account/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 1546,
+      Cw4Group: 1547, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 1548,
+
+      // ContractVersion.V240
+      CwPayrollFactory: 1550,
+      CwTokenSwap: 1551,
+      CwTokenfactoryIssuer: 1552,
+      CwVesting: 1553,
+      DaoCore: 1554,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 1556,
+      DaoPreProposeApprover: 1557,
+      DaoPreProposeMultiple: 1558,
+      DaoPreProposeSingle: 1559,
+      DaoProposalMultiple: 1560,
+      DaoProposalSingle: 1561,
+      DaoVotingCw4: 1562,
+      DaoVotingCw721Staked: 1563,
+      DaoVotingTokenStaked: 1564,
+
+      // Oraichain uses cw20 DAOs.
+      Cw20Base: 1595, // v1.1.2
+      Cw20Stake: 1565,
+      DaoVotingCw20Staked: 1566,
+    },
+    polytone: {
+      [ChainId.OsmosisMainnet]: {
+        // oraichain
+        note: 'orai1hvfzt6f7n7pea803j633089rsh23qhgmexk3j844lsegnyfxjluqt0e9pq',
+        // oraichain
+        listener:
+          'orai1efwyc0zlc69n7pvj6yvnem504ynsv4xprquk9rgd65dthhc8n08snhh5my',
+        // osmosis
+        voice:
+          'osmo1e459dlf6y4xlmlsjfpzpea6p54fx5zkngq203p4eamjhn334h56sspgqhz',
+        // oraichain
+        localConnection: 'connection-21',
+        // osmosis
+        remoteConnection: 'connection-1464',
+        // oraichain
+        localChannel: 'channel-216',
+        // osmosis
+        remoteChannel: 'channel-20862',
+      },
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
@@ -1172,6 +1255,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.ChihuahuaMainnet]: {
     rpc: 'https://chihuahua-rpc.polkachu.com',
     rest: 'https://chihuahua-api.polkachu.com',
+  },
+  [ChainId.OraichainMainnet]: {
+    rpc: 'https://rpc.orai.io',
+    rest: 'https://lcd.orai.io',
   },
 }
 

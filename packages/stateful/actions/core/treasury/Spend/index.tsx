@@ -54,7 +54,6 @@ import {
   getPfmFinalReceiverFromMemo,
   isDecodedStargateMsg,
   isValidBech32Address,
-  isValidContractAddress,
   makeBankMessage,
   makeStargateMessage,
   makeWasmMessage,
@@ -183,7 +182,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           {
             chainId: fromChainId,
             // Cw20 denoms are contract addresses, native denoms are not.
-            type: isValidContractAddress(
+            type: isValidBech32Address(
               denom,
               getChainForChainId(fromChainId).bech32_prefix
             )
@@ -228,7 +227,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       : genericTokenSelector({
           chainId: fromChainId,
           // Cw20 denoms are contract addresses, native denoms are not.
-          type: isValidContractAddress(
+          type: isValidBech32Address(
             denom,
             getChainForChainId(fromChainId).bech32_prefix
           )

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -20,7 +20,7 @@ import {
 import {
   decodePolytoneExecuteMsg,
   getChainForChainId,
-  isValidContractAddress,
+  isValidBech32Address,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -101,10 +101,10 @@ const Component: ActionComponent = (props) => {
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
 
-  const [contract, setContract] = useState('')
+  const contract = watch((props.fieldNamePrefix + 'contract') as 'contract')
 
   const admin = useRecoilValueLoadable(
-    contract && isValidContractAddress(contract, bech32Prefix)
+    contract && isValidBech32Address(contract, bech32Prefix)
       ? contractAdminSelector({
           contractAddress: contract,
           chainId,
@@ -129,7 +129,6 @@ const Component: ActionComponent = (props) => {
           options={{
             contractAdmin:
               admin.state === 'hasValue' ? admin.contents : undefined,
-            onContractChange: (contract: string) => setContract(contract),
           }}
         />
       </ChainProvider>

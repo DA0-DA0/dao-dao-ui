@@ -15,7 +15,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  isValidContractAddress,
+  isValidBech32Address,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -139,7 +139,7 @@ const Component: ActionComponent = (props) => {
       : walletAdminOfDaosLoadable
 
   const daoInfoLoadable = useRecoilValueLoadable(
-    coreAddress && isValidContractAddress(coreAddress, bech32Prefix)
+    coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
       ? daoInfoSelector({
           coreAddress,
           chainId,

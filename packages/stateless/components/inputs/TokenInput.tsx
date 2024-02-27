@@ -11,6 +11,7 @@ import {
   getFallbackImage,
   toAccessibleImageUrl,
   tokensEqual,
+  transformIpfsUrlToHttpsIfNecessary,
   validateNonNegative,
   validatePositive,
   validateRequired,
@@ -200,8 +201,9 @@ export const TokenInput = <
                 : tokens.data.map((token, index) => ({
                     key: index + token.denomOrAddress,
                     label: token.symbol,
-                    iconUrl:
-                      token.imageUrl || getFallbackImage(token.denomOrAddress),
+                    iconUrl: transformIpfsUrlToHttpsIfNecessary(
+                      token.imageUrl || getFallbackImage(token.denomOrAddress)
+                    ),
                     ...token,
                     rightNode: (
                       <p className="caption-text max-w-[5rem] truncate">

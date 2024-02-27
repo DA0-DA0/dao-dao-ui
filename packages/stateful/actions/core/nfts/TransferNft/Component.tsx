@@ -25,7 +25,6 @@ import {
   getChainForChainId,
   getNftKey,
   makeValidateAddress,
-  makeValidateContractAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
@@ -110,7 +109,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                   // If executing smart contract, ensure recipient is smart
                   // contract.
                   (executeSmartContract
-                    ? makeValidateContractAddress
+                    ? makeValidateAddress
                     : makeValidateAddress)(chain.bech32_prefix),
                 ]}
               />

@@ -9,7 +9,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { ChooseExistingNftCollectionOptions } from '../types'
 
@@ -37,10 +37,7 @@ export const ChooseExistingNftCollection: ActionComponent<
           fieldName={fieldNamePrefix + 'collectionAddress'}
           register={register}
           type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-          ]}
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
 
         <InputErrorMessage error={errors?.collectionAddress} />

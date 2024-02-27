@@ -20,7 +20,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
-  makeValidateContractAddress,
+  makeValidateAddress,
   makeWasmMessage,
   validateCosmosMsg,
   validateRequired,
@@ -86,10 +86,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           fieldName={fieldNamePrefix + 'address'}
           register={register}
           type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-          ]}
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
         <InputErrorMessage error={errors?.address} />
       </div>

@@ -21,9 +21,7 @@ import {
 import {
   ContractName,
   convertMicroDenomToDenomWithDecimals,
-  getChainForChainId,
   getVestingValidatorSlashes,
-  isValidContractAddress,
 } from '@dao-dao/utils'
 
 export const vestingPaymentsOwnedBySelector = selectorFamily<
@@ -190,17 +188,15 @@ export const vestingInfoSelector = selectorFamily<
         ])
       )
 
-      const ownerIsCw1Whitelist =
-        owner &&
-        isValidContractAddress(owner, getChainForChainId(chainId).bech32_prefix)
-          ? get(
-              isContractSelector({
-                chainId,
-                contractAddress: owner,
-                name: ContractName.Cw1Whitelist,
-              })
-            )
-          : false
+      const ownerIsCw1Whitelist = owner
+        ? get(
+            isContractSelector({
+              chainId,
+              contractAddress: owner,
+              name: ContractName.Cw1Whitelist,
+            })
+          )
+        : false
       const cw1WhitelistAdmins =
         owner && ownerIsCw1Whitelist
           ? get(

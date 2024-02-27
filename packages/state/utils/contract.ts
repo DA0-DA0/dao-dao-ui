@@ -9,10 +9,9 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
+  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   cosmWasmClientRouter,
-  getChainForChainId,
   getRpcForChainId,
-  isValidContractAddress,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -45,13 +44,31 @@ export const fetchContractInfo = async (
 
   // If indexer fails, fallback to querying chain.
   if (!info) {
-    const client = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
-    const contractInfo = await client.queryContractRaw(
-      contractAddress,
-      toUtf8('contract_info')
-    )
-    if (contractInfo) {
-      info = JSON.parse(fromUtf8(contractInfo))
+    try {
+      const client = await cosmWasmClientRouter.connect(
+        getRpcForChainId(chainId)
+      )
+      const contractInfo = await client.queryContractRaw(
+        contractAddress,
+        toUtf8('contract_info')
+      )
+      if (contractInfo) {
+        info = JSON.parse(fromUtf8(contractInfo))
+      }
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
+          (err as Error).message.includes(substring)
+        )
+      ) {
+        // Ignore error.
+        console.error(err)
+        return undefined
+      }
+
+      // Rethrow other errors because it should not have failed.
+      throw err
     }
   }
 
@@ -106,41 +123,32 @@ export const fetchPreProposeModule = async (
       }
 
       // Check if approver is an approver contract.
-      if (
-        isValidContractAddress(
-          approver,
-          getChainForChainId(chainId).bech32_prefix
-        )
-      ) {
-        const approverContractInfo = await fetchContractInfo(chainId, approver)
-        if (
-          approverContractInfo?.contract === ContractName.PreProposeApprover
-        ) {
-          preProposeApproverContract = approver
-          approver = undefined
+      const approverContractInfo = await fetchContractInfo(chainId, approver)
+      if (approverContractInfo?.contract === ContractName.PreProposeApprover) {
+        preProposeApproverContract = approver
+        approver = undefined
 
-          // Get DAO address from approver contract.
-          // Try indexer first.
-          try {
-            approver = await queryIndexer({
-              type: 'contract',
-              address: preProposeApproverContract,
-              formula: 'daoPreProposeApprover/dao',
-              chainId,
-            })
-          } catch (err) {
-            // Ignore error.
-            console.error(err)
-          }
-          // If indexer fails, fallback to querying chain.
-          if (!approver) {
-            const client = new DaoPreProposeApproverQueryClient(
-              await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
-              preProposeApproverContract
-            )
+        // Get DAO address from approver contract.
+        // Try indexer first.
+        try {
+          approver = await queryIndexer({
+            type: 'contract',
+            address: preProposeApproverContract,
+            formula: 'daoPreProposeApprover/dao',
+            chainId,
+          })
+        } catch (err) {
+          // Ignore error.
+          console.error(err)
+        }
+        // If indexer fails, fallback to querying chain.
+        if (!approver) {
+          const client = new DaoPreProposeApproverQueryClient(
+            await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+            preProposeApproverContract
+          )
 
-            approver = await client.dao()
-          }
+          approver = await client.dao()
         }
       }
 

@@ -23,7 +23,7 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  { codeIds },
+  { createWithCw20, codeIds },
   {
     name,
     votingConfig: {
@@ -54,7 +54,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
             proposalDeposit.type === 'voting_module_token'
               ? {
                   voting_module_token: {
-                    token_type: 'native',
+                    token_type: createWithCw20 ? 'cw20' : 'native',
                   },
                 }
               : {

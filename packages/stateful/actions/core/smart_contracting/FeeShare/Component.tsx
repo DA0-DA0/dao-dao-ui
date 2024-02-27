@@ -10,10 +10,7 @@ import {
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  makeValidateAddress,
-  makeValidateContractAddress,
-} from '@dao-dao/utils'
+import { makeValidateAddress } from '@dao-dao/utils'
 import {
   MsgRegisterFeeShare,
   MsgUpdateFeeShare,
@@ -79,7 +76,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
           fieldName={(fieldNamePrefix + 'contract') as 'contract'}
           register={register}
           type="contract"
-          validation={[makeValidateContractAddress(bech32Prefix, false)]}
+          validation={[makeValidateAddress(bech32Prefix, false)]}
         />
         <InputErrorMessage error={errors?.contract} />
       </div>

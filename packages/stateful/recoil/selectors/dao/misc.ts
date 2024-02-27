@@ -38,13 +38,11 @@ import {
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
-  getChainForChainId,
   getDaoProposalPath,
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getSupportedChainConfig,
   getSupportedFeatures,
-  isValidContractAddress,
 } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
@@ -270,10 +268,6 @@ export const daoInfoSelector: (param: {
       let parentSubDaos
       if (admin && admin !== coreAddress) {
         if (
-          isValidContractAddress(
-            admin,
-            getChainForChainId(chainId).bech32_prefix
-          ) &&
           get(
             isDaoSelector({
               address: admin,

@@ -10,7 +10,7 @@ import {
   cwMsgToEncodeObject,
   decodeMessages,
   decodePolytoneExecuteMsg,
-  isValidContractAddress,
+  isValidBech32Address,
   typesRegistry,
 } from '@dao-dao/utils'
 import { cosmos } from '@dao-dao/utils/protobuf'
@@ -38,7 +38,7 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
 
   const polytoneProxies =
     useRecoilValue(
-      isValidContractAddress(senderAddress, bech32Prefix)
+      isValidBech32Address(senderAddress, bech32Prefix)
         ? DaoCoreV2Selectors.polytoneProxiesSelector({
             chainId,
             contractAddress: senderAddress,

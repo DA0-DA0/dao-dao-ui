@@ -17,10 +17,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  isValidContractAddress,
-  makeValidateContractAddress,
-} from '@dao-dao/utils'
+import { isValidBech32Address, makeValidateAddress } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -76,7 +73,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
               fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
               register={register}
               type="contract"
-              validation={[makeValidateContractAddress(bech32Prefix)]}
+              validation={[makeValidateAddress(bech32Prefix)]}
             />
           )
         ) : (
@@ -84,7 +81,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
         )}
       </div>
 
-      {isValidContractAddress(coreAddress, bech32Prefix) && (
+      {isValidBech32Address(coreAddress, bech32Prefix) && (
         <>
           <p className="title-text">{t('title.actions')}</p>
 

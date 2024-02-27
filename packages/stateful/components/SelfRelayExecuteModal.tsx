@@ -88,6 +88,7 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.TerraMainnet]: 100000,
   [ChainId.MigalooMainnet]: 2000000,
   [ChainId.KujiraMainnet]: 100000,
+  [ChainId.OraichainMainnet]: 100000,
 }
 
 type Relayer = {

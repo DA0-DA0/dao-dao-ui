@@ -29,7 +29,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
-  isValidContractAddress,
+  isValidBech32Address,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
@@ -65,7 +65,7 @@ export const Component: ActionComponent = (props) => {
   const tokenLoadable = useRecoilValueLoadable(
     depositInfo.type === 'cw20' &&
       depositInfo.denomOrAddress &&
-      isValidContractAddress(depositInfo.denomOrAddress, bech32Prefix)
+      isValidBech32Address(depositInfo.denomOrAddress, bech32Prefix)
       ? genericTokenSelector({
           chainId,
           type: TokenType.Cw20,

@@ -8,7 +8,7 @@ import {
   InputLabel,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../react'
 import { ChooseExistingTokenSwapOptions } from '../types'
@@ -39,10 +39,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
           fieldName={fieldNamePrefix + 'tokenSwapContractAddress'}
           register={register}
           type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-          ]}
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
 
         <InputErrorMessage error={errors?.tokenSwapContractAddress} />

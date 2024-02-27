@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { isDaoSelector } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
   DaoSupportedChainPickerInput,
@@ -23,8 +24,6 @@ import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
-  isValidContractAddress,
-  isValidWalletAddress,
   makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -96,13 +95,16 @@ const InnerComponentWrapper: ActionComponent<
   const {
     options: { address },
   } = props
-  const { bech32_prefix: bech32Prefix, chain_id: chainId } = useChain()
+  const { chain_id: chainId } = useChain()
 
-  const isContractAddress = isValidContractAddress(address, bech32Prefix)
-  const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
-  // If contract, try to load DAO info.
+  const isDaoLoadable = useRecoilValueLoadable(
+    isDaoSelector({
+      address,
+      chainId,
+    })
+  )
   const daoInfoLoadable = useRecoilValueLoadable(
-    isContractAddress
+    isDaoLoadable.state === 'hasValue' && isDaoLoadable.contents
       ? daoInfoSelector({
           chainId,
           coreAddress: address,
@@ -110,22 +112,19 @@ const InnerComponentWrapper: ActionComponent<
       : constSelector(undefined)
   )
 
-  return isContractAddress &&
-    daoInfoLoadable.state === 'hasValue' &&
-    daoInfoLoadable.contents ? (
+  return isDaoLoadable.state === 'loading' ||
+    daoInfoLoadable.state === 'loading' ? (
+    <InnerComponentLoading {...props} />
+  ) : daoInfoLoadable.state === 'hasValue' && daoInfoLoadable.contents ? (
     <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
       <DaoProviders info={daoInfoLoadable.contents}>
         <InnerComponent {...props} />
       </DaoProviders>
     </SuspenseLoader>
-  ) : (isContractAddress &&
-      (daoInfoLoadable.state === 'hasError' || !daoInfoLoadable.contents)) ||
-    isWalletAddress ? (
+  ) : (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
-  ) : (
-    <InnerComponentLoading {...props} />
   )
 }
 

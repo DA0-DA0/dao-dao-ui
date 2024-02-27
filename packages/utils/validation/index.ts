@@ -3,7 +3,6 @@ import { TFunction } from 'react-i18next'
 
 import {
   isValidBech32Address,
-  isValidContractAddress,
   isValidTokenFactoryDenom,
   isValidValidatorAddress,
 } from '../address'
@@ -42,13 +41,6 @@ export const makeValidateAddress =
 export const makeValidateValidatorAddress =
   (bech32Prefix: string) => (v: string) =>
     isValidValidatorAddress(v, bech32Prefix) || 'Invalid address'
-
-export const makeValidateContractAddress =
-  (bech32Prefix: string, required = true) =>
-  (v: any) =>
-    (!required && !v) ||
-    (v && typeof v === 'string' && isValidContractAddress(v, bech32Prefix)) ||
-    'Invalid contract address'
 
 export const validateUrl = (v: string | undefined) =>
   (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'

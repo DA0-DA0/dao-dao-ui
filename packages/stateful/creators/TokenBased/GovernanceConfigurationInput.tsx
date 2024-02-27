@@ -7,12 +7,14 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
+  Cw20BaseSelectors,
   genericTokenSelector,
   nativeSupplySelector,
   tokenFactoryDenomCreationFeeSelector,
 } from '@dao-dao/state'
 import {
   Button,
+  ImageSelector,
   InputErrorMessage,
   InputLabel,
   Loader,
@@ -22,7 +24,7 @@ import {
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
   useCachedLoading,
-  useChain,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -35,7 +37,9 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
+  isValidBech32Address,
   isValidNativeTokenDenom,
+  makeValidateAddress,
   validateNativeTokenDenom,
   validatePercent,
   validatePositive,
@@ -45,6 +49,7 @@ import {
 
 import { TokenBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
+import { Trans } from '../../components/Trans'
 import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData, GovernanceTokenType } from './types'
@@ -65,8 +70,13 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress } = useWallet()
+
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    config: { createWithCw20 },
+  } = useSupportedChainContext()
+  const isCw20 = !!createWithCw20
 
   const {
     fields: tierFields,
@@ -193,15 +203,25 @@ export const GovernanceConfigurationInput = ({
     initialTreasuryPercent + totalMemberPercent === 100
 
   //! Validate existing governance token.
-  const governanceTokenIsValid =
-    !!data.existingTokenDenom &&
-    isValidNativeTokenDenom(data.existingTokenDenom)
+  const existingGovernanceTokenIsCw20 =
+    isCw20 &&
+    !!data.existingTokenDenomOrAddress &&
+    isValidBech32Address(data.existingTokenDenomOrAddress, bech32Prefix)
+  const existingGovernanceTokenIsNative =
+    !isCw20 &&
+    !!data.existingTokenDenomOrAddress &&
+    isValidNativeTokenDenom(data.existingTokenDenomOrAddress)
+  const existingGovernanceTokenIsValid =
+    existingGovernanceTokenIsNative || existingGovernanceTokenIsCw20
+
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
-    governanceTokenIsValid
+    existingGovernanceTokenIsValid
       ? genericTokenSelector({
           chainId,
-          type: TokenType.Native,
-          denomOrAddress: data.existingTokenDenom,
+          type: existingGovernanceTokenIsNative
+            ? TokenType.Native
+            : TokenType.Cw20,
+          denomOrAddress: data.existingTokenDenomOrAddress,
         })
       : constSelector(undefined)
   )
@@ -210,10 +230,16 @@ export const GovernanceConfigurationInput = ({
   >(
     existingGovernanceTokenLoadable.state === 'hasValue' &&
       existingGovernanceTokenLoadable.contents
-      ? nativeSupplySelector({
-          chainId,
-          denom: data.existingTokenDenom,
-        })
+      ? existingGovernanceTokenIsNative
+        ? nativeSupplySelector({
+            chainId,
+            denom: data.existingTokenDenomOrAddress,
+          })
+        : Cw20BaseSelectors.tokenInfoSelector({
+            chainId,
+            contractAddress: data.existingTokenDenomOrAddress,
+            params: [],
+          })
       : constSelector(undefined)
   )
   useEffect(() => {
@@ -245,7 +271,11 @@ export const GovernanceConfigurationInput = ({
     if (!errors?.creator?.data?.existingToken?._error) {
       setError('creator.data.existingToken._error', {
         type: 'manual',
-        message: t('error.failedToGetFactoryTokenInfo'),
+        message: existingGovernanceTokenIsNative
+          ? t('error.failedToGetFactoryTokenInfo')
+          : t('error.failedToGetTokenInfo', {
+              tokenType: 'CW20',
+            }),
       })
     }
   }, [
@@ -257,6 +287,7 @@ export const GovernanceConfigurationInput = ({
     t,
     existingGovernanceTokenSupply.state,
     existingGovernanceTokenSupply.contents,
+    existingGovernanceTokenIsNative,
   ])
 
   //! Bar chart data
@@ -317,20 +348,22 @@ export const GovernanceConfigurationInput = ({
 
             <div className="flex flex-col items-stretch sm:flex-row">
               <div className="flex flex-col items-stretch sm:flex-row">
-                {/* TODO(tokenfactory-image): add back in once token factory supports URI metadata */}
-                {/* <div className="flex flex-col items-center gap-5 py-6 px-10 sm:border-border-secondary sm:border-r">
-                  <InputLabel name={t('form.image')} />
-                  <ImageSelector
-                    Trans={Trans}
-                    error={errors.creator?.data?.newInfo?.imageUrl}
-                    fieldName="creator.data.newInfo.imageUrl"
-                    register={register}
-                    setValue={setValue}
-                    size={40}
-                    watch={watch}
-                  />
-                </div> */}
-                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-r">
+                {/* TODO(tokenfactory-image): add back in once token factory  supports URI metadata */}
+                {isCw20 && (
+                  <div className="flex flex-col items-center gap-5 border-b border-border-secondary py-6 px-10 sm:border-r sm:border-b-0">
+                    <InputLabel name={t('form.image')} />
+                    <ImageSelector
+                      Trans={Trans}
+                      error={errors.creator?.data?.newInfo?.imageUrl}
+                      fieldName="creator.data.newInfo.imageUrl"
+                      register={register}
+                      setValue={setValue}
+                      size={40}
+                      watch={watch}
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col gap-5 border-b border-border-secondary py-6 px-8 sm:border-b-0 sm:border-r">
                   <InputLabel name={t('form.symbol')} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-center gap-2">
@@ -521,16 +554,25 @@ export const GovernanceConfigurationInput = ({
             <div>
               <TextInput
                 className="symbol-small-body-text font-mono text-text-secondary"
-                error={errors.creator?.data?.existingTokenDenom}
-                fieldName="creator.data.existingTokenDenom"
+                error={errors.creator?.data?.existingTokenDenomOrAddress}
+                fieldName="creator.data.existingTokenDenomOrAddress"
                 ghost
-                placeholder={`"denom" OR "ibc/HASH" OR "factory/${bech32Prefix}.../denom"`}
+                placeholder={
+                  isCw20
+                    ? bech32Prefix + '...'
+                    : `"denom" OR "ibc/HASH" OR "factory/${bech32Prefix}.../denom"`
+                }
                 register={register}
-                validation={[validateRequired, validateNativeTokenDenom]}
+                validation={[
+                  validateRequired,
+                  ...(isCw20
+                    ? [makeValidateAddress(bech32Prefix)]
+                    : [validateNativeTokenDenom]),
+                ]}
               />
               <InputErrorMessage
                 error={
-                  errors.creator?.data?.existingTokenDenom ||
+                  errors.creator?.data?.existingTokenDenomOrAddress ||
                   errors.creator?.data?.existingToken?._error
                 }
               />

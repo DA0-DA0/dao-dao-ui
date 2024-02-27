@@ -38,6 +38,7 @@ import {
   ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
+  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
@@ -52,7 +53,7 @@ import {
   getSupportedChainConfig,
   getSupportedFeatures,
   isFeatureSupportedByVersion,
-  isValidContractAddress,
+  isValidBech32Address,
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
@@ -526,7 +527,7 @@ const loadParentDaoInfo = async (
     }
 
     if (
-      !isValidContractAddress(
+      !isValidBech32Address(
         potentialParentAddress,
         getChainForChainId(chainId).bech32_prefix
       )
@@ -555,7 +556,12 @@ const loadParentDaoInfo = async (
     }
   } catch (err) {
     // If contract not found, ignore error. Otherwise, log it.
-    if (!(err instanceof Error) || !err.message.includes('not found')) {
+    if (
+      !(err instanceof Error) ||
+      !INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
+        (err as Error).message.includes(substring)
+      )
+    ) {
       console.error(err)
       console.error(
         `Error loading parent DAO (${potentialParentAddress}) of ${subDaoAddress}`,

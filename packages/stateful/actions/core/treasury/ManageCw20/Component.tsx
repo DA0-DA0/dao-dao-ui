@@ -16,7 +16,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { getChainForChainId } from '@dao-dao/utils'
 import {
-  makeValidateContractAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
@@ -127,7 +127,7 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
             type="contract"
             validation={[
               validateRequired,
-              makeValidateContractAddress(chain.bech32_prefix),
+              makeValidateAddress(chain.bech32_prefix),
               // Invalidate field if additional error is present.
               () => additionalAddressError || true,
             ]}

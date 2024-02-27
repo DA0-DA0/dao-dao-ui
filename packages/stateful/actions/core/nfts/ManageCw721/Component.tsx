@@ -16,7 +16,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import { getChainForChainId } from '@dao-dao/utils'
 import {
-  makeValidateContractAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
@@ -133,7 +133,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
             type="contract"
             validation={[
               validateRequired,
-              makeValidateContractAddress(chain.bech32_prefix),
+              makeValidateAddress(chain.bech32_prefix),
               // Invalidate field if additional error is present.
               () => additionalAddressError || true,
             ]}

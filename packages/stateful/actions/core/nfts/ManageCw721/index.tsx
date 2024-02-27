@@ -25,7 +25,7 @@ import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
   getChainForChainId,
-  isValidContractAddress,
+  isValidBech32Address,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -68,7 +68,7 @@ const Component: ActionComponent = (props) => {
   const workaround = watch(fieldNamePrefix + 'workaround')
 
   const tokenInfoLoadable = useRecoilValueLoadable(
-    tokenAddress && isValidContractAddress(tokenAddress, bech32Prefix)
+    tokenAddress && isValidBech32Address(tokenAddress, bech32Prefix)
       ? CommonNftSelectors.contractInfoSelector({
           contractAddress: tokenAddress,
           chainId,

@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  makeValidateContractAddress,
+  makeValidateAddress,
   validateJSON,
   validatePositive,
   validateRequired,
@@ -63,10 +63,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
             fieldName={fieldNamePrefix + 'contract'}
             onChange={(v) => onContractChange(v.target.value)}
             register={register}
-            validation={[
-              validateRequired,
-              makeValidateContractAddress(bech32Prefix),
-            ]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
           <InputErrorMessage error={errors?.contract} />
         </div>
