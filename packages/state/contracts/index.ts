@@ -1,4 +1,12 @@
 export { Cw1WhitelistClient, Cw1WhitelistQueryClient } from './Cw1Whitelist'
+export {
+  Cw3FixedMultisigClient,
+  Cw3FixedMultisigQueryClient,
+} from './Cw3FixedMultisig'
+export {
+  Cw3FlexMultisigClient,
+  Cw3FlexMultisigQueryClient,
+} from './Cw3FlexMultisig'
 export { Cw4GroupClient, Cw4GroupQueryClient } from './Cw4Group'
 export { Cw20BaseClient, Cw20BaseQueryClient } from './Cw20Base'
 export { Cw20StakeClient, Cw20StakeQueryClient } from './Cw20Stake'

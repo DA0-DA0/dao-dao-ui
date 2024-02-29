@@ -1,6 +1,8 @@
 // These are all used elsewhere in the codebase.
 export enum ContractName {
   Cw1Whitelist = 'crates.io:cw1-whitelist',
+  Cw3FixedMultisig = 'crates.io:cw3-fixed-multisig',
+  Cw3FlexMultisig = 'crates.io:cw3-flex-multisig',
   CwTokenSwap = 'crates.io:cw-token-swap',
   CwTokenfactoryIssuer = 'crates.io:cw-tokenfactory-issuer',
   PolytoneProxy = 'crates.io:polytone-proxy',

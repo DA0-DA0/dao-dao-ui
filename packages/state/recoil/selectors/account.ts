@@ -9,14 +9,16 @@ import {
 import {
   Account,
   AccountType,
-  CryptographicMultisigDetails,
   GenericToken,
   GenericTokenBalanceWithOwner,
   IcaAccount,
+  MultisigDetails as MultisigDetails,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
+import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
+  ContractName,
   ICA_CHAINS_TX_PREFIX,
   POLYTONE_CONFIG_PER_CHAIN,
   getChainForChainId,
@@ -28,8 +30,16 @@ import { LegacyAminoPubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto
 import { PubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 
 import { cosmosRpcClientForChainSelector } from './chain'
-import { isDaoSelector, isPolytoneProxySelector } from './contract'
-import { DaoCoreV2Selectors, PolytoneProxySelectors } from './contracts'
+import {
+  isContractSelector,
+  isDaoSelector,
+  isPolytoneProxySelector,
+} from './contract'
+import {
+  Cw3FlexMultisigSelectors,
+  DaoCoreV2Selectors,
+  PolytoneProxySelectors,
+} from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalanceSelector,
@@ -337,7 +347,7 @@ export const reverseLookupPolytoneProxySelector = selectorFamily<
  * Get the details of a cryptographic multisig account.
  */
 export const cryptographicMultisigDetailsSelector = selectorFamily<
-  CryptographicMultisigDetails,
+  MultisigDetails,
   WithChainId<{ address: string }>
 >({
   key: 'cryptographicMultisigDetails',
@@ -379,8 +389,127 @@ export const cryptographicMultisigDetailsSelector = selectorFamily<
       return {
         chainId,
         address,
-        addresses,
-        threshold,
+        members: addresses.map((address) => ({
+          address,
+          weight: 1,
+        })),
+        threshold: {
+          absolute_count: {
+            threshold: BigInt(threshold).toString(),
+          },
+        },
+        totalWeight: addresses.length,
       }
+    },
+})
+
+/**
+ * Get the details of a cw3-fixed or cw3-flex multisig account.
+ */
+export const cw3MultisigDetailsSelector = selectorFamily<
+  MultisigDetails,
+  WithChainId<{ address: string }>
+>({
+  key: 'cw3MultisigDetails',
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      const isCw3Multisig = get(
+        isContractSelector({
+          chainId,
+          contractAddress: address,
+          names: [ContractName.Cw3FixedMultisig, ContractName.Cw3FlexMultisig],
+        })
+      )
+
+      if (!isCw3Multisig) {
+        throw new Error('Not a multisig address.')
+      }
+
+      const [_threshold, { voters }] = get(
+        waitForAll([
+          Cw3FlexMultisigSelectors.thresholdSelector({
+            chainId,
+            contractAddress: address,
+            params: [],
+          }),
+          Cw3FlexMultisigSelectors.listAllVotersSelector({
+            chainId,
+            contractAddress: address,
+          }),
+        ])
+      )
+
+      const threshold: Threshold | undefined =
+        'absolute_count' in _threshold
+          ? {
+              absolute_count: {
+                threshold: BigInt(_threshold.absolute_count.weight).toString(),
+              },
+            }
+          : 'absolute_percentage' in _threshold
+          ? {
+              absolute_percentage: {
+                percentage: {
+                  percent: _threshold.absolute_percentage.percentage,
+                },
+              },
+            }
+          : 'threshold_quorum' in _threshold
+          ? {
+              threshold_quorum: {
+                quorum: {
+                  percent: _threshold.threshold_quorum.quorum,
+                },
+                threshold: {
+                  percent: _threshold.threshold_quorum.threshold,
+                },
+              },
+            }
+          : undefined
+
+      if (!threshold) {
+        throw new Error('Unsupported multisig.')
+      }
+
+      return {
+        chainId,
+        address,
+        members: voters.map(({ addr, weight }) => ({
+          address: addr,
+          weight,
+        })),
+        threshold,
+        totalWeight: voters.reduce((acc, { weight }) => acc + weight, 0),
+      }
+    },
+})
+
+/**
+ * Get the details of a cryptographic, cw3-fixed, or cw3-flex multisig account.
+ */
+export const multisigDetailsSelector = selectorFamily<
+  MultisigDetails,
+  WithChainId<{ address: string }>
+>({
+  key: 'multisigDetails',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const [cryptographicMultisig, cw3Multisig] = get(
+        waitForAllSettled([
+          cryptographicMultisigDetailsSelector(params),
+          cw3MultisigDetailsSelector(params),
+        ])
+      )
+
+      if (cryptographicMultisig.state === 'hasValue') {
+        return cryptographicMultisig.contents
+      }
+      if (cw3Multisig.state === 'hasValue') {
+        return cw3Multisig.contents
+      }
+
+      throw new Error('Not a multisig address.')
     },
 })

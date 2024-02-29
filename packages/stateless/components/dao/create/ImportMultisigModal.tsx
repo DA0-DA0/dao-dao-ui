@@ -2,14 +2,19 @@ import { fromBech32 } from '@cosmjs/encoding'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ImportMultisigForm, ImportMultisigModalProps } from '@dao-dao/types'
 import {
+  ImportMultisigForm,
+  ImportMultisigModalProps,
+  ProcessedTQType,
+} from '@dao-dao/types'
+import {
+  formatPercentOf100,
   getConfiguredChains,
   isValidBech32Address,
   makeValidateAddress,
 } from '@dao-dao/utils'
 
-import { useChain } from '../../../hooks'
+import { useChain, useProcessTQ } from '../../../hooks'
 import { Button } from '../../buttons'
 import { InputErrorMessage, InputLabel } from '../../inputs'
 import { Loader } from '../../logo'
@@ -34,14 +39,36 @@ export const ImportMultisigModal = ({
 
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
+  const processTQ = useProcessTQ()
+  const processedMultisigTQ =
+    loadingMultisig.loading || loadingMultisig.errored
+      ? undefined
+      : processTQ(loadingMultisig.data.threshold)
+
+  const multisigType =
+    loadingMultisig.loading || loadingMultisig.errored || !processedMultisigTQ
+      ? 'unknown'
+      : processedMultisigTQ.threshold.type === ProcessedTQType.Absolute
+      ? t('info.xOfYMultisig', {
+          x: processedMultisigTQ.threshold.display,
+          y: loadingMultisig.data.totalWeight,
+        })
+      : [
+          t('title.threshold') + ': ' + processedMultisigTQ.threshold.display,
+          processedMultisigTQ.quorum &&
+            t('info.quorum') + ': ' + processedMultisigTQ.quorum.display,
+        ]
+          .filter(Boolean)
+          .join(', ')
+
   return (
     <Modal
       {...props}
       containerClassName="sm:!max-w-xl"
       contentContainerClassName="gap-4"
       header={{
-        title: t('title.importCryptographicMultisig'),
-        subtitle: t('info.importCryptographicMultisigDescription'),
+        title: t('title.importMultisig'),
+        subtitle: t('info.importMultisigDescription'),
       }}
     >
       <div className="space-y-1">
@@ -114,19 +141,25 @@ export const ImportMultisigModal = ({
                 <div className="space-y-2">
                   <InputLabel>{t('title.type')}</InputLabel>
 
-                  <p className="primary-text">
-                    {t('info.xOfYMultisig', {
-                      x: loadingMultisig.data.threshold,
-                      y: loadingMultisig.data.addresses.length,
-                    })}
-                  </p>
+                  <p className="primary-text">{multisigType}</p>
                 </div>
 
                 <div className="space-y-2">
                   <InputLabel>{t('title.members')}</InputLabel>
 
-                  {loadingMultisig.data.addresses.map((address) => (
-                    <EntityDisplay key={address} address={address} />
+                  {loadingMultisig.data.members.map(({ address, weight }) => (
+                    <div
+                      key={address}
+                      className="flex flex-row items-center justify-between"
+                    >
+                      <EntityDisplay address={address} />
+
+                      <p className="secondary-text shrink-0 font-mono">
+                        {formatPercentOf100(
+                          (weight / loadingMultisig.data.totalWeight) * 100
+                        )}
+                      </p>
+                    </div>
                   ))}
                 </div>
               </div>

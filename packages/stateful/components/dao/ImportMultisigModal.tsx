@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { cryptographicMultisigDetailsSelector } from '@dao-dao/state/recoil'
+import { multisigDetailsSelector } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
   ImportMultisigModal as StatelessImportMultisigModal,
@@ -32,7 +32,7 @@ export const ImportMultisigModal = (
     chainId &&
       address &&
       isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
-      ? cryptographicMultisigDetailsSelector({
+      ? multisigDetailsSelector({
           chainId,
           address,
         })

@@ -17,6 +17,7 @@ import {
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
+  useProcessTQ,
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
@@ -38,7 +39,6 @@ import {
   SimulateProposal,
   UsePublishProposal,
 } from '../../types'
-import { useProcessTQ } from '../hooks'
 import { NewProposalMain } from './NewProposalMain'
 import { NewProposalPreview } from './NewProposalPreview'
 

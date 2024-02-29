@@ -1,6 +1,7 @@
 import { ComponentType } from 'react'
 
 import { ActionKeyAndData } from './actions'
+import { Threshold } from './contracts/DaoProposalSingle.common'
 
 /**
  * The type of account given whatever the relevant context is.
@@ -73,9 +74,9 @@ export type AccountTxSave = AccountTxForm & {
 }
 
 /**
- * The details that describe a cryptographic multisig.
+ * The details that describe a multisig membership and threshold.
  */
-export type CryptographicMultisigDetails = {
+export type MultisigDetails = {
   /**
    * The multisig's chain ID.
    */
@@ -85,11 +86,18 @@ export type CryptographicMultisigDetails = {
    */
   address: string
   /**
-   * The member addresses of the multisig.
+   * The members of the multisig.
    */
-  addresses: string[]
+  members: {
+    address: string
+    weight: number
+  }[]
   /**
-   * The number of members that must sign a transaction for it to be valid.
+   * The threshold of members that must sign a transaction for it to be valid.
    */
-  threshold: number
+  threshold: Threshold
+  /**
+   * The sum of all members' weights.
+   */
+  totalWeight: number
 }

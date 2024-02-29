@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { CryptographicMultisigDetails } from '../account'
+import { MultisigDetails } from '../account'
 import { LoadingDataWithError } from '../misc'
 import { AddressInputProps } from './AddressInput'
 import { StatefulEntityDisplayProps } from './EntityDisplay'
@@ -13,11 +13,11 @@ export type ImportMultisigModalProps = Pick<
   /**
    * Multisig details loading from the entered address.
    */
-  loadingMultisig: LoadingDataWithError<CryptographicMultisigDetails>
+  loadingMultisig: LoadingDataWithError<MultisigDetails>
   /**
    * Import callback.
    */
-  onImport: (details: CryptographicMultisigDetails) => void
+  onImport: (details: MultisigDetails) => void
   /**
    * The stateful address input component.
    */

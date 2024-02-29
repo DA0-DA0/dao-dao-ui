@@ -9,6 +9,7 @@ import {
 import {
   TokenAmountDisplay,
   useCachedLoadingWithError,
+  useProcessTQ,
 } from '@dao-dao/stateless'
 import {
   DaoInfoCard,
@@ -24,7 +25,7 @@ import {
 
 import { EntityDisplay } from '../../../../components'
 import { useProposalModuleAdapterCommonContext } from '../../../react/context'
-import { anyoneCanProposeSelector, useProcessTQ } from '../common'
+import { anyoneCanProposeSelector } from '../common'
 
 export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()

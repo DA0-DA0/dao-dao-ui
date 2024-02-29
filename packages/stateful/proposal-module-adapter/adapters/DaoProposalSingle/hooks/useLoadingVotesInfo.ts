@@ -1,6 +1,6 @@
+import { useProcessTQ } from '@dao-dao/stateless'
 import { LoadingData, ProcessedTQType } from '@dao-dao/types'
 
-import { useProcessTQ } from '../common/hooks/useProcessTQ'
 import { VotesInfo } from '../types'
 import { useLoadingProposal } from './useLoadingProposal'
 
