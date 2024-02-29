@@ -2,11 +2,7 @@ import { fromBech32 } from '@cosmjs/encoding'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ImportMultisigForm,
-  ImportMultisigModalProps,
-  ProcessedTQType,
-} from '@dao-dao/types'
+import { ImportMultisigForm, ImportMultisigModalProps } from '@dao-dao/types'
 import {
   formatPercentOf100,
   getConfiguredChains,
@@ -48,7 +44,7 @@ export const ImportMultisigModal = ({
   const multisigType =
     loadingMultisig.loading || loadingMultisig.errored || !processedMultisigTQ
       ? 'unknown'
-      : processedMultisigTQ.threshold.type === ProcessedTQType.Absolute
+      : 'absolute_count' in loadingMultisig.data.threshold
       ? t('info.xOfYMultisig', {
           x: processedMultisigTQ.threshold.display,
           y: loadingMultisig.data.totalWeight,
