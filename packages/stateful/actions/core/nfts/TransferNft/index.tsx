@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
 import { BoxEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
@@ -196,7 +196,7 @@ const Component: ActionComponent = (props) => {
           })
       : undefined
   )
-  const nftInfo = useRecoilValue(
+  const nftInfo = useCachedLoadingWithError(
     chainId && collection && tokenId
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)

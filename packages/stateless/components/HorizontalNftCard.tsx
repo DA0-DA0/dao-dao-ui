@@ -202,3 +202,22 @@ export const HorizontalNftCard = forwardRef<
     </div>
   )
 })
+
+export const HorizontalNftCardLoader = () => (
+  <div className="flex animate-pulse flex-col items-stretch overflow-hidden rounded-lg bg-background-primary sm:grid sm:grid-cols-[auto_1fr] sm:grid-rows-1">
+    <div className="aspect-square sm:h-36 sm:w-36"></div>
+
+    <div className="flex min-w-0 grow flex-col">
+      <p className="title-text border-b border-border-secondary py-4 px-6 opacity-0">
+        LOADING
+      </p>
+
+      <div className="flex grow flex-row items-center justify-between gap-8 py-4 px-6">
+        <div className="flex flex-col items-stretch justify-between gap-1 overflow-hidden">
+          <p className="secondary-text text-xs opacity-0">LOADING</p>
+          <p className="primary-text truncate font-normal opacity-0">LOADING</p>
+        </div>
+      </div>
+    </div>
+  </div>
+)

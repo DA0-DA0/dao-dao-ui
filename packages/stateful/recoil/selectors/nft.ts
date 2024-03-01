@@ -167,42 +167,43 @@ export const nftCardInfoSelector = selectorFamily<
   get:
     ({ tokenId, collection, chainId }) =>
     async ({ get }) => {
-      // Use Stargaze indexer when possible.
+      // Use Stargaze indexer when possible. Fallback to contract query.
       if (
         chainId === ChainId.StargazeMainnet ||
         chainId === ChainId.StargazeTestnet
       ) {
-        const { error, data } = await stargazeIndexerClient.query({
-          query: stargazeTokenQuery,
-          variables: {
-            collectionAddr: collection,
-            tokenId,
-          },
-        })
-
-        if (error) {
-          throw error
+        let data
+        try {
+          data = (
+            await stargazeIndexerClient.query({
+              query: stargazeTokenQuery,
+              variables: {
+                collectionAddr: collection,
+                tokenId,
+              },
+            })
+          ).data
+        } catch (err) {
+          console.error(err)
         }
 
-        if (!data.token) {
-          throw new Error('Failed to load NFT from Stargaze')
+        if (data?.token) {
+          const genericToken = data.token?.highestOffer?.offerPrice?.denom
+            ? get(
+                genericTokenSelector({
+                  chainId,
+                  type: TokenType.Native,
+                  denomOrAddress: data.token.highestOffer.offerPrice.denom,
+                })
+              )
+            : undefined
+
+          return nftCardInfoFromStargazeIndexerNft(
+            chainId,
+            data.token,
+            genericToken
+          )
         }
-
-        const genericToken = data.token?.highestOffer?.offerPrice?.denom
-          ? get(
-              genericTokenSelector({
-                chainId,
-                type: TokenType.Native,
-                denomOrAddress: data.token.highestOffer.offerPrice.denom,
-              })
-            )
-          : undefined
-
-        return nftCardInfoFromStargazeIndexerNft(
-          chainId,
-          data.token,
-          genericToken
-        )
       }
 
       const tokenInfo = get(

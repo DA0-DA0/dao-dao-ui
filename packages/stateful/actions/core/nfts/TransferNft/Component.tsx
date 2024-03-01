@@ -8,8 +8,10 @@ import {
   Button,
   ChainProvider,
   CodeMirrorInput,
+  ErrorPage,
   FormSwitchCard,
   HorizontalNftCard,
+  HorizontalNftCardLoader,
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/stateless'
@@ -44,7 +46,7 @@ export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
   options: LoadingDataWithError<LazyNftCardInfo[]>
   // Information about the NFT currently selected.
-  nftInfo: NftCardInfo | undefined
+  nftInfo: LoadingDataWithError<NftCardInfo | undefined>
 
   AddressInput: ComponentType<AddressInputProps<TransferNftData>>
   NftSelectionModal: ComponentType<NftSelectionModalProps>
@@ -182,7 +184,13 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
         </div>
 
         <div className="flex grow flex-col gap-2">
-          {nftInfo && <HorizontalNftCard {...nftInfo} />}
+          {nftInfo.loading ? (
+            <HorizontalNftCardLoader />
+          ) : nftInfo.errored ? (
+            <ErrorPage error={nftInfo.error} />
+          ) : (
+            nftInfo.data && <HorizontalNftCard {...nftInfo.data} />
+          )}
 
           {isCreating && (
             <Button

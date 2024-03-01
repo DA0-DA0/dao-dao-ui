@@ -40,7 +40,11 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    nftInfo: selected,
+    nftInfo: {
+      loading: false,
+      errored: false,
+      data: selected,
+    },
     options: {
       loading: false,
       errored: false,

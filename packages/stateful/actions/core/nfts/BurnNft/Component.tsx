@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   HorizontalNftCard,
+  HorizontalNftCardLoader,
   InputErrorMessage,
-  Loader,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -86,7 +86,7 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
     <>
       <div className="flex flex-col gap-2">
         {nftInfo.loading ? (
-          <Loader size={24} />
+          <HorizontalNftCardLoader />
         ) : !nftInfo.errored && nftInfo.data ? (
           <HorizontalNftCard {...nftInfo.data} />
         ) : (
