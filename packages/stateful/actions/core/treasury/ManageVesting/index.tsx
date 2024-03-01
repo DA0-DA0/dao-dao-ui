@@ -701,7 +701,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
                     funds: [],
                     msg: {
                       send: {
-                        amount: total,
+                        amount: BigInt(total).toString(),
                         contract: vestingSource.factory,
                         msg: encodeMessageAsBase64({
                           instantiate_payroll_contract: msg,
