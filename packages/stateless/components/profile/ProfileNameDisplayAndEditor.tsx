@@ -12,16 +12,14 @@ import { ChainLogo } from '../chain/ChainLogo'
 import { IconButton } from '../icon_buttons'
 import { TextInput } from '../inputs'
 import { Loader } from '../logo'
-import { Tooltip } from '../tooltip'
+import { Tooltip, TooltipInfoIcon } from '../tooltip'
 
 export type ProfileNameDisplayAndEditorProps = {
   walletProfileData: WalletProfileData
   compact?: boolean
   updateProfileName?: (name: string | null) => Promise<void>
   className?: string
-  nameClassName?: string
-  // The height of this should match the line-height of the name.
-  editingContainerClassName?: string
+  header?: boolean
   editingClassName?: string
 }
 
@@ -30,9 +28,7 @@ export const ProfileNameDisplayAndEditor = ({
   walletProfileData,
   updateProfileName,
   className,
-  nameClassName = '!title-text',
-  // h-5 matches the line-height of title-text.
-  editingContainerClassName = 'h-5',
+  header,
   editingClassName,
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
@@ -68,6 +64,10 @@ export const ProfileNameDisplayAndEditor = ({
 
   const noNameSet =
     !walletProfileData.loading && walletProfileData.profile.name === null
+
+  const nameClassName = clsx('title-text', header && '!text-2xl !font-bold')
+  // Height should match text line-height.
+  const editingContainerClassName = header ? 'h-8 !min-w-72' : 'h-5'
 
   return (
     <div className={clsx(className, editingName && editingClassName)}>
@@ -155,11 +155,14 @@ export const ProfileNameDisplayAndEditor = ({
 
           <p
             className={clsx(
+              nameClassName,
               walletProfileData.loading && 'animate-pulse',
               noNameSet
-                ? 'font-normal italic text-text-secondary'
-                : 'text-text-body',
-              nameClassName
+                ? [
+                    '!font-normal !italic !text-text-secondary',
+                    !header && '!text-sm',
+                  ]
+                : '!text-text-body'
             )}
           >
             {walletProfileData.loading
@@ -170,6 +173,14 @@ export const ProfileNameDisplayAndEditor = ({
                 : t('info.noDisplayName')
               : walletProfileData.profile.name}
           </p>
+
+          {!canEdit && !walletProfileData.loading && noNameSet && (
+            <TooltipInfoIcon
+              className="-ml-1"
+              size="xs"
+              title={t('info.noDisplayNameTooltip')}
+            />
+          )}
 
           {canEdit && (
             <Edit

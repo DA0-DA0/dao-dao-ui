@@ -53,6 +53,8 @@ export const Account: NextPage = () => {
   const configuredChain =
     getConfiguredChains().find(({ chain }) => chain.bech32_prefix === prefix) ||
     getConfiguredChains()[0]
+  // Transform just in case there was no chain found and we defaulted to the
+  // first configured chain.
   const accountAddress = transformBech32Address(
     address as string,
     configuredChain.chainId

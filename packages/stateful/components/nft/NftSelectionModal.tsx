@@ -49,6 +49,7 @@ export const NftSelectionModal = ({
   allowSelectingNone,
   selectedDisplay,
   headerDisplay,
+  headerContent,
   noneDisplay,
   ...modalProps
 }: NftSelectionModalProps) => {
@@ -149,6 +150,9 @@ export const NftSelectionModal = ({
     Math.ceil(filteredSearchedNfts.length / NFTS_PER_PAGE)
   )
 
+  const showHeaderNftControls =
+    nfts.loading || nfts.errored || nfts.data.length > 0
+
   return (
     <Modal
       {...modalProps}
@@ -198,58 +202,68 @@ export const NftSelectionModal = ({
         </div>
       }
       headerContent={
-        headerDisplay ||
-        nfts.loading ||
-        nfts.errored ||
-        nfts.data.length > 0 ? (
+        headerDisplay || showHeaderNftControls || headerContent ? (
           <div className="mt-4 flex flex-col gap-4">
             {headerDisplay}
 
-            <SearchBar
-              autoFocus={modalProps.visible}
-              placeholder={t('info.searchNftsPlaceholder')}
-              {...searchBarProps}
-            />
+            {showHeaderNftControls && (
+              <>
+                <SearchBar
+                  autoFocus={modalProps.visible}
+                  placeholder={t('info.searchNftsPlaceholder')}
+                  {...searchBarProps}
+                />
 
-            <div
-              className={clsx(
-                'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
-                // Push sort/filter to the right no matter what.
-                showSelectAll ? 'justify-between' : 'justify-end'
-              )}
-            >
-              {showSelectAll && (
-                <Button
-                  className="text-text-interactive-active"
-                  disabled={nfts.loading}
-                  onClick={
-                    nfts.loading
-                      ? undefined
-                      : nfts.data.length === selectedKeys.length
-                      ? onDeselectAll
-                      : onSelectAll
-                  }
-                  variant="underline"
+                <div
+                  className={clsx(
+                    'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+                    // Push sort/filter to the right no matter what.
+                    showSelectAll ? 'justify-between' : 'justify-end'
+                  )}
                 >
-                  {!nfts.loading &&
-                    (nfts.data.length === selectedKeys.length
-                      ? t('button.deselectAllNfts', { count: nfts.data.length })
-                      : t('button.selectAllNfts', { count: nfts.data.length }))}
-                </Button>
-              )}
+                  {showSelectAll && (
+                    <Button
+                      className="text-text-interactive-active"
+                      disabled={nfts.loading}
+                      onClick={
+                        nfts.loading
+                          ? undefined
+                          : nfts.data.length === selectedKeys.length
+                          ? onDeselectAll
+                          : onSelectAll
+                      }
+                      variant="underline"
+                    >
+                      {!nfts.loading &&
+                        (nfts.data.length === selectedKeys.length
+                          ? t('button.deselectAllNfts', {
+                              count: nfts.data.length,
+                            })
+                          : t('button.selectAllNfts', {
+                              count: nfts.data.length,
+                            }))}
+                    </Button>
+                  )}
 
-              <div className="flex grow flex-row items-center justify-end">
-                <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-              </div>
-            </div>
+                  <div className="flex grow flex-row items-center justify-end">
+                    <ButtonPopup
+                      position="left"
+                      {...filterNftButtonPopupProps}
+                    />
+                  </div>
+                </div>
 
-            <Pagination
-              className="mx-auto -mt-4"
-              page={nftPage}
-              pageSize={NFTS_PER_PAGE}
-              setPage={setNftPage}
-              total={filteredSearchedNfts.length}
-            />
+                <Pagination
+                  className="mx-auto -mt-4"
+                  page={nftPage}
+                  pageSize={NFTS_PER_PAGE}
+                  setPage={setNftPage}
+                  total={filteredSearchedNfts.length}
+                />
+              </>
+            )}
+
+            {headerContent}
           </div>
         ) : undefined
       }

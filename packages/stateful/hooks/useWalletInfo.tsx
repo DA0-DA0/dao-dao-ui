@@ -44,6 +44,7 @@ export type UseWalletInfoReturn = {
   updateProfileNft: (nft: Required<WalletProfileUpdate>['nft']) => Promise<void>
   updatingProfile: boolean
   backupImageUrl: string
+  refreshWalletProfile: () => void
 }
 
 export const useWalletInfo = ({
@@ -271,5 +272,6 @@ export const useWalletInfo = ({
     updateProfileNft,
     updatingProfile: updatingNonce !== undefined,
     backupImageUrl,
+    refreshWalletProfile,
   }
 }

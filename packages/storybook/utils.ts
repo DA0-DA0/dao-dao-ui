@@ -12,6 +12,7 @@ export const WALLET_PROFILE_DATA: WalletProfileData = {
     name: '@Modern-Edamame',
     nameSource: 'pfpk',
     nft: null,
+    chains: {},
   },
   backupImageUrl: '/placeholder/1.svg',
 }
@@ -25,6 +26,7 @@ export const WALLET_PROFILE_DATA_LOADING: WalletProfileData = {
     name: null,
     nameSource: 'pfpk',
     nft: null,
+    chains: {},
   },
   backupImageUrl: '/placeholder/1.svg',
 }

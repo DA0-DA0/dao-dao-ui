@@ -1,6 +1,4 @@
-export * from './ConnectedWalletDisplay'
 export * from './DisconnectWallet'
-export * from './WalletBalances'
 export * from './WalletChainSwitcher'
 export * from './WalletDaos'
 export * from './WalletFiatRampModal'

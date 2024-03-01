@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router'
 
-import { getSupportedChains, transformBech32Address } from '@dao-dao/utils'
+import { useChain } from '@dao-dao/stateless'
 
+import { useProfile } from '../../hooks'
 import { WalletDaos } from '../wallet'
 
 export const AccountDaos = () => {
@@ -12,20 +13,36 @@ export const AccountDaos = () => {
     throw new Error('Invalid address.')
   }
 
-  // Get wallets on all DAO DAO-supported chains. Once we support chains with
-  // other HD paths (coin types), we need to re-think this.
-  const chainWallets = getSupportedChains().map(({ chain }) => ({
-    chainId: chain.chain_id,
-    walletAddress: transformBech32Address(address, chain.chain_id),
-  }))
+  const { chain_id: chainId } = useChain()
+  const { chains } = useProfile({
+    address,
+    onlySupported: true,
+  })
 
   return (
     <WalletDaos
-      chainWallets={{
-        loading: false,
-        errored: false,
-        data: chainWallets,
-      }}
+      chainWallets={
+        chains.loading
+          ? {
+              loading: true,
+              errored: false,
+            }
+          : {
+              loading: false,
+              errored: false,
+              updating: chains.updating,
+              data:
+                // If no chains found, no profile; just show current chain.
+                chains.data.length === 0
+                  ? [
+                      {
+                        chainId,
+                        address,
+                      },
+                    ]
+                  : chains.data,
+            }
+      }
     />
   )
 }

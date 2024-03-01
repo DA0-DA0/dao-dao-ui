@@ -1,5 +1,5 @@
 import { Image } from '@mui/icons-material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,18 +28,20 @@ import {
   getDisplayNameForChainId,
   getNftKey,
   getSupportedChainConfig,
+  getSupportedChains,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
 
 import {
   useInstantiateAndExecute,
-  useSupportedChainWallets,
+  useProfile,
   useWallet,
   useWalletInfo,
 } from '../hooks'
 import { allWalletNftsSelector } from '../recoil'
 import { NftSelectionModal } from './nft'
+import { ProfileAddChains } from './profile'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 
@@ -61,23 +63,29 @@ export const InnerPfpkNftSelectionModal = ({
     attemptConnection: visible,
   })
 
-  const chainWallets = useSupportedChainWallets({
-    attemptConnection: visible,
+  const { chains } = useProfile({
+    onlySupported: true,
   })
 
+  const allChainsAdded =
+    !chains.loading && chains.data.length === getSupportedChains().length
+
+  // Don't load NFTs until visible for the first time. This avoids having to use
+  // visible directly in the cached loading hook below, which causes a flicker
+  // on close.
+  const wasVisibleOnce = useRef(visible)
+  if (visible) {
+    wasVisibleOnce.current = true
+  }
+
   const nfts = useCachedLoadingWithError(
-    // Don't load NFTs until visible.
-    visible && chainWallets.every(({ chainWallet: { address } }) => address)
+    wasVisibleOnce.current && !chains.loading
       ? // Load NFTs for all DAO DAO-supported chains.
         allWalletNftsSelector(
-          chainWallets.flatMap(({ chainWallet: { chain, address } }) =>
-            address
-              ? {
-                  chainId: chain.chain_id,
-                  walletAddress: address,
-                }
-              : []
-          )
+          chains.data.map(({ chainId, address }) => ({
+            chainId,
+            walletAddress: address,
+          }))
         )
       : undefined
   )
@@ -281,6 +289,26 @@ export const InnerPfpkNftSelectionModal = ({
           title: t('title.chooseProfilePicture'),
           subtitle: t('info.chooseProfilePictureSubtitle'),
         }}
+        headerContent={
+          chains.loading ? undefined : (
+            <ProfileAddChains
+              disabled={allChainsAdded}
+              onlySupported
+              prompt={
+                allChainsAdded
+                  ? t('info.allNftSupportedChainsAddedPrompt')
+                  : t('info.supportedChainNftsNotShowingUpPrompt')
+              }
+              promptClassName={allChainsAdded ? '!italic' : undefined}
+              promptTooltip={
+                allChainsAdded
+                  ? t('info.allNftSupportedChainsAddedPromptTooltip')
+                  : t('info.supportedChainNftsNotShowingUpPromptTooltip')
+              }
+              size="sm"
+            />
+          )
+        }
         nfts={
           isWalletError && walletErrorMessage
             ? {
@@ -331,7 +359,7 @@ export const InnerPfpkNftSelectionModal = ({
                   (selectedNft &&
                     !nftCardInfosForKey[selectedNft.key]?.imageUrl)
                 }
-                size="sm"
+                size="md"
               />
             </div>
           </Tooltip>

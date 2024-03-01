@@ -12,6 +12,7 @@ import {
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
+import { PfpkProfile } from './profile'
 
 export enum ActionCategoryKey {
   CommonlyUsed = 'commonlyUsed',
@@ -234,6 +235,7 @@ export type ActionContext =
     }
   | {
       type: ActionContextType.Wallet
+      profile?: PfpkProfile
     }
   | {
       type: ActionContextType.Gov

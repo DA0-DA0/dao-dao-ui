@@ -16,7 +16,7 @@ import {
   coins,
   fromTendermintEvent,
 } from '@cosmjs/stargate'
-import { useChains } from '@cosmos-kit/react-lite'
+import { ChainWalletBase } from '@cosmos-kit/core'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
@@ -66,6 +66,8 @@ import {
 import { MsgGrant } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
 import { toTimestamp } from '@dao-dao/utils/protobuf/codegen/helpers'
+
+import { useWallet } from '../hooks'
 
 enum RelayStatus {
   Uninitialized,
@@ -129,9 +131,11 @@ export const SelfRelayExecuteModal = ({
   // All chains, including current.
   const chainIds = [currentChainId, ..._chainIds]
   const chains = uniq(chainIds).map(getChainForChainId)
-  const wallets = useChains(chains.map(({ chain_name }) => chain_name))
-  const allWalletsConnected = Object.values(wallets).every(
-    (wallet) => wallet.isWalletConnected
+
+  const { isWalletConnected, chainWallet } = useWallet()
+  const chainWalletList = chainWallet?.mainWallet?.getChainWalletList(false)
+  const chainWallets = chainIds.map((chainId) =>
+    chainWalletList?.find((cw) => cw.chainId === chainId)
   )
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
@@ -274,13 +278,37 @@ export const SelfRelayExecuteModal = ({
       return
     }
 
-    if (!allWalletsConnected) {
-      toast.error(t('error.chainNotConnected'))
+    // Should never happen...
+    const unsupportedChains = chains.filter((_, index) => !chainWallets[index])
+    if (unsupportedChains.length > 0) {
+      toast.error(
+        t('error.unsupportedChains', {
+          count: unsupportedChains.length,
+          chains: unsupportedChains.join(', '),
+        })
+      )
       return
     }
 
-    // Make sure all wallets are connected by trying to connect first one.
-    Object.values(wallets)[0]?.connect()
+    // Connect to all disconnected chain wallets.
+    const relayerChainWallets = chainWallets as ChainWalletBase[]
+    try {
+      await Promise.all(
+        relayerChainWallets.map(
+          async (wallet) =>
+            wallet.isWalletConnected || (await wallet.connect(false))
+        )
+      )
+
+      // Make sure all wallets are connected. Should never happen...
+      if (relayerChainWallets.some((wallet) => !wallet.isWalletConnected)) {
+        throw new Error('unexpected wallet not connected')
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(t('error.failedToConnect'))
+      return
+    }
 
     setStatus(RelayStatus.Initializing)
     try {
@@ -290,7 +318,7 @@ export const SelfRelayExecuteModal = ({
         (await DirectSecp256k1HdWallet.generate(24)).mnemonic
 
       const relayers = await Promise.all(
-        chains.map(async (chain): Promise<Relayer> => {
+        chains.map(async (chain, index): Promise<Relayer> => {
           const chainImageUrl =
             getImageUrlForChainId(chain.chain_id) ||
             getFallbackImage(chain.chain_id)
@@ -308,12 +336,13 @@ export const SelfRelayExecuteModal = ({
           }
 
           // Connect wallet to chain so we can send tokens.
-          const connectedWallet = wallets[chain.chain_name]
-          if (!connectedWallet?.address) {
+          const { address, getSigningStargateClient } =
+            relayerChainWallets[index]
+          if (!address) {
             throw new Error(t('error.chainNotConnected'))
           }
-          const signingStargateClient =
-            await connectedWallet.getSigningStargateClient()
+
+          const signingStargateClient = await getSigningStargateClient()
 
           // Create relayer signer.
           const signer = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
@@ -342,7 +371,7 @@ export const SelfRelayExecuteModal = ({
             chainImageUrl,
             feeToken,
             wallet: {
-              address: connectedWallet.address,
+              address,
               // cosmos-kit has an older version of the package. This is a
               // workaround.
               signingStargateClient:
@@ -945,16 +974,9 @@ export const SelfRelayExecuteModal = ({
                 <Button
                   className="self-end"
                   loading={status === RelayStatus.Initializing}
-                  onClick={
-                    allWalletsConnected
-                      ? setupRelayer
-                      : // Connect all wallets by connecting one.
-                        () => Object.values(wallets)[0]?.connect()
-                  }
+                  onClick={setupRelayer}
                 >
-                  {allWalletsConnected
-                    ? t('button.begin')
-                    : t('button.connect')}
+                  {isWalletConnected ? t('button.begin') : t('button.connect')}
                 </Button>
               </div>
             ),

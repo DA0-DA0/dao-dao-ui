@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 import { ModalProps } from '@dao-dao/types/components/Modal'
@@ -60,12 +60,24 @@ export const Modal = ({
 
   const mountedInBrowser = useMountedInBrowser()
 
+  const openedOnce = useRef(visible)
+  if (visible && !openedOnce.current) {
+    openedOnce.current = true
+  }
+
+  // Don't render until first time the modal is visible to conserve memory.
+  if (!openedOnce.current) {
+    return null
+  }
+
   return mountedInBrowser
     ? createPortal(
         <div
           className={clsx(
             'hd-screen wd-screen fixed top-0 left-0 z-40 flex flex-col items-center justify-center backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe-or-4',
-            visible ? 'opacity-100' : 'pointer-events-none opacity-0',
+            visible
+              ? 'animate-fade-in opacity-100'
+              : 'pointer-events-none animate-fade-out opacity-0',
             onClose && 'cursor-pointer',
             backdropClassName
           )}
@@ -78,8 +90,10 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'relative flex h-min max-h-[min(96dvh,_100%)] max-w-[min(96dvw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms] sm:max-h-[82dvh] sm:max-w-md',
-              visible ? 'scale-100' : 'scale-90',
+              'relative flex h-min max-h-[min(96dvh,_100%)] max-w-[min(96dvw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 duration-[120ms] sm:max-h-[82dvh] sm:max-w-md',
+              visible
+                ? 'scale-100 animate-expand-in'
+                : 'scale-90 animate-contract-out',
               // If no children, remove bottom padding since header has its own
               // padding.
               !children && '!pb-0',

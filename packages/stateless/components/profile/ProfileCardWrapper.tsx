@@ -11,8 +11,6 @@ import { ProfileNameDisplayAndEditor } from './ProfileNameDisplayAndEditor'
 export const ProfileCardWrapper = ({
   children,
   walletProfileData,
-  showUpdateProfileNft,
-  updateProfileName,
   compact = false,
   underHeaderComponent,
   childContainerClassName,
@@ -32,8 +30,6 @@ export const ProfileCardWrapper = ({
         (averageImgColorLoadable.contents.length === 7 ? '33' : '')
       : undefined
 
-  const canEdit = walletProfileData.profile.nonce >= 0
-
   return (
     <div
       className={clsx(
@@ -52,14 +48,12 @@ export const ProfileCardWrapper = ({
             <ProfileImage
               imageUrl={walletProfileData.profile.imageUrl}
               loading={walletProfileData.loading}
-              onEdit={canEdit ? showUpdateProfileNft : undefined}
-              size="sm"
+              size="md"
             />
 
             <div className="flex min-w-0 grow flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 compact={compact}
-                updateProfileName={updateProfileName}
                 walletProfileData={walletProfileData}
               />
               {underHeaderComponent}
@@ -71,13 +65,11 @@ export const ProfileCardWrapper = ({
               className="mb-6"
               imageUrl={walletProfileData.profile.imageUrl}
               loading={walletProfileData.loading}
-              onEdit={canEdit ? showUpdateProfileNft : undefined}
               size="lg"
             />
             <ProfileNameDisplayAndEditor
               className="mb-5"
               compact={compact}
-              updateProfileName={updateProfileName}
               walletProfileData={walletProfileData}
             />
             {underHeaderComponent}

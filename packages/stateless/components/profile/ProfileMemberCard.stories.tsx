@@ -30,8 +30,6 @@ const makeProps = (
       {...makeProfileCardMemberInfoTokensProps(...args)}
     />
   ),
-  showUpdateProfileNft: () => {},
-  updateProfileName: async () => {},
 })
 
 export const Default = Template.bind({})

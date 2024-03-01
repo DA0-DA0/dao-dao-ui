@@ -22,7 +22,7 @@ import { Modal } from '../modals'
 import { NoContent } from '../NoContent'
 import { TriggerRenderer } from './Popup'
 
-export interface FilterableItem {
+export type FilterableItem = {
   key: string | number
   Icon?: ComponentType<{ className?: string }>
   iconUrl?: string
@@ -35,9 +35,9 @@ export interface FilterableItem {
   contentContainerClassName?: string
 }
 
-export interface FilterableItemPopupProps<
+export type FilterableItemPopupProps<
   T extends FilterableItem = FilterableItem
-> {
+> = {
   trigger: PopupTrigger
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]

@@ -75,7 +75,7 @@ export const getAccountPath = (
 // Create a path for the Me page transaction builder with a pre-filled
 // transaction form.
 export const getMeTxPrefillPath = (actions: ActionKeyAndDataNoId[]) => {
-  const base = '/me/tx'
+  const base = '/me/actions'
   const query = `?${queryString.stringify({
     prefill: JSON.stringify({
       actions: actions.map((action, index) => ({

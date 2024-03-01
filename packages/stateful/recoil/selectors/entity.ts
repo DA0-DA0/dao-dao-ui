@@ -175,6 +175,7 @@ export const entitySelector: (
           name: walletProfileData?.profile.name || null,
           imageUrl:
             walletProfileData?.profile.imageUrl || getFallbackImage(address),
+          profile: walletProfileData?.profile,
         }
       }
     },

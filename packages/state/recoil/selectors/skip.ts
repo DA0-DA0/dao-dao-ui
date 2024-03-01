@@ -1,29 +1,31 @@
+import { selectorFamily, waitForAll } from 'recoil'
+
 import {
-  Asset,
-  AssetRecommendation,
-  MultiChainMsg,
-  Asset as SkipAsset,
-  Chain as SkipChain,
-  RouteResponse as SkipRoute,
-} from '@skip-router/core'
-import { selector, selectorFamily, waitForAll } from 'recoil'
+  GenericToken,
+  SkipAsset,
+  SkipAssetRecommendation,
+  SkipChain,
+  SkipMultiChainMsg,
+  SkipRoute,
+  TokenType,
+} from '@dao-dao/types'
+import { SKIP_API_BASE } from '@dao-dao/utils'
 
-import { GenericToken, TokenType } from '@dao-dao/types'
-
-import { skipClient } from '../../skip'
 import { querySnapperSelector } from './indexer'
-
-export const skipChainsSelector = selector<SkipChain[]>({
-  key: 'skipChains',
-  get: async () => await skipClient.chains(),
-})
 
 export const skipChainSelector = selectorFamily<SkipChain | undefined, string>({
   key: 'skipChain',
   get:
     (chainId) =>
     ({ get }) =>
-      get(skipChainsSelector).find((chain) => chain.chainID === chainId),
+      get(
+        querySnapperSelector({
+          query: 'skip-chain',
+          parameters: {
+            chainId,
+          },
+        })
+      ),
 })
 
 /**
@@ -55,7 +57,7 @@ export const skipChainPfmEnabledSelector = selectorFamily<boolean, string>({
     (chainId) =>
     ({ get }) => {
       const chain = get(skipChainSelector(chainId))
-      return chain?.pfmEnabled || false
+      return chain?.ibc_capabilities?.cosmos_pfm ?? chain?.pfm_enabled ?? false
     },
 })
 
@@ -78,7 +80,7 @@ export const skipAllChainsPfmEnabledSelector = selectorFamily<
 })
 
 export const skipRecommendedAssetsSelector = selectorFamily<
-  AssetRecommendation[],
+  SkipAssetRecommendation[],
   {
     fromChainId: string
     denom: string
@@ -88,30 +90,21 @@ export const skipRecommendedAssetsSelector = selectorFamily<
   key: 'skipRecommendedAssets',
   get:
     ({ fromChainId, denom, toChainId }) =>
-    async () => {
-      try {
-        return await skipClient.recommendAssets({
-          sourceAssetChainID: fromChainId,
-          sourceAssetDenom: denom,
-          destChainID: toChainId,
+    ({ get }) =>
+      get(
+        querySnapperSelector({
+          query: 'skip-recommended-assets',
+          parameters: {
+            sourceAssetChainId: fromChainId,
+            sourceAssetDenom: denom,
+            destChainId: toChainId,
+          },
         })
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          (err.message.toLowerCase().includes('not found') ||
-            err.message.includes('no recommendation found'))
-        ) {
-          return []
-        }
-
-        // Rethrow other errors.
-        throw err
-      }
-    },
+      ),
 })
 
 export const skipRecommendedAssetSelector = selectorFamily<
-  AssetRecommendation | undefined,
+  SkipAssetRecommendation | undefined,
   {
     fromChainId: string
     denom: string
@@ -169,15 +162,23 @@ export const skipRouteSelector = selectorFamily<
         throw new Error('No recommended asset found.')
       }
 
-      const route = await skipClient.route({
-        sourceAssetChainID: fromChainId,
-        sourceAssetDenom: sourceDenom,
-        destAssetChainID: toChainId,
-        destAssetDenom: asset.denom,
-        amountIn: BigInt(amountIn).toString(),
-      })
+      const route: SkipRoute = await (
+        await fetch(SKIP_API_BASE + '/v2/fungible/route', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            source_asset_chain_id: fromChainId,
+            source_asset_denom: sourceDenom,
+            dest_asset_chain_id: toChainId,
+            dest_asset_denom: asset.denom,
+            amount_in: BigInt(amountIn).toString(),
+          }),
+        })
+      ).json()
 
-      if (route.doesSwap) {
+      if (route.does_swap) {
         throw new Error('Route requires a swap.')
       }
 
@@ -189,7 +190,7 @@ export const skipRouteSelector = selectorFamily<
 // be executed to move funds between the two chains using the chain addresses as
 // the source or intermediate addresses.
 export const skipRouteMessageSelector = selectorFamily<
-  MultiChainMsg,
+  SkipMultiChainMsg,
   {
     // Map chain ID to address on that chain that can serve as the source or
     // intermediate address for transfers.
@@ -223,7 +224,7 @@ export const skipRouteMessageSelector = selectorFamily<
       )
 
       const addressList = [
-        ...route.chainIDs
+        ...route.chain_ids
           .slice(0, -1)
           .map((chainId) => chainAddresses[chainId]),
         toAddress,
@@ -231,27 +232,51 @@ export const skipRouteMessageSelector = selectorFamily<
       if (!addressList.every(Boolean)) {
         throw new Error(
           `Missing accounts for chain(s): ${addressList
-            .flatMap((address, index) => (address ? [] : route.chainIDs[index]))
+            .flatMap((address, index) =>
+              address ? [] : route.chain_ids[index]
+            )
             .join(', ')}.`
         )
       }
 
-      const msgs = await skipClient.messages({
-        ...route,
-        addressList: addressList as string[],
-        slippageTolerancePercent: '0',
-      })
+      const {
+        msgs,
+      }: {
+        msgs: {
+          multi_chain_msg: SkipMultiChainMsg
+        }[]
+      } = await (
+        await fetch(SKIP_API_BASE + '/v2/fungible/msgs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            source_asset_chain_id: route.source_asset_chain_id,
+            source_asset_denom: route.source_asset_denom,
+            dest_asset_chain_id: route.dest_asset_chain_id,
+            dest_asset_denom: route.dest_asset_denom,
+            amount_in: route.amount_in,
+            amount_out: route.amount_out,
+            operations: route.operations,
+            estimated_amount_out: route.estimated_amount_out,
+
+            addressList: addressList as string[],
+            slippage_tolerance_percent: '0',
+          }),
+        })
+      ).json()
 
       if (msgs.length !== 1) {
         throw new Error('Route requires multiple messages.')
       }
 
       const msg = msgs[0]
-      if (!('multiChainMsg' in msg)) {
+      if (!('multi_chain_msg' in msg)) {
         throw new Error('Route requires invalid message type.')
       }
 
-      return msg.multiChainMsg
+      return msg.multi_chain_msg
     },
 })
 
@@ -259,7 +284,7 @@ export const skipRouteMessageSelector = selectorFamily<
  * Get the recommended asset for a token on a given chain.
  */
 export const skipRecommendedAssetForGenericTokenSelector = selectorFamily<
-  Asset | undefined,
+  SkipAsset | undefined,
   Pick<GenericToken, 'type' | 'denomOrAddress'> & {
     sourceChainId: string
     targetChainId: string

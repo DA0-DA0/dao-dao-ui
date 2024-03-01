@@ -15,10 +15,7 @@ export const useAddToken = () => {
       // Can only add tokens to Keplr on mainnet.
       MAINNET
         ? async (address: string) => {
-            const keplr = await (
-              await import('@keplr-wallet/stores')
-            ).getKeplrFromWindow()
-            if (keplr && (await suggestToken(chainId, keplr, address))) {
+            if (await suggestToken(chainId, address)) {
               toast.success(t('success.addedToken'))
             } else {
               toast.error(t('error.logInToContinue'))

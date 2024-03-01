@@ -2,7 +2,6 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { MultiChainMsg } from '@skip-router/core'
 import clsx from 'clsx'
 import { ComponentType, RefAttributes, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -37,6 +36,7 @@ import {
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
+  SkipMultiChainMsg,
   TokenType,
 } from '@dao-dao/types'
 import {
@@ -86,7 +86,7 @@ export interface SpendData {
   _error?: string
 
   // Defined once loaded for IBC transfers. Needed for transforming.
-  _skipIbcTransferMsg?: LoadingDataWithError<MultiChainMsg>
+  _skipIbcTransferMsg?: LoadingDataWithError<SkipMultiChainMsg>
 
   // Loaded from IBC transfer message on decode.
   _ibcData?: {
@@ -198,10 +198,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
     // Convert wallet address to destination chain's format.
     if (currentEntity.type === EntityType.Wallet) {
-      newRecipient = transformBech32Address(
-        currentEntity.address,
-        toChain.chain_id
-      )
+      newRecipient =
+        // Use profile address if set, falling back to transforming the address
+        // (which is unreliable due to different chains using different HD
+        // paths).
+        currentEntity.profile?.chains[toChain.chain_id]?.address ||
+        transformBech32Address(currentEntity.address, toChain.chain_id)
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
     // account on the destination chain.
@@ -788,6 +790,10 @@ const NobleTariff = ({
     amount && !isNaN(amount)
       ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)
       : 0
+
+  if (fee === 0) {
+    return null
+  }
 
   return (
     <p className="secondary-text max-w-prose text-text-interactive-warning-body">

@@ -181,7 +181,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
           onSelect={({ chainId, address }) => {
             navigator.clipboard.writeText(address)
             toast.success(
-              t('info.copiedDaoChainAddress', {
+              t('info.copiedChainAddress', {
                 chain: getDisplayNameForChainId(chainId),
               })
             )

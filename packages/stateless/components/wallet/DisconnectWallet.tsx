@@ -1,4 +1,5 @@
 import { SensorsOff } from '@mui/icons-material'
+import clsx from 'clsx'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,7 +8,7 @@ import { ButtonProps } from '@dao-dao/types'
 import { Button } from '../buttons'
 
 export interface DisconnectWalletProps
-  extends Partial<Omit<ButtonProps, 'onClick' | 'size'>> {
+  extends Partial<Omit<ButtonProps, 'onClick'>> {
   onDisconnect?: () => void
   className?: string
 }
@@ -15,12 +16,18 @@ export interface DisconnectWalletProps
 export const DisconnectWallet = forwardRef<
   HTMLButtonElement,
   DisconnectWalletProps
->(function DisconnectWallet({ onDisconnect, ...props }, ref) {
+>(function DisconnectWallet({ onDisconnect, size = 'lg', ...props }, ref) {
   const { t } = useTranslation()
 
   return (
-    <Button {...props} onClick={onDisconnect} ref={ref} size="lg">
-      <SensorsOff className="!h-6 !w-6" />
+    <Button {...props} onClick={onDisconnect} ref={ref} size={size}>
+      <SensorsOff
+        className={clsx({
+          '!h-4 !w-4': size === 'sm',
+          '!h-5 !w-5': size === 'md',
+          '!h-6 !w-6': size === 'lg',
+        })}
+      />
       <p>{t('button.logOut')}</p>
     </Button>
   )

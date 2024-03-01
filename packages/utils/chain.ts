@@ -1,6 +1,5 @@
 import { Buffer } from 'buffer'
 
-import { asset_lists } from '@chain-registry/assets'
 import { AssetList, Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { GasPrice } from '@cosmjs/stargate'
@@ -167,7 +166,7 @@ export const maybeGetAssetListForChainId = (
 ): AssetList | undefined => {
   const { chain_name: name } = maybeGetChainForChainId(chainId) ?? {}
   if (name) {
-    cachedAssetListsById[chainId] ||= asset_lists.find(
+    cachedAssetListsById[chainId] ||= assets.find(
       ({ chain_name }) => chain_name === name
     )
   }
@@ -487,6 +486,12 @@ export const mustGetSupportedChainConfig = (
 
   return config
 }
+
+/**
+ * Whether or not this chain is supported.
+ */
+export const isSupportedChain = (chainId: string): boolean =>
+  getSupportedChainConfig(chainId) !== undefined
 
 export const getSupportedChains = ({
   mainnet = MAINNET,

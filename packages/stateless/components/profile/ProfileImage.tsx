@@ -4,14 +4,13 @@ import { forwardRef, useEffect, useState } from 'react'
 
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
-export interface ProfileImageProps {
+export type ProfileImageProps = {
   imageUrl?: string
   loading?: boolean
-  size: 'xs' | 'sm' | 'lg' | 'xl'
+  size: 'xs' | 'sm' | 'md' | 'lg' | 'header'
   className?: string
   fallbackIconClassName?: string
   onClick?: () => void
-  onEdit?: () => void
   rounded?: boolean
   disabled?: boolean
 }
@@ -25,7 +24,6 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
       className,
       fallbackIconClassName,
       onClick,
-      onEdit,
       rounded,
     },
     ref
@@ -53,9 +51,10 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
     const sizingRoundingClassNames = clsx(
       {
         'h-6 w-6 rounded-full': size === 'xs',
-        'h-10 w-10 rounded-xl': size === 'sm',
+        'h-8 w-8 rounded-lg': size === 'sm',
+        'h-10 w-10 rounded-xl': size === 'md',
         'h-16 w-16 rounded-2xl': size === 'lg',
-        'h-24 w-24 rounded-full': size === 'xl',
+        'h-24 w-24 rounded-full': size === 'header',
       },
       rounded && '!rounded-full'
     )
@@ -71,10 +70,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage && 'animate-pulse !border-border-interactive-disabled',
-          // Make clickable for onClick and onEdit.
-          (onClick || onEdit) && 'cursor-pointer',
-          // Enable group events for onEdit.
-          onEdit && 'group/profileimage',
+          // Make clickable for onClick. Enale group events.
+          onClick && 'group/profileimage cursor-pointer',
 
           className
         )}
@@ -85,7 +82,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         <div
           className={clsx(
             'absolute top-0 right-0 bottom-0 left-0 bg-cover bg-center',
-            onEdit && [
+            onClick && [
               'group-hover/profileimage:brightness-[0.35] transition',
               // If showing placeholder, dim even when not hovering.
               showingPlaceholder ? 'brightness-[0.5]' : 'brightness-100',
@@ -107,8 +104,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           )}
         />
 
-        {/* Edit icon */}
-        {onEdit && (
+        {/* Click icon */}
+        {onClick && (
           <div
             className={clsx(
               'group-hover/profileimage:opacity-100 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center transition-opacity',
@@ -116,7 +113,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
               showingPlaceholder ? 'opacity-70' : 'opacity-0',
               sizingRoundingClassNames
             )}
-            onClick={onEdit}
+            onClick={onClick}
           >
             {!loadingImage && (
               <Edit className="!h-2/5 !w-2/5 text-icon-primary" />

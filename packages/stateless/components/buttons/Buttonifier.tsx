@@ -134,11 +134,10 @@ export const getButtonifiedClassNames = ({
     // Brand variant
     variant === 'brand' && {
       // Default
-      'bg-border-interactive-active text-text-button-primary hover:opacity-90 active:opacity-80':
+      'bg-border-interactive-active text-text-body hover:opacity-90 active:opacity-80':
         !disabledOrLoading,
       // Disabled
-      'bg-background-interactive-active text-text-button-primary':
-        disabledOrLoading,
+      'bg-background-interactive-active text-text-tertiary': disabledOrLoading,
     },
     // Brand outline variant
     variant === 'brand_outline' && {
@@ -163,7 +162,7 @@ export const getButtonifiedClassNames = ({
     (variant === 'underline' || variant === 'none') && {
       // Always no padding
       '!p-0': true,
-      underline: variant === 'underline',
+      underline: variant === 'underline' && !disabledOrLoading,
       // Default
       'hover:opacity-80 active:opacity-70': !disabledOrLoading,
       // Disabled

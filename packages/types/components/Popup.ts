@@ -25,6 +25,10 @@ export interface PopupProps {
   // Give parent a way to access and control open and setOpen.
   openRef?: MutableRefObject<boolean | null>
   setOpenRef?: MutableRefObject<Dispatch<SetStateAction<boolean>> | null>
+  /**
+   * Optionally add offset to the top of the popup.
+   */
+  topOffset?: number
 }
 
 export type PopupTriggerOptions = {

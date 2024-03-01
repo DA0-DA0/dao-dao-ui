@@ -48,6 +48,7 @@ export const DaoCard = ({
       href={getDaoPath(coreAddress)}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
+      prefetch
     >
       <div className="absolute top-0 left-0 flex w-full flex-row items-center justify-between p-2 sm:p-3">
         {showIsMember && !lazyData.loading && lazyData.data.isMember ? (

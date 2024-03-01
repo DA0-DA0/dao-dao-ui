@@ -17,13 +17,19 @@ import { LoadingData } from '@dao-dao/types'
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 export type UseWalletOptions = {
-  // If undefined, defaults to current chain context. If not in a chain context,
-  // falls back to first supported chain.
+  /**
+   * If undefined, defaults to current chain context. If not in a chain context,
+   * falls back to first supported chain.
+   */
   chainId?: string
-  // If true, will return `account` and `hexPublicKey` in response.
+  /**
+   * If true, will return `account` and `hexPublicKey` in response.
+   */
   loadAccount?: boolean
-  // If true, attempt connection if wallet is connected to a different chain but
-  // not the current one.
+  /**
+   * If true, attempt connection if wallet is connected to a different chain but
+   * not the current one.
+   */
   attemptConnection?: boolean
 }
 

@@ -1,15 +1,30 @@
-import { DisconnectWallet as StatelessDisconnectWallet } from '@dao-dao/stateless'
+import clsx from 'clsx'
+
+import {
+  DisconnectWalletProps,
+  DisconnectWallet as StatelessDisconnectWallet,
+} from '@dao-dao/stateless'
 
 import { useWallet } from '../../hooks'
 
-export const DisconnectWallet = () => {
+export type StatefulDisconnectWalletProps = Omit<
+  DisconnectWalletProps,
+  'onDisconnect'
+>
+
+export const DisconnectWallet = ({
+  className,
+  variant = 'secondary',
+  ...props
+}: StatefulDisconnectWalletProps) => {
   const { disconnect } = useWallet()
 
   return (
     <StatelessDisconnectWallet
-      className="shrink-0"
+      className={clsx('shrink-0', className)}
       onDisconnect={disconnect}
-      variant="secondary"
+      variant={variant}
+      {...props}
     />
   )
 }

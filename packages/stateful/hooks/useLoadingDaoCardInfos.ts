@@ -6,7 +6,7 @@ import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
-import { useSupportedChainWallets } from './useSupportedChainWallets'
+import { useProfile } from './useProfile'
 
 export const useLoadingDaoCardInfos = (
   daos: LoadingData<
@@ -84,21 +84,21 @@ export const useLoadingFollowingDaoCardInfos = (
   // from all chains.
   chainId?: string
 ): LoadingData<DaoCardInfo[]> => {
-  const supportedChainWallets = useSupportedChainWallets().filter(
-    ({ chainWallet: { chain } }) => !chainId || chain.chain_id === chainId
-  )
+  const { chains } = useProfile({
+    onlySupported: true,
+  })
+  const filteredChains = chains.loading
+    ? []
+    : chains.data.filter((chain) => !chainId || chainId === chain.chainId)
 
   const followingDaosLoading = useRecoilValueLoadable(
-    supportedChainWallets.some(({ hexPublicKey }) => hexPublicKey)
+    !chains.loading
       ? waitForAll(
-          supportedChainWallets.map(
-            ({ chainWallet: { chain }, hexPublicKey }) =>
-              hexPublicKey
-                ? followingDaosSelector({
-                    chainId: chain.chain_id,
-                    walletPublicKey: hexPublicKey,
-                  })
-                : constSelector([])
+          filteredChains.map(({ chainId, publicKey }) =>
+            followingDaosSelector({
+              chainId,
+              walletPublicKey: publicKey,
+            })
           )
         )
       : constSelector([])
@@ -111,13 +111,15 @@ export const useLoadingFollowingDaoCardInfos = (
       ? { loading: false, data: [] }
       : {
           loading: false,
-          data: supportedChainWallets.flatMap(
-            ({ chainWallet: { chain } }, index) =>
-              followingDaosLoading.contents[index]?.map((coreAddress) => ({
-                chainId: chain.chain_id,
-                coreAddress,
-              })) || []
-          ),
+          data: chains.loading
+            ? []
+            : filteredChains.flatMap(
+                ({ chainId }, index) =>
+                  followingDaosLoading.contents[index]?.map((coreAddress) => ({
+                    chainId,
+                    coreAddress,
+                  })) || []
+              ),
         },
     // Alphabetize.
     true

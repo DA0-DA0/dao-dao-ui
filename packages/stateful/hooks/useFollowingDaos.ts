@@ -1,5 +1,5 @@
 import uniq from 'lodash.uniq'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
@@ -18,6 +18,7 @@ import {
   temporaryFollowingDaosAtom,
 } from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useManageProfile } from './useManageProfile'
 import { useWallet } from './useWallet'
 
 export type UseFollowingDaosReturn = {
@@ -75,19 +76,34 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
     'Update Following'
   )
 
+  const { profile, addChains } = useManageProfile()
+
+  // Turn this into a reference so we can use it in `setFollowing` without
+  // memoizing.
+  const addChainsRef = useRef(addChains)
+  addChainsRef.current = addChains
+
   const setFollowing = useCallback(
     async (coreAddressOrAddresses: string | string[]) => {
-      if (!ready) {
+      const addChains = addChainsRef.current
+
+      if (!ready || !addChains.ready || profile.loading || profile.errored) {
         toast.error(t('error.logInToFollow'))
         return false
       }
-      if (updating) {
+      if (updating || addChains.status !== 'idle') {
         return false
       }
 
       setUpdating(true)
 
       try {
+        // If chain not added to profile, add it so that we know to load
+        // followed DAOs from the public key on this chain later.
+        if (!profile.data.chains[chainId]) {
+          await addChains.go([chainId])
+        }
+
         const daos = [coreAddressOrAddresses].flat()
         await postRequest('/setMany', {
           data: daos.map((coreAddress) => ({
@@ -114,7 +130,16 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [chainId, postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [
+      chainId,
+      postRequest,
+      profile,
+      ready,
+      refreshFollowing,
+      setTemporary,
+      t,
+      updating,
+    ]
   )
 
   const setUnfollowing = useCallback(

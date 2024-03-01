@@ -1,9 +1,9 @@
 import { WarningRounded } from '@mui/icons-material'
 import Fuse from 'fuse.js'
-import { ComponentType, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LazyDaoCardProps, LoadingDataWithError } from '@dao-dao/types'
+import { LazyDaoCardProps, WalletDaosProps } from '@dao-dao/types'
 
 import { useQuerySyncedState, useSearchFilter } from '../../hooks'
 import { Collapsible } from '../Collapsible'
@@ -15,12 +15,12 @@ import { Logo } from '../logo'
 import { NoContent } from '../NoContent'
 import { ChainPickerPopup } from '../popup'
 
-export type WalletDaosProps = {
-  daos: LoadingDataWithError<LazyDaoCardProps[]>
-  LazyDaoCard: ComponentType<LazyDaoCardProps>
-}
-
-export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
+export const WalletDaos = ({
+  chainIds,
+  daos,
+  LazyDaoCard,
+  onChainSelect,
+}: WalletDaosProps) => {
   const { t } = useTranslation()
 
   const allDaos = daos.loading || daos.errored || !daos.data ? [] : daos.data
@@ -55,9 +55,17 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
 
         <ChainPickerPopup
           NoneIcon={Logo}
-          chains={{ type: 'supported' }}
+          chains={{
+            type: 'custom',
+            chainIds: chainIds.loading || chainIds.errored ? [] : chainIds.data,
+          }}
           noneLabel={t('info.allChains')}
-          onSelect={setChainId}
+          onSelect={(chainId) => {
+            setChainId(chainId)
+            if (chainId) {
+              onChainSelect?.(chainId)
+            }
+          }}
           selectedChainId={chainId}
           showNone
         />

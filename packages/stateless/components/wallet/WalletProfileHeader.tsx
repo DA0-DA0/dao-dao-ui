@@ -25,13 +25,12 @@ export const WalletProfileHeader = ({
       <ProfileImage
         imageUrl={profileData.profile.imageUrl}
         loading={profileData.loading}
-        onEdit={canEditProfile ? openProfileNftUpdate : undefined}
-        size="xl"
+        onClick={canEditProfile ? openProfileNftUpdate : undefined}
+        size="header"
       />
 
       <ProfileNameDisplayAndEditor
-        editingContainerClassName="h-8 !min-w-72"
-        nameClassName="!font-bold !text-2xl"
+        header
         updateProfileName={canEditProfile ? updateProfileName : undefined}
         walletProfileData={profileData}
       />

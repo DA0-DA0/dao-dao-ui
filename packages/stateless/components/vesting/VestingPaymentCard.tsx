@@ -287,7 +287,7 @@ export const VestingPaymentCard = ({
               <ProfileImage
                 imageUrl={recipientEntity.data.imageUrl}
                 rounded
-                size="sm"
+                size="md"
               />
             )}
 

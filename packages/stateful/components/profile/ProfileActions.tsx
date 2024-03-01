@@ -10,8 +10,8 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
 import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
-  MeTransactionBuilderProps,
-  MeTransactionBuilder as StatelessMeTransactionBuilder,
+  ProfileActionsProps,
+  ProfileActions as StatelessProfileActions,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { AccountTxForm, AccountTxSave } from '@dao-dao/types'
@@ -29,8 +29,9 @@ import {
   temporarySavedTxsAtom,
 } from '../../recoil/selectors/wallet'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { WalletChainSwitcher } from '../wallet'
 
-export const MeTransactionBuilder = () => {
+export const ProfileActions = () => {
   const { t } = useTranslation()
 
   const {
@@ -88,7 +89,7 @@ export const MeTransactionBuilder = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txHash, setTxHash] = useState('')
-  const execute: MeTransactionBuilderProps['execute'] = useCallback(
+  const execute: ProfileActionsProps['execute'] = useCallback(
     async (data) => {
       if (!walletAddress) {
         setError(t('error.logInToContinue'))
@@ -218,8 +219,9 @@ export const MeTransactionBuilder = () => {
   }
 
   return (
-    <StatelessMeTransactionBuilder
+    <StatelessProfileActions
       SuspenseLoader={SuspenseLoader}
+      WalletChainSwitcher={WalletChainSwitcher}
       categories={categories}
       deleteSave={deleteSave}
       error={error}

@@ -8,6 +8,9 @@ const animation = {
   spin: 'spin 200ms ease-in-out',
   'spin-slow': `spin 10s cubic-bezier(.6,1.15,.89,.81) infinite`,
   'spin-medium': `spin 3s cubic-bezier(.6,1.15,.89,.81) infinite`,
+  // Modal
+  'expand-in': `expand-in 0.2s cubic-bezier(0.4, 0, 0.2, 1)`,
+  'contract-out': `contract-out 0.2s cubic-bezier(0.4, 0, 0.2, 1)`,
   // Dropdown menu
   'scale-in': `scale-in 0.2s ease-in-out`,
   'slide-down': `slide-down 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,

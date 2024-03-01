@@ -1,15 +1,17 @@
 import { Wallet } from '@cosmos-kit/core'
+import { ComponentType } from 'react'
 
 import { WalletProfileData } from '../profile'
+import { ButtonLinkProps } from './Buttonifier'
 import { NotificationsProps } from './Notifications'
 
 export type NavWalletConnectedProps = {
   wallet: Wallet
-  walletAddress: string
   walletProfileData: WalletProfileData
-  updateProfileName: (name: string | null) => Promise<void>
-  onEditProfileImage: () => void
-  disconnect: () => Promise<void>
+  /**
+   * Disconnect the wallet.
+   */
+  disconnect: () => void | Promise<void>
   /**
    * Optional container class name.
    */
@@ -19,5 +21,9 @@ export type NavWalletConnectedProps = {
    * small screens, and dock on small screens.
    */
   mode: 'header' | 'sidebar' | 'dock'
+  /**
+   * Stateful button link component.
+   */
+  ButtonLink: ComponentType<ButtonLinkProps>
 } & Partial<Pick<NotificationsProps, 'inbox'>> &
   Pick<NotificationsProps, 'InboxMainItemRenderer'>

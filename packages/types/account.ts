@@ -52,9 +52,9 @@ export type Account = NativeAccount | PolytoneAccount | IcaAccount
  * Unique identifier for account tabs, which is used in the URL path.
  */
 export enum AccountTabId {
-  Balances = 'balances',
+  Home = 'home',
   Daos = 'daos',
-  TransactionBuilder = 'tx',
+  Actions = 'actions',
 }
 
 export type AccountTab = {

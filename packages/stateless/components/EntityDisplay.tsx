@@ -95,6 +95,7 @@ export const EntityDisplay = ({
           href={noLink ? undefined : href}
           onClick={(e) => !noLink && e.stopPropagation()}
           openInNewTab={openInNewTab}
+          prefetch
           variant={noUnderline || noLink || !href ? 'none' : 'underline'}
         >
           {!hideImage && (

@@ -9,7 +9,6 @@ import { useSetRecoilState } from 'recoil'
 import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   Button,
-  CopyableAddress,
   ProfileImage,
   ProfileNameDisplayAndEditor,
   Tooltip,
@@ -52,7 +51,7 @@ export const WalletUiConnected = ({
           <ProfileImage
             imageUrl={walletProfileData.profile.imageUrl}
             loading={walletProfileData.loading}
-            onEdit={() => setUpdateProfileNftVisible(true)}
+            onClick={() => setUpdateProfileNftVisible(true)}
             size="lg"
           />
           <Tooltip
@@ -79,8 +78,6 @@ export const WalletUiConnected = ({
           updateProfileName={updateProfileName}
           walletProfileData={walletProfileData}
         />
-        {/* Address */}
-        <CopyableAddress address={walletRepo?.current.address ?? ''} />
       </div>
 
       {/* In Keplr mobile web, the wallet is force connected and cannot be logged out of, so only show the log out button for all other options. */}
