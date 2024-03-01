@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   AccountType,
   ButtonLinkProps,
+  ChainId,
   DaoFiatDepositModalProps,
   LoadingData,
   LoadingDataWithError,
@@ -15,6 +16,7 @@ import {
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
 import {
+  NEUTRON_GOVERNANCE_DAO,
   concatAddressStartEnd,
   getDisplayNameForChainId,
   getImageUrlForChainId,
@@ -202,20 +204,32 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         />
       </div>
 
-      <TreasuryHistoryGraph
-        address={coreAddress}
-        chainId={daoChainId}
-        className="mb-8 hidden rounded-md bg-background-tertiary p-6 md:flex"
-        graphClassName="max-h-[20rem]"
-        header={
-          <div className="flex flex-row items-center justify-center gap-1">
-            <p className="title-text">{t('title.treasuryValue')}</p>
+      {
+        // Don't show the treasury history graph for the Neutron DAO for
+        // performance reasons.
+        !(
+          daoChainId === ChainId.NeutronMainnet &&
+          coreAddress === NEUTRON_GOVERNANCE_DAO
+        ) && (
+          <TreasuryHistoryGraph
+            address={coreAddress}
+            chainId={daoChainId}
+            className="mb-8 hidden rounded-md bg-background-tertiary p-6 md:flex"
+            graphClassName="max-h-[20rem]"
+            header={
+              <div className="flex flex-row items-center justify-center gap-1">
+                <p className="title-text">{t('title.treasuryValue')}</p>
 
-            <TooltipInfoIcon size="sm" title={t('info.treasuryValueTooltip')} />
-          </div>
-        }
-        registerTokenColors={setTokenSourceColorMap}
-      />
+                <TooltipInfoIcon
+                  size="sm"
+                  title={t('info.treasuryValueTooltip')}
+                />
+              </div>
+            }
+            registerTokenColors={setTokenSourceColorMap}
+          />
+        )
+      }
 
       <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2">
         <p className="title-text">{t('title.tokens')}</p>
