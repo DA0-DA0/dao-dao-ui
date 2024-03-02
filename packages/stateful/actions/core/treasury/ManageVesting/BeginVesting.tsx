@@ -263,10 +263,17 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     actionOptions,
     chainId
   )
+
   const vestingManagerExists =
     !!widgetData.factories?.[chainId] ||
     // Old single-chain factory support.
     (chainId === nativeChainId && !!widgetData.factory)
+  const vestingManagerVersion = widgetData.factories
+    ? widgetData.factories[chainId]?.version
+    : // Old single-chain factory support.
+    chainId === nativeChainId && !!widgetData.factory
+    ? widgetData.version
+    : undefined
 
   const crossChainAccountActionExists = allActionsWithData.some(
     (action) => action.actionKey === ActionKey.ConfigureVestingPayments
@@ -429,8 +436,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
         {
           // V1 and later can set the owner.
-          !!widgetData.version &&
-            widgetData.version >= VestingContractVersion.V1 && (
+          !!vestingManagerVersion &&
+            vestingManagerVersion >= VestingContractVersion.V1 && (
               <div className="flex flex-col gap-4 rounded-md bg-background-tertiary p-4">
                 <InputLabel name={t('form.whoCanCancelPayment')} />
 
