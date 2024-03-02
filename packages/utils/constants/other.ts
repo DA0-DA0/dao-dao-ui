@@ -178,7 +178,7 @@ export const CHAIN_SUBDAOS: Record<string, string[] | undefined> = {
 export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
   'Error parsing into type',
   'no such contract',
-  'not found: invalid request',
+  'not found',
   'unknown query path',
   'decoding bech32 failed',
 ]
