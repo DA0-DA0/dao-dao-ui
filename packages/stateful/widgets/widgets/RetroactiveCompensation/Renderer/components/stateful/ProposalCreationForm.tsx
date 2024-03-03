@@ -136,7 +136,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         )
       : undefined
   )
-  const walletEntity = useEntity(walletAddress)
+  const { entity: walletEntity } = useEntity(walletAddress)
 
   return (
     <SuspenseLoader

@@ -12,7 +12,7 @@ export const NewProposalPreview = () => {
   const { watch } = useFormContext<NewProposalForm>()
 
   const { walletAddress = '' } = useWalletInfo()
-  const entity = useEntity(walletAddress)
+  const { entity } = useEntity(walletAddress)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')

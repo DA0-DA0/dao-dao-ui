@@ -42,7 +42,7 @@ export const DaoProposalContentDisplay = ({
     proposalModule.prePropose?.type === PreProposeModuleType.Approver
       ? proposalModule.prePropose.config.approvalDao
       : proposalInfo.createdByAddress
-  const loadingEntity = useEntity(creatorAddress)
+  const { entity } = useEntity(creatorAddress)
 
   const { refreshProposal, refreshing } = useProposalRefreshers()
 
@@ -74,7 +74,7 @@ export const DaoProposalContentDisplay = ({
       }
       creator={{
         address: creatorAddress,
-        entity: loadingEntity,
+        entity,
       }}
       description={proposalInfo.description}
       duplicateUrl={duplicateUrl}

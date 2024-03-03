@@ -19,7 +19,7 @@ export const NewProposalPreview = () => {
 
   const { loadedActions } = useLoadedActionsAndCategories()
   const { walletAddress = '' } = useWalletInfo()
-  const entity = useEntity(walletAddress)
+  const { entity } = useEntity(walletAddress)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')

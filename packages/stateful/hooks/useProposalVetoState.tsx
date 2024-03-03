@@ -77,7 +77,7 @@ export const useProposalVetoState = ({
   const [vetoLoading, setVetoLoading] = useState<
     'veto' | 'earlyExecute' | false
   >(false)
-  const vetoerEntity = useEntity(
+  const { entity: vetoerEntity } = useEntity(
     vetoConfig?.vetoer || neutronTimelockOverrule?.dao || ''
   )
   // Flatten vetoer entities in case a cw1-whitelist is the vetoer.

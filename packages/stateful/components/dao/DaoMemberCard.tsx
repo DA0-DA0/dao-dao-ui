@@ -5,13 +5,13 @@ import { useEntity } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 
 export const DaoMemberCard = (props: StatefulDaoMemberCardProps) => {
-  const loadingEntity = useEntity(props.address)
+  const { entity } = useEntity(props.address)
 
   return (
     <StatelessDaoMemberCard
       {...props}
       ButtonLink={ButtonLink}
-      loadingEntity={loadingEntity}
+      loadingEntity={entity}
     />
   )
 }

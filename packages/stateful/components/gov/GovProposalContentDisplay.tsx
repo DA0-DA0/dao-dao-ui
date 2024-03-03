@@ -26,7 +26,7 @@ export const GovProposalContentDisplay = ({
     (proposal.version === GovProposalVersion.V1 &&
       proposal.proposal.proposer) ||
     ''
-  const entity = useEntity(proposerAddress)
+  const { entity } = useEntity(proposerAddress)
 
   const loadingProposal = useLoadingGovProposal(proposal.id.toString())
   const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))

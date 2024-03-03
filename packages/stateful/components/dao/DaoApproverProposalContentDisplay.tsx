@@ -100,7 +100,7 @@ export const DaoApproverProposalContentDisplay = ({
   }
 
   const creatorAddress = proposalInfo.createdByAddress
-  const entity = useEntity(creatorAddress)
+  const { entity } = useEntity(creatorAddress)
 
   const innerProps: InnerDaoApproverProposalContentDisplayProps = {
     creator: {
@@ -177,7 +177,7 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
     // Fallback to approval proposal creator passed in from main component.
     props.creator?.address ||
     ''
-  const entity = useEntity(creatorAddress)
+  const { entity } = useEntity(creatorAddress)
 
   if (!PreProposeApprovalInnerContentDisplay) {
     return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />

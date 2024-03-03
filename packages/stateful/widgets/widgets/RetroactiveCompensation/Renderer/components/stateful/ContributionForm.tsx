@@ -35,7 +35,7 @@ export const ContributionForm = () => {
   } = useWallet({
     loadAccount: true,
   })
-  const walletEntity = useEntity(walletAddress)
+  const { entity: walletEntity } = useEntity(walletAddress)
 
   const postRequest = usePostRequest()
 

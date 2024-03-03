@@ -165,6 +165,10 @@ const remarkEntityDisplay = () => {
 
         const words = value.split(' ')
         const newNodes = words.reduce((nodes, word) => {
+          // Strip non alphanumeric characters, in case address is surrounded by
+          // punctuation.
+          word = word.replace(/[^a-zA-Z0-9]/gi, '')
+
           if (isValidBech32Address(word)) {
             // Append entity display node.
             nodes.push({

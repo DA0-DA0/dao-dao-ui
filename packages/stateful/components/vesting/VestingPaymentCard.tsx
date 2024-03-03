@@ -56,7 +56,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     steps,
   } = vestingInfo
 
-  const recipientEntity = useEntity(vest.recipient)
+  const { entity: recipientEntity } = useEntity(vest.recipient)
   const recipientIsDao =
     !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao
 

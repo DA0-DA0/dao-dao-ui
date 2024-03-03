@@ -143,7 +143,7 @@ const InnerNewGovProposal = ({
   const [submitError, setSubmitError] = useState('')
 
   const { walletAddress = '' } = useWalletInfo()
-  const entity = useEntity(walletAddress)
+  const { entity } = useEntity(walletAddress)
 
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
