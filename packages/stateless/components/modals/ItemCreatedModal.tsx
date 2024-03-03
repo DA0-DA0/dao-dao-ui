@@ -45,7 +45,7 @@ export const ItemCreatedModal = <
   return (
     <Modal
       {...modalProps}
-      containerClassName={clsx('max-w-lg', modalContainerClassName)}
+      containerClassName={clsx('sm:!max-w-lg', modalContainerClassName)}
       header={header}
       visible
     >
