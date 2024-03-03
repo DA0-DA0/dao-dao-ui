@@ -167,16 +167,16 @@ const remarkEntityDisplay = () => {
         const newNodes = words.reduce((nodes, word) => {
           // Strip non alphanumeric characters, in case address is surrounded by
           // punctuation.
-          word = word.replace(/[^a-zA-Z0-9]/gi, '')
+          const strippedWord = word.replace(/[^a-zA-Z0-9]/gi, '')
 
-          if (isValidBech32Address(word)) {
+          if (isValidBech32Address(strippedWord)) {
             // Append entity display node.
             nodes.push({
               type: 'element',
               tagName: ENTITY_DISPLAY_NODE_TAG,
               children: [],
               properties: {
-                address: word,
+                address: strippedWord,
                 className: clsx(
                   '!inline-flex',
                   // If surrounded by other words, add some margin and
