@@ -9,7 +9,7 @@ export type ProposalCrossChainRelayStatusProps = {
 }
 
 export const ProposalCrossChainRelayStatus = ({
-  state: { hasPolytoneMessages, anyUnrelayed, needsSelfRelay },
+  state: { hasPolytoneMessages, needsSelfRelay, unrelayedMsgs, timedOutMsgs },
 }: ProposalCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
@@ -17,13 +17,15 @@ export const ProposalCrossChainRelayStatus = ({
     return null
   }
 
-  return anyUnrelayed ? (
+  return unrelayedMsgs.length > 0 ? (
     !needsSelfRelay ? (
       <InfoCard
         content={t('info.relayingCrossChainMessages')}
         style="loading"
       />
     ) : null
+  ) : timedOutMsgs.length > 0 ? (
+    <InfoCard content={t('error.crossChainMessagesTimedOut')} style="warning" />
   ) : (
     <InfoCard
       content={t('success.crossChainMessagesRelayed')}

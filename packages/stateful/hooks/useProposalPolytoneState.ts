@@ -34,6 +34,7 @@ import {
   decodeMessage,
   decodePolytoneExecuteMsg,
   makeWasmMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 export type UseProposalPolytoneStateOptions = {
@@ -90,7 +91,7 @@ export const useProposalPolytoneState = ({
     () =>
       msgs
         .map((msg) =>
-          decodePolytoneExecuteMsg(srcChainId, decodeMessage(msg), 'oneOrZero')
+          decodePolytoneExecuteMsg(srcChainId, decodeMessage(msg), 'any')
         )
         .flatMap((decoded) => (decoded.match ? [decoded] : [])),
     [srcChainId, msgs]
@@ -166,13 +167,59 @@ export const useProposalPolytoneState = ({
     []
   )
 
-  // If any packets or acks are not received, or any callbacks failed to load,
-  // refresh the data.
-  const anyUnrelayed =
-    (!unreceivedPackets.loading && unreceivedPackets.data.flat().length > 0) ||
-    (!unreceivedAcks.loading && unreceivedAcks.data.flat().length > 0) ||
-    (!polytoneResults.loading &&
-      polytoneResults.data.some(({ state }) => state === 'hasError'))
+  // Get unrelayed and timed-out messages.
+  const { relayedMsgs, unrelayedMsgs, timedOutMsgs } = useMemo(() => {
+    const relayedMsgs = !polytoneResults.loading
+      ? polytoneResults.data.flatMap((loadable, index) =>
+          loadable.state === 'hasValue' &&
+          objectMatchesStructure(loadable.contents, {
+            callback: {
+              result: {
+                execute: {
+                  Ok: {},
+                },
+              },
+            },
+          })
+            ? polytoneMessages[index].initiatorMsg
+            : []
+        )
+      : []
+    const unrelayedMsgs = !polytoneResults.loading
+      ? polytoneResults.data.flatMap((loadable, index) =>
+          loadable.state === 'hasError' &&
+          loadable.contents instanceof Error &&
+          loadable.contents.message.includes(
+            'polytone::callbacks::CallbackMessage not found'
+          )
+            ? polytoneMessages[index].initiatorMsg
+            : []
+        )
+      : []
+    const timedOutMsgs = !polytoneResults.loading
+      ? polytoneResults.data.flatMap((loadable, index) =>
+          loadable.state === 'hasValue' &&
+          objectMatchesStructure(loadable.contents, {
+            callback: {
+              result: {
+                execute: {
+                  Err: {},
+                },
+              },
+            },
+          }) &&
+          (loadable.contents.callback.result as any).execute.Err === 'timeout'
+            ? polytoneMessages[index].initiatorMsg
+            : []
+        )
+      : []
+
+    return {
+      relayedMsgs,
+      unrelayedMsgs,
+      timedOutMsgs,
+    }
+  }, [polytoneResults, polytoneMessages])
 
   // Refresh every 10 seconds while anything is unrelayed.
   const refreshUnreceivedIbcData = useRecoilCallback(
@@ -186,6 +233,7 @@ export const useProposalPolytoneState = ({
       },
     useDeepCompareMemoize([srcChainId, dstChainIds])
   )
+  const anyUnrelayed = unrelayedMsgs.length > 0
   useEffect(() => {
     if (!anyUnrelayed) {
       return
@@ -203,16 +251,12 @@ export const useProposalPolytoneState = ({
   const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
     ? undefined
     : polytoneMessages.filter(
-        ({ polytoneConnection: { needsSelfRelay } }, index) =>
+        ({ polytoneConnection: { needsSelfRelay }, initiatorMsg }) =>
           // Needs self-relay or does not need self-relay but was executed a few
           // minutes ago and still has not been relayed.
           (!!needsSelfRelay || executedOverFiveMinutesAgo) &&
           // Not yet relayed.
-          polytoneResults.data[index].state === 'hasError' &&
-          polytoneResults.data[index].errorOrThrow() instanceof Error &&
-          (
-            polytoneResults.data[index].errorOrThrow() as Error
-          ).message.includes('polytone::callbacks::CallbackMessage not found')
+          unrelayedMsgs.includes(initiatorMsg)
       )
   const hasPolytoneMessagesNeedingSelfRelay =
     !!polytoneMessagesNeedingSelfRelay?.length
@@ -260,7 +304,9 @@ export const useProposalPolytoneState = ({
         loading: false,
         data: {
           hasPolytoneMessages: polytoneMessages.length > 0,
-          anyUnrelayed,
+          relayedMsgs,
+          unrelayedMsgs,
+          timedOutMsgs,
           needsSelfRelay: hasPolytoneMessagesNeedingSelfRelay,
           openPolytoneRelay: () =>
             status === ProposalStatusEnum.Executed && !loadingTxHash.loading

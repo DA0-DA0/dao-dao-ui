@@ -372,6 +372,7 @@
     "couldntFindProposal": "We couldn't find a proposal with that ID.",
     "couldntFindWallet": "We couldn't find a wallet with that address.",
     "counterpartyBalanceInsufficient": "The counterparty's balance of {{amount}} ${{tokenSymbol}} is insufficient. They may be unable to complete this swap.",
+    "crossChainMessagesTimedOut": "One or more cross-chain messages timed out and thus did not get executed on the destination chain.",
     "daoAccountNotFound": "The DAO account could not be found for this chain.",
     "daoAndSubDaosAlreadyOnV2": "This DAO (and all of its SubDAOs, if it has any) have already been upgraded.",
     "daoCreationIncomplete": "DAO creation is incomplete. Ensure all required fields have been filled out.",

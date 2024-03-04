@@ -11,18 +11,34 @@ export type ProposalCreatedCardProps = Omit<
 >
 
 export type ProposalPolytoneState = {
-  // Whether or not there are any polytone messages.
+  /**
+   * Whether or not there are any polytone messages.
+   */
   hasPolytoneMessages: boolean
-  // Whether or not there are polytone messages that have not been relayed.
-  anyUnrelayed: boolean
-  // Whether or not there are polytone messages that need to be self-relayed.
-  // Most chains have relayers set up, so no need to self-relay on those chains.
-  // After a few minutes if there are still messages that need to be relayed,
-  // they can be self-relayed. This will be true when unrelayed messages exist
-  // on a chain with no relayers or when there are still unrelayed messages
-  // after a few minutes.
+  /**
+   * The initiator msgs that relayed successfully.
+   */
+  relayedMsgs: string[]
+  /**
+   * The initiator msgs that are unrelayed.
+   */
+  unrelayedMsgs: string[]
+  /**
+   * The initiator msgs that timed out.
+   */
+  timedOutMsgs: string[]
+  /**
+   * Whether or not there are polytone messages that need to be self-relayed.
+   * Most chains have relayers set up, so no need to self-relay on those chains.
+   * After a few minutes if there are still messages that need to be relayed,
+   * they can be self-relayed. This will be true when unrelayed messages exist
+   * on a chain with no relayers or when there are still unrelayed messages
+   * after a few minutes.
+   */
   needsSelfRelay: boolean
-  // Opens the execute and self-relay modal.
+  /**
+   * Opens the execute and self-relay modal.
+   */
   openPolytoneRelay: () => void
 }
 

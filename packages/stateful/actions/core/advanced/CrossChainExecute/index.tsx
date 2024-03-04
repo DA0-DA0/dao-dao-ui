@@ -126,7 +126,7 @@ export const makeCrossChainExecuteAction: ActionMaker<
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<CrossChainExecuteData> = (
     msg: Record<string, any>
   ) => {
-    const decodedPolytone = decodePolytoneExecuteMsg(currentChainId, msg)
+    const decodedPolytone = decodePolytoneExecuteMsg(currentChainId, msg, 'any')
 
     return decodedPolytone.match
       ? {
