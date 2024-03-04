@@ -27,7 +27,7 @@ import {
   useAwaitNextBlock,
   useEntity,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../hooks'
 import {
   useDistribute,
@@ -42,7 +42,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { isWalletConnected, refreshBalances } = useWalletInfo()
+  const { isWalletConnected, refreshBalances } = useWalletBalances()
 
   const {
     vestingContractAddress,

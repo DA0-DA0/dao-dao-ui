@@ -35,9 +35,10 @@ import {
 
 import {
   useInstantiateAndExecute,
+  useManageProfile,
   useProfile,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../hooks'
 import { allWalletNftsSelector } from '../recoil'
 import { NftSelectionModal } from './nft'
@@ -91,19 +92,17 @@ export const InnerPfpkNftSelectionModal = ({
   )
 
   const {
-    walletProfileData,
-    updateProfileNft,
-    updatingProfile,
-    backupImageUrl,
-    refreshBalances,
-  } = useWalletInfo()
+    profile,
+    updateProfile: { updating: updatingProfile, go: updateProfile },
+  } = useManageProfile()
+  const { refreshBalances } = useWalletBalances()
   // Initialize to selected NFT.
   const [selectedKey, setSelectedKey] = useState<string | undefined>(
-    !walletProfileData.loading && walletProfileData.profile.nft
+    !profile.loading && profile.data.nft
       ? getNftKey(
-          walletProfileData.profile.nft.chainId,
-          walletProfileData.profile.nft.collectionAddress,
-          walletProfileData.profile.nft.tokenId
+          profile.data.nft.chainId,
+          profile.data.nft.collectionAddress,
+          profile.data.nft.tokenId
         )
       : undefined
   )
@@ -113,50 +112,45 @@ export const InnerPfpkNftSelectionModal = ({
       : undefined
   // If nonce changes, set selected NFT.
   const [lastNonce, setLastNonce] = useState(
-    walletProfileData.loading ? 0 : walletProfileData.profile.nonce
+    profile.loading ? 0 : profile.data.nonce
   )
   useEffect(() => {
     if (
-      !walletProfileData.loading &&
-      walletProfileData.profile.nft &&
-      walletProfileData.profile.nonce > lastNonce
+      !profile.loading &&
+      profile.data.nft &&
+      profile.data.nonce > lastNonce
     ) {
       setSelectedKey(
         getNftKey(
-          walletProfileData.profile.nft.chainId,
-          walletProfileData.profile.nft.collectionAddress,
-          walletProfileData.profile.nft.tokenId
+          profile.data.nft.chainId,
+          profile.data.nft.collectionAddress,
+          profile.data.nft.tokenId
         )
       )
-      setLastNonce(walletProfileData.profile.nonce)
+      setLastNonce(profile.data.nonce)
     }
-  }, [lastNonce, walletProfileData])
+  }, [lastNonce, profile])
 
   const onAction = useCallback(async () => {
-    if (nfts.loading) {
-      toast.error(t('error.noNftsSelected'))
-      return
-    }
-
     // Only give error about no NFTs if something should be selected. This
     // should never happen...
-    if (selectedKey && !selectedNft) {
+    if (nfts.loading || (selectedKey && !selectedNft)) {
       toast.error(t('error.noNftsSelected'))
       return
     }
 
     try {
       // Update NFT only.
-      await updateProfileNft(
-        selectedNft
+      await updateProfile({
+        nft: selectedNft
           ? {
               chainId: selectedNft.chainId,
               collectionAddress: selectedNft.collectionAddress,
               tokenId: selectedNft.tokenId,
             }
           : // Clear NFT if nothing selected.
-            null
-      )
+            null,
+      })
       // Close on successful update.
       onClose()
     } catch (err) {
@@ -167,7 +161,7 @@ export const InnerPfpkNftSelectionModal = ({
         })
       )
     }
-  }, [nfts, selectedKey, selectedNft, t, updateProfileNft, onClose])
+  }, [nfts.loading, selectedKey, selectedNft, t, updateProfile, onClose])
 
   const [showImageSelector, setShowImageSelector] = useState(false)
   const { register, setValue, watch } = useForm<{ image: string }>()
@@ -350,14 +344,17 @@ export const InnerPfpkNftSelectionModal = ({
                   !nfts.loading
                     ? selectedNft
                       ? nftCardInfosForKey[selectedNft.key]?.imageUrl
-                      : backupImageUrl
+                      : profile.loading
+                      ? undefined
+                      : profile.data.backupImageUrl
                     : undefined
                 }
                 loading={
                   nfts.loading ||
                   // If selected NFT but info not yet loaded, we're loading.
-                  (selectedNft &&
-                    !nftCardInfosForKey[selectedNft.key]?.imageUrl)
+                  (selectedNft
+                    ? !nftCardInfosForKey[selectedNft.key]?.imageUrl
+                    : profile.loading)
                 }
                 size="md"
               />

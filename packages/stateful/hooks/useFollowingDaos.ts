@@ -87,7 +87,7 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
     async (coreAddressOrAddresses: string | string[]) => {
       const addChains = addChainsRef.current
 
-      if (!ready || !addChains.ready || profile.loading || profile.errored) {
+      if (!ready || !addChains.ready || profile.loading) {
         toast.error(t('error.logInToFollow'))
         return false
       }

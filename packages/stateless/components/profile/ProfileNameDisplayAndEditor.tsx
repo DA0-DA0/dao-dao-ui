@@ -4,7 +4,12 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ChainId, WalletProfileData } from '@dao-dao/types'
+import {
+  ChainId,
+  LoadingData,
+  PfpkProfileUpdateFunction,
+  UnifiedProfile,
+} from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
@@ -15,9 +20,9 @@ import { Loader } from '../logo'
 import { Tooltip, TooltipInfoIcon } from '../tooltip'
 
 export type ProfileNameDisplayAndEditorProps = {
-  walletProfileData: WalletProfileData
+  profile: LoadingData<UnifiedProfile>
   compact?: boolean
-  updateProfileName?: (name: string | null) => Promise<void>
+  updateProfile?: PfpkProfileUpdateFunction
   className?: string
   header?: boolean
   editingClassName?: string
@@ -25,15 +30,15 @@ export type ProfileNameDisplayAndEditorProps = {
 
 export const ProfileNameDisplayAndEditor = ({
   compact,
-  walletProfileData,
-  updateProfileName,
+  profile,
+  updateProfile,
   className,
   header,
   editingClassName,
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 
-  const canEdit = !!updateProfileName && walletProfileData.profile.nonce >= 0
+  const canEdit = !!updateProfile && !profile.loading && profile.data.nonce >= 0
 
   // If set, will show edit input.
   const [editingName, setEditingName] = useState<string | undefined>()
@@ -47,7 +52,7 @@ export const ProfileNameDisplayAndEditor = ({
     setSavingName(true)
     try {
       // Empty names unset.
-      await updateProfileName(editingName.trim() || null)
+      await updateProfile({ name: editingName.trim() || null })
       // Stop editing on success.
       setEditingName(undefined)
     } catch (err) {
@@ -60,10 +65,9 @@ export const ProfileNameDisplayAndEditor = ({
     } finally {
       setSavingName(false)
     }
-  }, [canEdit, editingName, updateProfileName])
+  }, [canEdit, editingName, updateProfile])
 
-  const noNameSet =
-    !walletProfileData.loading && walletProfileData.profile.name === null
+  const noNameSet = !profile.loading && profile.data.name === null
 
   const nameClassName = clsx('title-text', header && '!text-2xl !font-bold')
   // Height should match text line-height.
@@ -134,29 +138,26 @@ export const ProfileNameDisplayAndEditor = ({
           contentContainerClassName={clsx(canEdit && compact && 'pr-6')}
           disabled={!canEdit}
           onClick={() =>
-            !walletProfileData.loading &&
+            !profile.loading &&
             setEditingName(
               // Prefill name editor with current name from PFPK. If name from
               // other name service, allow overriding name, but default to
               // empty.
-              walletProfileData.profile.nameSource === 'pfpk'
-                ? walletProfileData.profile.name ?? ''
-                : ''
+              profile.data.nameSource === 'pfpk' ? profile.data.name ?? '' : ''
             )
           }
           variant="none"
         >
-          {!walletProfileData.loading &&
-            walletProfileData.profile.nameSource === 'stargaze' && (
-              <Tooltip title={t('title.stargazeNames')}>
-                <ChainLogo chainId={ChainId.StargazeMainnet} />
-              </Tooltip>
-            )}
+          {!profile.loading && profile.data.nameSource === 'stargaze' && (
+            <Tooltip title={t('title.stargazeNames')}>
+              <ChainLogo chainId={ChainId.StargazeMainnet} />
+            </Tooltip>
+          )}
 
           <p
             className={clsx(
               nameClassName,
-              walletProfileData.loading && 'animate-pulse',
+              profile.loading && 'animate-pulse',
               noNameSet
                 ? [
                     '!font-normal !italic !text-text-secondary',
@@ -165,16 +166,16 @@ export const ProfileNameDisplayAndEditor = ({
                 : '!text-text-body'
             )}
           >
-            {walletProfileData.loading
+            {profile.loading
               ? '...'
               : noNameSet
               ? canEdit
                 ? t('button.setDisplayName')
                 : t('info.noDisplayName')
-              : walletProfileData.profile.name}
+              : profile.data.name}
           </p>
 
-          {!canEdit && !walletProfileData.loading && noNameSet && (
+          {!canEdit && !profile.loading && noNameSet && (
             <TooltipInfoIcon
               className="-ml-1"
               size="xs"

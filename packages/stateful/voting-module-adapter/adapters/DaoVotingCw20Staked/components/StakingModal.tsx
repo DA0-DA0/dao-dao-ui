@@ -33,7 +33,7 @@ import {
   Cw20StakeHooks,
   useAwaitNextBlock,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
@@ -54,7 +54,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, isWalletConnected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletBalances()
   const { chainId, coreAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)

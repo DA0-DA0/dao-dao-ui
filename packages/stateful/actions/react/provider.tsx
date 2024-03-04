@@ -212,7 +212,7 @@ export const WalletActionsProvider = ({
       address={address}
       context={{
         type: ActionContextType.Wallet,
-        profile: profile.errored ? undefined : profile.data,
+        profile: profile.data,
       }}
     >
       {children}

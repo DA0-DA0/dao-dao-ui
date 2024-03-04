@@ -1,11 +1,12 @@
 import { ReactNode } from 'react'
 
-import { WalletProfileData } from '../profile'
+import { LoadingData } from '../misc'
+import { PfpkProfileUpdateFunction, UnifiedProfile } from '../profile'
 
 export type WalletProfileHeaderProps = {
   editable: boolean
-  profileData: WalletProfileData
-  updateProfileName?: (name: string | null) => Promise<void>
+  profile: LoadingData<UnifiedProfile>
+  updateProfile?: PfpkProfileUpdateFunction
   openProfileNftUpdate?: () => void
   className?: string
   children?: ReactNode

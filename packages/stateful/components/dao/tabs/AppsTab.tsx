@@ -48,7 +48,7 @@ import {
 import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
 import { useActionsForMatching } from '../../../actions'
-import { useWalletInfo } from '../../../hooks'
+import { useProfile } from '../../../hooks'
 import {
   ProposalModuleAdapterCommonProvider,
   matchAdapter as matchProposalModuleAdapter,
@@ -336,7 +336,7 @@ const ActionMatcherAndProposer = ({
 }: ActionMatcherAndProposerProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { isWalletConnected, walletProfileData } = useWalletInfo()
+  const { connected, profile } = useProfile()
 
   const {
     id: proposalModuleAdapterCommonId,
@@ -525,20 +525,18 @@ const ActionMatcherAndProposer = ({
       containerClassName="sm:!max-w-[min(90dvw,64rem)] !w-full"
       footerContainerClassName="flex flex-row justify-end"
       footerContent={
-        isWalletConnected ? (
+        connected ? (
           <>
             <div className="flex min-w-0 flex-row items-center gap-2">
               {/* Image */}
               <ProfileImage
-                imageUrl={walletProfileData.profile.imageUrl}
-                loading={walletProfileData.loading}
+                imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+                loading={profile.loading}
                 size="sm"
               />
 
               {/* Name */}
-              <ProfileNameDisplayAndEditor
-                walletProfileData={walletProfileData}
-              />
+              <ProfileNameDisplayAndEditor profile={profile} />
             </div>
           </>
         ) : (

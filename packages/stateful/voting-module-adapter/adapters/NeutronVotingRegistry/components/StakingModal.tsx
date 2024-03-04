@@ -33,7 +33,7 @@ import {
   NeutronVaultHooks,
   useAwaitNextBlock,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule } from '../hooks'
@@ -53,7 +53,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address = '', isWalletConnected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletBalances()
   const { coreAddress, chainId } = useVotingModuleAdapterOptions()
 
   const { loadingVaults } = useVotingModule()

@@ -1,13 +1,20 @@
 import { Wallet } from '@cosmos-kit/core'
 import { ComponentType } from 'react'
 
-import { WalletProfileData } from '../profile'
+import { LoadingData } from '../misc'
+import { UnifiedProfile } from '../profile'
 import { ButtonLinkProps } from './Buttonifier'
 import { NotificationsProps } from './Notifications'
 
 export type NavWalletConnectedProps = {
+  /**
+   * The currently connected wallet.
+   */
   wallet: Wallet
-  walletProfileData: WalletProfileData
+  /**
+   * The unified profile data.
+   */
+  profile: LoadingData<UnifiedProfile>
   /**
    * Disconnect the wallet.
    */

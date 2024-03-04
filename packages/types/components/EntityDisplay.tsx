@@ -1,6 +1,6 @@
 import { DaoInfo } from '../dao'
 import { LoadingData } from '../misc'
-import { WalletProfile } from '../profile'
+import { UnifiedProfile } from '../profile'
 
 export enum EntityType {
   Dao = 'dao',
@@ -20,7 +20,7 @@ export type Entity = {
 } & (
   | {
       type: EntityType.Wallet
-      profile?: WalletProfile
+      profile?: UnifiedProfile
     }
   | {
       type: EntityType.Module

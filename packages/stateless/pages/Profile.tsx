@@ -13,7 +13,7 @@ export type ProfileProps = {
   tabs: AccountTab[]
 } & Pick<
   WalletProfileHeaderProps,
-  'openProfileNftUpdate' | 'profileData' | 'updateProfileName'
+  'openProfileNftUpdate' | 'profile' | 'updateProfile'
 >
 
 export const Profile = ({ tabs, ...headerProps }: ProfileProps) => {

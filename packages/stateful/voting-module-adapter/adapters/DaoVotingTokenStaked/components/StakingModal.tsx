@@ -28,7 +28,7 @@ import {
   DaoVotingTokenStakedHooks,
   useAwaitNextBlock,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
@@ -49,7 +49,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, isWalletConnected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletBalances()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)

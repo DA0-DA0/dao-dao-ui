@@ -1,7 +1,7 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { ResolvedProfile, WithChainId } from '@dao-dao/types'
-import { PFPK_API_BASE, processError } from '@dao-dao/utils'
+import { PFPK_API_BASE, processError, toBech32Hash } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
 
@@ -39,7 +39,9 @@ export const searchProfilesByNamePrefixSelector = selectorFamily<
       if (profiles.length > 0) {
         get(
           waitForAll(
-            profiles.map((hit) => refreshWalletProfileAtom(hit.address))
+            profiles.map((hit) =>
+              refreshWalletProfileAtom(toBech32Hash(hit.address))
+            )
           )
         )
       }

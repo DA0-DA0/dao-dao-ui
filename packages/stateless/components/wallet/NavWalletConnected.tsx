@@ -18,7 +18,7 @@ import { WalletLogo } from './WalletLogo'
 
 export const NavWalletConnected = ({
   wallet,
-  walletProfileData,
+  profile,
   disconnect,
   className,
   mode,
@@ -49,8 +49,8 @@ export const NavWalletConnected = ({
         onClick={mode === 'dock' ? undefined : onClick}
       >
         <ProfileImage
-          imageUrl={walletProfileData.profile.imageUrl}
-          loading={walletProfileData.loading}
+          imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+          loading={profile.loading}
           size={mode === 'dock' ? 'xs' : 'md'}
         />
 
@@ -73,7 +73,7 @@ export const NavWalletConnected = ({
         </Tooltip>
       </div>
     ),
-    [mode, t, wallet, walletProfileData]
+    [mode, t, wallet, profile]
   )
 
   return (

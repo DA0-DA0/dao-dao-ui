@@ -39,7 +39,7 @@ import {
   useAwaitNextBlock,
   useCfWorkerAuthPostRequest,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../hooks'
 import {
   hiddenBalancesSelector,
@@ -62,7 +62,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     chainId: props.token.chainId,
     loadAccount: true,
   })
-  const { refreshBalances } = useWalletInfo({
+  const { refreshBalances } = useWalletBalances({
     chainId: props.token.chainId,
   })
 

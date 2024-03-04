@@ -24,5 +24,8 @@ const Template: ComponentStory<typeof Profile> = (args) => <Profile {...args} />
 export const Default = Template.bind({})
 Default.args = {
   tabs: [],
-  profileData: WALLET_PROFILE_DATA,
+  profile: {
+    loading: false,
+    data: WALLET_PROFILE_DATA,
+  },
 }

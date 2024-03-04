@@ -1,4 +1,5 @@
-import { noWait, selectorFamily } from 'recoil'
+import uniq from 'lodash.uniq'
+import { noWait, selectorFamily, waitForAll } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
@@ -7,8 +8,7 @@ import {
 import {
   ChainId,
   PfpkProfile,
-  WalletProfile,
-  WalletProfileData,
+  UnifiedProfile,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -18,6 +18,7 @@ import {
   getChainForChainId,
   getFallbackImage,
   objectMatchesStructure,
+  toBech32Hash,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -31,11 +32,12 @@ export const EMPTY_PFPK_PROFILE: PfpkProfile = {
   chains: {},
 }
 
-export const EMPTY_WALLET_PROFILE: WalletProfile = {
+export const makeEmptyUnifiedProfile = (address: string): UnifiedProfile => ({
   ...EMPTY_PFPK_PROFILE,
   nameSource: 'pfpk',
-  imageUrl: '',
-}
+  imageUrl: getFallbackImage(address),
+  backupImageUrl: getFallbackImage(address),
+})
 
 // Get profile from PFPK.
 export const pfpkProfileSelector = selectorFamily<PfpkProfile, string>({
@@ -43,18 +45,35 @@ export const pfpkProfileSelector = selectorFamily<PfpkProfile, string>({
   get:
     (walletAddress) =>
     async ({ get }) => {
-      if (!walletAddress) {
+      const bech32Hash = walletAddress && toBech32Hash(walletAddress)
+      if (!bech32Hash) {
         return { ...EMPTY_PFPK_PROFILE }
       }
 
-      get(refreshWalletProfileAtom(walletAddress))
+      get(refreshWalletProfileAtom(bech32Hash))
 
       try {
-        const response = await fetch(
-          PFPK_API_BASE + `/address/${walletAddress}`
-        )
+        const response = await fetch(PFPK_API_BASE + `/bech32/${bech32Hash}`)
         if (response.ok) {
-          return await response.json()
+          const profile: PfpkProfile = await response.json()
+
+          // If profile found, add refresher dependencies on the other public
+          // keys in the profile. This ensures that the profile will update for
+          // all other public keys when any of the other public keys update the
+          // profile.
+          if (profile?.chains) {
+            get(
+              waitForAll(
+                uniq(
+                  Object.values(profile.chains).map(({ address }) =>
+                    toBech32Hash(address)
+                  )
+                ).map((bech32Hash) => refreshWalletProfileAtom(bech32Hash))
+              )
+            )
+          }
+
+          return profile
         } else {
           console.error(await response.json().catch(() => response.statusText))
         }
@@ -142,42 +161,23 @@ export const stargazeNameImageForAddressSelector = selectorFamily<
     },
 })
 
-export const makeDefaultWalletProfileData = (
-  address: string,
-  loading = false
-): WalletProfileData => ({
-  loading,
-  address,
-  profile: { ...EMPTY_WALLET_PROFILE },
-  backupImageUrl: getFallbackImage(address),
-})
-
-// This selector returns the profile for a wallet with some helpful metadata,
-// such as its loading state and a backup image. It is designed to not wait for
-// any data, returning a default profile immediately and filling in data as it
-// comes in. Thus, it should be safe to use in any component without suspending
-// it.
-export const walletProfileDataSelector = selectorFamily<
-  WalletProfileData,
+export const profileSelector = selectorFamily<
+  UnifiedProfile,
   WithChainId<{ address: string }>
 >({
-  key: 'walletProfileData',
+  key: 'profile',
   get:
     ({ address, chainId }) =>
     ({ get }) => {
       if (!address) {
-        return makeDefaultWalletProfileData(address)
+        return makeEmptyUnifiedProfile(address)
       }
 
-      get(refreshWalletProfileAtom(address))
+      get(refreshWalletProfileAtom(toBech32Hash(address)))
 
-      let profile = { ...EMPTY_WALLET_PROFILE }
+      const profile = makeEmptyUnifiedProfile(address)
 
-      const pfpkProfileLoadable = get(noWait(pfpkProfileSelector(address)))
-      const pfpkProfile =
-        pfpkProfileLoadable.state === 'hasValue'
-          ? pfpkProfileLoadable.contents
-          : null
+      const pfpkProfile = get(pfpkProfileSelector(address))
       if (pfpkProfile) {
         profile.nonce = pfpkProfile.nonce
         profile.name = pfpkProfile.name
@@ -185,7 +185,7 @@ export const walletProfileDataSelector = selectorFamily<
         profile.chains = pfpkProfile.chains
       }
 
-      // Load Stargaze name as backup if no PFPK set.
+      // Load Stargaze name as backup if no PFPK name set.
       if (!profile.name) {
         const stargazeNameLoadable = get(
           noWait(
@@ -210,10 +210,8 @@ export const walletProfileDataSelector = selectorFamily<
         }
       }
 
-      const backupImageUrl = getFallbackImage(address)
-
       // Set `imageUrl` to PFPK image, defaulting to fallback image.
-      profile.imageUrl = pfpkProfile?.nft?.imageUrl || backupImageUrl
+      profile.imageUrl = pfpkProfile?.nft?.imageUrl || profile.backupImageUrl
 
       // If NFT present from PFPK, get image from token once loaded.
       if (pfpkProfile?.nft) {
@@ -236,7 +234,7 @@ export const walletProfileDataSelector = selectorFamily<
           profile.imageUrl = nftInfoLoadable.contents.imageUrl
         }
 
-        // Load Stargaze name image if no PFPK.
+        // Load Stargaze name image if no PFPK image.
       } else if (profile.nameSource === 'stargaze') {
         const stargazeNameImageLoadable = get(
           noWait(
@@ -257,11 +255,6 @@ export const walletProfileDataSelector = selectorFamily<
         }
       }
 
-      return {
-        loading: pfpkProfileLoadable.state === 'loading',
-        address,
-        profile,
-        backupImageUrl,
-      }
+      return profile
     },
 })

@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
-import { useMembership, useWalletInfo } from '../../hooks'
+import { useManageProfile, useMembership } from '../../hooks'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
@@ -27,7 +27,10 @@ export interface ProfileProposalCardProps {
 export const ProfileProposalCard = () => {
   const chain = useChain()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
-  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const {
+    profile,
+    updateProfile: { go: updateProfile },
+  } = useManageProfile()
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
@@ -99,9 +102,9 @@ export const ProfileProposalCard = () => {
   const commonProps = {
     votingPower: votingPowerPercent,
     daoName,
-    walletProfileData,
+    profile,
     showUpdateProfileNft: () => setUpdateProfileNftVisible(true),
-    updateProfileName,
+    updateProfile,
   }
 
   return couldVote ? (

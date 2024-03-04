@@ -21,7 +21,7 @@ import {
 } from '@dao-dao/utils'
 
 import { daoInfoFromPolytoneProxySelector, daoInfoSelector } from './dao'
-import { walletProfileDataSelector } from './profile'
+import { profileSelector } from './profile'
 
 // Load entity from address on chain, whether it's a wallet address, a DAO, or a
 // DAO's polytone account.
@@ -78,7 +78,7 @@ export const entitySelector: (
       const [
         daoInfoLoadable,
         daoInfoFromPolytoneProxyLoadable,
-        walletProfileDataLoadable,
+        profileLoadable,
         cw1WhitelistEntitiesLoadable,
       ] = get(
         waitForAllSettled([
@@ -97,7 +97,7 @@ export const entitySelector: (
             : constSelector(undefined),
           // Try to load profile assuming the address is a wallet.
           address && isValidWalletAddress(address, bech32Prefix)
-            ? walletProfileDataSelector({
+            ? profileSelector({
                 address,
                 chainId,
               })
@@ -131,7 +131,7 @@ export const entitySelector: (
       const daoInfo = daoInfoLoadable.valueMaybe()
       const daoInfoFromPolytoneProxy =
         daoInfoFromPolytoneProxyLoadable.valueMaybe()
-      const walletProfileData = walletProfileDataLoadable.valueMaybe()
+      const profile = profileLoadable.valueMaybe()
       const cw1WhitelistEntities = cw1WhitelistEntitiesLoadable.valueMaybe()
 
       if (daoInfo) {
@@ -172,10 +172,9 @@ export const entitySelector: (
           type: EntityType.Wallet,
           chainId,
           address,
-          name: walletProfileData?.profile.name || null,
-          imageUrl:
-            walletProfileData?.profile.imageUrl || getFallbackImage(address),
-          profile: walletProfileData?.profile,
+          name: profile?.name || null,
+          imageUrl: profile?.imageUrl || getFallbackImage(address),
+          profile: profile,
         }
       }
     },

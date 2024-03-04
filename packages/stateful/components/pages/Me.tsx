@@ -35,8 +35,8 @@ import {
 } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
+import { useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileActions, ProfileWallet } from '../profile'
@@ -73,7 +73,10 @@ export const Me: NextPage = () => {
     isWalletConnected,
     isWalletConnecting,
   } = useWallet()
-  const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
+  const {
+    profile,
+    updateProfile: { go: updateProfile },
+  } = useManageProfile()
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Switch to a valid chain if not configured.
@@ -87,9 +90,7 @@ export const Me: NextPage = () => {
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
   const averageImgColorLoadable = useCachedLoadable(
-    profileData.loading
-      ? undefined
-      : averageColorSelector(profileData.profile.imageUrl)
+    profile.loading ? undefined : averageColorSelector(profile.data.imageUrl)
   )
 
   const setUpdateProfileNftVisible = useSetRecoilState(
@@ -161,9 +162,9 @@ export const Me: NextPage = () => {
             <SuspenseLoader fallback={<Loader />}>
               <StatelessProfile
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
-                profileData={profileData}
+                profile={profile}
                 tabs={tabs}
-                updateProfileName={updateProfileName}
+                updateProfile={updateProfile}
               />
             </SuspenseLoader>
           </WalletActionsProvider>

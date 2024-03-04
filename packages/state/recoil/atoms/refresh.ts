@@ -50,7 +50,8 @@ export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
   default: 0,
 })
 
-// Change this to refresh the profile for a wallet.
+// Change this to refresh the profile for a wallet. The argument is the address'
+// bech32 data hash.
 export const refreshWalletProfileAtom = atomFamily<number, string>({
   key: 'refreshWalletProfile',
   default: 0,

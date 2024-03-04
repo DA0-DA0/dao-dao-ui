@@ -6,14 +6,13 @@ import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
 
 export const WalletProfileHeader = ({
   editable,
-  profileData,
-  updateProfileName,
+  profile,
+  updateProfile,
   openProfileNftUpdate,
   className,
   children,
 }: WalletProfileHeaderProps) => {
-  const canEditProfile =
-    editable && !profileData.loading && profileData.profile.nonce >= 0
+  const canEditProfile = editable && !profile.loading && profile.data.nonce >= 0
 
   return (
     <div
@@ -23,16 +22,16 @@ export const WalletProfileHeader = ({
       )}
     >
       <ProfileImage
-        imageUrl={profileData.profile.imageUrl}
-        loading={profileData.loading}
+        imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+        loading={profile.loading}
         onClick={canEditProfile ? openProfileNftUpdate : undefined}
         size="header"
       />
 
       <ProfileNameDisplayAndEditor
         header
-        updateProfileName={canEditProfile ? updateProfileName : undefined}
-        walletProfileData={profileData}
+        profile={profile}
+        updateProfile={canEditProfile ? updateProfile : undefined}
       />
 
       {children}

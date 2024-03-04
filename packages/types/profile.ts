@@ -21,24 +21,46 @@ export type PfpkProfile = {
   >
 }
 
-export type WalletProfileNameSource = 'pfpk' | 'stargaze'
-
-// Move `imageUrl` out of `NFT` in case we use the Keplr profile image API or a
-// fallback image as backup.
-export type WalletProfile = PfpkProfile & {
-  imageUrl: string
-  // Whether or not the name is loaded from PFPK or Stargaze names.
-  nameSource: WalletProfileNameSource
-}
-
-export type WalletProfileUpdate = {
+export type PfpkProfileUpdate = {
   nonce: number
-  name?: WalletProfile['name']
+  name?: string | null
   nft?: {
     chainId: string
     tokenId: string
     collectionAddress: string
   } | null
+}
+
+/**
+ * Function used to update a profile. Throws an error on failure.
+ */
+export type PfpkProfileUpdateFunction = (
+  updates: Omit<PfpkProfileUpdate, 'nonce'>
+) => Promise<void>
+
+/**
+ * The source of the name in the unified profile.
+ */
+export type UnifiedProfileNameSource = 'pfpk' | 'stargaze'
+
+/**
+ * A unified profile that uses information from backup sources when missing from
+ * PFPK.
+ */
+export type UnifiedProfile = PfpkProfile & {
+  /**
+   * Image URL to use, which takes into account backup data sources if PFPK does
+   * not have an NFT set.
+   */
+  imageUrl: string
+  /**
+   * The source of the name.
+   */
+  nameSource: UnifiedProfileNameSource
+  /**
+   * Backup image URL that will be used if no PFPK NFT is set.
+   */
+  backupImageUrl: string
 }
 
 export type KeplrWalletProfile = {
@@ -60,14 +82,6 @@ export type ResolvedProfile = {
     tokenId: string
     imageUrl: string
   } | null
-}
-
-// Meta info about wallet profile, including loading state and a fallback image.
-export type WalletProfileData = {
-  loading: boolean
-  address: string
-  profile: WalletProfile
-  backupImageUrl: string
 }
 
 export type ProfileChain = {

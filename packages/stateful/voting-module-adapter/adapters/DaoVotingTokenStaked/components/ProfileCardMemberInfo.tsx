@@ -25,7 +25,7 @@ import {
   DaoVotingTokenStakedHooks,
   useAwaitNextBlock,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -42,7 +42,7 @@ export const ProfileCardMemberInfo = ({
   const { address: walletAddress, isWalletConnected } = useWallet({
     chainId,
   })
-  const { refreshBalances } = useWalletInfo({
+  const { refreshBalances } = useWalletBalances({
     chainId,
   })
 

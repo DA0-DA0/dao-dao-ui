@@ -10,7 +10,7 @@ import { ProfileNameDisplayAndEditor } from './ProfileNameDisplayAndEditor'
 
 export const ProfileCardWrapper = ({
   children,
-  walletProfileData,
+  profile,
   compact = false,
   underHeaderComponent,
   childContainerClassName,
@@ -18,9 +18,9 @@ export const ProfileCardWrapper = ({
 }: ProfileCardWrapperProps) => {
   // Get average color of image URL if in compact mode.
   const averageImgColorLoadable = useCachedLoadable(
-    !compact || walletProfileData.loading
+    !compact || profile.loading
       ? undefined
-      : averageColorSelector(walletProfileData.profile.imageUrl)
+      : averageColorSelector(profile.data.imageUrl)
   )
   const averageImgColor =
     averageImgColorLoadable.state === 'hasValue' &&
@@ -46,15 +46,15 @@ export const ProfileCardWrapper = ({
         {compact ? (
           <div className="flex flex-row items-stretch gap-3">
             <ProfileImage
-              imageUrl={walletProfileData.profile.imageUrl}
-              loading={walletProfileData.loading}
+              imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+              loading={profile.loading}
               size="md"
             />
 
             <div className="flex min-w-0 grow flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 compact={compact}
-                walletProfileData={walletProfileData}
+                profile={profile}
               />
               {underHeaderComponent}
             </div>
@@ -63,14 +63,14 @@ export const ProfileCardWrapper = ({
           <div className="flex flex-col items-center justify-center pt-4">
             <ProfileImage
               className="mb-6"
-              imageUrl={walletProfileData.profile.imageUrl}
-              loading={walletProfileData.loading}
+              imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+              loading={profile.loading}
               size="lg"
             />
             <ProfileNameDisplayAndEditor
               className="mb-5"
               compact={compact}
-              walletProfileData={walletProfileData}
+              profile={profile}
             />
             {underHeaderComponent}
           </div>

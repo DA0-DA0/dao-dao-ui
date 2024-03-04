@@ -1,7 +1,7 @@
 import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
 import { StatefulNavWalletProps } from '@dao-dao/types'
 
-import { useInboxApiWithUi, useWallet, useWalletInfo } from '../hooks'
+import { useInboxApiWithUi, useProfile, useWallet } from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -9,7 +9,7 @@ import { SuspenseLoader } from './SuspenseLoader'
 export const NavWallet = (props: StatefulNavWalletProps) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()
-  const { walletProfileData } = useWalletInfo()
+  const { profile } = useProfile()
 
   // Ignore errors loading inbox because the SDA does not have an inbox.
   let inbox
@@ -33,8 +33,8 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
           connected
           disconnect={disconnect}
           inbox={inbox}
+          profile={profile}
           wallet={wallet}
-          walletProfileData={walletProfileData}
           {...props}
         />
       ) : (

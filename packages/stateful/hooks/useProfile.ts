@@ -1,15 +1,7 @@
 import uniq from 'lodash.uniq'
-import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
 
-import { refreshWalletProfileAtom } from '@dao-dao/state'
-import { useCachedLoadingWithError } from '@dao-dao/stateless'
-import {
-  LoadingData,
-  LoadingDataWithError,
-  PfpkProfile,
-  ProfileChain,
-} from '@dao-dao/types'
+import { useCachedLoading } from '@dao-dao/stateless'
+import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
   MAINNET,
   getDisplayNameForChainId,
@@ -17,7 +9,8 @@ import {
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
-import { pfpkProfileSelector } from '../recoil'
+import { makeEmptyUnifiedProfile, profileSelector } from '../recoil'
+import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
 export type UseProfileOptions = {
@@ -40,9 +33,11 @@ export type UseProfileReturn = {
   connected: boolean
   /**
    * The profile for the currently connected wallet. If not connected and no
-   * address was passed, this will be in the loading state.
+   * address was passed, this will be in the loading state. The unified profile
+   * loads data from backup sources in case profile information is missing and
+   * substitutes a default profile on error.
    */
-  profile: LoadingDataWithError<PfpkProfile>
+  profile: LoadingData<UnifiedProfile>
   /**
    * Refresh the profile for the currently connected wallet.
    */
@@ -80,64 +75,60 @@ export const useProfile = ({
 
   const profileAddress = address || currentAddress
 
-  const profile = useCachedLoadingWithError(pfpkProfileSelector(profileAddress))
+  const profile = useCachedLoading(
+    profileSelector({
+      chainId: walletChainId,
+      address: currentAddress,
+    }),
+    makeEmptyUnifiedProfile(currentAddress)
+  )
 
-  const setRefreshWalletProfile = useSetRecoilState(
-    refreshWalletProfileAtom(profileAddress)
-  )
-  const refreshProfile = useCallback(
-    () => setRefreshWalletProfile((id) => id + 1),
-    [setRefreshWalletProfile]
-  )
+  const refreshProfile = useRefreshProfile(profileAddress, profile)
 
   const chains: LoadingData<ProfileChain[]> =
     (!address && !isWalletConnected) || profile.loading
       ? { loading: true }
       : {
           loading: false,
-          data: !profile.errored
-            ? Object.entries({
-                ...profile.data.chains,
-                // Add wallet-connected account if not already in the profile.
-                // This should only be the case if no profile exists yet and an
-                // empty profile with no chains is being returned.
-                ...(!profile.data.chains[walletChainId] &&
-                !hexPublicKey.loading &&
-                currentAddress
-                  ? {
-                      [walletChainId]: {
-                        publicKey: hexPublicKey.data,
-                        address: currentAddress,
-                      },
-                    }
-                  : {}),
-              })
-                .flatMap(
-                  ([chainId, { address, publicKey }]): ProfileChain | [] => {
-                    const chain = maybeGetChainForChainId(chainId)
-                    const supported = chain ? isSupportedChain(chainId) : false
+          data: Object.entries({
+            ...profile.data.chains,
+            // Add wallet-connected account if not already in the profile. This
+            // should only be the case if no profile exists yet and an empty
+            // profile with no chains is being returned.
+            ...(!profile.data.chains[walletChainId] &&
+            !hexPublicKey.loading &&
+            currentAddress
+              ? {
+                  [walletChainId]: {
+                    publicKey: hexPublicKey.data,
+                    address: currentAddress,
+                  },
+                }
+              : {}),
+          })
+            .flatMap(([chainId, { address, publicKey }]): ProfileChain | [] => {
+              const chain = maybeGetChainForChainId(chainId)
+              const supported = chain ? isSupportedChain(chainId) : false
 
-                    return chain &&
-                      // Only include chains that are on the right network type.
-                      (chain.network_type === 'mainnet') === MAINNET &&
-                      // Filter by onlySupported filter.
-                      (!onlySupported || supported)
-                      ? {
-                          chainId,
-                          chain,
-                          supported,
-                          address,
-                          publicKey,
-                        }
-                      : []
+              return chain &&
+                // Only include chains that are on the right network type.
+                (chain.network_type === 'mainnet') === MAINNET &&
+                // Filter by onlySupported filter.
+                (!onlySupported || supported)
+                ? {
+                    chainId,
+                    chain,
+                    supported,
+                    address,
+                    publicKey,
                   }
-                )
-                .sort((a, b) =>
-                  getDisplayNameForChainId(a.chainId).localeCompare(
-                    getDisplayNameForChainId(b.chainId)
-                  )
-                )
-            : [],
+                : []
+            })
+            .sort((a, b) =>
+              getDisplayNameForChainId(a.chainId).localeCompare(
+                getDisplayNameForChainId(b.chainId)
+              )
+            ),
         }
 
   const uniquePublicKeys: LoadingData<string[]> = chains.loading

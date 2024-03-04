@@ -24,7 +24,10 @@ const makeProps = (
   ...args: Parameters<typeof makeProfileCardMemberInfoTokensProps>
 ): ProfileMemberCardProps => ({
   daoName: 'A Very Real DAO',
-  walletProfileData: WALLET_PROFILE_DATA,
+  profile: {
+    loading: false,
+    data: WALLET_PROFILE_DATA,
+  },
   membershipInfo: (
     <ProfileCardMemberInfoTokens
       {...makeProfileCardMemberInfoTokensProps(...args)}
