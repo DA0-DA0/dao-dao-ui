@@ -15,6 +15,7 @@ export const ProfileAddChains = (props: StatefulProfileAddChainsProps) => {
   const { t } = useTranslation()
 
   const { chains } = useProfile()
+  const { otherProfiles, addChains } = useManageProfile()
 
   const form = useForm<ProfileAddChainsForm>({
     defaultValues: {
@@ -22,7 +23,11 @@ export const ProfileAddChains = (props: StatefulProfileAddChainsProps) => {
     },
   })
 
-  const { addChains } = useManageProfile()
+  // Cannot add chains while conflicting profiles exist.
+  if (otherProfiles.length > 0) {
+    return null
+  }
+
   const onAddChains: SubmitHandler<ProfileAddChainsForm> = async ({
     chains,
   }) => {

@@ -20,6 +20,15 @@ export type NavWalletConnectedProps = {
    */
   disconnect: () => void | Promise<void>
   /**
+   * If set, show a tooltip that explains there are multiple profiles attached
+   * to the current wallet and prompt to merge them.
+   */
+  otherProfilesExist?: boolean
+  /**
+   * Callback to show merge profiles modal.
+   */
+  onMergeProfiles: () => void
+  /**
    * Optional container class name.
    */
   className?: string

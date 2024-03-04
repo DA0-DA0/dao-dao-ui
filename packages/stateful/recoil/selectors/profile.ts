@@ -39,13 +39,32 @@ export const makeEmptyUnifiedProfile = (address: string): UnifiedProfile => ({
   backupImageUrl: getFallbackImage(address),
 })
 
-// Get profile from PFPK.
+/**
+ * Get profile from PFPK given a wallet address on any chain.
+ */
 export const pfpkProfileSelector = selectorFamily<PfpkProfile, string>({
   key: 'pfpkProfile',
   get:
     (walletAddress) =>
+    ({ get }) =>
+      get(
+        pfpkProfileForBech32HashSelector(
+          walletAddress && toBech32Hash(walletAddress)
+        )
+      ),
+})
+
+/**
+ * Get profile from PFPK given a wallet address's bech32 hash.
+ */
+export const pfpkProfileForBech32HashSelector = selectorFamily<
+  PfpkProfile,
+  string
+>({
+  key: 'pfpkProfileForBech32Hash',
+  get:
+    (bech32Hash) =>
     async ({ get }) => {
-      const bech32Hash = walletAddress && toBech32Hash(walletAddress)
       if (!bech32Hash) {
         return { ...EMPTY_PFPK_PROFILE }
       }

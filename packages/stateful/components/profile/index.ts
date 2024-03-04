@@ -1,3 +1,4 @@
+export * from './MergeProfilesModal'
 export * from './ProfileActions'
 export * from './ProfileAddChains'
 export * from './ProfileDaos'

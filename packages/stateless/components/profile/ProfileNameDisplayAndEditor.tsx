@@ -26,6 +26,7 @@ export type ProfileNameDisplayAndEditorProps = {
   className?: string
   header?: boolean
   editingClassName?: string
+  hideNoNameTooltip?: boolean
 }
 
 export const ProfileNameDisplayAndEditor = ({
@@ -35,6 +36,7 @@ export const ProfileNameDisplayAndEditor = ({
   className,
   header,
   editingClassName,
+  hideNoNameTooltip,
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 
@@ -175,7 +177,7 @@ export const ProfileNameDisplayAndEditor = ({
               : profile.data.name}
           </p>
 
-          {!canEdit && !profile.loading && noNameSet && (
+          {!canEdit && !profile.loading && noNameSet && !hideNoNameTooltip && (
             <TooltipInfoIcon
               className="-ml-1"
               size="xs"

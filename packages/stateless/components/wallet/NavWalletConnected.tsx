@@ -1,4 +1,9 @@
-import { Logout, NotificationsOutlined, Person } from '@mui/icons-material'
+import {
+  Logout,
+  NotificationsOutlined,
+  Person,
+  WarningAmberRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +14,7 @@ import {
   PopupTriggerCustomComponent,
 } from '@dao-dao/types'
 
+import { IconButton } from '../icon_buttons'
 import { useAppContextIfAvailable } from '../layout/AppContext'
 import { Notifications } from '../Notifications'
 import { ButtonPopup, Popup } from '../popup'
@@ -19,6 +25,8 @@ import { WalletLogo } from './WalletLogo'
 export const NavWalletConnected = ({
   wallet,
   profile,
+  otherProfilesExist,
+  onMergeProfiles,
   disconnect,
   className,
   mode,
@@ -128,6 +136,32 @@ export const NavWalletConnected = ({
               inbox={notificationsProps.inbox}
             />
           </Popup>
+        )}
+
+      {mode !== 'dock' &&
+        !profile.loading &&
+        profile.data.nonce > -1 &&
+        otherProfilesExist && (
+          <Tooltip
+            title={
+              // If current profile has never been used, make it more clear that
+              // they just have to add the current chain wallet to another
+              // profile. Otherwise, show a more general merge message. Most of
+              // the time, it should just be the simple "add" case.
+              profile.data.nonce === 0 ||
+              (!profile.data.name && !profile.data.nft)
+                ? t('info.addWalletToProfile')
+                : t('info.mergeProfilesTooltip')
+            }
+          >
+            <IconButton
+              Icon={WarningAmberRounded}
+              iconClassName="text-icon-interactive-warning"
+              onClick={onMergeProfiles}
+              size="sm"
+              variant="ghost"
+            />
+          </Tooltip>
         )}
 
       {/* Icon overflows a bit on the bottom, so add extra room with pb-1. */}

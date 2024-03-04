@@ -10,6 +10,7 @@ export type WarningCardProps = {
   textClassName?: string
   size?: 'sm' | 'default'
   contentContainerClassName?: string
+  onClick?: () => void
 }
 
 export const WarningCard = ({
@@ -20,13 +21,17 @@ export const WarningCard = ({
   textClassName,
   size = 'default',
   contentContainerClassName,
+  onClick,
 }: WarningCardProps) => (
   <div
     className={clsx(
       'flex flex-row items-center rounded-md bg-background-secondary',
+      onClick &&
+        'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70',
       size === 'default' ? 'gap-4 p-4' : 'gap-3 p-3',
       className
     )}
+    onClick={onClick}
   >
     <WarningRounded
       className={clsx(

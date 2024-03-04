@@ -6,29 +6,32 @@ import { LoadingData, UnifiedProfile } from '@dao-dao/types'
 import { toBech32Hash } from '@dao-dao/utils'
 
 /**
- * A hook that generates a function that refreshes the given profile.
+ * A hook that generates a function to refresh the given profile(s).
  *
- * @param address The wallet address attached to the profile.
- * @param profile The profile loaded for the address that will be refreshed.
+ * @param address The wallet address(es) attached to the profile(s).
+ * @param profile The profile(s) loaded for the address(es) that will be
+ * refreshed.
  */
 export const useRefreshProfile = (
-  address: string,
-  profile: LoadingData<UnifiedProfile>
+  address: string | string[],
+  profile: LoadingData<UnifiedProfile | UnifiedProfile[]>
 ) =>
   useRecoilCallback(
     ({ set }) =>
       () => {
-        // Refresh all hashes in the profile. This ensures updates made by one
-        // public key propagate to the other public keys in the profile.
+        // Refresh all hashes in the profile(s). This ensures updates made by
+        // one public key propagate to the other public keys in the profile(s).
         const hashes = uniq(
           [
-            address,
+            ...[address].flat(),
             ...(profile.loading
               ? []
-              : Object.values(profile.data.chains).map(
-                  ({ address }) => address
-                )),
-          ].map((address) => toBech32Hash(address))
+              : [profile.data]
+                  .flat()
+                  .flatMap((profile) =>
+                    Object.values(profile.chains).map(({ address }) => address)
+                  )),
+          ].flatMap((address) => toBech32Hash(address) || [])
         )
 
         hashes.forEach((hash) =>

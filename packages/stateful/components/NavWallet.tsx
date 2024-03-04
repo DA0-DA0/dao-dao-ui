@@ -1,7 +1,10 @@
+import { useSetRecoilState } from 'recoil'
+
+import { mergeProfilesVisibleAtom } from '@dao-dao/state'
 import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
 import { StatefulNavWalletProps } from '@dao-dao/types'
 
-import { useInboxApiWithUi, useProfile, useWallet } from '../hooks'
+import { useInboxApiWithUi, useManageProfile, useWallet } from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -9,7 +12,11 @@ import { SuspenseLoader } from './SuspenseLoader'
 export const NavWallet = (props: StatefulNavWalletProps) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()
-  const { profile } = useProfile()
+  const { profile, otherProfiles } = useManageProfile()
+
+  const setMergeProfilesModalVisible = useSetRecoilState(
+    mergeProfilesVisibleAtom
+  )
 
   // Ignore errors loading inbox because the SDA does not have an inbox.
   let inbox
@@ -33,6 +40,8 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
           connected
           disconnect={disconnect}
           inbox={inbox}
+          onMergeProfiles={() => setMergeProfilesModalVisible(true)}
+          otherProfilesExist={otherProfiles.length > 0}
           profile={profile}
           wallet={wallet}
           {...props}

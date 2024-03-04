@@ -12,6 +12,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   averageColorSelector,
+  mergeProfilesVisibleAtom,
   updateProfileNftVisibleAtom,
   walletChainIdAtom,
 } from '@dao-dao/state/recoil'
@@ -75,6 +76,7 @@ export const Me: NextPage = () => {
   } = useWallet()
   const {
     profile,
+    otherProfiles,
     updateProfile: { go: updateProfile },
   } = useManageProfile()
 
@@ -96,6 +98,7 @@ export const Me: NextPage = () => {
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
+  const setMergeProfilesVisible = useSetRecoilState(mergeProfilesVisibleAtom)
 
   // Set theme's accentColor.
   useEffect(() => {
@@ -161,7 +164,9 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessProfile
+                openMergeProfilesModal={() => setMergeProfilesVisible(true)}
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
+                otherProfilesExist={otherProfiles.length > 0}
                 profile={profile}
                 tabs={tabs}
                 updateProfile={updateProfile}

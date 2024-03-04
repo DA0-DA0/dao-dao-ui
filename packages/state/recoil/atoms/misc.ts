@@ -35,6 +35,11 @@ export const updateProfileNftVisibleAtom = atom<boolean>({
   default: false,
 })
 
+export const mergeProfilesVisibleAtom = atom<boolean>({
+  key: 'mergeProfilesVisible',
+  default: false,
+})
+
 export const web3AuthPromptAtom = atom<Web3AuthPrompt | undefined>({
   key: 'web3AuthPrompt',
   default: undefined,
