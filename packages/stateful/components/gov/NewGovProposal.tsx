@@ -79,7 +79,6 @@ import { WalletActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
 import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
@@ -93,7 +92,7 @@ export const NewGovProposal = () => {
   const { t } = useTranslation()
   const chainContext = useConfiguredChainContext()
 
-  const { walletAddress = '' } = useWalletInfo()
+  const { address: walletAddress = '' } = useWallet()
 
   const governanceProposalAction = makeGovernanceProposalAction({
     t,
@@ -142,7 +141,7 @@ const InnerNewGovProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { walletAddress = '' } = useWalletInfo()
+  const { address: walletAddress = '' } = useWallet()
   const { entity } = useEntity(walletAddress)
 
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =

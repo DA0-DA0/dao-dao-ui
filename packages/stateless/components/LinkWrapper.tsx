@@ -17,6 +17,7 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
       openInNewTab: _openInNewTab,
       shallow,
       replace,
+      prefetch = false,
       ...props
     },
     ref
@@ -63,6 +64,7 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
             className={contentClassName}
             href={href ?? '#'}
             onClick={onClick}
+            prefetch={prefetch}
             replace={replace}
             shallow={shallow}
           >

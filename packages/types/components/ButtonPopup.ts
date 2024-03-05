@@ -9,7 +9,9 @@ export type ButtonPopupSectionButton = {
   loading?: boolean
   disabled?: boolean
   pressed?: boolean
-  // Default: true.
+  /**
+   * Whether or not to close the popup on click. Defaults to `true`.
+   */
   closeOnClick?: boolean
 } & (
   | {

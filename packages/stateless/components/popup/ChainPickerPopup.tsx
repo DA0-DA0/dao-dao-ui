@@ -1,9 +1,10 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
+import { ChainPickerPopupProps } from '@dao-dao/types'
 import {
   getConfiguredChains,
   getDisplayNameForChainId,
@@ -14,97 +15,7 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { FilterableItem, FilterableItemPopup } from '.'
-
-export type ChainPickerPopupProps = {
-  /**
-   * The chains to include in the picker.
-   */
-  chains:
-    | {
-        /**
-         * Supported chains have native DAO DAO deployments.
-         */
-        type: 'supported'
-        /**
-         * Chain IDs to exclude.
-         */
-        excludeChainIds?: string[]
-      }
-    | {
-        /**
-         * Configured chains include supported chains and others which show up
-         * in the UI in various places, such as the governance UI.
-         */
-        type: 'configured'
-        /**
-         * Chain IDs to exclude.
-         */
-        excludeChainIds?: string[]
-        /**
-         * Only include chains with a governance module. This uses the `noGov`
-         * flag in chain config.
-         */
-        onlyGov?: boolean
-      }
-    | {
-        /**
-         * Set any chains explicitly
-         */
-        type: 'custom'
-        chainIds: string[]
-      }
-  /**
-   * The selected chain ID. If undefined, will select the none option if exists.
-   */
-  selectedChainId?: string
-  /**
-   * Handler for when a chain is selected. If the none option is selected, the
-   * handler will be called with `undefined`.
-   */
-  onSelect: (chainId?: string) => void | Promise<void>
-  /**
-   * Whether to use the chain name or the native token symbol as the label.
-   * Defaults to 'chain'.
-   */
-  labelMode?: 'chain' | 'token'
-  /**
-   * Whether or not to show a loading indicator.
-   */
-  loading?: boolean
-  /**
-   * Whether or not chain selection is disabled.
-   */
-  disabled?: boolean
-  /**
-   * Optional class name applied to the button.
-   */
-  buttonClassName?: string
-  /**
-   * If true, a button will be shown at the top that represents none.
-   */
-  showNone?: boolean
-  /**
-   * If defined, this will be the label of the none button.
-   */
-  noneLabel?: string
-  /**
-   * If defined, this will be the icon of the none button.
-   */
-  NoneIcon?: ComponentType<{ className?: string }>
-  /**
-   * If true, will make the button more like a text header instead.
-   */
-  headerMode?: boolean
-  /**
-   * Optional class name applied to the selected chain icon.
-   */
-  selectedIconClassName?: string
-  /**
-   * Optional class name applied to the selected chain label.
-   */
-  selectedLabelClassName?: string
-}
+import { FilterableItem, FilterableItemPopup } from './FilterableItemPopup'
 
 /**
  * A popup that allows the user to select a chain.
@@ -123,6 +34,7 @@ export const ChainPickerPopup = ({
   headerMode,
   selectedIconClassName,
   selectedLabelClassName,
+  trigger,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
@@ -194,60 +106,62 @@ export const ChainPickerPopup = ({
           ? t('info.searchForChain')
           : t('info.searchForToken')
       }
-      trigger={{
-        type: 'button',
-        tooltip: t('button.switchChain'),
-        props: {
-          className: buttonClassName,
-          contentContainerClassName: clsx(
-            'justify-between text-icon-primary',
-            headerMode ? '!gap-1' : '!gap-4'
-          ),
-          loading,
-          disabled,
-          size: 'lg',
-          variant: headerMode ? 'none' : 'ghost_outline',
-          children: (
-            <>
-              <div className="flex flex-row items-center gap-2">
-                {selectedChain
-                  ? !!selectedChain.iconUrl && (
-                      <div
-                        className={clsx(
-                          'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
-                          selectedIconClassName
-                        )}
-                        style={{
-                          backgroundImage: `url(${selectedChain.iconUrl})`,
-                        }}
-                      />
-                    )
-                  : showNone &&
-                    NoneIcon && (
-                      <NoneIcon
-                        className={clsx('!h-6 !w-6', selectedIconClassName)}
-                      />
+      trigger={
+        trigger || {
+          type: 'button',
+          tooltip: t('button.switchChain'),
+          props: {
+            className: buttonClassName,
+            contentContainerClassName: clsx(
+              'justify-between text-icon-primary',
+              headerMode ? '!gap-1' : '!gap-4'
+            ),
+            loading,
+            disabled,
+            size: 'lg',
+            variant: headerMode ? 'none' : 'ghost_outline',
+            children: (
+              <>
+                <div className="flex flex-row items-center gap-2">
+                  {selectedChain
+                    ? !!selectedChain.iconUrl && (
+                        <div
+                          className={clsx(
+                            'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
+                            selectedIconClassName
+                          )}
+                          style={{
+                            backgroundImage: `url(${selectedChain.iconUrl})`,
+                          }}
+                        />
+                      )
+                    : showNone &&
+                      NoneIcon && (
+                        <NoneIcon
+                          className={clsx('!h-6 !w-6', selectedIconClassName)}
+                        />
+                      )}
+
+                  <p
+                    className={clsx(
+                      !selectedChain && 'text-text-tertiary',
+                      selectedLabelClassName
                     )}
+                  >
+                    {selectedChain?.label ||
+                      (showNone && noneLabel) ||
+                      (labelMode === 'chain'
+                        ? t('button.selectChain')
+                        : t('button.selectToken'))}
+                  </p>
+                </div>
 
-                <p
-                  className={clsx(
-                    !selectedChain && 'text-text-tertiary',
-                    selectedLabelClassName
-                  )}
-                >
-                  {selectedChain?.label ||
-                    (showNone && noneLabel) ||
-                    (labelMode === 'chain'
-                      ? t('button.selectChain')
-                      : t('button.selectToken'))}
-                </p>
-              </div>
-
-              {!disabled && <ArrowDropDown className="!h-6 !w-6" />}
-            </>
-          ),
-        },
-      }}
+                {!disabled && <ArrowDropDown className="!h-6 !w-6" />}
+              </>
+            ),
+          },
+        }
+      }
     />
   )
 }

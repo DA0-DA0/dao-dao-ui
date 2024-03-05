@@ -15,9 +15,9 @@ export const ACCOUNT_PAGE_DESCRIPTION =
 export const NOTIFICATIONS_PAGE_TITLE = 'Notifications'
 export const NOTIFICATIONS_PAGE_DESCRIPTION =
   'View notifications in your followed DAOs.'
-export const ME_PAGE_TITLE = 'Account'
-export const ME_PAGE_DESCRIPTION =
-  'View your tokens, NFTs, and DAOs, or execute transactions from your wallet.'
+export const PROFILE_PAGE_TITLE = 'Profile'
+export const PROFILE_PAGE_DESCRIPTION =
+  'View your tokens, NFTs, and DAOs, and perform actions from your wallet.'
 export const STATUS_PAGE_TITLE = 'Status'
 export const STATUS_PAGE_DESCRIPTION = "Check the status of DAO DAO's services."
 
@@ -105,6 +105,8 @@ export const NEUTRON_SECURITY_SUBDAO =
   'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
 
 export const IPFS_GATEWAY_TEMPLATE = 'https://ipfs.daodao.zone/ipfs/PATH'
+
+export const SKIP_API_BASE = 'https://api.skip.money'
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']

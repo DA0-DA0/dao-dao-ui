@@ -71,14 +71,14 @@ export const genericTokenSelector = selectorFamily<
 
       if (skipAsset) {
         return {
-          chainId: skipAsset.chainID,
-          type: skipAsset.isCW20 ? TokenType.Cw20 : TokenType.Native,
+          chainId: skipAsset.chain_id,
+          type: skipAsset.is_cw20 ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress:
-            (skipAsset.isCW20 && skipAsset.tokenContract) || skipAsset.denom,
+            (skipAsset.is_cw20 && skipAsset.token_contract) || skipAsset.denom,
           symbol:
-            skipAsset.recommendedSymbol || skipAsset.symbol || skipAsset.denom,
+            skipAsset.recommended_symbol || skipAsset.symbol || skipAsset.denom,
           decimals: skipAsset.decimals || 0,
-          imageUrl: skipAsset.logoURI || getFallbackImage(denomOrAddress),
+          imageUrl: skipAsset.logo_uri || getFallbackImage(denomOrAddress),
           source,
         }
       } else if (source.chainId !== chainId) {
@@ -93,12 +93,12 @@ export const genericTokenSelector = selectorFamily<
             type,
             denomOrAddress,
             symbol:
-              skipSourceAsset.recommendedSymbol ||
+              skipSourceAsset.recommended_symbol ||
               skipSourceAsset.symbol ||
               skipSourceAsset.denom,
             decimals: skipSourceAsset.decimals || 0,
             imageUrl:
-              skipSourceAsset.logoURI || getFallbackImage(denomOrAddress),
+              skipSourceAsset.logo_uri || getFallbackImage(denomOrAddress),
             source,
           }
         }
@@ -202,14 +202,14 @@ export const coinGeckoUsdPriceSelector = selectorFamily<
 
       // Resolve Skip asset to retrieve coingecko ID.
       const asset = get(skipAssetSelector(params))
-      if (!asset?.coingeckoID) {
+      if (!asset?.coingecko_id) {
         return
       }
       const usdPrice: number | undefined = get(
         querySnapperSelector({
           query: 'coingecko-price',
           parameters: {
-            id: asset.coingeckoID,
+            id: asset.coingecko_id,
           },
         })
       )
@@ -582,16 +582,16 @@ export const genericTokenSourceSelector = selectorFamily<
       )
 
       if (skipAsset) {
-        const sourceType = skipAsset.originDenom.startsWith('cw20:')
+        const sourceType = skipAsset.origin_denom.startsWith('cw20:')
           ? TokenType.Cw20
           : TokenType.Native
         return {
-          chainId: skipAsset.originChainID,
+          chainId: skipAsset.origin_chain_id,
           type: sourceType,
           denomOrAddress:
             sourceType === TokenType.Cw20
-              ? skipAsset.originDenom.replace(/^cw20:/, '')
-              : skipAsset.originDenom,
+              ? skipAsset.origin_denom.replace(/^cw20:/, '')
+              : skipAsset.origin_denom,
         }
       }
 
@@ -673,7 +673,7 @@ export const historicalUsdPriceSelector = selectorFamily<
         })
       )
 
-      if (!asset?.coingeckoID) {
+      if (!asset?.coingecko_id) {
         return
       }
 
@@ -682,7 +682,7 @@ export const historicalUsdPriceSelector = selectorFamily<
           querySnapperSelector({
             query: 'coingecko-price-history',
             parameters: {
-              id: asset.coingeckoID,
+              id: asset.coingecko_id,
               range,
             },
           })

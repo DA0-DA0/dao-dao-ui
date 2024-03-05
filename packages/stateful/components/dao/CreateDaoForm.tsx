@@ -66,7 +66,7 @@ import {
   useFollowingDaos,
   useQuerySyncedRecoilState,
   useWallet,
-  useWalletInfo,
+  useWalletBalances,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
@@ -389,7 +389,7 @@ export const InnerCreateDaoForm = ({
 
   const [creating, setCreating] = useState(false)
   const { isWalletConnected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletBalances()
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({

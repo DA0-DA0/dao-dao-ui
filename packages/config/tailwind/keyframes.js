@@ -7,6 +7,15 @@ const keyframes = {
     '75%': { transform: 'translate(-2px, 0px) rotate(3deg)' },
     '100%': { transform: 'translate(0px, 2px) rotate(0deg)' },
   },
+  // Moodal
+  'expand-in': {
+    '0%': { transform: 'scale(0.9)' },
+    '100%': { transform: 'scale(1)' },
+  },
+  'contract-out': {
+    '0%': { transform: 'scale(1)' },
+    '100%': { transform: 'scale(0.9)' },
+  },
   // Dropdown menu
   'scale-in': {
     '0%': { opacity: 0, transform: 'scale(0)' },

@@ -6,7 +6,6 @@ import {
   LoadedActions,
 } from '@dao-dao/types'
 
-import { transformBech32Address } from './conversion'
 import { getAccountAddress } from './dao'
 
 // Convert action data to a Cosmos message given all loaded actions.
@@ -77,7 +76,7 @@ export const getChainAddressForActionOptions = (
         accounts: context.info.accounts,
         chainId,
       })
-    : // If on different chain, return wallet's transformed bech32 address.
+    : // If on different chain, return wallet's chain profile address if set.
     context.type === ActionContextType.Wallet
-    ? transformBech32Address(address, chainId)
+    ? context.profile?.chains[chainId]?.address
     : undefined

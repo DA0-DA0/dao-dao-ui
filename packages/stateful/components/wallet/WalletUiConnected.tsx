@@ -9,7 +9,6 @@ import { useSetRecoilState } from 'recoil'
 import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   Button,
-  CopyableAddress,
   ProfileImage,
   ProfileNameDisplayAndEditor,
   Tooltip,
@@ -17,7 +16,7 @@ import {
   WarningCard,
 } from '@dao-dao/stateless'
 
-import { useWalletInfo } from '../../hooks'
+import { useManageProfile } from '../../hooks'
 
 const keplrExtensionWallet = keplrExtensionWallets[0]
 
@@ -26,7 +25,10 @@ export const WalletUiConnected = ({
 }: Pick<WalletModalProps, 'walletRepo'>) => {
   const { t } = useTranslation()
 
-  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const {
+    profile,
+    updateProfile: { go: updateProfile },
+  } = useManageProfile()
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
@@ -50,9 +52,9 @@ export const WalletUiConnected = ({
         {/* Image */}
         <div className="relative">
           <ProfileImage
-            imageUrl={walletProfileData.profile.imageUrl}
-            loading={walletProfileData.loading}
-            onEdit={() => setUpdateProfileNftVisible(true)}
+            imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+            loading={profile.loading}
+            onClick={() => setUpdateProfileNftVisible(true)}
             size="lg"
           />
           <Tooltip
@@ -76,11 +78,9 @@ export const WalletUiConnected = ({
         {/* Name */}
         <ProfileNameDisplayAndEditor
           className="mt-4 mb-1"
-          updateProfileName={updateProfileName}
-          walletProfileData={walletProfileData}
+          profile={profile}
+          updateProfile={updateProfile}
         />
-        {/* Address */}
-        <CopyableAddress address={walletRepo?.current.address ?? ''} />
       </div>
 
       {/* In Keplr mobile web, the wallet is force connected and cannot be logged out of, so only show the log out button for all other options. */}

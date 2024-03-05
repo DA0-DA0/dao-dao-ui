@@ -24,7 +24,10 @@ const Template: ComponentStory<typeof ProfileCantVoteCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
-  walletProfileData: WALLET_PROFILE_DATA,
+  profile: {
+    loading: false,
+    data: WALLET_PROFILE_DATA,
+  },
   isMember: false,
   membershipInfo: (
     <ProfileCardMemberInfoTokens

@@ -22,6 +22,7 @@ export const Popup = ({
   onClose,
   openRef,
   setOpenRef,
+  topOffset = 0,
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
@@ -122,7 +123,7 @@ export const Popup = ({
   // Track button to position the dropdown.
   const { onDropdownRef, onTrackRef } = useTrackDropdown({
     // Offset for outline of Trigger.
-    top: (rect) => rect.bottom + 4,
+    top: (rect) => rect.bottom + 4 + topOffset,
     left:
       position === 'right'
         ? (rect) => rect.left - 2

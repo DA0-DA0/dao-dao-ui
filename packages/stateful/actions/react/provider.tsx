@@ -22,6 +22,7 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
+import { useProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -200,7 +201,9 @@ export const WalletActionsProvider = ({
 
   const address = overrideAddress || connectedAddress
 
-  if (!address) {
+  const { profile } = useProfile({ address })
+
+  if (!address || profile.loading) {
     return <Loader />
   }
 
@@ -209,6 +212,7 @@ export const WalletActionsProvider = ({
       address={address}
       context={{
         type: ActionContextType.Wallet,
+        profile: profile.data,
       }}
     >
       {children}

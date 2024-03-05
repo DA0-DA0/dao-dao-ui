@@ -1,8 +1,7 @@
-import { makeSignDoc } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { signOffChainAuth } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
@@ -11,21 +10,49 @@ import { useWallet } from './useWallet'
 // a global variable so it persists across all hook uses.
 const lastSuccessfulNonceForApi: Record<string, number | undefined> = {}
 
+/**
+ * Hook that makes it easy to interact with our various Cloudflare Workers that
+ * use off-chain wallet auth.
+ */
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
   defaultSignatureType: string
 ) => {
   const { t } = useTranslation()
-  const {
-    getOfflineSignerAmino,
-    chain,
-    hexPublicKey,
-    address: walletAddress,
-  } = useWallet({
+  const { getOfflineSignerAmino, chain, hexPublicKey } = useWallet({
     loadAccount: true,
   })
 
-  const ready = !hexPublicKey.loading && !!walletAddress
+  const ready = !hexPublicKey.loading
+
+  const getNonce = useCallback(async () => {
+    if (!ready) {
+      throw new Error(t('error.logInToContinue'))
+    }
+
+    // Fetch nonce.
+    const nonceResponse: { nonce: number } = await (
+      await fetch(`${apiBase}/nonce/${hexPublicKey.data}`, {
+        cache: 'no-store',
+      })
+    ).json()
+    if (
+      !('nonce' in nonceResponse) ||
+      typeof nonceResponse.nonce !== 'number'
+    ) {
+      console.error('Failed to fetch nonce.', nonceResponse, hexPublicKey.data)
+      throw new Error(t('error.loadingData'))
+    }
+
+    // If nonce was already used, manually increment.
+    let nonce = nonceResponse.nonce
+    const lastSuccessfulNonce = lastSuccessfulNonceForApi[apiBase] ?? -1
+    if (nonce <= lastSuccessfulNonce) {
+      nonce = lastSuccessfulNonce + 1
+    }
+
+    return nonce
+  }, [apiBase, hexPublicKey, ready, t])
 
   const postRequest = useCallback(
     async <R = any>(
@@ -38,78 +65,16 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       // Fetch nonce.
-      const nonceResponse: { nonce: number } = await (
-        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`, {
-          cache: 'no-store',
-        })
-      ).json()
-      if (
-        !('nonce' in nonceResponse) ||
-        typeof nonceResponse.nonce !== 'number'
-      ) {
-        console.error(
-          'Failed to fetch nonce.',
-          nonceResponse,
-          hexPublicKey.data
-        )
-        throw new Error(t('error.loadingData'))
-      }
+      const nonce = await getNonce()
 
-      // If nonce was already used, manually increment.
-      let nonce = nonceResponse.nonce
-      const lastSuccessfulNonce = lastSuccessfulNonceForApi[apiBase] ?? -1
-      if (nonce <= lastSuccessfulNonce) {
-        nonce = lastSuccessfulNonce + 1
-      }
-
-      const dataWithAuth = {
-        ...data,
-        auth: {
-          type: signatureType,
-          nonce,
-          chainId: chain.chain_id,
-          chainFeeDenom: getNativeTokenForChainId(chain.chain_id)
-            .denomOrAddress,
-          chainBech32Prefix: chain.bech32_prefix,
-          publicKey: hexPublicKey.data,
-        },
-      }
-
-      // Sign data.
-      const signDocAmino = makeSignDoc(
-        [
-          {
-            type: dataWithAuth.auth.type,
-            value: {
-              signer: walletAddress,
-              data: JSON.stringify(dataWithAuth, undefined, 2),
-            },
-          },
-        ],
-        {
-          gas: '0',
-          amount: [
-            {
-              denom: dataWithAuth.auth.chainFeeDenom,
-              amount: '0',
-            },
-          ],
-        },
-        chain.chain_id,
-        '',
-        0,
-        0
-      )
-      const {
-        signature: { signature },
-      } = await (
-        await getOfflineSignerAmino()
-      ).signAmino(walletAddress, signDocAmino)
-
-      const body = {
-        data: dataWithAuth,
-        signature,
-      }
+      const body = await signOffChainAuth({
+        type: signatureType,
+        nonce,
+        chainId: chain.chain_id,
+        hexPublicKey: hexPublicKey.data,
+        data,
+        offlineSignerAmino: await getOfflineSignerAmino(),
+      })
 
       // Send request.
       const response = await fetch(apiBase + endpoint, {
@@ -141,15 +106,18 @@ export const useCfWorkerAuthPostRequest = (
     [
       defaultSignatureType,
       ready,
-      apiBase,
-      hexPublicKey,
+      getNonce,
       chain.chain_id,
-      chain.bech32_prefix,
-      walletAddress,
+      hexPublicKey,
       getOfflineSignerAmino,
+      apiBase,
       t,
     ]
   )
 
-  return { ready, postRequest }
+  return {
+    ready,
+    postRequest,
+    getNonce,
+  }
 }

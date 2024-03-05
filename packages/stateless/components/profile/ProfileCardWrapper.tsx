@@ -10,9 +10,7 @@ import { ProfileNameDisplayAndEditor } from './ProfileNameDisplayAndEditor'
 
 export const ProfileCardWrapper = ({
   children,
-  walletProfileData,
-  showUpdateProfileNft,
-  updateProfileName,
+  profile,
   compact = false,
   underHeaderComponent,
   childContainerClassName,
@@ -20,9 +18,9 @@ export const ProfileCardWrapper = ({
 }: ProfileCardWrapperProps) => {
   // Get average color of image URL if in compact mode.
   const averageImgColorLoadable = useCachedLoadable(
-    !compact || walletProfileData.loading
+    !compact || profile.loading
       ? undefined
-      : averageColorSelector(walletProfileData.profile.imageUrl)
+      : averageColorSelector(profile.data.imageUrl)
   )
   const averageImgColor =
     averageImgColorLoadable.state === 'hasValue' &&
@@ -31,8 +29,6 @@ export const ProfileCardWrapper = ({
         averageImgColorLoadable.contents +
         (averageImgColorLoadable.contents.length === 7 ? '33' : '')
       : undefined
-
-  const canEdit = walletProfileData.profile.nonce >= 0
 
   return (
     <div
@@ -50,17 +46,15 @@ export const ProfileCardWrapper = ({
         {compact ? (
           <div className="flex flex-row items-stretch gap-3">
             <ProfileImage
-              imageUrl={walletProfileData.profile.imageUrl}
-              loading={walletProfileData.loading}
-              onEdit={canEdit ? showUpdateProfileNft : undefined}
-              size="sm"
+              imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+              loading={profile.loading}
+              size="md"
             />
 
             <div className="flex min-w-0 grow flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 compact={compact}
-                updateProfileName={updateProfileName}
-                walletProfileData={walletProfileData}
+                profile={profile}
               />
               {underHeaderComponent}
             </div>
@@ -69,16 +63,14 @@ export const ProfileCardWrapper = ({
           <div className="flex flex-col items-center justify-center pt-4">
             <ProfileImage
               className="mb-6"
-              imageUrl={walletProfileData.profile.imageUrl}
-              loading={walletProfileData.loading}
-              onEdit={canEdit ? showUpdateProfileNft : undefined}
+              imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+              loading={profile.loading}
               size="lg"
             />
             <ProfileNameDisplayAndEditor
               className="mb-5"
               compact={compact}
-              updateProfileName={updateProfileName}
-              walletProfileData={walletProfileData}
+              profile={profile}
             />
             {underHeaderComponent}
           </div>

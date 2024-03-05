@@ -25,6 +25,7 @@ import {
   LoadedActions,
   LoadingData,
   SuspenseLoaderProps,
+  WalletChainSwitcherProps,
 } from '@dao-dao/types'
 import {
   convertActionsToMessages,
@@ -32,27 +33,21 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import {
-  ActionsEditor,
-  Button,
-  ButtonLink,
-  CopyToClipboard,
-  IconButton,
-  InputErrorMessage,
-  Modal,
-  RawActionsRenderer,
-  TextAreaInput,
-  TextInput,
-  Tooltip,
-} from '../components'
-import { useChainContext } from '../hooks'
+import { useChainContext } from '../../hooks'
+import { ActionsEditor, RawActionsRenderer } from '../actions'
+import { Button, ButtonLink } from '../buttons'
+import { CopyToClipboard } from '../CopyToClipboard'
+import { IconButton } from '../icon_buttons'
+import { InputErrorMessage, TextAreaInput, TextInput } from '../inputs'
+import { Modal } from '../modals'
+import { Tooltip } from '../tooltip'
 
 enum SubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
 }
 
-export type MeTransactionBuilderProps = {
+export type ProfileActionsProps = {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   formMethods: UseFormReturn<AccountTxForm, object>
@@ -65,9 +60,10 @@ export type MeTransactionBuilderProps = {
   save: (save: AccountTxSave) => Promise<boolean>
   deleteSave: (save: AccountTxSave) => Promise<boolean>
   saving: boolean
+  WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
 }
 
-export const MeTransactionBuilder = ({
+export const ProfileActions = ({
   categories,
   loadedActions,
   formMethods,
@@ -80,7 +76,8 @@ export const MeTransactionBuilder = ({
   save,
   deleteSave,
   saving,
-}: MeTransactionBuilderProps) => {
+  WalletChainSwitcher,
+}: ProfileActionsProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
 
@@ -167,9 +164,13 @@ export const MeTransactionBuilder = ({
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="secondary-text">
-        {t('info.transactionBuilderDescription')}
-      </p>
+      <div className="flex flex-row justify-between">
+        <p className="secondary-text">
+          {t('info.transactionBuilderDescription')}
+        </p>
+
+        <WalletChainSwitcher headerMode type="configured" />
+      </div>
 
       <FormProvider {...formMethods}>
         <form

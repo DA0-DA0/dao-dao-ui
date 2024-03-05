@@ -18,6 +18,8 @@ import {
 import {
   Loader,
   Modal,
+  ProfileImage,
+  ProfileNameDisplayAndEditor,
   AppsTab as StatelessAppsTab,
   WarningCard,
   useDaoInfoContext,
@@ -46,7 +48,7 @@ import {
 import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
 import { useActionsForMatching } from '../../../actions'
-import { useWallet } from '../../../hooks/useWallet'
+import { useProfile } from '../../../hooks'
 import {
   ProposalModuleAdapterCommonProvider,
   matchAdapter as matchProposalModuleAdapter,
@@ -55,7 +57,6 @@ import { NewProposalForm as NewSingleChoiceProposalForm } from '../../../proposa
 import { useProposalModuleAdapterCommonContext } from '../../../proposal-module-adapter/react/context'
 import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
-import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
 import { ProposalDaoInfoCards } from '../ProposalDaoInfoCards'
 
 export const AppsTab = () => {
@@ -335,7 +336,7 @@ const ActionMatcherAndProposer = ({
 }: ActionMatcherAndProposerProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { isWalletConnected } = useWallet()
+  const { connected, profile } = useProfile()
 
   const {
     id: proposalModuleAdapterCommonId,
@@ -522,18 +523,24 @@ const ActionMatcherAndProposer = ({
     <Modal
       backdropClassName="!z-[39]"
       containerClassName="sm:!max-w-[min(90dvw,64rem)] !w-full"
-      footerContainerClassName="flex flex-row justify-between gap-8"
+      footerContainerClassName="flex flex-row justify-end"
       footerContent={
-        isWalletConnected ? (
+        connected ? (
           <>
-            <ConnectedWalletDisplay className="min-w-0 overflow-hidden" />
-            <DisconnectWallet />
+            <div className="flex min-w-0 flex-row items-center gap-2">
+              {/* Image */}
+              <ProfileImage
+                imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+                loading={profile.loading}
+                size="sm"
+              />
+
+              {/* Name */}
+              <ProfileNameDisplayAndEditor profile={profile} />
+            </div>
           </>
         ) : (
-          <>
-            <div></div>
-            <ConnectWallet />
-          </>
+          <ConnectWallet size="md" />
         )
       }
       header={{

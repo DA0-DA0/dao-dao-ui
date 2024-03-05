@@ -9,7 +9,7 @@ import {
 import { useCachedLoading } from '@dao-dao/stateless'
 import { InboxState } from '@dao-dao/types'
 
-import { useSupportedChainWallets } from './useSupportedChainWallets'
+import { useProfile } from './useProfile'
 import { useWallet } from './useWallet'
 import { useOnWebSocketMessage } from './useWebSocket'
 
@@ -29,17 +29,17 @@ export const useInbox = (): InboxState => {
     return () => clearInterval(interval)
   }, [refresh])
 
-  const supportedChainWallets = useSupportedChainWallets()
+  const { chains } = useProfile({
+    onlySupported: true,
+  })
   const itemsLoading = useCachedLoading(
-    supportedChainWallets.every(({ chainWallet: { address } }) => address)
+    !chains.loading
       ? waitForAll(
-          supportedChainWallets.flatMap(({ chainWallet: { chain, address } }) =>
-            address
-              ? inboxItemsSelector({
-                  walletAddress: address,
-                  chainId: chain.chain_id,
-                })
-              : []
+          chains.data.map(({ chainId, address }) =>
+            inboxItemsSelector({
+              chainId,
+              walletAddress: address,
+            })
           )
         )
       : undefined,

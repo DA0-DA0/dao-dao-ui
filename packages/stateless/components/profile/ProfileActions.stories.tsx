@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/stateful'
+import { SuspenseLoader, WalletChainSwitcher } from '@dao-dao/stateful'
 import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   WalletActionsProviderDecorator,
@@ -10,19 +10,19 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { AccountTxForm, ActionKey } from '@dao-dao/types'
 
-import { MeTransactionBuilder } from './MeTransactionBuilder'
+import { ProfileActions } from './ProfileActions'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / MeTransactionBuilder',
-  component: MeTransactionBuilder,
+  title: 'DAO DAO / packages / stateless / pages / ProfileActions',
+  component: ProfileActions,
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
     WalletActionsProviderDecorator,
   ],
-} as ComponentMeta<typeof MeTransactionBuilder>
+} as ComponentMeta<typeof ProfileActions>
 
-const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
+const Template: ComponentStory<typeof ProfileActions> = (args) => {
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const formMethods = useForm<AccountTxForm>({
@@ -33,7 +33,7 @@ const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
   })
 
   return (
-    <MeTransactionBuilder
+    <ProfileActions
       {...args}
       categories={categories}
       formMethods={formMethods}
@@ -76,6 +76,7 @@ Default.args = {
     return true
   },
   saving: false,
+  WalletChainSwitcher,
 
   // Overwritten in template.
   categories: [],

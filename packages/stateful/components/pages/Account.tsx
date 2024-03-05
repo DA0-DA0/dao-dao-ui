@@ -4,7 +4,6 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import {
   averageColorSelector,
@@ -14,6 +13,7 @@ import {
   ChainProvider,
   Account as StatelessAccount,
   useCachedLoadable,
+  useCachedLoading,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
@@ -27,7 +27,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { walletProfileDataSelector } from '../../recoil'
+import { makeEmptyUnifiedProfile, profileSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -53,6 +53,8 @@ export const Account: NextPage = () => {
   const configuredChain =
     getConfiguredChains().find(({ chain }) => chain.bech32_prefix === prefix) ||
     getConfiguredChains()[0]
+  // Transform just in case there was no chain found and we defaulted to the
+  // first configured chain.
   const accountAddress = transformBech32Address(
     address as string,
     configuredChain.chainId
@@ -65,19 +67,18 @@ export const Account: NextPage = () => {
     })
   )
 
-  const profileData = useRecoilValue(
-    walletProfileDataSelector({
+  const profile = useCachedLoading(
+    profileSelector({
       chainId: configuredChain.chain.chain_id,
       address: accountAddress,
-    })
+    }),
+    makeEmptyUnifiedProfile(accountAddress)
   )
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
   const averageImgColorLoadable = useCachedLoadable(
-    profileData.loading
-      ? undefined
-      : averageColorSelector(profileData.profile.imageUrl)
+    profile.loading ? undefined : averageColorSelector(profile.data.imageUrl)
   )
 
   // Set theme's accentColor.
@@ -140,7 +141,7 @@ export const Account: NextPage = () => {
           SuspenseLoader={SuspenseLoader}
           address={accountAddress}
           hexPublicKey={hexPublicKey}
-          profileData={profileData}
+          profile={profile}
         />
       </ChainProvider>
     </>

@@ -1,12 +1,18 @@
+import {
+  ExtensionRounded,
+  GroupRounded,
+  WalletRounded,
+} from '@mui/icons-material'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   averageColorSelector,
+  mergeProfilesVisibleAtom,
   updateProfileNftVisibleAtom,
   walletChainIdAtom,
 } from '@dao-dao/state/recoil'
@@ -15,14 +21,14 @@ import {
   Loader,
   LogInRequiredPage,
   PageLoader,
-  Me as StatelessMe,
+  Profile as StatelessProfile,
   useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { Theme } from '@dao-dao/types'
+import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
 import {
-  ME_PAGE_DESCRIPTION,
-  ME_PAGE_TITLE,
+  PROFILE_PAGE_DESCRIPTION,
+  PROFILE_PAGE_TITLE,
   SITE_URL,
   getConfiguredChainConfig,
   getConfiguredChains,
@@ -30,35 +36,53 @@ import {
 } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
-import { useQuerySyncedRecoilState } from '../../hooks'
+import { useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { PageHeaderContent } from '../PageHeaderContent'
+import { ProfileActions, ProfileWallet } from '../profile'
+import { ProfileDaos } from '../profile/ProfileDaos'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { WalletConfiguredChainSwitcherHeader } from '../wallet/WalletChainSwitcher'
-import { MeBalances } from './MeBalances'
-import { MeDaos } from './MeDaos'
-import { MeTransactionBuilder } from './MeTransactionBuilder'
 
 export const Me: NextPage = () => {
   const { t } = useTranslation()
   const router = useRouter()
+
+  const tabs: AccountTab[] = [
+    {
+      id: AccountTabId.Home,
+      label: t('title.wallet'),
+      Icon: WalletRounded,
+      Component: ProfileWallet,
+    },
+    {
+      id: AccountTabId.Daos,
+      label: t('title.daos'),
+      Icon: GroupRounded,
+      Component: ProfileDaos,
+    },
+    {
+      id: AccountTabId.Actions,
+      label: t('title.actions'),
+      Icon: ExtensionRounded,
+      Component: ProfileActions,
+    },
+  ]
 
   const {
     address: walletAddress = '',
     isWalletConnected,
     isWalletConnecting,
   } = useWallet()
-  const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
+  const {
+    profile,
+    otherProfiles,
+    updateProfile: { go: updateProfile },
+  } = useManageProfile()
 
-  // Sync chain ID in query param.
-  const [chainId, setWalletChainId] = useQuerySyncedRecoilState({
-    param: 'chain',
-    atom: walletChainIdAtom,
-  })
+  const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Switch to a valid chain if not configured.
-  const configuredChainConfig = getConfiguredChainConfig(chainId)
+  const configuredChainConfig = getConfiguredChainConfig(walletChainId)
   useEffect(() => {
     if (!configuredChainConfig) {
       setWalletChainId(getConfiguredChains()[0].chainId)
@@ -68,14 +92,13 @@ export const Me: NextPage = () => {
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
   const averageImgColorLoadable = useCachedLoadable(
-    profileData.loading
-      ? undefined
-      : averageColorSelector(profileData.profile.imageUrl)
+    profile.loading ? undefined : averageColorSelector(profile.data.imageUrl)
   )
 
   const setUpdateProfileNftVisible = useSetRecoilState(
     updateProfileNftVisibleAtom
   )
+  const setMergeProfilesVisible = useSetRecoilState(mergeProfilesVisibleAtom)
 
   // Set theme's accentColor.
   useEffect(() => {
@@ -113,42 +136,39 @@ export const Me: NextPage = () => {
   return (
     <>
       <NextSeo
-        description={ME_PAGE_DESCRIPTION}
+        description={PROFILE_PAGE_DESCRIPTION}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: ME_PAGE_TITLE,
-          description: ME_PAGE_DESCRIPTION,
+          title: PROFILE_PAGE_TITLE,
+          description: PROFILE_PAGE_DESCRIPTION,
         }}
-        title={ME_PAGE_TITLE}
+        title={PROFILE_PAGE_TITLE}
       />
 
-      <PageHeaderContent
-        rightNode={<WalletConfiguredChainSwitcherHeader />}
-        title={t('title.account')}
-      />
+      <PageHeaderContent title={t('title.profile')} />
 
       {!configuredChainConfig ? (
         <PageLoader />
       ) : isWalletConnected ? (
         // Refresh all children when chain changes since state varies by chain.
-        <ChainProvider key={chainId} chainId={chainId}>
+        <ChainProvider key={walletChainId} chainId={walletChainId}>
           <WalletActionsProvider
             address={
               // Convert address to prevent blink on chain switch.
               walletAddress
-                ? transformBech32Address(walletAddress, chainId)
+                ? transformBech32Address(walletAddress, walletChainId)
                 : undefined
             }
           >
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
-              <StatelessMe
-                MeBalances={MeBalances}
-                MeDaos={MeDaos}
-                MeTransactionBuilder={MeTransactionBuilder}
+              <StatelessProfile
+                openMergeProfilesModal={() => setMergeProfilesVisible(true)}
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
-                profileData={profileData}
-                updateProfileName={updateProfileName}
+                otherProfilesExist={otherProfiles.length > 0}
+                profile={profile}
+                tabs={tabs}
+                updateProfile={updateProfile}
               />
             </SuspenseLoader>
           </WalletActionsProvider>

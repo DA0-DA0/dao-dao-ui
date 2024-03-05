@@ -4,7 +4,7 @@ import clsx from 'clsx'
 
 import { NavWalletProps } from '@dao-dao/types'
 
-import { ConnectWallet, NavWalletConnected } from '../wallet'
+import { ConnectWallet, DisconnectWallet, NavWalletConnected } from '../wallet'
 
 export const NavWallet = ({ mode, ...props }: NavWalletProps) => (
   <div
@@ -13,17 +13,26 @@ export const NavWallet = ({ mode, ...props }: NavWalletProps) => (
       mode === 'sidebar' &&
         '-mx-6 border-b border-border-secondary px-6 py-3 md:hidden',
       mode === 'header' &&
-        'min-w-72 hidden self-stretch border-l border-border-secondary pl-3 md:flex lg:pl-4'
+        'hidden self-stretch border-l border-border-secondary pl-3 md:flex lg:pl-4'
     )}
   >
     {props.connected ? (
-      <NavWalletConnected
-        mode={mode}
-        {...{
-          ...props,
-          connected: undefined,
-        }}
-      />
+      mode === 'sidebar' ? (
+        <DisconnectWallet
+          center
+          className="w-full"
+          onDisconnect={props.disconnect}
+          variant="secondary"
+        />
+      ) : (
+        <NavWalletConnected
+          mode={mode}
+          {...{
+            ...props,
+            connected: undefined,
+          }}
+        />
+      )
     ) : (
       <ConnectWallet
         center

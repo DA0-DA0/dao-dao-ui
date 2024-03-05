@@ -14,7 +14,7 @@ import { getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../actions'
 import { TransferNftData } from '../../actions/core/nfts/TransferNft/Component'
-import { useWalletInfo } from '../../hooks'
+import { useManageProfile } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { LazyNftCard } from '../nft'
 
@@ -22,15 +22,19 @@ export const WalletLazyNftCard = (
   props: ComponentProps<typeof LazyNftCard>
 ) => {
   const { t } = useTranslation()
-  const { walletProfileData, updatingProfile, updateProfileNft } =
-    useWalletInfo()
+  const {
+    profile,
+    updateProfile: { updating: updatingProfile, go: updateProfile },
+  } = useManageProfile()
 
   const setProfilePhoto = async () => {
     try {
-      await updateProfileNft({
-        chainId: props.chainId,
-        collectionAddress: props.collectionAddress,
-        tokenId: props.tokenId,
+      await updateProfile({
+        nft: {
+          chainId: props.chainId,
+          collectionAddress: props.collectionAddress,
+          tokenId: props.tokenId,
+        },
       })
     } catch (err) {
       console.error(err)
@@ -43,7 +47,7 @@ export const WalletLazyNftCard = (
   }
   const unsetProfilePhoto = async () => {
     try {
-      await updateProfileNft(null)
+      await updateProfile({ nft: null })
     } catch (err) {
       console.error(err)
       toast.error(
@@ -55,10 +59,10 @@ export const WalletLazyNftCard = (
   }
 
   const currentProfilePhoto =
-    walletProfileData.profile.nft?.chainId === props.chainId &&
-    walletProfileData.profile.nft?.collectionAddress ===
-      props.collectionAddress &&
-    walletProfileData.profile.nft?.tokenId === props.tokenId
+    !profile.loading &&
+    profile.data.nft?.chainId === props.chainId &&
+    profile.data.nft?.collectionAddress === props.collectionAddress &&
+    profile.data.nft?.tokenId === props.tokenId
 
   const transferActionDefaults = useActionForKey(
     ActionKey.TransferNft
@@ -66,7 +70,7 @@ export const WalletLazyNftCard = (
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
-    ...(!walletProfileData.loading && walletProfileData.profile.nonce >= 0
+    ...(!profile.loading && profile.data.nonce >= 0
       ? [
           {
             label: t('title.profile'),
@@ -83,7 +87,7 @@ export const WalletLazyNftCard = (
                 Icon: NoAccounts,
                 label: t('button.unsetProfilePhoto'),
                 loading: updatingProfile,
-                disabled: !walletProfileData.profile.nft,
+                disabled: !profile.data.nft,
                 closeOnClick: false,
                 onClick: unsetProfilePhoto,
               },

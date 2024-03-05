@@ -26,7 +26,7 @@ import {
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
-import { useAutoRefreshData, useWallet, useWalletInfo } from '../hooks'
+import { useAutoRefreshData, useProfile, useWallet } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -79,7 +79,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   }
 
   const { openView, isWalletConnected } = useWallet()
-  const { walletHexPublicKey } = useWalletInfo()
 
   //! COMMAND MODAL
   // Hide modal when we nav away.
@@ -128,13 +127,16 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useAutoRefreshData()
 
   //! Following DAOs
+  const { chains } = useProfile({
+    onlySupported: true,
+  })
   const followingDaoDropdownInfos = useCachedLoading(
-    walletHexPublicKey
+    !chains.loading
       ? waitForAll(
-          getSupportedChains().map(({ chain }) =>
+          chains.data.map(({ chainId, publicKey }) =>
             followingDaoDropdownInfosSelector({
-              chainId: chain.chain_id,
-              walletPublicKey: walletHexPublicKey,
+              chainId,
+              walletPublicKey: publicKey,
               // If not compact, remove any SubDAO from the top level that
               // exists as a SubDAO of another followed DAO at the top level.
               // When compact, SubDAOs aren't visible, so we should show

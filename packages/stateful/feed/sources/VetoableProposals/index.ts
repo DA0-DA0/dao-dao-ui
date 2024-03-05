@@ -15,7 +15,7 @@ import {
 import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useOnWebSocketMessage, useSupportedChainWallets } from '../../../hooks'
+import { useOnWebSocketMessage, useProfile } from '../../../hooks'
 import { followingDaosSelector } from '../../../recoil'
 import { feedVetoableProposalsSelector } from './state'
 
@@ -28,38 +28,36 @@ export const VetoableProposals: FeedSource<
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const supportedChainWallets = useSupportedChainWallets().filter(
-      ({ chainWallet: { chain } }) =>
-        !filter?.chainId || chain.chain_id === filter.chainId
-    )
+    const { chains } = useProfile({
+      onlySupported: true,
+    })
+    const filteredChains = chains.loading
+      ? []
+      : chains.data.filter(
+          ({ chainId }) => !filter?.chainId || chainId === filter.chainId
+        )
 
     const daosWithItemsLoadable = useCachedLoadable(
-      supportedChainWallets.every(({ hexPublicKey }) => hexPublicKey)
+      !chains.loading
         ? waitForAll(
-            supportedChainWallets.flatMap(
-              ({ chainWallet: { chain }, hexPublicKey }) =>
-                hexPublicKey
-                  ? feedVetoableProposalsSelector({
-                      chainId: chain.chain_id,
-                      hexPublicKey,
-                    })
-                  : []
+            filteredChains.map(({ chainId, publicKey }) =>
+              feedVetoableProposalsSelector({
+                chainId,
+                hexPublicKey: publicKey,
+              })
             )
           )
         : undefined
     )
 
     const followingDaosLoadable = useRecoilValueLoadable(
-      supportedChainWallets.every(({ hexPublicKey }) => hexPublicKey)
+      !chains.loading
         ? waitForAll(
-            supportedChainWallets.flatMap(
-              ({ chainWallet: { chain }, hexPublicKey }) =>
-                hexPublicKey
-                  ? followingDaosSelector({
-                      chainId: chain.chain_id,
-                      walletPublicKey: hexPublicKey,
-                    })
-                  : []
+            filteredChains.map(({ chainId, publicKey }) =>
+              followingDaosSelector({
+                chainId,
+                walletPublicKey: publicKey,
+              })
             )
           )
         : constSelector([])
@@ -68,13 +66,13 @@ export const VetoableProposals: FeedSource<
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
-      followingDaosLoadable.state === 'hasValue'
-        ? supportedChainWallets.flatMap(
-            ({ chainWallet: { chain } }, index) =>
+      !chains.loading && followingDaosLoadable.state === 'hasValue'
+        ? filteredChains.flatMap(
+            ({ chainId }, index) =>
               followingDaosLoadable.contents[index]?.map((coreAddress) =>
                 webSocketChannelNameForDao({
                   coreAddress,
-                  chainId: chain.chain_id,
+                  chainId,
                 })
               ) || []
           )

@@ -1,5 +1,5 @@
-import { asset_lists } from '@chain-registry/assets'
 import { fromBech32 } from '@cosmjs/encoding'
+import { assets } from 'chain-registry'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
@@ -20,7 +20,7 @@ const chainAssetsMap: Record<
 export const getChainAssets = (chainId: string) => {
   if (!chainAssetsMap[chainId]) {
     chainAssetsMap[chainId] =
-      asset_lists
+      assets
         .find(
           ({ chain_name }) =>
             chain_name === getChainForChainId(chainId).chain_name

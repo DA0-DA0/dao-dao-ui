@@ -5,7 +5,7 @@ import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { Entity, EntityType, LoadingData } from '@dao-dao/types'
 import { getConfiguredChains, getFallbackImage } from '@dao-dao/utils'
 
-import { entitySelector } from '../recoil'
+import { entitySelector, makeEmptyUnifiedProfile } from '../recoil'
 
 export type UseEntityReturn = {
   /**
@@ -62,6 +62,7 @@ export const useEntity = (address: string): UseEntityReturn => {
       address,
       name: null,
       imageUrl: getFallbackImage(address),
+      profile: makeEmptyUnifiedProfile(address),
     }
   )
 

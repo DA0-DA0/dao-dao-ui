@@ -25,7 +25,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock, useWallet, useWalletInfo } from '../../hooks'
+import { useAwaitNextBlock, useWallet, useWalletBalances } from '../../hooks'
 
 export type WalletStakingModalProps = Pick<
   StakingModalProps,
@@ -45,7 +45,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     throw new Error(t('error.missingNativeToken'))
   }
 
-  const { walletBalance, refreshBalances } = useWalletInfo()
+  const { walletBalance, refreshBalances } = useWalletBalances()
   // Refreshes validator balances.
   const setRefreshValidatorBalances = useSetRecoilState(
     refreshWalletBalancesIdAtom('')

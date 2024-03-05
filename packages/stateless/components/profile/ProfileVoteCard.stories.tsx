@@ -22,7 +22,10 @@ export const Default = Template.bind({})
 Default.args = {
   votingPower: 32.4,
   daoName: 'Dog Dao',
-  walletProfileData: WALLET_PROFILE_DATA,
+  profile: {
+    loading: false,
+    data: WALLET_PROFILE_DATA,
+  },
   vote: <ProposalWalletVote fallback="hasNoVote" vote={Vote.Yes} />,
 }
 

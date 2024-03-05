@@ -27,7 +27,7 @@ export type AccountProps = {
   AccountDaos: ComponentType
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   ButtonLink: ComponentType<ButtonLinkProps>
-} & Pick<WalletProfileHeaderProps, 'profileData'>
+} & Pick<WalletProfileHeaderProps, 'profile'>
 
 export const Account = ({
   address,

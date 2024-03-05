@@ -37,6 +37,7 @@ import {
   SITE_URL,
   WEB3AUTH_CLIENT_ID,
   getChainForChainId,
+  getKeplrFromWindow,
   getSignerOptions,
 } from '@dao-dao/utils'
 
@@ -118,10 +119,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     }
 
     ;(async () => {
-      setIsKeplrMobileWeb(
-        (await (await import('@keplr-wallet/stores')).getKeplrFromWindow())
-          ?.mode === 'mobile-web'
-      )
+      setIsKeplrMobileWeb((await getKeplrFromWindow())?.mode === 'mobile-web')
     })()
   }, [mountedInBrowser, setIsKeplrMobileWeb])
 

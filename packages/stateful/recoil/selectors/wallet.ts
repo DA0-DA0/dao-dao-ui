@@ -4,6 +4,7 @@ import {
   noWait,
   selectorFamily,
   waitForAll,
+  waitForAny,
 } from 'recoil'
 
 import {
@@ -34,12 +35,14 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNativeTokenForChainId,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import {
   walletLazyNftCardInfosSelector,
   walletStakedLazyNftCardInfosSelector,
 } from './nft'
+import { tokenCardLazyInfoSelector } from './token'
 
 // This doesn't update right away due to Cloudflare KV Store latency, so this
 // serves to keep track of all successful updates for the current session. This
@@ -219,13 +222,15 @@ export const walletTokenCardInfosSelector = selectorFamily<
           ? cw20ContractsLoadable.contents ?? []
           : []
       const cw20s = get(
-        waitForAll(
-          cw20Contracts.map((c) =>
-            genericTokenSelector({
-              type: TokenType.Cw20,
-              denomOrAddress: c.contractAddress,
-              chainId,
-            })
+        noWait(
+          waitForAny(
+            cw20Contracts.map((c) =>
+              genericTokenSelector({
+                type: TokenType.Cw20,
+                denomOrAddress: c.contractAddress,
+                chainId,
+              })
+            )
           )
         )
       )
@@ -252,23 +257,53 @@ export const walletTokenCardInfosSelector = selectorFamily<
                 ).amount
               ) > 0
 
+            const owner = allAccounts[accountIndex]
+
+            const lazyInfo = get(
+              noWait(
+                tokenCardLazyInfoSelector({
+                  owner: owner.address,
+                  token,
+                  unstakedBalance,
+                })
+              )
+            )
+
             const info: TokenCardInfo = {
-              owner: allAccounts[accountIndex],
+              owner,
               token,
               isGovernanceToken: false,
               unstakedBalance,
               hasStakingInfo,
-
-              lazyInfo: { loading: true },
+              lazyInfo: loadableToLoadingData(lazyInfo, {
+                usdUnitPrice: undefined,
+                stakingInfo: undefined,
+                totalBalance: unstakedBalance,
+              }),
             }
 
             return info
           })
         ),
-        ...cw20s.map((token, index) => {
+        ...(cw20s.valueMaybe() || []).flatMap((tokenLoadable, index) => {
+          const token = tokenLoadable.valueMaybe()
+          if (!token) {
+            return []
+          }
+
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             cw20Contracts[index].balance || '0',
             token.decimals
+          )
+
+          const lazyInfo = get(
+            noWait(
+              tokenCardLazyInfoSelector({
+                owner: walletAddress,
+                token,
+                unstakedBalance,
+              })
+            )
           )
 
           const info: TokenCardInfo = {
@@ -282,8 +317,11 @@ export const walletTokenCardInfosSelector = selectorFamily<
             unstakedBalance,
             // No unstaking info for CW20.
             hasStakingInfo: false,
-
-            lazyInfo: { loading: true },
+            lazyInfo: loadableToLoadingData(lazyInfo, {
+              usdUnitPrice: undefined,
+              stakingInfo: undefined,
+              totalBalance: unstakedBalance,
+            }),
           }
 
           return info
@@ -344,11 +382,11 @@ export const allWalletNftsSelector = selectorFamily<
 export const walletDaosSelector = selectorFamily<
   LazyDaoCardProps[],
   // Can be any wallet address.
-  WithChainId<{ walletAddress: string }>
+  WithChainId<{ address: string }>
 >({
   key: 'walletDaos',
   get:
-    ({ chainId, walletAddress }) =>
+    ({ chainId, address }) =>
     ({ get }) => {
       const daos: {
         dao: string
@@ -357,7 +395,7 @@ export const walletDaosSelector = selectorFamily<
       }[] = get(
         queryWalletIndexerSelector({
           chainId,
-          walletAddress,
+          walletAddress: address,
           formula: 'daos/memberOf',
         })
       )
@@ -380,34 +418,5 @@ export const walletDaosSelector = selectorFamily<
         .sort((a, b) => a.name.localeCompare(b.name))
 
       return lazyDaoCards
-    },
-})
-
-// Get DAOs for a wallet on many chains.
-export const allWalletDaosSelector = selectorFamily<
-  LazyDaoCardProps[],
-  {
-    chainId: string
-    walletAddress: string
-  }[]
->({
-  key: 'allWalletDaos',
-  get:
-    (chainWallets) =>
-    ({ get }) => {
-      const allLazyDaoCards = get(
-        waitForAll(
-          chainWallets.map(({ chainId, walletAddress }) =>
-            walletDaosSelector({
-              chainId,
-              walletAddress,
-            })
-          )
-        )
-      )
-        .flat()
-        .sort((a, b) => a.name.localeCompare(b.name))
-
-      return allLazyDaoCards
     },
 })

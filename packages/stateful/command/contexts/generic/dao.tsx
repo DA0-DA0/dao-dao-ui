@@ -138,7 +138,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
         ...accounts.map(({ chainId, address }) => ({
           name:
             copied === chainId
-              ? t('info.copiedDaoChainAddress', {
+              ? t('info.copiedChainAddress', {
                   chain: getDisplayNameForChainId(chainId),
                 })
               : t('button.copyDaoChainAddress', {

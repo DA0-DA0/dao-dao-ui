@@ -14,7 +14,7 @@ const Template: ComponentStory<typeof NavWallet> = (args) => (
 export const Connected = Template.bind({})
 Connected.args = {
   connected: true,
-  walletAddress: 'juno123abc987zyx',
+  disconnect: () => {},
 }
 
 export const Connecting = Template.bind({})

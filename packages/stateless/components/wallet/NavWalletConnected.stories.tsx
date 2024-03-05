@@ -16,5 +16,4 @@ const Template: ComponentStory<typeof NavWalletConnected> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   wallet: keplrWallets[0].walletInfo,
-  walletAddress: 'juno123abx789xyz',
 }

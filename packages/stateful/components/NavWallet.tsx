@@ -1,19 +1,21 @@
 import { useSetRecoilState } from 'recoil'
 
-import { updateProfileNftVisibleAtom } from '@dao-dao/state'
+import { mergeProfilesVisibleAtom } from '@dao-dao/state'
 import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
 import { StatefulNavWalletProps } from '@dao-dao/types'
 
-import { useInboxApiWithUi, useWallet, useWalletInfo } from '../hooks'
+import { useInboxApiWithUi, useManageProfile, useWallet } from '../hooks'
+import { ButtonLink } from './ButtonLink'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const NavWallet = (props: StatefulNavWalletProps) => {
   const { openView, isWalletConnected, address, wallet, disconnect } =
     useWallet()
-  const { walletProfileData, updateProfileName } = useWalletInfo()
-  const setUpdateProfileNftVisible = useSetRecoilState(
-    updateProfileNftVisibleAtom
+  const { profile, otherProfiles } = useManageProfile()
+
+  const setMergeProfilesModalVisible = useSetRecoilState(
+    mergeProfilesVisibleAtom
   )
 
   // Ignore errors loading inbox because the SDA does not have an inbox.
@@ -33,15 +35,15 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
     >
       {isWalletConnected && address && wallet ? (
         <StatelessNavWallet
+          ButtonLink={ButtonLink}
           InboxMainItemRenderer={InboxMainItemRenderer}
           connected
           disconnect={disconnect}
           inbox={inbox}
-          onEditProfileImage={() => setUpdateProfileNftVisible(true)}
-          updateProfileName={updateProfileName}
+          onMergeProfiles={() => setMergeProfilesModalVisible(true)}
+          otherProfilesExist={otherProfiles.length > 0}
+          profile={profile}
           wallet={wallet}
-          walletAddress={address}
-          walletProfileData={walletProfileData}
           {...props}
         />
       ) : (

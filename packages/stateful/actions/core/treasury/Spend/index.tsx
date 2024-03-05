@@ -298,13 +298,13 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     skipRoute.loading ||
       skipRoute.errored ||
       // Cannot use skip route if more than one TX is required.
-      skipRoute.data.txsRequired > 1
+      skipRoute.data.txs_required > 1
       ? undefined
       : accountsSelector({
           chainId: currentChainId,
           address,
           // Only need ICA for intermediate accounts.
-          includeIcaChains: skipRoute.data.chainIDs.slice(1, -1),
+          includeIcaChains: skipRoute.data.chain_ids.slice(1, -1),
         })
   )
   // Get account for each skip route chain.
@@ -312,18 +312,19 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     skipRoute.loading ||
     skipRoute.errored ||
     // Cannot use skip route if more than one TX is required.
-    skipRoute.data.txsRequired > 1 ||
+    skipRoute.data.txs_required > 1 ||
     accounts.loading ||
     accounts.errored
       ? undefined
-      : skipRoute.data.chainIDs.slice(0, -1).map((chainId, index) =>
+      : skipRoute.data.chain_ids.slice(0, -1).map((chainId, index) =>
           // For source, use from address. This should always match the first
           // chain ID.
           index === 0
             ? from
-            : // Transform bech32 wallet address to chain.
+            : // Use profile address if set, falling back to transforming the address (which is unreliable due to different chains using different HD paths).
             context.type === ActionContextType.Wallet
-            ? transformBech32Address(address, chainId)
+            ? context.profile?.chains[chainId]?.address ||
+              transformBech32Address(address, chainId)
             : // Otherwise try to find an account (DAOs and gov).
               getAccountAddress({
                 accounts: accounts.data,
@@ -340,7 +341,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     !routeAddresses || skipRoute.loading || skipRoute.errored
       ? undefined
       : routeAddresses.flatMap((address, index) =>
-          address ? [] : [skipRoute.data.chainIDs[index]]
+          address ? [] : [skipRoute.data.chain_ids[index]]
         )
 
   // Load Skip route message if IBC transfer.
@@ -352,7 +353,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       !skipRoute.loading &&
       !skipRoute.errored &&
       // Can only use skip route if only one TX is required.
-      skipRoute.data.txsRequired === 1 &&
+      skipRoute.data.txs_required === 1 &&
       routeAddresses &&
       missingAccountChainIds &&
       missingAccountChainIds.length === 0 &&
@@ -361,7 +362,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           chainAddresses: routeAddresses.reduce(
             (acc, address, index) => ({
               ...acc,
-              [skipRoute.data.chainIDs[index]]: address,
+              [skipRoute.data.chain_ids[index]]: address,
             }),
             {} as Record<string, string | undefined>
           ),
@@ -386,7 +387,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         !skipRoute.loading &&
         !skipRoute.errored &&
         // Can only use skip route if only one TX is required.
-        skipRoute.data.txsRequired === 1 &&
+        skipRoute.data.txs_required === 1 &&
         // Only use skip IBC path if loads message successfully.
         !skipRouteMessageLoading.loading &&
         !skipRouteMessageLoading.errored
@@ -394,7 +395,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           loading: false,
           errored: false,
           updating: skipRoute.updating,
-          data: skipRoute.data.chainIDs,
+          data: skipRoute.data.chain_ids,
         }
       : !props.isCreating && pfmChainPath?.length
       ? {
@@ -432,7 +433,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           errored: false,
           updating: skipRoute.updating,
           data: convertMicroDenomToDenomWithDecimals(
-            skipRoute.data.amountOut,
+            skipRoute.data.amount_out,
             selectedToken.token.decimals
           ),
         }
@@ -527,9 +528,9 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
             : {
                 loading: false,
                 data:
-                  skipRoute.data.txsRequired === 1
+                  skipRoute.data.txs_required === 1
                     ? undefined
-                    : skipRoute.data.chainIDs,
+                    : skipRoute.data.chain_ids,
               },
         missingAccountChainIds,
         nobleTariff,
@@ -695,11 +696,11 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           })
         } else {
           if (
-            _skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl &&
-            _skipIbcTransferMsg.data.msgTypeURL !== NeutronMsgTransfer.typeUrl
+            _skipIbcTransferMsg.data.msg_type_url !== MsgTransfer.typeUrl &&
+            _skipIbcTransferMsg.data.msg_type_url !== NeutronMsgTransfer.typeUrl
           ) {
             throw new Error(
-              `Unexpected Skip transfer message type: ${_skipIbcTransferMsg.data.msgTypeURL}`
+              `Unexpected Skip transfer message type: ${_skipIbcTransferMsg.data.msg_type_url}`
             )
           }
 
