@@ -35,9 +35,11 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { connected, connecting, chains } = useProfile({
-    chainId,
-  })
+
+  // Don't load chain-specific profile because the wallet may not be connected
+  // to that chain and thus the correct profile won't load. Instead, fetch the
+  // chains from the currently connected profile and find the correct one.
+  const { connected, connecting, chains } = useProfile()
 
   // Get current hex public key from profile's chains, falling back to the
   // profile's first chain if the current chain is not found.

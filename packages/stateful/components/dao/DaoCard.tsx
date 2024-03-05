@@ -9,9 +9,11 @@ import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
-  const { chains } = useProfile({
-    chainId: props.chainId,
-  })
+  // Don't load chain-specific profile because the wallet may not be connected
+  // to that chain and thus the correct profile won't load. Instead, fetch the
+  // chains from the currently connected profile and find the correct one.
+  const { chains } = useProfile()
+
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos(props.chainId)
 

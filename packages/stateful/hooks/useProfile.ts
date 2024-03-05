@@ -14,11 +14,6 @@ import { useWallet } from './useWallet'
 
 export type UseProfileOptions = {
   /**
-   * The chain ID to load the profile for. Defaults to the current chain
-   * context.
-   */
-  chainId?: string
-  /**
    * The wallet address to get profile information for. Defaults to the
    * currently connected wallet.
    */
@@ -75,7 +70,6 @@ export type UseProfileReturn = {
  * defaults to the currently connected wallet.
  */
 export const useProfile = ({
-  chainId,
   address,
   onlySupported = false,
 }: UseProfileOptions = {}): UseProfileReturn => {
@@ -86,7 +80,6 @@ export const useProfile = ({
     isWalletConnected,
     isWalletConnecting,
   } = useWallet({
-    chainId,
     loadAccount: true,
   })
 
