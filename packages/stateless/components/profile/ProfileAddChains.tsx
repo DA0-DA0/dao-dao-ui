@@ -46,8 +46,6 @@ export const ProfileAddChains = ({
       )}
       onSubmit={onAddChains && handleSubmit(onAddChains)}
     >
-      {/* TODO(profile-refactor): suggested chains */}
-
       <ChainPickerPopup
         chains={{
           type: onlySupported ? 'supported' : 'configured',

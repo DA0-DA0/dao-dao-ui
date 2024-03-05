@@ -88,9 +88,7 @@ export const ASTROPORT_PRICES_API =
   'https://api.astroport.fi/api/tokens/DENOM?chainId=neutron-1'
 
 // Snapper API
-// export const SNAPPER_API_BASE = 'https://snapper.daodao.zone'
-// TODO(profile-upgrade): change back to prod
-export const SNAPPER_API_BASE = 'http://localhost:3030'
+export const SNAPPER_API_BASE = 'https://snapper.daodao.zone'
 
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'

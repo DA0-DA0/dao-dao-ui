@@ -150,7 +150,6 @@ export const Me: NextPage = () => {
       {!configuredChainConfig ? (
         <PageLoader />
       ) : isWalletConnected ? (
-        // TODO(profile-refactor): figure out if we need this
         // Refresh all children when chain changes since state varies by chain.
         <ChainProvider key={walletChainId} chainId={walletChainId}>
           <WalletActionsProvider
