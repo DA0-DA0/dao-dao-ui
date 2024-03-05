@@ -16,10 +16,13 @@ const lastSuccessfulNonceForApi: Record<string, number | undefined> = {}
  */
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
-  defaultSignatureType: string
+  defaultSignatureType: string,
+  // Optionally override the current chain context.
+  chainId?: string
 ) => {
   const { t } = useTranslation()
   const { getOfflineSignerAmino, chain, hexPublicKey } = useWallet({
+    chainId,
     loadAccount: true,
   })
 

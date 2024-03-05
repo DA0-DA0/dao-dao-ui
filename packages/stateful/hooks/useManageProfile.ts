@@ -124,7 +124,7 @@ export const useManageProfile = ({
 
   const refreshProfile = useRefreshProfile(address, profile)
 
-  const pfpkApi = useCfWorkerAuthPostRequest(PFPK_API_BASE, '')
+  const pfpkApi = useCfWorkerAuthPostRequest(PFPK_API_BASE, '', chainId)
 
   const ready =
     !profile.loading &&

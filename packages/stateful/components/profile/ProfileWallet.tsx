@@ -37,7 +37,7 @@ export const ProfileWallet = () => {
       ? undefined
       : uniquePublicKeys.data.length > 0
       ? waitForAny(
-          uniquePublicKeys.data.map((publicKey) =>
+          uniquePublicKeys.data.map(({ publicKey }) =>
             hiddenBalancesSelector(publicKey)
           )
         )

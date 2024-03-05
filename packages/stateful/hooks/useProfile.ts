@@ -1,5 +1,3 @@
-import uniq from 'lodash.uniq'
-
 import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
@@ -7,6 +5,7 @@ import {
   getDisplayNameForChainId,
   isSupportedChain,
   maybeGetChainForChainId,
+  toBech32Hash,
 } from '@dao-dao/utils'
 
 import { makeEmptyUnifiedProfile, profileSelector } from '../recoil'
@@ -37,6 +36,11 @@ export type UseProfileReturn = {
    */
   connected: boolean
   /**
+   * Whether or not the current wallet is connecting. When an address is passed,
+   * this will be false.
+   */
+  connecting: boolean
+  /**
    * The profile for the currently connected wallet. If not connected and no
    * address was passed, this will be in the loading state. The unified profile
    * loads data from backup sources in case profile information is missing and
@@ -58,7 +62,12 @@ export type UseProfileReturn = {
    * Unique public keys for the profile's chains. If not connected and no
    * address was passed, this will be in the loading state.
    */
-  uniquePublicKeys: LoadingData<string[]>
+  uniquePublicKeys: LoadingData<
+    {
+      publicKey: string
+      bech32Hash: string
+    }[]
+  >
 }
 
 /**
@@ -75,6 +84,7 @@ export const useProfile = ({
     address: currentAddress = '',
     hexPublicKey,
     isWalletConnected,
+    isWalletConnecting,
   } = useWallet({
     chainId,
     loadAccount: true,
@@ -138,19 +148,33 @@ export const useProfile = ({
             ),
         }
 
-  const uniquePublicKeys: LoadingData<string[]> = chains.loading
+  const uniquePublicKeys: LoadingData<
+    {
+      publicKey: string
+      bech32Hash: string
+    }[]
+  > = chains.loading
     ? {
         loading: true,
       }
     : {
         loading: false,
-        data: uniq(chains.data.map((c) => c.publicKey)),
+        // Convert to object and back to array to get unique public keys only.
+        // All addresses for the same public key have the same bech32 hash, so
+        // it doesn't matter which address is used for that conversion.
+        data: Object.entries(
+          Object.fromEntries(chains.data.map((c) => [c.publicKey, c.address]))
+        ).map(([publicKey, address]) => ({
+          publicKey,
+          bech32Hash: toBech32Hash(address),
+        })),
       }
 
   return {
-    // Connected is only relevant when using the currently connected wallet. If
-    // an address is passed, set connected to false.
+    // Connected and connecting are only relevant when using the currently
+    // connected wallet. If an address is passed, set connected to false.
     connected: address ? false : isWalletConnected,
+    connecting: address ? false : isWalletConnecting,
     profile,
     refreshProfile,
     chains,

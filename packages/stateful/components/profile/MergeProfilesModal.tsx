@@ -75,7 +75,7 @@ export const MergeProfilesModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
-  if (profile.loading || !address) {
+  if (profile.loading) {
     return null
   }
 

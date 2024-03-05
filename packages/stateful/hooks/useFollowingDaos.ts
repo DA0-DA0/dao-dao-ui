@@ -19,7 +19,7 @@ import {
 } from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useManageProfile } from './useManageProfile'
-import { useWallet } from './useWallet'
+import { useProfile } from './useProfile'
 
 export type UseFollowingDaosReturn = {
   daos: LoadingData<string[]>
@@ -35,23 +35,29 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { isWalletConnected, isWalletConnecting, hexPublicKey } = useWallet({
+  const { connected, connecting, chains } = useProfile({
     chainId,
-    loadAccount: true,
   })
+
+  // Get current hex public key from profile's chains, falling back to the
+  // profile's first chain if the current chain is not found.
+  const currentHexPublicKey = chains.loading
+    ? undefined
+    : (chains.data.find((chain) => chain.chainId === chainId) || chains.data[0])
+        ?.publicKey
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryFollowingDaosAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
+    temporaryFollowingDaosAtom(currentHexPublicKey || '')
   )
 
   const followingDaosLoading = useCachedLoading(
-    !hexPublicKey.loading
+    currentHexPublicKey
       ? followingDaosSelector({
           chainId,
-          walletPublicKey: hexPublicKey.data,
+          walletPublicKey: currentHexPublicKey,
         })
       : undefined,
     []
@@ -73,7 +79,8 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const [updating, setUpdating] = useState(false)
   const { ready, postRequest } = useCfWorkerAuthPostRequest(
     KVPK_API_BASE,
-    'Update Following'
+    'Update Following',
+    chainId
   )
 
   const { profile, addChains } = useManageProfile()
@@ -192,11 +199,11 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
     setUnfollowing,
     updatingFollowing:
       // If wallet connecting, following is not yet loaded.
-      isWalletConnecting ||
+      connecting ||
       // Updating if wallet connected and following is loading or update is in
       // progress or hex public key not yet loaded.
-      (isWalletConnected &&
-        (!hexPublicKey || followingDaosLoading.loading || updating)),
+      (connected &&
+        (!currentHexPublicKey || followingDaosLoading.loading || updating)),
     ready,
   }
 }

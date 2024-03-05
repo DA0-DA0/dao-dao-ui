@@ -10,8 +10,7 @@ import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const NavWallet = (props: StatefulNavWalletProps) => {
-  const { openView, isWalletConnected, address, wallet, disconnect } =
-    useWallet()
+  const { openView, isWalletConnected, wallet, disconnect } = useWallet()
   const { profile, otherProfiles } = useManageProfile()
 
   const setMergeProfilesModalVisible = useSetRecoilState(
@@ -33,7 +32,7 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
         <StatelessNavWallet connected={false} loading mode={props.mode} />
       }
     >
-      {isWalletConnected && address && wallet ? (
+      {isWalletConnected && wallet ? (
         <StatelessNavWallet
           ButtonLink={ButtonLink}
           InboxMainItemRenderer={InboxMainItemRenderer}

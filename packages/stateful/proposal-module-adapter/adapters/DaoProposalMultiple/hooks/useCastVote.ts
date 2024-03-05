@@ -15,7 +15,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
   const _castVote = DaoProposalMultipleHooks.useVote({
     contractAddress: proposalModule.address,
-    sender: walletAddress ?? '',
+    sender: walletAddress,
   })
 
   const [castingVote, setCastingVote] = useState(false)

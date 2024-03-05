@@ -89,7 +89,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   )
 
   const { ready: hiddenBalancesReady, postRequest: postHiddenBalancesRequest } =
-    useCfWorkerAuthPostRequest(KVPK_API_BASE, 'Hidden Balances')
+    useCfWorkerAuthPostRequest(
+      KVPK_API_BASE,
+      'Hidden Balances',
+      props.token.chainId
+    )
 
   const setRefreshHidden = useSetRecoilState(refreshHiddenBalancesAtom)
   const refreshHidden = useCallback(
