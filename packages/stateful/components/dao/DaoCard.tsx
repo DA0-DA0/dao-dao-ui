@@ -4,12 +4,14 @@ import {
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 
-import { useFollowingDaos, useWallet } from '../../hooks'
+import { useFollowingDaos, useProfile } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
-  const { address: walletAddress } = useWallet({ chainId: props.chainId })
+  const { chains } = useProfile({
+    chainId: props.chainId,
+  })
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos(props.chainId)
 
@@ -17,7 +19,9 @@ export const DaoCard = (props: DaoCardInfo) => {
     daoCardInfoLazyDataSelector({
       coreAddress: props.coreAddress,
       chainId: props.chainId,
-      walletAddress,
+      walletAddress: chains.loading
+        ? undefined
+        : chains.data.find((chain) => chain.chainId === props.chainId)?.address,
     }),
     {
       isMember: false,

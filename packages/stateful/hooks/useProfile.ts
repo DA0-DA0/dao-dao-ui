@@ -15,6 +15,11 @@ import { useWallet } from './useWallet'
 
 export type UseProfileOptions = {
   /**
+   * The chain ID to load the profile for. Defaults to the current chain
+   * context.
+   */
+  chainId?: string
+  /**
    * The wallet address to get profile information for. Defaults to the
    * currently connected wallet.
    */
@@ -61,6 +66,7 @@ export type UseProfileReturn = {
  * defaults to the currently connected wallet.
  */
 export const useProfile = ({
+  chainId,
   address,
   onlySupported = false,
 }: UseProfileOptions = {}): UseProfileReturn => {
@@ -70,6 +76,7 @@ export const useProfile = ({
     hexPublicKey,
     isWalletConnected,
   } = useWallet({
+    chainId,
     loadAccount: true,
   })
 
@@ -78,9 +85,9 @@ export const useProfile = ({
   const profile = useCachedLoading(
     profileSelector({
       chainId: walletChainId,
-      address: currentAddress,
+      address: profileAddress,
     }),
-    makeEmptyUnifiedProfile(currentAddress)
+    makeEmptyUnifiedProfile(profileAddress)
   )
 
   const refreshProfile = useRefreshProfile(profileAddress, profile)
@@ -97,11 +104,11 @@ export const useProfile = ({
             // profile with no chains is being returned.
             ...(!profile.data.chains[walletChainId] &&
             !hexPublicKey.loading &&
-            currentAddress
+            profileAddress
               ? {
                   [walletChainId]: {
                     publicKey: hexPublicKey.data,
-                    address: currentAddress,
+                    address: profileAddress,
                   },
                 }
               : {}),
