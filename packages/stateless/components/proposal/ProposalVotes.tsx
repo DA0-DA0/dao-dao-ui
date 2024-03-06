@@ -43,6 +43,14 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   footer?: ReactNode
   hideVotedAt?: boolean
   hideDownload?: boolean
+  /**
+   * All votes (non-paginated) for downloading the CSV.
+   */
+  allVotes: LoadingDataWithError<ProposalVote<Vote>[]>
+  /**
+   * A function to convert the vote type into a string for the CSV.
+   */
+  exportVoteTransformer: (vote: Vote) => string
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -53,6 +61,8 @@ export const ProposalVotes = <Vote extends unknown = any>({
   footer,
   hideVotedAt,
   hideDownload,
+  allVotes,
+  exportVoteTransformer,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -63,6 +73,15 @@ export const ProposalVotes = <Vote extends unknown = any>({
     votes.loading || votes.errored
       ? []
       : votes.data.sort(
+          (a, b) =>
+            // Sort descending by date, and those without a date last.
+            (b.votedAt?.getTime() ?? -Infinity) -
+            (a.votedAt?.getTime() ?? -Infinity)
+        )
+  const allVotesWithDate =
+    allVotes.loading || allVotes.errored
+      ? []
+      : allVotes.data.sort(
           (a, b) =>
             // Sort descending by date, and those without a date last.
             (b.votedAt?.getTime() ?? -Infinity) -
@@ -209,7 +228,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
         {!hideDownload && (
           <Button
             className="caption-text mt-6 self-end pr-1 text-right italic"
-            disabled={!csvLinkRef.current || votes.loading}
+            disabled={!csvLinkRef.current || allVotes.loading}
             onClick={() => csvLinkRef.current?.click()}
             variant="none"
           >
@@ -223,7 +242,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
           className="hidden"
           data={[
             ['Timestamp', 'Voter', 'Voting Power', 'Vote', 'Rationale'],
-            ...votesWithDate.map(
+            ...allVotesWithDate.map(
               ({
                 votedAt,
                 voterAddress,
@@ -234,7 +253,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
                 votedAt?.toISOString() ?? '',
                 voterAddress,
                 votingPowerPercent,
-                vote,
+                exportVoteTransformer(vote),
                 rationale,
               ]
             ),

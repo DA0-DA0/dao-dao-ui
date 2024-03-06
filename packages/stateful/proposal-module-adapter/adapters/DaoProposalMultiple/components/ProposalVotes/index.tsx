@@ -9,7 +9,7 @@ import {
 
 import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
-import { useLoadingProposal } from '../../hooks'
+import { useLoadingProposal, useLoadingVoteOptions } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
 const VOTES_PER_PAGE = 20
@@ -22,6 +22,7 @@ export const ProposalVotes = () => {
   } = useProposalModuleAdapterOptions()
 
   const loadingProposal = useLoadingProposal()
+  const voteOptions = useLoadingVoteOptions()
 
   const totalPower = loadingProposal.loading
     ? 0
@@ -67,6 +68,14 @@ export const ProposalVotes = () => {
     <PaginatedProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
+      allVotes={votes}
+      exportVoteTransformer={(vote) =>
+        voteOptions.loading
+          ? 'LOADING_ERROR'
+          : voteOptions.data.find(
+              (option) => option.value.option_id === vote.option_id
+            )?.label || 'UNKNOWN_ERROR'
+      }
       pagination={{
         page,
         setPage,

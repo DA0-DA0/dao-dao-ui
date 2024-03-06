@@ -67,6 +67,8 @@ export const ProposalVotes = () => {
     <PaginatedProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
+      allVotes={votes}
+      exportVoteTransformer={(vote) => vote}
       pagination={{
         page,
         setPage,

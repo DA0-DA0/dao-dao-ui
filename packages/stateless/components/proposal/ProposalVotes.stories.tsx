@@ -36,6 +36,18 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
       votedAt: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
     })),
   },
+  allVotes: {
+    loading: false,
+    errored: false,
+    data: [...Array(10)].map(() => ({
+      voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
+      // 25% chance of No, 75% chance of Yes
+      vote: Math.random() < 0.25 ? Vote.No : Vote.Yes,
+      votingPowerPercent: 0.0432,
+      // Within the past 5 days.
+      votedAt: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
+    })),
+  },
   votingOpen: true,
   EntityDisplay: (props) => (
     <EntityDisplay
