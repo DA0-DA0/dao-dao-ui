@@ -17,6 +17,7 @@ export const stargazeTokenQuery = gql(`
       }
       media {
         url
+        type
         visualAssets {
           lg {
             url

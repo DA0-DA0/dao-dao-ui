@@ -1,6 +1,11 @@
 // If name is only a number, prefix with collection name. Fallback to token ID
 
-import { GenericToken, NftCardInfo, StargazeNft } from '@dao-dao/types'
+import {
+  GenericToken,
+  NftCardInfo,
+  StargazeNft,
+  StargazeNftMediaType,
+} from '@dao-dao/types'
 
 import { STARGAZE_URL_BASE } from './constants'
 
@@ -87,7 +92,14 @@ export const nftCardInfoFromStargazeIndexerNft = (
     href: `${STARGAZE_URL_BASE}/media/${token.collection.contractAddress}/${token.tokenId}`,
     name: 'Stargaze',
   },
-  imageUrl: token.media?.visualAssets?.lg?.url || token.media?.url || undefined,
+  imageUrl:
+    // The Stargaze API resizes animated images (gifs) into `video/mp4`
+    // mimetype, which cannot display in an `img` tag. If this is a gif, use the
+    // original media URL instead of the resized one.
+    (token.media?.type !== StargazeNftMediaType.AnimatedImage &&
+      token.media?.visualAssets?.lg?.url) ||
+    token.media?.url ||
+    undefined,
   name: token.name || token.tokenId || 'Unknown NFT',
   description: token.description || undefined,
   highestOffer: offerToken

@@ -30,12 +30,26 @@ export type StargazeNft = {
   } | null
   media?: {
     url?: string | null
+    // Need to allow string values of enum because TypeScript does not think the
+    // enums are compatible even with the same values.
+    type?: `${StargazeNftMediaType}` | null
     visualAssets?: {
       lg?: {
         url?: string | null
       } | null
     } | null
   } | null
+}
+
+export enum StargazeNftMediaType {
+  AnimatedImage = 'animated_image',
+  Audio = 'audio',
+  Html = 'html',
+  Image = 'image',
+  Pdf = 'pdf',
+  Unknown = 'unknown',
+  VectorGraphic = 'vector_graphic',
+  Video = 'video',
 }
 
 export interface NativeStargazeCollectionInfo {
