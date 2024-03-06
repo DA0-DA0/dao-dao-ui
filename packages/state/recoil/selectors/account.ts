@@ -202,6 +202,8 @@ export const allBalancesSelector = selectorFamily<
     >[]
     // Ignore staked and unstaking tokens.
     ignoreStaked?: boolean
+    // Ignore Valence tokens.
+    ignoreValence?: boolean
   }>
 >({
   key: 'allBalances',
@@ -215,6 +217,7 @@ export const allBalancesSelector = selectorFamily<
       filter,
       additionalTokens,
       ignoreStaked,
+      ignoreValence,
     }) =>
     ({ get }) => {
       const allAccounts = get(
@@ -223,7 +226,7 @@ export const allBalancesSelector = selectorFamily<
           address: mainAddress,
           includeIcaChains,
         })
-      )
+      ).filter(({ type }) => !ignoreValence || type !== AccountType.Valence)
 
       const accountBalances = get(
         waitForAll(

@@ -16,6 +16,7 @@ import { makeDaoGovernanceActionCategory } from './dao_governance'
 import { makeManageNftsActionCategory } from './nfts'
 import { makeSmartContractingActionCategory } from './smart_contracting'
 import { makeTreasuryActionCategory } from './treasury'
+import { makeValenceActionCategory } from './valence'
 
 // Get all core action category makers.
 export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
@@ -27,6 +28,7 @@ export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
   makeSmartContractingActionCategory,
   makeAuthorizationsActionCategory,
   makeChainGovernanceActionCategory,
+  makeValenceActionCategory,
   makeAdvancedActionCategory,
   // Add action category makers here to display them.
 ]

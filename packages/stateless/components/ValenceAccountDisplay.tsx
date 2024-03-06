@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { TokenCardInfo, ValenceAccountDisplayProps } from '@dao-dao/types'
 import { serializeTokenSource } from '@dao-dao/utils'
 
-import { useChain } from '../hooks'
-import { CopyToClipboard } from './CopyToClipboard'
 import { ErrorPage } from './error'
 import { Loader } from './logo'
 import { TokenLineHeader } from './token'
@@ -23,7 +21,6 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
   className,
 }: ValenceAccountDisplayProps<T>) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
 
   const valenceAccountRebalancerTargets =
     account.config?.rebalancer?.targets.map(({ source }) =>
@@ -50,27 +47,14 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
 
   return (
     <div className={className}>
-      <div className="mb-3 flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex flex-row items-center gap-1">
-          <p className="primary-text">{t('title.valenceAccount')}</p>
-          <TooltipInfoIcon
-            size="sm"
-            title={
-              // TODO(rebalancer): Add description.
-              'What is a Valence Account'
-            }
-          />
-        </div>
-
-        <CopyToClipboard
-          className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
-          takeStartEnd={{
-            start: bech32Prefix.length + 6,
-            end: 6,
-          }}
-          textClassName="!bg-transparent !p-0"
-          tooltip={t('button.clickToCopyAddress')}
-          value={account.address}
+      <div className="mb-4 flex flex-row items-center gap-1">
+        <p className="primary-text">{t('title.valenceAccount')}</p>
+        <TooltipInfoIcon
+          size="sm"
+          title={
+            // TODO(rebalancer): Add description.
+            'What is a Valence Account'
+          }
         />
       </div>
 

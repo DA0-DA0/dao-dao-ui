@@ -30,6 +30,7 @@ import {
 } from 'recoil'
 
 import {
+  accountsSelector,
   govParamsSelector,
   govProposalCreatedCardPropsAtom,
   govProposalSelector,
@@ -47,6 +48,7 @@ import {
   PageLoader,
   ProposalContentDisplay,
   Tooltip,
+  useCachedLoadingWithError,
   useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
@@ -77,8 +79,9 @@ import {
 
 import { WalletActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
-import { useEntity } from '../../hooks'
+import { useEntity, useProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
+import { makeEmptyUnifiedProfile } from '../../recoil'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
@@ -93,6 +96,15 @@ export const NewGovProposal = () => {
   const chainContext = useConfiguredChainContext()
 
   const { address: walletAddress = '' } = useWallet()
+  const { profile } = useProfile()
+  const accounts = useCachedLoadingWithError(
+    walletAddress
+      ? accountsSelector({
+          chainId: chainContext.chainId,
+          address: walletAddress,
+        })
+      : undefined
+  )
 
   const governanceProposalAction = makeGovernanceProposalAction({
     t,
@@ -104,11 +116,15 @@ export const NewGovProposal = () => {
     address: walletAddress,
     context: {
       type: ActionContextType.Wallet,
+      profile: profile.loading
+        ? makeEmptyUnifiedProfile(chainContext.chainId, walletAddress)
+        : profile.data,
+      accounts: accounts.loading || accounts.errored ? [] : accounts.data,
     },
   })!
   const defaults = governanceProposalAction.useDefaults()
 
-  return !defaults ? (
+  return !defaults || accounts.loading ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
     <ErrorPage error={defaults} />

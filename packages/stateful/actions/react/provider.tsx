@@ -2,7 +2,11 @@ import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
-import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
+import {
+  accountsSelector,
+  govParamsSelector,
+  moduleAddressSelector,
+} from '@dao-dao/state/recoil'
 import {
   ErrorPage,
   Loader,
@@ -14,6 +18,7 @@ import {
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
+  Account,
   ActionChainContext,
   ActionChainContextType,
   ActionContext,
@@ -68,6 +73,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     context: {
       type: ActionContextType.Dao,
       info,
+      accounts: info.accounts,
     },
   }
 
@@ -197,14 +203,28 @@ export const WalletActionsProvider = ({
   address: overrideAddress,
   children,
 }: WalletActionsProviderProps) => {
-  const { address: connectedAddress } = useWallet()
+  const { address: connectedAddress, chain } = useWallet()
 
   const address =
     overrideAddress === undefined ? connectedAddress : overrideAddress
 
   const { profile } = useProfile({ address })
 
-  if (address === undefined || profile.loading) {
+  const accounts = useCachedLoadingWithError(
+    address
+      ? accountsSelector({
+          chainId: chain.chain_id,
+          address,
+        })
+      : undefined
+  )
+
+  if (
+    address === undefined ||
+    profile.loading ||
+    accounts.loading ||
+    accounts.errored
+  ) {
     return <Loader />
   }
 
@@ -214,6 +234,7 @@ export const WalletActionsProvider = ({
       context={{
         type: ActionContextType.Wallet,
         profile: profile.data,
+        accounts: accounts.data,
       }}
     >
       {children}
@@ -238,6 +259,17 @@ export const GovActionsProvider = ({
     ])
   )
 
+  // TODO(valence): add gov support to fetch valence accounts
+  // const accounts = useCachedLoadingWithError(
+  //   address
+  //     ? accountsSelector({
+  //         chainId: chain.chain_id,
+  //         address,
+  //       })
+  //     : undefined
+  // )
+  const accounts: Account[] = []
+
   return govDataLoading.loading ? (
     <>{loader || <PageLoader />}</>
   ) : govDataLoading.errored ? (
@@ -248,6 +280,7 @@ export const GovActionsProvider = ({
       context={{
         type: ActionContextType.Gov,
         params: govDataLoading.data[1],
+        accounts,
       }}
     >
       {children}

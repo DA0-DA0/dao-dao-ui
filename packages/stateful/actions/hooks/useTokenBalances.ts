@@ -55,6 +55,9 @@ export const useTokenBalances = ({
           // This hook is used to fetch usable balances for actions. Staked
           // balances are not desired.
           ignoreStaked: true,
+          // Valence account funds must first be withdrawn into the DAO's
+          // treasury before they can be used in actions.
+          ignoreValence: true,
         }),
     [],
     (error) => console.error(error)
