@@ -38,6 +38,7 @@ import {
 import {
   useAwaitNextBlock,
   useCfWorkerAuthPostRequest,
+  useProfile,
   useWallet,
   useWalletBalances,
 } from '../../hooks'
@@ -53,14 +54,14 @@ import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
-  const nativeToken = getNativeTokenForChainId(props.token.chainId)
-  const {
-    address: walletAddress = '',
-    hexPublicKey,
-    getSigningCosmWasmClient,
-  } = useWallet({
+  const { chains } = useProfile()
+
+  const profileChain = chains.loading
+    ? undefined
+    : chains.data.find((c) => c.chainId === props.token.chainId)
+
+  const { chainWallet } = useWallet({
     chainId: props.token.chainId,
-    loadAccount: true,
   })
   const { refreshBalances } = useWalletBalances({
     chainId: props.token.chainId,
@@ -81,7 +82,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(walletAddress)
+    refreshNativeTokenStakingInfoAtom(profileChain?.address)
   )
   const refreshNativeTokenStakingInfo = useCallback(
     () => setRefreshNativeTokenStakingInfo((id) => id + 1),
@@ -102,12 +103,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   )
 
   const setTemporaryHiddenBalances = useSetRecoilState(
-    temporaryHiddenBalancesAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
+    temporaryHiddenBalancesAtom(profileChain?.publicKey || '')
   )
   const hiddenBalancesLoadable = useCachedLoadable(
-    !hexPublicKey.loading
-      ? hiddenBalancesSelector(hexPublicKey.data)
-      : undefined
+    profileChain ? hiddenBalancesSelector(profileChain.publicKey) : undefined
   )
   const isHidden =
     hiddenBalancesLoadable.state === 'hasValue'
@@ -119,6 +118,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const setBalanceHidden = async (hidden: boolean) => {
     if (!hiddenBalancesReady) {
       toast.error(t('error.logInToContinue'))
+      return
     }
 
     setSavingHidden(true)
@@ -145,6 +145,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     }
   }
 
+  const nativeToken = getNativeTokenForChainId(props.token.chainId)
   const isNative =
     props.token.type === TokenType.Native &&
     props.token.denomOrAddress === nativeToken.denomOrAddress
@@ -168,16 +169,23 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     if (!claimReady) {
       return
     }
-    if (!walletAddress) {
+    if (!chainWallet) {
       toast.error(t('error.logInToContinue'))
       return
     }
 
     setClaimLoading(true)
     try {
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
+      if (!chainWallet.isWalletConnected) {
+        await chainWallet.connect(false)
+      }
+      if (!chainWallet.address) {
+        throw new Error(t('error.logInToContinue'))
+      }
+
+      const signingCosmWasmClient = await chainWallet.getSigningCosmWasmClient()
       await signingCosmWasmClient.signAndBroadcast(
-        walletAddress,
+        chainWallet.address,
         (lazyInfo.loading ? [] : lazyInfo.data.stakingInfo!.stakes).map(
           ({ validator }) =>
             cwMsgToEncodeObject(
@@ -188,7 +196,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                   },
                 },
               },
-              walletAddress
+              chainWallet.address!
             )
         ),
         CHAIN_GAS_MULTIPLIER

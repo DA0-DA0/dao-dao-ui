@@ -1,3 +1,4 @@
+import { toHex } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -21,21 +22,51 @@ export const useCfWorkerAuthPostRequest = (
   chainId?: string
 ) => {
   const { t } = useTranslation()
-  const { getOfflineSignerAmino, chain, hexPublicKey } = useWallet({
+  const { chain, hexPublicKey, chainWallet } = useWallet({
     chainId,
     loadAccount: true,
   })
 
-  const ready = !hexPublicKey.loading
+  // Either the hex public key loaded, or we have a chain wallet that we can
+  // attempt connection to.
+  const ready = !hexPublicKey.loading || !!chainWallet
 
-  const getNonce = useCallback(async () => {
-    if (!ready) {
+  const getHexPublicKey = useCallback(async () => {
+    if (!hexPublicKey.loading) {
+      return hexPublicKey.data
+    }
+
+    // If hex public key not loaded, load it from the wallet.
+    if (!chainWallet) {
+      throw new Error(t('error.loadingData'))
+    }
+
+    // Attempt to connect if needed.
+    if (!chainWallet.isWalletConnected) {
+      await chainWallet.connect(false)
+    }
+
+    // If still disconnected, throw.
+    if (!chainWallet.isWalletConnected) {
       throw new Error(t('error.logInToContinue'))
     }
 
+    // Get public key from wallet client, if possible.
+    const publicKey = (await chainWallet.client.getAccount?.(chain.chain_id))
+      ?.pubkey
+    if (!publicKey) {
+      throw new Error(t('error.unsupportedWallet'))
+    }
+
+    return toHex(publicKey)
+  }, [chain.chain_id, chainWallet, hexPublicKey, t])
+
+  const getNonce = useCallback(async () => {
+    const hexPublicKey = await getHexPublicKey()
+
     // Fetch nonce.
     const nonceResponse: { nonce: number } = await (
-      await fetch(`${apiBase}/nonce/${hexPublicKey.data}`, {
+      await fetch(`${apiBase}/nonce/${hexPublicKey}`, {
         cache: 'no-store',
       })
     ).json()
@@ -43,7 +74,7 @@ export const useCfWorkerAuthPostRequest = (
       !('nonce' in nonceResponse) ||
       typeof nonceResponse.nonce !== 'number'
     ) {
-      console.error('Failed to fetch nonce.', nonceResponse, hexPublicKey.data)
+      console.error('Failed to fetch nonce.', nonceResponse, hexPublicKey)
       throw new Error(t('error.loadingData'))
     }
 
@@ -55,7 +86,7 @@ export const useCfWorkerAuthPostRequest = (
     }
 
     return nonce
-  }, [apiBase, hexPublicKey, ready, t])
+  }, [apiBase, getHexPublicKey, t])
 
   const postRequest = useCallback(
     async <R = any>(
@@ -63,8 +94,14 @@ export const useCfWorkerAuthPostRequest = (
       data?: Record<string, unknown>,
       signatureType = defaultSignatureType
     ): Promise<R> => {
-      if (!ready) {
-        throw new Error(t('error.logInToContinue'))
+      const hexPublicKey = await getHexPublicKey()
+
+      const offlineSignerAmino =
+        await chainWallet?.client.getOfflineSignerAmino?.bind(
+          chainWallet.client
+        )?.(chain.chain_id)
+      if (!offlineSignerAmino) {
+        throw new Error(t('error.unsupportedWallet'))
       }
 
       // Fetch nonce.
@@ -74,9 +111,9 @@ export const useCfWorkerAuthPostRequest = (
         type: signatureType,
         nonce,
         chainId: chain.chain_id,
-        hexPublicKey: hexPublicKey.data,
+        hexPublicKey,
         data,
-        offlineSignerAmino: await getOfflineSignerAmino(),
+        offlineSignerAmino,
       })
 
       // Send request.
@@ -108,11 +145,10 @@ export const useCfWorkerAuthPostRequest = (
     },
     [
       defaultSignatureType,
-      ready,
+      getHexPublicKey,
+      chainWallet,
       getNonce,
       chain.chain_id,
-      hexPublicKey,
-      getOfflineSignerAmino,
       apiBase,
       t,
     ]

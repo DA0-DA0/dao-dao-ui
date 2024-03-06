@@ -169,6 +169,15 @@ export const useWallet = ({
   const response = useMemo(
     (): UseWalletReturn => ({
       ...walletChainRef.current,
+      chainWallet:
+        walletChainRef.current.chainWallet ||
+        // Fallback to getting chain wallet from repo if not set on walletChain.
+        // This won't be set if the walletChain is disconnected.
+        (mainWalletRef.current
+          ? getWalletRepo(chain.chain_name).getWallet(
+              mainWalletRef.current.walletName
+            )
+          : undefined),
       connect,
       // Use chain from our version of the chain-registry.
       chain,
