@@ -54,7 +54,7 @@ ChartJS.register(
   annotationPlugin
 )
 
-// TODO: add way to set base price denom to use instead of USD
+// TODO(rebalancer): add way to set base price denom to use instead of USD
 export const TreasuryHistoryGraph = ({
   chainId,
   address,

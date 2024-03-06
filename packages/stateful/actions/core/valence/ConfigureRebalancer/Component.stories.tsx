@@ -98,76 +98,115 @@ Default.args = {
         },
       ],
     },
-    historicalPrices: {
+    denomWhitelistTokens: {
       loading: false,
       data: [
+        getNativeTokenForChainId(ChainId.NeutronMainnet),
         {
-          denom: getNativeTokenForChainId(ChainId.NeutronMainnet)
+          chainId: ChainId.NeutronMainnet,
+          type: TokenType.Native,
+          denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
             .denomOrAddress,
-          // Random disturbance.
-          prices: [...Array(50)].reduce(
-            (acc) => [
-              ...acc,
-              {
-                timestamp: new Date(
-                  acc[acc.length - 1].timestamp.getTime() + 1000
-                ),
-                amount:
-                  acc[acc.length - 1].amount *
-                  (1 + (Math.random() - 0.5) * 0.5),
-              },
-            ],
-            [
-              {
-                timestamp: new Date(new Date().getTime() - 50 * 1000),
-                amount: 0.4,
-              },
-            ]
-          ),
+          decimals: 6,
+          symbol: 'USDC',
+          imageUrl: '',
+          source: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+              .denomOrAddress,
+          },
         },
         {
-          denom: getNativeIbcUsdc(ChainId.NeutronMainnet)!.denomOrAddress,
-          // Constant.
-          prices: [...Array(50)].reduce(
-            (acc) => [
-              ...acc,
-              {
-                timestamp: new Date(
-                  acc[acc.length - 1].timestamp.getTime() + 1000
-                ),
-                amount: 1,
-              },
-            ],
-            [
-              {
-                timestamp: new Date(new Date().getTime() - 50 * 1000),
-                amount: 1,
-              },
-            ]
-          ),
+          chainId: ChainId.NeutronMainnet,
+          type: TokenType.Native,
+          denomOrAddress: 'uatom',
+          decimals: 6,
+          symbol: 'ATOM',
+          imageUrl: '',
+          source: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+          },
+        },
+      ],
+    },
+    baseDenomWhitelistTokens: {
+      loading: false,
+      data: [
+        getNativeTokenForChainId(ChainId.NeutronMainnet),
+        {
+          chainId: ChainId.NeutronMainnet,
+          type: TokenType.Native,
+          denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+            .denomOrAddress,
+          decimals: 6,
+          symbol: 'USDC',
+          imageUrl: '',
+          source: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+              .denomOrAddress,
+          },
         },
         {
-          denom: 'uatom',
-          // Random disturbance.
-          prices: [...Array(50)].reduce(
-            (acc) => [
-              ...acc,
-              {
-                timestamp: new Date(
-                  acc[acc.length - 1].timestamp.getTime() + 1000
-                ),
-                amount:
-                  acc[acc.length - 1].amount *
-                  (1 + (Math.random() - 0.5) * 0.5),
-              },
-            ],
-            [
-              {
-                timestamp: new Date(new Date().getTime() - 50 * 1000),
-                amount: 6.5,
-              },
-            ]
-          ),
+          chainId: ChainId.NeutronMainnet,
+          type: TokenType.Native,
+          denomOrAddress: 'uatom',
+          decimals: 6,
+          symbol: 'ATOM',
+          imageUrl: '',
+          source: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+          },
+        },
+      ],
+    },
+    prices: {
+      loading: false,
+      errored: false,
+      data: [
+        {
+          token: getNativeTokenForChainId(ChainId.NeutronMainnet),
+          usdPrice: 1.5,
+        },
+        {
+          token: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+              .denomOrAddress,
+            decimals: 6,
+            symbol: 'USDC',
+            imageUrl: '',
+            source: {
+              chainId: ChainId.NeutronMainnet,
+              type: TokenType.Native,
+              denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+                .denomOrAddress,
+            },
+          },
+          usdPrice: 1,
+        },
+        {
+          token: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+            decimals: 6,
+            symbol: 'ATOM',
+            imageUrl: '',
+            source: {
+              chainId: ChainId.NeutronMainnet,
+              type: TokenType.Native,
+              denomOrAddress: 'uatom',
+            },
+          },
+          usdPrice: 12,
         },
       ],
     },

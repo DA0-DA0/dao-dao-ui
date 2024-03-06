@@ -38,6 +38,7 @@ export const TokenInput = <
   // use-cases exist for this component, so the token selection is left up to
   // the caller instead of being handled internally like the amount field.
   tokens,
+  hideTokens,
   onSelectToken,
   selectedToken: _selectedToken,
   // Fallback when no token is selected. If nothing is provided, a placeholder
@@ -198,23 +199,30 @@ export const TokenInput = <
             items={
               tokens.loading
                 ? []
-                : tokens.data.map((token, index) => ({
-                    key: index + token.denomOrAddress,
-                    label: token.symbol,
-                    iconUrl: transformIpfsUrlToHttpsIfNecessary(
-                      token.imageUrl || getFallbackImage(token.denomOrAddress)
-                    ),
-                    ...token,
-                    rightNode: (
-                      <p className="caption-text max-w-[5rem] truncate">
-                        {allTokensOnSameChain
-                          ? token.denomOrAddress
-                          : getDisplayNameForChainId(token.chainId)}
-                      </p>
-                    ),
-                    iconClassName: '!h-8 !w-8',
-                    contentContainerClassName: '!gap-3',
-                  }))
+                : tokens.data
+                    .filter(
+                      (token) =>
+                        !hideTokens?.some((hidden) =>
+                          tokensEqual(hidden, token)
+                        )
+                    )
+                    .map((token, index) => ({
+                      key: index + token.denomOrAddress,
+                      label: token.symbol,
+                      iconUrl: transformIpfsUrlToHttpsIfNecessary(
+                        token.imageUrl || getFallbackImage(token.denomOrAddress)
+                      ),
+                      ...token,
+                      rightNode: (
+                        <p className="caption-text max-w-[5rem] truncate">
+                          {allTokensOnSameChain
+                            ? token.denomOrAddress
+                            : getDisplayNameForChainId(token.chainId)}
+                        </p>
+                      ),
+                      iconClassName: '!h-8 !w-8',
+                      contentContainerClassName: '!gap-3',
+                    }))
             }
             onSelect={(token) => onSelectToken(token as T)}
             searchPlaceholder={t('info.searchForToken')}

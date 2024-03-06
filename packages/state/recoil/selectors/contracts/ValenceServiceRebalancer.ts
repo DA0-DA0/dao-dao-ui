@@ -4,16 +4,21 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import { ValenceServiceRebalancerQueryClient } from '@dao-dao/state/contracts/ValenceServiceRebalancer'
-import { WithChainId } from '@dao-dao/types'
+import { Addr, GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 import {
+  ManagersAddrsResponse,
+  NullableCoin,
+  PauseData,
   RebalancerConfig,
   SystemRebalanceStatus,
+  WhitelistsResponse,
 } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 
 import { cosmWasmClientForChainSelector } from '../chain'
+import { genericTokenSelector } from '../token'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -47,6 +52,20 @@ export const getConfigSelector = selectorFamily<
       return await client.getConfig(...params)
     },
 })
+export const getPausedConfigSelector = selectorFamily<
+  PauseData,
+  QueryClientParams & {
+    params: Parameters<ValenceServiceRebalancerQueryClient['getPausedConfig']>
+  }
+>({
+  key: 'valenceServiceRebalancerGetPausedConfig',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getPausedConfig(...params)
+    },
+})
 export const getSystemStatusSelector = selectorFamily<
   SystemRebalanceStatus,
   QueryClientParams & {
@@ -59,5 +78,111 @@ export const getSystemStatusSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       return await client.getSystemStatus(...params)
+    },
+})
+export const getServiceFeeSelector = selectorFamily<
+  NullableCoin,
+  QueryClientParams & {
+    params: Parameters<ValenceServiceRebalancerQueryClient['getServiceFee']>
+  }
+>({
+  key: 'valenceServiceRebalancerGetServiceFee',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getServiceFee(...params)
+    },
+})
+export const getWhiteListsSelector = selectorFamily<
+  WhitelistsResponse,
+  QueryClientParams & {
+    params: Parameters<ValenceServiceRebalancerQueryClient['getWhiteLists']>
+  }
+>({
+  key: 'valenceServiceRebalancerGetWhiteLists',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getWhiteLists(...params)
+    },
+})
+export const getManagersAddrsSelector = selectorFamily<
+  ManagersAddrsResponse,
+  QueryClientParams & {
+    params: Parameters<ValenceServiceRebalancerQueryClient['getManagersAddrs']>
+  }
+>({
+  key: 'valenceServiceRebalancerGetManagersAddrs',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getManagersAddrs(...params)
+    },
+})
+export const getAdminSelector = selectorFamily<
+  Addr,
+  QueryClientParams & {
+    params: Parameters<ValenceServiceRebalancerQueryClient['getAdmin']>
+  }
+>({
+  key: 'valenceServiceRebalancerGetAdmin',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getAdmin(...params)
+    },
+})
+
+// Custom
+
+/**
+ * Get the generic tokens for the whitelisted tokens in the rebalancer.
+ */
+export const whitelistGenericTokensSelector = selectorFamily<
+  { baseDenoms: GenericToken[]; denoms: GenericToken[] },
+  QueryClientParams
+>({
+  key: 'valenceServiceRebalancerWhitelistGenericTokens',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const whitelists = get(
+        getWhiteListsSelector({
+          ...queryClientParams,
+          params: [],
+        })
+      )
+
+      const [baseDenoms, denoms] = get(
+        waitForAll([
+          waitForAll(
+            whitelists.base_denom_whitelist.map(({ denom }) =>
+              genericTokenSelector({
+                chainId: queryClientParams.chainId,
+                type: TokenType.Native,
+                denomOrAddress: denom,
+              })
+            )
+          ),
+          waitForAll(
+            whitelists.denom_whitelist.map((denom) =>
+              genericTokenSelector({
+                chainId: queryClientParams.chainId,
+                type: TokenType.Native,
+                denomOrAddress: denom,
+              })
+            )
+          ),
+        ])
+      )
+
+      return {
+        baseDenoms,
+        denoms,
+      }
     },
 })

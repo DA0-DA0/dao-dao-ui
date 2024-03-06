@@ -260,7 +260,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
           <TreasuryHistoryGraph
             address={coreAddress}
             chainId={daoChainId}
-            className="mb-8 hidden rounded-md bg-background-tertiary p-6 md:flex"
+            className="mb-8 hidden rounded-md bg-background-tertiary p-6 sm:flex"
             graphClassName="max-h-[20rem]"
             header={
               <div className="flex flex-row items-center justify-center gap-1">
