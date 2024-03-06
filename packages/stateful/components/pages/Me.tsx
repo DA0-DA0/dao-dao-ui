@@ -19,7 +19,6 @@ import {
 import {
   ChainProvider,
   Loader,
-  LogInRequiredPage,
   PageLoader,
   Profile as StatelessProfile,
   useCachedLoadable,
@@ -72,7 +71,7 @@ export const Me: NextPage = () => {
   const {
     address: walletAddress = '',
     isWalletConnected,
-    isWalletConnecting,
+    connect,
   } = useWallet()
   const {
     profile,
@@ -163,6 +162,7 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessProfile
+                connected
                 mergeProfileType={
                   profileMergeOptions.length === 0
                     ? undefined
@@ -180,9 +180,12 @@ export const Me: NextPage = () => {
           </WalletActionsProvider>
         </ChainProvider>
       ) : (
-        <LogInRequiredPage
-          connectWalletButton={<ConnectWallet />}
-          connecting={isWalletConnecting}
+        <StatelessProfile
+          ConnectWallet={ConnectWallet}
+          connect={connect}
+          connected={false}
+          profile={undefined}
+          tabs={tabs}
         />
       )}
     </>

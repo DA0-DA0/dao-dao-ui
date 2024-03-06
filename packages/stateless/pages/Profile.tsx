@@ -1,13 +1,15 @@
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   AccountTab,
   AccountTabId,
+  StatefulConnectWalletProps,
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 
-import { TabBar, WalletProfileHeader } from '../components'
+import { TabBar, WalletProfileHeader, WarningCard } from '../components'
 
 export type ProfileProps = {
   tabs: AccountTab[]
@@ -18,9 +20,28 @@ export type ProfileProps = {
   | 'updateProfile'
   | 'mergeProfileType'
   | 'openMergeProfilesModal'
->
+> &
+  (
+    | {
+        connected: false
+        connect: () => Promise<void>
+        ConnectWallet: ComponentType<StatefulConnectWalletProps>
+      }
+    | {
+        connected: true
+        connect?: never
+        ConnectWallet?: never
+      }
+  )
 
-export const Profile = ({ tabs, ...headerProps }: ProfileProps) => {
+export const Profile = ({
+  tabs,
+  connected,
+  connect,
+  ConnectWallet,
+  ...headerProps
+}: ProfileProps) => {
+  const { t } = useTranslation()
   const router = useRouter()
 
   // Pre-fetch tabs.
@@ -45,7 +66,9 @@ export const Profile = ({ tabs, ...headerProps }: ProfileProps) => {
 
   return (
     <div className="flex flex-col items-stretch gap-6">
-      <WalletProfileHeader editable {...headerProps} />
+      <WalletProfileHeader editable {...headerProps}>
+        {!connected && <ConnectWallet variant="ghost" />}
+      </WalletProfileHeader>
 
       <TabBar
         onSelect={(tab) =>
@@ -56,7 +79,15 @@ export const Profile = ({ tabs, ...headerProps }: ProfileProps) => {
       />
 
       {/* Don't render a tab unless it is visible. */}
-      {selectedTab && <selectedTab.Component />}
+      {connected ? (
+        selectedTab && <selectedTab.Component />
+      ) : (
+        <WarningCard
+          className="self-center mt-4"
+          content={t('info.logInToViewPage')}
+          onClick={connect}
+        />
+      )}
     </div>
   )
 }

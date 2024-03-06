@@ -56,7 +56,7 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
                   : undefined
               )
         }
-        variant="primary"
+        variant="brand"
         {...props}
       />
     </Tooltip>

@@ -18,7 +18,11 @@ export const WalletProfileHeader = ({
 }: WalletProfileHeaderProps) => {
   const { t } = useTranslation()
   const canEditProfile =
-    editable && !profile.loading && profile.data.nonce >= 0 && !mergeProfileType
+    editable &&
+    profile &&
+    !profile.loading &&
+    profile.data.nonce >= 0 &&
+    !mergeProfileType
 
   return (
     <div
@@ -28,6 +32,7 @@ export const WalletProfileHeader = ({
       )}
     >
       {editable &&
+        profile &&
         !profile.loading &&
         profile.data.nonce > -1 &&
         mergeProfileType && (
@@ -44,18 +49,22 @@ export const WalletProfileHeader = ({
         )}
 
       <ProfileImage
-        imageUrl={profile.loading ? undefined : profile.data.imageUrl}
-        loading={profile.loading}
+        imageUrl={
+          !profile || profile.loading ? undefined : profile.data.imageUrl
+        }
+        loading={profile?.loading}
         onClick={canEditProfile ? openProfileNftUpdate : undefined}
         size="header"
       />
 
-      <ProfileNameDisplayAndEditor
-        header
-        hideNoNameTooltip
-        profile={profile}
-        updateProfile={canEditProfile ? updateProfile : undefined}
-      />
+      {profile && (
+        <ProfileNameDisplayAndEditor
+          header
+          hideNoNameTooltip
+          profile={profile}
+          updateProfile={canEditProfile ? updateProfile : undefined}
+        />
+      )}
 
       {children}
     </div>

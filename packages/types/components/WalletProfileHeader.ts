@@ -9,9 +9,9 @@ export type WalletProfileHeaderProps = {
    */
   editable: boolean
   /**
-   * The profile being displayed.
+   * The profile being displayed. If undefined, show logged in.
    */
-  profile: LoadingData<UnifiedProfile>
+  profile: LoadingData<UnifiedProfile> | undefined
   /**
    * If set, show a tooltip that explains there are multiple profiles attached
    * to the current wallet and prompt to merge them. The type determines the

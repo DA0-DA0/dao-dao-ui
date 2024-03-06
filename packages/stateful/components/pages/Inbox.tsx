@@ -4,7 +4,7 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
-import { LogInRequiredPage, Inbox as StatelessInbox } from '@dao-dao/stateless'
+import { Inbox as StatelessInbox, WarningCard } from '@dao-dao/stateless'
 import {
   NOTIFICATIONS_PAGE_DESCRIPTION,
   NOTIFICATIONS_PAGE_TITLE,
@@ -14,14 +14,13 @@ import {
 } from '@dao-dao/utils'
 
 import { useInboxApiWithUi, useWallet } from '../../hooks'
-import { ConnectWallet } from '../ConnectWallet'
 import { InboxMainItemRenderer } from '../inbox'
 import { PageHeaderContent } from '../PageHeaderContent'
 
 export const Inbox: NextPage = () => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
-  const { isWalletConnected, isWalletConnecting } = useWallet()
+  const { isWalletConnected, connect } = useWallet()
 
   const inbox = useInboxApiWithUi({
     mode: 'page',
@@ -64,9 +63,10 @@ export const Inbox: NextPage = () => {
             inbox={inbox}
           />
         ) : (
-          <LogInRequiredPage
-            connectWalletButton={<ConnectWallet />}
-            connecting={isWalletConnecting}
+          <WarningCard
+            className="mx-auto max-w-max mt-10"
+            content={t('info.logInToViewPage')}
+            onClick={connect}
           />
         )}
       </div>
