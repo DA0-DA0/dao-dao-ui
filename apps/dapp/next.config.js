@@ -96,6 +96,7 @@ const config = {
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
   },
   images: {
+    unoptimized: true,
     domains: [
       'ipfs.stargaze.zone',
       'ipfs-gw.stargaze-apis.com',
