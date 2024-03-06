@@ -13,7 +13,10 @@ import {
   useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
-import { VoteOption } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
+import {
+  VoteOption,
+  voteOptionToJSON,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -73,6 +76,8 @@ const InnerGovProposalVotes = ({ proposalId }: GovProposalVotesProps) => {
     <PaginatedProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={GovProposalVoteDisplay}
+      allVotes={pageVotes}
+      exportVoteTransformer={(vote) => voteOptionToJSON(vote)}
       hideDownload
       hideVotedAt
       pagination={{
