@@ -5,17 +5,35 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { Addr } from '@dao-dao/types'
 import {
+  ManagersAddrsResponse,
+  NullableCoin,
+  PauseData,
+  QueryFeeAction,
+  RebalancerAdminMsg,
   RebalancerConfig,
   RebalancerData,
   RebalancerUpdateData,
   SystemRebalanceStatus,
+  WhitelistsResponse,
 } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 
 export interface ValenceServiceRebalancerReadOnlyInterface {
   contractAddress: string
   getConfig: ({ addr }: { addr: string }) => Promise<RebalancerConfig>
+  getPausedConfig: ({ addr }: { addr: string }) => Promise<PauseData>
   getSystemStatus: () => Promise<SystemRebalanceStatus>
+  getServiceFee: ({
+    account,
+    action,
+  }: {
+    account: string
+    action: QueryFeeAction
+  }) => Promise<NullableCoin>
+  getWhiteLists: () => Promise<WhitelistsResponse>
+  getManagersAddrs: () => Promise<ManagersAddrsResponse>
+  getAdmin: () => Promise<Addr>
 }
 export class ValenceServiceRebalancerQueryClient
   implements ValenceServiceRebalancerReadOnlyInterface
@@ -27,7 +45,12 @@ export class ValenceServiceRebalancerQueryClient
     this.client = client
     this.contractAddress = contractAddress
     this.getConfig = this.getConfig.bind(this)
+    this.getPausedConfig = this.getPausedConfig.bind(this)
     this.getSystemStatus = this.getSystemStatus.bind(this)
+    this.getServiceFee = this.getServiceFee.bind(this)
+    this.getWhiteLists = this.getWhiteLists.bind(this)
+    this.getManagersAddrs = this.getManagersAddrs.bind(this)
+    this.getAdmin = this.getAdmin.bind(this)
   }
 
   getConfig = async ({ addr }: { addr: string }): Promise<RebalancerConfig> => {
@@ -37,16 +60,58 @@ export class ValenceServiceRebalancerQueryClient
       },
     })
   }
+  getPausedConfig = async ({ addr }: { addr: string }): Promise<PauseData> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_paused_config: {
+        addr,
+      },
+    })
+  }
   getSystemStatus = async (): Promise<SystemRebalanceStatus> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_system_status: {},
     })
+  }
+  getServiceFee = async ({
+    account,
+    action,
+  }: {
+    account: string
+    action: QueryFeeAction
+  }): Promise<NullableCoin> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_service_fee: {
+        account,
+        action,
+      },
+    })
+  }
+  getWhiteLists = async (): Promise<WhitelistsResponse> => {
+    return this.client.queryContractSmart(
+      this.contractAddress,
+      'get_white_lists'
+    )
+  }
+  getManagersAddrs = async (): Promise<ManagersAddrsResponse> => {
+    return this.client.queryContractSmart(
+      this.contractAddress,
+      'get_managers_addrs'
+    )
+  }
+  getAdmin = async (): Promise<Addr> => {
+    return this.client.queryContractSmart(this.contractAddress, 'get_admin')
   }
 }
 export interface ValenceServiceRebalancerInterface
   extends ValenceServiceRebalancerReadOnlyInterface {
   contractAddress: string
   sender: string
+  admin: (
+    rebalancerAdminMsg: RebalancerAdminMsg,
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ) => Promise<ExecuteResult>
   systemRebalance: (
     {
       limit,
@@ -94,9 +159,11 @@ export interface ValenceServiceRebalancerInterface
   pause: (
     {
       pauseFor,
+      reason,
       sender,
     }: {
       pauseFor: string
+      reason?: string
       sender: string
     },
     fee?: number | StdFee | 'auto',
@@ -133,6 +200,7 @@ export class ValenceServiceRebalancerClient
     this.client = client
     this.sender = sender
     this.contractAddress = contractAddress
+    this.admin = this.admin.bind(this)
     this.systemRebalance = this.systemRebalance.bind(this)
     this.register = this.register.bind(this)
     this.deregister = this.deregister.bind(this)
@@ -141,6 +209,23 @@ export class ValenceServiceRebalancerClient
     this.resume = this.resume.bind(this)
   }
 
+  admin = async (
+    rebalancerAdminMsg: RebalancerAdminMsg,
+    fee: number | StdFee | 'auto' = 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        admin: rebalancerAdminMsg,
+      },
+      fee,
+      memo,
+      _funds
+    )
+  }
   systemRebalance = async (
     {
       limit,
@@ -242,9 +327,11 @@ export class ValenceServiceRebalancerClient
   pause = async (
     {
       pauseFor,
+      reason,
       sender,
     }: {
       pauseFor: string
+      reason?: string
       sender: string
     },
     fee: number | StdFee | 'auto' = 'auto',
@@ -257,6 +344,7 @@ export class ValenceServiceRebalancerClient
       {
         pause: {
           pause_for: pauseFor,
+          reason,
           sender,
         },
       },

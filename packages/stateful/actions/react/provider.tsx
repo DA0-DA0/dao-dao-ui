@@ -18,13 +18,13 @@ import {
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
-  Account,
   ActionChainContext,
   ActionChainContextType,
   ActionContext,
   ActionContextType,
   ActionOptions,
   ActionsProviderProps,
+  ChainId,
   GovActionsProviderProps,
   IActionsContext,
   WalletActionsProviderProps,
@@ -246,28 +246,32 @@ export const GovActionsProvider = ({
     ])
   )
 
-  // TODO(valence): add gov support to fetch valence accounts
-  // const accounts = useCachedLoadingWithError(
-  //   address
-  //     ? accountsSelector({
-  //         chainId: chain.chain_id,
-  //         address,
-  //       })
-  //     : undefined
-  // )
-  const accounts: Account[] = []
+  const accounts = useCachedLoadingWithError(
+    govDataLoading.loading || govDataLoading.errored
+      ? undefined
+      : accountsSelector({
+          chainId,
+          address: govDataLoading.data[0],
+          // Make sure to load ICAs for Neutron so Valence accounts load.
+          includeIcaChains: [ChainId.NeutronMainnet],
+        })
+  )
 
-  return govDataLoading.loading ? (
+  return govDataLoading.loading ||
+    (accounts.loading && !govDataLoading.errored) ? (
     <>{loader || <PageLoader />}</>
   ) : govDataLoading.errored ? (
     <ErrorPage error={govDataLoading.error} />
+  ) : accounts.errored ? (
+    <ErrorPage error={accounts.error} />
   ) : (
     <BaseActionsProvider
       address={govDataLoading.data[0]}
       context={{
         type: ActionContextType.Gov,
         params: govDataLoading.data[1],
-        accounts,
+        // Type-check. Will never be loading here.
+        accounts: accounts.loading ? [] : accounts.data,
       }}
     >
       {children}

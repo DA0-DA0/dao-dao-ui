@@ -1,20 +1,23 @@
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValueLoadable, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state'
-import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors'
+import {
+  ValenceServiceRebalancerSelectors,
+  genericTokenSelector,
+} from '@dao-dao/state'
+import { usdPriceSelector } from '@dao-dao/state/recoil/selectors'
 import {
   BalanceEmoji,
   ChainProvider,
   DaoSupportedChainPickerInput,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   AccountType,
   ChainId,
-  TokenPriceHistoryRange,
   TokenType,
   UseDecodedCosmosMsg,
 } from '@dao-dao/types'
@@ -37,7 +40,6 @@ import {
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
   getAccount,
-  loadableToLoadingData,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   mustGetSupportedChainConfig,
@@ -60,6 +62,16 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const selectedTokens = watch((props.fieldNamePrefix + 'tokens') as 'tokens')
 
+  const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
+  const whitelists = useCachedLoadingWithError(
+    rebalancer
+      ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
+          chainId,
+          contractAddress: rebalancer,
+        })
+      : undefined
+  )
+
   const loadingTokens = useTokenBalances({
     filter: TokenType.Native,
     // Ensure chosen tokens are loaded.
@@ -68,6 +80,8 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
       type: TokenType.Native,
       denomOrAddress: denom,
     })),
+    // Only fetch balances for Valence account.
+    includeAccountTypes: [AccountType.Valence],
   })
 
   const minBalanceDenom = watch(
@@ -94,68 +108,20 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
         ),
       }
 
-  const historicalPricesLoading = loadableToLoadingData(
-    useRecoilValueLoadable(
-      waitForAll(
-        selectedTokens.map(({ denom }) =>
-          historicalUsdPriceSelector({
-            chainId,
-            type: TokenType.Native,
-            denomOrAddress: denom,
-            range: TokenPriceHistoryRange.Year,
-          })
-        )
-      )
-    ),
-    undefined
-  )
-
-  // Get overlapping timestamps across all tokens.
-  const overlappingTimestamps =
-    historicalPricesLoading.loading || !historicalPricesLoading.data
-      ? []
-      : Object.entries(
-          // Map timestamp to number of tokens for which it appears in its
-          // historical price list.
-          historicalPricesLoading.data.reduce((acc, prices) => {
-            if (!prices) {
-              return acc
-            }
-
-            // Increment timestamp counter for each price.
-            prices.forEach(({ timestamp }) => {
-              const time = timestamp.getTime().toString()
-              acc[time] = (acc[time] ?? 0) + 1
+  const prices = useCachedLoadingWithError(
+    whitelists.loading || whitelists.errored
+      ? undefined
+      : waitForAll(
+          whitelists.data.denoms.map(({ chainId, type, denomOrAddress }) =>
+            usdPriceSelector({
+              chainId,
+              type,
+              denomOrAddress,
             })
-
-            return acc
-          }, {} as Record<string, number>)
-        )
-          // Keep only timestamp keys that exist in each token's historical
-          // price list.
-          .filter(([, value]) => value === historicalPricesLoading.data?.length)
-          .map(([timestamp]) => Number(timestamp))
-
-  const historicalPrices = historicalPricesLoading.loading
-    ? historicalPricesLoading
-    : {
-        loading: false,
-        data: selectedTokens.flatMap(({ denom }, index) =>
-          historicalPricesLoading.data?.[index]
-            ? {
-                denom,
-                // Keep only prices that overlap with all tokens.
-                prices: historicalPricesLoading
-                  .data![index]!.filter(({ timestamp }) =>
-                    overlappingTimestamps.includes(timestamp.getTime())
-                  )
-                  .sort(
-                    (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
-                  ),
-              }
-            : []
+          )
         ),
-      }
+    (data) => data.flatMap((data) => data || [])
+  )
 
   return (
     <>
@@ -174,7 +140,15 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
           {...props}
           options={{
             nativeBalances,
-            historicalPrices,
+            baseDenomWhitelistTokens:
+              whitelists.loading || whitelists.errored
+                ? { loading: true }
+                : { loading: false, data: whitelists.data.baseDenoms },
+            denomWhitelistTokens:
+              whitelists.loading || whitelists.errored
+                ? { loading: true }
+                : { loading: false, data: whitelists.data.denoms },
+            prices,
             minBalanceToken: minBalanceToken.loading
               ? undefined
               : minBalanceToken.data,
@@ -239,6 +213,16 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     undefined
   )
 
+  const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
+  const whitelists = useCachedLoadingWithError(
+    rebalancer
+      ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
+          chainId,
+          contractAddress: rebalancer,
+        })
+      : undefined
+  )
+
   if (
     serviceName !== 'rebalancer' ||
     !data ||
@@ -247,18 +231,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
       targets: {},
       pid: {},
       target_override_strategy: {},
-    })
+    }) ||
+    whitelists.loading ||
+    whitelists.errored
   ) {
     return {
       match: false,
     }
-  }
-
-  const defaultBaseDenom =
-    mustGetSupportedChainConfig(chainId).valence?.rebalancer
-      .baseTokenAllowlist?.[0]
-  if (!defaultBaseDenom) {
-    throw new Error('No default base denom found for rebalancer.')
   }
 
   const maxLimitBps =
@@ -283,7 +262,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
             'set' in data.trustee
           ? data.trustee.set
           : undefined,
-      baseDenom: data.base_denom || defaultBaseDenom,
+      baseDenom:
+        data.base_denom || whitelists.data.baseDenoms[0].denomOrAddress,
       tokens: data.targets.map(({ denom, min_balance, bps }) => ({
         denom,
         percent: bps / 100,
@@ -328,24 +308,35 @@ export const makeConfigureRebalancerAction: ActionMaker<
       chainId: ChainId.NeutronMainnet,
       types: [AccountType.Valence],
     })
+    const chainId = account?.chainId || ChainId.NeutronMainnet
+
+    const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
+    const whitelists = useCachedLoadingWithError(
+      rebalancer
+        ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
+            chainId,
+            contractAddress: rebalancer,
+          })
+        : undefined
+    )
 
     if (!account || account.type !== AccountType.Valence) {
       return new Error(t('error.noValenceAccount'))
-    }
-
-    const defaultBaseDenom = mustGetSupportedChainConfig(account.chainId)
-      .valence?.rebalancer.baseTokenAllowlist?.[0]
-    if (!defaultBaseDenom) {
-      throw new Error('No default base denom found for rebalancer.')
+    } else if (whitelists.loading) {
+      return
+    } else if (whitelists.errored) {
+      return whitelists.error
     }
 
     const rebalancerConfig = account?.config?.rebalancer?.config
 
     return {
       valenceAccount: account,
-      chainId: account?.chainId || ChainId.NeutronMainnet,
+      chainId,
       trustee: rebalancerConfig?.trustee || undefined,
-      baseDenom: rebalancerConfig?.base_denom || defaultBaseDenom,
+      baseDenom:
+        rebalancerConfig?.base_denom ||
+        whitelists.data.baseDenoms[0].denomOrAddress,
       tokens: rebalancerConfig?.targets.map(
         ({ denom, percentage, min_balance }) => ({
           denom,
@@ -357,11 +348,11 @@ export const makeConfigureRebalancerAction: ActionMaker<
         })
       ) || [
         {
-          denom: defaultBaseDenom,
+          denom: whitelists.data.baseDenoms[0].denomOrAddress,
           percent: 100,
         },
       ],
-      // TODO: pick defaults
+      // TODO(rebalancer): pick defaults
       pid: {
         kp: Number(rebalancerConfig?.pid.p || 0.1),
         ki: Number(rebalancerConfig?.pid.i || 0.1),
@@ -371,7 +362,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
         rebalancerConfig?.max_limit &&
         !isNaN(Number(rebalancerConfig.max_limit))
           ? Number(rebalancerConfig.max_limit)
-          : // TODO: pick default
+          : // TODO(rebalancer): pick default
             // 5%
             500,
       targetOverrideStrategy:
@@ -434,7 +425,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
                           // BPS
                           bps: percent * 100,
                         })),
-                        trustee,
+                        trustee: trustee || null,
                       } as Pick<
                         RebalancerData,
                         keyof RebalancerData & keyof RebalancerUpdateData

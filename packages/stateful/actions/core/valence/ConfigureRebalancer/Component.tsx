@@ -5,25 +5,28 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ErrorPage,
   IconButton,
   InputErrorMessage,
   InputLabel,
   Loader,
+  MarkdownRenderer,
   NumberInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
   SegmentedControls,
   SwitchCard,
   TokenInput,
+  Tooltip,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
-  AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
+  GenericTokenWithUsdPrice,
   LoadingData,
-  TokenType,
+  LoadingDataWithError,
   ValenceAccount,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -31,7 +34,6 @@ import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceServiceR
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
-  getNativeTokenForChainId,
   makeValidateAddress,
   validatePositive,
   validateRequired,
@@ -63,12 +65,9 @@ export type ConfigureRebalancerData = {
 
 export type ConfigureRebalancerOptions = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
-  historicalPrices: LoadingData<
-    {
-      denom: string
-      prices: AmountWithTimestamp[]
-    }[]
-  >
+  baseDenomWhitelistTokens: LoadingData<GenericToken[]>
+  denomWhitelistTokens: LoadingData<GenericToken[]>
+  prices: LoadingDataWithError<GenericTokenWithUsdPrice[]>
   minBalanceToken: GenericToken | undefined
   AddressInput: ComponentType<AddressInputProps<ConfigureRebalancerData>>
 }
@@ -79,25 +78,19 @@ export const ConfigureRebalancerComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nativeBalances, historicalPrices, minBalanceToken, AddressInput },
+  options: {
+    nativeBalances,
+    baseDenomWhitelistTokens,
+    denomWhitelistTokens,
+    prices,
+    minBalanceToken,
+    AddressInput,
+  },
 }) => {
   const { t } = useTranslation()
   const {
-    chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: { valence },
   } = useSupportedChainContext()
-
-  const allowedBaseTokenBalances = nativeBalances.loading
-    ? []
-    : nativeBalances.data.filter(({ token }) =>
-        valence?.rebalancer.baseTokenAllowlist.includes(token.denomOrAddress)
-      )
-  const allowedTokenBalances = nativeBalances.loading
-    ? []
-    : nativeBalances.data.filter(({ token }) =>
-        valence?.rebalancer.tokenAllowlist.includes(token.denomOrAddress)
-      )
 
   const { control, watch, register, setValue, clearErrors, setError } =
     useFormContext<ConfigureRebalancerData>()
@@ -115,11 +108,20 @@ export const ConfigureRebalancerComponent: ActionComponent<
     (fieldNamePrefix + 'targetOverrideStrategy') as 'targetOverrideStrategy'
   )
   const pid = watch((fieldNamePrefix + 'pid') as 'pid')
-  const tokens = watch((fieldNamePrefix + 'tokens') as 'tokens')
-  const totalPercent = watch((fieldNamePrefix + `tokens`) as 'tokens').reduce(
-    (acc, { percent }) => acc + percent,
-    0
-  )
+  const tokens = watch((fieldNamePrefix + 'tokens') as 'tokens', [])
+  const totalPercent = tokens.reduce((acc, { percent }) => acc + percent, 0)
+
+  // Get selected whitelist tokens.
+  const denomWhitelistTokensSelected = denomWhitelistTokens.loading
+    ? []
+    : denomWhitelistTokens.data.filter((token) =>
+        tokens.some(({ denom }) => token.denomOrAddress === denom)
+      )
+  const denomWhitelistTokensRemaining = denomWhitelistTokens.loading
+    ? []
+    : denomWhitelistTokens.data.filter(
+        (token) => !tokens.some(({ denom }) => token.denomOrAddress === denom)
+      )
 
   const maxLimit = watch((fieldNamePrefix + 'maxLimit') as 'maxLimit')
   const maxLimitEnabled = maxLimit !== undefined
@@ -130,54 +132,30 @@ export const ConfigureRebalancerComponent: ActionComponent<
   // Validate all add up to 100%.
   useEffect(() => {
     if (totalPercent === 100) {
-      clearErrors(
-        (fieldNamePrefix +
-          `tokens.${
-            tokensFields.length - 1
-          }.percent`) as `tokens.${number}.percent`
-      )
+      clearErrors((fieldNamePrefix + 'tokens') as 'tokens')
     } else {
-      setError(
-        (fieldNamePrefix +
-          `tokens.${
-            tokensFields.length - 1
-          }.percent`) as `tokens.${number}.percent`,
-        {
-          type: 'manual',
-          message: t('error.percentageDoesNotSumTo100', {
-            totalPercent: formatPercentOf100(totalPercent),
-          }),
-        }
-      )
+      setError((fieldNamePrefix + 'tokens') as 'tokens', {
+        type: 'manual',
+        message: t('error.percentageDoesNotSumTo100', {
+          totalPercent: formatPercentOf100(totalPercent),
+        }),
+      })
     }
-  }, [
-    t,
-    clearErrors,
-    setError,
-    totalPercent,
-    fieldNamePrefix,
-    tokensFields.length,
-  ])
+  }, [t, clearErrors, setError, totalPercent, fieldNamePrefix])
 
-  const [projection, setProjection] = useState(false)
+  const [projection, setProjection] = useState(isCreating)
 
-  const rebalanceTimestamps = historicalPrices.loading
-    ? []
-    : // All tokens historical price lists should have the same timestamps, so we just need to pick the first one that has prices loaded.
-      historicalPrices.data
-        .find(({ prices }) => prices.length)
-        ?.prices.map(({ timestamp }) => timestamp)
-        // Rebalance one fewer time than how many prices we have. The rebalancer
-        // projector expects number of rebalances to be one fewer than the
-        // number of prices since the first price acts as the initial price.
-        ?.slice(1) || []
+  // Once per day for the next 180 days.
+  const rebalanceTimestamps = new Array(180)
+    .fill(0)
+    .map((_, i) => new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000))
 
   return (
     <>
       <div className="flex max-w-prose flex-col gap-5">
         <div className="flex flex-col gap-2">
           <InputLabel name={t('form.baseToken')} primary />
-          <p className="body-text -mt-1 text-sm text-text-secondary">
+          <p className="body-text text-text-secondary -mt-1 text-sm">
             {t('form.rebalancerBaseTokenDescription')}
           </p>
 
@@ -191,24 +169,19 @@ export const ConfigureRebalancerComponent: ActionComponent<
             }
             readOnly={!isCreating}
             selectedToken={
-              allowedBaseTokenBalances.find(
-                ({ token }) => token.denomOrAddress === baseDenom
-              )?.token
+              baseDenomWhitelistTokens.loading
+                ? undefined
+                : baseDenomWhitelistTokens.data.find(
+                    ({ denomOrAddress }) => denomOrAddress === baseDenom
+                  )
             }
-            tokens={
-              nativeBalances.loading
-                ? { loading: true }
-                : {
-                    loading: false,
-                    data: allowedBaseTokenBalances.map(({ token }) => token),
-                  }
-            }
+            tokens={baseDenomWhitelistTokens}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <InputLabel name={t('form.trustee')} optional primary />
-          <p className="body-text -mt-1 text-sm text-text-secondary">
+          <p className="body-text text-text-secondary -mt-1 text-sm">
             {t('form.rebalancerTrusteeDescription')}
           </p>
 
@@ -222,10 +195,110 @@ export const ConfigureRebalancerComponent: ActionComponent<
         </div>
 
         <div className="flex flex-col gap-2">
+          <InputLabel name={t('form.tokenTargets')} primary />
+
+          {tokensFields.map(({ id }, index) => (
+            <div key={id}>
+              <div className="flex flex-row items-stretch gap-2">
+                <TokenInput
+                  amount={{
+                    watch,
+                    setValue,
+                    register,
+                    fieldName: (fieldNamePrefix +
+                      `tokens.${index}.percent`) as `tokens.${number}.percent`,
+                    error: errors?.tokens?.[index]?.percent,
+                    min: 0.01,
+                    max: 100,
+                    step: 0.01,
+                    unit: '%',
+                  }}
+                  hideTokens={denomWhitelistTokensSelected.filter(
+                    (selected) =>
+                      // Still show this selected token.
+                      selected.denomOrAddress !== tokens[index]?.denom
+                  )}
+                  onSelectToken={({ denomOrAddress }) =>
+                    setValue(
+                      (fieldNamePrefix +
+                        `tokens.${index}.denom`) as `tokens.${number}.denom`,
+                      denomOrAddress
+                    )
+                  }
+                  readOnly={!isCreating}
+                  selectedToken={
+                    denomWhitelistTokens.loading
+                      ? undefined
+                      : denomWhitelistTokens.data.find(
+                          ({ denomOrAddress }) =>
+                            denomOrAddress === tokens[index]?.denom
+                        )
+                  }
+                  tokens={denomWhitelistTokens}
+                />
+
+                {isCreating && (
+                  <IconButton
+                    Icon={Close}
+                    className="self-center"
+                    onClick={() => removeToken(index)}
+                    size="sm"
+                    variant="ghost"
+                  />
+                )}
+              </div>
+
+              <InputErrorMessage
+                error={
+                  errors?.tokens?.[index]?.percent ||
+                  errors?.tokens?.[index]?.denom
+                }
+              />
+            </div>
+          ))}
+
+          <InputErrorMessage error={errors?.tokens} />
+
+          {isCreating ? (
+            <Tooltip
+              title={
+                !denomWhitelistTokens.loading &&
+                denomWhitelistTokensRemaining.length === 0
+                  ? t('info.allSupportedTokensAdded')
+                  : undefined
+              }
+            >
+              <Button
+                className="mt-1 self-start"
+                disabled={denomWhitelistTokensRemaining.length === 0}
+                loading={denomWhitelistTokens.loading}
+                onClick={() =>
+                  appendToken({
+                    percent: 25,
+                    denom:
+                      denomWhitelistTokensRemaining[0]?.denomOrAddress || '',
+                  })
+                }
+                variant="secondary"
+              >
+                {t('button.addToken')}
+              </Button>
+            </Tooltip>
+          ) : (
+            tokensFields.length === 0 && (
+              <p className="text-text-tertiary mt-1 mb-2 text-xs italic">
+                {t('info.none')}
+              </p>
+            )
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
           <InputLabel name={t('form.targetOverrideStrategy')} primary />
-          <p className="body-text -mt-1 text-sm text-text-secondary">
-            {t('form.targetOverrideStrategyDescription')}
-          </p>
+          <MarkdownRenderer
+            className="body-text text-text-secondary -mt-1 text-sm"
+            markdown={t('form.targetOverrideStrategyDescription')}
+          />
 
           <SegmentedControls<'proportional' | 'priority'>
             disabled={!isCreating}
@@ -251,101 +324,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
         </div>
 
         <div className="flex flex-col gap-2">
-          <InputLabel name={t('form.tokenTargets')} primary />
-
-          {tokensFields.map(({ id }, index) => {
-            const watchDenom = watch(
-              (fieldNamePrefix +
-                `tokens.${index}.denom`) as `tokens.${number}.denom`
-            )
-
-            const selectedToken = allowedTokenBalances.find(
-              ({ token }) => token.denomOrAddress === watchDenom
-            )?.token
-
-            return (
-              <div key={id}>
-                <div className="flex flex-row items-stretch gap-2">
-                  <TokenInput
-                    amount={{
-                      watch,
-                      setValue,
-                      register,
-                      fieldName: (fieldNamePrefix +
-                        `tokens.${index}.percent`) as `tokens.${number}.percent`,
-                      error: errors?.tokens?.[index]?.percent,
-                      min: 0.01,
-                      max: 100,
-                      step: 0.01,
-                      unit: '%',
-                    }}
-                    onSelectToken={({ denomOrAddress }) =>
-                      setValue(
-                        (fieldNamePrefix +
-                          `tokens.${index}.denom`) as `tokens.${number}.denom`,
-                        denomOrAddress
-                      )
-                    }
-                    readOnly={!isCreating}
-                    selectedToken={selectedToken}
-                    tokens={
-                      nativeBalances.loading
-                        ? { loading: true }
-                        : {
-                            loading: false,
-                            data: allowedTokenBalances.map(
-                              ({ token }) => token
-                            ),
-                          }
-                    }
-                  />
-
-                  {isCreating && (
-                    <IconButton
-                      Icon={Close}
-                      className="self-center"
-                      onClick={() => removeToken(index)}
-                      size="sm"
-                      variant="ghost"
-                    />
-                  )}
-                </div>
-
-                <InputErrorMessage
-                  error={
-                    errors?.tokens?.[index]?.percent ||
-                    errors?.tokens?.[index]?.denom
-                  }
-                />
-              </div>
-            )
-          })}
-
-          {isCreating ? (
-            <Button
-              className="mt-1 self-start"
-              onClick={() =>
-                appendToken({
-                  percent: 25,
-                  denom:
-                    allowedTokenBalances[0]?.token.denomOrAddress ||
-                    getNativeTokenForChainId(chainId).denomOrAddress,
-                })
-              }
-              variant="secondary"
-            >
-              {t('button.addToken')}
-            </Button>
-          ) : (
-            tokensFields.length === 0 && (
-              <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-                {t('info.none')}
-              </p>
-            )
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
           <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
             <InputLabel name={t('form.minBalance')} primary />
 
@@ -367,7 +345,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
             />
           </div>
 
-          <p className="body-text -mt-1 text-sm text-text-secondary">
+          <p className="body-text text-text-secondary -mt-1 text-sm">
             {t('form.rebalancerMinBalanceDescription')}
           </p>
 
@@ -396,24 +374,18 @@ export const ConfigureRebalancerComponent: ActionComponent<
                 )
               }
               readOnly={!isCreating}
-              selectedToken={{
-                chainId,
-                type: TokenType.Native,
-                denomOrAddress: minBalance?.denom,
-              }}
+              selectedToken={
+                minBalance &&
+                denomWhitelistTokensSelected.find(
+                  ({ denomOrAddress }) => denomOrAddress === minBalance.denom
+                )
+              }
               tokens={
-                nativeBalances.loading
+                denomWhitelistTokens.loading
                   ? { loading: true }
                   : {
                       loading: false,
-                      data: allowedTokenBalances
-                        .map(({ token }) => token)
-                        // Can only set min balance of a rebalanced token.
-                        .filter((token) =>
-                          tokens.some(
-                            ({ denom }) => token.denomOrAddress === denom
-                          )
-                        ),
+                      data: denomWhitelistTokensSelected,
                     }
               }
             />
@@ -437,7 +409,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
             />
           </div>
 
-          <p className="body-text -mt-1 text-sm text-text-secondary">
+          <p className="body-text text-text-secondary -mt-1 text-sm">
             {t('form.maximumSellablePerCycleDescription')}
           </p>
 
@@ -525,40 +497,48 @@ export const ConfigureRebalancerComponent: ActionComponent<
       />
 
       {projection &&
-        (nativeBalances.loading || historicalPrices.loading ? (
+        (nativeBalances.loading ||
+        prices.loading ||
+        denomWhitelistTokens.loading ? (
           <Loader />
+        ) : prices.errored ? (
+          <ErrorPage error={prices.error} />
         ) : (
           <RebalancerProjector
             assets={tokens.flatMap(
               ({ denom, percent }): RebalancerProjectorAsset | [] => {
-                const { token, balance: _balance } =
+                const token = denomWhitelistTokens.data.find(
+                  ({ denomOrAddress }) => denomOrAddress === denom
+                )
+                const { balance: _balance } =
                   nativeBalances.data.find(
                     ({ token }) => token.denomOrAddress === denom
                   ) ?? {}
-                const balance = Number(_balance) || 10000000000
-                const prices = historicalPrices.data.find(
-                  ({ denom: priceDenom }) => priceDenom === denom
-                )?.prices
+                const balance = Number(_balance) || 0
+                const price = prices.data.find(
+                  ({ token: { denomOrAddress: priceDenom } }) =>
+                    priceDenom === denom
+                )?.usdPrice
 
-                if (!token || !balance || !prices) {
+                if (!token || !balance || price === undefined) {
                   return []
                 }
 
                 return {
-                  symbol:
-                    nativeBalances.data.find(
-                      ({ token }) => token.denomOrAddress === denom
-                    )?.token.symbol || denom,
+                  symbol: token.symbol,
                   initialAmount: convertMicroDenomToDenomWithDecimals(
                     balance,
                     token.decimals
                   ),
                   targetProportion: percent / 100,
-                  prices: prices.map(({ amount }) => amount),
+                  // Add an extra price to account for the initial balance.
+                  prices: new Array(rebalanceTimestamps.length + 1)
+                    .fill(0)
+                    .map(() => price),
                 }
               }
             )}
-            className="h-72"
+            className="!h-72"
             pid={{
               ...pid,
               interval: 1,

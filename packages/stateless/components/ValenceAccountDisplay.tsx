@@ -47,15 +47,30 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
 
   return (
     <div className={className}>
-      <div className="mb-4 flex flex-row items-center gap-1">
-        <p className="primary-text">{t('title.valenceAccount')}</p>
-        <TooltipInfoIcon
-          size="sm"
-          title={
-            // TODO(rebalancer): Add description.
-            'What is a Valence Account'
-          }
-        />
+      <div className="mb-4 flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center gap-1">
+          <p className="title-text">{t('title.rebalancer')}</p>
+
+          <TooltipInfoIcon
+            size="sm"
+            title={
+              // TODO(rebalancer): Add description.
+              'What is the Rebalancer'
+            }
+          />
+        </div>
+
+        {!!configureRebalancerHref && (
+          <Tooltip title={t('title.configureRebalancer')}>
+            <IconButtonLink
+              Icon={Build}
+              containerClassName="absolute right-0"
+              href={configureRebalancerHref}
+              size="sm"
+              variant="ghost"
+            />
+          </Tooltip>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
@@ -74,36 +89,15 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
           tokens.data.length > 0 && (
             <>
               {account.config.rebalancer && (
-                <div className="mb-6 flex flex-col gap-2 px-8">
-                  <div className="relative flex flex-row items-center justify-center gap-1">
-                    <p className="title-text">{t('title.rebalancer')}</p>
-
-                    <TooltipInfoIcon
-                      size="sm"
-                      title={t('info.rebalancerGraphTooltip')}
-                    />
-
-                    {!!configureRebalancerHref && (
-                      <Tooltip title={t('title.configureRebalancer')}>
-                        <IconButtonLink
-                          Icon={Build}
-                          containerClassName="absolute right-0"
-                          href={configureRebalancerHref}
-                          size="sm"
-                          variant="ghost"
-                        />
-                      </Tooltip>
-                    )}
-                  </div>
-
-                  <TreasuryHistoryGraph
-                    account={account}
-                    address={account.address}
-                    chainId={account.chainId}
-                    registerTokenColors={setTokenSourceColorMap}
-                    showRebalancer
-                  />
-                </div>
+                <TreasuryHistoryGraph
+                  account={account}
+                  address={account.address}
+                  chainId={account.chainId}
+                  className="mb-8 hidden rounded-md bg-background-tertiary p-6 sm:flex"
+                  graphClassName="max-h-[20rem]"
+                  registerTokenColors={setTokenSourceColorMap}
+                  showRebalancer
+                />
               )}
 
               <div className="flex flex-col gap-1">
@@ -123,12 +117,14 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
                       />
                     ))}
 
-                    <div className="-mx-3 mt-4 h-[1px] bg-border-primary sm:-mx-4 lg:-mx-5"></div>
-
                     {otherTokens.length > 0 && (
-                      <p className="title-text mt-8 mb-4">
-                        {t('title.nonRebalancedTokens')}
-                      </p>
+                      <>
+                        <div className="my-4 h-[1px] bg-border-primary"></div>
+
+                        <p className="title-text my-4">
+                          {t('title.nonRebalancedTokens')}
+                        </p>
+                      </>
                     )}
                   </>
                 )}

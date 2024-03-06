@@ -804,20 +804,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     valence: {
       servicesManager:
         'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
-      rebalancer: {
-        address:
-          'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
-        tokenAllowlist: [
-          'untrn',
-          // ATOM
-          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
-        ],
-        baseTokenAllowlist: [
-          'untrn',
-          // ATOM
-          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
-        ],
-      },
+      rebalancer:
+        'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
   },
   {

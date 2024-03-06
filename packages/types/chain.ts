@@ -190,16 +190,18 @@ export type SupportedChainConfig = BaseChainConfig & {
    * Polytone connections to other chains from this chain.
    */
   polytone?: PolytoneConfig
+  /**
+   * Timewave's Valence config.
+   */
   valence?: {
-    // Address of services manager contract.
+    /**
+     * Address of services manager contract.
+     */
     servicesManager: string
-    rebalancer: {
-      // Address of rebalancer contract.
-      address: string
-      tokenAllowlist: string[]
-      // First denom is the default.
-      baseTokenAllowlist: string[]
-    }
+    /**
+     * Address of rebalancer contract.
+     */
+    rebalancer: string
   }
 }
 

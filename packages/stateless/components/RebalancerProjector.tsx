@@ -106,9 +106,9 @@ export const RebalancerProjector = ({
           0
         )
 
-        // TODO: Contrain buy amounts to only how much we are able to sell of
-        // other assets. Just like the sell amount is bounded by 0 on the
-        // bottom, we need to bound the buy amount by the total value not
+        // TODO(rebalancer): Contrain buy amounts to only how much we are able
+        // to sell of other assets. Just like the sell amount is bounded by 0 on
+        // the bottom, we need to bound the buy amount by the total value not
         // already sold of other assets.
 
         // Use PID controller with new values to rebalance amounts.
@@ -154,16 +154,16 @@ export const RebalancerProjector = ({
             ),
           })
         ),
-        // Total
-        {
-          label: 'Total Value',
-          data: projections.map((projection) =>
-            projection.reduce(
-              (acc, { amount, price }) => acc + amount * price,
-              0
-            )
-          ),
-        },
+        // // Total
+        // {
+        //   label: 'Total Value',
+        //   data: projections.map((projection) =>
+        //     projection.reduce(
+        //       (acc, { amount, price }) => acc + amount * price,
+        //       0
+        //     )
+        //   ),
+        // },
       ].map((p, index) => ({
         ...p,
         borderColor: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
@@ -184,7 +184,7 @@ export const RebalancerProjector = ({
     <div className={clsx('h-full', className)}>
       <Line
         data={{
-          labels: ['Initial', ...rebalanceTimestamps.map((t) => formatDate(t))],
+          labels: ['Today', ...rebalanceTimestamps.map((t) => formatDate(t))],
           datasets,
         }}
         options={{

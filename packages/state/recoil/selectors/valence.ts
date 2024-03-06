@@ -57,7 +57,7 @@ export const valenceAccountSelector = selectorFamily<
     ({ address, chainId }) =>
     async ({ get }) => {
       const rebalancerAddress =
-        getSupportedChainConfig(chainId)?.valence?.rebalancer.address
+        getSupportedChainConfig(chainId)?.valence?.rebalancer
 
       const rebalancerConfig = rebalancerAddress
         ? get(

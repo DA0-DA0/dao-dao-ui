@@ -3,8 +3,10 @@ import { actionContextSupportsValence } from '@dao-dao/utils'
 
 import { makeConfigureRebalancerAction } from './ConfigureRebalancer'
 import { makeCreateValenceAccountAction } from './CreateValenceAccount'
+import { makeFundRebalancerAction } from './FundRebalancer'
 import { makePauseRebalancerAction } from './PauseRebalancer'
 import { makeResumeRebalancerAction } from './ResumeRebalancer'
+import { makeWithdrawFromRebalancerAction } from './WithdrawFromRebalancer'
 
 export const makeValenceActionCategory: ActionCategoryMaker = (options) =>
   actionContextSupportsValence(options)
@@ -18,6 +20,8 @@ export const makeValenceActionCategory: ActionCategoryMaker = (options) =>
         }),
         actionMakers: [
           makeConfigureRebalancerAction,
+          makeFundRebalancerAction,
+          makeWithdrawFromRebalancerAction,
           makePauseRebalancerAction,
           makeResumeRebalancerAction,
           makeCreateValenceAccountAction,

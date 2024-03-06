@@ -120,6 +120,8 @@ export interface SpendOptions {
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
   >
+  // Hide the destination chain/address picker.
+  noChangeDestination?: boolean
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
@@ -137,6 +139,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     neutronTransferFee,
     proposalModuleMaxVotingPeriodInBlocks,
     AddressInput,
+    noChangeDestination,
   },
   addAction,
   remove,
@@ -419,27 +422,29 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             ref={toContainerRef}
           >
             {/* Cannot send over IBC from the gov module. */}
-            {isCreating && context.type !== ActionContextType.Gov && (
-              <IbcDestinationChainPicker
-                buttonClassName={toWrapped ? 'grow' : undefined}
-                disabled={selectedToken?.token.type === TokenType.Cw20}
-                includeSourceChain
-                onSelect={(chainId) => {
-                  // Type-check. None option is disabled so should not be
-                  // possible.
-                  if (!chainId) {
-                    return
-                  }
+            {isCreating &&
+              context.type !== ActionContextType.Gov &&
+              !noChangeDestination && (
+                <IbcDestinationChainPicker
+                  buttonClassName={toWrapped ? 'grow' : undefined}
+                  disabled={selectedToken?.token.type === TokenType.Cw20}
+                  includeSourceChain
+                  onSelect={(chainId) => {
+                    // Type-check. None option is disabled so should not be
+                    // possible.
+                    if (!chainId) {
+                      return
+                    }
 
-                  setValue(
-                    (fieldNamePrefix + 'toChainId') as 'toChainId',
-                    chainId
-                  )
-                }}
-                selectedChainId={toChainId}
-                sourceChainId={spendChainId}
-              />
-            )}
+                    setValue(
+                      (fieldNamePrefix + 'toChainId') as 'toChainId',
+                      chainId
+                    )
+                  }}
+                  selectedChainId={toChainId}
+                  sourceChainId={spendChainId}
+                />
+              )}
 
             {/* Change search address and placeholder based on destination chain. */}
             <ChainProvider chainId={toChainId}>
@@ -449,7 +454,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               >
                 <AddressInput
                   containerClassName="grow"
-                  disabled={!isCreating}
+                  disabled={!isCreating || noChangeDestination}
                   error={errors?.to}
                   fieldName={(fieldNamePrefix + 'to') as 'to'}
                   register={register}

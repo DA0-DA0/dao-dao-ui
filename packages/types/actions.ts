@@ -90,6 +90,8 @@ export enum ActionKey {
   ConfigureRebalancer = 'configureRebalancer',
   PauseRebalancer = 'pauseRebalancer',
   ResumeRebalancer = 'resumeRebalancer',
+  FundRebalancer = 'fundRebalancer',
+  WithdrawFromRebalancer = 'withdrawFromRebalancer',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
