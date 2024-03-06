@@ -32,9 +32,10 @@ export const ProfileDaos = () => {
 
       {missingChains && (
         <ProfileAddChains
-          className="mt-4"
+          className="self-end mt-4"
           onlySupported
-          prompt={t('info.supportedChainDaosNotShowingUpPrompt')}
+          prompt={t('button.addChains')}
+          promptTooltip={t('info.supportedChainDaosNotShowingUpPrompt')}
         />
       )}
     </>

@@ -90,7 +90,7 @@ export const useProfile = ({
       chainId: walletChainId,
       address: profileAddress,
     }),
-    makeEmptyUnifiedProfile(profileAddress)
+    makeEmptyUnifiedProfile(walletChainId, profileAddress)
   )
 
   const refreshProfile = useRefreshProfile(profileAddress, profile)

@@ -76,8 +76,8 @@ export const Me: NextPage = () => {
   } = useWallet()
   const {
     profile,
-    otherProfiles,
     updateProfile: { go: updateProfile },
+    merge: { options: profileMergeOptions },
   } = useManageProfile()
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
@@ -163,9 +163,15 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessProfile
+                mergeProfileType={
+                  profileMergeOptions.length === 0
+                    ? undefined
+                    : profileMergeOptions.length === 1
+                    ? 'add'
+                    : 'merge'
+                }
                 openMergeProfilesModal={() => setMergeProfilesVisible(true)}
                 openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
-                otherProfilesExist={otherProfiles.length > 0}
                 profile={profile}
                 tabs={tabs}
                 updateProfile={updateProfile}

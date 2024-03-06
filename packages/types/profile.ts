@@ -49,6 +49,19 @@ export type UnifiedProfileNameSource = 'pfpk' | 'stargaze'
  */
 export type UnifiedProfile = PfpkProfile & {
   /**
+   * The source chain and address used to load the profile.
+   */
+  source: {
+    /**
+     * The chain ID of the source.
+     */
+    chainId: string
+    /**
+     * The address of the source.
+     */
+    address: string
+  }
+  /**
    * Image URL to use, which takes into account backup data sources if PFPK does
    * not have an NFT set.
    */
@@ -129,3 +142,21 @@ export type AddChainsFunction = (
     setChainStatus?: (chainId: string, status: AddChainsChainStatus) => void
   }
 ) => Promise<void>
+
+/**
+ * Another profile connected on the same wallet. Used in `useManageProfile`.
+ */
+export type OtherProfile = {
+  /**
+   * The chain ID of the chain.
+   */
+  chainId: string
+  /**
+   * The address for the profile on this chain.
+   */
+  address: string
+  /**
+   * The profile.
+   */
+  profile: UnifiedProfile
+}

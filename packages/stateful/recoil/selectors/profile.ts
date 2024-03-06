@@ -32,8 +32,15 @@ export const EMPTY_PFPK_PROFILE: PfpkProfile = {
   chains: {},
 }
 
-export const makeEmptyUnifiedProfile = (address: string): UnifiedProfile => ({
+export const makeEmptyUnifiedProfile = (
+  chainId: string,
+  address: string
+): UnifiedProfile => ({
   ...EMPTY_PFPK_PROFILE,
+  source: {
+    chainId,
+    address,
+  },
   nameSource: 'pfpk',
   imageUrl: getFallbackImage(address),
   backupImageUrl: getFallbackImage(address),
@@ -76,10 +83,9 @@ export const pfpkProfileForBech32HashSelector = selectorFamily<
         if (response.ok) {
           const profile: PfpkProfile = await response.json()
 
-          // If profile found, add refresher dependencies on the other public
-          // keys in the profile. This ensures that the profile will update for
-          // all other public keys when any of the other public keys update the
-          // profile.
+          // If profile found, add refresher dependencies for the other chains
+          // in the profile. This ensures that the profile will update for all
+          // other chains when any of the other chains update the profile.
           if (profile?.chains) {
             get(
               waitForAll(
@@ -188,13 +194,12 @@ export const profileSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     ({ get }) => {
+      const profile = makeEmptyUnifiedProfile(chainId, address)
       if (!address) {
-        return makeEmptyUnifiedProfile(address)
+        return profile
       }
 
       get(refreshWalletProfileAtom(toBech32Hash(address)))
-
-      const profile = makeEmptyUnifiedProfile(address)
 
       const pfpkProfile = get(pfpkProfileSelector(address))
       if (pfpkProfile) {

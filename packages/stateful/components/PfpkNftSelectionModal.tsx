@@ -286,6 +286,7 @@ export const InnerPfpkNftSelectionModal = ({
         headerContent={
           chains.loading ? undefined : (
             <ProfileAddChains
+              className="self-start"
               disabled={allChainsAdded}
               onlySupported
               prompt={
@@ -300,6 +301,7 @@ export const InnerPfpkNftSelectionModal = ({
                   : t('info.supportedChainNftsNotShowingUpPromptTooltip')
               }
               size="sm"
+              textPrompt
             />
           )
         }

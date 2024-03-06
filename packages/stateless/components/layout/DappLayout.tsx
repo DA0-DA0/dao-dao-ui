@@ -131,10 +131,10 @@ export const DappLayout = ({
                       navigationProps.inboxCount.data > 0,
                   },
                   {
-                    key: 'account',
+                    key: 'profile',
                     href: '/me',
                     pathnames: ['/me/[[...tab]]'],
-                    labelI18nKey: 'title.account',
+                    labelI18nKey: 'title.profile',
                     IconUnselected: DockWallet,
                     IconSelected: DockWallet,
                     compact: true,

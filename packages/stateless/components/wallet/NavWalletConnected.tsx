@@ -25,7 +25,7 @@ import { WalletLogo } from './WalletLogo'
 export const NavWalletConnected = ({
   wallet,
   profile,
-  otherProfilesExist,
+  mergeProfileType,
   onMergeProfiles,
   disconnect,
   className,
@@ -141,15 +141,10 @@ export const NavWalletConnected = ({
       {mode !== 'dock' &&
         !profile.loading &&
         profile.data.nonce > -1 &&
-        otherProfilesExist && (
+        mergeProfileType && (
           <Tooltip
             title={
-              // If current profile has never been used, make it more clear that
-              // they just have to add the current chain wallet to another
-              // profile. Otherwise, show a more general merge message. Most of
-              // the time, it should just be the simple "add" case.
-              profile.data.nonce === 0 ||
-              (!profile.data.name && !profile.data.nft)
+              mergeProfileType === 'add'
                 ? t('info.addWalletToProfile')
                 : t('info.mergeProfilesTooltip')
             }

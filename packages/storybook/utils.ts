@@ -8,6 +8,10 @@ export const WALLET_PROFILE_DATA: UnifiedProfile = {
   name: '@Modern-Edamame',
   nft: null,
   chains: {},
+  source: {
+    chainId: CHAIN_ID,
+    address: 'address',
+  },
   imageUrl: '/noah.jpg',
   nameSource: 'pfpk',
   backupImageUrl: '/placeholder/1.svg',

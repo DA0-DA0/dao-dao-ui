@@ -214,7 +214,7 @@ export const DappNavigation = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 href="/me"
-                label={t('title.account')}
+                label={t('title.profile')}
                 selected={asPath.startsWith('/me')}
               />
 

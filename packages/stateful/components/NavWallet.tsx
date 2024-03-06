@@ -11,7 +11,10 @@ import { SuspenseLoader } from './SuspenseLoader'
 
 export const NavWallet = (props: StatefulNavWalletProps) => {
   const { openView, isWalletConnected, wallet, disconnect } = useWallet()
-  const { profile, otherProfiles } = useManageProfile()
+  const {
+    profile,
+    merge: { options: profileMergeOptions },
+  } = useManageProfile()
 
   const setMergeProfilesModalVisible = useSetRecoilState(
     mergeProfilesVisibleAtom
@@ -39,8 +42,14 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
           connected
           disconnect={disconnect}
           inbox={inbox}
+          mergeProfileType={
+            profileMergeOptions.length === 0
+              ? undefined
+              : profileMergeOptions.length === 1
+              ? 'add'
+              : 'merge'
+          }
           onMergeProfiles={() => setMergeProfilesModalVisible(true)}
-          otherProfilesExist={otherProfiles.length > 0}
           profile={profile}
           wallet={wallet}
           {...props}

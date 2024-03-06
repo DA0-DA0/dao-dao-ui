@@ -172,8 +172,9 @@ export const ProfileWallet = <T extends TokenCardInfo>({
       </div>
 
       <ProfileAddChains
-        className="mt-4"
-        prompt={t('info.chainTokensNotShowingUpPrompt')}
+        className="self-end"
+        prompt={t('button.addChains')}
+        promptTooltip={t('info.chainTokensNotShowingUpPrompt')}
       />
     </div>
   )

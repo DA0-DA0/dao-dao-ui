@@ -16,7 +16,7 @@ export type ProfileProps = {
   | 'openProfileNftUpdate'
   | 'profile'
   | 'updateProfile'
-  | 'otherProfilesExist'
+  | 'mergeProfileType'
   | 'openMergeProfilesModal'
 >
 

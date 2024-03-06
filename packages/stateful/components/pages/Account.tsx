@@ -62,17 +62,17 @@ export const Account: NextPage = () => {
 
   const hexPublicKey = useCachedLoadingWithError(
     walletHexPublicKeySelector({
-      chainId: configuredChain.chain.chain_id,
+      chainId: configuredChain.chainId,
       walletAddress: accountAddress,
     })
   )
 
   const profile = useCachedLoading(
     profileSelector({
-      chainId: configuredChain.chain.chain_id,
+      chainId: configuredChain.chainId,
       address: accountAddress,
     }),
-    makeEmptyUnifiedProfile(accountAddress)
+    makeEmptyUnifiedProfile(configuredChain.chainId, accountAddress)
   )
 
   const { setAccentColor, theme } = useThemeContext()

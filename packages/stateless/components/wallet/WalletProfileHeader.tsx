@@ -9,7 +9,7 @@ import { WarningCard } from '../WarningCard'
 export const WalletProfileHeader = ({
   editable,
   profile,
-  otherProfilesExist,
+  mergeProfileType,
   openMergeProfilesModal,
   updateProfile,
   openProfileNftUpdate,
@@ -18,10 +18,7 @@ export const WalletProfileHeader = ({
 }: WalletProfileHeaderProps) => {
   const { t } = useTranslation()
   const canEditProfile =
-    editable &&
-    !profile.loading &&
-    profile.data.nonce >= 0 &&
-    !otherProfilesExist
+    editable && !profile.loading && profile.data.nonce >= 0 && !mergeProfileType
 
   return (
     <div
@@ -33,16 +30,11 @@ export const WalletProfileHeader = ({
       {editable &&
         !profile.loading &&
         profile.data.nonce > -1 &&
-        otherProfilesExist && (
+        mergeProfileType && (
           <WarningCard
             className="max-w-xs mb-4 text-left"
             content={
-              // If current profile has never been used, make it more clear that
-              // they just have to add the current chain wallet to another
-              // profile. Otherwise, show a more general merge message. Most of
-              // the time, it should just be the simple "add" case.
-              profile.data.nonce === 0 ||
-              (!profile.data.name && !profile.data.nft)
+              mergeProfileType === 'add'
                 ? t('info.addWalletToProfileToEdit')
                 : t('info.noEditUntilProfileMerge')
             }

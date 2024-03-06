@@ -13,14 +13,14 @@ export type WalletProfileHeaderProps = {
    */
   profile: LoadingData<UnifiedProfile>
   /**
-   * Whether or not other profiles are attached to the current wallet. Only
-   * relevant when editable is true. This is used to prompt the user to merge
-   * their profiles, and it prevents editing until that is done.
+   * If set, show a tooltip that explains there are multiple profiles attached
+   * to the current wallet and prompt to merge them. The type determines the
+   * text to show based on the context.
    */
-  otherProfilesExist?: boolean
+  mergeProfileType?: 'add' | 'merge'
   /**
-   * Function to open merge profiles modal. This is only used if
-   * editable is true and otherProfilesExist is true.
+   * Function to open merge profiles modal. This is only used if editable is
+   * true and mergeProfileType is defined.
    */
   openMergeProfilesModal?: () => void
   /**

@@ -1,4 +1,4 @@
-import { Check, InfoOutlined } from '@mui/icons-material'
+import { Add, Check, Close, InfoOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -7,7 +7,7 @@ import { ProfileAddChainsForm, ProfileAddChainsProps } from '@dao-dao/types'
 
 import { Button } from '../buttons'
 import { ChainLabel } from '../chain'
-import { FormCheckbox } from '../inputs'
+import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo'
 import { ChainPickerPopup } from '../popup'
 
@@ -22,30 +22,81 @@ export const ProfileAddChains = ({
   size = 'default',
   onlySupported = false,
   autoAdd = false,
+  textPrompt = false,
   className,
 }: ProfileAddChainsProps) => {
   const { t } = useTranslation()
 
-  const { control, watch, setValue, handleSubmit } =
+  const { control, watch, handleSubmit } =
     useFormContext<ProfileAddChainsForm>()
   const chainsBeingAdded = watch('chains')
-  const { append: appendChain } = useFieldArray({
+  const { append: appendChain, remove: removeChain } = useFieldArray({
     control,
     name: 'chains',
   })
 
+  const formActive = chainsBeingAdded.length > 0
+
   return (
     <form
       className={clsx(
-        'flex flex-col',
+        'flex flex-col transition-all bg-transparent rounded-none',
         {
-          'gap-8': size === 'default',
           'gap-4': size === 'sm',
+          'gap-6': size === 'default',
         },
+        formActive && [
+          '!bg-background-tertiary !rounded-md w-full max-w-[14rem]',
+          {
+            'p-4': size === 'sm',
+            'p-6': size === 'default',
+          },
+        ],
         className
       )}
       onSubmit={onAddChains && handleSubmit(onAddChains)}
     >
+      {formActive && (
+        <div
+          className={clsx('animate-fade-in', {
+            'space-y-3': size === 'sm',
+            'space-y-4': size === 'default',
+          })}
+        >
+          {chainsBeingAdded.map(({ chainId, status }, index) => (
+            <div
+              key={chainId}
+              className={clsx('flex flex-row items-center justify-between', {
+                'gap-2': size === 'sm',
+                'gap-3': size === 'default',
+              })}
+            >
+              <ChainLabel chainId={chainId} />
+
+              {status === 'idle' ? (
+                <IconButton
+                  Icon={Close}
+                  onClick={() => removeChain(index)}
+                  size="xs"
+                  variant="ghost"
+                />
+              ) : status === 'loading' ? (
+                <div className="p-0.5">
+                  <Loader fill={false} size={16} />
+                </div>
+              ) : status === 'done' ? (
+                <Check
+                  className={clsx('!text-icon-brand', {
+                    '!h-4 !w-4': size === 'sm',
+                    '!h-5 !w-5': size === 'default',
+                  })}
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
+
       <ChainPickerPopup
         chains={{
           type: onlySupported ? 'supported' : 'configured',
@@ -64,7 +115,6 @@ export const ProfileAddChains = ({
 
           appendChain({
             chainId,
-            checked: true,
             status: 'idle',
           })
 
@@ -72,87 +122,65 @@ export const ProfileAddChains = ({
             handleSubmit(onAddChains)()
           }
         }}
-        trigger={{
-          type: 'button',
-          tooltip: promptTooltip,
-          props: {
-            className: 'self-start',
-            contentContainerClassName: clsx('!secondary-text', promptClassName),
-            variant: 'underline',
-            children: (
-              <>
-                {!!promptTooltip && (
-                  // Show info icon to indicate tooltip is available.
-                  <InfoOutlined className="!h-4 !w-4 !text-icon-secondary" />
-                )}
+        trigger={
+          chainsBeingAdded.length === 0
+            ? {
+                type: 'button',
+                tooltip: promptTooltip,
+                props: {
+                  className: 'self-end',
+                  contentContainerClassName: clsx(
+                    textPrompt && '!secondary-text',
+                    promptClassName
+                  ),
+                  children: (
+                    <>
+                      {!!promptTooltip && (
+                        // Show info icon to indicate tooltip is available.
+                        <InfoOutlined
+                          className={clsx(
+                            '!h-4 !w-4',
+                            textPrompt && '!text-icon-secondary'
+                          )}
+                        />
+                      )}
 
-                {prompt}
-              </>
-            ),
-            disabled,
-          },
-        }}
+                      {prompt}
+                    </>
+                  ),
+                  variant: textPrompt ? 'none' : 'brand',
+                  size: 'lg',
+                  disabled,
+                },
+              }
+            : {
+                type: 'icon_button',
+                props: {
+                  // Round to match checkbox.
+                  className: clsx('self-end !rounded', {
+                    '-mt-1': size === 'sm',
+                    '-mt-3': size === 'default',
+                  }),
+                  Icon: Add,
+                  variant: 'primary',
+                  size: 'xs',
+                  disabled: status !== 'idle',
+                },
+              }
+        }
       />
 
-      {chainsBeingAdded.length > 0 && (
-        <div
-          className={clsx(
-            'flex max-w-sm flex-col rounded-md bg-background-tertiary',
-            {
-              'gap-4 p-4': size === 'sm',
-              'gap-6 p-6': size === 'default',
-            }
-          )}
+      {formActive && (
+        <Button
+          center
+          className="animate-fade-in"
+          disabled={status === 'chains' || !onAddChains}
+          loading={status === 'registering'}
+          type="submit"
+          variant="brand"
         >
-          <div className="space-y-3">
-            {chainsBeingAdded.map(({ chainId, checked, status }, index) => (
-              <div
-                key={chainId}
-                className={clsx('flex cursor-pointer flex-row items-center', {
-                  'gap-3': size === 'sm',
-                  'gap-4': size === 'default',
-                })}
-                onClick={() => setValue(`chains.${index}.checked`, !checked)}
-              >
-                {status === 'idle' ? (
-                  <FormCheckbox
-                    fieldName={`chains.${index}.checked`}
-                    setValue={setValue}
-                    size={size}
-                    value={checked}
-                  />
-                ) : status === 'loading' ? (
-                  <div className="p-0.5">
-                    <Loader fill={false} size={size === 'sm' ? 16 : 20} />
-                  </div>
-                ) : status === 'done' ? (
-                  <Check
-                    className={clsx(
-                      '!text-icon-brand',
-                      size === 'sm' ? '!h-5 !w-5' : '!h-6 !w-6'
-                    )}
-                  />
-                ) : null}
-
-                <ChainLabel chainId={chainId} />
-              </div>
-            ))}
-          </div>
-
-          <Button
-            center
-            disabled={
-              status === 'chains' ||
-              !onAddChains ||
-              chainsBeingAdded.every((c) => !c.checked)
-            }
-            loading={status === 'registering'}
-            type="submit"
-            variant="brand"
-          >
-            {t('button.addChains')}
-          </Button>
-        </div>
+          {t('button.addChains')}
+        </Button>
       )}
     </form>
   )

@@ -1,5 +1,6 @@
 import { toHex } from '@cosmjs/encoding'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import isEqual from 'lodash.isequal'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForNone } from 'recoil'
 
@@ -8,6 +9,7 @@ import {
   AddChainsFunction,
   AddChainsStatus,
   LoadingData,
+  OtherProfile,
   PfpkProfileUpdate,
   PfpkProfileUpdateFunction,
   UnifiedProfile,
@@ -36,6 +38,10 @@ export type UseManageProfileOptions = {
 }
 
 export type UseManageProfileReturn = {
+  /**
+   * The current chain the profile is loading from for the connected wallet.
+   */
+  chainId: string
   /**
    * Whether or not the current wallet is connected. When an address is passed,
    * this will be false.
@@ -87,13 +93,33 @@ export type UseManageProfileReturn = {
     go: AddChainsFunction
   }
   /**
-   * Profiles on the other chains the current wallet is connected to.
+   * Data required to merge profiles.
    */
-  otherProfiles: {
-    chainId: string
-    address: string
-    profile: UnifiedProfile
-  }[]
+  merge: {
+    /**
+     * Profiles on all the chains the current wallet is connected to where the
+     * current chain wallet is not registered. These are all the profiles that
+     * should be merged into this one if chosen.
+     *
+     * This may include the current chain wallet if it has not yet been added to
+     * the current profile. This can occur because a public key resolves to a
+     * profile even when that public key hasn't been assigned to this particular
+     * chain. Thus, an address on a chain will resolve to a profile when
+     * searched by public key or address, regardless of if that public
+     * key/address has been added for that chain.
+     */
+    otherProfiles: OtherProfile[]
+    /**
+     * The merge options presented to the user based on all the profiles found.
+     * This combines the current profile and the other profiles, de-dupes them,
+     * and prioritizes based on a few heuristics, such as a name being set and
+     * the number of chains added to a profile.
+     *
+     * This is only populated if other profiles exist. Otherwise, this will be
+     * empty.
+     */
+    options: OtherProfile[]
+  }
 }
 
 /**
@@ -119,12 +145,12 @@ export const useManageProfile = ({
       chainId: walletChainId,
       address,
     }),
-    makeEmptyUnifiedProfile(address)
+    makeEmptyUnifiedProfile(walletChainId, address)
   )
 
   const refreshProfile = useRefreshProfile(address, profile)
 
-  const pfpkApi = useCfWorkerAuthPostRequest(PFPK_API_BASE, '', chainId)
+  const pfpkApi = useCfWorkerAuthPostRequest(PFPK_API_BASE, '', walletChainId)
 
   const ready =
     !profile.loading &&
@@ -343,17 +369,18 @@ export const useManageProfile = ({
     }
   }
 
-  // Find whichever other chain wallets are currently connected so we can check
-  // all the profiles attached to the current wallet. Different chains may use
+  // Find whichever chain wallets are currently connected so we can check all
+  // the profiles attached to the current wallet. Different chains may use
   // different public keys, so we need to check all of them in order to prompt
-  // to merge them.
+  // to merge them. Also check the same chain as the current chain wallet in
+  // case the current chain has not yet been added to the profile. Profiles
+  // resolve by public key / bech32 hash, which means a profile may resolve for
+  // an address even if the address has not yet been added. We should still
+  // prompt to add the current chain wallet to its profile if it's missing.
   const otherConnectedChainWallets = (
     currentChainWallet?.mainWallet.getChainWalletList() || []
   ).filter(
-    (chainWallet) =>
-      !!chainWallet.isWalletConnected &&
-      !!chainWallet.address &&
-      chainWallet.chainId !== walletChainId
+    (chainWallet) => !!chainWallet.isWalletConnected && !!chainWallet.address
   )
   const otherChainWalletProfiles = useCachedLoadingWithError(
     waitForNone(
@@ -366,36 +393,124 @@ export const useManageProfile = ({
     )
   )
 
-  // Get all profiles attached to this wallet on the other chains which do not
-  // have the current chain wallet registered.
-  const otherProfiles =
-    currentChainWallet &&
-    !profile.loading &&
-    !otherChainWalletProfiles.loading &&
-    !otherChainWalletProfiles.errored
-      ? otherChainWalletProfiles.data.flatMap((loadable, index) => {
-          const profile = loadable.valueMaybe()
-          const thisChainWallet = otherConnectedChainWallets[index]
-          if (
-            !profile ||
-            // Ignore if the current chain wallet is registered on this profile,
-            // indicating that these are the same profile.
-            profile.chains[currentChainWallet.chainId]?.address === address ||
-            // Type-check.
-            !thisChainWallet.address
-          ) {
-            return []
+  const merge: UseManageProfileReturn['merge'] = useMemo(() => {
+    // Get all profiles attached to this wallet which do not have the current
+    // chain wallet registered.
+    const otherProfiles =
+      currentChainWallet &&
+      !profile.loading &&
+      !otherChainWalletProfiles.loading &&
+      !otherChainWalletProfiles.errored
+        ? otherChainWalletProfiles.data.flatMap((loadable) => {
+            const chainProfile = loadable.valueMaybe()
+            if (
+              !chainProfile ||
+              // Ignore if the current chain wallet is registered on this
+              // chain's profile, indicating that these are the same profile.
+              chainProfile.chains[currentChainWallet.chainId]?.address ===
+                address ||
+              // Ignore if the current profile has registered this chain wallet,
+              // indicating that these are the same profile.
+              profile.data.chains[chainProfile.source.chainId]?.address ===
+                chainProfile.source.address
+            ) {
+              return []
+            }
+
+            return {
+              ...chainProfile.source,
+              profile: chainProfile,
+            }
+          })
+        : []
+
+    // Merge options are only needed if other profiles exist.
+    let options: OtherProfile[] = []
+    if (otherProfiles.length > 0) {
+      options = [
+        ...(profile.loading
+          ? []
+          : [
+              {
+                chainId: walletChainId,
+                address,
+                profile: profile.data,
+              },
+            ]),
+        ...otherProfiles,
+      ]
+        .sort((a, b) => {
+          // Priority:
+          // - name set
+          // - NFT set
+          // - number of chains
+          if (a.profile.name && !b.profile.name) {
+            return -1
+          } else if (!a.profile.name && b.profile.name) {
+            return 1
+          } else if (a.profile.nft && !b.profile.nft) {
+            return -1
+          } else if (!a.profile.nft && b.profile.nft) {
+            return 1
           }
 
-          return {
-            chainId: thisChainWallet.chainId,
-            address: thisChainWallet.address,
-            profile,
+          const aChains = Object.keys(a.profile.chains).length
+          const bChains = Object.keys(b.profile.chains).length
+          if (aChains > bChains) {
+            return -1
+          } else if (aChains < bChains) {
+            return 1
           }
+
+          // If all else equal, sort by nonce as a heuristic for which is older.
+          return b.profile.nonce - a.profile.nonce
         })
-      : []
+        // Remove duplicates by detecting which profiles have the same chains.
+        // Since they are all the same profile, we only need one.
+        .reduce((acc, otherProfile) => {
+          if (
+            !acc.some(
+              ({ chainId, address, profile }) =>
+                (chainId === otherProfile.chainId &&
+                  address === otherProfile.address) ||
+                // Make sure chains exist and this isn't an empty profile.
+                (Object.keys(profile.chains).length > 0 &&
+                  // Deep compare chains.
+                  isEqual(profile.chains, otherProfile.profile.chains))
+            )
+          ) {
+            acc.push(otherProfile)
+          }
+
+          return acc
+        }, [] as OtherProfile[])
+
+      // If any profiles in the list have been used before, remove any that
+      // haven't.
+      if (options.some(({ profile }) => profile.nonce > 0)) {
+        options = options.filter(({ profile }) => profile.nonce > 0)
+      }
+      // If no profile in the list has been used before, remove all but one
+      // since it doesn't matter which is chosen.
+      else {
+        options = options.slice(0, 1)
+      }
+    }
+
+    return {
+      otherProfiles,
+      options,
+    }
+  }, [
+    address,
+    currentChainWallet,
+    otherChainWalletProfiles,
+    profile,
+    walletChainId,
+  ])
 
   return {
+    chainId: walletChainId,
     // Connected is only relevant when using the currently connected wallet. If
     // an address is passed, set connected to false.
     connected: address ? false : isWalletConnected,
@@ -411,6 +526,6 @@ export const useManageProfile = ({
       status: addChainsStatus,
       go: addChains,
     },
-    otherProfiles,
+    merge,
   }
 }

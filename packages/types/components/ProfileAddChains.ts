@@ -51,6 +51,10 @@ export type ProfileAddChainsProps = {
    */
   autoAdd?: boolean
   /**
+   * Optionally use text button style for prompt. Defaults to `false`.
+   */
+  textPrompt?: boolean
+  /**
    * Optional container class name.
    */
   className?: string
@@ -59,7 +63,6 @@ export type ProfileAddChainsProps = {
 export type ProfileAddChainsForm = {
   chains: {
     chainId: string
-    checked: boolean
     /**
      * Status to display while submitting.
      */
