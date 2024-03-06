@@ -3,17 +3,17 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { genericTokenSelector, valenceAccountsSelector } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state'
 import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors'
 import {
   BalanceEmoji,
   ChainProvider,
   DaoSupportedChainPickerInput,
   useCachedLoading,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   AccountType,
+  ChainId,
   TokenPriceHistoryRange,
   TokenType,
   UseDecodedCosmosMsg,
@@ -36,7 +36,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
-  getValenceControllerAccount,
+  getAccount,
   loadableToLoadingData,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
@@ -322,41 +322,28 @@ export const makeConfigureRebalancerAction: ActionMaker<
     context,
   } = options
 
-  // Get account that can control valence accounts.
-  const valenceControllerAccount = getValenceControllerAccount(options)
-
   const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
-    // This action should not be allowed to be picked if there are no accounts
-    // that can control a Valence account, so this is just a type check.
-    if (!valenceControllerAccount) {
-      throw new Error('No valence controller account found.')
+    const account = getAccount({
+      accounts: context.accounts,
+      chainId: ChainId.NeutronMainnet,
+      types: [AccountType.Valence],
+    })
+
+    if (!account || account.type !== AccountType.Valence) {
+      return new Error(t('error.noValenceAccount'))
     }
 
-    const valenceAccountsLoading = useCachedLoadingWithError(
-      valenceAccountsSelector({
-        chainId: valenceControllerAccount.chainId,
-        address: valenceControllerAccount.address,
-      })
-    )
-    const valenceAccount =
-      valenceAccountsLoading.loading || valenceAccountsLoading.errored
-        ? undefined
-        : valenceAccountsLoading.data[0]
-
-    const { chainId } = valenceControllerAccount
-
-    const defaultBaseDenom =
-      mustGetSupportedChainConfig(chainId).valence?.rebalancer
-        .baseTokenAllowlist?.[0]
+    const defaultBaseDenom = mustGetSupportedChainConfig(account.chainId)
+      .valence?.rebalancer.baseTokenAllowlist?.[0]
     if (!defaultBaseDenom) {
       throw new Error('No default base denom found for rebalancer.')
     }
 
-    const rebalancerConfig = valenceAccount?.config.rebalancer?.config
+    const rebalancerConfig = account?.config?.rebalancer?.config
 
     return {
-      valenceAccount,
-      chainId: valenceAccount?.chainId || chainId,
+      valenceAccount: account,
+      chainId: account?.chainId || ChainId.NeutronMainnet,
       trustee: rebalancerConfig?.trustee || undefined,
       baseDenom: rebalancerConfig?.base_denom || defaultBaseDenom,
       tokens: rebalancerConfig?.targets.map(
