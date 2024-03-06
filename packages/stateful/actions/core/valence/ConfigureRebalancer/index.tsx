@@ -13,6 +13,7 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   TokenPriceHistoryRange,
   TokenType,
   UseDecodedCosmosMsg,
@@ -23,7 +24,6 @@ import {
   ActionKey,
   ActionMaker,
   UseDefaults,
-  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { ExecuteMsg as ValenceAccountExecuteMsg } from '@dao-dao/types/contracts/ValenceAccount'
@@ -33,7 +33,6 @@ import {
 } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 import {
   VALENCE_SUPPORTED_CHAINS,
-  actionContextSupportsValence,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
@@ -317,10 +316,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
 export const makeConfigureRebalancerAction: ActionMaker<
   ConfigureRebalancerData
 > = (options) => {
-  if (!actionContextSupportsValence(options)) {
-    return null
-  }
-
   const {
     t,
     chain: { chain_id: srcChainId },
@@ -484,25 +479,6 @@ export const makeConfigureRebalancerAction: ActionMaker<
       []
     )
 
-  // Disallow selection if there are no valence accounts.
-  const useHideFromPicker: UseHideFromPicker = () => {
-    const valenceAccountsLoading = useCachedLoadingWithError(
-      valenceControllerAccount
-        ? valenceAccountsSelector({
-            chainId: valenceControllerAccount.chainId,
-            address: valenceControllerAccount.address,
-          })
-        : undefined
-    )
-
-    return (
-      !valenceControllerAccount ||
-      valenceAccountsLoading.loading ||
-      valenceAccountsLoading.errored ||
-      valenceAccountsLoading.data.length === 0
-    )
-  }
-
   return {
     key: ActionKey.ConfigureRebalancer,
     Icon: BalanceEmoji,
@@ -515,6 +491,9 @@ export const makeConfigureRebalancerAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    useHideFromPicker,
+    // Hide if no Valence account created.
+    hideFromPicker: !context.accounts.some(
+      ({ type }) => type === AccountType.Valence
+    ),
   }
 }

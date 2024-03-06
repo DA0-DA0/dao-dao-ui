@@ -16,7 +16,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / ConfigureRebalancer',
+    'DAO DAO / packages / stateful / actions / core / valence / ConfigureRebalancer',
   component: ConfigureRebalancerComponent,
   decorators: [
     makeReactHookFormDecorator<ConfigureRebalancerData>({

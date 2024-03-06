@@ -9,7 +9,7 @@ import {
   DaoSupportedChainPickerInput,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { Coin, TokenType } from '@dao-dao/types'
+import { AccountType, Coin, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -22,7 +22,6 @@ import {
 import { InstantiateMsg as ValenceAccountInstantiateMsg } from '@dao-dao/types/contracts/ValenceAccount'
 import {
   VALENCE_SUPPORTED_CHAINS,
-  actionContextSupportsValence,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -96,10 +95,6 @@ const useDefaults: UseDefaults<CreateValenceAccountData> = () => ({
 export const makeCreateValenceAccountAction: ActionMaker<
   CreateValenceAccountData
 > = (options) => {
-  if (!actionContextSupportsValence(options)) {
-    return null
-  }
-
   const {
     t,
     address,
@@ -241,5 +236,9 @@ export const makeCreateValenceAccountAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    // Prevent creating more than one valence account.
+    hideFromPicker: context.accounts.some(
+      ({ type }) => type === AccountType.Valence
+    ),
   }
 }
