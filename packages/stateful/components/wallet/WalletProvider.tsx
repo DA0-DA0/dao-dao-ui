@@ -10,11 +10,14 @@ import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
 import { wallets as ledgerWallets } from '@cosmos-kit/ledger'
+import { wallets as ninjiWallets } from '@cosmos-kit/ninji'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
+import { wallets as owalletWallets } from '@cosmos-kit/owallet'
 import { ChainProvider } from '@cosmos-kit/react-lite'
 import { wallets as shellWallets } from '@cosmos-kit/shell'
 import { wallets as stationWallets } from '@cosmos-kit/station'
+import { wallets as tailwindWallets } from '@cosmos-kit/tailwind'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
@@ -143,6 +146,9 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       ...cosmosExtensionMetamaskWallets,
       ...exodusWallets,
       ...ledgerWallets,
+      ...tailwindWallets,
+      ...ninjiWallets,
+      ...owalletWallets,
     ].sort((a, b) =>
       a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
     ),
@@ -217,7 +223,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     ) {
       reconnectingRef.current = true
       walletRepoRef.current
-        .connect(previousWalletName)
+        .connect(previousWalletName, false)
         .catch(console.error)
         .finally(() => {
           reconnectingRef.current = false
@@ -240,7 +246,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     const refresh = async () => {
       // Ensure connection still alive, and disconnect on failure.
       try {
-        await walletRepo.connect(wallet.name)
+        await walletRepo.connect(wallet.name, false)
       } catch {
         await walletRepo.disconnect(wallet.name, true).catch(console.error)
       }
@@ -265,7 +271,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
       return
     }
 
-    walletRepo.connect(keplrExtensionWallets[0].walletName)
+    walletRepo.connect(keplrExtensionWallets[0].walletName, false)
   }, [isKeplrMobileWeb, isWalletDisconnected, walletRepo])
 
   return <>{children}</>

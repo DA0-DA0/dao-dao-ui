@@ -40,7 +40,7 @@ export const WalletChainSwitcher = ({
           .find(
             (wallet) => wallet.chainId === chainId && !wallet.isWalletConnected
           )
-          ?.connect()
+          ?.connect(false)
           .catch(console.error)
       }}
       selectedChainId={chainId}
