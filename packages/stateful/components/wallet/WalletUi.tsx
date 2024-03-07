@@ -160,9 +160,9 @@ export const WalletUi = (props: WalletModalProps) => {
                 ...(mainWalletRepo.isWalletConnected ||
                 mainWalletChainId === wallet.chainId
                   ? []
-                  : [mainWalletRepo.connect(wallet.walletName)]),
+                  : [mainWalletRepo.connect(wallet.walletName, false)]),
                 // Connect selected wallet for chain.
-                wallet.connect(),
+                wallet.connect(false),
               ])
             } catch (err) {
               console.error(err)

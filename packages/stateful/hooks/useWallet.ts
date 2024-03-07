@@ -58,7 +58,7 @@ export const useWallet = ({
       : currentChain || maybeGetChainForChainId(walletChainId)) ||
     getSupportedChains()[0].chain
 
-  const _walletChain = useChain(chain.chain_name)
+  const _walletChain = useChain(chain.chain_name, false)
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
   const walletChainRef = useRef(_walletChain)
@@ -88,7 +88,7 @@ export const useWallet = ({
   const connect = useCallback(() => {
     if (mainWalletConnected && mainWalletRef.current) {
       return walletChainRef.current.walletRepo
-        .connect(mainWalletRef.current.walletName)
+        .connect(mainWalletRef.current.walletName, false)
         .catch(console.error)
     } else {
       return walletChainRef.current.connect()

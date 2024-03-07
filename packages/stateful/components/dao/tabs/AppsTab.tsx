@@ -290,7 +290,7 @@ export const AppsTab = () => {
     if (wallet && !wallet.isWalletConnected && !connectingRef.current) {
       connectingRef.current = true
       try {
-        wallet.connect()
+        wallet.connect(false)
       } finally {
         connectingRef.current = false
       }
