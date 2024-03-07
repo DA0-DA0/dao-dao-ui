@@ -31,6 +31,7 @@ export * as NeutronCwdSubdaoPreProposeSingleSelectors from './NeutronCwdSubdaoPr
 export * as NeutronCwdSubdaoTimelockSingleSelectors from './NeutronCwdSubdaoTimelockSingle'
 export * as NeutronVaultSelectors from './NeutronVault'
 export * as NeutronVotingRegistrySelectors from './NeutronVotingRegistry'
+export * as OraichainCw20StakingSelectors from './OraichainCw20Staking'
 export * as PolytoneListenerSelectors from './PolytoneListener'
 export * as PolytoneNoteSelectors from './PolytoneNote'
 export * as PolytoneProxySelectors from './PolytoneProxy'

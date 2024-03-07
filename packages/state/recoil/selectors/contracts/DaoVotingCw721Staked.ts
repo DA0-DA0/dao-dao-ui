@@ -176,7 +176,9 @@ export const topStakersSelector = selectorFamily<
   get:
     ({ limit, ...queryClientParams }) =>
     ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(undefined))
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
       return (
         get(

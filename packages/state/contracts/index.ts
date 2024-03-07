@@ -71,6 +71,10 @@ export {
   NeutronVotingRegistryQueryClient,
 } from './NeutronVotingRegistry'
 export {
+  OraichainCw20StakingClient,
+  OraichainCw20StakingQueryClient,
+} from './OraichainCw20Staking'
+export {
   NeutronCwdPreProposeSingleOverruleClient,
   NeutronCwdPreProposeSingleOverruleQueryClient,
 } from './NeutronCwdPreProposeSingleOverrule'

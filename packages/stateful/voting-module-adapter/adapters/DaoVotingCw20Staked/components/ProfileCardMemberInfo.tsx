@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
+  Cw20StakeSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
@@ -27,6 +28,7 @@ import {
 
 import {
   Cw20StakeHooks,
+  OraichainCw20StakingHooks,
   useAwaitNextBlock,
   useWallet,
   useWalletBalances,
@@ -72,8 +74,35 @@ export const ProfileCardMemberInfo = ({
     fetchTotalStakedValue: true,
   })
 
+  const isOraichainCustomStaking = useRecoilValue(
+    Cw20StakeSelectors.isOraichainProxySnapshotContractSelector({
+      chainId,
+      contractAddress: stakingContractAddress,
+    })
+  )
+
+  const oraichainCw20StakingConfig = useRecoilValue(
+    isOraichainCustomStaking
+      ? Cw20StakeSelectors.oraichainProxySnapshotConfigSelector({
+          chainId,
+          contractAddress: stakingContractAddress,
+        })
+      : constSelector(undefined)
+  )
+
+  // Support Oraichain custom cw20-staking contract.
+  const stakingContractToExecute = isOraichainCustomStaking
+    ? // If Oraichain proxy snapshot, fallback to empty string so it errors if
+      // trying to stake anything. This should never happen.
+      oraichainCw20StakingConfig?.staking_contract || ''
+    : stakingContractAddress
+
   const doClaim = Cw20StakeHooks.useClaim({
-    contractAddress: stakingContractAddress,
+    contractAddress: stakingContractToExecute,
+    sender: walletAddress ?? '',
+  })
+  const doOraichainUnbond = OraichainCw20StakingHooks.useUnbond({
+    contractAddress: stakingContractToExecute,
     sender: walletAddress ?? '',
   })
 
@@ -88,7 +117,15 @@ export const ProfileCardMemberInfo = ({
 
     setClaimingLoading(true)
     try {
-      await doClaim()
+      if (isOraichainCustomStaking) {
+        // Oraichain claiming is an unbond with zero amount.
+        await doOraichainUnbond({
+          amount: '0',
+          stakingToken: governanceToken.denomOrAddress,
+        })
+      } else {
+        await doClaim()
+      }
 
       // New balances will not appear until the next block.
       await awaitNextBlock()
@@ -112,16 +149,19 @@ export const ProfileCardMemberInfo = ({
       setClaimingLoading(false)
     }
   }, [
-    awaitNextBlock,
     isWalletConnected,
-    doClaim,
-    governanceToken.decimals,
-    governanceToken.symbol,
-    refreshBalances,
-    refreshClaims,
-    refreshTotals,
     sumClaimsAvailable,
     t,
+    isOraichainCustomStaking,
+    awaitNextBlock,
+    refreshBalances,
+    refreshTotals,
+    refreshClaims,
+    governanceToken.decimals,
+    governanceToken.symbol,
+    governanceToken.denomOrAddress,
+    doOraichainUnbond,
+    doClaim,
   ])
 
   const blockHeightLoadable = useCachedLoadable(

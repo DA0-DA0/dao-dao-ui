@@ -6,6 +6,7 @@ import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
+  waitForAll,
 } from 'recoil'
 
 import {
@@ -22,8 +23,10 @@ import {
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  encodeMessageAsBase64,
   processError,
 } from '@dao-dao/utils'
 
@@ -31,6 +34,7 @@ import { SuspenseLoader } from '../../../../components'
 import {
   Cw20BaseHooks,
   Cw20StakeHooks,
+  OraichainCw20StakingHooks,
   useAwaitNextBlock,
   useWallet,
   useWalletBalances,
@@ -77,13 +81,41 @@ const InnerStakingModal = ({
     fetchWalletStakedValue: true,
   })
 
-  const totalStakedBalance = useRecoilValue(
-    Cw20StakeSelectors.totalStakedAtHeightSelector({
-      chainId,
-      contractAddress: stakingContractAddress,
-      params: [{}],
-    })
+  const [isOraichainCustomStaking, totalStakedBalance, totalValue] =
+    useRecoilValue(
+      waitForAll([
+        Cw20StakeSelectors.isOraichainProxySnapshotContractSelector({
+          chainId,
+          contractAddress: stakingContractAddress,
+        }),
+        Cw20StakeSelectors.totalStakedAtHeightSelector({
+          chainId,
+          contractAddress: stakingContractAddress,
+          params: [{}],
+        }),
+        Cw20StakeSelectors.totalValueSelector({
+          chainId,
+          contractAddress: stakingContractAddress,
+          params: [],
+        }),
+      ])
+    )
+
+  const oraichainCw20StakingConfig = useRecoilValue(
+    isOraichainCustomStaking
+      ? Cw20StakeSelectors.oraichainProxySnapshotConfigSelector({
+          chainId,
+          contractAddress: stakingContractAddress,
+        })
+      : constSelector(undefined)
   )
+
+  // Support Oraichain custom cw20-staking contract.
+  const stakingContractToExecute = isOraichainCustomStaking
+    ? // If Oraichain proxy snapshot, fallback to empty string so it errors if
+      // trying to stake anything. This should never happen.
+      oraichainCw20StakingConfig?.staking_contract || ''
+    : stakingContractAddress
 
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
@@ -100,26 +132,22 @@ const InnerStakingModal = ({
       ? Number(walletStakedBalanceLoadable.contents.balance)
       : undefined
 
-  const totalValue = useRecoilValue(
-    Cw20StakeSelectors.totalValueSelector({
-      chainId,
-      contractAddress: stakingContractAddress,
-      params: [],
-    })
-  )
-
   const [amount, setAmount] = useState(0)
 
-  const doStake = Cw20BaseHooks.useSend({
+  const doCw20SendAndExecute = Cw20BaseHooks.useSend({
     contractAddress: governanceToken.denomOrAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = Cw20StakeHooks.useUnstake({
-    contractAddress: stakingContractAddress,
+    contractAddress: stakingContractToExecute,
+    sender: walletAddress ?? '',
+  })
+  const doOraichainUnbond = OraichainCw20StakingHooks.useUnbond({
+    contractAddress: stakingContractToExecute,
     sender: walletAddress ?? '',
   })
   const doClaim = Cw20StakeHooks.useClaim({
-    contractAddress: stakingContractAddress,
+    contractAddress: stakingContractToExecute,
     sender: walletAddress ?? '',
   })
 
@@ -146,13 +174,15 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
-          await doStake({
+          await doCw20SendAndExecute({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               governanceToken.decimals
             ).toString(),
-            contract: stakingContractAddress,
-            msg: btoa('{"stake": {}}'),
+            contract: stakingContractToExecute,
+            msg: encodeMessageAsBase64({
+              [isOraichainCustomStaking ? 'bond' : 'stake']: {},
+            }),
           })
 
           // New balances will not appear until the next block.
@@ -218,12 +248,20 @@ const InnerStakingModal = ({
         }
 
         try {
-          await doUnstake({
-            amount: convertDenomToMicroDenomWithDecimals(
-              amountToUnstake,
-              governanceToken.decimals
-            ).toString(),
-          })
+          const convertedAmount = convertDenomToMicroDenomStringWithDecimals(
+            amountToUnstake,
+            governanceToken.decimals
+          )
+          if (isOraichainCustomStaking) {
+            await doOraichainUnbond({
+              amount: convertedAmount,
+              stakingToken: governanceToken.denomOrAddress,
+            })
+          } else {
+            await doUnstake({
+              amount: convertedAmount,
+            })
+          }
 
           // New balances will not appear until the next block.
           await awaitNextBlock()
@@ -258,7 +296,15 @@ const InnerStakingModal = ({
 
         setStakingLoading(true)
         try {
-          await doClaim()
+          if (isOraichainCustomStaking) {
+            // Oraichain claiming is an unbond with zero amount.
+            await doOraichainUnbond({
+              amount: '0',
+              stakingToken: governanceToken.denomOrAddress,
+            })
+          } else {
+            await doClaim()
+          }
 
           // New balances will not appear until the next block.
           await awaitNextBlock()

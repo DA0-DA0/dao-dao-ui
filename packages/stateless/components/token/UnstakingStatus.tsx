@@ -22,7 +22,7 @@ export const UnstakingStatus = ({ status }: UnstakingStatusProps) => {
       Icon={Icon}
       iconClassName={clsx('!h-[19px] !w-[19px]', iconClassName)}
       label={t(`info.unstakingStatus.${status}`)}
-      labelClassName={clsx('w-10', textClassName)}
+      labelClassName={textClassName}
     />
   )
 }
