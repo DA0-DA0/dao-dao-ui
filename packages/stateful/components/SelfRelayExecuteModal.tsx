@@ -91,6 +91,7 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.MigalooMainnet]: 2000000,
   [ChainId.KujiraMainnet]: 100000,
   [ChainId.OraichainMainnet]: 100000,
+  [ChainId.ChihuahuaMainnet]: 1000000000,
 }
 
 type Relayer = {
@@ -132,7 +133,7 @@ export const SelfRelayExecuteModal = ({
   const chainIds = [currentChainId, ..._chainIds]
   const chains = uniq(chainIds).map(getChainForChainId)
 
-  const { isWalletConnected, chainWallet } = useWallet()
+  const { isWalletConnected, chainWallet, connect } = useWallet()
   const chainWalletList = chainWallet?.mainWallet?.getChainWalletList(false)
   const chainWallets = chainIds.map((chainId) =>
     chainWalletList?.find((cw) => cw.chainId === chainId)
@@ -284,7 +285,9 @@ export const SelfRelayExecuteModal = ({
       toast.error(
         t('error.unsupportedChains', {
           count: unsupportedChains.length,
-          chains: unsupportedChains.join(', '),
+          chains: unsupportedChains
+            .map(({ chain_id }) => getDisplayNameForChainId(chain_id))
+            .join(', '),
         })
       )
       return
@@ -974,7 +977,7 @@ export const SelfRelayExecuteModal = ({
                 <Button
                   className="self-end"
                   loading={status === RelayStatus.Initializing}
-                  onClick={setupRelayer}
+                  onClick={isWalletConnected ? setupRelayer : connect}
                 >
                   {isWalletConnected ? t('button.begin') : t('button.connect')}
                 </Button>
