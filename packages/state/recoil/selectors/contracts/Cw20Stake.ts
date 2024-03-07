@@ -2,6 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import {
+  Claim,
   ClaimsResponse,
   GetConfigResponse,
   GetHooksResponse,
@@ -11,6 +12,8 @@ import {
   TotalStakedAtHeightResponse,
   TotalValueResponse,
 } from '@dao-dao/types/contracts/Cw20Stake'
+import { ConfigResponse as OraichainCw20StakingProxySnapshotConfigResponse } from '@dao-dao/types/contracts/OraichainCw20StakingProxySnapshot'
+import { ContractName } from '@dao-dao/utils'
 
 import {
   Cw20StakeClient,
@@ -22,9 +25,9 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { isContractSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
-import { objectMatchesStructure } from '@dao-dao/utils'
-import { toUtf8 } from '@cosmjs/encoding'
+import { allLockInfosSelector } from './OraichainCw20Staking'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -74,26 +77,33 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
+      // If Oraichain proxy, get staking token and pass to indexer query.
+      let oraichainStakingToken: string | undefined
       const isOraichainProxy = get(
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
-      if (!isOraichainProxy) {
-        const balance = get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'cw20Stake/stakedBalance',
-            args: {
-              address: params[0].address,
-            },
-            block: params[0].height ? { height: params[0].height } : undefined,
-            id,
-          })
-        )
-        if (balance && !isNaN(balance)) {
-          return {
-            balance,
-            height: params[0].height,
-          }
+      if (isOraichainProxy) {
+        oraichainStakingToken = get(
+          oraichainProxySnapshotConfigSelector(queryClientParams)
+        ).asset_key
+      }
+
+      const balance = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formula: 'cw20Stake/stakedBalance',
+          args: {
+            address: params[0].address,
+            oraichainStakingToken,
+          },
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+        })
+      )
+      if (balance && !isNaN(balance)) {
+        return {
+          balance,
+          height: params[0].height,
         }
       }
 
@@ -114,23 +124,32 @@ export const totalStakedAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
+      // If Oraichain proxy, get staking token and pass to indexer query.
+      let oraichainStakingToken: string | undefined
       const isOraichainProxy = get(
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
-      if (!isOraichainProxy) {
-        const total = get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'cw20Stake/totalStaked',
-            block: params[0].height ? { height: params[0].height } : undefined,
-            id,
-          })
-        )
-        if (total && !isNaN(total)) {
-          return {
-            total,
-            height: params[0].height,
-          }
+      if (isOraichainProxy) {
+        oraichainStakingToken = get(
+          oraichainProxySnapshotConfigSelector(queryClientParams)
+        ).asset_key
+      }
+
+      const total = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formula: 'cw20Stake/totalStaked',
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+          args: {
+            oraichainStakingToken,
+          },
+        })
+      )
+      if (total && !isNaN(total)) {
+        return {
+          total,
+          height: params[0].height,
         }
       }
 
@@ -151,6 +170,7 @@ export const stakedValueSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
+      // Oraichain proxy handles passing the query through.
       const isOraichainProxy = get(
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
@@ -195,6 +215,7 @@ export const totalValueSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
+      // This query does not exist on Oraichain's proxy-snapshot.
       const isOraichainProxy = get(
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
@@ -240,10 +261,7 @@ export const getConfigSelector = selectorFamily<
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
 
-      // The Oraichain cw20-staking proxy-snapshot contract is used as the
-      // staking contract for their custom staking solution. If this is the
-      // case, ignore the indexer response and use the contract query since it
-      // executes a passthrough query and returns the correct config.
+      // Oraichain proxy handles passing the query through.
       if (!isOraichainProxy) {
         const config = get(
           queryContractIndexerSelector({
@@ -274,12 +292,34 @@ export const claimsSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshClaimsIdAtom(params[0].address))
 
-      // Oraichain has their own interface.
+      // Convert Oraichain lock infos to claims.
       const isOraichainProxy = get(
         isOraichainProxySnapshotContractSelector(queryClientParams)
       )
       if (isOraichainProxy) {
-        return { claims: [] }
+        const { asset_key, staking_contract } = get(
+          oraichainProxySnapshotConfigSelector(queryClientParams)
+        )
+        const { lock_infos } = get(
+          allLockInfosSelector({
+            chainId: queryClientParams.chainId,
+            contractAddress: staking_contract,
+            stakerAddr: params[0].address,
+            stakingToken: asset_key,
+          })
+        )
+
+        return {
+          claims: lock_infos.map(
+            ({ amount, unlock_time }): Claim => ({
+              amount,
+              release_at: {
+                // Convert seconds to nanoseconds.
+                at_time: (BigInt(unlock_time) * BigInt(1e9)).toString(),
+              },
+            })
+          ),
+        }
       }
 
       const claims = get(
@@ -361,22 +401,37 @@ export const topStakersSelector = selectorFamily<
   key: 'cw20StakeTopStakers',
   get:
     ({ limit, ...queryClientParams }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'cw20Stake/topStakers',
-          args: {
-            limit,
-          },
-        })
-      ) ?? undefined,
+    ({ get }) => {
+      // If Oraichain proxy, get staking token and pass to indexer query.
+      let oraichainStakingToken: string | undefined
+      const isOraichainProxy = get(
+        isOraichainProxySnapshotContractSelector(queryClientParams)
+      )
+      if (isOraichainProxy) {
+        oraichainStakingToken = get(
+          oraichainProxySnapshotConfigSelector(queryClientParams)
+        ).asset_key
+      }
+
+      return (
+        get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula: 'cw20Stake/topStakers',
+            args: {
+              limit,
+              oraichainStakingToken,
+            },
+          })
+        ) ?? undefined
+      )
+    },
 })
 
 /**
- * The Oraichain cw20-staking proxy-snapshot contract is used as the staking
+ * The Oraichain cw20-staking-proxy-snapshot contract is used as the staking
  * contract for their custom staking solution. This selector returns whether or
- * not this is a proxy-snapshot contract.
+ * not this is a cw20-staking-proxy-snapshot contract.
  */
 export const isOraichainProxySnapshotContractSelector = selectorFamily<
   boolean,
@@ -385,33 +440,52 @@ export const isOraichainProxySnapshotContractSelector = selectorFamily<
   key: 'cw20StakeIsOraichainProxySnapshotContract',
   get:
     (queryClientParams) =>
+    ({ get }) =>
+      get(
+        isContractSelector({
+          ...queryClientParams,
+          name: ContractName.OraichainCw20StakingProxySnapshot,
+        })
+      ),
+})
+
+/**
+ * Get config for Oraichain's cw20-staking-proxy-snapshot contract.
+ */
+export const oraichainProxySnapshotConfigSelector = selectorFamily<
+  OraichainCw20StakingProxySnapshotConfigResponse,
+  QueryClientParams
+>({
+  key: 'cw20StakeOraichainProxySnapshotConfig',
+  get:
+    (queryClientParams) =>
     async ({ get }) => {
+      if (!get(isOraichainProxySnapshotContractSelector(queryClientParams))) {
+        throw new Error(
+          'Contract is not an Oraichain cw20-staking proxy-snapshot contract'
+        )
+      }
+
       let config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'cw20Stake/config',
+          formula: 'item',
+          args: {
+            key: 'config',
+          },
         })
       )
-
-      if (!config) {
-        // If indexer fails, fallback to querying chain.
-        const client = get(
-          cosmWasmClientForChainSelector(queryClientParams.chainId)
-        )
-        config = await client.queryContractRaw(
-          queryClientParams.contractAddress,
-          toUtf8('config')
-        )
+      if (config) {
+        return config
       }
 
-      if (!config) {
-        throw new Error('No config found')
-      }
-
-      return objectMatchesStructure(config, {
-        owner: {},
-        asset_key: {},
-        staking_contract: {},
-      })
+      // If indexer fails, fallback to querying chain.
+      const client = get(
+        cosmWasmClientForChainSelector(queryClientParams.chainId)
+      )
+      return await client.queryContractSmart(
+        queryClientParams.contractAddress,
+        { config: {} }
+      )
     },
 })

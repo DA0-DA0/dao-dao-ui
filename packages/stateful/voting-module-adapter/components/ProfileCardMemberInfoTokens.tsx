@@ -266,8 +266,8 @@ export const ProfileCardMemberInfoTokens = ({
             onClick={onClaim}
             size="lg"
             variant={
-              // If stake button below is primary, don't make this primary.
-              canBeMemberButIsnt ? 'secondary' : 'primary'
+              // If stake button below is brand, don't make this brand.
+              canBeMemberButIsnt ? 'secondary' : 'brand'
             }
           >
             {loadingTokens.loading || !onlyOneToken
@@ -287,7 +287,7 @@ export const ProfileCardMemberInfoTokens = ({
           loading={stakingLoading}
           onClick={onStake}
           size="lg"
-          variant={canBeMemberButIsnt ? 'primary' : 'secondary'}
+          variant={canBeMemberButIsnt ? 'brand' : 'secondary'}
         >
           {loadingTokens.loading || !hasStaked
             ? onlyOneToken
@@ -301,6 +301,7 @@ export const ProfileCardMemberInfoTokens = ({
 
       {!hideUnstaking && (
         <UnstakingModal
+          claimingLoading={claimingLoading}
           onClaim={onClaim}
           onClose={() => setShowUnstakingTokens(false)}
           refresh={refreshUnstakingTasks}
