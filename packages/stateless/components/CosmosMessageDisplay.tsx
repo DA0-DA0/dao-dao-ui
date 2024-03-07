@@ -3,9 +3,16 @@ import 'codemirror/theme/material-ocean.css'
 import 'codemirror/theme/material.css'
 
 import clsx from 'clsx'
-import { UnControlled as CodeMirror } from 'react-codemirror2'
+import dynamic from 'next/dynamic'
 
 import { Theme, useThemeContext } from '../theme'
+
+const CodeMirror = dynamic(
+  () => import('react-codemirror2').then((module) => module.UnControlled),
+  {
+    ssr: false,
+  }
+)
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {

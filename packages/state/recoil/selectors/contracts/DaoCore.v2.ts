@@ -1,5 +1,6 @@
 import {
   constSelector,
+  noWait,
   selectorFamily,
   waitForAll,
   waitForAllSettled,
@@ -70,6 +71,7 @@ import {
 } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 import { genericTokenSelector } from '../token'
+import { walletCw20DaoStakedBalancesSelector } from '../wallet'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -751,6 +753,38 @@ export const nativeCw20TokensWithBalancesSelector = selectorFamily<
           }
         }
       }
+
+      // Get the cw20 staked balances (list is summed by cw20 address)
+      const stakedBalances =
+        get(
+          noWait(
+            walletCw20DaoStakedBalancesSelector({
+              walletAddress: queryClientParams.contractAddress,
+              ...queryClientParams,
+            })
+          )
+        ).valueMaybe() || []
+
+      // Add balances to stakedBalances
+      const stakedBalancesMap = stakedBalances.reduce(
+        (acc, { addr, balance }) => {
+          acc.set(addr, BigInt(balance))
+          return acc
+        },
+        new Map<string, bigint>()
+      )
+      balances.forEach(({ addr, balance }) => {
+        stakedBalancesMap.set(
+          addr,
+          (stakedBalancesMap.get(addr) || BigInt(0)) + BigInt(balance)
+        )
+      })
+
+      // Update the balances from the sum map
+      balances = Array.from(stakedBalancesMap).map(([addr, balance]) => ({
+        addr,
+        balance: balance.toString(),
+      }))
 
       //! Add governance token balance if exists but missing from list.
       if (
