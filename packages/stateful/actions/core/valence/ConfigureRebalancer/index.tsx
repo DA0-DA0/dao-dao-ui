@@ -240,13 +240,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     }
   }
 
-  const maxLimitBps =
-    'max_limit' in data
-      ? data.max_limit
-      : 'max_limit_bps' in data
-      ? data.max_limit_bps
-      : undefined
-
   return {
     match: true,
     data: {
@@ -277,7 +270,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
         ki: Number(data.pid?.i || -1),
         kd: Number(data.pid?.d || -1),
       },
-      maxLimit: typeof maxLimitBps === 'number' ? maxLimitBps / 100 : undefined,
+      maxLimit:
+        typeof data.max_limit_bps === 'number'
+          ? data.max_limit_bps / 100
+          : undefined,
       minBalance:
         minBalanceTarget?.min_balance && !minBalanceToken.loading
           ? {
@@ -409,7 +405,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
                       ...({
                         base_denom: baseDenom,
                         // BPS
-                        max_limit: maxLimit && maxLimit * 100,
+                        max_limit_bps: maxLimit && maxLimit * 100,
                         pid: {
                           p: pid.kp.toString(),
                           i: pid.ki.toString(),
@@ -425,7 +421,6 @@ export const makeConfigureRebalancerAction: ActionMaker<
                           // BPS
                           bps: percent * 100,
                         })),
-                        trustee: trustee || null,
                       } as Pick<
                         RebalancerData,
                         keyof RebalancerData & keyof RebalancerUpdateData
@@ -433,19 +428,11 @@ export const makeConfigureRebalancerAction: ActionMaker<
                       // Differences between data and update.
                       ...(valenceAccount.config.rebalancer
                         ? ({
-                            // BPS
-                            max_limit: maxLimit && maxLimit * 100,
-                          } as Omit<
-                            RebalancerUpdateData,
-                            keyof RebalancerData & keyof RebalancerUpdateData
-                          >)
+                            trustee: trustee ? { set: trustee } : 'clear',
+                          } as Partial<RebalancerUpdateData>)
                         : ({
-                            // BPS
-                            max_limit_bps: maxLimit && maxLimit * 100,
-                          } as Omit<
-                            RebalancerData,
-                            keyof RebalancerData & keyof RebalancerUpdateData
-                          >)),
+                            trustee: trustee || null,
+                          } as Partial<RebalancerData>)),
                     }),
                   },
                 } as ValenceAccountExecuteMsg,
