@@ -21,6 +21,7 @@ import {
 } from '../../../contracts/Cw20Stake'
 import {
   refreshClaimsIdAtom,
+  refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
@@ -402,6 +403,10 @@ export const topStakersSelector = selectorFamily<
   get:
     ({ limit, ...queryClientParams }) =>
     ({ get }) => {
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+
       // If Oraichain proxy, get staking token and pass to indexer query.
       let oraichainStakingToken: string | undefined
       const isOraichainProxy = get(
@@ -422,6 +427,7 @@ export const topStakersSelector = selectorFamily<
               limit,
               oraichainStakingToken,
             },
+            id,
           })
         ) ?? undefined
       )

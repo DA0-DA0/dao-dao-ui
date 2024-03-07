@@ -239,14 +239,22 @@ export const topStakersSelector = selectorFamily<
   key: 'daoVotingCw20StakedTopStakers',
   get:
     ({ limit, ...queryClientParams }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoVotingCw20Staked/topStakers',
-          args: {
-            limit,
-          },
-        })
-      ) ?? undefined,
+    ({ get }) => {
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+
+      return (
+        get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula: 'daoVotingCw20Staked/topStakers',
+            args: {
+              limit,
+            },
+            id,
+          })
+        ) ?? undefined
+      )
+    },
 })
