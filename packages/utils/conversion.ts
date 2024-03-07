@@ -364,8 +364,8 @@ export const toAccessibleImageUrl = (
   // of our NextJS allowed image sources. Thus proxy it through a whitelisted
   // domain. This only needs to be used for images that are displayed in the
   // NextJS Image component, which is why it is optional and off by default.
-  if (proxy && !url.includes('ipfs')) {
-    url = `https://img-proxy.ekez.workers.dev/${url}`
+  if (proxy && url.startsWith('http')) {
+    url = `https://img-proxy.daodao.zone/?url=${encodeURIComponent(url)}`
   }
 
   return url
