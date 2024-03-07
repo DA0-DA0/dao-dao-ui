@@ -17,8 +17,9 @@ const Template: ComponentStory<typeof ProfileWallet<TokenCardProps>> = (
 
 export const Default = Template.bind({})
 Default.args = {
-  chains: {
+  accounts: {
     loading: false,
+    errored: false,
     data: [],
   },
   tokens: {
@@ -37,8 +38,9 @@ Default.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  chains: {
+  accounts: {
     loading: true,
+    errored: false,
   },
   tokens: {
     loading: true,

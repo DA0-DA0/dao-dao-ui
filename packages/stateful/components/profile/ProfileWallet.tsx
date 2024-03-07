@@ -1,5 +1,6 @@
 import { constSelector, waitForAny } from 'recoil'
 
+import { accountsSelector } from '@dao-dao/state/recoil'
 import {
   ProfileWallet as StatelessProfileWallet,
   useCachedLoadingWithError,
@@ -15,6 +16,19 @@ import { ProfileAddChains } from './ProfileAddChains'
 
 export const ProfileWallet = () => {
   const { chains, uniquePublicKeys } = useProfile()
+  const accounts = useCachedLoadingWithError(
+    chains.loading
+      ? undefined
+      : waitForAny(
+          chains.data.map(({ chainId, address }) =>
+            accountsSelector({
+              chainId,
+              address,
+            })
+          )
+        ),
+    (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
+  )
 
   const tokens = useCachedLoadingWithError(
     chains.loading
@@ -49,7 +63,7 @@ export const ProfileWallet = () => {
     <StatelessProfileWallet
       ProfileAddChains={ProfileAddChains}
       TokenLine={WalletTokenLine}
-      chains={chains}
+      accounts={accounts}
       hiddenTokens={hiddenTokens}
       tokens={tokens}
     />

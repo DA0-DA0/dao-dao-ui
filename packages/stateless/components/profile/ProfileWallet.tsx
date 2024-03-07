@@ -21,7 +21,7 @@ import { FilterableItemPopup } from '../popup'
 import { TokenLineHeader } from '../token/TokenLineHeader'
 
 export const ProfileWallet = <T extends TokenCardInfo>({
-  chains,
+  accounts,
   tokens,
   hiddenTokens,
   TokenLine,
@@ -62,15 +62,16 @@ export const ProfileWallet = <T extends TokenCardInfo>({
         <FilterableItemPopup
           filterableItemKeys={FILTERABLE_KEYS}
           items={
-            chains.loading
+            accounts.loading || accounts.errored
               ? []
-              : chains.data.map(({ chainId, address }) => ({
+              : accounts.data.map(({ type, chainId, address }) => ({
                   key: chainId + address,
                   label: getDisplayNameForChainId(chainId),
                   iconUrl: getImageUrlForChainId(chainId),
+                  description: concatAddressStartEnd(address, 10, 6),
                   rightNode: (
-                    <p className="caption-text">
-                      {concatAddressStartEnd(address, 10, 6)}
+                    <p className="caption-text self-end md:self-center">
+                      {t(`accountTypeLabel.${type}`)}
                     </p>
                   ),
                   iconClassName: '!h-8 !w-8',
@@ -94,6 +95,11 @@ export const ProfileWallet = <T extends TokenCardInfo>({
               className: 'self-start',
               variant: 'secondary',
               contentContainerClassName: '!gap-1',
+              loading: accounts.loading,
+              disabled:
+                accounts.loading ||
+                accounts.errored ||
+                accounts.data.length === 0,
               children: (
                 <>
                   <CopyAll className="!h-4 !w-4" />

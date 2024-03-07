@@ -1,15 +1,15 @@
 import { ComponentType } from 'react'
 
-import { LoadingData, LoadingDataWithError } from '../misc'
-import { ProfileChain } from '../profile'
+import { Account } from '../account'
+import { LoadingDataWithError } from '../misc'
 import { TokenCardInfo } from '../token'
 import { StatefulProfileAddChainsProps } from './ProfileAddChains'
 
 export type ProfileWalletProps<T extends TokenCardInfo> = {
   /**
-   * List of profile chains.
+   * List of accounts for profile.
    */
-  chains: LoadingData<ProfileChain[]>
+  accounts: LoadingDataWithError<Account[]>
   /**
    * List of tokens on all chains.
    */
