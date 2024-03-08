@@ -1,3 +1,4 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { toHex } from '@cosmjs/encoding'
 import cloneDeep from 'lodash.clonedeep'
 import { useRouter } from 'next/router'
@@ -20,6 +21,8 @@ import {
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   cwMsgToEncodeObject,
+  getRpcForChainId,
+  getSignerOptions,
   processError,
 } from '@dao-dao/utils'
 
@@ -37,7 +40,8 @@ export const ProfileActions = () => {
   const {
     address: walletAddress = '',
     hexPublicKey,
-    getSigningCosmWasmClient,
+    getOfflineSignerAmino,
+    getOfflineSignerDirect,
     chain,
   } = useWallet({
     loadAccount: true,
@@ -86,6 +90,35 @@ export const ProfileActions = () => {
     return () => clearTimeout(timeout)
   }, [setWalletTransactionAtom, meTransaction])
 
+  const [holdAltForDirectSign, setHoldAltForDirectSign] = useState(false)
+  // Unset holding alt after 3 seconds, in case it got stuck.
+  useEffect(() => {
+    if (holdAltForDirectSign) {
+      const timeout = setTimeout(() => setHoldAltForDirectSign(false), 3000)
+      return () => clearTimeout(timeout)
+    }
+  }, [holdAltForDirectSign])
+  // Detect keys.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Alt') {
+        setHoldAltForDirectSign(true)
+      }
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'Alt') {
+        setHoldAltForDirectSign(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txHash, setTxHash] = useState('')
@@ -101,7 +134,17 @@ export const ProfileActions = () => {
       setTxHash('')
 
       try {
-        const signingCosmWasmClient = await getSigningCosmWasmClient()
+        const signer = holdAltForDirectSign
+          ? getOfflineSignerDirect()
+          : getOfflineSignerAmino()
+
+        const signingCosmWasmClient =
+          await SigningCosmWasmClient.connectWithSigner(
+            getRpcForChainId(chain.chain_id),
+            signer,
+            getSignerOptions(chain)
+          )
+
         const encodeObjects = data.map((msg) =>
           cwMsgToEncodeObject(msg, walletAddress)
         )
@@ -121,7 +164,14 @@ export const ProfileActions = () => {
         setLoading(false)
       }
     },
-    [getSigningCosmWasmClient, t, walletAddress]
+    [
+      chain,
+      getOfflineSignerAmino,
+      getOfflineSignerDirect,
+      holdAltForDirectSign,
+      t,
+      walletAddress,
+    ]
   )
 
   const { ready: txSavesReady, postRequest: postTxSavesRequest } =
@@ -227,6 +277,7 @@ export const ProfileActions = () => {
       error={error}
       execute={execute}
       formMethods={formMethods}
+      holdAltForDirectSign={holdAltForDirectSign}
       loadedActions={loadedActions}
       loading={loading}
       save={save}

@@ -7,7 +7,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useCallback, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -60,6 +60,7 @@ export type ProfileActionsProps = {
   save: (save: AccountTxSave) => Promise<boolean>
   deleteSave: (save: AccountTxSave) => Promise<boolean>
   saving: boolean
+  holdAltForDirectSign: boolean
   WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
 }
 
@@ -76,6 +77,7 @@ export const ProfileActions = ({
   save,
   deleteSave,
   saving,
+  holdAltForDirectSign,
   WalletChainSwitcher,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
@@ -86,6 +88,7 @@ export const ProfileActions = ({
     watch,
     formState: { errors },
     reset,
+    getValues,
   } = formMethods
 
   const actionData = watch('actions') || []
@@ -93,6 +96,35 @@ export const ProfileActions = ({
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
+
+  const [holdingShiftForForce, setHoldingShiftForForce] = useState(false)
+  // Unset holding shift after delay, in case it got stuck.
+  useEffect(() => {
+    if (holdingShiftForForce) {
+      const timeout = setTimeout(() => setHoldingShiftForForce(false), 6000)
+      return () => clearTimeout(timeout)
+    }
+  }, [holdingShiftForForce])
+  // Detect keys.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Shift') {
+        setHoldingShiftForForce(true)
+      }
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'Shift') {
+        setHoldingShiftForForce(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
 
   const onSubmitForm: SubmitHandler<AccountTxForm> = useCallback(
     ({ actions }, event) => {
@@ -129,10 +161,30 @@ export const ProfileActions = ({
     (errors) => {
       console.error('Form errors', errors)
 
-      setShowSubmitErrorNote(true)
-      setSubmitError('')
+      // Attempt submit anyways if forcing.
+      if (holdingShiftForForce) {
+        let msgs
+        try {
+          msgs = convertActionsToMessages(loadedActions, getValues('actions'))
+        } catch (err) {
+          console.error(err)
+          setSubmitError(
+            processError(err, {
+              forceCapture: false,
+            })
+          )
+          return
+        }
+
+        execute(msgs)
+
+        // If not forcing, show error to check for errors.
+      } else {
+        setShowSubmitErrorNote(true)
+        setSubmitError('')
+      }
     },
-    [setShowSubmitErrorNote]
+    [execute, getValues, holdingShiftForForce, loadedActions]
   )
 
   const [saveModalVisible, setSaveModalVisible] = useState(false)
@@ -175,6 +227,7 @@ export const ProfileActions = ({
       <FormProvider {...formMethods}>
         <form
           className="flex flex-col gap-4"
+          noValidate={holdingShiftForForce}
           onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
         >
           <ActionsEditor
@@ -210,15 +263,26 @@ export const ProfileActions = ({
                 )}
               </Button>
 
-              <Button
-                disabled={actionData.length === 0}
-                loading={loading}
-                type="submit"
-                value={SubmitValue.Submit}
+              <Tooltip
+                title={
+                  holdingShiftForForce
+                    ? t('info.forceExecuteTooltip')
+                    : undefined
+                }
               >
-                {t('button.execute') + ' '}
-                <Key className="!h-5 !w-5" />
-              </Button>
+                <Button
+                  disabled={actionData.length === 0}
+                  loading={loading}
+                  type="submit"
+                  value={SubmitValue.Submit}
+                >
+                  {(holdingShiftForForce
+                    ? t('button.forceExecute')
+                    : t('button.execute')) +
+                    (holdAltForDirectSign ? ` (${t('info.direct')})` : '')}
+                  <Key className="!h-5 !w-5" />
+                </Button>
+              </Tooltip>
             </div>
           </div>
 

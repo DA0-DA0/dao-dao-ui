@@ -1,5 +1,3 @@
-// Store each subDAO creation state separately. Main DAO creation state uses an
-
 import { atomFamily } from 'recoil'
 
 import { AccountTxForm } from '@dao-dao/types'

@@ -24,6 +24,7 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
+    "@cosmos-kit/core": "^2.8.9",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@graphql-codegen/cli": "^5.0.0",

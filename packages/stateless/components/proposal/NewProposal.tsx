@@ -113,16 +113,16 @@ export const NewProposal = <
 
   const [holdingAltForSimulation, setHoldingAltForSimulation] = useState(false)
   const [holdingShiftForForce, setHoldingShiftForForce] = useState(false)
-  // Unset holding alt/shift after 3 seconds, in case it got stuck.
+  // Unset holding alt/shift after delay, in case it got stuck.
   useEffect(() => {
     if (holdingAltForSimulation) {
-      const timeout = setTimeout(() => setHoldingAltForSimulation(false), 3000)
+      const timeout = setTimeout(() => setHoldingAltForSimulation(false), 6000)
       return () => clearTimeout(timeout)
     }
   }, [holdingAltForSimulation])
   useEffect(() => {
     if (holdingShiftForForce) {
-      const timeout = setTimeout(() => setHoldingShiftForForce(false), 3000)
+      const timeout = setTimeout(() => setHoldingShiftForForce(false), 6000)
       return () => clearTimeout(timeout)
     }
   }, [holdingShiftForForce])
@@ -216,7 +216,7 @@ export const NewProposal = <
 
       createProposal(data)
 
-      // If not simulating or creating, show error to check for errors.
+      // If not simulating or forcing, show error to check for errors.
     } else {
       setSubmitError(t('error.correctErrorsAbove'))
     }
