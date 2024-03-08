@@ -133,7 +133,7 @@ const Component: ActionComponent = (props) => {
 
   // Load DAO info for chosen DAO.
   const { watch } = useFormContext<AuthzExecData>()
-  const address = watch((props.fieldNamePrefix + 'address') as 'address')
+  const address = watch((props.fieldNamePrefix + 'address') as 'address') || ''
   const msgsPerSender =
     watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
 
@@ -152,7 +152,8 @@ const Component: ActionComponent = (props) => {
         />
       )}
 
-      <ChainProvider chainId={chainId}>
+      {/* Re-render when chain changes so hooks and state reset. */}
+      <ChainProvider key={chainId} chainId={chainId}>
         {props.isCreating ? (
           <InnerComponentWrapper
             {...props}

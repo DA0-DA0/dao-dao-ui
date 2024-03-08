@@ -199,11 +199,12 @@ export const WalletActionsProvider = ({
 }: WalletActionsProviderProps) => {
   const { address: connectedAddress } = useWallet()
 
-  const address = overrideAddress || connectedAddress
+  const address =
+    overrideAddress === undefined ? connectedAddress : overrideAddress
 
   const { profile } = useProfile({ address })
 
-  if (!address || profile.loading) {
+  if (address === undefined || profile.loading) {
     return <Loader />
   }
 
