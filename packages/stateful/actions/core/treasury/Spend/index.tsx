@@ -726,9 +726,14 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                   : MsgTransfer
                 ).fromAmino({
                   ...skipTransferMsgValue,
-                  // If no memo, use empty string. This will be undefined if PFM
-                  // is not used and it's only a single hop.
-                  memo: skipTransferMsgValue.memo || '',
+                  // Replace all forwarding timeouts with our own. If no memo,
+                  // use empty string. This will be undefined if PFM is not used
+                  // and it's only a single hop.
+                  memo:
+                    skipTransferMsgValue.memo.replace(
+                      /"timeout":\d+/g,
+                      `"timeout":${timeoutTimestamp.toString()}`
+                    ) || '',
                   timeout_timestamp: timeoutTimestamp,
                   timeout_height: undefined,
                 }),
