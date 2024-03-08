@@ -87,10 +87,13 @@ const useDefaults: UseDefaults<SpendData> = () => {
   } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
-  // Should always be defined if in a DAO.
+  // Should always be defined if in a DAO proposal. Even for a DAO, it may not
+  // be defined if being authz executed or something similar.
   const maxVotingPeriodSelector =
     useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
-      ?.maxVotingPeriod
+      ?.maxVotingPeriod ||
+    // If no selector, default to 0 time (likely in authz context).
+    constSelector({ time: 0 })
   const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
     context.type === ActionContextType.Dao
       ? maxVotingPeriodSelector
@@ -193,10 +196,13 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         ],
   })
 
-  // Should always be defined if in a DAO.
+  // Should always be defined if in a DAO proposal. Even for a DAO, it may not
+  // be defined if being authz executed or something similar.
   const maxVotingPeriodSelector =
     useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
-      ?.maxVotingPeriod
+      ?.maxVotingPeriod ||
+    // If no selector, default to 0 time (likely in authz context).
+    constSelector({ time: 0 })
   const proposalModuleMaxVotingPeriod = useRecoilValue(
     context.type === ActionContextType.Dao
       ? maxVotingPeriodSelector || constSelector(undefined)
@@ -562,10 +568,13 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     undefined
   )
 
-  // Should always be defined if in a DAO.
+  // Should always be defined if in a DAO proposal. Even for a DAO, it may not
+  // be defined if being authz executed or something similar.
   const maxVotingPeriodSelector =
     useProposalModuleAdapterCommonContextIfAvailable()?.common?.selectors
-      ?.maxVotingPeriod
+      ?.maxVotingPeriod ||
+    // If no selector, default to 0 time (likely in authz context).
+    constSelector({ time: 0 })
   const proposalModuleMaxVotingPeriod = useCachedLoadingWithError(
     options.context.type === ActionContextType.Dao
       ? maxVotingPeriodSelector
