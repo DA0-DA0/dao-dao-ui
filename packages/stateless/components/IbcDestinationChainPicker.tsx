@@ -1,4 +1,3 @@
-import { ibc } from 'chain-registry'
 import { useMemo } from 'react'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
@@ -6,6 +5,7 @@ import { ChainPickerPopupProps } from '@dao-dao/types'
 import {
   getChainForChainId,
   getChainForChainName,
+  ibc,
   maybeGetChainForChainName,
 } from '@dao-dao/utils'
 

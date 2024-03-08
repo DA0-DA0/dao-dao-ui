@@ -3,7 +3,7 @@ import { Buffer } from 'buffer'
 import { AssetList, Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { GasPrice } from '@cosmjs/stargate'
-import { assets, chains, ibc } from 'chain-registry'
+import { assets, chains } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
@@ -25,6 +25,7 @@ import {
   CONFIGURED_CHAINS,
   MAINNET,
   SUPPORTED_CHAINS,
+  ibc,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { aminoTypes, typesRegistry } from './messages/protobuf'

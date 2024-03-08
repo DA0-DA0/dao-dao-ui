@@ -1,4 +1,5 @@
-import { chains } from 'chain-registry'
+import { IBCInfo } from '@chain-registry/types'
+import { ibc as chainRegistryIbc, chains } from 'chain-registry'
 
 import {
   BaseChainConfig,
@@ -7,6 +8,41 @@ import {
   PolytoneConfig,
   SupportedChainConfig,
 } from '@dao-dao/types'
+
+export const ibc: IBCInfo[] = [
+  ...chainRegistryIbc,
+  // Oraichain <-> Cosmos Hub
+  {
+    chain_1: {
+      chain_name: 'oraichain',
+      client_id: '07-tendermint-47',
+      connection_id: 'connection-22',
+    },
+    chain_2: {
+      chain_name: 'cosmoshub',
+      client_id: '07-tendermint-651',
+      connection_id: 'connection-497',
+    },
+    channels: [
+      {
+        chain_1: {
+          channel_id: 'channel-15',
+          port_id: 'transfer',
+        },
+        chain_2: {
+          channel_id: 'channel-301',
+          port_id: 'transfer',
+        },
+        ordering: 'unordered',
+        version: 'ics20-1',
+        tags: {
+          status: 'live',
+          preferred: true,
+        },
+      },
+    ],
+  },
+]
 
 // Chains which DAO DAO DAOs exist on.
 export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
