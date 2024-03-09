@@ -364,7 +364,13 @@ export const toAccessibleImageUrl = (
   // of our NextJS allowed image sources. Thus proxy it through a whitelisted
   // domain. This only needs to be used for images that are displayed in the
   // NextJS Image component, which is why it is optional and off by default.
-  if (proxy && url.startsWith('http')) {
+  if (
+    proxy &&
+    url.startsWith('http') &&
+    !url.includes('ipfs.daodao.zone') &&
+    !url.includes('ipfs.stargaze.zone') &&
+    !url.includes('ipfs-gw.stargaze-apis.com')
+  ) {
     url = `https://img-proxy.daodao.zone/?url=${encodeURIComponent(url)}`
   }
 
