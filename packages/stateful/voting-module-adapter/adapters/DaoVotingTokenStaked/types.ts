@@ -5,7 +5,6 @@ import {
   GenericTokenWithUsdPrice,
   LoadingData,
 } from '@dao-dao/types'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { Claim } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
 
 export interface DaoCreationConfig {
@@ -39,27 +38,51 @@ export interface UseStakingInfoResponse {
   loadingWalletStakedValue?: LoadingData<number>
 }
 
-export interface UseGovernanceTokenInfoOptions {
+export type UseGovernanceTokenInfoOptions = {
+  /**
+   * Optionally fetch wallet balance. Defaults to false.
+   */
   fetchWalletBalance?: boolean
+  /**
+   * Optionally fetch treasury balance. Defaults to false.
+   */
   fetchTreasuryBalance?: boolean
+  /**
+   * Optionally fetch USDC price. Defaults to false.
+   */
   fetchUsdcPrice?: boolean
 }
 
-// TODO: Make improved standard that covers native tokens and custom info.
-export interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress: string
-  governanceTokenAddress: string
-  isFactory: boolean
-  // Will be defined if the governance token is a token factory denom and a
-  // token factory issuer contract exists.
+export type UseGovernanceTokenInfoResponse = {
+  /**
+   * The token factory issuer contract address, if the governance token is a
+   * token factory denom and a token factory issuer contract exists.
+   */
   tokenFactoryIssuerAddress: string | undefined
-  governanceTokenInfo: TokenInfoResponse
-  token: GenericToken
-  /// Optional
-  // Wallet balance
+  /**
+   * The generic governance token.
+   */
+  governanceToken: GenericToken
+  /**
+   * The supply of the governance token converted to the appropriate decimals.
+   */
+  supply: number
+
+  // Optional, defined if options are set to true.
+
+  /**
+   * Unstaked governance token balance. Only defined if a wallet is connected
+   * and the option to fetch this is true.
+   */
   loadingWalletBalance?: LoadingData<number>
-  // Treasury balance
+  /**
+   * The treasury balance of the governance token. Only defined if the option to
+   * fetch this is true.
+   */
   loadingTreasuryBalance?: LoadingData<number>
-  // Price
+  /**
+   * The price of the governance token. Only defined if the option to fetch this
+   * is true.
+   */
   loadingPrice?: LoadingData<GenericTokenWithUsdPrice>
 }

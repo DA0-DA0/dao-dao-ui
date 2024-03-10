@@ -8,13 +8,12 @@ export const useVotingModuleRelevantAddresses =
   (): VotingModuleRelevantAddress[] => {
     const { t } = useTranslation()
 
-    const { stakingContractAddress, governanceTokenAddress } =
-      useGovernanceTokenInfo()
+    const { governanceToken, stakingContractAddress } = useGovernanceTokenInfo()
 
     return [
       {
         label: t('info.govTokenAddress'),
-        address: governanceTokenAddress,
+        address: governanceToken.denomOrAddress,
       },
       {
         label: t('info.stakingAddress'),

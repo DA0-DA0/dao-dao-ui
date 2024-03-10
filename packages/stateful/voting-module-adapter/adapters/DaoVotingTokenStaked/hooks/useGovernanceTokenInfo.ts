@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -37,10 +37,7 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  // Token factory issuer
-  const isFactory = denom.startsWith('factory/')
-
-  const [token, supply, tokenFactoryIssuerAddress] = useRecoilValue(
+  const [governanceToken, supply, tokenFactoryIssuerAddress] = useRecoilValue(
     waitForAll([
       genericTokenSelector({
         chainId,
@@ -59,12 +56,6 @@ export const useGovernanceTokenInfo = ({
       ),
     ])
   )
-  const governanceTokenInfo: TokenInfoResponse = {
-    decimals: token.decimals,
-    name: token.symbol,
-    symbol: token.symbol,
-    total_supply: supply.toString(),
-  }
 
   /// Optional
 
@@ -94,7 +85,7 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const loadingPrice = useCachedLoading(
-    fetchUsdcPrice && governanceTokenInfo
+    fetchUsdcPrice
       ? usdPriceSelector({
           type: TokenType.Native,
           chainId,
@@ -105,12 +96,12 @@ export const useGovernanceTokenInfo = ({
   )
 
   return {
-    stakingContractAddress: '',
-    governanceTokenAddress: denom,
-    governanceTokenInfo,
-    isFactory,
     tokenFactoryIssuerAddress,
-    token,
+    governanceToken,
+    supply: convertMicroDenomToDenomWithDecimals(
+      supply,
+      governanceToken.decimals
+    ),
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading

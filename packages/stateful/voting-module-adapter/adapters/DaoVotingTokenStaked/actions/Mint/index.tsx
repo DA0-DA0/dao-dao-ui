@@ -29,7 +29,7 @@ import {
 const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   const {
     tokenFactoryIssuerAddress,
-    governanceTokenInfo: { decimals },
+    governanceToken: { decimals },
   } = useGovernanceTokenInfo()
 
   return useCallback(
@@ -60,7 +60,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 ) => {
   const {
     tokenFactoryIssuerAddress,
-    governanceTokenInfo: { decimals },
+    governanceToken: { decimals },
   } = useGovernanceTokenInfo()
 
   return objectMatchesStructure(msg, {
@@ -92,13 +92,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const { token } = useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   return (
     <StatelessMintComponent
       {...props}
       options={{
-        govToken: token,
+        govToken: governanceToken,
         AddressInput,
       }}
     />

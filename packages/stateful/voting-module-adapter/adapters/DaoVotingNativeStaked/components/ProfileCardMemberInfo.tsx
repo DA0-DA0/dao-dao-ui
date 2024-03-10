@@ -50,12 +50,10 @@ export const ProfileCardMemberInfo = ({
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  const {
-    token: governanceToken,
-    loadingWalletBalance: loadingUnstakedBalance,
-  } = useGovernanceTokenInfo({
-    fetchWalletBalance: true,
-  })
+  const { governanceToken, loadingWalletBalance: loadingUnstakedBalance } =
+    useGovernanceTokenInfo({
+      fetchWalletBalance: true,
+    })
 
   const {
     unstakingDuration,

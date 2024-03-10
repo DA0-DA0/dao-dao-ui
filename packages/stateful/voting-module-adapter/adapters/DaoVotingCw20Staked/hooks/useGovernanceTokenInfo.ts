@@ -3,10 +3,12 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 import {
   Cw20BaseSelectors,
   DaoVotingCw20StakedSelectors,
+  genericTokenSelector,
   usdPriceSelector,
 } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -39,16 +41,17 @@ export const useGovernanceTokenInfo = ({
     ])
   )
 
-  const [governanceTokenInfo, governanceTokenLogoUrl] = useRecoilValue(
+  const [governanceToken, cw20TokenInfo] = useRecoilValue(
     waitForAll([
+      genericTokenSelector({
+        chainId,
+        type: TokenType.Cw20,
+        denomOrAddress: governanceTokenAddress,
+      }),
       Cw20BaseSelectors.tokenInfoSelector({
         chainId,
         contractAddress: governanceTokenAddress,
         params: [],
-      }),
-      Cw20BaseSelectors.logoUrlSelector({
-        chainId,
-        contractAddress: governanceTokenAddress,
       }),
     ])
   )
@@ -92,22 +95,12 @@ export const useGovernanceTokenInfo = ({
   )
 
   return {
+    governanceToken,
+    supply: convertMicroDenomToDenomWithDecimals(
+      cw20TokenInfo.total_supply,
+      governanceToken.decimals
+    ),
     stakingContractAddress,
-    governanceTokenAddress,
-    governanceTokenInfo,
-    token: {
-      chainId,
-      type: TokenType.Cw20,
-      denomOrAddress: governanceTokenAddress,
-      symbol: governanceTokenInfo.symbol,
-      decimals: governanceTokenInfo.decimals,
-      imageUrl: governanceTokenLogoUrl,
-      source: {
-        chainId,
-        type: TokenType.Cw20,
-        denomOrAddress: governanceTokenAddress,
-      },
-    },
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading
