@@ -145,19 +145,20 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
           token_info: {
             existing: {
               address: existingTokenDenomOrAddress,
-              staking_contract: customStakingAddress
-                ? {
-                    existing: {
-                      staking_contract_address: customStakingAddress,
+              staking_contract:
+                customStakingAddress !== undefined
+                  ? {
+                      existing: {
+                        staking_contract_address: customStakingAddress,
+                      },
+                    }
+                  : {
+                      new: {
+                        staking_code_id: codeIds.Cw20Stake ?? -1,
+                        unstaking_duration:
+                          convertDurationWithUnitsToDuration(unstakingDuration),
+                      },
                     },
-                  }
-                : {
-                    new: {
-                      staking_code_id: codeIds.Cw20Stake ?? -1,
-                      unstaking_duration:
-                        convertDurationWithUnitsToDuration(unstakingDuration),
-                    },
-                  },
             },
           },
         }
