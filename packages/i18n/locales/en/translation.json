@@ -569,6 +569,7 @@
     "createValidatorMessage": "Create validator message",
     "createValidatorMessageTooltip": "Create a validator controlled by your DAO. Note: you will need to run a validator node (on a server for example). Be sure to use that node's public key (<binary> tendermint show-validator).",
     "currentValue": "Current value",
+    "customStakingContract": "Custom staking contract",
     "cw20Token": "CW20 Token",
     "cw20Tokens": "CW20 tokens",
     "daoDescriptionPlaceholder": "Give your DAO a description...",

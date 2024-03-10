@@ -7,7 +7,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -33,7 +33,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useChainContext } from '../../hooks'
+import { useChainContext, useHoldingKey } from '../../hooks'
 import { ActionsEditor, RawActionsRenderer } from '../actions'
 import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -60,7 +60,7 @@ export type ProfileActionsProps = {
   save: (save: AccountTxSave) => Promise<boolean>
   deleteSave: (save: AccountTxSave) => Promise<boolean>
   saving: boolean
-  holdAltForDirectSign: boolean
+  holdingAltForDirectSign: boolean
   WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
 }
 
@@ -77,7 +77,7 @@ export const ProfileActions = ({
   save,
   deleteSave,
   saving,
-  holdAltForDirectSign,
+  holdingAltForDirectSign,
   WalletChainSwitcher,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
@@ -97,34 +97,7 @@ export const ProfileActions = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const [holdingShiftForForce, setHoldingShiftForForce] = useState(false)
-  // Unset holding shift after delay, in case it got stuck.
-  useEffect(() => {
-    if (holdingShiftForForce) {
-      const timeout = setTimeout(() => setHoldingShiftForForce(false), 6000)
-      return () => clearTimeout(timeout)
-    }
-  }, [holdingShiftForForce])
-  // Detect keys.
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Shift') {
-        setHoldingShiftForForce(true)
-      }
-    }
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === 'Shift') {
-        setHoldingShiftForForce(false)
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [])
+  const holdingShiftForForce = useHoldingKey({ key: 'shift' })
 
   const onSubmitForm: SubmitHandler<AccountTxForm> = useCallback(
     ({ actions }, event) => {
@@ -279,7 +252,7 @@ export const ProfileActions = ({
                   {(holdingShiftForForce
                     ? t('button.forceExecute')
                     : t('button.execute')) +
-                    (holdAltForDirectSign ? ` (${t('info.direct')})` : '')}
+                    (holdingAltForDirectSign ? ` (${t('info.direct')})` : '')}
                   <Key className="!h-5 !w-5" />
                 </Button>
               </Tooltip>

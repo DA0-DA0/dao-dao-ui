@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, useState } from 'react'
 import {
   FieldValues,
   SubmitErrorHandler,
@@ -30,6 +30,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useHoldingKey } from '../../hooks'
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { FilterableItem, FilterableItemPopup } from '../popup'
@@ -111,45 +112,8 @@ export const NewProposal = <
   const [showPreview, setShowPreview] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const [holdingAltForSimulation, setHoldingAltForSimulation] = useState(false)
-  const [holdingShiftForForce, setHoldingShiftForForce] = useState(false)
-  // Unset holding alt/shift after delay, in case it got stuck.
-  useEffect(() => {
-    if (holdingAltForSimulation) {
-      const timeout = setTimeout(() => setHoldingAltForSimulation(false), 6000)
-      return () => clearTimeout(timeout)
-    }
-  }, [holdingAltForSimulation])
-  useEffect(() => {
-    if (holdingShiftForForce) {
-      const timeout = setTimeout(() => setHoldingShiftForForce(false), 6000)
-      return () => clearTimeout(timeout)
-    }
-  }, [holdingShiftForForce])
-  // Detect keys.
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Alt') {
-        setHoldingAltForSimulation(true)
-      } else if (event.key === 'Shift') {
-        setHoldingShiftForForce(true)
-      }
-    }
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === 'Alt') {
-        setHoldingAltForSimulation(false)
-      } else if (event.key === 'Shift') {
-        setHoldingShiftForForce(false)
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [])
+  const holdingAltForSimulation = useHoldingKey({ key: 'alt' })
+  const holdingShiftForForce = useHoldingKey({ key: 'shift' })
 
   const onSubmitForm: SubmitHandler<FormData> = (formData, event) => {
     setSubmitError('')

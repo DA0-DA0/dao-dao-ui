@@ -14,6 +14,7 @@ import {
   ProfileActionsProps,
   ProfileActions as StatelessProfileActions,
   useCachedLoading,
+  useHoldingKey,
 } from '@dao-dao/stateless'
 import { AccountTxForm, AccountTxSave } from '@dao-dao/types'
 import {
@@ -90,34 +91,7 @@ export const ProfileActions = () => {
     return () => clearTimeout(timeout)
   }, [setWalletTransactionAtom, meTransaction])
 
-  const [holdAltForDirectSign, setHoldAltForDirectSign] = useState(false)
-  // Unset holding alt after 3 seconds, in case it got stuck.
-  useEffect(() => {
-    if (holdAltForDirectSign) {
-      const timeout = setTimeout(() => setHoldAltForDirectSign(false), 3000)
-      return () => clearTimeout(timeout)
-    }
-  }, [holdAltForDirectSign])
-  // Detect keys.
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Alt') {
-        setHoldAltForDirectSign(true)
-      }
-    }
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === 'Alt') {
-        setHoldAltForDirectSign(false)
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [])
+  const holdingAltForDirectSign = useHoldingKey({ key: 'alt' })
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -134,7 +108,7 @@ export const ProfileActions = () => {
       setTxHash('')
 
       try {
-        const signer = holdAltForDirectSign
+        const signer = holdingAltForDirectSign
           ? getOfflineSignerDirect()
           : getOfflineSignerAmino()
 
@@ -168,7 +142,7 @@ export const ProfileActions = () => {
       chain,
       getOfflineSignerAmino,
       getOfflineSignerDirect,
-      holdAltForDirectSign,
+      holdingAltForDirectSign,
       t,
       walletAddress,
     ]
@@ -277,7 +251,7 @@ export const ProfileActions = () => {
       error={error}
       execute={execute}
       formMethods={formMethods}
-      holdAltForDirectSign={holdAltForDirectSign}
+      holdingAltForDirectSign={holdingAltForDirectSign}
       loadedActions={loadedActions}
       loading={loading}
       save={save}

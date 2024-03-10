@@ -31,6 +31,11 @@ export type CreatorData = {
   }
   existingTokenSupply?: string
   unstakingDuration: DurationWithUnits
+  /**
+   * If defined, use a custom cw20 staking contract instead of creating a new
+   * one with the specified unstaking duration. Does not work for native.
+   */
+  customStakingAddress?: string
   // If token factory denom requires a creation fee, this should be set.
   tokenFactoryDenomCreationFee?: Coin[]
 } & DaoCreationVotingConfigWithActiveThreshold
