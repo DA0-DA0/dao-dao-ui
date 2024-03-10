@@ -30,6 +30,7 @@ import {
   GOVERNANCE_PROPOSAL_TYPE_CUSTOM,
   GenericToken,
   GenericTokenBalance,
+  GenericTokenBalanceWithOwner,
   GovProposalActionDisplayProps,
   GovernanceProposalActionData,
   LoadingData,
@@ -59,6 +60,7 @@ export type GovernanceProposalOptions = {
       min: string
     })[]
   >
+  communityPoolBalances: LoadingData<GenericTokenBalanceWithOwner[]>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   AddressInput: ComponentType<AddressInputProps<GovernanceProposalActionData>>
   GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
@@ -75,6 +77,7 @@ export const GovernanceProposalComponent: ActionComponent<
     options: {
       supportsV1GovProposals,
       minDeposits,
+      communityPoolBalances,
       GovProposalActionDisplay,
       TokenAmountDisplay,
       AddressInput,
@@ -128,15 +131,23 @@ export const GovernanceProposalComponent: ActionComponent<
     name: (fieldNamePrefix + 'legacy.spends') as 'legacy.spends',
   })
 
-  const availableTokens: GenericToken[] = [
-    // First native.
-    ...(nativeToken ? [nativeToken] : []),
-    // Then the chain assets.
-    ...getChainAssets(chainId).filter(
-      ({ denomOrAddress }) =>
-        !nativeToken || denomOrAddress !== nativeToken.denomOrAddress
-    ),
-  ]
+  const availableTokens: GenericToken[] = Object.values(
+    Object.fromEntries(
+      [
+        // First native.
+        ...(nativeToken ? [nativeToken] : []),
+        // Then community pool tokens.
+        ...(!communityPoolBalances.loading
+          ? communityPoolBalances.data.map(({ token }) => token)
+          : []),
+        // Then the chain assets.
+        ...getChainAssets(chainId).filter(
+          ({ denomOrAddress }) =>
+            !nativeToken || denomOrAddress !== nativeToken.denomOrAddress
+        ),
+      ].map((token) => [token.denomOrAddress, token])
+    )
+  )
 
   // When any legacy fields change, encode and store it.
   const legacy = watch((fieldNamePrefix + 'legacy') as 'legacy')

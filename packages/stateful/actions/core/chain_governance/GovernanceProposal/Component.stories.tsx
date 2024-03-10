@@ -74,6 +74,7 @@ Default.args = {
   options: {
     supportsV1GovProposals: true,
     minDeposits: { loading: false, data: [] },
+    communityPoolBalances: { loading: false, data: [] },
     TokenAmountDisplay,
     AddressInput,
     GovProposalActionDisplay,

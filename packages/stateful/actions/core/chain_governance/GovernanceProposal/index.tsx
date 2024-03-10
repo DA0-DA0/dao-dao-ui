@@ -5,6 +5,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   chainSupportsV1GovModuleSelector,
+  communityPoolBalancesSelector,
   genericTokenBalanceSelector,
   genericTokenSelector,
   govParamsSelector,
@@ -132,6 +133,13 @@ const InnerComponent = ({
     })
   )
 
+  const communityPoolBalances = useCachedLoading(
+    communityPoolBalancesSelector({
+      chainId,
+    }),
+    []
+  )
+
   // Update version in data.
   useEffect(() => {
     setValue(
@@ -220,6 +228,7 @@ const InnerComponent = ({
                 min: minDepositParams[index].amount,
               })),
             },
+        communityPoolBalances,
         categories,
         loadedActions,
         TokenAmountDisplay,
