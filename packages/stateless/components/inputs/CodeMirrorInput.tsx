@@ -1,7 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
-import { Controlled as CodeMirror } from 'react-codemirror2'
+import dynamic from 'next/dynamic'
 import {
   Control,
   Controller,
@@ -13,6 +13,13 @@ import {
 } from 'react-hook-form'
 
 import { useThemeContext } from '../../theme'
+
+const CodeMirror = dynamic(
+  () => import('react-codemirror2').then((module) => module.Controlled),
+  {
+    ssr: false,
+  }
+)
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -71,13 +78,12 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
     <Controller
       control={control}
       name={fieldName}
-      render={({ field: { onChange, onBlur, ref, value } }) => (
+      render={({ field: { onChange, onBlur, value } }) => (
         <CodeMirror
           className="rounded"
           onBeforeChange={(_editor, _data, value) => onChange(value)}
           onBlur={(_instance, _event) => onBlur()}
           options={cmOptions}
-          ref={ref}
           value={transform ? transform(value) : value}
         />
       )}
