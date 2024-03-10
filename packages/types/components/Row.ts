@@ -13,6 +13,7 @@ export interface RowProps {
   href?: string
   defaultExpanded?: boolean
   forceExpanded?: boolean
+  hideExpand?: boolean
   compact?: boolean
   loading?: boolean
   selected?: boolean

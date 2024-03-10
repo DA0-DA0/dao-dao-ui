@@ -239,6 +239,9 @@ export const DappNavigation = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 defaultExpanded
+                hideExpand={
+                  !followingDaos.loading && followingDaos.data.length === 0
+                }
                 label={t('title.following')}
                 loading={followingDaos.loading || followingDaos.updating}
               >

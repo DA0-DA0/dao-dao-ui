@@ -20,6 +20,7 @@ export const Row = ({
   href,
   defaultExpanded = false,
   forceExpanded = false,
+  hideExpand = false,
   compact = false,
   loading = false,
   selected = false,
@@ -113,7 +114,7 @@ export const Row = ({
           {loading ? (
             <Loader className="!justify-end" size={24} />
           ) : // If children exist and not forcing expanded, display expand button.
-          children && !forceExpanded ? (
+          children && !forceExpanded && !hideExpand ? (
             <IconButton
               Icon={ExpandButton}
               className="text-icon-secondary"
@@ -132,7 +133,7 @@ export const Row = ({
         </div>
       </RowWrapper>
 
-      {children && (
+      {children && !hideExpand && (
         // Load in background even when hidden.
         <div className={clsx({ hidden: !expanded })}>{children}</div>
       )}
