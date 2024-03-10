@@ -32,8 +32,7 @@ const useDefaults: UseDefaults<MintData> = () => ({
 
 const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   const { address } = useActionOptions()
-  const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   return useCallback(
     (data: MintData) => {
@@ -45,25 +44,22 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
             amount: coin(
               convertDenomToMicroDenomStringWithDecimals(
                 data.amount,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
-              governanceTokenAddress
+              governanceToken.denomOrAddress
             ),
           } as MsgMint,
         },
       })
     },
-    [address, governanceTokenAddress, governanceTokenInfo.decimals]
+    [address, governanceToken]
   )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
   msg: Record<string, any>
 ) => {
-  const {
-    governanceTokenAddress,
-    governanceTokenInfo: { decimals },
-  } = useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   return useMemo(() => {
     if (
@@ -77,27 +73,30 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 
     const { denom, amount } = msg.stargate.value.amount as Coin
 
-    return governanceTokenAddress === denom
+    return governanceToken.denomOrAddress === denom
       ? {
           match: true,
           data: {
-            amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+            amount: convertMicroDenomToDenomWithDecimals(
+              amount,
+              governanceToken.decimals
+            ),
           },
         }
       : {
           match: false,
         }
-  }, [governanceTokenAddress, decimals, msg])
+  }, [governanceToken, msg])
 }
 
 const Component: ActionComponent = (props) => {
-  const { token } = useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   return (
     <StatelessMintComponent
       {...props}
       options={{
-        govToken: token,
+        govToken: governanceToken,
       }}
     />
   )

@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next'
+import { constSelector } from 'recoil'
 
-import {
-  DaoPreProposeApprovalSingleSelectors,
-  DaoPreProposeApproverSelectors,
-} from '@dao-dao/state/recoil'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { DaoPreProposeApprovalSingleSelectors } from '@dao-dao/state/recoil'
+import { useCachedLoading, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   LoadingData,
   PreProposeApprovalProposalWithMeteadata,
@@ -14,8 +12,8 @@ import {
 import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
-import { daoCoreProposalModulesSelector } from '../../../../recoil'
 import { useProposalModuleAdapterOptions } from '../../../react'
+import { approverIdForPreProposeApprovalIdSelector } from '../selectors'
 
 export const useLoadingPreProposeApprovalProposal =
   (): LoadingData<PreProposeApprovalProposalWithMeteadata> => {
@@ -46,62 +44,26 @@ export const useLoadingPreProposeApprovalProposal =
       (err) => console.error(err)
     ) as LoadingData<DaoPreProposeApprovalSingleProposal>
 
-    // TODO(approver): turn this into one selector
-    const usesApprover =
+    // Retrieve proposal ID in approver DAO if exists.
+    const approverProposalId = useCachedLoadingWithError(
       prePropose?.type === PreProposeModuleType.Approval &&
-      !!prePropose.config.preProposeApproverContract
-    const approverDaoProposalModules = useCachedLoading(
-      usesApprover
-        ? daoCoreProposalModulesSelector({
+        !!prePropose.config.preProposeApproverContract
+        ? approverIdForPreProposeApprovalIdSelector({
             chainId,
-            coreAddress: prePropose.config.approver,
+            preProposeAddress: prePropose.address,
+            proposalNumber,
+            isPreProposeApprovalProposal: true,
+            approver: prePropose.config.approver,
+            preProposeApproverContract:
+              prePropose.config.preProposeApproverContract,
           })
-        : undefined,
-      undefined
+        : constSelector(undefined)
     )
-    // Get prefix of proposal module with dao-pre-propose-approver attached so
-    // we can link to the approver proposal.
-    const approverDaoApproverProposalModulePrefix =
-      approverDaoProposalModules.loading || !usesApprover
-        ? undefined
-        : approverDaoProposalModules.data?.find(
-            (approverDaoProposalModule) =>
-              approverDaoProposalModule.prePropose?.type ===
-                PreProposeModuleType.Approver &&
-              approverDaoProposalModule.prePropose.address ===
-                prePropose.config.preProposeApproverContract
-          )?.prefix
-    // Get approver proposal ID that was created to approve this pre-propose
-    // proposal.
-    const approverProposalNumber = useCachedLoading(
-      usesApprover && prePropose.config.preProposeApproverContract
-        ? DaoPreProposeApproverSelectors.queryExtensionSelector({
-            chainId,
-            contractAddress: prePropose.config.preProposeApproverContract,
-            params: [
-              {
-                msg: {
-                  approver_proposal_id_for_pre_propose_approval_id: {
-                    id: proposalNumber,
-                  },
-                },
-              },
-            ],
-          })
-        : undefined,
-      undefined
-    ) as LoadingData<number | undefined>
-    const approverProposalId =
-      approverDaoApproverProposalModulePrefix &&
-      !approverProposalNumber.loading &&
-      approverProposalNumber.data
-        ? `${approverDaoApproverProposalModulePrefix}${approverProposalNumber.data}`
-        : undefined
 
     if (
       loadingProposal.loading ||
       !loadingProposal.data ||
-      (usesApprover && !approverProposalId)
+      approverProposalId.loading
     ) {
       return { loading: true }
     }
@@ -134,7 +96,10 @@ export const useLoadingPreProposeApprovalProposal =
       data: {
         ...loadingProposal.data,
         timestampDisplay,
-        approverProposalId,
+        // On error, just return undefined so we still render the proposal.
+        approverProposalId: approverProposalId.errored
+          ? undefined
+          : approverProposalId.data,
       },
     }
   }

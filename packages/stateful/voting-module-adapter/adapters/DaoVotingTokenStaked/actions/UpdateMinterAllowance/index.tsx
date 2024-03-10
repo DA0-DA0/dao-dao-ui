@@ -31,7 +31,7 @@ const useTransformToCosmos: UseTransformToCosmos<
 > = () => {
   const {
     tokenFactoryIssuerAddress,
-    governanceTokenInfo: { decimals },
+    governanceToken: { decimals },
   } = useGovernanceTokenInfo()
 
   return useCallback(
@@ -62,7 +62,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateMinterAllowanceData> = (
 ) => {
   const {
     tokenFactoryIssuerAddress,
-    governanceTokenInfo: { decimals },
+    governanceToken: { decimals },
   } = useGovernanceTokenInfo()
 
   return objectMatchesStructure(msg, {
@@ -94,13 +94,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateMinterAllowanceData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const { token } = useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   return (
     <UpdateMinterAllowanceComponent
       {...props}
       options={{
-        govToken: token,
+        govToken: governanceToken,
         AddressInput,
       }}
     />

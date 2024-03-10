@@ -27,7 +27,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   }
 
   const {
-    governanceTokenInfo: { decimals, symbol, total_supply },
+    governanceToken: { decimals, symbol },
+    supply,
   } = useGovernanceTokenInfo()
 
   const loadingMembers = useCachedLoadingWithError(
@@ -55,7 +56,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       }),
       value: (
         <TokenAmountDisplay
-          amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
+          amount={supply}
           decimals={decimals}
           symbol={symbol}
         />

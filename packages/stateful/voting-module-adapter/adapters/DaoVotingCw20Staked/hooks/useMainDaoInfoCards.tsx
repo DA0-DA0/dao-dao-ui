@@ -7,8 +7,8 @@ import {
 } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
+  convertDenomToMicroDenomWithDecimals,
   convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
 } from '@dao-dao/utils'
 
@@ -28,7 +28,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { unstakingDuration } = useStakingInfo()
 
   const {
-    governanceTokenInfo: { decimals, symbol, total_supply },
+    governanceToken: { decimals, symbol },
+    supply,
   } = useGovernanceTokenInfo()
 
   const loadingMembers = useCachedLoadingWithError(
@@ -56,7 +57,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       }),
       value: (
         <TokenAmountDisplay
-          amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
+          amount={supply}
           decimals={decimals}
           symbol={symbol}
         />
@@ -72,7 +73,9 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
         totalVotingWeight === undefined
           ? undefined
           : formatPercentOf100(
-              (totalVotingWeight / Number(total_supply)) * 100
+              (totalVotingWeight /
+                convertDenomToMicroDenomWithDecimals(supply, decimals)) *
+                100
             ),
     },
     {

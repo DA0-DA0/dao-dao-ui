@@ -82,7 +82,6 @@ export const DaoApproverProposalContentDisplay = ({
       params: [
         {
           msg: {
-            // pending_proposal_id_for_approval_proposal_id: {
             pre_propose_approval_id_for_approver_proposal_id: {
               id: proposalNumber,
             },

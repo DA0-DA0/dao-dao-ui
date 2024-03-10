@@ -54,12 +54,10 @@ const InnerStakingModal = ({
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
-  const {
-    token: governanceToken,
-    loadingWalletBalance: loadingUnstakedBalance,
-  } = useGovernanceTokenInfo({
-    fetchWalletBalance: true,
-  })
+  const { governanceToken, loadingWalletBalance: loadingUnstakedBalance } =
+    useGovernanceTokenInfo({
+      fetchWalletBalance: true,
+    })
   const {
     unstakingDuration,
     refreshTotals,

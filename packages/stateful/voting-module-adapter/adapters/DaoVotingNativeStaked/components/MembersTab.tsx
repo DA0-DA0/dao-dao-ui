@@ -19,7 +19,7 @@ import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const { token } = useGovernanceTokenInfo()
+  const { governanceToken } = useGovernanceTokenInfo()
 
   const members = useCachedLoadingWithError(
     DaoVotingNativeStakedSelectors.topStakersSelector({
@@ -36,14 +36,14 @@ export const MembersTab = () => {
           address,
           balance: {
             label: t('title.staked'),
-            unit: '$' + token.symbol,
+            unit: '$' + governanceToken.symbol,
             value: {
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
                 balance,
-                token.decimals
+                governanceToken.decimals
               ).toLocaleString(undefined, {
-                maximumFractionDigits: token.decimals,
+                maximumFractionDigits: governanceToken.decimals,
               }),
             },
           },

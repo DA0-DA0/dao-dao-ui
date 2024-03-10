@@ -158,14 +158,34 @@ export type IProposalModuleAdapterCommonInitialOptions = Omit<
 >
 
 export type IProposalModuleAdapterOptions = {
+  /**
+   * The DAO's native chain.
+   */
   chain: Chain
+  /**
+   * The DAO's core contract address.
+   */
   coreAddress: string
+  /**
+   * The proposal module.
+   */
   proposalModule: ProposalModule
+  /**
+   * The proposal ID unique across all proposal modules. They include the
+   * proposal module's prefix, the proposal number within the proposal module,
+   * and potentially an asterisk in the middle to indicate a
+   * pre-propose-approval proposal.
+   */
   proposalId: string
+  /**
+   * The proposal number used by the proposal module to identify this proposal.
+   */
   proposalNumber: number
-  // Whether or not this refers to a pre-propose-approval proposal. If this is
-  // true, the proposal ID should contain an asterisk (*) between the proposal
-  // module prefix and proposal number.
+  /**
+   * Whether or not this refers to a pre-propose-approval proposal. If this is
+   * true, the proposal ID should contain an asterisk (*) between the proposal
+   * module prefix and proposal number.
+   */
   isPreProposeApprovalProposal: boolean
 }
 
