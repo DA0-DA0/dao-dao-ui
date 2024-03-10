@@ -20,12 +20,14 @@ import {
   AddressInput,
   EntityDisplay,
   SuspenseLoader,
+  Trans,
 } from '../../../../../../components'
 import { useWallet } from '../../../../../../hooks/useWallet'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
 import { RatingsFormData } from '../../types'
+import { prepareContributionFormData } from '../../utils'
 import {
   ContributionRatingData,
   NominationForm,
@@ -122,7 +124,7 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
 
         // Nominate.
         await postRequest(`/${coreAddress}/nominate`, {
-          ...formData,
+          ...prepareContributionFormData(formData),
           contributor: contributorPublicKey,
         })
         toast.success(t('success.nominationSubmitted'))
@@ -154,6 +156,7 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
           <StatelessRatingForm
             AddressInput={AddressInput}
             EntityDisplay={EntityDisplay}
+            Trans={Trans}
             data={data}
             loadingNominate={loadingNominate}
             loadingSubmit={loadingSubmit || statusLoadable.updating}

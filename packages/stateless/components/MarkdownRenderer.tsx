@@ -19,7 +19,10 @@ import { Node } from 'unist'
 import { visitParents } from 'unist-util-visit-parents'
 
 import { StatefulEntityDisplayProps } from '@dao-dao/types'
-import { isValidBech32Address } from '@dao-dao/utils'
+import {
+  isValidBech32Address,
+  transformIpfsUrlToHttpsIfNecessary,
+} from '@dao-dao/utils'
 
 import { IconButton } from './icon_buttons/IconButton'
 
@@ -82,6 +85,10 @@ export const MarkdownRenderer = forwardRef<
           ...(EntityDisplay ? [remarkEntityDisplay] : []),
         ]}
         remarkPlugins={[remarkGfm]}
+        transformImageUri={
+          // Support IPFS images.
+          (src, alt) => transformIpfsUrlToHttpsIfNecessary(src || alt)
+        }
       >
         {markdown}
       </ReactMarkdown>

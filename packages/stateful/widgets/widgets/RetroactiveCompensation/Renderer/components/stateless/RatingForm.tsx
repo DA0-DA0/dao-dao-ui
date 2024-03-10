@@ -1,6 +1,6 @@
 import { Publish } from '@mui/icons-material'
 import { ComponentType, useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -17,6 +17,7 @@ import {
   AddressInputProps,
   GenericTokenWithUsdPrice,
   StatefulEntityDisplayProps,
+  TransProps,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -28,15 +29,13 @@ import {
 import {
   Contribution,
   ContributionCompensation,
+  ContributionFormData,
   ContributionRating,
   RatingsFormData,
   Status,
 } from '../../types'
 import { computeCompensation } from '../../utils'
-import {
-  ContributionFormData,
-  ContributionFormInput,
-} from './ContributionFormInput'
+import { ContributionFormInput } from './ContributionFormInput'
 
 export interface ContributionRatingData {
   contributions: Contribution[]
@@ -54,6 +53,7 @@ export interface RatingFormProps {
   loadingSubmit: boolean
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   AddressInput: ComponentType<AddressInputProps<NominationForm>>
+  Trans: ComponentType<TransProps>
   tokenPrices: GenericTokenWithUsdPrice[]
   onNominate: (data: NominationForm) => Promise<void>
   loadingNominate: boolean
@@ -66,6 +66,7 @@ export const RatingForm = ({
   loadingSubmit,
   EntityDisplay,
   AddressInput,
+  Trans,
   tokenPrices,
   onNominate,
   loadingNominate,
@@ -121,15 +122,10 @@ export const RatingForm = ({
     [tokenPrices]
   )
 
-  const {
-    watch: nominationWatch,
-    register: nominationRegister,
-    handleSubmit: nominationHandleSubmit,
-    formState: { errors: nominationErrors },
-    setValue: nominationSetValue,
-  } = useForm<NominationForm>({
+  const nominationFormMethods = useForm<NominationForm>({
     defaultValues: {
       contribution: '',
+      images: [],
       ratings: survey.attributes.map(() => null),
     },
   })
@@ -335,43 +331,43 @@ export const RatingForm = ({
         <p className="title-text mb-2">{t('title.nominateContributor')}</p>
         <MarkdownRenderer markdown={t('info.nominateContributorDescription')} />
 
-        <form
-          className="mt-6 flex flex-col gap-4"
-          onSubmit={nominationHandleSubmit(onNominate)}
-        >
-          <div className="space-y-1">
-            <InputLabel name={t('form.contributorAddress')} />
-            <AddressInput
-              containerClassName="grow"
-              error={nominationErrors?.contributor}
-              fieldName="contributor"
-              register={nominationRegister}
-              setValue={nominationSetValue}
-              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
-              watch={nominationWatch}
-            />
-            <InputErrorMessage error={nominationErrors?.contributor} />
-          </div>
-
-          <ContributionFormInput
-            errors={nominationErrors}
-            register={nominationRegister as any}
-            setValue={nominationSetValue as any}
-            survey={survey}
-            thirdPerson
-            watch={nominationWatch as any}
-          />
-
-          <Button
-            className="self-end"
-            disabled={loadingSubmit}
-            loading={loadingNominate}
-            type="submit"
+        <FormProvider {...nominationFormMethods}>
+          <form
+            className="mt-6 flex flex-col gap-4"
+            onSubmit={nominationFormMethods.handleSubmit(onNominate)}
           >
-            {t('button.nominate')}
-            <Publish className="!h-4 !w-4" />
-          </Button>
-        </form>
+            <div className="space-y-1">
+              <InputLabel name={t('form.contributorAddress')} />
+              <AddressInput
+                containerClassName="grow"
+                error={nominationFormMethods.formState.errors?.contributor}
+                fieldName="contributor"
+                register={nominationFormMethods.register}
+                setValue={nominationFormMethods.setValue}
+                validation={[
+                  validateRequired,
+                  makeValidateAddress(bech32Prefix),
+                ]}
+                watch={nominationFormMethods.watch}
+              />
+              <InputErrorMessage
+                error={nominationFormMethods.formState.errors?.contributor}
+              />
+            </div>
+
+            <ContributionFormInput Trans={Trans} survey={survey} thirdPerson />
+
+            <Button
+              className="self-end"
+              disabled={loadingSubmit}
+              loading={loadingNominate}
+              type="submit"
+            >
+              {t('button.nominate')}
+              <Publish className="!h-4 !w-4" />
+            </Button>
+          </form>
+        </FormProvider>
       </div>
     </div>
   )
