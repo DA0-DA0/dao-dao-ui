@@ -1,5 +1,6 @@
 export * from './CreateGovProposal'
 export * from './GovCommunityPoolTab'
+export * from './GovForumTab'
 export * from './GovInfoBar'
 export * from './GovPageWrapper'
 export * from './GovProposal'

@@ -4,6 +4,8 @@ import {
   ArrowOutwardRounded,
   FiberSmartRecordOutlined,
   FiberSmartRecordRounded,
+  ForumOutlined,
+  ForumRounded,
   HowToVoteOutlined,
   HowToVoteRounded,
 } from '@mui/icons-material'
@@ -26,7 +28,12 @@ import {
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../ButtonLink'
-import { GovCommunityPoolTab, GovProposalsTab, GovSubDaosTab } from '../gov'
+import {
+  GovCommunityPoolTab,
+  GovForumTab,
+  GovProposalsTab,
+  GovSubDaosTab,
+} from '../gov'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
@@ -36,7 +43,7 @@ export const ChainGovernanceHome = () => {
   const { t } = useTranslation()
   const {
     chainId,
-    config: { name, explorerUrlTemplates },
+    config: { name, explorerUrlTemplates, forumUrl },
   } = useConfiguredChainContext()
   const { coreVersion } = useDaoInfoContext()
 
@@ -67,6 +74,19 @@ export const ChainGovernanceHome = () => {
             Component: GovSubDaosTab,
             Icon: FiberSmartRecordOutlined,
             IconFilled: FiberSmartRecordRounded,
+          },
+        ]
+      : []),
+    // If forum exists, show it.
+    ...(forumUrl
+      ? [
+          {
+            id: DaoTabId.Forum,
+            label: t('title.forum'),
+            Component: GovForumTab,
+            Icon: ForumOutlined,
+            IconFilled: ForumRounded,
+            lazy: true,
           },
         ]
       : []),

@@ -419,6 +419,7 @@ export enum DaoTabId {
   Collection = 'collection',
   Apps = 'apps',
   Vaults = 'vaults',
+  Forum = 'forum',
 }
 
 export type DaoTab = {

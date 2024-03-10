@@ -103,6 +103,10 @@ export type BaseChainConfig = {
    */
   noGov?: boolean
   /**
+   * Optionally display an iframe forum on the governance page.
+   */
+  forumUrl?: string
+  /**
    * Chain explorer URL templates for various external links.
    */
   explorerUrlTemplates?: {

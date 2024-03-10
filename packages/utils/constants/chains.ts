@@ -540,6 +540,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#8ac3cc',
     factoryContractAddress:
       'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
+    forumUrl: 'https://commonwealth.im/stargaze',
     explorerUrlTemplates: {
       tx: 'https://ping.pub/stargaze/tx/REPLACE',
       gov: 'https://ping.pub/stargaze/gov',
