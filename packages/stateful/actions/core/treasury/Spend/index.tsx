@@ -730,10 +730,12 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                   // use empty string. This will be undefined if PFM is not used
                   // and it's only a single hop.
                   memo:
-                    skipTransferMsgValue.memo.replace(
-                      /"timeout":\d+/g,
-                      `"timeout":${timeoutTimestamp.toString()}`
-                    ) || '',
+                    (typeof skipTransferMsgValue.memo === 'string' &&
+                      skipTransferMsgValue.memo.replace(
+                        /"timeout":\d+/g,
+                        `"timeout":${timeoutTimestamp.toString()}`
+                      )) ||
+                    '',
                   timeout_timestamp: timeoutTimestamp,
                   timeout_height: undefined,
                 }),
