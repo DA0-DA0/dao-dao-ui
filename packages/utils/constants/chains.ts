@@ -203,6 +203,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // kujira
         remoteChannel: 'channel-129',
       },
+      [ChainId.OraichainMainnet]: {
+        // juno
+        note: 'juno1slr28gq9acpjj2dqt90svs6dwlmaev77uupg9fysy6200vkssjfsca266k',
+        // juno
+        listener:
+          'juno1r2hez8nr6yqcxcadpyp6ckjsapn0dxkhgf50mspvez74fhwq4ymqfl776u',
+        // oraichain
+        voice:
+          'orai1chmwuwq4akxcpm0dv2w5rc5qr0d9c7ufpwacrzn7uheyd5c2wxvsff4vsv',
+        // juno
+        localConnection: 'connection-521',
+        // oraichain
+        remoteConnection: 'connection-150',
+        // juno
+        localChannel: 'channel-529',
+        // oraichain
+        remoteChannel: 'channel-229',
+      },
     },
   },
   {
@@ -1048,6 +1066,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-216',
         // osmosis
         remoteChannel: 'channel-20862',
+      },
+      [ChainId.JunoMainnet]: {
+        // oraichain
+        note: 'orai1nu034cg5w2eax65n5nx9q92gaahywehjwfagf2cutwndt3jw66rsuj9n5a',
+        // oraichain
+        listener:
+          'orai10urjh074nxcmy98sxl98rj63gyexdjvx5w7ttrtwsqsur3ucpk6qftv9ek',
+        // juno
+        voice:
+          'juno1r9uz5a35ru3tpsjktd3a7kgj3afmrq993trkpmmxxlxwmtethc0s6s7v2y',
+        // oraichain
+        localConnection: 'connection-150',
+        // juno
+        remoteConnection: 'connection-521',
+        // oraichain
+        localChannel: 'channel-230',
+        // juno
+        remoteChannel: 'channel-530',
       },
     },
   },
