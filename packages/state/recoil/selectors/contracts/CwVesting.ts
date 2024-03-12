@@ -1,6 +1,11 @@
 import { selectorFamily } from 'recoil'
 
-import { Uint128, Uint64, WithChainId } from '@dao-dao/types'
+import {
+  CwVestingStakeHistory,
+  Uint128,
+  Uint64,
+  WithChainId,
+} from '@dao-dao/types'
 import { OwnershipForAddr, Vest } from '@dao-dao/types/contracts/CwVesting'
 
 import {
@@ -169,41 +174,6 @@ export const stakeSelector = selectorFamily<
 })
 
 //! Custom selectors
-
-export type CwVestingStakeEvent = {
-  blockHeight: string
-  blockTimeUnixMs: string
-} & (
-  | {
-      type: 'delegate'
-      validator: string
-      amount: string
-    }
-  | {
-      type: 'undelegate'
-      validator: string
-      amount: string
-    }
-  | {
-      type: 'redelegate'
-      fromValidator: string
-      toValidator: string
-      amount: string
-    }
-)
-
-export type CwVestingSlashRegistration = {
-  validator: string
-  // Nanoseconds.
-  time: string
-  amount: string
-  duringUnbonding: boolean
-}
-
-export type CwVestingStakeHistory = {
-  stakeEvents: CwVestingStakeEvent[]
-  slashRegistrations: CwVestingSlashRegistration[]
-}
 
 // TODO(indexer): Use TX events indexer for this instead.
 export const stakeHistorySelector = selectorFamily<

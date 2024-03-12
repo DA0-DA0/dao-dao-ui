@@ -27,6 +27,7 @@ import {
   TokenType,
   UnbondingDelegation,
   Validator,
+  ValidatorSlash,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -1507,22 +1508,6 @@ export const walletHexPublicKeySelector = selectorFamily<
       return toHex(fromBase64(account.pubkey.value))
     },
 })
-
-export type ValidatorSlash = {
-  registeredBlockHeight: string
-  registeredBlockTimeUnixMs: string
-  infractionBlockHeight: string
-  // Slash fraction applied to validator's undelegating and redelegating tokens.
-  slashFactor: string
-  amountSlashed: string
-  // Slash fraction applied to validator's current delegations. It may be less
-  // than `slashFactor`.
-  effectiveFraction: string
-  // Amount of tokens slashed from delegations. This should be `amountSlashed`
-  // minus the amount slashed from the validator's undelegating and redelegating
-  // tokens.
-  stakedTokensBurned: string
-}
 
 // TODO(indexer): Use TX events indexer for this instead.
 export const validatorSlashesSelector = selectorFamily<

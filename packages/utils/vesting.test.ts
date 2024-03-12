@@ -1,9 +1,9 @@
-import { ValidatorSlash } from '@dao-dao/state/recoil'
 import {
   CwVestingSlashRegistration,
   CwVestingStakeEvent,
-} from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
-import { VestingValidatorSlash } from '@dao-dao/types'
+  ValidatorSlash,
+  VestingValidatorSlash,
+} from '@dao-dao/types'
 
 import {
   getSlashedStakedUnstaking,

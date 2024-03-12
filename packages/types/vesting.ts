@@ -136,3 +136,38 @@ export type VestingStep = {
   // Total amount vested at this timestamp.
   amount: number
 }
+
+export type CwVestingStakeEvent = {
+  blockHeight: string
+  blockTimeUnixMs: string
+} & (
+  | {
+      type: 'delegate'
+      validator: string
+      amount: string
+    }
+  | {
+      type: 'undelegate'
+      validator: string
+      amount: string
+    }
+  | {
+      type: 'redelegate'
+      fromValidator: string
+      toValidator: string
+      amount: string
+    }
+)
+
+export type CwVestingSlashRegistration = {
+  validator: string
+  // Nanoseconds.
+  time: string
+  amount: string
+  duringUnbonding: boolean
+}
+
+export type CwVestingStakeHistory = {
+  stakeEvents: CwVestingStakeEvent[]
+  slashRegistrations: CwVestingSlashRegistration[]
+}

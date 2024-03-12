@@ -1,9 +1,7 @@
-import { ValidatorSlash } from '@dao-dao/state/recoil'
 import {
   CwVestingStakeEvent,
   CwVestingStakeHistory,
-} from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
-import {
+  ValidatorSlash,
   VestingValidatorSlash,
   VestingValidatorWithSlashes,
 } from '@dao-dao/types'
