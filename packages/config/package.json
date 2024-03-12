@@ -25,5 +25,5 @@
     "typescript": "5.3.3"
   },
   "prettier": "./prettier/index.js",
-  "gitHead": "bd677d09eafd9675aadb3fb1d220e4737fe21a0f"
+  "gitHead": "8f3a8f6aefbb2779fdda1f59c37e8bfacc87428d"
 }

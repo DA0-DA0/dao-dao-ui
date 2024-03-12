@@ -101,5 +101,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "bd677d09eafd9675aadb3fb1d220e4737fe21a0f"
+  "gitHead": "8f3a8f6aefbb2779fdda1f59c37e8bfacc87428d"
 }
