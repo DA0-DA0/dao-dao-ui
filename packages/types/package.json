@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.4.0-rc.4",
+  "version": "2.4.0-rc.5",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -18,7 +18,7 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.4"
+    "@dao-dao/config": "2.4.0-rc.5"
   },
   "peerDependencies": {
     "next": "^12 || ^13",

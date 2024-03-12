@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/state",
-  "version": "2.4.0-rc.4",
+  "version": "2.4.0-rc.5",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc && npm run build:gql",
@@ -15,7 +15,7 @@
     "@cosmjs/encoding": "^0.32.1",
     "@cosmjs/proto-signing": "^0.32.1",
     "@cosmjs/stargate": "^0.32.1",
-    "@dao-dao/utils": "2.4.0-rc.4",
+    "@dao-dao/utils": "2.4.0-rc.5",
     "graphql": "^16.8.1",
     "json5": "^2.2.0",
     "lodash.uniq": "^4.5.0",
@@ -25,8 +25,8 @@
   },
   "devDependencies": {
     "@cosmos-kit/core": "^2.8.9",
-    "@dao-dao/config": "2.4.0-rc.4",
-    "@dao-dao/types": "2.4.0-rc.4",
+    "@dao-dao/config": "2.4.0-rc.5",
+    "@dao-dao/types": "2.4.0-rc.5",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
