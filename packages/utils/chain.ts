@@ -312,16 +312,16 @@ export const getIbcTransferInfoBetweenChains = (
 
   const info = ibc.find(
     ({ chain_1, chain_2, channels }) =>
-      (chain_1.chain_name === srcChainName &&
+      ((chain_1.chain_name === srcChainName &&
         chain_2.chain_name === destChainName) ||
-      (chain_1.chain_name === destChainName &&
-        chain_2.chain_name === srcChainName &&
-        channels.some(
-          ({ chain_1, chain_2, version }) =>
-            version === 'ics20-1' &&
-            chain_1.port_id === 'transfer' &&
-            chain_2.port_id === 'transfer'
-        ))
+        (chain_1.chain_name === destChainName &&
+          chain_2.chain_name === srcChainName)) &&
+      channels.some(
+        ({ chain_1, chain_2, version }) =>
+          version === 'ics20-1' &&
+          chain_1.port_id === 'transfer' &&
+          chain_2.port_id === 'transfer'
+      )
   )
   if (!info) {
     throw new Error(
