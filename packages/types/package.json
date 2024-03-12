@@ -25,5 +25,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "e88c8a0c97b9e800617620617814d2313346b7fc"
+  "gitHead": "5fe79ba6ec467126321581d9a92d3389c96c8220"
 }
