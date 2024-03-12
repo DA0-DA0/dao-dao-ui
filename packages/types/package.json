@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.4.0-rc.3",
+  "version": "2.4.0-rc.4",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -8,9 +8,7 @@
   },
   "dependencies": {
     "@chain-registry/types": "^0.17.1",
-    "@cosmjs/cosmwasm-stargate": "^0.32.1",
     "@cosmos-kit/web3auth": "^2.5.9",
-    "@dao-dao/config": "2.4.0-rc.3",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
     "react": "^18.2.0",
@@ -18,6 +16,9 @@
     "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
     "typescript": "5.3.3"
+  },
+  "devDependencies": {
+    "@dao-dao/config": "2.4.0-rc.4"
   },
   "peerDependencies": {
     "next": "^12 || ^13",
