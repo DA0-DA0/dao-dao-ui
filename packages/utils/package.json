@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/utils",
-  "version": "2.4.0-rc.0",
+  "version": "2.4.0-rc.1",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -35,8 +35,8 @@
     "@chain-registry/types": "^0.17.1",
     "@cosmjs/proto-signing": "^0.32.1",
     "@cosmology/telescope": "^1.4.12",
-    "@dao-dao/config": "2.4.0-rc.0",
-    "@dao-dao/types": "2.4.0-rc.0",
+    "@dao-dao/config": "2.4.0-rc.1",
+    "@dao-dao/types": "2.4.0-rc.1",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/ripemd160": "^2.0.0",
     "@types/semver": "^7.5.6",
@@ -53,5 +53,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "6e6067e622f478708ad30d2f331b8d81397f58b9"
+  "gitHead": "f9de63bfa28e223acb5cc07bc7a412b8324248e0"
 }
