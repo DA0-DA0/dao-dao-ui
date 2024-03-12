@@ -21,5 +21,6 @@
     "eslint-plugin-i18n-json": "^3.1.0",
     "i18n-unused": "^0.10.0"
   },
-  "prettier": "@dao-dao/config/prettier"
+  "prettier": "@dao-dao/config/prettier",
+  "gitHead": "6e6067e622f478708ad30d2f331b8d81397f58b9"
 }

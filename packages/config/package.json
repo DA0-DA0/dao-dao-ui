@@ -24,5 +24,6 @@
     "tailwindcss-safe-area": "^0.4.1",
     "typescript": "5.3.3"
   },
-  "prettier": "./prettier/index.js"
+  "prettier": "./prettier/index.js",
+  "gitHead": "6e6067e622f478708ad30d2f331b8d81397f58b9"
 }

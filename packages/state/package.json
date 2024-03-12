@@ -33,5 +33,6 @@
     "@types/lodash.uniq": "^4.5.7",
     "typescript": "5.3.3"
   },
-  "prettier": "@dao-dao/config/prettier"
+  "prettier": "@dao-dao/config/prettier",
+  "gitHead": "6e6067e622f478708ad30d2f331b8d81397f58b9"
 }
