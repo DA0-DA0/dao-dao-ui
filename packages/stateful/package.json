@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/stateful",
-  "version": "2.4.0-rc.5",
+  "version": "2.4.0-rc.6",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
@@ -38,10 +38,10 @@
     "@cosmos-kit/vectis": "^2.6.9",
     "@cosmos-kit/web3auth": "^2.5.9",
     "@cosmos-kit/xdefi": "^2.5.9",
-    "@dao-dao/i18n": "2.4.0-rc.5",
-    "@dao-dao/state": "2.4.0-rc.5",
-    "@dao-dao/stateless": "2.4.0-rc.5",
-    "@dao-dao/utils": "2.4.0-rc.5",
+    "@dao-dao/i18n": "2.4.0-rc.6",
+    "@dao-dao/state": "2.4.0-rc.6",
+    "@dao-dao/stateless": "2.4.0-rc.6",
+    "@dao-dao/utils": "2.4.0-rc.6",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -75,8 +75,8 @@
   "devDependencies": {
     "@chain-registry/types": "^0.17.1",
     "@cosmjs/amino": "^0.32.1",
-    "@dao-dao/config": "2.4.0-rc.5",
-    "@dao-dao/types": "2.4.0-rc.5",
+    "@dao-dao/config": "2.4.0-rc.6",
+    "@dao-dao/types": "2.4.0-rc.6",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/lodash.clonedeep": "^4.5.0",
@@ -96,7 +96,7 @@
     "typescript": "5.3.3"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "2.4.0-rc.5",
+    "@dao-dao/storybook": "2.4.0-rc.6",
     "next": "^12 || ^13",
     "react": "^17 || ^18"
   },

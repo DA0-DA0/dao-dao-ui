@@ -1,10 +1,7 @@
 {
   "name": "@dao-dao/utils",
-  "version": "2.4.0-rc.5",
+  "version": "2.4.0-rc.6",
   "license": "BSD-3-Clause-Clear",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
@@ -12,8 +9,7 @@
     "protobuf:codegen": "node protobuf/scripts/codegen.js",
     "protobuf:patch": "git apply protobuf/patches.diff",
     "protobuf:patch:update": "cd protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
-    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch",
-    "build": "tsup --dts"
+    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
     "@cosmjs/amino": "^0.32.1",
@@ -21,7 +17,7 @@
     "@cosmjs/encoding": "^0.32.1",
     "@cosmjs/stargate": "^0.32.1",
     "@cosmjs/tendermint-rpc": "^0.32.1",
-    "@dao-dao/types": "2.4.0-rc.5",
+    "@dao-dao/types": "2.4.0-rc.6",
     "@sentry/nextjs": "^7.7.0",
     "@types/semver": "^7.5.6",
     "ajv": "^8.11.0",
@@ -42,7 +38,7 @@
     "@chain-registry/types": "^0.17.1",
     "@cosmjs/proto-signing": "^0.32.1",
     "@cosmology/telescope": "^1.4.12",
-    "@dao-dao/config": "2.4.0-rc.5",
+    "@dao-dao/config": "2.4.0-rc.6",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/ripemd160": "^2.0.0",
     "cosmjs-types": "^0.9.0",
