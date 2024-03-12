@@ -34,5 +34,5 @@
     "typescript": "5.3.3"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "f9de63bfa28e223acb5cc07bc7a412b8324248e0"
+  "gitHead": "bd677d09eafd9675aadb3fb1d220e4737fe21a0f"
 }
