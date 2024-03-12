@@ -46,7 +46,6 @@
     "next": "^13.3.0",
     "nft.storage": "^7.0.0",
     "react": "^18.2.0",
-    "tsup": "^8.0.2",
     "typescript": "5.3.3"
   },
   "peerDependencies": {
@@ -54,13 +53,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "tsup": {
-    "entry": [
-      "index.ts"
-    ],
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true
-  },
   "gitHead": "5fe79ba6ec467126321581d9a92d3389c96c8220"
 }
