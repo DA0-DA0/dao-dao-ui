@@ -75,5 +75,5 @@
     "react-dom": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "5fe79ba6ec467126321581d9a92d3389c96c8220"
+  "gitHead": "67c8ffb27c34ee37b9367d3fde6856085081f40c"
 }
