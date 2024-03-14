@@ -57,6 +57,13 @@ export const DAO_APPS: DaoApp[] = [
     imageUrl: '/apps/kleomedes.png',
     url: 'https://dashboard.kleomed.es',
   },
+  {
+    name: 'Atlas',
+    imageUrl: '/apps/atlas.jpg',
+    url: MAINNET
+      ? 'https://app.atlasdao.zone'
+      : 'https://testapp.atlasdao.zone',
+  },
 
   // Must be last for index matching. Enables custom URL input.
   {
