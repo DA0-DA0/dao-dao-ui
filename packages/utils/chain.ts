@@ -17,7 +17,12 @@ import {
   TokenType,
   Validator,
 } from '@dao-dao/types'
-import { cosmos } from '@dao-dao/utils/protobuf'
+import { aminoTypes, cosmos, typesRegistry } from '@dao-dao/types/protobuf'
+import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import {
+  Validator as RpcValidator,
+  bondStatusToJSON,
+} from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/staking'
 
 import { getChainAssets } from './assets'
 import {
@@ -28,12 +33,6 @@ import {
   ibc,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
-import { aminoTypes, typesRegistry } from './messages/protobuf'
-import { ModuleAccount } from './protobuf/codegen/cosmos/auth/v1beta1/auth'
-import {
-  Validator as RpcValidator,
-  bondStatusToJSON,
-} from './protobuf/codegen/cosmos/staking/v1beta1/staking'
 
 export const getRpcForChainId = (
   chainId: string,

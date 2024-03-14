@@ -9,12 +9,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { Coin, CosmosMsgFor_Empty } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  cwMsgToEncodeObject,
-  makeWasmMessage,
-} from '@dao-dao/utils'
+import { Coin, CosmosMsgFor_Empty, cwMsgToEncodeObject } from '@dao-dao/types'
+import { CHAIN_GAS_MULTIPLIER, makeWasmMessage } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 

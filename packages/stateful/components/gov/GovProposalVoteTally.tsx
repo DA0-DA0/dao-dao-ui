@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
 import { GovProposalWithMetadata, ProcessedTQType } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { formatPercentOf100 } from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposal } from '../../hooks/useLoadingGovProposal'
 import { SuspenseLoader } from '../SuspenseLoader'

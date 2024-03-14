@@ -17,6 +17,9 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
+import { PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 import {
   ContractName,
   ICA_CHAINS_TX_PREFIX,
@@ -25,9 +28,6 @@ import {
   secp256k1PublicKeyToBech32Address,
   tokensEqual,
 } from '@dao-dao/utils'
-import { BaseAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
-import { LegacyAminoPubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto/multisig/keys'
-import { PubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 
 import { cosmosRpcClientForChainSelector } from './chain'
 import {

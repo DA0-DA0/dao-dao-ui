@@ -1,6 +1,5 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
-import { GenericToken } from '.'
 import { ChainId, WithChainId } from './chain'
 import {
   ButtonLinkProps,
@@ -10,6 +9,7 @@ import {
 } from './components'
 import { ContractInfoResponse } from './contracts/Cw721Base'
 import { LoadingDataWithError } from './misc'
+import { GenericToken } from './token'
 
 // Shape of type returned from Stargaze GraphQL indexer queries in
 // @dao-dao/state

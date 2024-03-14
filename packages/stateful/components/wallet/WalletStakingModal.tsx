@@ -17,11 +17,11 @@ import {
   useCachedLoadable,
   useChainContext,
 } from '@dao-dao/stateless'
+import { cwMsgToEncodeObject } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  cwMsgToEncodeObject,
   processError,
 } from '@dao-dao/utils'
 

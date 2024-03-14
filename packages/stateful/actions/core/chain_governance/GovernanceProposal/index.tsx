@@ -32,28 +32,28 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/types'
-import {
   cwMsgToProtobuf,
+  makeStargateMessage,
+} from '@dao-dao/types'
+import { CommunityPoolSpendProposal } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import {
+  MsgExecLegacyContent,
+  MsgSubmitProposal as MsgSubmitProposalV1,
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/tx'
+import { TextProposal } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { ParameterChangeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/params/v1beta1/params'
+import { SoftwareUpgradeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
+import {
   decodeGovProposalV1Messages,
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
-import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import {
-  MsgExecLegacyContent,
-  MsgSubmitProposal as MsgSubmitProposalV1,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
-import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
-import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
-import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { AddressInput } from '../../../../components/AddressInput'

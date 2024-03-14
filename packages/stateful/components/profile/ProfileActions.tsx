@@ -16,12 +16,15 @@ import {
   useCachedLoading,
   useHoldingKey,
 } from '@dao-dao/stateless'
-import { AccountTxForm, AccountTxSave } from '@dao-dao/types'
+import {
+  AccountTxForm,
+  AccountTxSave,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
-  cwMsgToEncodeObject,
   getRpcForChainId,
   getSignerOptions,
   processError,

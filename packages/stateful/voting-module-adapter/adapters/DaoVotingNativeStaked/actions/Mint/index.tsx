@@ -2,6 +2,7 @@ import { Coin, coin } from '@cosmjs/stargate'
 import { useCallback, useMemo } from 'react'
 
 import { HerbEmoji } from '@dao-dao/stateless'
+import { makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -10,13 +11,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgMint } from '@dao-dao/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   isDecodedStargateMsg,
-  makeStargateMessage,
 } from '@dao-dao/utils'
-import { MsgMint } from '@dao-dao/utils/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 
 import { useActionOptions } from '../../../../../actions'
 import { useGovernanceTokenInfo } from '../../hooks'

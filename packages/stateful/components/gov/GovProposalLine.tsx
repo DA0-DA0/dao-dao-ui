@@ -6,8 +6,8 @@ import {
   useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { getGovProposalPath } from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposalWalletVoteInfo } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'

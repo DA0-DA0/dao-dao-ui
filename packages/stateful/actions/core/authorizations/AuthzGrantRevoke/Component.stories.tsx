@@ -8,13 +8,13 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
-import { GenericAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/authz'
-import { MsgDelegate } from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import { GenericAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { MsgDelegate } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   AllowAllMessagesFilter,
   MaxCallsLimit,
-} from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/authz'
+} from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { AuthzGrantRevokeComponent } from './Component'
 import { AuthzGrantRevokeData } from './types'

@@ -31,6 +31,30 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  cosmos,
+  cosmwasm,
+  ibc,
+  juno,
+  neutron,
+  noble,
+  osmosis,
+} from '@dao-dao/types/protobuf'
+import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
+import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
+import {
+  ProposalStatus,
+  TallyResult,
+  Vote,
+  WeightedVoteOption,
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import {
+  Pool,
+  Validator as RpcValidator,
+} from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/staking'
+import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feerefunder/fee'
+import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
+import {
   addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs46OrHigher,
@@ -43,30 +67,6 @@ import {
   retry,
   stargateClientRouter,
 } from '@dao-dao/utils'
-import {
-  cosmos,
-  cosmwasm,
-  ibc,
-  juno,
-  neutron,
-  noble,
-  osmosis,
-} from '@dao-dao/utils/protobuf'
-import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
-import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
-import { DecCoin } from '@dao-dao/utils/protobuf/codegen/cosmos/base/v1beta1/coin'
-import {
-  ProposalStatus,
-  TallyResult,
-  Vote,
-  WeightedVoteOption,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import {
-  Pool,
-  Validator as RpcValidator,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/staking'
-import { Fee as NeutronFee } from '@dao-dao/utils/protobuf/codegen/neutron/feerefunder/fee'
-import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import {
   refreshBlockHeightAtom,

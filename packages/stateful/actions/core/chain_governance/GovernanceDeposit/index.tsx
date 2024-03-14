@@ -16,7 +16,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { ChainId, TokenType } from '@dao-dao/types'
+import { ChainId, TokenType, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -26,16 +26,15 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgDeposit } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'

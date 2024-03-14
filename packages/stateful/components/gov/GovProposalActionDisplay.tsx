@@ -12,13 +12,13 @@ import {
   GovProposalActionDisplayProps,
   GovProposalVersion,
 } from '@dao-dao/types'
+import { CommunityPoolSpendProposal } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { TextProposal } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   decodeMessages,
   decodeRawDataForDisplay,
   objectMatchesStructure,
 } from '@dao-dao/utils'
-import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useActionsForMatching } from '../../actions'
 import { PayEntityDisplay } from '../PayEntityDisplay'

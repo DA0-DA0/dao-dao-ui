@@ -49,11 +49,14 @@ import {
   PolytoneConnection,
   SelfRelayExecuteModalProps,
   TokenType,
+  cwMsgToEncodeObject,
 } from '@dao-dao/types'
+import { MsgGrant } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
+import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import { toTimestamp } from '@dao-dao/types/protobuf/codegen/helpers'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertMicroDenomToDenomWithDecimals,
-  cwMsgToEncodeObject,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -63,9 +66,6 @@ import {
   makeBankMessage,
   processError,
 } from '@dao-dao/utils'
-import { MsgGrant } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/tx'
-import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
-import { toTimestamp } from '@dao-dao/utils/protobuf/codegen/helpers'
 
 import { useWallet } from '../hooks'
 

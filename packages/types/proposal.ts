@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
@@ -155,4 +157,13 @@ export type NeutronTimelockOverrule = {
   dao: string
   proposalModulePrefix: string
   proposal: ProposalResponse
+}
+
+export type ProposalTimestampInfo = {
+  display?: {
+    label: string
+    tooltip?: string
+    content: ReactNode
+  }
+  expirationDate: Date
 }

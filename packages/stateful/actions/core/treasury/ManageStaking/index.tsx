@@ -23,6 +23,8 @@ import {
   CosmosMsgForEmpty,
   LoadingData,
   TokenType,
+  decodedStakingStargateMsgToCw,
+  makeStargateMessage,
 } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -34,26 +36,24 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  StakingActionType,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  decodePolytoneExecuteMsg,
-  decodedStakingStargateMsgToCw,
-  getChainAddressForActionOptions,
-  getNativeTokenForChainId,
-  isDecodedStargateMsg,
-  makeStargateMessage,
-  maybeMakePolytoneExecuteMessage,
-} from '@dao-dao/utils'
-import {
   MsgSetWithdrawAddress,
   MsgWithdrawDelegatorReward,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+} from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import {
   MsgBeginRedelegate,
   MsgDelegate,
   MsgUndelegate,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
+} from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  StakingActionType,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
+  getNativeTokenForChainId,
+  isDecodedStargateMsg,
+  maybeMakePolytoneExecuteMessage,
+} from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'

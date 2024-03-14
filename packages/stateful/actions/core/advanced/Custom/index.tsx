@@ -2,6 +2,7 @@ import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
 import { RobotEmoji } from '@dao-dao/stateless'
+import { makeStargateMessage } from '@dao-dao/types'
 import {
   ActionKey,
   ActionMaker,
@@ -9,7 +10,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeStargateMessage, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import { CustomComponent as Component, CustomData } from './Component'
 

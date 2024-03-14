@@ -28,11 +28,11 @@ import {
   ActionComponentProps,
   ActionContextType,
 } from '@dao-dao/types/actions'
-import { formatPercentOf100, validateRequired } from '@dao-dao/utils'
 import {
   VoteOption,
   WeightedVoteOption,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { formatPercentOf100, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 

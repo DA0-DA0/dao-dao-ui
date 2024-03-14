@@ -17,8 +17,8 @@ import {
   GovProposalWithDecodedContent,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { formatDateTimeTz, govProposalToDecodedContent } from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useChainContext, useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { IconButtonLink } from '../icon_buttons'

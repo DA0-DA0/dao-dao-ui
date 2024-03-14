@@ -13,7 +13,7 @@ import {
   ChainProvider,
   DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { TokenType, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -23,6 +23,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -31,12 +32,10 @@ import {
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
-import { MsgInstantiateContract2 } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'

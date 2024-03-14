@@ -16,17 +16,17 @@ import {
   UseDefaults,
   UseHideFromPicker,
   UseTransformToCosmos,
+  makeStargateMessage,
 } from '@dao-dao/types'
+import { MsgRegisterInterchainAccount } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import { Metadata } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
 import {
   getChainForChainName,
   getDisplayNameForChainId,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromConnection,
   isDecodedStargateMsg,
-  makeStargateMessage,
 } from '@dao-dao/utils'
-import { MsgRegisterInterchainAccount } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
-import { Metadata } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
 
 import { useActionOptions } from '../../../react'
 import { CreateIcaComponent, CreateIcaData } from './Component'

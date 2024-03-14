@@ -3,7 +3,7 @@ import cloneDeep from 'lodash.clonedeep'
 import { useCallback } from 'react'
 
 import { PickEmoji } from '@dao-dao/stateless'
-import { ChainId } from '@dao-dao/types'
+import { ChainId, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionContextType,
   ActionKey,
@@ -12,23 +12,22 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/ed25519/keys'
+import { MsgWithdrawValidatorCommission } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/types/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   getChainForChainId,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   toValidatorAddress,
 } from '@dao-dao/utils'
-import { PubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto/ed25519/keys'
-import { MsgWithdrawValidatorCommission } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgUnjail } from '@dao-dao/utils/protobuf/codegen/cosmos/slashing/v1beta1/tx'
-import {
-  MsgCreateValidator,
-  MsgEditValidator,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
 
 import {
   ValidatorActionsComponent as Component,

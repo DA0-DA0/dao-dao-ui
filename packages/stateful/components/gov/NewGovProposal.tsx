@@ -57,6 +57,11 @@ import {
   GovernanceProposalActionData,
   ProposalDraft,
 } from '@dao-dao/types'
+import { BinaryReader } from '@dao-dao/types/protobuf'
+import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/tx'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
   CHAIN_GAS_MULTIPLIER,
   dateToWdhms,
@@ -69,11 +74,6 @@ import {
   isCosmWasmStargateMsg,
   processError,
 } from '@dao-dao/utils'
-import { BinaryReader } from '@dao-dao/utils/protobuf'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { WalletActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'

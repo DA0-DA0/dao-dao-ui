@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
-import { ChainId } from '@dao-dao/types'
+import { ChainId, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -10,11 +10,11 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
 import {
   MsgRegisterFeeShare,
   MsgUpdateFeeShare,
-} from '@dao-dao/utils/protobuf/codegen/juno/feeshare/v1/tx'
+} from '@dao-dao/types/protobuf/codegen/juno/feeshare/v1/tx'
+import { isDecodedStargateMsg } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { FeeShareComponent, FeeShareData } from './Component'

@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import { GovProposal, LoadingData, ProposalTimestampInfo } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useTranslatedTimeDeltaFormatter } from './useTranslatedTimeDeltaFormatter'
 

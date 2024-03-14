@@ -2,8 +2,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID, ReactHookFormDecorator } from '@dao-dao/storybook'
 import { GovProposalVersion } from '@dao-dao/types'
-import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
-import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
+import { SoftwareUpgradeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 
 import {
   GovProposalActionDisplay,

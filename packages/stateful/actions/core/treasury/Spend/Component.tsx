@@ -44,6 +44,7 @@ import {
   ActionContextType,
   ActionKey,
 } from '@dao-dao/types/actions'
+import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -59,7 +60,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import { useActionOptions } from '../../../react'
 

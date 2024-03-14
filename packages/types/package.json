@@ -3,8 +3,12 @@
   "version": "2.4.0-rc.7",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
+    "lint": "eslint .",
     "format": "eslint . --fix",
-    "lint": "eslint ."
+    "protobuf:codegen": "node src/protobuf/scripts/codegen.js",
+    "protobuf:patch": "git apply src/protobuf/patches.diff",
+    "protobuf:patch:update": "cd src/protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
+    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
     "@chain-registry/types": "^0.17.1",
@@ -18,7 +22,8 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.7"
+    "@dao-dao/config": "2.4.0-rc.7",
+    "@cosmology/telescope": "^1.4.12"
   },
   "peerDependencies": {
     "next": "^12 || ^13",

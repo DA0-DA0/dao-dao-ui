@@ -8,7 +8,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'

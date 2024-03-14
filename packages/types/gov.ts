@@ -1,25 +1,22 @@
-import { ReactNode } from 'react'
-
-import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { NestedActionsEditorFormData } from './actions'
+import { Coin, CosmosMsgFor_Empty } from './contracts'
+import { LoadingData } from './misc'
+import { ProcessedTQ, ProposalTimestampInfo } from './proposal'
+import { CommunityPoolSpendProposal } from './protobuf/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Params as GovParamsV1,
   Proposal as ProposalV1,
   WeightedVoteOption,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
+} from './protobuf/codegen/cosmos/gov/v1/gov'
 import {
   Proposal as ProposalV1Beta1,
   TextProposal,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
+} from './protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ParameterChangeProposal } from './protobuf/codegen/cosmos/params/v1beta1/params'
 import {
   CancelSoftwareUpgradeProposal,
   SoftwareUpgradeProposal,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
-
-import { NestedActionsEditorFormData } from './actions'
-import { Coin, CosmosMsgFor_Empty } from './contracts'
-import { LoadingData } from './misc'
-import { ProcessedTQ } from './proposal'
+} from './protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 export { ProposalV1Beta1, ProposalV1 }
 
@@ -83,15 +80,6 @@ export type GovProposalWithMetadata = GovProposal & {
   walletVoteInfo: LoadingData<GovProposalWalletVoteInfo>
   // Deposit needed to ender voting period.
   minDeposit: Coin[]
-}
-
-export type ProposalTimestampInfo = {
-  display?: {
-    label: string
-    tooltip?: string
-    content: ReactNode
-  }
-  expirationDate: Date
 }
 
 export type GovProposalVotesInfo = {

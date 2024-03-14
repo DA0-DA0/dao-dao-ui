@@ -10,9 +10,9 @@ import {
   CosmosMessageDisplay,
   Modal,
 } from '@dao-dao/stateless'
-import { ActionAndData } from '@dao-dao/types'
-import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
-import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
+import { ActionAndData, protobufToCwMsg } from '@dao-dao/types'
+import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
+import { decodeMessages } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { WalletActionsProvider } from '../../actions/react/provider'

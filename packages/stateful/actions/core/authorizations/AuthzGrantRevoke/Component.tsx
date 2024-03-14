@@ -26,16 +26,8 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  getNativeTokenForChainId,
-  makeValidateAddress,
-  makeWasmMessage,
-  validateCosmosMsg,
-  validateNonNegative,
-  validateRequired,
-} from '@dao-dao/utils'
-import { GenericAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/authz'
-import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import { GenericAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/authz'
 import {
   AcceptedMessageKeysFilter,
   AcceptedMessagesFilter,
@@ -44,7 +36,15 @@ import {
   ContractMigrationAuthorization,
   MaxCallsLimit,
   MaxFundsLimit,
-} from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/authz'
+} from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
+import {
+  getNativeTokenForChainId,
+  makeValidateAddress,
+  makeWasmMessage,
+  validateCosmosMsg,
+  validateNonNegative,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import {
   ACTION_TYPES,

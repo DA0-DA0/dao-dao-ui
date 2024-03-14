@@ -2,10 +2,10 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Coin, SigningStargateClient } from '@cosmjs/stargate'
 import { findAttribute, parseRawLog } from '@cosmjs/stargate/build/logs'
 
-import { ContractVersion } from '@dao-dao/types'
+import { ContractVersion, cwMsgToEncodeObject } from '@dao-dao/types'
 
 import { CHAIN_GAS_MULTIPLIER } from './constants'
-import { cwMsgToEncodeObject, encodeMessageAsBase64 } from './messages'
+import { encodeMessageAsBase64 } from './messages'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
 

@@ -9,11 +9,9 @@ import {
   FilterableItemPopup,
   useChain,
 } from '@dao-dao/stateless'
-import { ChainId } from '@dao-dao/types'
+import { ChainId, PROTOBUF_TYPES, makeStargateMessage } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  PROTOBUF_TYPES,
-  makeStargateMessage,
   makeWasmMessage,
   objectMatchesStructure,
   validateCosmosMsg,
