@@ -7,6 +7,7 @@ import {
   ModalProps,
   StatefulEntityDisplayProps,
 } from './components'
+import { Duration } from './contracts/common'
 import { ContractInfoResponse } from './contracts/Cw721Base'
 import { LoadingDataWithError } from './misc'
 import { GenericToken } from './token'
@@ -164,4 +165,5 @@ export type NftSelectionModalProps = Omit<ModalProps, 'children' | 'header'> &
     headerDisplay?: ReactNode
     // What displays when there are no NFTs.
     noneDisplay?: ReactNode
+    unstakingDuration?: Duration | null
   }

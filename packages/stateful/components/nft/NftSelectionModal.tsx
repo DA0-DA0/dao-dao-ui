@@ -17,6 +17,7 @@ import {
   PAGINATION_MIN_PAGE,
   Pagination,
   SearchBar,
+  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { useButtonPopupFilter, useSearchFilter } from '@dao-dao/stateless/hooks'
 import {
@@ -26,7 +27,11 @@ import {
   NftSelectionModalProps,
   TypedOption,
 } from '@dao-dao/types'
-import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
+import {
+  convertDurationToHumanReadableString,
+  getChainForChainId,
+  getDisplayNameForChainId,
+} from '@dao-dao/utils'
 
 import { LazyNftCard } from './LazyNftCard'
 
@@ -51,6 +56,7 @@ export const NftSelectionModal = ({
   headerDisplay,
   headerContent,
   noneDisplay,
+  unstakingDuration,
   ...modalProps
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
@@ -204,6 +210,30 @@ export const NftSelectionModal = ({
       headerContent={
         headerDisplay || showHeaderNftControls || headerContent ? (
           <div className="mt-4 flex flex-col gap-4">
+            {unstakingDuration &&
+              ('height' in unstakingDuration
+                ? unstakingDuration.height
+                : unstakingDuration.time) > 0 && (
+                <div className="-mt-3 flex flex-row items-center gap-1">
+                  <p className="secondary-text">
+                    {t('title.unstakingPeriod') +
+                      `: ${convertDurationToHumanReadableString(
+                        t,
+                        unstakingDuration
+                      )}`}
+                  </p>
+                  <TooltipInfoIcon
+                    size="xs"
+                    title={t('info.unstakingMechanics', {
+                      humanReadableTime: convertDurationToHumanReadableString(
+                        t,
+                        unstakingDuration
+                      ),
+                    })}
+                  />
+                </div>
+              )}
+
             {headerDisplay}
 
             {showHeaderNftControls && (
