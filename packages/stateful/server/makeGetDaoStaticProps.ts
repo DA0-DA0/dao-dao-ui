@@ -32,6 +32,7 @@ import {
   ListItemsResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
+import { cosmos } from '@dao-dao/types/protobuf'
 import {
   CHAIN_SUBDAOS,
   CI,
@@ -59,7 +60,6 @@ import {
   processError,
   retry,
 } from '@dao-dao/utils'
-import { cosmos } from '@dao-dao/utils/protobuf'
 
 import { DaoPageWrapperProps } from '../components'
 import {

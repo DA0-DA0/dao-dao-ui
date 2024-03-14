@@ -20,11 +20,11 @@ import {
   NeutronTimelockOverrule,
   ProposalStatusEnum,
   ProposalStatusKey,
+  cwMsgToEncodeObject,
 } from '@dao-dao/types'
 import { VetoConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CHAIN_GAS_MULTIPLIER,
-  cwMsgToEncodeObject,
   getDaoProposalSinglePrefill,
   makeCw1WhitelistExecuteMessage,
   makeWasmMessage,

@@ -4,7 +4,12 @@ import { useFormContext } from 'react-hook-form'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { DownArrowEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
-import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import {
+  ChainId,
+  TokenType,
+  UseDecodedCosmosMsg,
+  makeStargateMessage,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -12,16 +17,15 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgFundCommunityPool } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
-import { MsgFundCommunityPool } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import {

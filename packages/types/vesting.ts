@@ -1,5 +1,5 @@
-import { GenericToken } from '@dao-dao/types'
-import { Vest } from '@dao-dao/types/contracts/CwVesting'
+import { Vest } from './contracts/CwVesting'
+import { GenericToken } from './token'
 
 export enum VestingContractVersion {
   /**

@@ -16,6 +16,7 @@ import {
   ProposalV1Beta1,
   SupportedFeatureMap,
 } from '@dao-dao/types'
+import { cosmos } from '@dao-dao/types/protobuf'
 import {
   CI,
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -30,7 +31,6 @@ import {
   processError,
   retry,
 } from '@dao-dao/utils'
-import { cosmos } from '@dao-dao/utils/protobuf'
 
 import { GovPageWrapperProps } from '../components'
 

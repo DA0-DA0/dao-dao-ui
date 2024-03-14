@@ -10,11 +10,11 @@ import {
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { makeValidateAddress } from '@dao-dao/utils'
 import {
   MsgRegisterFeeShare,
   MsgUpdateFeeShare,
-} from '@dao-dao/utils/protobuf/codegen/juno/feeshare/v1/tx'
+} from '@dao-dao/types/protobuf/codegen/juno/feeshare/v1/tx'
+import { makeValidateAddress } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 

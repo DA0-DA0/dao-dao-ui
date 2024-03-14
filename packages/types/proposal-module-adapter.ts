@@ -26,9 +26,8 @@ import {
   ProposalModule,
 } from './dao'
 import { ContractVersion } from './features'
-import { ProposalTimestampInfo } from './gov'
 import { LoadingData } from './misc'
-import { ProposalCreatedCardProps } from './proposal'
+import { ProposalCreatedCardProps, ProposalTimestampInfo } from './proposal'
 
 export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
   // Fields

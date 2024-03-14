@@ -4,7 +4,7 @@ import {
   getChainForChainId,
   getNativeTokenForChainId,
   secp256k1PublicKeyToBech32Address,
-} from '@dao-dao/utils'
+} from './chain'
 
 export type SignatureOptions<
   Data extends Record<string, unknown> | undefined = Record<string, any>

@@ -30,22 +30,22 @@ import {
   BaseNewProposalProps,
   CosmosMsgFor_Empty,
   ProposalDraft,
+  aminoTypes,
+  decodedStargateMsgToCw,
+  protobufToCwMsg,
 } from '@dao-dao/types'
+import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   DaoProposalSingleAdapterId,
   SITE_URL,
-  aminoTypes,
   decodeMessages,
-  decodedStargateMsgToCw,
   getAccountAddress,
   getAccountChainId,
   getDisplayNameForChainId,
   getFallbackImage,
   maybeMakePolytoneExecuteMessage,
-  protobufToCwMsg,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
-import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
 import { useActionsForMatching } from '../../../actions'
 import { useProfile } from '../../../hooks'

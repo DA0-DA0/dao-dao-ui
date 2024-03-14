@@ -37,6 +37,10 @@ import {
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import { CommunityPoolSpendProposal } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ParameterChangeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/params/v1beta1/params'
+import { SoftwareUpgradeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import {
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
@@ -46,10 +50,6 @@ import {
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
-import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
-import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { useActionOptions } from '../../../react'
 

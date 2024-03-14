@@ -28,6 +28,7 @@ import {
   LoadingDataWithError,
   TokenType,
   UseDecodedCosmosMsg,
+  makeStargateMessage,
 } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -37,6 +38,9 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgCommunityPoolSpend } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
+import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/types/protobuf/codegen/neutron/transfer/v1/tx'
 import {
   MAINNET,
   convertDenomToMicroDenomStringWithDecimals,
@@ -55,7 +59,6 @@ import {
   isDecodedStargateMsg,
   isValidBech32Address,
   makeBankMessage,
-  makeStargateMessage,
   makeWasmMessage,
   maybeGetNativeTokenForChainId,
   maybeMakeIcaExecuteMessage,
@@ -64,9 +67,6 @@ import {
   parseValidPfmMemo,
   transformBech32Address,
 } from '@dao-dao/utils'
-import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
-import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/utils/protobuf/codegen/neutron/transfer/v1/tx'
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'

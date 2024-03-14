@@ -1,9 +1,9 @@
 import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
+import { MsgSend } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/tx'
+import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { getIbcTransferInfoBetweenChains } from '@dao-dao/utils'
-import { MsgSend } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/tx'
-import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
 
 import { ibcRpcClientForChainSelector } from './chain'
 

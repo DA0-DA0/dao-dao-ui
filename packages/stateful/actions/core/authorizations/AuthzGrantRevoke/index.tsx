@@ -9,7 +9,7 @@ import {
   KeyEmoji,
   Loader,
 } from '@dao-dao/stateless'
-import { Coin } from '@dao-dao/types'
+import { Coin, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -19,23 +19,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  decodePolytoneExecuteMsg,
-  getChainAddressForActionOptions,
-  getTokenForChainIdAndDenom,
-  isDecodedStargateMsg,
-  makeStargateMessage,
-  maybeMakePolytoneExecuteMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
-import { GenericAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { GenericAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/authz'
 import {
   MsgGrant,
   MsgRevoke,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/tx'
-import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
+} from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
+import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/authz'
 import {
   AcceptedMessageKeysFilter,
   AcceptedMessagesFilter,
@@ -44,8 +33,18 @@ import {
   ContractGrant,
   ContractMigrationAuthorization,
   MaxCallsLimit,
-} from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/authz'
-import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
+} from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
+import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
+  getTokenForChainIdAndDenom,
+  isDecodedStargateMsg,
+  maybeMakePolytoneExecuteMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../../../components'
 import { useTokenBalances } from '../../../hooks'

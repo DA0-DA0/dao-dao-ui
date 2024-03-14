@@ -9,6 +9,12 @@ import {
   SelectInput,
 } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import { MsgWithdrawValidatorCommission } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/types/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   getChainAddressForActionOptions,
   getChainForChainId,
@@ -16,12 +22,6 @@ import {
   toValidatorAddress,
   validateJSON,
 } from '@dao-dao/utils'
-import { MsgWithdrawValidatorCommission } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgUnjail } from '@dao-dao/utils/protobuf/codegen/cosmos/slashing/v1beta1/tx'
-import {
-  MsgCreateValidator,
-  MsgEditValidator,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
 
 import { useActionOptions } from '../../../react'
 

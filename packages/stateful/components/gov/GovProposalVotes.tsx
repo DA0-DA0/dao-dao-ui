@@ -16,7 +16,7 @@ import {
 import {
   VoteOption,
   voteOptionToJSON,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'

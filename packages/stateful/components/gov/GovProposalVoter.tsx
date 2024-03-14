@@ -12,12 +12,12 @@ import {
   useGovProposalVoteOptions,
 } from '@dao-dao/stateless'
 import { GovProposalWithMetadata, ProposalVoterProps } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 import {
   ProposalStatus,
   VoteOption,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgVote } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgVote } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'

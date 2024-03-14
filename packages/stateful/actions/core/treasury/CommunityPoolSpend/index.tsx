@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 import { MoneyEmoji } from '@dao-dao/stateless'
-import { UseDecodedCosmosMsg } from '@dao-dao/types'
+import { UseDecodedCosmosMsg, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -10,12 +10,8 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  isDecodedStargateMsg,
-  makeStargateMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
-import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgCommunityPoolSpend } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { isDecodedStargateMsg, objectMatchesStructure } from '@dao-dao/utils'
 
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import {

@@ -6,6 +6,7 @@ import {
   ComputerDiskEmoji,
   DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
+import { makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -15,14 +16,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
-import { MsgStoreCode } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { useActionOptions } from '../../../react'
 import { UploadCodeComponent, UploadCodeData } from './Component'

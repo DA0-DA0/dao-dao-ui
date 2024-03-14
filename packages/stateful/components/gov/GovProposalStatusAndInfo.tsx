@@ -35,6 +35,11 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
+  ProposalStatus,
+  Vote,
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -42,11 +47,6 @@ import {
   getGovPath,
   processError,
 } from '@dao-dao/utils'
-import {
-  ProposalStatus,
-  Vote,
-} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgDeposit } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'

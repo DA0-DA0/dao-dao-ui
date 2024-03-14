@@ -11,7 +11,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { DaoTabId, GovProposalWithDecodedContent } from '@dao-dao/types'
-import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { GovActionsProvider } from '../../actions'
 import { useLoadingGovProposal } from '../../hooks'

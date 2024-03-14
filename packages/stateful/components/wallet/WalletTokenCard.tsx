@@ -22,12 +22,16 @@ import {
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
+import {
+  ActionKey,
+  TokenCardInfo,
+  TokenType,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
-  cwMsgToEncodeObject,
   getMeTxPrefillPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,

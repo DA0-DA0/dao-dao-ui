@@ -2,7 +2,14 @@ import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DecodedIcaMsg, DecodedPolytoneMsg } from '@dao-dao/types'
+import {
+  DecodedIcaMsg,
+  DecodedPolytoneMsg,
+  cwMsgToProtobuf,
+  decodeStargateMessage,
+  makeStargateMessage,
+  protobufToCwMsg,
+} from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -10,6 +17,13 @@ import {
   StargateMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
+import { MsgSendTx } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import {
+  CosmosTx,
+  InterchainAccountPacketData,
+  Type,
+} from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
+import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
 
 import {
   getChainForChainName,
@@ -20,21 +34,8 @@ import {
 import { IBC_TIMEOUT_SECONDS } from '../constants'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
-import { MsgSendTx } from '../protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
-import {
-  CosmosTx,
-  InterchainAccountPacketData,
-  Type,
-} from '../protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
-import { MsgTransfer } from '../protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
-import {
-  cwMsgToProtobuf,
-  decodeStargateMessage,
-  isDecodedStargateMsg,
-  makeStargateMessage,
-  protobufToCwMsg,
-} from './protobuf'
+import { isDecodedStargateMsg } from './protobuf'
 
 type WasmMsgType =
   | 'execute'

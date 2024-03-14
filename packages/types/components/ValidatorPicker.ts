@@ -1,6 +1,7 @@
-import { GenericToken, TokenStake, Validator } from '@dao-dao/types'
+import { Validator } from '../chain'
+import { GenericToken, TokenStake } from '../token'
 
-export interface ValidatorPickerProps {
+export type ValidatorPickerProps = {
   validators: Validator[]
   stakes?: TokenStake[]
   selectedAddress?: string

@@ -5,11 +5,7 @@
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "test": "jest",
-    "protobuf:codegen": "node protobuf/scripts/codegen.js",
-    "protobuf:patch": "git apply protobuf/patches.diff",
-    "protobuf:patch:update": "cd protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
-    "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
+    "test": "jest"
   },
   "dependencies": {
     "@cosmjs/amino": "^0.32.1",
@@ -40,7 +36,6 @@
   "devDependencies": {
     "@chain-registry/types": "^0.17.1",
     "@cosmjs/proto-signing": "^0.32.1",
-    "@cosmology/telescope": "^1.4.12",
     "@dao-dao/config": "2.4.0-rc.7",
     "cosmjs-types": "^0.9.0",
     "jest": "^29.1.1",
