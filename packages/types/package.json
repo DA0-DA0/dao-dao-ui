@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.4.0-rc.7",
+  "version": "2.4.0-rc.8",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "lint": "eslint .",
@@ -22,7 +22,7 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.7",
+    "@dao-dao/config": "2.4.0-rc.8",
     "@cosmology/telescope": "^1.4.12"
   },
   "peerDependencies": {
