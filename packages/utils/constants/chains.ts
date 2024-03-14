@@ -898,7 +898,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 2631,
       CwTokenSwap: 2632,
-      CwTokenfactoryIssuer: 2633,
+      CwTokenfactoryIssuerOsmosis: 2633,
       CwVesting: 2634,
       DaoCore: 2635,
       DaoMigrator: -1,
@@ -1030,7 +1030,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 1550,
       CwTokenSwap: 1551,
-      CwTokenfactoryIssuer: 1552,
+      CwTokenfactoryIssuerOsmosis: 1552,
       CwVesting: 1553,
       DaoCore: 1554,
       DaoMigrator: -1,
