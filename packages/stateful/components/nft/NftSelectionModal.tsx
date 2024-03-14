@@ -213,7 +213,7 @@ export const NftSelectionModal = ({
               ('height' in unstakingDuration
                 ? unstakingDuration.height
                 : unstakingDuration.time) > 0 && (
-                <div className="flex flex-row items-center gap-1">
+                <div className="-mt-3 flex flex-row items-center gap-1">
                   <p className="secondary-text">
                     {t('title.unstakingPeriod') +
                       `: ${convertDurationToHumanReadableString(
