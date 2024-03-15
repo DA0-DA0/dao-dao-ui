@@ -130,9 +130,30 @@ export const ActionLibrary = ({
     ? categories.find((c) => c.key === categoryKeySelected)
     : undefined
 
-  const showingActions = categoryKeySelected
-    ? (selectedCategory || categories[0]).actions
-    : filteredActions.slice(0, 10).map(({ item }) => item)
+  const showingActions = (
+    categoryKeySelected
+      ? (selectedCategory || categories[0]).actions
+      : filteredActions.slice(0, 10).map(({ item }) => item)
+  )
+    .filter(
+      (action) =>
+        // Never show programmatic actions.
+        !action.programmaticOnly &&
+        // Show if reusable or not already used.
+        (!action.notReusable ||
+          !actionData.some((a) => a.actionKey === action.key))
+    )
+    .sort((a, b) =>
+      a.order !== undefined && b.order !== undefined
+        ? a.order - b.order
+        : // Prioritize the action with an order set.
+        a.order
+        ? -1
+        : b.order
+        ? 1
+        : // Leave them sorted by the original order in the category definition.
+          0
+    )
 
   // Ensure selected item is scrolled into view.
   useEffect(() => {
@@ -284,54 +305,44 @@ export const ActionLibrary = ({
           className="flex min-w-0 grow flex-col gap-2 pt-1 md:pb-1"
           ref={itemsListRef}
         >
-          {showingActions
-            .filter(
-              (action) =>
-                // Never show programmatic actions.
-                !action.programmaticOnly &&
-                // Show if reusable or not already used.
-                (!action.notReusable ||
-                  !actionData.some((a) => a.actionKey === action.key))
-            )
-            .map((action, index) => (
-              <Button
-                key={categoryKeySelected + action.key}
-                className={clsx(
-                  selectedIndex === index &&
-                    'bg-background-interactive-selected'
-                )}
-                contentContainerClassName="gap-4 text-left"
-                disabled={
-                  loadingActionKeys.includes(action.key) ||
-                  !!erroredActionKeys[action.key]
-                }
-                onClick={() => onSelectAction(action)}
-                variant="ghost"
-              >
-                {action.Icon && (
-                  <p className="text-3xl">
-                    <action.Icon />
-                  </p>
-                )}
+          {showingActions.map((action, index) => (
+            <Button
+              key={categoryKeySelected + action.key}
+              className={clsx(
+                selectedIndex === index && 'bg-background-interactive-selected'
+              )}
+              contentContainerClassName="gap-4 text-left"
+              disabled={
+                loadingActionKeys.includes(action.key) ||
+                !!erroredActionKeys[action.key]
+              }
+              onClick={() => onSelectAction(action)}
+              variant="ghost"
+            >
+              {action.Icon && (
+                <p className="text-3xl">
+                  <action.Icon />
+                </p>
+              )}
 
-                <div className="flex grow flex-col items-start gap-1">
-                  <p className="primary-text">{action.label}</p>
-                  <p className="caption-text">{action.description}</p>
-                </div>
+              <div className="flex grow flex-col items-start gap-1">
+                <p className="primary-text">{action.label}</p>
+                <p className="caption-text">{action.description}</p>
+              </div>
 
-                {erroredActionKeys[action.key] && (
-                  <TooltipInfoIcon
-                    size="lg"
-                    title={erroredActionKeys[action.key]!.message}
-                    warning
-                  />
-                )}
+              {erroredActionKeys[action.key] && (
+                <TooltipInfoIcon
+                  size="lg"
+                  title={erroredActionKeys[action.key]!.message}
+                  warning
+                />
+              )}
 
-                {loadingActionKeys.includes(action.key) && (
-                  <Loader fill={false} size={32} />
-                )}
-              </Button>
-            ))}
+              {loadingActionKeys.includes(action.key) && (
+                <Loader fill={false} size={32} />
+              )}
+            </Button>
+          ))}
         </div>
       </div>
     </Collapsible>

@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  makeMigrateMigalooV4TokenFactoryAction,
   makeMintAction,
   makeUpdateMinterAllowanceAction,
   makeUpdateStakingConfigAction,
@@ -52,12 +53,18 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     fields: {
       actionCategoryMakers: [
         () => ({
+          // Add to Commonly Used category.
+          key: ActionCategoryKey.CommonlyUsed,
+          actionMakers: [makeMigrateMigalooV4TokenFactoryAction],
+        }),
+        () => ({
           // Add to DAO Governance category.
           key: ActionCategoryKey.DaoGovernance,
           actionMakers: [
             makeMintAction,
             makeUpdateMinterAllowanceAction,
             makeUpdateStakingConfigAction,
+            makeMigrateMigalooV4TokenFactoryAction,
           ],
         }),
       ],

@@ -81,6 +81,7 @@ export enum ActionKey {
   ManageSubDaoPause = 'manageSubDaoPause',
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
+  MigrateMigalooV4TokenFactory = 'migrateMigalooV4TokenFactory',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
@@ -191,6 +192,12 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // and `notReusable`, while also preventing the user from going back to the
   // category action picker or removing the action.
   programmaticOnly?: boolean
+  /**
+   * Order of this action in the list of actions. A greater number will be shown
+   * first. If no order specified, actions will be sorted based on their
+   * position in the category definition.
+   */
+  order?: number
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
