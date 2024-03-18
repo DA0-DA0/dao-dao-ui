@@ -89,7 +89,12 @@ const Component: ActionComponent = (props) => {
 
 const useDefaults: UseDefaults<CreateValenceAccountData> = () => ({
   chainId: VALENCE_SUPPORTED_CHAINS[0],
-  funds: [],
+  funds: [
+    {
+      denom: 'untrn',
+      amount: 10,
+    },
+  ],
 })
 
 export const makeCreateValenceAccountAction: ActionMaker<
