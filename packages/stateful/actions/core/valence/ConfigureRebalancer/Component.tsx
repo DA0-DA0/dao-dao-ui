@@ -1,4 +1,4 @@
-import { Close } from '@mui/icons-material'
+import { Close, InfoOutlined } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -489,63 +489,73 @@ export const ConfigureRebalancerComponent: ActionComponent<
       </div>
 
       <SwitchCard
-        containerClassName="self-end"
+        containerClassName="self-start mt-2"
         enabled={projection}
         label={t('form.projection')}
         onClick={() => setProjection((p) => !p)}
         sizing="sm"
       />
 
-      {projection &&
-        (nativeBalances.loading ||
-        prices.loading ||
-        denomWhitelistTokens.loading ? (
-          <Loader />
-        ) : prices.errored ? (
-          <ErrorPage error={prices.error} />
-        ) : (
-          <RebalancerProjector
-            assets={tokens.flatMap(
-              ({ denom, percent }): RebalancerProjectorAsset | [] => {
-                const token = denomWhitelistTokens.data.find(
-                  ({ denomOrAddress }) => denomOrAddress === denom
-                )
-                const { balance: _balance } =
-                  nativeBalances.data.find(
-                    ({ token }) => token.denomOrAddress === denom
-                  ) ?? {}
-                const balance = Number(_balance) || 0
-                const price = prices.data.find(
-                  ({ token: { denomOrAddress: priceDenom } }) =>
-                    priceDenom === denom
-                )?.usdPrice
+      {projection && (
+        <>
+          <div className="flex flex-row gap-1 items-start -mt-2 max-w-prose">
+            <InfoOutlined className="!h-4 !w-4 !text-icon-secondary" />
+            <p className="secondary-text">
+              {t('info.rebalancerProjectionExplanation')}
+            </p>
+          </div>
 
-                if (!token || !balance || price === undefined) {
-                  return []
-                }
+          {nativeBalances.loading ||
+          prices.loading ||
+          denomWhitelistTokens.loading ? (
+            <Loader />
+          ) : prices.errored ? (
+            <ErrorPage error={prices.error} />
+          ) : (
+            <RebalancerProjector
+              assets={tokens.flatMap(
+                ({ denom, percent }): RebalancerProjectorAsset | [] => {
+                  const token = denomWhitelistTokens.data.find(
+                    ({ denomOrAddress }) => denomOrAddress === denom
+                  )
+                  const { balance: _balance } =
+                    nativeBalances.data.find(
+                      ({ token }) => token.denomOrAddress === denom
+                    ) ?? {}
+                  const balance = Number(_balance) || 0
+                  const price = prices.data.find(
+                    ({ token: { denomOrAddress: priceDenom } }) =>
+                      priceDenom === denom
+                  )?.usdPrice
 
-                return {
-                  symbol: token.symbol,
-                  initialAmount: convertMicroDenomToDenomWithDecimals(
-                    balance,
-                    token.decimals
-                  ),
-                  targetProportion: percent / 100,
-                  // Add an extra price to account for the initial balance.
-                  prices: new Array(rebalanceTimestamps.length + 1)
-                    .fill(0)
-                    .map(() => price),
+                  if (!token || !balance || price === undefined) {
+                    return []
+                  }
+
+                  return {
+                    symbol: token.symbol,
+                    initialAmount: convertMicroDenomToDenomWithDecimals(
+                      balance,
+                      token.decimals
+                    ),
+                    targetProportion: percent / 100,
+                    // Add an extra price to account for the initial balance.
+                    prices: new Array(rebalanceTimestamps.length + 1)
+                      .fill(0)
+                      .map(() => price),
+                  }
                 }
-              }
-            )}
-            className="!h-72"
-            pid={{
-              ...pid,
-              interval: 1,
-            }}
-            rebalanceTimestamps={rebalanceTimestamps}
-          />
-        ))}
+              )}
+              className="!h-72"
+              pid={{
+                ...pid,
+                interval: 1,
+              }}
+              rebalanceTimestamps={rebalanceTimestamps}
+            />
+          )}
+        </>
+      )}
     </>
   )
 }
