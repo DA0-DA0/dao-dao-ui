@@ -39,5 +39,6 @@ Sentry.init({
     "Cannot assign to read only property 'keplr' of object '#<Window>'",
     'out of gas in location',
     'Load failed',
+    "'defineProperty' on proxy: trap returned falsish for property 'request'",
   ],
 })
