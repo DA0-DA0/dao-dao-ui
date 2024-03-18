@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IconButton, Tooltip, WarningCard } from '@dao-dao/stateless'
+import { IconButton, Loader, Tooltip, WarningCard } from '@dao-dao/stateless'
 import {
   InboxItemRendererProps,
   InboxItemType,
@@ -11,6 +11,7 @@ import {
 } from '@dao-dao/types'
 
 import { useInboxApi } from '../../hooks'
+import { SuspenseLoader } from '../SuspenseLoader'
 import { JoinedDaoRenderer, ProposalRenderer } from './renderers'
 
 export const InboxMainItemRenderer = ({
@@ -29,7 +30,14 @@ export const InboxMainItemRenderer = ({
     <div
       className={clsx('relative transition-opacity', checked && 'opacity-30')}
     >
-      <Renderer clear={clear} compact={compact} data={item.data} item={item} />
+      <SuspenseLoader fallback={<Loader />}>
+        <Renderer
+          clear={clear}
+          compact={compact}
+          data={item.data}
+          item={item}
+        />
+      </SuspenseLoader>
 
       <div
         className="absolute top-0 bottom-0 right-4 flex flex-row items-center"

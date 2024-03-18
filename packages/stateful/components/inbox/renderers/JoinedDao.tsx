@@ -25,6 +25,11 @@ export const JoinedDaoRenderer = ({
   clear,
   compact,
 }: InboxItemRendererProps<InboxItemTypeJoinedDaoData>) => {
+  // `chainId` is occasionally undefined.
+  if (item.chainId && !chainId) {
+    chainId = item.chainId
+  }
+
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
   const { setFollowing, updatingFollowing } = useFollowingDaos(chainId)
