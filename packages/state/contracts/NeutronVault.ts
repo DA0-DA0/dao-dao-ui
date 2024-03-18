@@ -11,12 +11,11 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Addr, Uint128 } from '@dao-dao/types'
+import { Addr, InfoResponse, Uint128 } from '@dao-dao/types'
 import {
   ArrayOfTupleOfAddrAndUint128,
   BondingStatusResponse,
   Config,
-  InfoResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/NeutronVault'

@@ -78,13 +78,6 @@ export interface Config {
   name: string
   owner: Addr
 }
-export interface InfoResponse {
-  info: ContractVersion
-}
-export interface ContractVersion {
-  contract: string
-  version: string
-}
 export type ArrayOfTupleOfAddrAndUint128 = [Addr, Uint128][]
 export interface TotalPowerAtHeightResponse {
   height: number

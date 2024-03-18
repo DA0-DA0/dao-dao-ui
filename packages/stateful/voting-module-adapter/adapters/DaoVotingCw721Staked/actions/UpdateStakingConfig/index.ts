@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
-import { GearEmoji } from '@dao-dao/stateless'
-import { DurationUnits } from '@dao-dao/types'
+import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
+import { DurationUnits, Feature } from '@dao-dao/types'
 import {
   ActionKey,
   ActionMaker,
@@ -12,6 +12,7 @@ import {
 import {
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
+  isFeatureSupportedByVersion,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -39,7 +40,8 @@ const useDefaults: UseDefaults<UpdateStakingConfigData> = () => {
 const useTransformToCosmos: UseTransformToCosmos<
   UpdateStakingConfigData
 > = () => {
-  const { stakingContractAddress } = useStakingInfo()
+  const { coreAddress } = useDaoInfoContext()
+  const { stakingContractVersion, stakingContractAddress } = useStakingInfo()
 
   return useCallback(
     ({ unstakingDurationEnabled, unstakingDuration }) =>
@@ -50,6 +52,16 @@ const useTransformToCosmos: UseTransformToCosmos<
             funds: [],
             msg: {
               update_config: {
+                // Prevent unsetting the NFT contract owner when updating config
+                // if using an old contract version.
+                ...(!isFeatureSupportedByVersion(
+                  Feature.DaoVotingCw721StakedNoOwner,
+                  stakingContractVersion
+                )
+                  ? {
+                      owner: coreAddress,
+                    }
+                  : {}),
                 duration: unstakingDurationEnabled
                   ? convertDurationWithUnitsToDuration(unstakingDuration)
                   : null,
@@ -58,7 +70,7 @@ const useTransformToCosmos: UseTransformToCosmos<
           },
         },
       }),
-    [stakingContractAddress]
+    [coreAddress, stakingContractAddress, stakingContractVersion]
   )
 }
 

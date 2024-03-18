@@ -62,6 +62,10 @@ export enum Feature {
    */
   VoteUntilExpiration,
   /**
+   * Owner was removed from dao-voting-cw721-staked.
+   */
+  DaoVotingCw721StakedNoOwner,
+  /**
    * A `funds` field was added to module instantiate messages (such as when
    * adding proposal modules).
    */

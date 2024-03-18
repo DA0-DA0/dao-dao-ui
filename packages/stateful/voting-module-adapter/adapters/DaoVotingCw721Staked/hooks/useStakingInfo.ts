@@ -10,6 +10,7 @@ import {
   CommonNftSelectors,
   DaoVotingCw721StakedSelectors,
   blockHeightSelector,
+  contractVersionSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
@@ -41,14 +42,20 @@ export const useStakingInfo = ({
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()
 
-  const unstakingDuration =
+  const [stakingContractVersion, { unstaking_duration: unstakingDuration }] =
     useRecoilValue(
-      DaoVotingCw721StakedSelectors.configSelector({
-        chainId,
-        contractAddress: votingModuleAddress,
-        params: [],
-      })
-    ).unstaking_duration ?? undefined
+      waitForAll([
+        contractVersionSelector({
+          chainId,
+          contractAddress: votingModuleAddress,
+        }),
+        DaoVotingCw721StakedSelectors.configSelector({
+          chainId,
+          contractAddress: votingModuleAddress,
+          params: [],
+        }),
+      ])
+    )
 
   const setRefreshTotalBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(undefined)
@@ -181,8 +188,9 @@ export const useStakingInfo = ({
   )
 
   return {
+    stakingContractVersion,
     stakingContractAddress: votingModuleAddress,
-    unstakingDuration,
+    unstakingDuration: unstakingDuration ?? undefined,
     refreshTotals,
     /// Optional
     // Claims

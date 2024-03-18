@@ -1,4 +1,5 @@
 import {
+  ContractVersion,
   Duration,
   GenericToken,
   LoadingData,
@@ -15,6 +16,7 @@ export interface UseStakingInfoOptions {
 }
 
 export interface UseStakingInfoResponse {
+  stakingContractVersion: ContractVersion
   stakingContractAddress: string
   unstakingDuration?: Duration
   refreshTotals: () => void
