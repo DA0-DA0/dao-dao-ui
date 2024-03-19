@@ -26,8 +26,8 @@ const useUpdateProposalConfigActions = (): ProposalModuleWithAction[] => {
 
   const proposalModuleActions = useMemo(
     () =>
-      proposalModules.flatMap(
-        (proposalModule): ProposalModuleWithAction | [] => {
+      proposalModules
+        .flatMap((proposalModule): ProposalModuleWithAction | [] => {
           const action = matchAndLoadCommon(proposalModule, {
             chain: options.chain,
             coreAddress,
@@ -39,8 +39,11 @@ const useUpdateProposalConfigActions = (): ProposalModuleWithAction[] => {
                 action,
               }
             : []
-        }
-      ),
+        })
+        // Sort proposal modules by prefix.
+        .sort((a, b) =>
+          a.proposalModule.prefix.localeCompare(b.proposalModule.prefix)
+        ),
     [coreAddress, options, proposalModules]
   )
 
