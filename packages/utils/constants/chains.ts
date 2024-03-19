@@ -454,6 +454,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 574,
       DaoVotingCw721Staked: 576,
       DaoVotingTokenStaked: 577,
+
+      ValenceAccount: 750,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -549,6 +551,12 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // kujira
         remoteChannel: 'channel-138',
       },
+    },
+    valence: {
+      servicesManager:
+        'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
+      rebalancer:
+        'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
   },
   {
@@ -1480,3 +1488,7 @@ chains
       explorerUrlTemplates,
     })
   })
+
+export const VALENCE_SUPPORTED_CHAINS = SUPPORTED_CHAINS.filter(
+  ({ valence }) => valence
+).map(({ chainId }) => chainId as ChainId)

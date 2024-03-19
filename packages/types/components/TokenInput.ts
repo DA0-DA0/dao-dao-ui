@@ -44,6 +44,11 @@ export type TokenInputProps<
   }
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
+  /**
+   * Optionally hide these tokens from the dropdown. This is useful to hide
+   * tokens that have already been selected.
+   */
+  hideTokens?: T[]
   onSelectToken: (token: T) => void
   selectedToken: Pick<T, 'chainId' | 'type' | 'denomOrAddress'> | undefined
   tokenFallback?: ReactNode

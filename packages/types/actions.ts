@@ -4,6 +4,7 @@ import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
+import { Account } from './account'
 import {
   ConfiguredChainContext,
   IChainContext,
@@ -12,7 +13,7 @@ import {
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
-import { PfpkProfile } from './profile'
+import { UnifiedProfile } from './profile'
 
 export enum ActionCategoryKey {
   CommonlyUsed = 'commonlyUsed',
@@ -22,6 +23,7 @@ export enum ActionCategoryKey {
   DaoGovernance = 'daoGovernance',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
+  Rebalancer = 'rebalancer',
   Nfts = 'nfts',
   Press = 'press',
   Advanced = 'advanced',
@@ -82,6 +84,19 @@ export enum ActionKey {
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
   MigrateMigalooV4TokenFactory = 'migrateMigalooV4TokenFactory',
+  // Valence
+  CreateValenceAccount = 'createValenceAccount',
+  ConfigureRebalancer = 'configureRebalancer',
+  PauseRebalancer = 'pauseRebalancer',
+  ResumeRebalancer = 'resumeRebalancer',
+  FundRebalancer = 'fundRebalancer',
+  WithdrawFromRebalancer = 'withdrawFromRebalancer',
+  // DaoProposalSingle
+  UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
+  UpdateProposalSingleConfig = 'updateProposalSingleConfig',
+  // DaoProposalMultiple
+  UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
+  UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
@@ -235,19 +250,23 @@ export enum ActionContextType {
   Gov = 'gov',
 }
 
-export type ActionContext =
+export type ActionContext = (
   | {
       type: ActionContextType.Dao
       info: DaoInfo
     }
   | {
       type: ActionContextType.Wallet
-      profile?: PfpkProfile
+      profile: UnifiedProfile
     }
   | {
       type: ActionContextType.Gov
       params: AllGovParams
     }
+) & {
+  // All contexts should have a list of accounts.
+  accounts: Account[]
+}
 
 export enum ActionChainContextType {
   /**

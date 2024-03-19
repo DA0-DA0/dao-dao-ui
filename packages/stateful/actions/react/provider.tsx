@@ -2,7 +2,11 @@ import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
-import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
+import {
+  accountsSelector,
+  govParamsSelector,
+  moduleAddressSelector,
+} from '@dao-dao/state/recoil'
 import {
   ErrorPage,
   Loader,
@@ -19,6 +23,7 @@ import {
   ActionContext,
   ActionContextType,
   ActionOptions,
+  ChainId,
   IActionsContext,
 } from '@dao-dao/types'
 
@@ -68,6 +73,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     context: {
       type: ActionContextType.Dao,
       info,
+      accounts: info.accounts,
     },
   }
 
@@ -197,14 +203,28 @@ export const WalletActionsProvider = ({
   address: overrideAddress,
   children,
 }: WalletActionsProviderProps) => {
-  const { address: connectedAddress } = useWallet()
+  const { address: connectedAddress, chain } = useWallet()
 
   const address =
     overrideAddress === undefined ? connectedAddress : overrideAddress
 
   const { profile } = useProfile({ address })
 
-  if (address === undefined || profile.loading) {
+  const accounts = useCachedLoadingWithError(
+    address
+      ? accountsSelector({
+          chainId: chain.chain_id,
+          address,
+        })
+      : undefined
+  )
+
+  if (
+    address === undefined ||
+    profile.loading ||
+    accounts.loading ||
+    accounts.errored
+  ) {
     return <Loader />
   }
 
@@ -214,6 +234,7 @@ export const WalletActionsProvider = ({
       context={{
         type: ActionContextType.Wallet,
         profile: profile.data,
+        accounts: accounts.data,
       }}
     >
       {children}
@@ -238,16 +259,32 @@ export const GovActionsProvider = ({
     ])
   )
 
-  return govDataLoading.loading ? (
+  const accounts = useCachedLoadingWithError(
+    govDataLoading.loading || govDataLoading.errored
+      ? undefined
+      : accountsSelector({
+          chainId,
+          address: govDataLoading.data[0],
+          // Make sure to load ICAs for Neutron so Valence accounts load.
+          includeIcaChains: [ChainId.NeutronMainnet],
+        })
+  )
+
+  return govDataLoading.loading ||
+    (accounts.loading && !govDataLoading.errored) ? (
     <>{loader || <PageLoader />}</>
   ) : govDataLoading.errored ? (
     <ErrorPage error={govDataLoading.error} />
+  ) : accounts.errored ? (
+    <ErrorPage error={accounts.error} />
   ) : (
     <BaseActionsProvider
       address={govDataLoading.data[0]}
       context={{
         type: ActionContextType.Gov,
         params: govDataLoading.data[1],
+        // Type-check. Will never be loading here.
+        accounts: accounts.loading ? [] : accounts.data,
       }}
     >
       {children}

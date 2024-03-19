@@ -2,13 +2,17 @@ import { ComponentType } from 'react'
 
 import { ActionKeyAndData } from './actions'
 import { Threshold } from './contracts/DaoProposalSingle.common'
+import {
+  ParsedTarget,
+  RebalancerConfig,
+} from './contracts/ValenceServiceRebalancer'
+import { GenericTokenSource } from './token'
 
 /**
  * The type of account given whatever the relevant context is.
  */
 export enum AccountType {
   /**
-   * Wallet/smart contract/module address on the current chain given the
    * context.
    */
   Native = 'native',
@@ -20,6 +24,10 @@ export enum AccountType {
    * An ICA controlled by an account on another chain.
    */
   Ica = 'ica',
+  /**
+   * A Timewave Valence account.
+   */
+  Valence = 'valence',
 }
 
 export type NativeAccountTypeConfig = {
@@ -32,9 +40,32 @@ export type PolytoneAccountTypeConfig = {
   config?: undefined
 }
 
+export type ValenceAccountTypeConfig = {
+  type: AccountType.Valence
+  config: ValenceAccountConfig
+}
+
 export type IcaAccountTypeConfig = {
   type: AccountType.Ica
   config?: undefined
+}
+
+export type ValenceAccountConfig = {
+  // If rebalancer setup, this will be defined.
+  rebalancer?: {
+    config: RebalancerConfig
+    // Process targest.
+    targets: ValenceAccountRebalancerTarget[]
+  }
+}
+
+export type ValenceAccountRebalancerTarget = {
+  // The source that uniquely identifies a token.
+  source: GenericTokenSource
+  // Target changes over time for this token.
+  targets: ({
+    timestamp: number
+  } & ParsedTarget)[]
 }
 
 export type BaseAccount = {
@@ -44,15 +75,23 @@ export type BaseAccount = {
 
 export type NativeAccount = BaseAccount & NativeAccountTypeConfig
 export type PolytoneAccount = BaseAccount & PolytoneAccountTypeConfig
+export type ValenceAccount = BaseAccount & ValenceAccountTypeConfig
 export type IcaAccount = BaseAccount & IcaAccountTypeConfig
 
-export type Account = NativeAccount | PolytoneAccount | IcaAccount
+export type Account =
+  | NativeAccount
+  | PolytoneAccount
+  | IcaAccount
+  | ValenceAccount
 
 /**
  * Unique identifier for account tabs, which is used in the URL path.
  */
 export enum AccountTabId {
+  // Home is used for Me. Wallet is used for other accounts.
   Home = 'home',
+  Wallet = 'wallet',
+
   Daos = 'daos',
   Actions = 'actions',
 }
@@ -61,7 +100,7 @@ export type AccountTab = {
   id: AccountTabId
   label: string
   Icon: ComponentType<{ className: string }>
-  Component: ComponentType
+  Component: ComponentType<any>
 }
 
 export type AccountTxForm = {
