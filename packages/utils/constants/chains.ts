@@ -1315,8 +1315,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://terra-api.polkachu.com',
   },
   [ChainId.MigalooMainnet]: {
-    rpc: 'https://rpc.cosmos.directory/migaloo',
-    rest: 'https://rest.cosmos.directory/migaloo',
+    rpc: 'https://migaloo-rpc.polkachu.com',
+    rest: 'https://migaloo-api.polkachu.com',
   },
   [ChainId.MigalooTestnet]: {
     rpc: 'https://migaloo-testnet-rpc.polkachu.com',
