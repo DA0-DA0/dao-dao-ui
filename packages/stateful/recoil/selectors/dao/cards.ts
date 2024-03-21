@@ -38,11 +38,7 @@ import {
 } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
-import {
-  daoCoreProposalModulesSelector,
-  daoCw20GovernanceTokenAddressSelector,
-  daoInfoSelector,
-} from './misc'
+import { daoCoreProposalModulesSelector, daoInfoSelector } from './misc'
 
 export const daoCardInfoSelector = selectorFamily<
   DaoCardInfo | undefined,
@@ -237,20 +233,12 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
   get:
     ({ coreAddress, chainId, walletAddress }) =>
     ({ get }) => {
-      const cw20GovernanceTokenAddress = get(
-        daoCw20GovernanceTokenAddressSelector({
+      const { amount: tvl } = get(
+        daoTvlSelector({
           coreAddress,
           chainId,
         })
       )
-
-      const tvl = get(
-        daoTvlSelector({
-          coreAddress,
-          chainId,
-          cw20GovernanceTokenAddress,
-        })
-      ).amount
 
       const walletVotingWeight = walletAddress
         ? Number(

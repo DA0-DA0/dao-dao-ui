@@ -1,6 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
-import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
@@ -8,13 +8,12 @@ import {
   getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
 
-import { allBalancesSelector } from './account'
 import {
   blockHeightTimestampSafeSelector,
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import { allNftUsdValueSelector } from './nft'
+import { querySnapperSelector } from './indexer'
 import { usdPriceSelector } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{
@@ -165,62 +164,23 @@ export const daoTvlSelector = selectorFamily<
   AmountWithTimestamp,
   WithChainId<{
     coreAddress: string
-    cw20GovernanceTokenAddress?: string
   }>
 >({
   key: 'daoTvl',
   get:
-    ({ chainId, coreAddress, cw20GovernanceTokenAddress }) =>
+    ({ chainId, coreAddress }) =>
     ({ get }) => {
       const timestamp = new Date()
 
-      const allBalances = get(
-        allBalancesSelector({
-          chainId,
-          address: coreAddress,
-          cw20GovernanceTokenAddress,
+      const amount = get(
+        querySnapperSelector({
+          query: 'daodao-tvl',
+          parameters: {
+            chainId,
+            address: coreAddress,
+          },
         })
       )
-
-      const usdPrices = get(
-        waitForAllSettled(
-          allBalances.map(({ token }) =>
-            usdPriceSelector({
-              type: token.type,
-              denomOrAddress: token.denomOrAddress,
-              chainId: token.chainId,
-            })
-          )
-        )
-      )
-
-      const nftAmount = get(
-        allNftUsdValueSelector({
-          chainId,
-          address: coreAddress,
-        })
-      )
-
-      const amount =
-        nftAmount +
-        allBalances
-          .map(({ token, balance }, index) => {
-            // Don't calculate price if could not load token decimals correctly.
-            if (token.decimals === 0) {
-              return 0
-            }
-
-            const price =
-              (usdPrices[index].state === 'hasValue' &&
-                usdPrices[index].getValue()?.usdPrice) ||
-              0
-            return (
-              price &&
-              convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
-                price
-            )
-          })
-          .reduce((price, total) => price + total, 0)
 
       return {
         amount,

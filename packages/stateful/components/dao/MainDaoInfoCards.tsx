@@ -17,10 +17,7 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import {
-  useCw20CommonGovernanceTokenInfoIfExists,
-  useVotingModuleAdapter,
-} from '../../voting-module-adapter'
+import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
@@ -46,15 +43,12 @@ const InnerMainDaoInfoCards = () => {
   const { coreAddress, activeThreshold, created, proposalModules } =
     useDaoInfoContext()
 
-  const { denomOrAddress: cw20GovernanceTokenAddress } =
-    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
   const tokenInfo = useCommonGovernanceTokenInfo?.()
 
   const treasuryUsdcValueLoading = useCachedLoading(
     daoTvlSelector({
       coreAddress,
       chainId,
-      cw20GovernanceTokenAddress,
     }),
     {
       amount: -1,
