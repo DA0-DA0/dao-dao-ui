@@ -147,6 +147,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   createWithCw20?: boolean
   /**
+   * Whether or not to create a DAO through chain governance.
+   */
+  createViaGovernance?: boolean
+  /**
    * Whether or not this chain has an indexer.
    */
   noIndexer?: boolean

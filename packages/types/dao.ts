@@ -189,14 +189,14 @@ export type ProposalModule = {
   prePropose: PreProposeModule | null
 } & ProposalModuleTypedConfig
 
-export interface ProposalPrefill<FormData> {
+export type ProposalPrefill<FormData> = {
   // Proposal module adapter ID
   id: string
   // Proposal module adapter proposal creation form data
   data: FormData
 }
 
-export interface ProposalDraft<FormData = any> {
+export type ProposalDraft<FormData = any> = {
   name: string
   createdAt: number
   lastUpdatedAt: number

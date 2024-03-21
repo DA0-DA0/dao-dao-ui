@@ -90,6 +90,7 @@ enum ProposeSubmitValue {
 
 export const NewGovProposal = () => {
   const { t } = useTranslation()
+  const router = useRouter()
   const chainContext = useConfiguredChainContext()
 
   const { address: walletAddress = '' } = useWallet()
@@ -108,24 +109,66 @@ export const NewGovProposal = () => {
   })!
   const defaults = governanceProposalAction.useDefaults()
 
-  return !defaults ? (
+  const localStorageKey = `gov_${chainContext.chainId}`
+  const latestProposalSave = useRecoilValue(
+    latestProposalSaveAtom(localStorageKey)
+  )
+
+  // Set once prefill has been assessed, indicating NewProposal can load now.
+  const [prefillChecked, setPrefillChecked] = useState(false)
+  const [usePrefill, setUsePrefill] = useState(false)
+  // Prefill form with data from parameter once ready.
+  useEffect(() => {
+    if (!router.isReady || prefillChecked) {
+      return
+    }
+
+    try {
+      const potentialDefaultValue = router.query.prefill
+      if (typeof potentialDefaultValue !== 'string') {
+        return
+      }
+
+      const prefillData = JSON.parse(potentialDefaultValue)
+      if (
+        prefillData.constructor.name === 'Object' &&
+        'chainId' in prefillData
+      ) {
+        setUsePrefill(true)
+      }
+      // If failed to parse, do nothing.
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setPrefillChecked(true)
+    }
+  }, [router.query.prefill, router.isReady, prefillChecked])
+
+  return !defaults || !prefillChecked ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
     <ErrorPage error={defaults} />
   ) : (
     <InnerNewGovProposal
       action={governanceProposalAction}
-      defaults={defaults}
+      defaults={{
+        ...defaults,
+        ...cloneDeep(latestProposalSave),
+        ...(usePrefill ? JSON.parse(router.query.prefill as string) : {}),
+      }}
+      localStorageKey={localStorageKey}
     />
   )
 }
 
 type InnerNewGovProposalProps = {
+  localStorageKey: string
   defaults: GovernanceProposalActionData
   action: Action<GovernanceProposalActionData>
 }
 
 const InnerNewGovProposal = ({
+  localStorageKey,
   defaults,
   action,
 }: InnerNewGovProposalProps) => {
@@ -147,8 +190,7 @@ const InnerNewGovProposal = ({
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
 
-  const localStorageKey = `gov_${chainContext.chainId}`
-  const [latestProposalSave, setLatestProposalSave] = useRecoilState(
+  const setLatestProposalSave = useSetRecoilState(
     latestProposalSaveAtom(localStorageKey)
   )
 
@@ -156,10 +198,7 @@ const InnerNewGovProposal = ({
     action.useTransformToCosmos()
   const formMethods = useForm<GovernanceProposalActionData>({
     mode: 'onChange',
-    defaultValues: {
-      ...defaults,
-      ...cloneDeep(latestProposalSave),
-    },
+    defaultValues: defaults,
   })
   const {
     handleSubmit,
@@ -420,7 +459,7 @@ const InnerNewGovProposal = ({
         toast.error(t('error.loadingData'))
       }
       // Deep clone to prevent values from being readOnly.
-      reset(draft.proposal.data)
+      reset(cloneDeep(draft.proposal.data))
       setDraftIndex(loadIndex)
     },
     [draftIndex, drafts, reset, t]
