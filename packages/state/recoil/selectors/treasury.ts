@@ -172,7 +172,7 @@ export const daoTvlSelector = selectorFamily<
     ({ get }) => {
       const timestamp = new Date()
 
-      const amount = get(
+      const { total: amount } = get(
         querySnapperSelector({
           query: 'daodao-tvl',
           parameters: {
