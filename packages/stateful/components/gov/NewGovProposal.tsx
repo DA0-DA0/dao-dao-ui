@@ -1,5 +1,6 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { EncodeObject } from '@cosmjs/proto-signing'
+import { SigningStargateClient } from '@cosmjs/stargate'
 import {
   BookOutlined,
   Close,
@@ -48,6 +49,7 @@ import {
   ProposalContentDisplay,
   Tooltip,
   useConfiguredChainContext,
+  useHoldingKey,
 } from '@dao-dao/stateless'
 import {
   Action,
@@ -70,6 +72,8 @@ import {
   formatTime,
   getGovProposalPath,
   getImageUrlForChainId,
+  getRpcForChainId,
+  getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
@@ -132,8 +136,13 @@ const InnerNewGovProposal = ({
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useConfiguredChainContext()
-  const { isWalletConnected, getSigningStargateClient, chain, chainWallet } =
-    useWallet()
+  const {
+    isWalletConnected,
+    getOfflineSignerAmino,
+    getOfflineSignerDirect,
+    chain,
+    chainWallet,
+  } = useWallet()
 
   const [loading, setLoading] = useState(false)
 
@@ -173,6 +182,8 @@ const InnerNewGovProposal = ({
       chainId: chainContext.chainId,
     })
   )
+
+  const holdingAltForDirectSign = useHoldingKey({ key: 'alt' })
 
   const onSubmitError: SubmitErrorHandler<GovernanceProposalActionData> =
     useCallback(() => {
@@ -270,9 +281,16 @@ const InnerNewGovProposal = ({
 
           setLoading(true)
           try {
-            const { events } = await (
-              await getSigningStargateClient()
-            ).signAndBroadcast(
+            const signer = holdingAltForDirectSign
+              ? getOfflineSignerDirect()
+              : getOfflineSignerAmino()
+            const signingClient = await SigningStargateClient.connectWithSigner(
+              getRpcForChainId(chain.chain_id),
+              signer,
+              getSignerOptions(chain)
+            )
+
+            const { events } = await signingClient.signAndBroadcast(
               walletAddress,
               [encodeObject],
               CHAIN_GAS_MULTIPLIER
@@ -371,7 +389,9 @@ const InnerNewGovProposal = ({
         t,
         transformGovernanceProposalActionDataToCosmos,
         walletAddress,
-        getSigningStargateClient,
+        getOfflineSignerAmino,
+        getOfflineSignerDirect,
+        holdingAltForDirectSign,
         chainContext.chainId,
         chainContext.chain.pretty_name,
         chainContext.config.name,
@@ -561,7 +581,10 @@ const InnerNewGovProposal = ({
                   type="submit"
                   value={ProposeSubmitValue.Submit}
                 >
-                  <p>{t('button.publish')}</p>
+                  <p>
+                    {t('button.publish') +
+                      (holdingAltForDirectSign ? ` (${t('info.direct')})` : '')}
+                  </p>
                   <GavelRounded className="!h-4 !w-4" />
                 </Button>
               </Tooltip>
