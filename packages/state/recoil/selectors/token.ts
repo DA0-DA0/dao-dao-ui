@@ -31,10 +31,10 @@ import { astroportUsdPriceSelector } from './astroport'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
-  nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   nativeDelegationInfoSelector,
+  nativeDenomBalanceSelector,
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
@@ -406,9 +406,10 @@ export const genericTokenBalanceSelector = selectorFamily<
       let balance = '0'
       if (token.type === TokenType.Native) {
         balance = get(
-          nativeBalanceSelector({
-            address,
+          nativeDenomBalanceSelector({
             chainId: params.chainId,
+            walletAddress: address,
+            denom: params.denomOrAddress,
           })
         ).amount
       } else if (token.type === TokenType.Cw20) {
