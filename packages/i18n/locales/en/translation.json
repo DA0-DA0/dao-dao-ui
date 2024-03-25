@@ -1645,6 +1645,7 @@
     "members": "Members",
     "membership": "Membership",
     "mergeProfiles": "Merge Profiles",
+    "metadata": "Metadata",
     "migrateFollowing": "Migrate Followed DAOs",
     "migrateSmartContract": "Migrate Smart Contract",
     "migrateTokenFactoryModule": "Migrate Token Factory Module",

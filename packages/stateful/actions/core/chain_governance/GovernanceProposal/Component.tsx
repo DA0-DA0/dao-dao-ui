@@ -290,6 +290,33 @@ export const GovernanceProposalComponent: ActionComponent<
               </div>
             </div>
 
+            {supportsV1GovProposals && (
+              <div
+                className={clsx(
+                  'flex flex-col gap-2 py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6',
+                  onGovernancePage
+                    ? 'border-b border-border-secondary py-5 px-6'
+                    : 'rounded-md bg-background-tertiary p-4'
+                )}
+              >
+                <InputLabel
+                  name={t('title.metadata')}
+                  optional
+                  primary={onGovernancePage}
+                />
+
+                <div className="flex grow flex-col">
+                  <TextInput
+                    disabled={!isCreating}
+                    error={errors?.metadata}
+                    fieldName={(fieldNamePrefix + 'metadata') as 'metadata'}
+                    register={register}
+                  />
+                  <InputErrorMessage error={errors?.metadata} />
+                </div>
+              </div>
+            )}
+
             {
               // Support expedited field on Osmosis.
               (chainId === ChainId.OsmosisMainnet ||

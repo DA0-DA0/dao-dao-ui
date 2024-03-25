@@ -327,6 +327,7 @@ export const makeGovernanceProposalAction: ActionMaker<
         : GovProposalVersion.V1_BETA_1,
       title: '',
       description: '',
+      metadata: '',
       deposit: deposit
         ? [
             {
@@ -365,6 +366,7 @@ export const makeGovernanceProposalAction: ActionMaker<
       version,
       title,
       description,
+      metadata,
       deposit,
       legacyContent,
       msgs,
@@ -414,7 +416,8 @@ export const makeGovernanceProposalAction: ActionMaker<
               summary: description,
               // In case it's undefined, default to false.
               expedited: expedited || false,
-              metadata: title,
+              // Metadata must be set, so just use the title as a fallback.
+              metadata: metadata.trim() || title,
             } as MsgSubmitProposalV1,
           },
         })
@@ -482,6 +485,7 @@ export const makeGovernanceProposalAction: ActionMaker<
           version: GovProposalVersion.V1_BETA_1,
           title: proposal.content.title,
           description: proposal.content.description,
+          metadata: '',
           deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
             ...coin,
             amount: Number(amount),
@@ -528,6 +532,7 @@ export const makeGovernanceProposalAction: ActionMaker<
           version: GovProposalVersion.V1,
           title: proposal.title,
           description: proposal.summary,
+          metadata: proposal.metadata,
           deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
             ...coin,
             amount: Number(amount),

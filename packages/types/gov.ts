@@ -148,6 +148,7 @@ export type GovernanceProposalActionData = {
   version: GovProposalVersion
   title: string
   description: string
+  metadata: string
   deposit: {
     amount: number
     denom: string
