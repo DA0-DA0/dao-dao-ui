@@ -35,6 +35,7 @@ Default.args = {
     title: 'Upgrade to v10 Alpha 1',
     description:
       'Full details on the testnets github. Target binary is v10.0.0-alpha.2',
+    metadata: '',
     deposit: [
       {
         amount: 100,
