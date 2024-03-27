@@ -69,7 +69,7 @@ const InnerAppsTab = ({
     setUrl(url)
   }
 
-  // On first iframe mount, go to url
+  // On first iframe mount, go to URL.
   useEffect(() => {
     try {
       if (iframe && (url === '' || (url && new URL(url).href))) {
@@ -79,6 +79,25 @@ const InnerAppsTab = ({
       // Ignore.
     }
   }, [iframe, url])
+
+  // Add event handler to inform iframe that it's wrapped in DAO DAO if it asks.
+  useEffect(() => {
+    if (!iframe?.contentWindow) {
+      return
+    }
+
+    const listener = ({ data }: MessageEvent) => {
+      if (data === 'isDaoDao') {
+        iframe.contentWindow?.postMessage('amDaoDao')
+      }
+    }
+
+    iframe.contentWindow.addEventListener('message', listener)
+
+    return () => {
+      iframe.contentWindow?.removeEventListener('message', listener)
+    }
+  }, [iframe])
 
   // Update the input field to match the URL if it changes in the parent
   // component. This should handle the URL being updated from the query params.
