@@ -128,5 +128,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    // Show at the top.
+    order: 1,
   }
 }

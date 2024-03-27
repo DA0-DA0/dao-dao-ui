@@ -72,6 +72,7 @@ input[type='number']::-webkit-outer-spin-button {
     --light: 243, 246, 248;
     --white: 255, 255, 255;
     --brand: 123, 97, 255;
+    --brand-secondary: 252, 129, 164;
     --active: 179, 160, 255;
     --error: 199, 62, 89;
     --valid: 57, 166, 153;
@@ -84,6 +85,7 @@ input[type='number']::-webkit-outer-spin-button {
     --color-light-transparent: rgba(var(--light), 0.5);
     --color-white: rgb(var(--white));
     --color-brand: rgb(var(--brand));
+    --color-brand-secondary: rgb(var(--brand-secondary));
     --color-active: rgb(var(--active));
     --color-error: rgb(var(--error));
     --color-valid: rgb(var(--valid));
@@ -99,6 +101,7 @@ input[type='number']::-webkit-outer-spin-button {
     --text-tertiary: rgba(var(--dark), 0.5);
     --text-quaternary: rgba(var(--dark), 0.35);
     --text-brand: rgba(var(--brand), 0.95);
+    --text-brand-secondary: rgba(var(--brand-secondary), 0.95);
     --text-interactive-disabled: rgba(var(--dark), 0.2);
     --text-interactive-active: rgba(var(--brand), 0.95);
     --text-interactive-error: rgba(var(--error), 0.95);
@@ -117,6 +120,7 @@ input[type='number']::-webkit-outer-spin-button {
     --icon-secondary: rgba(var(--dark), 0.6);
     --icon-tertiary: rgba(var(--dark), 0.45);
     --icon-brand: rgba(var(--brand), 0.9);
+    --icon-brand-secondary: rgba(var(--brand-secondary), 0.9);
     --icon-interactive-disabled: rgba(var(--dark), 0.15);
     --icon-interactive-active: rgba(var(--brand), 0.9);
     --icon-interactive-error: rgba(var(--error), 0.9);
@@ -176,6 +180,7 @@ input[type='number']::-webkit-outer-spin-button {
     --component-pill: rgba(var(--brand), 0.8);
     --component-badge-primary: rgba(var(--dark), 0.25);
     --component-badge-brand: rgba(var(--brand), 0.4);
+    --component-badge-brand-secondary: rgba(var(--brand-secondary), 0.4);
     --component-badge-valid: rgba(var(--valid), 0.45);
     --component-badge-error: rgba(var(--error), 0.45);
   }

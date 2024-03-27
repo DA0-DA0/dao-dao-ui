@@ -33,8 +33,8 @@ export type TokenAmountDisplayProps = Omit<
       }
     // Alow hiding symbol.
     | {
-        symbol?: never
-        hideSymbol: true
+        symbol?: string
+        hideSymbol: boolean
         // Full decimal precision of the value.
         decimals: number
         estimatedUsdValue?: false

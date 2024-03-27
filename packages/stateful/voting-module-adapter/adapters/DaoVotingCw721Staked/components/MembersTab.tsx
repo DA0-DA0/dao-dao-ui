@@ -13,12 +13,12 @@ import {
   EntityDisplay,
 } from '../../../../components'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useGovernanceCollectionInfo } from '../hooks'
+import { useCommonGovernanceTokenInfo } from '../hooks'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const { collectionInfo } = useGovernanceCollectionInfo()
+  const token = useCommonGovernanceTokenInfo()
 
   const members = useCachedLoadingWithError(
     DaoVotingCw721StakedSelectors.topStakersSelector({
@@ -33,12 +33,12 @@ export const MembersTab = () => {
           votingPowerPercent,
         }): StatefulDaoMemberCardProps => ({
           address,
+          balanceLabel: t('title.staked'),
           balance: {
-            label: t('title.staked'),
-            unit: '$' + collectionInfo.symbol,
-            value: {
-              loading: false,
-              data: count.toLocaleString(),
+            loading: false,
+            data: {
+              amount: count,
+              token,
             },
           },
           votingPowerPercent: {

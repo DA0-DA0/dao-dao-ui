@@ -34,17 +34,15 @@ export const MembersTab = () => {
           votingPowerPercent,
         }): StatefulDaoMemberCardProps => ({
           address,
+          balanceLabel: t('title.staked'),
           balance: {
-            label: t('title.staked'),
-            unit: '$' + governanceToken.symbol,
-            value: {
-              loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
+            loading: false,
+            data: {
+              token: governanceToken,
+              amount: convertMicroDenomToDenomWithDecimals(
                 balance,
                 governanceToken.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: governanceToken.decimals,
-              }),
+              ),
             },
           },
           votingPowerPercent: {

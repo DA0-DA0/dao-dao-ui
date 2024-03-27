@@ -15,10 +15,10 @@ import { Expiration } from '@dao-dao/types/contracts/common'
 import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
-export function convertMicroDenomToDenomWithDecimals(
+export const convertMicroDenomToDenomWithDecimals = (
   amount: number | string,
   decimals: number
-) {
+) => {
   if (typeof amount === 'string') {
     amount = Number(amount)
   }
@@ -26,10 +26,10 @@ export function convertMicroDenomToDenomWithDecimals(
   return isNaN(amount) ? 0 : amount
 }
 
-export function convertDenomToMicroDenomWithDecimals(
+export const convertDenomToMicroDenomWithDecimals = (
   amount: number | string,
   decimals: number
-) {
+) => {
   if (typeof amount === 'string') {
     amount = Number(amount)
   }
@@ -407,6 +407,22 @@ export const concatAddressStartEnd = (
 
 export const concatAddressBoth = (address: string, takeN = 7): string =>
   address && concatAddressStartEnd(address, takeN, takeN)
+
+export const intelligentAddressConcat = (
+  address: string,
+  takeN = 4
+): string => {
+  // Use bech32 prefix length to determine how much to truncate from beginning.
+  let prefixLength
+  try {
+    prefixLength = fromBech32(address).prefix.length
+  } catch (e) {
+    // Conservative estimate.
+    prefixLength = 6
+  }
+
+  return concatAddressStartEnd(address, prefixLength + takeN, takeN)
+}
 
 /**
  * Transform an address from one chain to another sharing the same bech32 data.

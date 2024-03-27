@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
-import { EntityType } from '@dao-dao/types'
+import { EntityType, TokenType } from '@dao-dao/types'
 import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 
 import { ButtonLink } from '../buttons'
@@ -22,16 +22,24 @@ const Template: ComponentStory<typeof DaoMemberCard> = (args) => (
 export const makeProps = (): DaoMemberCardProps => ({
   address: 'juno1abczhsdyechxcjz90y',
   // Random number between 0 and 100,000 with 6 decimals.
+  balanceLabel: 'Staked',
   balance: {
-    label: 'Staked',
-    unit: 'DAO',
-    value: {
-      loading: false,
-      data: (
-        Math.floor(Math.random() * (100000 * 1e6) + 1e6) / 1e6
-      ).toLocaleString(undefined, {
-        maximumFractionDigits: 6,
-      }),
+    loading: false,
+    data: {
+      amount: Math.floor(Math.random() * (100000 * 1e6) + 1e6) / 1e6,
+      token: {
+        chainId: CHAIN_ID,
+        type: TokenType.Native,
+        denomOrAddress: 'udao',
+        decimals: 6,
+        symbol: 'DAO',
+        imageUrl: 'https://daodao.zone/daodao.png',
+        source: {
+          chainId: CHAIN_ID,
+          type: TokenType.Native,
+          denomOrAddress: 'udao',
+        },
+      },
     },
   },
   // Random number between 0 and 31 with 2 decimals.

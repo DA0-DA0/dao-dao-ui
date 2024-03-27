@@ -247,7 +247,7 @@ export const MembersTab = ({
         <ErrorPage error={members.error} />
       ) : members.data.length ? (
         <>
-          <GridCardContainer>
+          <GridCardContainer className="xl:grid-cols-4">
             {members.data
               .slice(
                 (membersPage - 1) * MEMBERS_PER_PAGE,
@@ -287,9 +287,10 @@ export const MembersTab = ({
               [
                 'Member',
                 members.data.length
-                  ? members.data[0].balance.label +
-                    (members.data[0].balance.unit
-                      ? ` (${members.data[0].balance.unit})`
+                  ? members.data[0].balanceLabel +
+                    (!members.data[0].balance.loading &&
+                    members.data[0].balance.data.token
+                      ? ` (${members.data[0].balance.data.token.symbol})`
                       : '')
                   : 'Balance',
                 'Voting power',
@@ -297,7 +298,7 @@ export const MembersTab = ({
               ...members.data.map(
                 ({ address, balance, votingPowerPercent }) => [
                   address,
-                  balance.value.loading ? '...' : balance.value.data,
+                  balance.loading ? '...' : balance.data.amount.toString(),
                   votingPowerPercent.loading ? '...' : votingPowerPercent.data,
                 ]
               ),

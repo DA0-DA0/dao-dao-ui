@@ -39,11 +39,11 @@ export const MembersTab = () => {
           data:
             votingModule.data.members?.map(({ addr, weight }) => ({
               address: addr,
+              balanceLabel: t('title.votingWeight'),
               balance: {
-                label: t('title.votingWeight'),
-                value: {
-                  loading: false,
-                  data: weight.toLocaleString(),
+                loading: false,
+                data: {
+                  amount: weight,
                 },
               },
               votingPowerPercent:

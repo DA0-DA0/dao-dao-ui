@@ -169,6 +169,7 @@ export const ProposalCreationForm = ({
                 (contribution, contributionIndex) => {
                   // Every other row.
                   const backgroundClassName =
+                    // eslint-disable-next-line i18next/no-literal-string
                     contributionIndex % 2 !== 0 && 'bg-background-tertiary'
 
                   return (
@@ -291,6 +292,7 @@ export const ProposalCreationForm = ({
               ({ id, contributor, compensation }, contributionIndex) => {
                 // Every other row.
                 const backgroundClassName =
+                  // eslint-disable-next-line i18next/no-literal-string
                   contributionIndex % 2 !== 0 && 'bg-background-tertiary'
 
                 const tokens = compensation.compensationPerAttribute
