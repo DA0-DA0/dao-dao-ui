@@ -17,6 +17,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
+import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
@@ -24,6 +25,7 @@ import {
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../../components'
 import { useActionOptions } from '../../../react'
 import { UploadCodeComponent, UploadCodeData } from './Component'
 
@@ -43,6 +45,7 @@ const Component: ActionComponent = (props) => {
         {...props}
         options={{
           Trans,
+          AddressInput,
         }}
       />
     </>
@@ -52,34 +55,47 @@ const Component: ActionComponent = (props) => {
 export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
   const {
     t,
+    address,
     chain: { chain_id: currentChainId },
     context,
   } = options
 
   const useDefaults: UseDefaults<UploadCodeData> = () => ({
     chainId: currentChainId,
+    accessType: AccessType.ACCESS_TYPE_EVERYBODY,
+    allowedAddresses: [{ address }],
   })
 
   const useTransformToCosmos: UseTransformToCosmos<UploadCodeData> = () =>
-    useCallback(({ chainId, data }: UploadCodeData) => {
-      if (!data) {
-        return
-      }
+    useCallback(
+      ({ chainId, data, accessType, allowedAddresses }: UploadCodeData) => {
+        if (!data) {
+          return
+        }
 
-      return maybeMakePolytoneExecuteMessage(
-        currentChainId,
-        chainId,
-        makeStargateMessage({
-          stargate: {
-            typeUrl: MsgStoreCode.typeUrl,
-            value: {
-              sender: getChainAddressForActionOptions(options, chainId),
-              wasmByteCode: fromBase64(data),
-            } as MsgStoreCode,
-          },
-        })
-      )
-    }, [])
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgStoreCode.typeUrl,
+              value: {
+                sender: getChainAddressForActionOptions(options, chainId),
+                wasmByteCode: fromBase64(data),
+                instantiatePermission: {
+                  permission: accessType,
+                  addresses:
+                    accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES
+                      ? allowedAddresses.map(({ address }) => address)
+                      : [],
+                },
+              } as MsgStoreCode,
+            },
+          })
+        )
+      },
+      []
+    )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<UploadCodeData> = (
     msg: Record<string, any>
@@ -105,6 +121,13 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
       data: {
         chainId,
         data: toBase64(msg.stargate.value.wasmByteCode),
+        accessType:
+          msg.stargate.value.instantiatePermission?.permission ??
+          AccessType.UNRECOGNIZED,
+        allowedAddresses:
+          msg.stargate.value.instantiatePermission?.addresses?.map(
+            (address: string) => ({ address })
+          ) ?? [],
       },
     }
   }

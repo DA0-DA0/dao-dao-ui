@@ -139,10 +139,15 @@ export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
     },
   }) && typeof msg.stargate.value === 'object'
 
-// Decode any nested protobufs into JSON. Also decodes longs since those show up
-// often.
+/**
+ * Decode raw JSON data for displaying. Decode any nested protobufs into JSON.
+ * Also decodes longs since those show up often.
+ */
 export const decodeRawDataForDisplay = (msg: any): any =>
-  typeof msg !== 'object' || msg === null
+  // Truncate long strings.
+  typeof msg === 'string' && msg.length > 5000
+    ? msg.slice(0, 100) + `...<${msg.length - 200} more>...` + msg.slice(-100)
+    : typeof msg !== 'object' || msg === null
     ? msg
     : msg instanceof Uint8Array
     ? toBase64(msg)
@@ -161,7 +166,7 @@ export const decodeRawDataForDisplay = (msg: any): any =>
       (msg as Any).value instanceof Uint8Array
     ? (() => {
         try {
-          return decodeRawProtobufMsg(msg as Any)
+          return decodeRawDataForDisplay(decodeRawProtobufMsg(msg as Any))
         } catch {
           return msg
         }
@@ -172,7 +177,10 @@ export const decodeRawDataForDisplay = (msg: any): any =>
     : Object.entries(msg).reduce(
         (acc, [key, value]) => ({
           ...acc,
-          [key]: decodeRawDataForDisplay(value),
+          [key]:
+            key === 'wasmByteCode'
+              ? '[TOO LARGE TO SHOW]'
+              : decodeRawDataForDisplay(value),
         }),
         {} as Record<string, any>
       )

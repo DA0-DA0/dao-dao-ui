@@ -1,33 +1,67 @@
 import { fromBase64, toBase64, toHex } from '@cosmjs/encoding'
-import { DownloadDone } from '@mui/icons-material'
+import { Add, Close, DownloadDone } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useCallback, useEffect, useState } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { CopyToClipboard, FileDropInput, InputLabel } from '@dao-dao/stateless'
-import { TransProps } from '@dao-dao/types'
+import {
+  Button,
+  CopyToClipboard,
+  FileDropInput,
+  IconButton,
+  InputLabel,
+  RadioInput,
+  RadioInputOption,
+  useChain,
+} from '@dao-dao/stateless'
+import { AddressInputProps, TransProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { processError } from '@dao-dao/utils'
+import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
+import {
+  makeValidateAddress,
+  processError,
+  validateRequired,
+} from '@dao-dao/utils'
 
 export type UploadCodeData = {
   chainId: string
   // Set when file is chosen.
   data?: string
+  accessType: AccessType
+  // Only used when accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES
+  allowedAddresses: {
+    address: string
+  }[]
 }
 
 export type UploadCodeOptions = {
   Trans: ComponentType<TransProps>
+  AddressInput: ComponentType<AddressInputProps<UploadCodeData>>
 }
 
 export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
   isCreating,
   fieldNamePrefix,
-  options: { Trans },
+  options: { Trans, AddressInput },
+  errors,
 }) => {
   const { t } = useTranslation()
-  const { setValue, watch } = useFormContext<UploadCodeData>()
+  const { setValue, watch, control, register } =
+    useFormContext<UploadCodeData>()
+
+  const { bech32_prefix: bech32Prefix } = useChain()
+
+  const accessType = watch((fieldNamePrefix + 'accessType') as 'accessType')
+  const {
+    fields: allowedAddressesFields,
+    append: appendAllowedAddress,
+    remove: removeAllowedAddress,
+  } = useFieldArray({
+    control,
+    name: (fieldNamePrefix + 'allowedAddresses') as 'allowedAddresses',
+  })
 
   const data = watch((fieldNamePrefix + 'data') as 'data')
   const [fileName, setFileName] = useState<string | undefined>()
@@ -123,6 +157,82 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
           onSelect={onSelect}
         />
       )}
+
+      <div className="flex flex-col gap-4 rounded-md bg-background-tertiary p-4">
+        <InputLabel name={t('form.whoCanUseContract')} />
+
+        <RadioInput
+          disabled={!isCreating}
+          fieldName={(fieldNamePrefix + 'accessType') as 'accessType'}
+          options={(
+            [
+              {
+                label: t('info.anyone'),
+                value: AccessType.ACCESS_TYPE_EVERYBODY,
+              },
+              {
+                label: t('form.noOne'),
+                value: AccessType.ACCESS_TYPE_NOBODY,
+              },
+              {
+                label: t('form.oneOrMoreAccounts'),
+                value: AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES,
+              },
+            ] as RadioInputOption<AccessType>[]
+          )
+            // Only show the selected option once created.
+            .filter(({ value }) => isCreating || value === accessType)}
+          setValue={setValue}
+          watch={watch}
+        />
+
+        {accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES && (
+          <div className={clsx('flex flex-col', isCreating && 'gap-2')}>
+            {allowedAddressesFields.map(({ id }, index) => (
+              <div key={id} className="flex flex-row items-center gap-2">
+                <AddressInput
+                  containerClassName="grow"
+                  disabled={!isCreating}
+                  error={errors?.allowedAddresses?.[index]?.address}
+                  fieldName={
+                    (fieldNamePrefix +
+                      `allowedAddresses.${index}.address`) as `allowedAddresses.${number}.address`
+                  }
+                  register={register}
+                  validation={[
+                    validateRequired,
+                    makeValidateAddress(bech32Prefix),
+                  ]}
+                />
+
+                {isCreating && (
+                  <IconButton
+                    Icon={Close}
+                    onClick={() => removeAllowedAddress(index)}
+                    size="sm"
+                    variant="ghost"
+                  />
+                )}
+              </div>
+            ))}
+
+            {isCreating && (
+              <Button
+                className="self-end"
+                onClick={() =>
+                  appendAllowedAddress({
+                    address: '',
+                  })
+                }
+                variant="secondary"
+              >
+                <Add className="!h-4 !w-4" />
+                {t('button.add')}
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
     </>
   )
 }
