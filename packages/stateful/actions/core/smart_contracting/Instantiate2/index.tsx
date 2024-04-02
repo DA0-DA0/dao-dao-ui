@@ -182,7 +182,7 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
               typeUrl: MsgInstantiateContract2.typeUrl,
               value: {
                 sender: getChainAddressForActionOptions(options, chainId),
-                admin: admin || null,
+                admin: admin || '',
                 codeId: codeId ? BigInt(codeId) : 0n,
                 label,
                 msg: toUtf8(JSON.stringify(msg)),
