@@ -32,6 +32,7 @@ import {
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
+  maybeGetChainForChainId,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -52,11 +53,7 @@ type Instantiate2Data = {
 }
 
 const Component: ActionComponent = (props) => {
-  const {
-    context,
-    address,
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { context, address } = useActionOptions()
 
   const { watch, setValue } = useFormContext<Instantiate2Data>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -88,13 +85,17 @@ const Component: ActionComponent = (props) => {
         })),
   })
 
+  const chain = maybeGetChainForChainId(chainId)
+
   const instantiatedAddress =
-    codeDetailsLoadable.state === 'hasValue' && codeDetailsLoadable.contents
+    codeDetailsLoadable.state === 'hasValue' &&
+    codeDetailsLoadable.contents &&
+    chain
       ? instantiate2Address(
           fromHex(codeDetailsLoadable.contents.checksum),
           address,
           toUtf8(salt),
-          bech32Prefix
+          chain.bech32_prefix
         )
       : undefined
 
