@@ -1184,8 +1184,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'kujira',
     mainnet: true,
     accentColor: '#e53935',
-    // TODO(kujira)
-    factoryContractAddress: '',
+    factoryContractAddress:
+      'kujira1hwjtqgymczqra9n0859yvwemzamfqzvsegxsvuwcl7zwphpn04qqkr89yd',
     explorerUrlTemplates: {
       tx: 'https://finder.kujira.network/kaiyo-1/tx/REPLACE',
       gov: 'https://blue.kujira.network/govern',
@@ -1217,6 +1217,12 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 274,
     },
     // TODO(kujira)
+    // - Juno
+    // - Osmosis
+    // - Stargaze
+    // - Neutron
+    // - Terra
+    // - Migaloo
     polytone: {},
   },
   {
