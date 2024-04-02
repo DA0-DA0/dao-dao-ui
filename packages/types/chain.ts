@@ -180,7 +180,7 @@ export type CodeIdConfig = {
   // https://github.com/DA0-DA0/dao-contracts
   CwPayrollFactory: number
   CwTokenSwap: number
-  CwTokenfactoryIssuerOsmosis: number
+  CwTokenfactoryIssuerMain: number
   CwVesting: number
   DaoCore: number
   DaoMigrator: number
