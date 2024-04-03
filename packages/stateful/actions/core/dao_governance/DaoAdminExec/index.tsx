@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -89,30 +89,10 @@ const Component: ActionComponent = (props) => {
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  // Load DAO info for chosen DAO.
-  const { watch, setValue, clearErrors } = useFormContext<DaoAdminExecData>()
+  const { watch } = useFormContext<DaoAdminExecData>()
   const coreAddress = watch(
     (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
   )
-
-  // Reset actions when core address changes during creation.
-  useEffect(() => {
-    if (props.isCreating) {
-      setValue((props.fieldNamePrefix + 'msgs') as 'msgs', [])
-      clearErrors((props.fieldNamePrefix + 'msgs') as 'msgs')
-      setValue(
-        (props.fieldNamePrefix + '_actionData') as '_actionData',
-        undefined
-      )
-      clearErrors((props.fieldNamePrefix + '_actionData') as '_actionData')
-    }
-  }, [
-    clearErrors,
-    coreAddress,
-    props.fieldNamePrefix,
-    props.isCreating,
-    setValue,
-  ])
 
   const daoSubDaosLoadable = useCachedLoadable(
     context.type === ActionContextType.Dao
