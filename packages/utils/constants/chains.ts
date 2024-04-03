@@ -1184,6 +1184,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'kujira',
     mainnet: true,
     accentColor: '#e53935',
+    // Permissioned, only Kujira governance can create DAOs.
     factoryContractAddress:
       'kujira1hwjtqgymczqra9n0859yvwemzamfqzvsegxsvuwcl7zwphpn04qqkr89yd',
     explorerUrlTemplates: {
@@ -1216,14 +1217,95 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: 273,
       DaoVotingTokenStaked: 274,
     },
-    // TODO(kujira)
-    // - Juno
-    // - Osmosis
-    // - Stargaze
-    // - Neutron
-    // - Terra
+    // TODO(kujira-polytone):
     // - Migaloo
-    polytone: {},
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // kujira
+        note: 'kujira1kthhh99l9ec60jr4eytnva40ep52tjvjlup9y2a409vgc7sutn6qv4rrxj',
+        // kujira
+        listener: '',
+        // juno
+        voice:
+          'juno1vv7s07lcv2de64nphg255y7vsreasg6k89vq48gqf754wpsc5w0qmwupeu',
+        // kujira
+        localConnection: 'connection-',
+        // juno
+        remoteConnection: 'connection-',
+        // kujira
+        localChannel: 'channel-',
+        // juno
+        remoteChannel: 'channel-',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // kujira
+        note: 'kujira15454vhqp90cy7u2swyaf79e53hervg0g6h78jgfsgydys5vgqa6shcruhm',
+        // kujira
+        listener: '',
+        // osmosis
+        voice:
+          'osmo1546fnys90560am2jzuzsl0csmqc502g8ywgwpf3q9jdfucyr93jq7urvlm',
+        // kujira
+        localConnection: 'connection-',
+        // osmosis
+        remoteConnection: 'connection-',
+        // kujira
+        localChannel: 'channel-',
+        // osmosis
+        remoteChannel: 'channel-',
+      },
+      [ChainId.StargazeMainnet]: {
+        // kujira
+        note: 'kujira1wgjpx4d38gt3tc9rvyffk8upgs4sa805r0a3dleehtll67t7jyuqypclff',
+        // kujira
+        listener: '',
+        // stargaze
+        voice:
+          'stars1qm2nv8vx9qf673h9r68vzwce4xf9kvyvkk54a28xnn5x5etcthuswrglxc',
+        // kujira
+        localConnection: 'connection-',
+        // stargaze
+        remoteConnection: 'connection-',
+        // kujira
+        localChannel: 'channel-',
+        // stargaze
+        remoteChannel: 'channel-',
+      },
+      [ChainId.NeutronMainnet]: {
+        // kujira
+        note: 'kujira14dckdzh7t30lkpdr0hgdqsqh52erux4tst5rl7jhvc693plnm39qp2r95q',
+        // kujira
+        listener: '',
+        // neutron
+        voice:
+          'neutron162fvv88dxpsapf3rnux63anruqach36r8qg73ehm2dv3fkat2rusw70nlx',
+        // kujira
+        localConnection: 'connection-',
+        // neutron
+        remoteConnection: 'connection-',
+        // kujira
+        localChannel: 'channel-',
+        // neutron
+        remoteChannel: 'channel-',
+      },
+      [ChainId.TerraMainnet]: {
+        // kujira
+        note: 'kujira15u8wevalrxd62y6z549fmkmjdt3k2adr4zzsjgwp0uw365gmy45qkn8s8v',
+        // kujira
+        listener: '',
+        // terra
+        voice:
+          'terra14qj6ejeuqmgtx63fujulzcvnr290wcjmmfkvqdqh5p4vjdkuewzsyagufs',
+        // kujira
+        localConnection: 'connection-',
+        // terra
+        remoteConnection: 'connection-',
+        // kujira
+        localChannel: 'channel-',
+        // terra
+        remoteChannel: 'channel-',
+      },
+    },
   },
   {
     chainId: ChainId.JunoTestnet,
