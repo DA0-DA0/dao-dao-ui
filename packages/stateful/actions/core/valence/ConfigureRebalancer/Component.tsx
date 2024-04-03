@@ -528,7 +528,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
                       priceDenom === denom
                   )?.usdPrice
 
-                  if (!token || !balance || price === undefined) {
+                  if (!token || price === undefined) {
                     return []
                   }
 
