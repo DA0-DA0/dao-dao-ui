@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CreateProposal, PageLoader } from '@dao-dao/stateless'
@@ -10,6 +11,9 @@ import { NewGovProposal } from './NewGovProposal'
 
 export const CreateGovProposal = () => {
   const { t } = useTranslation()
+
+  const clearRef = useRef(() => {})
+  const copyDraftLinkRef = useRef(() => {})
 
   return (
     <>
@@ -24,10 +28,15 @@ export const CreateGovProposal = () => {
       />
 
       <CreateProposal
+        clear={() => clearRef.current()}
+        copyDraftLink={() => copyDraftLinkRef.current()}
         newProposal={
           <GovActionsProvider>
             <SuspenseLoader fallback={<PageLoader />}>
-              <NewGovProposal />
+              <NewGovProposal
+                clearRef={clearRef}
+                copyDraftLinkRef={copyDraftLinkRef}
+              />
             </SuspenseLoader>
           </GovActionsProvider>
         }

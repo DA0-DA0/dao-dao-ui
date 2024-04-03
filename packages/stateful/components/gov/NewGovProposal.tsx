@@ -14,7 +14,13 @@ import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -66,6 +72,7 @@ import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/types/pr
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
   CHAIN_GAS_MULTIPLIER,
+  SITE_URL,
   dateToWdhms,
   formatDateTime,
   formatPercentOf100,
@@ -92,8 +99,14 @@ enum ProposeSubmitValue {
   Submit = 'Submit',
 }
 
-export const NewGovProposal = () => {
+export type NewGovProposalProps = Pick<
+  InnerNewGovProposalProps,
+  'clearRef' | 'copyDraftLinkRef'
+>
+
+export const NewGovProposal = (innerProps: NewGovProposalProps) => {
   const { t } = useTranslation()
+  const router = useRouter()
   const chainContext = useConfiguredChainContext()
 
   const { address: walletAddress = '' } = useWallet()
@@ -112,26 +125,95 @@ export const NewGovProposal = () => {
   })!
   const defaults = governanceProposalAction.useDefaults()
 
-  return !defaults ? (
+  const localStorageKey = `gov_${chainContext.chainId}`
+  const latestProposalSave = useRecoilValue(
+    latestProposalSaveAtom(localStorageKey)
+  )
+
+  // Set once prefill has been assessed, indicating NewProposal can load now.
+  const [prefillChecked, setPrefillChecked] = useState(false)
+  const [usePrefill, setUsePrefill] = useState(false)
+  // Prefill form with data from parameter once ready.
+  useEffect(() => {
+    if (!router.isReady || prefillChecked) {
+      return
+    }
+
+    try {
+      const potentialDefaultValue = router.query.prefill
+      if (typeof potentialDefaultValue !== 'string') {
+        return
+      }
+
+      const prefillData = JSON.parse(potentialDefaultValue)
+      if (
+        prefillData.constructor.name === 'Object' &&
+        'chainId' in prefillData
+      ) {
+        setUsePrefill(true)
+      }
+      // If failed to parse, do nothing.
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setPrefillChecked(true)
+    }
+  }, [router.query.prefill, router.isReady, prefillChecked])
+
+  return !defaults || !prefillChecked ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
     <ErrorPage error={defaults} />
   ) : (
     <InnerNewGovProposal
+      {...innerProps}
       action={governanceProposalAction}
-      defaults={defaults}
+      defaults={{
+        ...defaults,
+        ...cloneDeep(latestProposalSave),
+        ...(usePrefill ? JSON.parse(router.query.prefill as string) : {}),
+      }}
+      localStorageKey={localStorageKey}
+      realDefaults={defaults}
     />
   )
 }
 
 type InnerNewGovProposalProps = {
+  /**
+   * The local storage key to use for saving the current form.
+   */
+  localStorageKey: string
+  /**
+   * The default values to use form the form on initial load, taking into
+   * account save state and prefill.
+   */
   defaults: GovernanceProposalActionData
+  /**
+   * Used to reset the form back to default.
+   */
+  realDefaults: GovernanceProposalActionData
+  /**
+   * The governance proposal creation action.
+   */
   action: Action<GovernanceProposalActionData>
+  /**
+   * A function ref that the parent uses to clear the form.
+   */
+  clearRef: MutableRefObject<() => void>
+  /**
+   * A function ref that copies a link to the current draft.
+   */
+  copyDraftLinkRef: MutableRefObject<() => void>
 }
 
 const InnerNewGovProposal = ({
+  localStorageKey,
   defaults,
+  realDefaults,
   action,
+  clearRef,
+  copyDraftLinkRef,
 }: InnerNewGovProposalProps) => {
   const { t } = useTranslation()
   const router = useRouter()
@@ -156,8 +238,7 @@ const InnerNewGovProposal = ({
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
 
-  const localStorageKey = `gov_${chainContext.chainId}`
-  const [latestProposalSave, setLatestProposalSave] = useRecoilState(
+  const setLatestProposalSave = useSetRecoilState(
     latestProposalSaveAtom(localStorageKey)
   )
 
@@ -165,10 +246,7 @@ const InnerNewGovProposal = ({
     action.useTransformToCosmos()
   const formMethods = useForm<GovernanceProposalActionData>({
     mode: 'onChange',
-    defaultValues: {
-      ...defaults,
-      ...cloneDeep(latestProposalSave),
-    },
+    defaultValues: defaults,
   })
   const {
     handleSubmit,
@@ -405,6 +483,23 @@ const InnerNewGovProposal = ({
     )
   const proposalData = watch()
 
+  // Reset form to defaults and clear latest proposal save.
+  clearRef.current = () => {
+    formMethods.reset(cloneDeep(realDefaults))
+    setLatestProposalSave({})
+  }
+
+  // Copy link to current draft.
+  copyDraftLinkRef.current = () => {
+    navigator.clipboard.writeText(
+      SITE_URL +
+        getGovProposalPath(chainContext.config.name, 'create', {
+          prefill: JSON.stringify(proposalData),
+        })
+    )
+    toast.success(t('info.copiedLinkToClipboard'))
+  }
+
   const saveQueuedRef = useRef(false)
   const saveLatestProposalRef = useRef(() => {})
   saveLatestProposalRef.current = () =>
@@ -453,7 +548,7 @@ const InnerNewGovProposal = ({
         toast.error(t('error.loadingData'))
       }
       // Deep clone to prevent values from being readOnly.
-      reset(draft.proposal.data)
+      reset(cloneDeep(draft.proposal.data))
       setDraftIndex(loadIndex)
     },
     [draftIndex, drafts, reset, t]
