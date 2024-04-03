@@ -1224,86 +1224,91 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // kujira
         note: 'kujira1kthhh99l9ec60jr4eytnva40ep52tjvjlup9y2a409vgc7sutn6qv4rrxj',
         // kujira
-        listener: '',
+        listener:
+          'kujira10dpjpmd4jak247hrcupxnn87h77f94kqmgy8rwkspjakxc4paflqd3wnv5',
         // juno
         voice:
           'juno1vv7s07lcv2de64nphg255y7vsreasg6k89vq48gqf754wpsc5w0qmwupeu',
         // kujira
-        localConnection: 'connection-',
+        localConnection: 'connection-1',
         // juno
-        remoteConnection: 'connection-',
+        remoteConnection: 'connection-140',
         // kujira
-        localChannel: 'channel-',
+        localChannel: 'channel-131',
         // juno
-        remoteChannel: 'channel-',
+        remoteChannel: 'channel-475',
       },
       [ChainId.OsmosisMainnet]: {
         // kujira
         note: 'kujira15454vhqp90cy7u2swyaf79e53hervg0g6h78jgfsgydys5vgqa6shcruhm',
         // kujira
-        listener: '',
+        listener:
+          'kujira1tcu45eeuklxxkd8s4jsjpp0zlz3f04w9dgyhxxvy2sts8rxd3uksjrm9md',
         // osmosis
         voice:
           'osmo1546fnys90560am2jzuzsl0csmqc502g8ywgwpf3q9jdfucyr93jq7urvlm',
         // kujira
-        localConnection: 'connection-',
+        localConnection: 'connection-2',
         // osmosis
-        remoteConnection: 'connection-',
+        remoteConnection: 'connection-1559',
         // kujira
-        localChannel: 'channel-',
+        localChannel: 'channel-147',
         // osmosis
-        remoteChannel: 'channel-',
+        remoteChannel: 'channel-16723',
       },
       [ChainId.StargazeMainnet]: {
         // kujira
         note: 'kujira1wgjpx4d38gt3tc9rvyffk8upgs4sa805r0a3dleehtll67t7jyuqypclff',
         // kujira
-        listener: '',
+        listener:
+          'kujira1u5c2cn936tqh5rpua7xrscavglwy2g300zwp075wp0fapvs50e0qtwkher',
         // stargaze
         voice:
           'stars1qm2nv8vx9qf673h9r68vzwce4xf9kvyvkk54a28xnn5x5etcthuswrglxc',
         // kujira
-        localConnection: 'connection-',
+        localConnection: 'connection-5',
         // stargaze
-        remoteConnection: 'connection-',
+        remoteConnection: 'connection-111',
         // kujira
-        localChannel: 'channel-',
+        localChannel: 'channel-136',
         // stargaze
-        remoteChannel: 'channel-',
+        remoteChannel: 'channel-277',
       },
       [ChainId.NeutronMainnet]: {
         // kujira
         note: 'kujira14dckdzh7t30lkpdr0hgdqsqh52erux4tst5rl7jhvc693plnm39qp2r95q',
         // kujira
-        listener: '',
+        listener:
+          'kujira1wkv5qgu75crgyn93wmc2hdysn7xacrzzz3spcjcskr469884cn2snp6ffy',
         // neutron
         voice:
           'neutron162fvv88dxpsapf3rnux63anruqach36r8qg73ehm2dv3fkat2rusw70nlx',
         // kujira
-        localConnection: 'connection-',
+        localConnection: 'connection-82',
         // neutron
-        remoteConnection: 'connection-',
+        remoteConnection: 'connection-2',
         // kujira
-        localChannel: 'channel-',
+        localChannel: 'channel-140',
         // neutron
-        remoteChannel: 'channel-',
+        remoteChannel: 'channel-69',
       },
       [ChainId.TerraMainnet]: {
         // kujira
         note: 'kujira15u8wevalrxd62y6z549fmkmjdt3k2adr4zzsjgwp0uw365gmy45qkn8s8v',
         // kujira
-        listener: '',
+        listener:
+          'kujira1vgsdqvuxdn229q05f7guhytutcfa0u87l0qnd5xyeyp40e0w6xfqd8y63n',
         // terra
         voice:
           'terra14qj6ejeuqmgtx63fujulzcvnr290wcjmmfkvqdqh5p4vjdkuewzsyagufs',
         // kujira
-        localConnection: 'connection-',
+        localConnection: 'connection-3',
         // terra
-        remoteConnection: 'connection-',
+        remoteConnection: 'connection-13',
         // kujira
-        localChannel: 'channel-',
+        localChannel: 'channel-141',
         // terra
-        remoteChannel: 'channel-',
+        remoteChannel: 'channel-333',
       },
     },
   },
