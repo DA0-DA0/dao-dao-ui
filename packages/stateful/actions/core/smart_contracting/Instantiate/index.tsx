@@ -273,7 +273,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
           makeWasmMessage({
             wasm: {
               instantiate: {
-                admin: admin || null,
+                admin: admin || '',
                 code_id: codeId,
                 funds: funds.map(({ denom, amount }, index) => ({
                   denom,
