@@ -669,7 +669,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: 576,
       DaoVotingTokenStaked: 577,
 
-      ValenceAccount: 1767,
+      ValenceAccount: 867,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
