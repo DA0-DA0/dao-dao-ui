@@ -27,6 +27,8 @@ export interface IndexerDumpState
   proposalCount?: number
   // Map polytone note address to remote address.
   polytoneProxies?: Record<string, string>
+  // Hide from search if storage item `hideFromSearch` exists.
+  hideFromSearch?: boolean
 }
 
 export type IndexerUpBlock = {
