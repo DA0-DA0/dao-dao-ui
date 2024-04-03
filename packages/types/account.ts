@@ -6,7 +6,7 @@ import {
   ParsedTarget,
   RebalancerConfig,
 } from './contracts/ValenceServiceRebalancer'
-import { GenericTokenSource } from './token'
+import { GenericToken } from './token'
 
 /**
  * The type of account given whatever the relevant context is.
@@ -101,9 +101,13 @@ export type ValenceAccountConfig = {
 }
 
 export type ValenceAccountRebalancerTarget = {
-  // The source that uniquely identifies a token.
-  source: GenericTokenSource
-  // Target changes over time for this token.
+  /**
+   * The token being rebalanced.
+   */
+  token: GenericToken
+  /**
+   * Target changes over time for this token.
+   */
   targets: ({
     timestamp: number
   } & ParsedTarget)[]

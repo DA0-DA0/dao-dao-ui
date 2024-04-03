@@ -23,8 +23,8 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
   const { t } = useTranslation()
 
   const valenceAccountRebalancerTargets =
-    account.config?.rebalancer?.targets.map(({ source }) =>
-      serializeTokenSource(source)
+    account.config?.rebalancer?.targets.map(({ token }) =>
+      serializeTokenSource(token)
     ) || []
 
   // Maps serialized token source to color.

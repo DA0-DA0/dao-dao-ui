@@ -37,6 +37,7 @@ import {
   formatPercentOf100,
   serializeTokenSource,
   shortenTokenSymbol,
+  tokenSourcesEqual,
 } from '@dao-dao/utils'
 
 import 'chartjs-adapter-date-fns'
@@ -89,7 +90,13 @@ export const TreasuryHistoryGraph = ({
         // Filter by rebalancer tokens.
         tokens:
           showRebalancer && account.type === AccountType.Valence
-            ? account.config.rebalancer?.targets.map(({ source }) => source)
+            ? account.config.rebalancer?.targets.map(
+                ({ token: { chainId, type, denomOrAddress } }) => ({
+                  chainId,
+                  type,
+                  denomOrAddress,
+                })
+              )
             : undefined,
       },
     })
@@ -149,7 +156,7 @@ export const TreasuryHistoryGraph = ({
   const targetValues = !showTargets
     ? []
     : (account.config.rebalancer?.targets || []).flatMap(
-        ({ source, targets }) => {
+        ({ token, targets }) => {
           if (targets.length === 0) {
             return []
           }
@@ -187,17 +194,6 @@ export const TreasuryHistoryGraph = ({
               return totalValue * Number(percentage)
             }
           )
-
-          const tokenIndex = treasuryValueHistory.data.tokens.findIndex(
-            ({ token }) =>
-              serializeTokenSource(token.source) ===
-              serializeTokenSource(source)
-          )
-          if (tokenIndex === -1) {
-            return []
-          }
-
-          const { token } = treasuryValueHistory.data.tokens[tokenIndex]
 
           return {
             token,
@@ -468,9 +464,9 @@ export const TreasuryHistoryGraph = ({
 
                 const targetValue =
                   token &&
-                  targetValues.find(({ token: t }) => t === token)?.data[
-                    tooltipFirstDataPoint.dataIndex
-                  ]
+                  targetValues.find(({ token: t }) =>
+                    tokenSourcesEqual(token, t)
+                  )?.data[tooltipFirstDataPoint.dataIndex]
 
                 return (
                   <div

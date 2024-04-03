@@ -107,7 +107,7 @@ export const valenceAccountSelector = selectorFamily<
           rebalancer: rebalancerConfig && {
             config: rebalancerConfig,
             targets: rebalancerConfig.targets.map((target) => ({
-              source: tokenMap[target.denom].source,
+              token: tokenMap[target.denom],
               // TODO(rebalancer): Get targets over time.
               targets: [
                 {
