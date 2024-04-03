@@ -286,15 +286,19 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
           return { match: false }
       }
     } else if (msg.stargate.typeUrl === MsgRevoke.typeUrl) {
+      const msgTypeUrl = msg.stargate.value.msgTypeUrl
+
       return {
         match: true,
         data: {
           ...defaults,
           chainId,
           mode: 'revoke',
-          customTypeUrl: false,
+          customTypeUrl: !ACTION_TYPES.some(
+            ({ type: { typeUrl } }) => typeUrl === msgTypeUrl
+          ),
           grantee: msg.stargate.value.grantee,
-          msgTypeUrl: msg.stargate.value.msgTypeUrl,
+          msgTypeUrl,
         },
       }
     }
