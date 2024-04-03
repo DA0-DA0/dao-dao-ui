@@ -32,7 +32,11 @@ import {
   ProposalModule,
   ProposalPrefill,
 } from '@dao-dao/types'
-import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
+import {
+  ContractName,
+  DaoProposalSingleAdapterId,
+  SITE_URL,
+} from '@dao-dao/utils'
 
 import {
   ProposalModuleAdapterCommonProvider,
@@ -87,7 +91,7 @@ const InnerCreateDaoProposal = ({
   setSelectedProposalModule,
 }: InnerCreateDaoProposalProps) => {
   const { t } = useTranslation()
-  const { goToDaoProposal, router } = useDaoNavHelpers()
+  const { goToDaoProposal, router, getDaoProposalPath } = useDaoNavHelpers()
   const daoInfo = useDaoInfoContext()
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
@@ -330,6 +334,19 @@ const InnerCreateDaoProposal = ({
     ]
   )
 
+  const copyDraftLink = () => {
+    navigator.clipboard.writeText(
+      SITE_URL +
+        getDaoProposalPath(daoInfo.coreAddress, 'create', {
+          prefill: JSON.stringify({
+            id: proposalModuleAdapterCommonId,
+            data: proposalData,
+          }),
+        })
+    )
+    toast.success(t('info.copiedLinkToClipboard'))
+  }
+
   return (
     <>
       <PageHeaderContent
@@ -345,6 +362,7 @@ const InnerCreateDaoProposal = ({
       <FormProvider {...formMethods}>
         <CreateProposal
           clear={clear}
+          copyDraftLink={copyDraftLink}
           newProposal={
             <SuspenseLoader
               fallback={<PageLoader />}

@@ -103,6 +103,7 @@
     "copyDaoAddress": "Copy DAO address",
     "copyDaoChainAddress": "Copy {{chain}} address",
     "copyIdToClipboard": "Copy ID to clipboard",
+    "copyLinkToProposalDraft": "Copy link to proposal draft",
     "copyToClipboard": "Copy to clipboard",
     "create": "Create",
     "createAProposal": "Create a proposal",
