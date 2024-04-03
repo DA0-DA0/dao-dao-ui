@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -130,6 +131,15 @@ const InnerCreateDaoProposal = ({
     useRecoilState(proposalCreatedCardPropsAtom)
 
   const proposalData = formMethods.watch()
+
+  const saveQueuedRef = useRef(false)
+  const saveLatestProposalRef = useRef(() => {})
+  saveLatestProposalRef.current = () =>
+    setLatestProposalSave(
+      // If created proposal, clear latest proposal save.
+      proposalCreatedCardProps ? {} : cloneDeep(proposalData)
+    )
+
   // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
     // If created proposal, don't save.
@@ -137,12 +147,17 @@ const InnerCreateDaoProposal = ({
       return
     }
 
-    // Deep clone to prevent values from becoming readOnly.
-    const timeout = setTimeout(
-      () => setLatestProposalSave(cloneDeep(proposalData)),
-      1000
-    )
-    return () => clearTimeout(timeout)
+    // Queue save in 1 second if not already queued.
+    if (saveQueuedRef.current) {
+      return
+    }
+    saveQueuedRef.current = true
+
+    // Save in one second.
+    setTimeout(() => {
+      saveLatestProposalRef.current()
+      saveQueuedRef.current = false
+    }, 1000)
   }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
 
   const loadPrefill = useCallback(

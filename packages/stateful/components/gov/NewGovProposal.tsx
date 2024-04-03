@@ -14,7 +14,7 @@ import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -405,19 +405,32 @@ const InnerNewGovProposal = ({
     )
   const proposalData = watch()
 
-  // Save latest data to atom and thus localStorage every 10 seconds.
+  const saveQueuedRef = useRef(false)
+  const saveLatestProposalRef = useRef(() => {})
+  saveLatestProposalRef.current = () =>
+    setLatestProposalSave(
+      // If created proposal, clear latest proposal save.
+      govProposalCreatedCardProps ? {} : cloneDeep(proposalData)
+    )
+
+  // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
     // If created proposal, don't save.
     if (govProposalCreatedCardProps) {
       return
     }
 
-    // Deep clone to prevent values from becoming readOnly.
-    const timeout = setTimeout(
-      () => setLatestProposalSave(cloneDeep(proposalData)),
-      10000
-    )
-    return () => clearTimeout(timeout)
+    // Queue save in 1 second if not already queued.
+    if (saveQueuedRef.current) {
+      return
+    }
+    saveQueuedRef.current = true
+
+    // Save in one second.
+    setTimeout(() => {
+      saveLatestProposalRef.current()
+      saveQueuedRef.current = false
+    }, 1000)
   }, [govProposalCreatedCardProps, setLatestProposalSave, proposalData])
 
   const [drafts, setDrafts] = useRecoilState(
