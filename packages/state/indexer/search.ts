@@ -57,7 +57,7 @@ export const searchDaos = async ({
       // Exclude inactive DAOs.
       `NOT value.config.name IN ["${INACTIVE_DAO_NAMES.join('", "')}"]`,
       // Exclude hidden DAOs.
-      'value.hideFromSearch != true',
+      'value.hideFromSearch NOT EXISTS OR value.hideFromSearch != true',
       ...(exclude?.length
         ? // Exclude DAOs that are in the exclude list.
           [`NOT id IN ["${exclude.join('", "')}"]`]
