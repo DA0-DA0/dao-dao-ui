@@ -79,6 +79,8 @@ export enum ChainId {
   BitsongMainnet = 'bitsong-2b',
   BitsongTestnet = 'bobnet',
   OmniflixHubMainnet = 'omniflixhub-1',
+  SecretMainnet = 'secret-4',
+  SecretTestnet = 'pulsar-3',
 }
 
 export type BaseChainConfig = {
