@@ -216,13 +216,42 @@ export class SecretCosmWasmClient extends CosmWasmClient {
     address: string,
     queryMsg: JsonObject
   ): Promise<JsonObject> {
+    return await this.queryContractSmartWithCodeHash(
+      address,
+      undefined,
+      queryMsg
+    )
+  }
+
+  /**
+   * Makes a smart query on the contract, returns the parsed JSON document.
+   *
+   * Promise is rejected when contract does not exist.
+   * Promise is rejected for invalid query format.
+   * Promise is rejected for invalid response format.
+   */
+  public async queryContractSmartWithCodeHash(
+    address: string,
+    codeHash: string | undefined,
+    queryMsg: JsonObject
+  ): Promise<JsonObject> {
     try {
-      return await this.forceGetSecretNetworkClient().query.compute.queryContract(
-        {
+      const response =
+        await this.forceGetSecretNetworkClient().query.compute.queryContract({
           contract_address: address,
+          code_hash: codeHash,
           query: queryMsg,
-        }
-      )
+        })
+
+      // secretjs' queryContract returns query errors as strings... rip
+      if (
+        typeof response === 'string' &&
+        response.includes('Error parsing into type')
+      ) {
+        throw new Error(response)
+      }
+
+      return response
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.startsWith('not found: contract')) {
