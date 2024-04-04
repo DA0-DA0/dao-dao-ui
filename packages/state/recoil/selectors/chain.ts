@@ -49,6 +49,7 @@ import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feere
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
   MAINNET,
+  SecretCosmWasmClient,
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
@@ -63,6 +64,7 @@ import {
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
+  secretCosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -98,6 +100,16 @@ export const cosmWasmClientForChainSelector = selectorFamily<
 >({
   key: 'cosmWasmClientForChain',
   get: (chainId) => async () => await cosmWasmClientRouter.connect(chainId),
+  dangerouslyAllowMutability: true,
+})
+
+export const secretCosmWasmClientForChainSelector = selectorFamily<
+  SecretCosmWasmClient,
+  string
+>({
+  key: 'secretCosmWasmClientForChain',
+  get: (chainId) => async () =>
+    await secretCosmWasmClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 

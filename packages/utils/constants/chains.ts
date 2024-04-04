@@ -1925,6 +1925,46 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 28,
     },
   },
+  {
+    chainId: ChainId.SecretTestnet,
+    name: 'secret',
+    mainnet: false,
+    accentColor: '#000000',
+    factoryContractAddress: '',
+    noIndexer: true,
+    explorerUrlTemplates: {
+      tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
+      gov: 'https://testnet.ping.pub/secret/gov',
+      govProp: 'https://testnet.ping.pub/secret/gov/REPLACE',
+      wallet: 'https://testnet.ping.pub/secret/account/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 0,
+      Cw4Group: 0, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 0,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 0,
+      CwTokenSwap: 0,
+      CwTokenfactoryIssuerMain: 0,
+      CwVesting: 0,
+      DaoCore: 0,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 0,
+      DaoPreProposeApprover: 0,
+      DaoPreProposeMultiple: 0,
+      DaoPreProposeSingle: 0,
+      DaoProposalMultiple: 0,
+      DaoProposalSingle: 0,
+      DaoVotingCw4: -1,
+      // SNIP721
+      DaoVotingCw721Staked: 0,
+      // SNIP20
+      DaoVotingTokenStaked: 0,
+    },
+  },
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -2017,6 +2057,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BitsongTestnet]: {
     rpc: 'https://rpc-testnet.explorebitsong.com',
     rest: 'https://lcd-testnet.explorebitsong.com',
+  },
+  [ChainId.SecretTestnet]: {
+    rpc: 'https://rpc.pulsar.scrttestnet.com',
+    rest: 'https://api.pulsar.scrttestnet.com',
   },
 }
 

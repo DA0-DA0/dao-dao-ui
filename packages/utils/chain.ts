@@ -39,6 +39,14 @@ import {
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 
+/**
+ * Get the RPC for the given chain.
+ *
+ * @param chainId Chain to get RPC for.
+ * @param offset Offset will try a different URL from the list of available
+ * RPCs.
+ * @returns RPC for the given chain.
+ */
 export const getRpcForChainId = (
   chainId: string,
   // Offset will try a different RPC from the list of available RPCs.
@@ -73,6 +81,48 @@ export const getRpcForChainId = (
   ]
 
   return rpcs[offset % rpcs.length].address.replace(/http:\/\//, 'https://')
+}
+
+/**
+ * Get the LCD for the given chain.
+ *
+ * @param chainId Chain to get LCD for.
+ * @param offset Offset will try a different URL from the list of available
+ * LCDs.
+ * @returns LCD for the given chain.
+ */
+export const getLcdForChainId = (
+  chainId: string,
+  // Offset will try a different LCD from the list of available LCDs.
+  offset = 0
+): string => {
+  let lcd = (
+    (chainId in CHAIN_ENDPOINTS &&
+      CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
+    {}
+  )?.rest
+  if (lcd && offset === 0) {
+    return lcd
+  }
+
+  // If LCD was found but not used, offset > 0, and subtract 1 from offset so we
+  // try the first LCD in the chain registry list.
+  if (lcd) {
+    offset -= 1
+  }
+
+  // Fallback to chain registry.
+  const chain = maybeGetChainForChainId(chainId)
+  if (!chain) {
+    throw new Error(`Unknown chain ID "${chainId}"`)
+  }
+
+  const lcds = chain?.apis?.rest ?? []
+  if (lcds.length === 0) {
+    throw new Error(`No LCD found for chain ID "${chainId}"`)
+  }
+
+  return lcds[offset % lcds.length].address.replace(/http:\/\//, 'https://')
 }
 
 export const cosmosValidatorToValidator = ({
@@ -667,3 +717,9 @@ export const getDaoInfoForChainId = (
   parentDao: null,
   admin: '',
 })
+
+/**
+ * Whether or not the chain ID is Secret Network mainnet or testnet.
+ */
+export const isSecretNetwork = (chainId: string): boolean =>
+  chainId === ChainId.SecretMainnet || chainId === ChainId.SecretTestnet

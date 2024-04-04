@@ -16,6 +16,7 @@
     "@cosmjs/encoding": "^0.32.3",
     "@cosmjs/proto-signing": "^0.32.3",
     "@cosmjs/stargate": "^0.32.3",
+    "@cosmjs/tendermint-rpc": "^0.32.3",
     "@dao-dao/utils": "2.4.0-rc.9",
     "@tanstack/react-query": "^5.40.0",
     "graphql": "^16.8.1",
@@ -23,7 +24,8 @@
     "lodash.uniq": "^4.5.0",
     "meilisearch": "^0.30.0",
     "pusher-js": "^7.6.0",
-    "recoil": "^0.7.2"
+    "recoil": "^0.7.2",
+    "secretjs": "^1.12.5"
   },
   "devDependencies": {
     "@dao-dao/config": "2.4.0-rc.9",
