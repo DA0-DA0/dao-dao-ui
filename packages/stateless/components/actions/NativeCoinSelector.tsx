@@ -151,12 +151,11 @@ export const NativeCoinSelector = ({
     dontValidate,
   ])
 
-  const minAmount =
-    min ??
-    convertMicroDenomToDenomWithDecimals(
-      1,
-      selectedTokenBalance?.token?.decimals ?? nativeToken.decimals
-    )
+  const minUnit = convertMicroDenomToDenomWithDecimals(
+    1,
+    selectedTokenBalance?.token?.decimals ?? nativeToken.decimals
+  )
+  const minAmount = min ?? minUnit
 
   return (
     <div className={className}>
@@ -169,7 +168,7 @@ export const NativeCoinSelector = ({
             fieldName: fieldNamePrefix + 'amount',
             error: errors?.amount || errors?._error,
             min: minAmount,
-            step: minAmount,
+            step: minUnit,
             max: dontValidate
               ? undefined
               : selectedTokenBalance &&
