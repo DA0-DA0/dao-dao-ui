@@ -9,7 +9,7 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
-  cosmWasmClientRouter,
+getCosmWasmClientForChainId,
   extractAddressFromMaybeSecretContractInfo,
   parseContractVersion,
 } from '@dao-dao/utils'
@@ -60,7 +60,7 @@ export const fetchPreProposeModule = async (
       // If indexer fails, fallback to querying chain.
       if (!approver) {
         const client = new DaoPreProposeApprovalSingleQueryClient(
-          await cosmWasmClientRouter.connect(chainId),
+          await getCosmWasmClientForChainId(chainId),
           preProposeAddress
         )
 
@@ -102,7 +102,7 @@ export const fetchPreProposeModule = async (
         // If indexer fails, fallback to querying chain.
         if (!approver) {
           const client = new DaoPreProposeApproverQueryClient(
-            await cosmWasmClientRouter.connect(chainId),
+            await getCosmWasmClientForChainId(chainId),
             preProposeApproverContract
           )
 
@@ -138,7 +138,7 @@ export const fetchPreProposeModule = async (
       // If indexer fails, fallback to querying chain.
       if (!preProposeApprovalContract) {
         const client = new DaoPreProposeApproverQueryClient(
-          await cosmWasmClientRouter.connect(chainId),
+          await getCosmWasmClientForChainId(chainId),
           preProposeAddress
         )
 
@@ -167,7 +167,7 @@ export const fetchPreProposeModule = async (
       // If indexer fails, fallback to querying chain.
       if (!approvalDao) {
         const client = new DaoPreProposeApprovalSingleQueryClient(
-          await cosmWasmClientRouter.connect(chainId),
+          await getCosmWasmClientForChainId(chainId),
           preProposeApprovalContract
         )
 
@@ -202,7 +202,7 @@ export const fetchPreProposeModule = async (
       // If indexer fails, fallback to querying chain.
       if (!timelockAddress) {
         const client = new NeutronCwdSubdaoPreProposeSingleQueryClient(
-          await cosmWasmClientRouter.connect(chainId),
+          await getCosmWasmClientForChainId(chainId),
           preProposeAddress
         )
 
@@ -229,7 +229,7 @@ export const fetchPreProposeModule = async (
       // If indexer fails, fallback to querying chain.
       if (!config) {
         const client = new NeutronCwdSubdaoTimelockSingleQueryClient(
-          await cosmWasmClientRouter.connect(chainId),
+          await getCosmWasmClientForChainId(chainId),
           timelockAddress
         )
 

@@ -294,6 +294,20 @@ export const feemarketProtoRpcClientRouter = new ChainClientRouter({
 })
 
 /**
+ * Get CosmWasmClient for the appropriate chain.
+ *
+ * Uses SecretCosmWasmClient for Secret Network mainnet and testnet.
+ *
+ * Defaults to CosmWasmClient for all other chains.
+ */
+export const getCosmWasmClientForChainId = async (
+  chainId: string
+): Promise<CosmWasmClient> =>
+  isSecretNetwork(chainId)
+    ? await secretCosmWasmClientRouter.connect(chainId)
+    : await cosmWasmClientRouter.connect(chainId)
+
+/**
  * In response events from a transaction with a wasm event, gets the attribute
  * key for a given contract address.
  */
