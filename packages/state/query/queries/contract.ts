@@ -8,6 +8,7 @@ import {
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
   cosmWasmClientRouter,
   getChainForChainId,
+  getCosmWasmClientForChainId,
   isSecretNetwork,
   isValidBech32Address,
   objectMatchesStructure,
@@ -52,7 +53,7 @@ export const fetchContractInfo = async (
   }
 
   // If indexer fails, fallback to querying chain.
-  const client = await cosmWasmClientRouter.connect(chainId)
+  const client = await getCosmWasmClientForChainId(chainId)
 
   if (isSecretNetwork(chainId)) {
     // Secret Network does not allow accessing raw state directly, so this will

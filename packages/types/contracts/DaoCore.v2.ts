@@ -322,10 +322,3 @@ export type SubDaoWithChainId = SubDao & {
   chainId: string
 }
 export type ListAllSubDaosResponse = SubDaoWithChainId[]
-
-// Secret Network
-
-export type SecretVotingModuleInfo = {
-  addr: Addr
-  code_hash: string
-}

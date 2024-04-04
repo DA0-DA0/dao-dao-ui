@@ -9,8 +9,8 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
-getCosmWasmClientForChainId,
   extractAddressFromMaybeSecretContractInfo,
+  getCosmWasmClientForChainId,
   parseContractVersion,
 } from '@dao-dao/utils'
 
