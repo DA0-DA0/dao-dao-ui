@@ -105,6 +105,12 @@ export const fetchDaoInfo = async (
     ),
   ])
 
+  const votingModuleAddress =
+    typeof state.voting_module === 'string'
+      ? state.voting_module
+      : 'addr' in state.voting_module
+      ? state.voting_module.addr
+      : ''
   const coreVersion = parseContractVersion(state.version.version)
   const supportedFeatures = getSupportedFeatures(coreVersion)
 
@@ -136,7 +142,7 @@ export const fetchDaoInfo = async (
       : queryClient.fetchQuery(
           contractQueries.info(queryClient, {
             chainId,
-            address: state.voting_module,
+            address: votingModuleAddress,
           })
         ),
     // Check if indexer returned this already.
@@ -184,7 +190,7 @@ export const fetchDaoInfo = async (
       .fetchQuery(
         votingModuleQueries.isActive({
           chainId,
-          address: state.voting_module,
+          address: votingModuleAddress,
         })
       )
       // If isActive query fails, just assume it is.
@@ -193,7 +199,7 @@ export const fetchDaoInfo = async (
       .fetchQuery(
         votingModuleQueries.activeThresold(queryClient, {
           chainId,
-          address: state.voting_module,
+          address: votingModuleAddress,
         })
       )
       .then(({ active_threshold }) => active_threshold || null)
@@ -210,7 +216,7 @@ export const fetchDaoInfo = async (
     coreAddress,
     coreVersion,
     supportedFeatures,
-    votingModuleAddress: state.voting_module,
+    votingModuleAddress,
     votingModuleContractName,
     proposalModules: proposalModules.sort((a, b) =>
       a.prefix.localeCompare(b.prefix)
