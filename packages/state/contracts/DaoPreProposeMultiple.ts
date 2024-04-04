@@ -6,7 +6,6 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 
 import {
-  Addr,
   Binary,
   Coin,
   Empty,
@@ -14,7 +13,9 @@ import {
 } from '@dao-dao/types/contracts/common'
 import {
   Config,
+  DaoResponse,
   DepositInfoResponse,
+  ProposalModuleResponse,
   ProposeMessage,
   UncheckedDenom,
   UncheckedDepositInfo,
@@ -23,8 +24,8 @@ import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface DaoPreProposeMultipleReadOnlyInterface {
   contractAddress: string
-  proposalModule: () => Promise<Addr>
-  dao: () => Promise<Addr>
+  proposalModule: () => Promise<ProposalModuleResponse>
+  dao: () => Promise<DaoResponse>
   config: () => Promise<Config>
   depositInfo: ({
     proposalId,
@@ -49,12 +50,12 @@ export class DaoPreProposeMultipleQueryClient
     this.queryExtension = this.queryExtension.bind(this)
   }
 
-  proposalModule = async (): Promise<Addr> => {
+  proposalModule = async (): Promise<ProposalModuleResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       proposal_module: {},
     })
   }
-  dao = async (): Promise<Addr> => {
+  dao = async (): Promise<DaoResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dao: {},
     })

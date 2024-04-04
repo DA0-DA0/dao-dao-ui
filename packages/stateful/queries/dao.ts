@@ -17,6 +17,7 @@ import {
   ProposalModule,
 } from '@dao-dao/types'
 import {
+  extractAddressFromMaybeSecretContractInfo,
   getDaoInfoForChainId,
   getFallbackImage,
   getSupportedChainConfig,
@@ -97,12 +98,9 @@ export const fetchDaoInfo = async (
     })
   )
 
-  const votingModuleAddress =
-    typeof state.voting_module === 'string'
-      ? state.voting_module
-      : 'addr' in state.voting_module
-      ? state.voting_module.addr
-      : ''
+  const votingModuleAddress = extractAddressFromMaybeSecretContractInfo(
+    state.voting_module
+  )
   const coreVersion = parseContractVersion(state.version.version)
   const supportedFeatures = getSupportedFeatures(coreVersion)
 

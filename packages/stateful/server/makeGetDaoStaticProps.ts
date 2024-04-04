@@ -34,6 +34,7 @@ import {
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
+  extractAddressFromMaybeSecretContractInfo,
   getChainForChainId,
   getChainIdForAddress,
   getConfiguredGovChainByName,

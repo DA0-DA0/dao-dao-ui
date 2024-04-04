@@ -3,10 +3,10 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   DaoResponse,
-  GroupContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
+import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import { DaoVotingCw4QueryClient } from '../../../contracts/DaoVotingCw4'
 import { cosmWasmClientForChainSelector } from '../chain'
@@ -32,7 +32,7 @@ export const queryClient = selectorFamily<
 })
 
 export const groupContractSelector = selectorFamily<
-  GroupContractResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw4QueryClient['groupContract']>
   }
@@ -47,13 +47,15 @@ export const groupContractSelector = selectorFamily<
           formula: 'daoVotingCw4/groupContract',
         })
       )
-      if (groupContract) {
+      if (groupContract && typeof groupContract === 'string') {
         return groupContract
       }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return await client.groupContract(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.groupContract(...params)
+      )
     },
 })
 export const daoSelector = selectorFamily<

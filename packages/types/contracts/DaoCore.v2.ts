@@ -6,6 +6,7 @@ import {
   Duration,
   Expiration,
   ModuleInstantiateInfo,
+  SecretAnyContractInfo,
   Timestamp,
   Uint128,
 } from './common'
@@ -76,7 +77,7 @@ export interface DumpStateResponse {
   proposal_modules: ProposalModule[]
   total_proposal_module_count: number
   version: ContractVersionInfo
-  voting_module: Addr | SecretVotingModuleInfo
+  voting_module: Addr | SecretAnyContractInfo
 }
 export interface Config {
   automatically_add_cw20s: boolean
@@ -300,7 +301,7 @@ export interface TotalPowerAtHeightResponse {
   height?: number
   power: Uint128
 }
-export type VotingModuleResponse = string
+export type VotingModuleResponse = string | SecretAnyContractInfo
 export interface VotingPowerAtHeightResponse {
   // Optional because the indexer does not provide this.
   height?: number

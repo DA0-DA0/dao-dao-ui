@@ -1,7 +1,7 @@
-import { ContractVersionInfo, Uint128 } from './common'
+import { ContractVersionInfo, SecretAnyContractInfo, Uint128 } from './common'
 
 export type DaoResponse = string
-export type GroupContractResponse = string
+export type GroupContractResponse = string | SecretAnyContractInfo
 export interface InfoResponse {
   info: ContractVersionInfo
 }

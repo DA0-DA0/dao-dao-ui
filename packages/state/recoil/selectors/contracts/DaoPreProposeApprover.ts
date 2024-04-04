@@ -6,6 +6,7 @@ import {
   DepositInfoResponse,
   HooksResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeApprover'
+import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import { DaoPreProposeApproverQueryClient } from '../../../contracts/DaoPreProposeApprover'
 import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
@@ -41,7 +42,9 @@ export const proposalModuleSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      return await client.proposalModule(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.proposalModule(...params)
+      )
     },
 })
 export const daoSelector = selectorFamily<
@@ -55,7 +58,9 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      return await client.dao(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.dao(...params)
+      )
     },
 })
 export const configSelector = selectorFamily<
@@ -175,6 +180,13 @@ export const queryExtensionSelector = selectorFamily<
 
       // If indexer query fails or doesn't exist, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return await client.queryExtension(...params)
+      const res = await client.queryExtension(...params)
+
+      // This will be an object if on Secret Network and a string otherwise.
+      if ('pre_propose_approval_contract' in query && typeof res === 'object') {
+        return extractAddressFromMaybeSecretContractInfo(res)
+      }
+
+      return res
     },
 })

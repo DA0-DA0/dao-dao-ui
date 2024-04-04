@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ConfigResponse,
-  DaoResponse,
   ListProposalsResponse,
   ProposalCountResponse,
   ProposalCreationPolicyResponse,
@@ -16,6 +15,7 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import {
   DaoProposalSingleV2Client,
@@ -340,7 +340,7 @@ export const voteHooksSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  DaoResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoProposalSingleV2QueryClient['dao']>
   }
@@ -355,13 +355,15 @@ export const daoSelector = selectorFamily<
           formula: 'daoProposalSingle/dao',
         })
       )
-      if (dao) {
+      if (dao && typeof dao === 'string') {
         return dao
       }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return await client.dao(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.dao(...params)
+      )
     },
 })
 export const infoSelector = contractInfoSelector
