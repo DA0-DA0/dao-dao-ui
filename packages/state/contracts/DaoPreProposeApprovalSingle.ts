@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Addr, Coin } from '@dao-dao/types'
+import { Addr, Coin, SecretAnyContractInfo } from '@dao-dao/types'
 import {
   Config,
   DepositInfoResponse,
@@ -20,8 +20,8 @@ import {
 
 export interface DaoPreProposeApprovalSingleReadOnlyInterface {
   contractAddress: string
-  proposalModule: () => Promise<Addr>
-  dao: () => Promise<Addr>
+  proposalModule: () => Promise<Addr | SecretAnyContractInfo>
+  dao: () => Promise<Addr | SecretAnyContractInfo>
   config: () => Promise<Config>
   depositInfo: ({
     proposalId,
@@ -48,12 +48,12 @@ export class DaoPreProposeApprovalSingleQueryClient
     this.queryExtension = this.queryExtension.bind(this)
   }
 
-  proposalModule = async (): Promise<Addr> => {
+  proposalModule = async (): Promise<Addr | SecretAnyContractInfo> => {
     return this.client.queryContractSmart(this.contractAddress, {
       proposal_module: {},
     })
   }
-  dao = async (): Promise<Addr> => {
+  dao = async (): Promise<Addr | SecretAnyContractInfo> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dao: {},
     })

@@ -345,3 +345,10 @@ export type ActiveThreshold =
 export type ActiveThresholdResponse = {
   active_threshold?: ActiveThreshold | null
 }
+
+// Secret Network
+
+export type SecretAnyContractInfo = {
+  addr: Addr
+  code_hash: string
+}

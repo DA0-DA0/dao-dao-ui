@@ -6,6 +6,7 @@ import {
   DepositInfoResponse,
   HooksResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import {
   DaoPreProposeApprovalSingleClient,
@@ -73,7 +74,9 @@ export const proposalModuleSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      return await client.proposalModule(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.proposalModule(...params)
+      )
     },
 })
 export const daoSelector = selectorFamily<
@@ -87,7 +90,9 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      return await client.dao(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.dao(...params)
+      )
     },
 })
 export const configSelector = selectorFamily<

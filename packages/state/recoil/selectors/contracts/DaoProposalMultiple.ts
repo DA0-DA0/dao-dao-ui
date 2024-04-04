@@ -11,6 +11,7 @@ import {
   VoteListResponse,
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import {
   DaoProposalMultipleClient,
@@ -344,13 +345,15 @@ export const daoSelector = selectorFamily<
           formula: 'daoProposalMultiple/dao',
         })
       )
-      if (dao) {
+      if (dao && typeof dao === 'string') {
         return dao
       }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return await client.dao(...params)
+      return extractAddressFromMaybeSecretContractInfo(
+        await client.dao(...params)
+      )
     },
 })
 export const infoSelector = contractInfoSelector
