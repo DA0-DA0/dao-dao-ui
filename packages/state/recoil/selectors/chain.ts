@@ -729,42 +729,76 @@ export const govProposalsSelector = selectorFamily<
       let total = 0
 
       // Try to load from indexer first.
-      const indexerProposals: {
-        id: string
-        data: string
-      }[] =
-        get(
-          queryGenericIndexerSelector({
-            chainId,
-            formula: 'gov/reverseProposals',
-            args: {
-              limit,
-              offset,
-            },
-          })
-        )?.proposals ?? []
+      const indexerProposals:
+        | {
+            proposals: {
+              id: string
+              data: string
+            }[]
+            total: number
+          }
+        | undefined = get(
+        queryGenericIndexerSelector({
+          chainId,
+          formula: 'gov/reverseProposals',
+          args: {
+            limit,
+            offset,
+          },
+        })
+      )
 
-      if (indexerProposals.length) {
+      if (indexerProposals?.proposals.length) {
         if (supportsV1Gov) {
-          v1Proposals = indexerProposals.flatMap(
+          v1Proposals = indexerProposals.proposals.flatMap(
             ({ data }): ProposalV1 | [] => {
               try {
-                return ProposalV1.decode(fromBase64(data))
-              } catch {
-                return []
-              }
+                const proposal = ProposalV1.decode(fromBase64(data))
+
+                if (
+                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
+                  proposal.status === status
+                ) {
+                  return proposal
+                }
+              } catch {}
+
+              return []
             }
           )
+
+          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
+            total = indexerProposals.total
+          } else {
+            total = v1Proposals.length
+          }
         } else {
-          v1Beta1Proposals = indexerProposals.flatMap(
+          v1Beta1Proposals = indexerProposals.proposals.flatMap(
             ({ data }): ProposalV1Beta1 | [] => {
               try {
-                return ProposalV1Beta1.decode(fromBase64(data), undefined, true)
-              } catch {
-                return []
-              }
+                const proposal = ProposalV1Beta1.decode(
+                  fromBase64(data),
+                  undefined,
+                  true
+                )
+
+                if (
+                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
+                  proposal.status === status
+                ) {
+                  return proposal
+                }
+              } catch {}
+
+              return []
             }
           )
+
+          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
+            total = indexerProposals.total
+          } else {
+            total = v1Beta1Proposals.length
+          }
         }
 
         // Fallback to querying chain if indexer failed.

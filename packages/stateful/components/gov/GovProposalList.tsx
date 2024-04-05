@@ -148,9 +148,14 @@ export const GovProposalList = () => {
             (a.proposal.proposal.depositEndTime ?? new Date(0)).getTime()
         )
 
-  const historyCount = loadingAllGovProposals.loading
-    ? 0
-    : loadingAllGovProposals.data.total - openProposals.length
+  const historyCount =
+    loadingAllGovProposals.loading ||
+    openGovProposalsVotingPeriod.loading ||
+    govProposalsDepositPeriod.loading
+      ? 0
+      : loadingAllGovProposals.data.total -
+        openGovProposalsVotingPeriod.data.total -
+        govProposalsDepositPeriod.data.total
 
   return (
     <StatelessProposalList
