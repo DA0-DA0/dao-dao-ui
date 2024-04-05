@@ -64,6 +64,7 @@ telescope({
           'ibc.applications.interchain_accounts.host.v1',
           'ibc.applications.interchain_accounts.controller.v1',
           'ibc.core.channel.v1',
+          'ibc.core.client.v1',
           'juno.feeshare.v1',
           'juno.mint',
           'neutron.contractmanager.v1',

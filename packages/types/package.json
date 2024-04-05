@@ -5,9 +5,9 @@
   "scripts": {
     "lint": "eslint .",
     "format": "eslint . --fix",
-    "protobuf:codegen": "node src/protobuf/scripts/codegen.js",
-    "protobuf:patch": "git apply src/protobuf/patches.diff",
-    "protobuf:patch:update": "cd src/protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
+    "protobuf:codegen": "node protobuf/scripts/codegen.js",
+    "protobuf:patch": "git apply protobuf/patches.diff",
+    "protobuf:patch:update": "cd protobuf && npm run protobuf:codegen && git diff -R codegen/ > patches.diff && npm run protobuf:patch",
     "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {

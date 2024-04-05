@@ -17,24 +17,31 @@ import * as _124 from "./core/channel/v1/genesis";
 import * as _125 from "./core/channel/v1/query";
 import * as _126 from "./core/channel/v1/tx";
 import * as _127 from "./core/client/v1/client";
-import * as _364 from "./applications/interchain_accounts/controller/v1/tx.amino";
-import * as _365 from "./applications/interchain_accounts/host/v1/tx.amino";
-import * as _366 from "./applications/transfer/v1/tx.amino";
-import * as _367 from "./core/channel/v1/tx.amino";
-import * as _368 from "./applications/interchain_accounts/controller/v1/tx.registry";
-import * as _369 from "./applications/interchain_accounts/host/v1/tx.registry";
-import * as _370 from "./applications/transfer/v1/tx.registry";
-import * as _371 from "./core/channel/v1/tx.registry";
-import * as _372 from "./applications/interchain_accounts/controller/v1/query.rpc.Query";
-import * as _373 from "./applications/interchain_accounts/host/v1/query.rpc.Query";
-import * as _374 from "./applications/transfer/v1/query.rpc.Query";
-import * as _375 from "./core/channel/v1/query.rpc.Query";
-import * as _376 from "./applications/interchain_accounts/controller/v1/tx.rpc.msg";
-import * as _377 from "./applications/interchain_accounts/host/v1/tx.rpc.msg";
-import * as _378 from "./applications/transfer/v1/tx.rpc.msg";
-import * as _379 from "./core/channel/v1/tx.rpc.msg";
-import * as _506 from "./rpc.query";
-import * as _507 from "./rpc.tx";
+import * as _128 from "./core/client/v1/genesis";
+import * as _129 from "./core/client/v1/query";
+import * as _130 from "./core/client/v1/tx";
+import * as _367 from "./applications/interchain_accounts/controller/v1/tx.amino";
+import * as _368 from "./applications/interchain_accounts/host/v1/tx.amino";
+import * as _369 from "./applications/transfer/v1/tx.amino";
+import * as _370 from "./core/channel/v1/tx.amino";
+import * as _371 from "./core/client/v1/tx.amino";
+import * as _372 from "./applications/interchain_accounts/controller/v1/tx.registry";
+import * as _373 from "./applications/interchain_accounts/host/v1/tx.registry";
+import * as _374 from "./applications/transfer/v1/tx.registry";
+import * as _375 from "./core/channel/v1/tx.registry";
+import * as _376 from "./core/client/v1/tx.registry";
+import * as _377 from "./applications/interchain_accounts/controller/v1/query.rpc.Query";
+import * as _378 from "./applications/interchain_accounts/host/v1/query.rpc.Query";
+import * as _379 from "./applications/transfer/v1/query.rpc.Query";
+import * as _380 from "./core/channel/v1/query.rpc.Query";
+import * as _381 from "./core/client/v1/query.rpc.Query";
+import * as _382 from "./applications/interchain_accounts/controller/v1/tx.rpc.msg";
+import * as _383 from "./applications/interchain_accounts/host/v1/tx.rpc.msg";
+import * as _384 from "./applications/transfer/v1/tx.rpc.msg";
+import * as _385 from "./core/channel/v1/tx.rpc.msg";
+import * as _386 from "./core/client/v1/tx.rpc.msg";
+import * as _513 from "./rpc.query";
+import * as _514 from "./rpc.tx";
 export namespace ibc {
   export namespace applications {
     export namespace interchain_accounts {
@@ -43,10 +50,10 @@ export namespace ibc {
           ..._109,
           ..._110,
           ..._111,
-          ..._364,
-          ..._368,
+          ..._367,
           ..._372,
-          ..._376
+          ..._377,
+          ..._382
         };
       }
       export namespace host {
@@ -54,10 +61,10 @@ export namespace ibc {
           ..._112,
           ..._113,
           ..._114,
-          ..._365,
-          ..._369,
+          ..._368,
           ..._373,
-          ..._377
+          ..._378,
+          ..._383
         };
       }
       export const v1 = {
@@ -73,10 +80,10 @@ export namespace ibc {
         ..._120,
         ..._121,
         ..._122,
-        ..._366,
-        ..._370,
+        ..._369,
         ..._374,
-        ..._378
+        ..._379,
+        ..._384
       };
     }
   }
@@ -87,20 +94,27 @@ export namespace ibc {
         ..._124,
         ..._125,
         ..._126,
-        ..._367,
-        ..._371,
+        ..._370,
         ..._375,
-        ..._379
+        ..._380,
+        ..._385
       };
     }
     export namespace client {
       export const v1 = {
-        ..._127
+        ..._127,
+        ..._128,
+        ..._129,
+        ..._130,
+        ..._371,
+        ..._376,
+        ..._381,
+        ..._386
       };
     }
   }
   export const ClientFactory = {
-    ..._506,
-    ..._507
+    ..._513,
+    ..._514
   };
 }

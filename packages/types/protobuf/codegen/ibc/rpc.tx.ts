@@ -51,6 +51,9 @@ export const createRPCMsgClient = async ({
     core: {
       channel: {
         v1: new (await import("./core/channel/v1/tx.rpc.msg")).MsgClientImpl(rpc)
+      },
+      client: {
+        v1: new (await import("./core/client/v1/tx.rpc.msg")).MsgClientImpl(rpc)
       }
     }
   }
