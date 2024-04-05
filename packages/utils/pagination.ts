@@ -8,26 +8,30 @@ export const getAllRpcResponse = async <
   R extends { pagination?: PageResponse; [key: string]: any },
   K extends keyof R
 >(
-  queryFn: (params: P) => Promise<R>,
+  queryFn: (params: P, useInterfaces?: boolean) => Promise<R>,
   params: P,
   key: K,
-  reverse = false
+  reverse = false,
+  useInterfaces = false
 ): Promise<R[K]> => {
   let pagination: Partial<PageRequest> | undefined
   const data = [] as any[]
 
   do {
-    const response = await queryFn({
-      ...params,
-      pagination: {
-        key: new Uint8Array(),
-        ...pagination,
-        reverse,
-        // Get all.
-        offset: 0n,
-        limit: BigInt(Number.MAX_SAFE_INTEGER),
+    const response = await queryFn(
+      {
+        ...params,
+        pagination: {
+          key: new Uint8Array(),
+          ...pagination,
+          reverse,
+          // Get all.
+          offset: 0n,
+          limit: BigInt(Number.MAX_SAFE_INTEGER),
+        },
       },
-    })
+      useInterfaces
+    )
 
     pagination = response.pagination?.nextKey?.length
       ? {

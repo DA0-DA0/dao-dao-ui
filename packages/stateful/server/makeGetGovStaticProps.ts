@@ -237,7 +237,9 @@ export const makeGetGovProposalStaticProps = ({
               version: GovProposalVersion.V1_BETA_1,
               id: BigInt(proposalId),
               proposal: ProposalV1Beta1.decode(
-                fromBase64(indexerProposal.data)
+                fromBase64(indexerProposal.data),
+                undefined,
+                true
               ),
             })
           }
@@ -281,9 +283,12 @@ export const makeGetGovProposalStaticProps = ({
 
           if (!proposal) {
             const proposalV1Beta1 = (
-              await client.gov.v1beta1.proposal({
-                proposalId: BigInt(proposalId),
-              })
+              await client.gov.v1beta1.proposal(
+                {
+                  proposalId: BigInt(proposalId),
+                },
+                true
+              )
             ).proposal
             if (!proposalV1Beta1) {
               throw new Error('NOT_FOUND')

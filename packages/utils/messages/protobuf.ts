@@ -48,6 +48,7 @@ export const decodeGovProposal = async (
   if (govProposal.version === GovProposalVersion.V1_BETA_1) {
     let title = govProposal.proposal.content?.title || ''
     let description = govProposal.proposal.content?.description || ''
+
     // If content not decoded and stuck as Any, decode as TextProposal to get
     // the title and description.
     if (

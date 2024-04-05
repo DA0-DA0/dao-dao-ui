@@ -759,7 +759,7 @@ export const govProposalsSelector = selectorFamily<
           v1Beta1Proposals = indexerProposals.flatMap(
             ({ data }): ProposalV1Beta1 | [] => {
               try {
-                return ProposalV1Beta1.decode(fromBase64(data))
+                return ProposalV1Beta1.decode(fromBase64(data), undefined, true)
               } catch {
                 return []
               }
@@ -824,22 +824,26 @@ export const govProposalsSelector = selectorFamily<
                 pagination: undefined,
               },
               'proposals',
+              true,
               true
             )
             total = v1Beta1Proposals.length
           } else {
-            const response = await client.gov.v1beta1.proposals({
-              proposalStatus: status,
-              voter: '',
-              depositor: '',
-              pagination: {
-                key: new Uint8Array(),
-                offset: BigInt(offset || 0),
-                limit: BigInt(limit || 0),
-                countTotal: true,
-                reverse: true,
+            const response = await client.gov.v1beta1.proposals(
+              {
+                proposalStatus: status,
+                voter: '',
+                depositor: '',
+                pagination: {
+                  key: new Uint8Array(),
+                  offset: BigInt(offset || 0),
+                  limit: BigInt(limit || 0),
+                  countTotal: true,
+                  reverse: true,
+                },
               },
-            })
+              true
+            )
             v1Beta1Proposals = response.proposals
             total = Number(response.pagination?.total || 0)
           }
@@ -911,7 +915,11 @@ export const govProposalSelector = selectorFamily<
           return await decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
-            proposal: ProposalV1Beta1.decode(fromBase64(indexerProposal.data)),
+            proposal: ProposalV1Beta1.decode(
+              fromBase64(indexerProposal.data),
+              undefined,
+              true
+            ),
           })
         }
       }
@@ -933,7 +941,7 @@ export const govProposalSelector = selectorFamily<
           return await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
-            proposal: proposal,
+            proposal,
           })
         } catch (err) {
           // Fallback to v1beta1 query if v1 not supported.
@@ -948,9 +956,12 @@ export const govProposalSelector = selectorFamily<
       }
 
       const proposal = (
-        await client.gov.v1beta1.proposal({
-          proposalId: BigInt(proposalId),
-        })
+        await client.gov.v1beta1.proposal(
+          {
+            proposalId: BigInt(proposalId),
+          },
+          true
+        )
       ).proposal
       if (!proposal) {
         throw new Error('Proposal not found')
@@ -959,7 +970,7 @@ export const govProposalSelector = selectorFamily<
       return await decodeGovProposal({
         version: GovProposalVersion.V1_BETA_1,
         id: BigInt(proposalId),
-        proposal: proposal,
+        proposal,
       })
     },
 })
