@@ -484,7 +484,7 @@ export const InnerCreateDaoForm = ({
         // Redirect to prefilled chain governance prop page.
         router.push(
           getGovProposalPath(chainGovName, 'create', {
-            prefill: JSON.stringify({
+            prefill: encodeJsonToBase64({
               chainId,
               title: `Create DAO: ${name.trim()}`,
               description: 'This proposal creates a new DAO.',
@@ -499,7 +499,7 @@ export const InnerCreateDaoForm = ({
                       {
                         instantiate_contract_with_self_admin: {
                           codeId: codeIds.DaoCore,
-                          instantiateMsg: encodeMessageAsBase64(instantiateMsg),
+                          instantiateMsg: encodeJsonToBase64(instantiateMsg),
                           label: instantiateMsg.name,
                         },
                       },
