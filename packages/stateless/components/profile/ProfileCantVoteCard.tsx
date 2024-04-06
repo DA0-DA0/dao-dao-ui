@@ -55,7 +55,7 @@ export const ProfileCantVoteCard = ({
             />
           </div>
 
-          <p className="font-mono text-text-interactive-disabled">0%</p>
+          <p className="font-mono text-text-brand-secondary">0%</p>
         </div>
 
         <div className="secondary-text mt-2 flex flex-row items-center justify-between">

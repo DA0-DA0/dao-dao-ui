@@ -47,7 +47,7 @@ export const ProfileVoteCard = ({
           />
         </div>
 
-        <p className="font-mono text-text-primary">
+        <p className="font-mono text-text-brand-secondary">
           {formatPercentOf100(votingPower)}
         </p>
       </div>

@@ -210,7 +210,7 @@ export const ProfileCardMemberInfoTokens = ({
                 'text-right font-mono',
                 loadingVotingPower.loading
                   ? 'animate-pulse text-text-tertiary'
-                  : 'text-text-primary'
+                  : 'text-text-brand-secondary'
               )}
             >
               {loadingVotingPower.loading
