@@ -25,8 +25,10 @@ import {
   CHAIN_GAS_MULTIPLIER,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
+  decodeJsonFromBase64,
   getRpcForChainId,
   getSignerOptions,
+  objectMatchesStructure,
   processError,
 } from '@dao-dao/utils'
 
@@ -73,13 +75,35 @@ export const ProfileActions = () => {
   // Load from prefill query.
   const router = useRouter()
   useEffect(() => {
-    if (router.query.prefill) {
+    const potentialPrefill = router.query.prefill
+    if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
+      return
+    }
+
+    // Try to parse as JSON.
+    let prefillData
+    try {
+      prefillData = JSON.parse(potentialPrefill)
+    } catch (error) {
+      console.error(error)
+    }
+
+    // Try to parse as base64.
+    if (!prefillData) {
       try {
-        const prefill = JSON.parse(router.query.prefill as string)
-        formMethods.reset(prefill)
-      } catch (err) {
-        console.error(err)
+        prefillData = decodeJsonFromBase64(potentialPrefill)
+      } catch (error) {
+        console.error(error)
       }
+    }
+
+    // If prefillData looks valid, use it.
+    if (
+      objectMatchesStructure(prefillData, {
+        actions: {},
+      })
+    ) {
+      formMethods.reset(prefillData)
     }
   }, [formMethods, router.query])
 

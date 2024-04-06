@@ -185,8 +185,8 @@ const InnerCreateDaoProposal = ({
       return
     }
 
-    const potentialDefaultValue = router.query.prefill
-    if (typeof potentialDefaultValue !== 'string' || !potentialDefaultValue) {
+    const potentialPrefill = router.query.prefill
+    if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
       setPrefillChecked(true)
       return
     }
@@ -194,7 +194,7 @@ const InnerCreateDaoProposal = ({
     // Try to parse as JSON.
     let prefillData
     try {
-      prefillData = JSON.parse(potentialDefaultValue)
+      prefillData = JSON.parse(potentialPrefill)
     } catch (error) {
       console.error(error)
     }
@@ -202,7 +202,7 @@ const InnerCreateDaoProposal = ({
     // Try to parse as base64.
     if (!prefillData) {
       try {
-        prefillData = decodeJsonFromBase64(potentialDefaultValue)
+        prefillData = decodeJsonFromBase64(potentialPrefill)
       } catch (error) {
         console.error(error)
       }

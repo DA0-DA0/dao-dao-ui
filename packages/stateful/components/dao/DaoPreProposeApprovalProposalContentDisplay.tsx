@@ -13,7 +13,7 @@ import {
   CommonProposalInfo,
   ProposalPrefill,
 } from '@dao-dao/types'
-import { keyFromPreProposeStatus } from '@dao-dao/utils'
+import { encodeJsonToBase64, keyFromPreProposeStatus } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { useEntity } from '../../hooks'
@@ -61,7 +61,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
   // duplicate button remains hidden until the form data is loaded.
   const duplicateUrl = duplicateFormData
     ? getDaoProposalPath(coreAddress, 'create', {
-        prefill: JSON.stringify(prefill),
+        prefill: encodeJsonToBase64(prefill),
       })
     : undefined
 

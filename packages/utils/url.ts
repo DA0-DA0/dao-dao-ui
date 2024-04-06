@@ -3,6 +3,7 @@ import queryString from 'query-string'
 import { ActionKeyAndDataNoId, DaoPageMode, DaoTabId } from '@dao-dao/types'
 
 import { DaoProposalSingleAdapterId } from './constants/adapters'
+import { encodeJsonToBase64 } from './messages'
 
 // Create a path to a DAO page based on the app's page mode.
 export const getDaoPath = (
@@ -77,7 +78,7 @@ export const getAccountPath = (
 export const getMeTxPrefillPath = (actions: ActionKeyAndDataNoId[]) => {
   const base = '/me/actions'
   const query = `?${queryString.stringify({
-    prefill: JSON.stringify({
+    prefill: encodeJsonToBase64({
       actions: actions.map((action, index) => ({
         _id: index.toString(),
         ...action,
@@ -98,7 +99,7 @@ export const getDaoProposalSinglePrefill = ({
   title?: string
   description?: string
 }): string =>
-  JSON.stringify({
+  encodeJsonToBase64({
     id: DaoProposalSingleAdapterId,
     data: {
       title,
