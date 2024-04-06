@@ -16,12 +16,12 @@ import {
 } from '@dao-dao/types'
 import {
   combineLoadingDataWithErrors,
+  decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
-  parseEncodedMessage,
 } from '@dao-dao/utils'
 
 import { AddressInput, NftSelectionModal } from '../../../../components'
@@ -78,7 +78,7 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () => {
                 ? {
                     send_nft: {
                       contract: recipient,
-                      msg: encodeMessageAsBase64(smartContractMsg),
+                      msg: encodeJsonToBase64(smartContractMsg),
                       token_id: tokenId,
                     },
                   }
@@ -157,7 +157,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
 
           executeSmartContract: true,
           smartContractMsg: JSON.stringify(
-            parseEncodedMessage(msg.wasm.execute.msg.send_nft.msg),
+            decodeJsonFromBase64(msg.wasm.execute.msg.send_nft.msg),
             null,
             2
           ),

@@ -37,6 +37,9 @@ import {
   ContractName,
   DaoProposalSingleAdapterId,
   SITE_URL,
+  decodeJsonFromBase64,
+  encodeJsonToBase64,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import {
@@ -182,26 +185,40 @@ const InnerCreateDaoProposal = ({
       return
     }
 
-    try {
-      const potentialDefaultValue = router.query.prefill
-      if (typeof potentialDefaultValue !== 'string') {
-        return
-      }
+    const potentialDefaultValue = router.query.prefill
+    if (typeof potentialDefaultValue !== 'string' || !potentialDefaultValue) {
+      setPrefillChecked(true)
+      return
+    }
 
-      const prefillData = JSON.parse(potentialDefaultValue)
-      if (
-        prefillData.constructor.name === 'Object' &&
-        'id' in prefillData &&
-        'data' in prefillData
-      ) {
-        loadPrefill(prefillData)
-      }
-      // If failed to parse, do nothing.
+    // Try to parse as JSON.
+    let prefillData
+    try {
+      prefillData = JSON.parse(potentialDefaultValue)
     } catch (error) {
       console.error(error)
-    } finally {
-      setPrefillChecked(true)
     }
+
+    // Try to parse as base64.
+    if (!prefillData) {
+      try {
+        prefillData = decodeJsonFromBase64(potentialDefaultValue)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    // If prefillData looks valid, use it.
+    if (
+      objectMatchesStructure(prefillData, {
+        id: {},
+        data: {},
+      })
+    ) {
+      loadPrefill(prefillData)
+    }
+
+    setPrefillChecked(true)
   }, [
     router.query.prefill,
     router.isReady,
@@ -353,7 +370,7 @@ const InnerCreateDaoProposal = ({
     navigator.clipboard.writeText(
       SITE_URL +
         getDaoProposalPath(daoInfo.coreAddress, 'create', {
-          prefill: JSON.stringify({
+          prefill: encodeJsonToBase64({
             id: proposalModuleAdapterCommonId,
             data: proposalData,
           }),

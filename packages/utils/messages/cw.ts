@@ -34,7 +34,7 @@ import {
 import { IBC_TIMEOUT_SECONDS } from '../constants'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
-import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
+import { decodeJsonFromBase64, encodeJsonToBase64 } from './encoding'
 import { isDecodedStargateMsg } from './protobuf'
 
 type WasmMsgType =
@@ -98,7 +98,7 @@ export const decodeMessage = (msg: CosmosMsgFor_Empty): Record<string, any> => {
     if (msgType && isBinaryType(msgType)) {
       const base64MsgContainer = (msg.wasm as any)[msgType]
       if (base64MsgContainer && 'msg' in base64MsgContainer) {
-        const parsedMsg = parseEncodedMessage(base64MsgContainer.msg)
+        const parsedMsg = decodeJsonFromBase64(base64MsgContainer.msg)
         if (parsedMsg) {
           return {
             ...msg,
@@ -143,20 +143,18 @@ export const makeWasmMessage = (message: {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages.
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = encodeMessageAsBase64(message.wasm.execute.msg)
+    msg.wasm.execute.msg = encodeJsonToBase64(message.wasm.execute.msg)
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = encodeMessageAsBase64(
-      message.wasm.instantiate.msg
-    )
+    msg.wasm.instantiate.msg = encodeJsonToBase64(message.wasm.instantiate.msg)
   } else if (message?.wasm?.instantiate2) {
-    msg.wasm.instantiate2.msg = encodeMessageAsBase64(
+    msg.wasm.instantiate2.msg = encodeJsonToBase64(
       message.wasm.instantiate2.msg
     )
     msg.wasm.instantiate2.salt = toBase64(
       toUtf8(message.wasm.instantiate2.salt)
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = encodeMessageAsBase64(message.wasm.migrate.msg)
+    msg.wasm.migrate.msg = encodeJsonToBase64(message.wasm.migrate.msg)
   }
   // Messages such as update or clear admin pass through without modification.
   return msg
@@ -169,7 +167,7 @@ export const makeExecutableMintMessage = (
   wasm: {
     execute: {
       contract_addr: contractAddress,
-      msg: encodeMessageAsBase64(msg),
+      msg: encodeJsonToBase64(msg),
       funds: [],
     },
   },

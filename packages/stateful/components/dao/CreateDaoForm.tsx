@@ -44,7 +44,7 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   findWasmAttributeValue,
   getFallbackImage,
   getFundsFromDaoInstantiateMsg,
@@ -407,7 +407,7 @@ export const InnerCreateDaoForm = ({
     const { logs } = await instantiateWithFactory(
       {
         codeId: codeIds.DaoCore,
-        instantiateMsg: encodeMessageAsBase64(instantiateMsg),
+        instantiateMsg: encodeJsonToBase64(instantiateMsg),
         label: instantiateMsg.name,
       },
       CHAIN_GAS_MULTIPLIER,

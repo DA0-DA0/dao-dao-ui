@@ -9,7 +9,7 @@ import {
   TokenBasedCreatorId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
@@ -180,7 +180,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     label: `DAO_${daoName.trim()}_${TokenBasedCreatorId}_${
       isNative ? 'native' : 'cw20'
     }`,
-    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
+    msg: encodeJsonToBase64(votingModuleAdapterInstantiateMsg),
     funds: tokenFactoryDenomCreationFee || [],
   }
 

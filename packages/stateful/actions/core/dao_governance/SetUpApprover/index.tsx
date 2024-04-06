@@ -26,10 +26,10 @@ import { InstantiateMsg as DaoPreProposeApproverInstantiateMsg } from '@dao-dao/
 import { InstantiateMsg as DaoProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DaoProposalSingleAdapterId,
-  encodeMessageAsBase64,
+  decodeJsonFromBase64,
+  encodeJsonToBase64,
   makeWasmMessage,
   objectMatchesStructure,
-  parseEncodedMessage,
 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../components/EntityDisplay'
@@ -82,7 +82,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SetUpApproverData> = (
     }
   }
 
-  const parsedMsg = parseEncodedMessage(info.msg)
+  const parsedMsg = decodeJsonFromBase64(info.msg)
   if (
     !info.label.endsWith(`${DaoProposalSingleAdapterId}_approver`) ||
     !objectMatchesStructure(parsedMsg, {
@@ -103,7 +103,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SetUpApproverData> = (
     }
   }
 
-  const parsedPreProposeMsg = parseEncodedMessage(
+  const parsedPreProposeMsg = decodeJsonFromBase64(
     parsedMsg.pre_propose_info.module_may_propose.info.msg
   )
   if (
@@ -218,7 +218,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
           admin: { core_module: {} },
           code_id: chainContext.config.codeIds.DaoProposalSingle,
           label: `DAO_${context.info.name.trim()}_${DaoProposalSingleAdapterId}_approver`,
-          msg: encodeMessageAsBase64({
+          msg: encodeJsonToBase64({
             threshold: config.threshold,
             allow_revoting: config.allow_revoting,
             close_proposal_on_execution_failure:
@@ -238,7 +238,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                   admin: { core_module: {} },
                   code_id: chainContext.config.codeIds.DaoPreProposeApprover,
                   label: `DAO_${context.info.name.trim()}_pre-propose${DaoProposalSingleAdapterId}_approver`,
-                  msg: encodeMessageAsBase64({
+                  msg: encodeJsonToBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
                   } as DaoPreProposeApproverInstantiateMsg),
                   funds: [],

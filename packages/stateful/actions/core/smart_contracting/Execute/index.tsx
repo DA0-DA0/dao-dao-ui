@@ -26,12 +26,12 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
-  parseEncodedMessage,
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../hooks'
@@ -108,7 +108,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
                     fundsTokens[0]!.decimals
                   ),
                   contract: address,
-                  msg: encodeMessageAsBase64(msg),
+                  msg: encodeJsonToBase64(msg),
                 },
               },
             },
@@ -221,7 +221,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
             : msg.wasm.execute.contract_addr,
           message: JSON.stringify(
             isCw20
-              ? parseEncodedMessage(msg.wasm.execute.msg.send.msg)
+              ? decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
               : msg.wasm.execute.msg,
             undefined,
             2

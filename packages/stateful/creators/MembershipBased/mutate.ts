@@ -1,6 +1,6 @@
 import { DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
-import { MembershipBasedCreatorId, encodeMessageAsBase64 } from '@dao-dao/utils'
+import { MembershipBasedCreatorId, encodeJsonToBase64 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
@@ -41,7 +41,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingCw4,
     label: `DAO_${name.trim()}_${MembershipBasedCreatorId}`,
-    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
+    msg: encodeJsonToBase64(votingModuleAdapterInstantiateMsg),
     funds: [],
   }
 

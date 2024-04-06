@@ -50,8 +50,9 @@ import {
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
   decodeCw1WhitelistExecuteMsg,
+  decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   getChainAddressForActionOptions,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
@@ -59,7 +60,6 @@ import {
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
-  parseEncodedMessage,
 } from '@dao-dao/utils'
 
 import {
@@ -703,7 +703,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
                       send: {
                         amount: BigInt(total).toString(),
                         contract: vestingSource.factory,
-                        msg: encodeMessageAsBase64({
+                        msg: encodeJsonToBase64({
                           instantiate_payroll_contract: msg,
                         }),
                       },
@@ -874,7 +874,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
         },
       }) &&
       objectMatchesStructure(
-        parseEncodedMessage(msg.wasm.execute.msg.send.msg),
+        decodeJsonFromBase64(msg.wasm.execute.msg.send.msg),
         {
           instantiate_payroll_contract: instantiateStructure,
         }
@@ -934,7 +934,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
       // isCw20Begin
       else {
         // Extract instantiate message from cw20 send message.
-        instantiateMsg = parseEncodedMessage(msg.wasm.execute.msg.send.msg)
+        instantiateMsg = decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
           .instantiate_payroll_contract.instantiate_msg as VestingInstantiateMsg
       }
     }

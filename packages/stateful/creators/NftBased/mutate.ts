@@ -3,7 +3,7 @@ import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   NftBasedCreatorId,
   convertDurationWithUnitsToDuration,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -40,7 +40,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingCw721Staked,
     label: `DAO_${daoName.trim()}_${NftBasedCreatorId}`,
-    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
+    msg: encodeJsonToBase64(votingModuleAdapterInstantiateMsg),
     funds: [],
   }
 

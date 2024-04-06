@@ -26,7 +26,7 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   processError,
 } from '@dao-dao/utils'
 
@@ -178,7 +178,7 @@ const InnerStakingModal = ({
               governanceToken.decimals
             ).toString(),
             contract: stakingContractToExecute,
-            msg: encodeMessageAsBase64({
+            msg: encodeJsonToBase64({
               [isOraichainCustomStaking ? 'bond' : 'stake']: {},
             }),
           })

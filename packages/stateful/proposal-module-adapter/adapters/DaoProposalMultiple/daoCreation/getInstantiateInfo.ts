@@ -6,7 +6,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -96,7 +96,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           admin: { core_module: {} },
           code_id: codeIdsToUse.DaoPreProposeMultiple,
           label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
-          msg: encodeMessageAsBase64(preProposeMultipleInstantiateMsg),
+          msg: encodeJsonToBase64(preProposeMultipleInstantiateMsg),
           // This function is used by the enable multiple choice action, and
           // DAOs before v2.3.0 still might want to enable multiple choice, so
           // make sure to support the old version without the `funds` field.
@@ -121,7 +121,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     admin: { core_module: {} },
     code_id: codeIdsToUse.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
-    msg: encodeMessageAsBase64(msg),
+    msg: encodeJsonToBase64(msg),
     // This function is used by the enable multiple choice action, and DAOs
     // before v2.3.0 still might want to enable multiple choice, so make sure to
     // support the old version without the `funds` field.

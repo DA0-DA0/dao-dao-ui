@@ -11,7 +11,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -110,7 +110,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           label: `DAO_${name.trim()}_pre-propose${
             approver.enabled ? '-approval' : ''
           }_${DaoProposalSingleAdapterId}`,
-          msg: encodeMessageAsBase64(preProposeInstantiateMsg),
+          msg: encodeJsonToBase64(preProposeInstantiateMsg),
           funds: [],
         },
       },
@@ -139,7 +139,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     admin: { core_module: {} },
     code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name.trim()}_${DaoProposalSingleAdapterId}`,
-    msg: encodeMessageAsBase64(msg),
+    msg: encodeJsonToBase64(msg),
     funds: [],
   }
 }

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext, DaoInfoCard } from '@dao-dao/types'
-import { parseEncodedMessage, processError } from '@dao-dao/utils'
+import { decodeJsonFromBase64, processError } from '@dao-dao/utils'
 
 import { CosmosMessageDisplay } from '../../../CosmosMessageDisplay'
 import { Checkbox } from '../../../inputs/Checkbox'
@@ -43,7 +43,7 @@ export const CreateDaoReview = ({
     // Convert encoded module instantiation messages back to readable JSON.
     if (decodeModuleMessages) {
       msg.proposal_modules_instantiate_info.forEach((info) => {
-        const msg = parseEncodedMessage(info.msg)
+        const msg = decodeJsonFromBase64(info.msg)
 
         // Convert encoded pre_propose_info message back to readable JSON.
         if (
@@ -53,14 +53,14 @@ export const CreateDaoReview = ({
           'msg' in msg.pre_propose_info.module_may_propose.info
         ) {
           msg.pre_propose_info.module_may_propose.info.msg =
-            parseEncodedMessage(
+            decodeJsonFromBase64(
               msg.pre_propose_info.module_may_propose.info.msg
             )
         }
 
         info.msg = msg
       })
-      msg.voting_module_instantiate_info.msg = parseEncodedMessage(
+      msg.voting_module_instantiate_info.msg = decodeJsonFromBase64(
         msg.voting_module_instantiate_info.msg
       )
     }

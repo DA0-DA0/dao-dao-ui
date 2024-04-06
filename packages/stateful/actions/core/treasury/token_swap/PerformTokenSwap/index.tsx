@@ -21,10 +21,10 @@ import {
 import {
   ContractName,
   convertDenomToMicroDenomStringWithDecimals,
-  encodeMessageAsBase64,
+  decodeJsonFromBase64,
+  encodeJsonToBase64,
   makeWasmMessage,
   objectMatchesStructure,
-  parseEncodedMessage,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
@@ -159,7 +159,7 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
                   send: {
                     amount,
                     contract: tokenSwapContractAddress,
-                    msg: encodeMessageAsBase64({
+                    msg: encodeJsonToBase64({
                       // Use common key to identify CW20s being sent to token
                       // swaps from this DAO DAO action.
                       [CW20_SEND_MSG_KEY]: {},
@@ -233,7 +233,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
     }) &&
     // Use common key to identify CW20s being sent to token swaps from this
     // DAO DAO action.
-    CW20_SEND_MSG_KEY in parseEncodedMessage(msg.wasm.execute.msg.send.msg)
+    CW20_SEND_MSG_KEY in decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
   ) {
     return {
       match: true,

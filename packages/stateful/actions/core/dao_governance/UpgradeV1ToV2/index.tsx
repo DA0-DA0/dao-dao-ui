@@ -27,7 +27,7 @@ import {
 } from '@dao-dao/types'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -286,7 +286,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                       DaoProposalSingleAdapter.id
                     }`,
                     funds: [],
-                    msg: encodeMessageAsBase64({
+                    msg: encodeJsonToBase64({
                       deposit_info: depositInfo
                         ? {
                             amount: depositInfo.amount,

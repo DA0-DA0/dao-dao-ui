@@ -74,6 +74,8 @@ import {
   CHAIN_GAS_MULTIPLIER,
   SITE_URL,
   dateToWdhms,
+  decodeJsonFromBase64,
+  encodeJsonToBase64,
   formatDateTime,
   formatPercentOf100,
   formatTime,
@@ -83,6 +85,7 @@ import {
   getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
+  objectMatchesStructure,
   processError,
 } from '@dao-dao/utils'
 
@@ -132,32 +135,52 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
-  const [usePrefill, setUsePrefill] = useState(false)
+  // If set to an object, prefill form with data.
+  const [usePrefill, setUsePrefill] = useState<Record<string, any> | undefined>(
+    undefined
+  )
   // Prefill form with data from parameter once ready.
   useEffect(() => {
     if (!router.isReady || prefillChecked) {
       return
     }
 
-    try {
-      const potentialDefaultValue = router.query.prefill
-      if (typeof potentialDefaultValue !== 'string') {
-        return
-      }
+    const potentialDefaultValue = router.query.prefill
+    if (typeof potentialDefaultValue !== 'string' || !potentialDefaultValue) {
+      setPrefillChecked(true)
+      return
+    }
 
-      const prefillData = JSON.parse(potentialDefaultValue)
-      if (
-        prefillData.constructor.name === 'Object' &&
-        'chainId' in prefillData
-      ) {
-        setUsePrefill(true)
-      }
-      // If failed to parse, do nothing.
+    // Try to parse as JSON.
+    let prefillData
+    try {
+      prefillData = JSON.parse(potentialDefaultValue)
     } catch (error) {
       console.error(error)
-    } finally {
-      setPrefillChecked(true)
     }
+
+    // Try to parse as base64.
+    if (!prefillData) {
+      try {
+        prefillData = decodeJsonFromBase64(potentialDefaultValue)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    // If prefillData looks valid, use it.
+    if (
+      objectMatchesStructure(prefillData, {
+        chainId: {},
+        version: {},
+        title: {},
+        description: {},
+      })
+    ) {
+      setUsePrefill(prefillData)
+    }
+
+    setPrefillChecked(true)
   }, [router.query.prefill, router.isReady, prefillChecked])
 
   return !defaults || !prefillChecked ? (
@@ -171,7 +194,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
       defaults={{
         ...defaults,
         ...cloneDeep(latestProposalSave),
-        ...(usePrefill ? JSON.parse(router.query.prefill as string) : {}),
+        ...usePrefill,
       }}
       localStorageKey={localStorageKey}
       realDefaults={defaults}
@@ -494,7 +517,7 @@ const InnerNewGovProposal = ({
     navigator.clipboard.writeText(
       SITE_URL +
         getGovProposalPath(chainContext.config.name, 'create', {
-          prefill: JSON.stringify(proposalData),
+          prefill: encodeJsonToBase64(proposalData),
         })
     )
     toast.success(t('info.copiedLinkToClipboard'))
