@@ -37,7 +37,6 @@ import {
 } from 'recoil'
 
 import {
-  govParamsSelector,
   govProposalCreatedCardPropsAtom,
   govProposalSelector,
   latestProposalSaveAtom,
@@ -89,7 +88,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { WalletActionsProvider } from '../../actions'
+import { WalletActionsProvider, useActionOptions } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
 import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
@@ -248,6 +247,11 @@ const InnerNewGovProposal = ({
     chainWallet,
   } = useWallet()
 
+  const { context } = useActionOptions()
+  if (context.type !== ActionContextType.Gov) {
+    throw new Error(`Unsupported context: ${context}`)
+  }
+
   const [loading, setLoading] = useState(false)
 
   const [showPreview, setShowPreview] = useState(false)
@@ -276,12 +280,6 @@ const InnerNewGovProposal = ({
     formState: { errors },
     reset,
   } = formMethods
-
-  const govParams = useRecoilValue(
-    govParamsSelector({
-      chainId: chainContext.chainId,
-    })
-  )
 
   const holdingAltForDirectSign = useHoldingKey({ key: 'alt' })
 
@@ -435,13 +433,13 @@ const InnerNewGovProposal = ({
                 {
                   Icon: BookOutlined,
                   label: `${t('title.threshold')}: ${formatPercentOf100(
-                    govParams.threshold * 100
+                    context.params.threshold * 100
                   )}`,
                 },
                 {
                   Icon: FlagOutlined,
                   label: `${t('title.quorum')}: ${formatPercentOf100(
-                    govParams.quorum * 100
+                    context.params.quorum * 100
                   )}`,
                 },
                 ...(endTime
@@ -496,8 +494,8 @@ const InnerNewGovProposal = ({
         chainContext.chain.pretty_name,
         chainContext.config.name,
         setGovProposalCreatedCardProps,
-        govParams.threshold,
-        govParams.quorum,
+        context.params.threshold,
+        context.params.quorum,
         refreshGovProposals,
         setLatestProposalSave,
         router,
