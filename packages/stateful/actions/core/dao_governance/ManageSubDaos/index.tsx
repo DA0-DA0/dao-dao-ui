@@ -38,7 +38,7 @@ const Component: ActionComponent = (props) => {
   } = useActionOptions()
 
   const currentSubDaos = useRecoilValue(
-    DaoCoreV2Selectors.allAdministratedSubDaoConfigsSelector({
+    DaoCoreV2Selectors.allSubDaoConfigsSelector({
       chainId,
       contractAddress: address,
     })

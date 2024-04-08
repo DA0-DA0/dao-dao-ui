@@ -1246,10 +1246,10 @@ export const listAllSubDaosSelector = selectorFamily<
 })
 
 /**
- * Get the configs for all this DAO's recognized SubDAOs that this DAO has admin
- * power over. These will only be SubDAOs on the same chain.
+ * Get the configs for all this DAO's recognized SubDAOs. These will only be
+ * SubDAOs on the same chain.
  */
-export const allAdministratedSubDaoConfigsSelector = selectorFamily<
+export const allSubDaoConfigsSelector = selectorFamily<
   (WithChainId<{ address: string }> & ConfigResponse)[],
   QueryClientParams
 >({
@@ -1257,13 +1257,7 @@ export const allAdministratedSubDaoConfigsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const subDaos = get(
-        listAllSubDaosSelector({
-          ...queryClientParams,
-          // Only get SubDAOs this DAO is the admin of.
-          onlyAdmin: true,
-        })
-      )
+      const subDaos = get(listAllSubDaosSelector(queryClientParams))
       const subDaoConfigs = get(
         waitForAll(
           subDaos.map(({ chainId, addr }) =>
