@@ -1187,6 +1187,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     // Permissioned, only Kujira governance can create DAOs.
     factoryContractAddress:
       'kujira1hwjtqgymczqra9n0859yvwemzamfqzvsegxsvuwcl7zwphpn04qqkr89yd',
+    createViaGovernance: true,
     explorerUrlTemplates: {
       tx: 'https://finder.kujira.network/kaiyo-1/tx/REPLACE',
       gov: 'https://blue.kujira.network/govern',

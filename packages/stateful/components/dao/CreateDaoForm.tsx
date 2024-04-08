@@ -498,8 +498,8 @@ export const InnerCreateDaoForm = ({
                     message: JSON.stringify(
                       {
                         instantiate_contract_with_self_admin: {
-                          codeId: codeIds.DaoCore,
-                          instantiateMsg: encodeJsonToBase64(instantiateMsg),
+                          code_id: codeIds.DaoCore,
+                          instantiate_msg: encodeJsonToBase64(instantiateMsg),
                           label: instantiateMsg.name,
                         },
                       },

@@ -950,7 +950,7 @@
     "daoAdminExecDescription": "Execute actions on behalf of a DAO with you as the admin. A parent DAO could use this to execute actions on behalf of a SubDAO.",
     "daoApproverExplanation": "An approver must approve proposals before they open for voting.",
     "daoCreationProcessExplanation": "Creating your DAO has never been this easy:",
-    "daoCreationRequiresChainGovProp": "{{chain}} requires that DAOs are created through chain governance proposals. Click Continue to open the proposal creation page.",
+    "daoCreationRequiresChainGovProp": "{{chain}} requires that your DAO is created through a chain governance proposal. Click Continue to open the proposal creation page.",
     "daoInfoWillRefresh": "DAO information may take up to {{seconds}} seconds to update on all pages once proposal is executed.",
     "daoNameAZ": "DAO name (A → Z)",
     "daoNameZA": "DAO name (Z → A)",

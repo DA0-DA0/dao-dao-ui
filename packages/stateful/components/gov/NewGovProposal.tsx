@@ -172,7 +172,6 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     if (
       objectMatchesStructure(prefillData, {
         chainId: {},
-        version: {},
         title: {},
         description: {},
       })
