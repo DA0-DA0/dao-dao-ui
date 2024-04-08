@@ -3,6 +3,7 @@ import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  DecodedCrossChainMessage,
   DecodedIcaMsg,
   DecodedPolytoneMsg,
   cwMsgToProtobuf,
@@ -250,8 +251,10 @@ export const maybeMakePolytoneExecuteMessage = (
   })
 }
 
-// Checks if the message is a Polytone execute message and extracts the chain ID
-// and msg(s).
+/**
+ * Checks if the message is a Polytone execute message and extracts the chain ID
+ * and msg(s).
+ */
 export const decodePolytoneExecuteMsg = (
   srcChainId: string,
   decodedMsg: Record<string, any>,
@@ -313,8 +316,10 @@ export const decodePolytoneExecuteMsg = (
   }
 }
 
-// If the source and destination chains are different, this wraps the message in
-// an ICA execution message. Otherwise, it just returns the message.
+/**
+ * If the source and destination chains are different, this wraps the message in
+ * an ICA execution message. Otherwise, it just returns the message.
+ */
 export const maybeMakeIcaExecuteMessage = (
   srcChainId: string,
   destChainId: string,
@@ -359,8 +364,10 @@ export const maybeMakeIcaExecuteMessage = (
   })
 }
 
-// Checks if the message is an ICA execute message and extracts the chain ID and
-// msg(s).
+/**
+ * Checks if the message is an ICA execute message and extracts the chain ID and
+ * msg(s).
+ */
 export const decodeIcaExecuteMsg = (
   srcChainId: string,
   decodedMsg: Record<string, any>,
@@ -420,6 +427,49 @@ export const decodeIcaExecuteMsg = (
     }
   }
 }
+
+/**
+ * Decode cross-chain messages, which is either polytone or ICA.
+ */
+export const decodeCrossChainMessages = (
+  srcChainId: string,
+  srcAddress: string,
+  msgs: CosmosMsgFor_Empty[]
+): DecodedCrossChainMessage[] =>
+  decodeMessages(msgs).flatMap((msg): DecodedCrossChainMessage | [] => {
+    const decodedPolytone = decodePolytoneExecuteMsg(srcChainId, msg, 'any')
+    if (decodedPolytone.match) {
+      return {
+        type: 'polytone',
+        data: decodedPolytone,
+        srcConnection: decodedPolytone.polytoneConnection.localConnection,
+        srcChannel: decodedPolytone.polytoneConnection.localChannel,
+        srcPort: `wasm.${decodedPolytone.polytoneConnection.note}`,
+        dstConnection: decodedPolytone.polytoneConnection.remoteConnection,
+        dstChannel: decodedPolytone.polytoneConnection.remoteChannel,
+        dstPort: `wasm.${decodedPolytone.polytoneConnection.voice}`,
+      }
+    }
+
+    const decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
+    if (decodedIca.match) {
+      const ibcInfo = getIbcTransferInfoBetweenChains(
+        srcChainId,
+        decodedIca.chainId
+      )
+
+      return {
+        type: 'ica',
+        data: decodedIca,
+        srcConnection: ibcInfo.sourceChain.connection_id,
+        srcPort: `icacontroller-${srcAddress}`,
+        dstConnection: ibcInfo.destinationChain.connection_id,
+        dstPort: 'icahost',
+      }
+    }
+
+    return []
+  })
 
 /**
  * Wrap the message in a cw1-whitelist execution message.

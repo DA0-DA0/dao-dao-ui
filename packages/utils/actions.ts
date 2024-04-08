@@ -60,9 +60,12 @@ export const convertActionsToMessages = (
     // Filter out undefined messages.
     .filter(Boolean) as CosmosMsgForEmpty[]
 
-// Get the address for the given action options for the given chain. If a DAO,
-// this is the address of the native address on the same chain or the polytone
-// proxy on that chain. For a wallet, this is the transformed bech32 address.
+/**
+ * Get the address for the given action options for the given chain. If a DAO,
+ * this is the address of the native address on the same chain or the polytone
+ * proxy on that chain. For a wallet, this is the address registered in the
+ * wallet's profile, if any.
+ */
 export const getChainAddressForActionOptions = (
   { context, chain, address }: ActionOptions,
   chainId: string

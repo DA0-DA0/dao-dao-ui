@@ -302,8 +302,9 @@ export const getIbcTransferInfoBetweenChains = (
   destChainId: string
 ): {
   sourceChain: IBCInfo['chain_1']
-  destinationChain: IBCInfo['chain_1']
   sourceChannel: string
+  destinationChain: IBCInfo['chain_1']
+  destinationChannel: string
   info: IBCInfo
 } => {
   const { chain_name: srcChainName } = getChainForChainId(srcChainId)
@@ -351,6 +352,7 @@ export const getIbcTransferInfoBetweenChains = (
     sourceChain: info[`chain_${srcChainNumber}`],
     sourceChannel: channel[`chain_${srcChainNumber}`].channel_id,
     destinationChain: info[`chain_${destChainNumber}`],
+    destinationChannel: channel[`chain_${destChainNumber}`].channel_id,
     info,
   }
 }

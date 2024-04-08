@@ -45,7 +45,7 @@ import {
   DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useProposalActionState,
-  useProposalPolytoneState,
+  useProposalRelayState,
   useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
@@ -137,7 +137,7 @@ const InnerProposalStatusAndInfo = ({
     sender: walletAddress,
   })
 
-  const polytoneState = useProposalPolytoneState({
+  const relayState = useProposalRelayState({
     msgs: winningChoice?.msgs || [],
     status: proposal.status,
     executedAt: proposal.executedAt,
@@ -148,7 +148,7 @@ const InnerProposalStatusAndInfo = ({
   })
   const { action, footer } = useProposalActionState({
     statusKey,
-    polytoneState,
+    relayState,
     loadingExecutionTxHash,
     executeProposal,
     closeProposal,

@@ -126,8 +126,8 @@ export const refreshGovProposalsAtom = atomFamily<number, string>({
   default: 0,
 })
 
-// Change this to refresh the unreceived IBC packets/acks for a given chain.
-export const refreshUnreceivedIbcDataAtom = atomFamily<number, string>({
+// Change this to refresh IBC packets/acks for a given chain.
+export const refreshIbcDataAtom = atomFamily<number, string>({
   key: 'refreshUnreceivedIbcData',
   default: 0,
 })
