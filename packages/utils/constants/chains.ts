@@ -1264,7 +1264,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
-  SUPPORTED_CHAINS.map(({ chainId, polytone = {} }) => [
+  SUPPORTED_CHAINS.map(({ chainId, polytone: polytone = {} }) => [
     chainId as ChainId,
     polytone,
   ])

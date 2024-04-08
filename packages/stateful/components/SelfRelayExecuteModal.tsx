@@ -1,5 +1,6 @@
 import { Chain } from '@chain-registry/types'
 import { AckWithMetadata } from '@confio/relayer'
+import { PacketWithMetadata } from '@confio/relayer/build/lib/endpoint'
 import { IbcClient } from '@confio/relayer/build/lib/ibcclient'
 import { Link } from '@confio/relayer/build/lib/link'
 import {
@@ -29,8 +30,8 @@ import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 import {
   genericTokenBalanceSelector,
   nativeDenomBalanceSelector,
+  refreshIbcDataAtom,
   refreshPolytoneListenerResultsAtom,
-  refreshUnreceivedIbcDataAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
@@ -46,7 +47,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   ChainId,
-  PolytoneConnection,
   SelfRelayExecuteModalProps,
   TokenType,
   cwMsgToEncodeObject,
@@ -107,14 +107,12 @@ type Relayer = {
   }
   relayerAddress: string
   client: IbcClient
-  // Will be loaded for receiving chains only. The current chain will not have a
-  // polytone note since it is just responsible for sending packets.
-  polytoneConnection?: PolytoneConnection
 }
 
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
+  crossChainMessages,
   transaction,
   onSuccess,
   onClose,
@@ -126,7 +124,6 @@ export const SelfRelayExecuteModal = ({
   // Current chain.
   const {
     chain: { chain_id: currentChainId },
-    config,
   } = useSupportedChainContext()
 
   // All chains, including current.
@@ -331,13 +328,6 @@ export const SelfRelayExecuteModal = ({
             throw new Error(t('error.feeTokenNotFound'))
           }
 
-          const polytoneConnection = config.polytone?.[chain.chain_id]
-          // Only the receiving chains need polytone notes. The current chain is
-          // just responsible for sending.
-          if (chain.chain_id !== currentChainId && !polytoneConnection) {
-            throw new Error(t('error.polytoneConnectionNotFound'))
-          }
-
           // Connect wallet to chain so we can send tokens.
           const { address, getSigningStargateClient } =
             relayerChainWallets[index]
@@ -382,7 +372,6 @@ export const SelfRelayExecuteModal = ({
             },
             relayerAddress,
             client,
-            polytoneConnection,
           }
         })
       )
@@ -561,7 +550,7 @@ export const SelfRelayExecuteModal = ({
     ({ set }) =>
       () => {
         chainIds.forEach((chainId) =>
-          set(refreshUnreceivedIbcDataAtom(chainId), (id) => id + 1)
+          set(refreshIbcDataAtom(chainId), (id) => id + 1)
         )
         set(refreshPolytoneListenerResultsAtom, (id) => id + 1)
       },
@@ -608,189 +597,303 @@ export const SelfRelayExecuteModal = ({
         // Wait for previous chain to finish relaying packets.
         await prev
 
-        const { chain, client, polytoneConnection } = relayer
+        const { chain, client } = relayer
 
-        // Type-check, should never happen since we slice off the first (current
-        // chain) relayer, which is just responsible for sending.
-        if (!polytoneConnection) {
-          throw new Error(t('error.polytoneNoteNotFound'))
-        }
+        // Get the messages for this chain that need relaying.
+        const messages = crossChainMessages.filter(
+          ({ data: { chainId } }) => chainId === chain.chain_id
+        )
 
         // Get packets for this chain that need relaying.
-        const thesePackets = packets.filter(
-          ({ packet }) =>
-            packet.sourcePort === `wasm.${polytoneConnection.note}` &&
-            packet.sourceChannel === polytoneConnection.localChannel &&
-            packet.destinationChannel === polytoneConnection.remoteChannel
+        const chainPackets = packets.filter(({ packet }) =>
+          messages.some(
+            ({ srcPort, dstPort }) =>
+              packet.sourcePort === srcPort &&
+              packet.destinationPort === dstPort
+          )
         )
-        if (!thesePackets.length) {
+        if (!chainPackets.length) {
           return
         }
-        const packetSequences = thesePackets.map(({ packet }) =>
-          Number(packet.sequence)
-        )
 
         setRelaying({
           type: 'packet',
           relayer,
         })
 
-        const link = await Link.createWithExistingConnections(
-          // First relayer is current chain sending packets.
-          relayers[0].client,
-          client,
-          polytoneConnection.localConnection,
-          polytoneConnection.remoteConnection
+        // Get unique source channels and connections.
+        const srcConnections = (
+          await Promise.all(
+            uniq(chainPackets.map(({ packet }) => packet.sourceChannel)).map(
+              async (channel) => ({
+                channel,
+                connection: (
+                  await relayers[0].client.query.ibc.channel.channel(
+                    chainPackets.find(
+                      ({ packet }) => packet.sourceChannel === channel
+                    )!.packet.sourcePort,
+                    channel
+                  )
+                ).channel?.connectionHops[0],
+              })
+            )
+          )
+        ).flatMap(({ channel, connection }) =>
+          connection ? { channel, connection } : []
         )
 
-        // Relay packets. Try 5 times.
-        let tries = 5
-        while (tries) {
-          try {
-            const unrelayedPackets =
-              await client.query.ibc.channel.unreceivedPackets(
-                thesePackets[0].packet.destinationPort,
-                thesePackets[0].packet.destinationChannel,
-                packetSequences
-              )
+        // Get connections for channels.
+        const connections = (
+          await Promise.all(
+            srcConnections
+              .reduce((acc, { channel, connection }) => {
+                let existing = acc.find((a) => a.src === connection)
+                if (!existing) {
+                  existing = {
+                    src: connection,
+                    packets: [],
+                  }
+                  acc.push(existing)
+                }
 
-            const packetsNeedingRelay = thesePackets.filter(({ packet }) =>
-              unrelayedPackets.sequences.some((seq) => seq === packet.sequence)
-            )
+                // Find packets coming from the same channel.
+                existing.packets.push(
+                  ...chainPackets.filter(
+                    ({ packet }) => packet.sourceChannel === channel
+                  )
+                )
 
-            // Relay only the packets that need relaying.
-            if (packetsNeedingRelay.length) {
-              await link.relayPackets('A', packetsNeedingRelay)
-            }
+                return acc
+              }, [] as { src: string; packets: PacketWithMetadata[] }[])
+              .map(async (data) => ({
+                ...data,
+                dst: (
+                  await relayers[0].client.query.ibc.connection.connection(
+                    data.src
+                  )
+                ).connection?.counterparty.connectionId,
+              }))
+          )
+        ).flatMap(({ src, dst, packets }) => (dst ? { src, dst, packets } : []))
 
-            break
-          } catch (err) {
-            // If relayer wallet out of funds, throw immediately since they need
-            // to top up.
-            if (
-              err instanceof Error &&
-              err.message.includes('insufficient funds')
-            ) {
-              // Refresh all balances.
-              relayers.map(refreshBalances)
-              throw new Error(t('error.relayerWalletNeedsFunds'))
-            }
-
-            tries -= 1
-
-            console.error(
-              t('error.failedToRelayPackets', {
-                chain: chain.pretty_name,
-              }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
-              err
-            )
-
-            // If no more tries, rethrow error.
-            if (tries === 0) {
-              throw err
-            }
-
-            // Wait a few seconds before trying again.
-            await new Promise((resolve) => setTimeout(resolve, 5000))
-          }
+        if (!connections.length) {
+          throw new Error(t('error.failedToLoadIbcConnection'))
         }
 
-        // Wait a few seconds for the packets to be indexed.
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        // Run relay process for each connection pair on this chain.
+        for (const {
+          src: srcConnection,
+          dst: dstConnection,
+          packets,
+        } of connections) {
+          const link = await Link.createWithExistingConnections(
+            // First relayer is current chain sending packets.
+            relayers[0].client,
+            client,
+            srcConnection,
+            dstConnection
+          )
 
-        setRelaying({
-          type: 'ack',
-          relayer,
-        })
+          // Get packets with unique source channel/port and destination
+          // channel/port combinations.
+          const uniquePackets = uniq(
+            packets.map((p) =>
+              [
+                p.packet.sourceChannel,
+                p.packet.sourcePort,
+                p.packet.destinationChannel,
+                p.packet.destinationPort,
+              ].join('/')
+            )
+          ).map((key) => {
+            const [srcChannel, srcPort, dstChannel, dstPort] = key.split('/')
+            return {
+              srcChannel,
+              srcPort,
+              dstChannel,
+              dstPort,
+            }
+          })
 
-        const sourcePort = thesePackets[0].packet.sourcePort
-        const sourceChannel = thesePackets[0].packet.sourceChannel
+          setRelaying({
+            type: 'packet',
+            relayer,
+          })
 
-        // Relay acks. Try 5 times.
-        tries = 5
-        while (tries) {
-          try {
-            // Find acks that need relaying.
-            const smallestSequenceNumber = Math.min(...packetSequences)
-            const largestSequenceNumber = Math.max(...packetSequences)
-            const search = await link.endB.client.tm.txSearchAll({
-              query: `write_acknowledgement.packet_connection='${polytoneConnection.remoteConnection}' AND write_acknowledgement.packet_src_port='${sourcePort}' AND write_acknowledgement.packet_src_channel='${sourceChannel}' AND write_acknowledgement.packet_sequence>=${smallestSequenceNumber} AND write_acknowledgement.packet_sequence<=${largestSequenceNumber}`,
-            })
+          const packetSequences = packets.map(({ packet }) =>
+            Number(packet.sequence)
+          )
 
-            const allAcks = search.txs.flatMap(({ height, result, hash }) => {
-              const events = result.events.map(fromTendermintEvent)
-              return parseAcksFromTxEvents(events).map(
-                (ack): AckWithMetadata => ({
-                  height,
-                  txHash: toHex(hash).toUpperCase(),
-                  txEvents: events,
-                  ...ack,
-                })
+          // Relay packets. Try 5 times.
+          let tries = 5
+          while (tries) {
+            try {
+              const unrelayedPackets = (
+                await Promise.all(
+                  uniquePackets.map(
+                    async ({ dstChannel, dstPort }) =>
+                      (
+                        await client.query.ibc.channel.unreceivedPackets(
+                          dstPort,
+                          dstChannel,
+                          packetSequences
+                        )
+                      ).sequences
+                  )
+                )
+              ).flat()
+
+              const packetsNeedingRelay = packets.filter(({ packet }) =>
+                unrelayedPackets.includes(packet.sequence)
               )
-            })
 
-            const unrelayedAcks =
-              // First relayer is current chain sending packets/getting acks.
-              await relayers[0].client.query.ibc.channel.unreceivedAcks(
-                sourcePort,
-                sourceChannel,
-                allAcks.map(({ originalPacket }) =>
-                  Number(originalPacket.sequence)
+              // Relay only the packets that need relaying.
+              if (packetsNeedingRelay.length) {
+                await link.relayPackets('A', packetsNeedingRelay)
+              }
+
+              break
+            } catch (err) {
+              // If relayer wallet out of funds, throw immediately since they
+              // need to top up.
+              if (
+                err instanceof Error &&
+                err.message.includes('insufficient funds')
+              ) {
+                // Refresh all balances.
+                relayers.map(refreshBalances)
+                throw new Error(t('error.relayerWalletNeedsFunds'))
+              }
+
+              tries -= 1
+
+              console.error(
+                t('error.failedToRelayPackets', {
+                  chain: chain.pretty_name,
+                }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
+                err
+              )
+
+              // If no more tries, rethrow error.
+              if (tries === 0) {
+                throw err
+              }
+
+              // Wait a few seconds before trying again.
+              await new Promise((resolve) => setTimeout(resolve, 5000))
+            }
+          }
+
+          // Wait a few seconds for the packets to be indexed.
+          await new Promise((resolve) => setTimeout(resolve, 5000))
+
+          setRelaying({
+            type: 'ack',
+            relayer,
+          })
+
+          // Relay acks. Try 5 times.
+          tries = 5
+          while (tries) {
+            try {
+              // Find acks that need relaying.
+              const smallestSequenceNumber = Math.min(...packetSequences)
+              const largestSequenceNumber = Math.max(...packetSequences)
+              const txSearch = (
+                await Promise.all(
+                  uniquePackets.map(
+                    async ({ srcChannel, srcPort }) =>
+                      (
+                        await link.endB.client.tm.txSearchAll({
+                          query: `write_acknowledgement.packet_connection='${dstConnection}' AND write_acknowledgement.packet_src_port='${srcPort}' AND write_acknowledgement.packet_src_channel='${srcChannel}' AND write_acknowledgement.packet_sequence>=${smallestSequenceNumber} AND write_acknowledgement.packet_sequence<=${largestSequenceNumber}`,
+                        })
+                      ).txs
+                  )
+                )
+              ).flat()
+
+              const allAcks = txSearch.flatMap(({ height, result, hash }) => {
+                const events = result.events.map(fromTendermintEvent)
+                return parseAcksFromTxEvents(events).map(
+                  (ack): AckWithMetadata => ({
+                    height,
+                    txHash: toHex(hash).toUpperCase(),
+                    txEvents: events,
+                    ...ack,
+                  })
+                )
+              })
+
+              const unrelayedAcks = (
+                await Promise.all(
+                  uniquePackets.map(
+                    async ({ srcChannel, srcPort }) =>
+                      // First relayer is current chain sending packets/getting
+                      // acks.
+                      (
+                        await relayers[0].client.query.ibc.channel.unreceivedAcks(
+                          srcPort,
+                          srcChannel,
+                          allAcks.map(({ originalPacket }) =>
+                            Number(originalPacket.sequence)
+                          )
+                        )
+                      ).sequences
+                  )
+                )
+              ).flat()
+
+              const acksNeedingRelay = allAcks.filter(({ originalPacket }) =>
+                unrelayedAcks.includes(originalPacket.sequence)
+              )
+
+              // Acknowledge only the packets that need relaying.
+              if (acksNeedingRelay.length) {
+                await link.relayAcks('B', acksNeedingRelay)
+              }
+
+              break
+            } catch (err) {
+              // If relayer wallet out of funds, throw immediately since they
+              // need to top up.
+              if (
+                err instanceof Error &&
+                err.message.includes('insufficient funds')
+              ) {
+                // Refresh all balances.
+                relayers.map(refreshBalances)
+                throw new Error(t('error.relayerWalletNeedsFunds'))
+              }
+
+              tries -= 1
+
+              console.error(
+                t('error.failedToRelayAcks', {
+                  chain: chain.pretty_name,
+                }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
+                err
+              )
+
+              // If no more tries, rethrow error.
+              if (tries === 0) {
+                throw err
+              }
+
+              // Wait a few seconds before trying again.
+              await new Promise((resolve) =>
+                setTimeout(
+                  resolve,
+                  // If redundant packets detected, a relayer already relayed
+                  // these acks. In that case, wait a bit longer to let it
+                  // finish. The ack relayer above tries to check which acks
+                  // have not yet been received, so if a relayer takes care of
+                  // the acks, we will safely continue.
+                  err instanceof Error && err.message.includes('redundant')
+                    ? 10 * 1000
+                    : 5 * 1000
                 )
               )
-
-            const acksNeedingRelay = allAcks.filter(({ originalPacket }) =>
-              unrelayedAcks.sequences.some(
-                (seq) => seq === originalPacket.sequence
-              )
-            )
-
-            // Acknowledge only the packets that need relaying.
-            if (acksNeedingRelay.length) {
-              await link.relayAcks('B', acksNeedingRelay)
             }
-
-            break
-          } catch (err) {
-            // If relayer wallet out of funds, throw immediately since they need
-            // to top up.
-            if (
-              err instanceof Error &&
-              err.message.includes('insufficient funds')
-            ) {
-              // Refresh all balances.
-              relayers.map(refreshBalances)
-              throw new Error(t('error.relayerWalletNeedsFunds'))
-            }
-
-            tries -= 1
-
-            console.error(
-              t('error.failedToRelayAcks', {
-                chain: chain.pretty_name,
-              }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
-              err
-            )
-
-            // If no more tries, rethrow error.
-            if (tries === 0) {
-              throw err
-            }
-
-            // Wait a few seconds before trying again.
-            await new Promise((resolve) =>
-              setTimeout(
-                resolve,
-                // If redundant packets detected, a relayer already relayed
-                // these acks. In that case, wait a bit longer to let it finish.
-                // The ack relayer above tries to check which acks have not yet
-                // been received, so if a relayer takes care of the acks, we
-                // will safely continue.
-                err instanceof Error && err.message.includes('redundant')
-                  ? 10 * 1000
-                  : 5 * 1000
-              )
-            )
           }
         }
       }, Promise.resolve())

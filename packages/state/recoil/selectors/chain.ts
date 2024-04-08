@@ -1,3 +1,4 @@
+import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
@@ -52,6 +53,7 @@ import {
   Pool,
   Validator as RpcValidator,
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/staking'
+import { Packet } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feerefunder/fee'
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
@@ -71,8 +73,8 @@ import {
 import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
+  refreshIbcDataAtom,
   refreshNativeTokenStakingInfoAtom,
-  refreshUnreceivedIbcDataAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
 import {
@@ -1535,6 +1537,19 @@ export const transactionSelector = selectorFamily<
     },
 })
 
+export const transactionPacketsSelector = selectorFamily<
+  Packet[] | undefined,
+  WithChainId<{ txHash: string }>
+>({
+  key: 'transactionPackets',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const tx = get(transactionSelector(params))
+      return tx && parsePacketsFromTendermintEvents(tx.events)
+    },
+})
+
 export const walletHexPublicKeySelector = selectorFamily<
   string | undefined,
   WithChainId<{ walletAddress: string }>
@@ -1600,8 +1615,8 @@ export const denomMetadataSelector = selectorFamily<
 })
 
 export const ibcUnreceivedPacketsSelector = selectorFamily<
-  // Returns unreceived IBC packet sequences.
-  number[],
+  // Returns whether or not all of the IBC packet sequences have been received.
+  boolean,
   WithChainId<{
     portId: string
     channelId: string
@@ -1612,7 +1627,7 @@ export const ibcUnreceivedPacketsSelector = selectorFamily<
   get:
     ({ chainId, portId, channelId, packetCommitmentSequences }) =>
     async ({ get }) => {
-      get(refreshUnreceivedIbcDataAtom(chainId))
+      get(refreshIbcDataAtom(chainId))
       const ibcClient = get(ibcRpcClientForChainSelector(chainId))
       const { sequences } = await ibcClient.core.channel.v1.unreceivedPackets({
         portId,
@@ -1621,13 +1636,15 @@ export const ibcUnreceivedPacketsSelector = selectorFamily<
           BigInt(v)
         ),
       })
-      return sequences.map((s) => Number(s))
+      return sequences.some((s) =>
+        packetCommitmentSequences.includes(Number(s))
+      )
     },
 })
 
 export const ibcUnreceivedAcksSelector = selectorFamily<
-  // Returns unreceived IBC packet acknowledgement sequences.
-  number[],
+  // Returns whether or not all of the IBC packet acks have been received.
+  boolean,
   WithChainId<{
     portId: string
     channelId: string
@@ -1638,13 +1655,41 @@ export const ibcUnreceivedAcksSelector = selectorFamily<
   get:
     ({ chainId, portId, channelId, packetAckSequences }) =>
     async ({ get }) => {
-      get(refreshUnreceivedIbcDataAtom(chainId))
+      get(refreshIbcDataAtom(chainId))
       const ibcClient = get(ibcRpcClientForChainSelector(chainId))
       const { sequences } = await ibcClient.core.channel.v1.unreceivedAcks({
         portId,
         channelId,
         packetAckSequences: packetAckSequences.map((v) => BigInt(v)),
       })
-      return sequences.map((s) => Number(s))
+      return sequences.some((s) => packetAckSequences.includes(Number(s)))
+    },
+})
+
+export const ibcAckReceivedSelector = selectorFamily<
+  // Returns whether or not the IBC packet acknowledgement was received.
+  boolean,
+  WithChainId<{
+    portId: string
+    channelId: string
+    sequence: number
+  }>
+>({
+  key: 'ibcAckReceived',
+  get:
+    ({ chainId, portId, channelId, sequence }) =>
+    async ({ get }) => {
+      get(refreshIbcDataAtom(chainId))
+      const ibcClient = get(ibcRpcClientForChainSelector(chainId))
+      try {
+        await ibcClient.core.channel.v1.packetAcknowledgement({
+          portId,
+          channelId,
+          sequence: BigInt(sequence),
+        })
+        return true
+      } catch (err) {
+        return false
+      }
     },
 })

@@ -29,11 +29,11 @@ import {
 import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
-import { UseProposalPolytoneStateReturn } from './useProposalPolytoneState'
+import { UseProposalRelayStateReturn } from './useProposalRelayState'
 import { useWallet } from './useWallet'
 
 export type UseProposalActionStateOptions = {
-  polytoneState: UseProposalPolytoneStateReturn
+  relayState: UseProposalRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
   executeProposal: (
@@ -58,7 +58,7 @@ export type UseProposalActionStateReturn = Pick<
  * components.
  */
 export const useProposalActionState = ({
-  polytoneState,
+  relayState,
   statusKey,
   loadingExecutionTxHash,
   executeProposal,
@@ -154,10 +154,10 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
 
-  const showPolytone =
-    !polytoneState.loading &&
+  const showRelayStatus =
+    !relayState.loading &&
     statusKey === ProposalStatusEnum.Executed &&
-    polytoneState.data.hasPolytoneMessages
+    relayState.data.hasCrossChainMessages
 
   return {
     action:
@@ -165,13 +165,13 @@ export const useProposalActionState = ({
       // Show if anyone can execute OR if the wallet is a member, once
       // polytone messages that need relaying are done loading.
       (!config.only_members_execute || isMember) &&
-      !polytoneState.loading
+      !relayState.loading
         ? {
             label: t('button.execute'),
             Icon: Key,
             loading: actionLoading,
-            doAction: polytoneState.data.needsSelfRelay
-              ? polytoneState.data.openPolytoneRelay
+            doAction: relayState.data.needsSelfRelay
+              ? relayState.data.openSelfRelay
               : onExecute,
             header: allowMemoOnExecute ? (
               <TextInput
@@ -197,22 +197,22 @@ export const useProposalActionState = ({
           }
         : // If executed and has polytone messages that need relaying...
         statusKey === ProposalStatusEnum.Executed &&
-          !polytoneState.loading &&
-          polytoneState.data.needsSelfRelay &&
+          !relayState.loading &&
+          relayState.data.needsSelfRelay &&
           !loadingExecutionTxHash.loading &&
           loadingExecutionTxHash.data
         ? {
             label: t('button.relay'),
             Icon: Send,
             loading: actionLoading,
-            doAction: polytoneState.data.openPolytoneRelay,
+            doAction: relayState.data.openSelfRelay,
             description: t('error.polytoneExecutedNoRelay'),
           }
         : undefined,
-    footer: (showPolytone || isWalletConnected) && (
+    footer: (showRelayStatus || isWalletConnected) && (
       <div className="flex flex-col gap-6">
-        {showPolytone && (
-          <ProposalCrossChainRelayStatus state={polytoneState.data} />
+        {showRelayStatus && (
+          <ProposalCrossChainRelayStatus state={relayState.data} />
         )}
 
         {isWalletConnected && <ProfileProposalCard />}

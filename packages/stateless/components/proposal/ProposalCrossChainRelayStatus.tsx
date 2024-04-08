@@ -1,19 +1,19 @@
 import { useTranslation } from 'react-i18next'
 
-import { ProposalPolytoneState } from '@dao-dao/types'
+import { ProposalRelayState } from '@dao-dao/types'
 
 import { InfoCard } from '../InfoCard'
 
 export type ProposalCrossChainRelayStatusProps = {
-  state: ProposalPolytoneState
+  state: ProposalRelayState
 }
 
 export const ProposalCrossChainRelayStatus = ({
-  state: { hasPolytoneMessages, needsSelfRelay, unrelayedMsgs, timedOutMsgs },
+  state: { hasCrossChainMessages, needsSelfRelay, unrelayedMsgs, timedOutMsgs },
 }: ProposalCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
-  if (!hasPolytoneMessages) {
+  if (!hasCrossChainMessages) {
     return null
   }
 

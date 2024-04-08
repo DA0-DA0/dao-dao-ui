@@ -12,25 +12,25 @@ export type ProposalCreatedCardProps = Omit<
   'className' | 'onMouseOver' | 'onMouseLeave' | 'LinkWrapper'
 >
 
-export type ProposalPolytoneState = {
+export type ProposalRelayState = {
   /**
-   * Whether or not there are any polytone messages.
+   * Whether or not there are any cross-chain messages.
    */
-  hasPolytoneMessages: boolean
+  hasCrossChainMessages: boolean
   /**
-   * The initiator msgs that relayed successfully.
+   * The state for the decoded messages msgs that relayed successfully.
    */
-  relayedMsgs: string[]
+  relayedMsgs: DecodedCrossChainMessage[]
   /**
-   * The initiator msgs that are unrelayed.
+   * The state for the decoded messages that are unrelayed.
    */
-  unrelayedMsgs: string[]
+  unrelayedMsgs: DecodedCrossChainMessage[]
   /**
-   * The initiator msgs that timed out.
+   * The state for the decoded messages that timed out.
    */
-  timedOutMsgs: string[]
+  timedOutMsgs: DecodedCrossChainMessage[]
   /**
-   * Whether or not there are polytone messages that need to be self-relayed.
+   * Whether or not there are cross-chain messages that need to be self-relayed.
    * Most chains have relayers set up, so no need to self-relay on those chains.
    * After a few minutes if there are still messages that need to be relayed,
    * they can be self-relayed. This will be true when unrelayed messages exist
@@ -41,7 +41,7 @@ export type ProposalPolytoneState = {
   /**
    * Opens the execute and self-relay modal.
    */
-  openPolytoneRelay: () => void
+  openSelfRelay: () => void
 }
 
 export type DecodedPolytoneMsgMatch = {
@@ -99,6 +99,28 @@ export type DecodedIcaMsgNoMatch = {
 }
 
 export type DecodedIcaMsg = DecodedIcaMsgNoMatch | DecodedIcaMsgMatch
+
+export type DecodedCrossChainMessage =
+  | {
+      type: 'polytone'
+      data: DecodedPolytoneMsgMatch
+      srcConnection: string
+      srcChannel: string
+      srcPort: string
+      dstConnection: string
+      dstChannel: string
+      dstPort: string
+    }
+  | {
+      type: 'ica'
+      data: DecodedIcaMsgMatch
+      srcConnection: string
+      // Cannot determine srcChannel from decoded message.
+      srcPort: string
+      dstConnection: string
+      // Cannot determine dstChannel from decoded message.
+      dstPort: string
+    }
 
 export enum ProcessedTQType {
   Majority,

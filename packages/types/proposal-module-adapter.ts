@@ -281,7 +281,7 @@ export type BaseProposalStatusAndInfoProps = {
   openSelfRelayExecute: (
     props: Pick<
       SelfRelayExecuteModalProps,
-      'uniqueId' | 'chainIds' | 'transaction'
+      'uniqueId' | 'chainIds' | 'crossChainMessages' | 'transaction'
     >
   ) => void
   onExecuteSuccess: () => void | Promise<void>
