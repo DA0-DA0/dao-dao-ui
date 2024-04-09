@@ -1,4 +1,4 @@
-import { Star } from '@mui/icons-material'
+import { Star, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
@@ -21,6 +21,7 @@ import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { SearchBar } from '../inputs'
 import { Loader } from '../logo'
+import { NoContent } from '../NoContent'
 import { TooltipInfoIcon } from '../tooltip'
 
 export type ActionLibraryProps = {
@@ -302,49 +303,58 @@ export const ActionLibrary = ({
 
         <div className="hidden w-[1px] min-w-0 shrink-0 self-stretch bg-border-primary md:block"></div>
 
-        <div
-          className="flex min-w-0 grow flex-col gap-2 pt-1 md:pb-1"
-          ref={itemsListRef}
-        >
-          {showingActions.map((action, index) => (
-            <Button
-              key={categoryKeySelected + action.key}
-              className={clsx(
-                selectedIndex === index && 'bg-background-interactive-selected'
-              )}
-              contentContainerClassName="gap-4 text-left"
-              disabled={
-                loadingActionKeys.includes(action.key) ||
-                !!erroredActionKeys[action.key]
-              }
-              onClick={() => onSelectAction(action)}
-              variant="ghost"
-            >
-              {action.Icon && (
-                <p className="text-3xl">
-                  <action.Icon />
-                </p>
-              )}
+        {showingActions.length > 0 ? (
+          <div
+            className="flex min-w-0 grow flex-col gap-2 pt-1 md:pb-1"
+            ref={itemsListRef}
+          >
+            {showingActions.map((action, index) => (
+              <Button
+                key={categoryKeySelected + action.key}
+                className={clsx(
+                  selectedIndex === index &&
+                    'bg-background-interactive-selected'
+                )}
+                contentContainerClassName="gap-4 text-left"
+                disabled={
+                  loadingActionKeys.includes(action.key) ||
+                  !!erroredActionKeys[action.key]
+                }
+                onClick={() => onSelectAction(action)}
+                variant="ghost"
+              >
+                {action.Icon && (
+                  <p className="text-3xl">
+                    <action.Icon />
+                  </p>
+                )}
 
-              <div className="flex grow flex-col items-start gap-1">
-                <p className="primary-text">{action.label}</p>
-                <p className="caption-text">{action.description}</p>
-              </div>
+                <div className="flex grow flex-col items-start gap-1">
+                  <p className="primary-text">{action.label}</p>
+                  <p className="caption-text">{action.description}</p>
+                </div>
 
-              {erroredActionKeys[action.key] && (
-                <TooltipInfoIcon
-                  size="lg"
-                  title={erroredActionKeys[action.key]!.message}
-                  warning
-                />
-              )}
+                {erroredActionKeys[action.key] && (
+                  <TooltipInfoIcon
+                    size="lg"
+                    title={erroredActionKeys[action.key]!.message}
+                    warning
+                  />
+                )}
 
-              {loadingActionKeys.includes(action.key) && (
-                <Loader fill={false} size={32} />
-              )}
-            </Button>
-          ))}
-        </div>
+                {loadingActionKeys.includes(action.key) && (
+                  <Loader fill={false} size={32} />
+                )}
+              </Button>
+            ))}
+          </div>
+        ) : (
+          <NoContent
+            Icon={WarningRounded}
+            body={t('info.nothingFound')}
+            className="self-center !border-0 grow md:-mt-4"
+          />
+        )}
       </div>
     </Collapsible>
   )
