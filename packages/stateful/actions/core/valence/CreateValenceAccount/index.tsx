@@ -1,3 +1,4 @@
+import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
@@ -9,7 +10,7 @@ import {
   DaoSupportedChainPickerInput,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { AccountType, Coin, TokenType } from '@dao-dao/types'
+import { TokenType, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -20,16 +21,18 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { InstantiateMsg as ValenceAccountInstantiateMsg } from '@dao-dao/types/contracts/ValenceAccount'
+import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
+  VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
-  getAccountAddress,
+  getChainAddressForActionOptions,
+  getDisplayNameForChainId,
   getSupportedChainConfig,
-  makeWasmMessage,
+  isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../hooks'
@@ -62,18 +65,19 @@ const Component: ActionComponent = (props) => {
 
   return (
     <>
-      {context.type === ActionContextType.Dao && (
-        <DaoSupportedChainPickerInput
-          className="mb-4"
-          disabled={!props.isCreating}
-          fieldName={props.fieldNamePrefix + 'chainId'}
-          includeChainIds={VALENCE_SUPPORTED_CHAINS}
-          onChange={() => {
-            // Reset funds when switching chain.
-            setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
-          }}
-        />
-      )}
+      {context.type === ActionContextType.Dao &&
+        VALENCE_SUPPORTED_CHAINS.length > 1 && (
+          <DaoSupportedChainPickerInput
+            className="mb-4"
+            disabled={!props.isCreating}
+            fieldName={props.fieldNamePrefix + 'chainId'}
+            includeChainIds={VALENCE_SUPPORTED_CHAINS}
+            onChange={() => {
+              // Reset funds when switching chain.
+              setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
+            }}
+          />
+        )}
 
       <ChainProvider chainId={chainId}>
         <CreateValenceAccountComponent
@@ -102,8 +106,6 @@ export const makeCreateValenceAccountAction: ActionMaker<
 > = (options) => {
   const {
     t,
-    address,
-    context,
     chain: { chain_id: currentChainId },
   } = options
 
@@ -117,26 +119,20 @@ export const makeCreateValenceAccountAction: ActionMaker<
       msg = decodedPolytone.msg
     }
 
-    const isInstantiateMsg = objectMatchesStructure(msg, {
-      wasm: {
-        instantiate: {
-          code_id: {},
-          label: {},
-          msg: {
-            services_manager: {},
-          },
-          funds: {},
-        },
-      },
-    })
+    const typedMsg =
+      isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === MsgInstantiateContract2.typeUrl &&
+      fromUtf8(msg.stargate.value.salt) === VALENCE_INSTANTIATE2_SALT
+        ? (msg.stargate.value as MsgInstantiateContract2)
+        : undefined
 
     const valenceAccountCodeId =
       getSupportedChainConfig(chainId)?.codeIds?.ValenceAccount
 
     const fundTokens = useCachedLoading(
-      isInstantiateMsg
+      typedMsg
         ? waitForAll(
-            (msg.wasm.instantiate.funds as Coin[]).map(({ denom }) =>
+            typedMsg.funds.map(({ denom }) =>
               genericTokenSelector({
                 chainId,
                 type: TokenType.Native,
@@ -148,26 +144,24 @@ export const makeCreateValenceAccountAction: ActionMaker<
       []
     )
 
-    return valenceAccountCodeId !== undefined && isInstantiateMsg
+    return valenceAccountCodeId !== undefined && typedMsg
       ? {
           match: true,
           data: {
             chainId,
-            funds: (msg.wasm.instantiate.funds as Coin[]).map(
-              ({ denom, amount }) => ({
-                denom,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  amount,
-                  (!fundTokens.loading &&
-                    fundTokens.data.find(
-                      (token) =>
-                        token.chainId === chainId &&
-                        token.denomOrAddress === denom
-                    )?.decimals) ||
-                    0
-                ),
-              })
-            ),
+            funds: typedMsg.funds.map(({ denom, amount }) => ({
+              denom,
+              amount: convertMicroDenomToDenomWithDecimals(
+                amount,
+                (!fundTokens.loading &&
+                  fundTokens.data.find(
+                    (token) =>
+                      token.chainId === chainId &&
+                      token.denomOrAddress === denom
+                  )?.decimals) ||
+                  0
+              ),
+            })),
           },
         }
       : {
@@ -189,40 +183,47 @@ export const makeCreateValenceAccountAction: ActionMaker<
           throw new Error(t('error.unsupportedValenceChain'))
         }
 
+        const sender = getChainAddressForActionOptions(options, chainId)
+        if (!sender) {
+          throw new Error(
+            t('error.failedToFindChainAccount', {
+              chain: getDisplayNameForChainId(chainId),
+            })
+          )
+        }
+
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
-          makeWasmMessage({
-            wasm: {
-              instantiate: {
-                code_id: config.codeIds.ValenceAccount,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgInstantiateContract2.typeUrl,
+              value: {
+                sender,
+                admin: sender,
+                codeId: BigInt(config.codeIds.ValenceAccount),
                 label: 'Valence Account',
-                msg: {
-                  services_manager: config.valence.servicesManager,
-                } as ValenceAccountInstantiateMsg,
-                admin:
-                  context.type === ActionContextType.Dao
-                    ? getAccountAddress({
-                        accounts: context.info.accounts,
-                        chainId,
-                      })
-                    : address,
+                msg: toUtf8(
+                  JSON.stringify({
+                    services_manager: config.valence.servicesManager,
+                  } as ValenceAccountInstantiateMsg)
+                ),
                 funds: funds.map(({ denom, amount }) => ({
                   denom,
-                  amount: BigInt(
-                    convertDenomToMicroDenomWithDecimals(
-                      amount,
-                      (!nativeBalances.loading &&
-                        nativeBalances.data.find(
-                          ({ token }) =>
-                            token.chainId === chainId &&
-                            token.denomOrAddress === denom
-                        )?.token.decimals) ||
-                        0
-                    )
-                  ).toString(),
+                  amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount,
+                    (!nativeBalances.loading &&
+                      nativeBalances.data.find(
+                        ({ token }) =>
+                          token.chainId === chainId &&
+                          token.denomOrAddress === denom
+                      )?.token.decimals) ||
+                      0
+                  ),
                 })),
-              },
+                salt: toUtf8(VALENCE_INSTANTIATE2_SALT),
+                fixMsg: false,
+              } as MsgInstantiateContract2,
             },
           })
         )
@@ -241,9 +242,7 @@ export const makeCreateValenceAccountAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Prevent creating more than one valence account.
-    hideFromPicker: context.accounts.some(
-      ({ type }) => type === AccountType.Valence
-    ),
+    // The configure rebalancer action is responsible for adding this action.
+    programmaticOnly: true,
   }
 }

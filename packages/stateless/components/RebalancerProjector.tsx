@@ -12,12 +12,13 @@ import {
 } from 'chart.js'
 import clsx from 'clsx'
 import Controller from 'node-pid-controller'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { DISTRIBUTION_COLORS, formatDate } from '@dao-dao/utils'
 
+import { useUpdatingRef } from '../hooks'
 import { useNamedThemeColor } from '../theme'
 
 ChartJS.register(
@@ -172,8 +173,7 @@ export const RebalancerProjector = ({
       }))
     )
   }
-  const makeProjectionsRef = useRef(makeProjections)
-  makeProjectionsRef.current = makeProjections
+  const makeProjectionsRef = useUpdatingRef(makeProjections)
 
   // When any projection info changes...
   useDeepCompareEffect(() => {

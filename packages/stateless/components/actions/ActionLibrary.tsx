@@ -16,7 +16,7 @@ import {
   LoadedActions,
 } from '@dao-dao/types'
 
-import { useSearchFilter } from '../../hooks'
+import { useSearchFilter, useUpdatingRef } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { SearchBar } from '../inputs'
@@ -61,8 +61,7 @@ export const ActionLibrary = ({
   })
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
-  const onSelectRef = useRef(onSelect)
-  onSelectRef.current = onSelect
+  const onSelectRef = useUpdatingRef(onSelect)
   const onSelectAction = useCallback(
     (action: Action) => {
       const loadedAction = loadedActions[action.key]
@@ -83,7 +82,7 @@ export const ActionLibrary = ({
         data: cloneDeep(loadedAction.defaults ?? {}),
       })
     },
-    [addAction, loadedActions]
+    [addAction, loadedActions, onSelectRef]
   )
 
   const [_categoryKeySelected, setCategoryKeySelected] = useState<

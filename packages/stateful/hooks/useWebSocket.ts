@@ -1,5 +1,5 @@
 import { Channel } from 'pusher-js'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
@@ -186,14 +186,12 @@ export const useOnWebSocketMessage = (
 
   // Store listening in ref so the fallback function can access it within the
   // same instance of the function without re-rendering.
-  const listeningRef = useRef(listening)
-  listeningRef.current = listening
+  const listeningRef = useUpdatingRef(listening)
 
   // Create a memoized fallback function that calls the callback with the
   // fallback data after waiting a block. This is useful for ensuring the
   // callback gets executed when the WebSocket is misbehaving.
-  const defaultFallbackDataRef = useRef(defaultFallbackData)
-  defaultFallbackDataRef.current = defaultFallbackData
+  const defaultFallbackDataRef = useUpdatingRef(defaultFallbackData)
   const fallback: OnMessageFallback = useCallback(
     async (data, { skipWait = false, onlyIfNotListening = true } = {}) => {
       // Do nothing if we are already listening.
@@ -209,7 +207,7 @@ export const useOnWebSocketMessage = (
 
       callbackRef.current(data ?? defaultFallbackDataRef.current ?? {}, true)
     },
-    [callbackRef]
+    [callbackRef, defaultFallbackDataRef, listeningRef]
   )
 
   return {

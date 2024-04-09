@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
@@ -331,11 +331,10 @@ export const ProposalList = ({
   )
 
   // Load once on mount.
-  const loadMoreRef = useRef(loadMore)
-  loadMoreRef.current = loadMore
+  const loadMoreRef = useUpdatingRef(loadMore)
   useEffect(() => {
     loadMoreRef.current()
-  }, [])
+  }, [loadMoreRef])
 
   // Refresh all proposals on proposal WebSocket messages.
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)

@@ -171,3 +171,8 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
   'unknown query path',
   'decoding bech32 failed',
 ]
+
+/**
+ * The salt used to generate a predictable Valence account address.
+ */
+export const VALENCE_INSTANTIATE2_SALT = 'valence'

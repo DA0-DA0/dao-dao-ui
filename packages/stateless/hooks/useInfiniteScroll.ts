@@ -62,6 +62,7 @@ export const useInfiniteScroll = ({
     }
   }, [element, _element])
 
+  // Memoize loadMore in case it changes between renders.
   const loadMoreRef = useUpdatingRef(loadMore)
 
   useEffect(() => {

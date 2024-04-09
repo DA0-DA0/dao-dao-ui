@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Coin, CosmosMsgFor_Empty, cwMsgToEncodeObject } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, makeWasmMessage } from '@dao-dao/utils'
 
@@ -57,18 +57,19 @@ export const useInstantiateAndExecute = (
   })
 
   // Load checksum of the contract code.
-  const codeDetailsLoadable = useCachedLoadable(
+  const checksum = useCachedLoadingWithError(
     chainId
       ? codeDetailsSelector({
           chainId,
           codeId,
         })
-      : undefined
+      : undefined,
+    (data) => fromHex(data.checksum)
   )
 
   const instantiateAndExecute: InstantiateAndExecute = useCallback(
     async ({ instantiate, executes }) => {
-      if (codeDetailsLoadable.state !== 'hasValue') {
+      if (checksum.loading || checksum.errored) {
         throw new Error(t('error.loadingData'))
       }
 
@@ -76,13 +77,11 @@ export const useInstantiateAndExecute = (
         throw new Error(t('error.logInToContinue'))
       }
 
-      // Get the checksum of the contract code.
-      const checksum = fromHex(codeDetailsLoadable.contents.checksum)
       // Random salt.
       const salt = uuidv4()
 
       const contractAddress = instantiate2Address(
-        checksum,
+        checksum.data,
         address,
         toUtf8(salt),
         chain.bech32_prefix
@@ -125,11 +124,11 @@ export const useInstantiateAndExecute = (
         response,
       }
     },
-    [address, chain, codeDetailsLoadable, codeId, getSigningCosmWasmClient, t]
+    [address, chain, checksum, codeId, getSigningCosmWasmClient, t]
   )
 
   return {
-    ready: codeDetailsLoadable.state === 'hasValue' && !!address,
+    ready: !checksum.loading && !checksum.errored && !!address,
     instantiateAndExecute,
   }
 }

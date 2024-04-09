@@ -1,5 +1,6 @@
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
-import { useCallback } from 'react'
+import cloneDeep from 'lodash.clonedeep'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
@@ -14,14 +15,16 @@ import {
   DaoSupportedChainPickerInput,
   useCachedLoading,
   useCachedLoadingWithError,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   AccountType,
-  ChainId,
   TokenType,
   UseDecodedCosmosMsg,
+  ValenceAccount,
 } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -35,11 +38,14 @@ import {
   RebalancerUpdateData,
 } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 import {
+  VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
   getAccount,
+  getChainAddressForActionOptions,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   mustGetSupportedChainConfig,
@@ -47,8 +53,9 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
+import { useGenerateInstantiate2 } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
-import { useActionOptions } from '../../../react'
+import { useActionForKey, useActionOptions } from '../../../react'
 import {
   ConfigureRebalancerData,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
@@ -57,10 +64,99 @@ import {
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
 ) => {
-  const { context } = useActionOptions()
-  const { watch } = useFormContext<ConfigureRebalancerData>()
+  const options = useActionOptions()
+  const { watch, setValue } = useFormContext<ConfigureRebalancerData>()
+  const valenceAccount = watch(
+    (props.fieldNamePrefix + 'valenceAccount') as 'valenceAccount'
+  )
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const selectedTokens = watch((props.fieldNamePrefix + 'tokens') as 'tokens')
+
+  // Get predictable valence account address in case we have to create it.
+  const generatedValenceAddress = useGenerateInstantiate2({
+    chainId,
+    creator: getChainAddressForActionOptions(options, chainId) || '',
+    codeId:
+      (options.chainContext.type === ActionChainContextType.Supported &&
+        options.chainContext.config.codeIds.ValenceAccount) ||
+      -1,
+    salt: VALENCE_INSTANTIATE2_SALT,
+  })
+
+  const existingValenceAccount = getAccount({
+    accounts: options.context.accounts,
+    chainId,
+    types: [AccountType.Valence],
+  })
+
+  // Check if create valence account action already exists.
+  const existingCreateValenceAccountActionIndex =
+    props.allActionsWithData.findIndex(
+      ({ actionKey }) => actionKey === ActionKey.CreateValenceAccount
+    )
+  const createValenceAccountActionDefaults = useActionForKey(
+    ActionKey.CreateValenceAccount
+  )?.useDefaults()
+  // Can add create valence account if no existing action and defaults loaded.
+  const canAddCreateValenceAccountAction =
+    !existingValenceAccount &&
+    (existingCreateValenceAccountActionIndex === -1 ||
+      existingCreateValenceAccountActionIndex > props.index) &&
+    createValenceAccountActionDefaults
+  const addCreateValenceAccountActionIfNeededRef = useUpdatingRef(() => {
+    if (canAddCreateValenceAccountAction) {
+      props.addAction?.(
+        {
+          actionKey: ActionKey.CreateValenceAccount,
+          data: cloneDeep(createValenceAccountActionDefaults),
+        },
+        props.index
+      )
+    }
+  })
+
+  // Set valence account if not set, or add action to create if not found before
+  // this configure action.
+  useEffect(() => {
+    if (!valenceAccount) {
+      // If existing account found, set it.
+      if (existingValenceAccount?.type === AccountType.Valence) {
+        setValue(
+          (props.fieldNamePrefix + 'valenceAccount') as 'valenceAccount',
+          existingValenceAccount
+        )
+      }
+      // Otherwise attempt to use generated one.
+      else if (
+        !generatedValenceAddress.loading &&
+        !generatedValenceAddress.errored
+      ) {
+        setValue(
+          (props.fieldNamePrefix + 'valenceAccount') as 'valenceAccount',
+          {
+            type: AccountType.Valence,
+            chainId,
+            address: generatedValenceAddress.data,
+            config: {},
+          }
+        )
+      }
+    }
+
+    // Attempt to add create valence account action if needed.
+    if (canAddCreateValenceAccountAction) {
+      addCreateValenceAccountActionIfNeededRef.current()
+    }
+  }, [
+    setValue,
+    valenceAccount,
+    props.fieldNamePrefix,
+    existingValenceAccount,
+    canAddCreateValenceAccountAction,
+    addCreateValenceAccountActionIfNeededRef,
+    generatedValenceAddress,
+    chainId,
+  ])
 
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
   const whitelists = useCachedLoadingWithError(
@@ -125,7 +221,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
 
   return (
     <>
-      {context.type === ActionContextType.Dao &&
+      {options.context.type === ActionContextType.Dao &&
         VALENCE_SUPPORTED_CHAINS.length > 1 && (
           <DaoSupportedChainPickerInput
             className="mb-4"
@@ -257,13 +353,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
           : undefined,
       baseDenom:
         data.base_denom || whitelists.data.baseDenoms[0].denomOrAddress,
-      tokens: data.targets.map(({ denom, min_balance, bps }) => ({
+      tokens: data.targets.map(({ denom, bps }) => ({
         denom,
         percent: bps / 100,
-        minBalance:
-          min_balance && !isNaN(Number(min_balance))
-            ? Number(min_balance)
-            : undefined,
       })),
       pid: {
         kp: Number(data.pid?.p || -1),
@@ -298,15 +390,14 @@ export const makeConfigureRebalancerAction: ActionMaker<
     context,
   } = options
 
-  const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
-    const account = getAccount({
-      accounts: context.accounts,
-      chainId: ChainId.NeutronMainnet,
-      types: [AccountType.Valence],
-    })
-    const chainId = account?.chainId || ChainId.NeutronMainnet
+  const valenceAccount = getAccount({
+    accounts: context.accounts,
+    types: [AccountType.Valence],
+  }) as ValenceAccount | undefined
+  const chainId = valenceAccount?.chainId || VALENCE_SUPPORTED_CHAINS[0]
+  const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
 
-    const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
+  const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
     const whitelists = useCachedLoadingWithError(
       rebalancer
         ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
@@ -316,36 +407,47 @@ export const makeConfigureRebalancerAction: ActionMaker<
         : undefined
     )
 
-    if (!account || account.type !== AccountType.Valence) {
-      return new Error(t('error.noValenceAccount'))
-    } else if (whitelists.loading) {
+    const rebalancerConfig = valenceAccount?.config?.rebalancer?.config
+    const minBalanceTarget = rebalancerConfig?.targets.find(
+      ({ min_balance }) => min_balance
+    )
+    const minBalanceToken = useCachedLoading(
+      minBalanceTarget?.denom
+        ? genericTokenSelector({
+            chainId,
+            type: TokenType.Native,
+            denomOrAddress: minBalanceTarget.denom,
+          })
+        : undefined,
+      undefined
+    )
+
+    if (whitelists.loading) {
       return
     } else if (whitelists.errored) {
       return whitelists.error
     }
 
-    const rebalancerConfig = account?.config?.rebalancer?.config
-
     return {
-      valenceAccount: account,
+      // If no valence account found, the action will detect this and add the
+      // create account action automatically.
+      valenceAccount,
       chainId,
       trustee: rebalancerConfig?.trustee || undefined,
       baseDenom:
         rebalancerConfig?.base_denom ||
         whitelists.data.baseDenoms[0].denomOrAddress,
-      tokens: rebalancerConfig?.targets.map(
-        ({ denom, percentage, min_balance }) => ({
-          denom,
-          percent: Number(percentage) * 100,
-          minBalance:
-            min_balance && !isNaN(Number(min_balance))
-              ? Number(min_balance)
-              : undefined,
-        })
-      ) || [
+      tokens: rebalancerConfig?.targets.map(({ denom, percentage }) => ({
+        denom,
+        percent: Number(percentage) * 100,
+      })) || [
         {
           denom: whitelists.data.baseDenoms[0].denomOrAddress,
-          percent: 100,
+          percent: 50,
+        },
+        {
+          denom: whitelists.data.baseDenoms[1].denomOrAddress,
+          percent: 50,
         },
       ],
       // TODO(rebalancer): pick defaults
@@ -361,6 +463,16 @@ export const makeConfigureRebalancerAction: ActionMaker<
           : // TODO(rebalancer): pick default
             // 5%
             500,
+      minBalance:
+        minBalanceTarget?.min_balance && !minBalanceToken.loading
+          ? {
+              denom: minBalanceTarget.denom,
+              amount: convertMicroDenomToDenomWithDecimals(
+                minBalanceTarget.min_balance,
+                minBalanceToken.data?.decimals ?? 0
+              ),
+            }
+          : undefined,
       targetOverrideStrategy:
         rebalancerConfig?.target_override_strategy || 'proportional',
     }
@@ -368,8 +480,17 @@ export const makeConfigureRebalancerAction: ActionMaker<
 
   const useTransformToCosmos: UseTransformToCosmos<
     ConfigureRebalancerData
-  > = () =>
-    useCallback(
+  > = () => {
+    const whitelists = useCachedLoadingWithError(
+      rebalancer
+        ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
+            chainId,
+            contractAddress: rebalancer,
+          })
+        : undefined
+    )
+
+    return useCallback(
       ({
         valenceAccount,
         chainId,
@@ -381,6 +502,12 @@ export const makeConfigureRebalancerAction: ActionMaker<
         minBalance,
         targetOverrideStrategy,
       }: ConfigureRebalancerData) => {
+        if (whitelists.loading) {
+          return
+        } else if (whitelists.errored) {
+          throw whitelists.error
+        }
+
         if (!valenceAccount) {
           throw new Error('Missing valence account.')
         }
@@ -416,7 +543,13 @@ export const makeConfigureRebalancerAction: ActionMaker<
                           denom,
                           min_balance:
                             minBalance && minBalance.denom === denom
-                              ? BigInt(minBalance.amount).toString()
+                              ? convertDenomToMicroDenomStringWithDecimals(
+                                  minBalance.amount,
+                                  // Should always find this.
+                                  whitelists.data.denoms.find(
+                                    (d) => d.denomOrAddress === denom
+                                  )?.decimals ?? 0
+                                )
                               : undefined,
                           // BPS
                           bps: percent * 100,
@@ -441,8 +574,9 @@ export const makeConfigureRebalancerAction: ActionMaker<
           })
         )
       },
-      []
+      [whitelists]
     )
+  }
 
   return {
     key: ActionKey.ConfigureRebalancer,
@@ -456,9 +590,5 @@ export const makeConfigureRebalancerAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Hide if no Valence account created.
-    hideFromPicker: !context.accounts.some(
-      ({ type }) => type === AccountType.Valence
-    ),
   }
 }

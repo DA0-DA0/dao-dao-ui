@@ -407,6 +407,7 @@
     "errorOccurredOnPage": "An error occurred on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToConnect": "Failed to connect.",
+    "failedToFindChainAccount": "Failed to find account on {{chain}}.",
     "failedToFindGovernanceProposal": "Failed to find governance proposal with ID {{id}}.",
     "failedToFindMatchingProposalModule": "Failed to find matching proposal module.",
     "failedToGetAccountFromWallet": "Failed to get account from wallet.",

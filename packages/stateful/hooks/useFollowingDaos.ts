@@ -76,6 +76,8 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     'Update Following'
   )
 
+  // Turn this into a reference so we can use it in `setFollowing` without
+  // memoizing.
   const addChainsRef = useUpdatingRef(addChains)
 
   const setFollowing = useCallback(

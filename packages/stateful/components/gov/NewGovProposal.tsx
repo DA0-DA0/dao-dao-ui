@@ -59,6 +59,7 @@ import {
   useConfiguredChainContext,
   useDaoNavHelpers,
   useHoldingKey,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   Action,
@@ -564,12 +565,12 @@ const InnerNewGovProposal = ({
   }
 
   const saveQueuedRef = useRef(false)
-  const saveLatestProposalRef = useRef(() => {})
-  saveLatestProposalRef.current = () =>
+  const saveLatestProposalRef = useUpdatingRef(() =>
     setLatestProposalSave(
       // If created proposal, clear latest proposal save.
       proposalCreatedCardProps ? {} : cloneDeep(proposalData)
     )
+  )
 
   // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
@@ -589,7 +590,12 @@ const InnerNewGovProposal = ({
       saveLatestProposalRef.current()
       saveQueuedRef.current = false
     }, 1000)
-  }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
+  }, [
+    proposalCreatedCardProps,
+    setLatestProposalSave,
+    proposalData,
+    saveLatestProposalRef,
+  ])
 
   const [drafts, setDrafts] = useRecoilState(
     proposalDraftsAtom(localStorageKey)
