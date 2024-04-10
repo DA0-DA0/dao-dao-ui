@@ -82,6 +82,7 @@ export enum ActionKey {
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
   MigrateMigalooV4TokenFactory = 'migrateMigalooV4TokenFactory',
+  CreateDao = 'createDao',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
