@@ -71,6 +71,7 @@ export enum ChainId {
   KujiraMainnet = 'kaiyo-1',
   ChihuahuaMainnet = 'chihuahua-1',
   OraichainMainnet = 'Oraichain',
+  ArchwayMainnet = 'archway-1',
 }
 
 export type BaseChainConfig = {

@@ -83,15 +83,16 @@ enum RelayStatus {
 }
 
 const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
-  [ChainId.JunoMainnet]: 100000,
-  [ChainId.OsmosisMainnet]: 100000,
-  [ChainId.StargazeMainnet]: 2000000,
-  [ChainId.NeutronMainnet]: 500000,
-  [ChainId.TerraMainnet]: 100000,
-  [ChainId.MigalooMainnet]: 2000000,
-  [ChainId.KujiraMainnet]: 100000,
-  [ChainId.OraichainMainnet]: 100000,
-  [ChainId.ChihuahuaMainnet]: 1000000000,
+  [ChainId.JunoMainnet]: 0.1 * 10 ** 6,
+  [ChainId.OsmosisMainnet]: 0.1 * 10 ** 6,
+  [ChainId.StargazeMainnet]: 2 * 10 ** 6,
+  [ChainId.NeutronMainnet]: 0.5 * 10 ** 6,
+  [ChainId.TerraMainnet]: 0.1 * 10 ** 6,
+  [ChainId.MigalooMainnet]: 2 * 10 ** 6,
+  [ChainId.KujiraMainnet]: 0.1 * 10 ** 6,
+  [ChainId.OraichainMainnet]: 0.1 * 10 ** 6,
+  [ChainId.ChihuahuaMainnet]: 1000 * 10 ** 6,
+  [ChainId.ArchwayMainnet]: 1 * 10 ** 18,
 }
 
 type Relayer = {

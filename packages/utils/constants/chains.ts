@@ -221,6 +221,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // oraichain
         remoteChannel: 'channel-229',
       },
+      [ChainId.ArchwayMainnet]: {
+        // juno
+        note: 'juno129y879p7fc7lwktj5c72cqrxyl6n9t4e3a9knr5mwjfc5algft0sw6ep29',
+        // juno
+        listener:
+          'juno1j8hac83mnjtww379wkgffpvqvl3grtyrkmsznav6v0ktyrhfl77seu9mah',
+        // archway
+        voice:
+          'archway16v6tzjhgt5v5mlfmh5x269vz5gc0t09flgzextspnkym6cc79m0qy0z40s',
+        // juno
+        localConnection: 'connection-379',
+        // archway
+        remoteConnection: 'connection-19',
+        // juno
+        localChannel: 'channel-413',
+        // archway
+        remoteChannel: 'channel-45',
+      },
     },
   },
   {
@@ -416,6 +434,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // oraichain
         remoteChannel: 'channel-214',
       },
+      [ChainId.ArchwayMainnet]: {
+        // osmosis
+        note: 'osmo14528h5e3c9knxzp82tex0gehhwx2qmz7fm32ntk6yluas27aknssrqkled',
+        // osmosis
+        listener:
+          'osmo1hddgcv5efr435d8hmlf6kacthn0xsffdljd3er3yq2nxag7kg8wsytx400',
+        // archway
+        voice:
+          'archway1c7vceg88kylv0u6lpqc6fejqkw50shg0mm84kacpkdkwtljked9q0kgkcy',
+        // osmosis
+        localConnection: 'connection-2362',
+        // archway
+        remoteConnection: 'connection-1',
+        // osmosis
+        localChannel: 'channel-8144',
+        // archway
+        remoteChannel: 'channel-43',
+      },
     },
   },
   {
@@ -548,6 +584,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-68',
         // kujira
         remoteChannel: 'channel-138',
+      },
+      [ChainId.ArchwayMainnet]: {
+        // neutron
+        note: 'neutron1kprjz0qusrcxvvhfklw0krn7g6ze36hzjuuhmktkepeyx5shljdqflwe2m',
+        // neutron
+        listener:
+          'neutron1fh522a0x8h2wehc9wfqxwacnz7dqne0423qwrh07q8kz9ewnvdwqrhu0wv',
+        // archway
+        voice:
+          'archway1qr94yuptq5h0nj5xctzft3q33262j2ajsquh42tpe0lptpev6rkswtfld5',
+        // neutron
+        localConnection: 'connection-43',
+        // archway
+        remoteConnection: 'connection-58',
+        // neutron
+        localChannel: 'channel-47',
+        // archway
+        remoteChannel: 'channel-85',
       },
     },
   },
@@ -717,6 +771,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // terra
         remoteChannel: 'channel-383',
       },
+      [ChainId.ArchwayMainnet]: {
+        // stargaze
+        note: 'stars1ny7xvq2l07sgxdrak4qzrcj8eszyk5cwx34fkdshw4gyv84nyeus9cuw45',
+        // stargaze
+        listener:
+          'stars14e2xhvph5ccteqxaes243na4dhskm4qx60eja75xg02kcdtg8lysdu7xug',
+        // archway
+        voice:
+          'archway1hd4s3z4ga7f26eae4p44mp70dvr5my39d7l2qrh2hrl74jsv22dquc6h63',
+        // stargaze
+        localConnection: 'connection-258',
+        // archway
+        remoteConnection: 'connection-54',
+        // stargaze
+        localChannel: 'channel-248',
+        // archway
+        remoteChannel: 'channel-86',
+      },
     },
   },
   {
@@ -761,6 +833,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     // - Neutron
     // TODO(polytone): Polytone does not yet exist with:
     // - Kujira
+    // - Archway
     polytone: {
       [ChainId.JunoMainnet]: {
         // migaloo
@@ -1002,6 +1075,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-389',
         // migaloo
         remoteChannel: 'channel-112',
+      },
+      [ChainId.ArchwayMainnet]: {
+        // terra
+        note: 'terra1x366fdkmpd88fvtjq09ksupjjgre6fr08zulwn3qe8mfefxfd3jswdmy3x',
+        // terra
+        listener:
+          'terra1s5nmuezlqhgu5f063mklygkgde92fjds0trp7eaw55vz0fdzyl5s4qed79',
+        // archway
+        voice:
+          'archway1ge0zdux54pn8f234l203nvugl4xnsr6hgv3tyah2wwm8qgz4y6esfzpwgg',
+        // terra
+        localConnection: 'connection-360',
+        // archway
+        remoteConnection: 'connection-47',
+        // terra
+        localChannel: 'channel-270',
+        // archway
+        remoteChannel: 'channel-54',
       },
     },
   },
@@ -1333,6 +1424,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.OraichainMainnet]: {
     rpc: 'https://rpc.orai.io',
     rest: 'https://lcd.orai.io',
+  },
+  [ChainId.ArchwayMainnet]: {
+    rpc: 'https://archway-rpc.polkachu.com',
+    rest: 'https://archway-api.polkachu.com',
   },
 }
 
