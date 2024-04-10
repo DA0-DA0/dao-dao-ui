@@ -2,10 +2,12 @@ import {
   Logout,
   NotificationsOutlined,
   Person,
+  Tag,
   WarningAmberRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -13,11 +15,21 @@ import {
   NavWalletConnectedProps,
   PopupTriggerCustomComponent,
 } from '@dao-dao/types'
+import {
+  concatAddressStartEnd,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+} from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { useAppContextIfAvailable } from '../layout/AppContext'
 import { Notifications } from '../Notifications'
-import { ButtonPopup, Popup } from '../popup'
+import {
+  ButtonPopup,
+  FilterableItem,
+  FilterableItemPopup,
+  Popup,
+} from '../popup'
 import { ProfileImage } from '../profile'
 import { Tooltip } from '../tooltip'
 import { WalletLogo } from './WalletLogo'
@@ -39,12 +51,7 @@ export const NavWalletConnected = ({
   // be in it.
   const { mode: appMode, inbox } = useAppContextIfAvailable() ?? {}
 
-  const [copied, setCopied] = useState(false)
-  // Debounce copy unset after 2 seconds.
-  useEffect(() => {
-    const timeout = setTimeout(() => setCopied(false), 2000)
-    return () => clearTimeout(timeout)
-  }, [copied])
+  const [addressPopupVisible, setAddressPopupVisible] = useState(false)
 
   const ProfileImagePopup: PopupTriggerCustomComponent = useCallback(
     ({ onClick }) => (
@@ -82,6 +89,29 @@ export const NavWalletConnected = ({
       </div>
     ),
     [mode, t, wallet, profile]
+  )
+
+  const profileChainAddresses = useMemo(
+    (): (FilterableItem & { chainId: string; address: string })[] =>
+      profile.loading
+        ? []
+        : Object.entries(profile.data.chains)
+            .map(([chainId, { address }]) => ({
+              key: chainId,
+              label: getDisplayNameForChainId(chainId),
+              iconUrl: getImageUrlForChainId(chainId),
+              rightNode: (
+                <p className="caption-text self-end md:self-center">
+                  {concatAddressStartEnd(address, 10, 6)}
+                </p>
+              ),
+              iconClassName: '!h-8 !w-8',
+              contentContainerClassName: '!gap-4',
+              chainId,
+              address,
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)),
+    [profile]
   )
 
   return (
@@ -174,6 +204,11 @@ export const NavWalletConnected = ({
                   href: '/me',
                 },
                 {
+                  label: t('button.copyAddress'),
+                  Icon: Tag,
+                  onClick: () => setAddressPopupVisible(true),
+                },
+                {
                   label: t('button.logOut'),
                   Icon: Logout,
                   onClick: disconnect,
@@ -188,6 +223,27 @@ export const NavWalletConnected = ({
           }}
         />
       </div>
+
+      <FilterableItemPopup
+        filterableItemKeys={FILTERABLE_KEYS}
+        items={profileChainAddresses}
+        onSelect={({ chainId, address }) => {
+          navigator.clipboard.writeText(address)
+          toast.success(
+            t('info.copiedChainAddress', {
+              chain: getDisplayNameForChainId(chainId),
+            })
+          )
+        }}
+        searchPlaceholder={t('info.searchForChain')}
+        trigger={{
+          type: 'manual',
+          open: addressPopupVisible,
+          setOpen: setAddressPopupVisible,
+        }}
+      />
     </div>
   )
 }
+
+const FILTERABLE_KEYS = ['label', 'chainId', 'address']
