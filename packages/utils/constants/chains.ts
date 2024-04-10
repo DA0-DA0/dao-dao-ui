@@ -72,7 +72,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 4042,
       CwTokenSwap: 4043,
-      CwTokenfactoryIssuerOsmosis: 4045,
+      CwTokenfactoryIssuerMain: 4045,
       CwVesting: 4046,
       DaoCore: 4047,
       DaoMigrator: 4048,
@@ -267,7 +267,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 353,
       CwTokenSwap: 354,
-      CwTokenfactoryIssuerOsmosis: 364,
+      CwTokenfactoryIssuerMain: 364,
       CwVesting: 355,
       DaoCore: 365,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -477,7 +477,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 553,
       CwTokenSwap: 564,
-      CwTokenfactoryIssuerOsmosis: 565,
+      CwTokenfactoryIssuerMain: 565,
       CwVesting: 703,
       DaoCore: 567,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -626,7 +626,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 148,
       CwTokenSwap: 149,
-      CwTokenfactoryIssuerOsmosis: 150,
+      CwTokenfactoryIssuerMain: 150,
       CwVesting: 151,
       DaoCore: 153,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -814,7 +814,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 286,
       CwTokenSwap: 287,
-      CwTokenfactoryIssuerOsmosis: 401,
+      CwTokenfactoryIssuerMain: 401,
       CwTokenfactoryIssuerCosmWasm: 288,
       CwVesting: 290,
       DaoCore: 291,
@@ -971,7 +971,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 2631,
       CwTokenSwap: 2632,
-      CwTokenfactoryIssuerOsmosis: 2633,
+      CwTokenfactoryIssuerMain: 2633,
       CwVesting: 2634,
       DaoCore: 2635,
       DaoMigrator: -1,
@@ -1121,7 +1121,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 1550,
       CwTokenSwap: 1551,
-      CwTokenfactoryIssuerOsmosis: 1552,
+      CwTokenfactoryIssuerMain: 1552,
       CwVesting: 1553,
       DaoCore: 1554,
       DaoMigrator: -1,
@@ -1180,6 +1180,158 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.KujiraMainnet,
+    name: 'kujira',
+    mainnet: true,
+    accentColor: '#e53935',
+    // Permissioned, only Kujira governance can create DAOs.
+    factoryContractAddress:
+      'kujira1hwjtqgymczqra9n0859yvwemzamfqzvsegxsvuwcl7zwphpn04qqkr89yd',
+    createViaGovernance: true,
+    explorerUrlTemplates: {
+      tx: 'https://finder.kujira.network/kaiyo-1/tx/REPLACE',
+      gov: 'https://blue.kujira.network/govern',
+      govProp: 'https://blue.kujira.network/govern/REPLACE',
+      wallet: 'https://finder.kujira.network/kaiyo-1/address/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 259,
+      Cw4Group: 260, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 261,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 262,
+      CwTokenSwap: 263,
+      CwTokenfactoryIssuerMain: 264,
+      CwVesting: 265,
+      DaoCore: 266,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 267,
+      DaoPreProposeApprover: 268,
+      DaoPreProposeMultiple: 269,
+      DaoPreProposeSingle: 270,
+      DaoProposalMultiple: 271,
+      DaoProposalSingle: 272,
+      DaoVotingCw4: 275,
+      DaoVotingCw721Staked: 273,
+      DaoVotingTokenStaked: 274,
+    },
+    // TODO(kujira-polytone):
+    // - Migaloo
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // kujira
+        note: 'kujira1kthhh99l9ec60jr4eytnva40ep52tjvjlup9y2a409vgc7sutn6qv4rrxj',
+        // kujira
+        listener:
+          'kujira10dpjpmd4jak247hrcupxnn87h77f94kqmgy8rwkspjakxc4paflqd3wnv5',
+        // juno
+        voice:
+          'juno1vv7s07lcv2de64nphg255y7vsreasg6k89vq48gqf754wpsc5w0qmwupeu',
+        // kujira
+        localConnection: 'connection-1',
+        // juno
+        remoteConnection: 'connection-140',
+        // kujira
+        localChannel: 'channel-131',
+        // juno
+        remoteChannel: 'channel-475',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // kujira
+        note: 'kujira15454vhqp90cy7u2swyaf79e53hervg0g6h78jgfsgydys5vgqa6shcruhm',
+        // kujira
+        listener:
+          'kujira1tcu45eeuklxxkd8s4jsjpp0zlz3f04w9dgyhxxvy2sts8rxd3uksjrm9md',
+        // osmosis
+        voice:
+          'osmo1546fnys90560am2jzuzsl0csmqc502g8ywgwpf3q9jdfucyr93jq7urvlm',
+        // kujira
+        localConnection: 'connection-2',
+        // osmosis
+        remoteConnection: 'connection-1559',
+        // kujira
+        localChannel: 'channel-147',
+        // osmosis
+        remoteChannel: 'channel-16723',
+      },
+      [ChainId.StargazeMainnet]: {
+        // kujira
+        note: 'kujira1wgjpx4d38gt3tc9rvyffk8upgs4sa805r0a3dleehtll67t7jyuqypclff',
+        // kujira
+        listener:
+          'kujira1u5c2cn936tqh5rpua7xrscavglwy2g300zwp075wp0fapvs50e0qtwkher',
+        // stargaze
+        voice:
+          'stars1qm2nv8vx9qf673h9r68vzwce4xf9kvyvkk54a28xnn5x5etcthuswrglxc',
+        // kujira
+        localConnection: 'connection-5',
+        // stargaze
+        remoteConnection: 'connection-111',
+        // kujira
+        localChannel: 'channel-136',
+        // stargaze
+        remoteChannel: 'channel-277',
+      },
+      [ChainId.NeutronMainnet]: {
+        // kujira
+        note: 'kujira14dckdzh7t30lkpdr0hgdqsqh52erux4tst5rl7jhvc693plnm39qp2r95q',
+        // kujira
+        listener:
+          'kujira1wkv5qgu75crgyn93wmc2hdysn7xacrzzz3spcjcskr469884cn2snp6ffy',
+        // neutron
+        voice:
+          'neutron162fvv88dxpsapf3rnux63anruqach36r8qg73ehm2dv3fkat2rusw70nlx',
+        // kujira
+        localConnection: 'connection-82',
+        // neutron
+        remoteConnection: 'connection-2',
+        // kujira
+        localChannel: 'channel-140',
+        // neutron
+        remoteChannel: 'channel-69',
+      },
+      [ChainId.TerraMainnet]: {
+        // kujira
+        note: 'kujira15u8wevalrxd62y6z549fmkmjdt3k2adr4zzsjgwp0uw365gmy45qkn8s8v',
+        // kujira
+        listener:
+          'kujira1vgsdqvuxdn229q05f7guhytutcfa0u87l0qnd5xyeyp40e0w6xfqd8y63n',
+        // terra
+        voice:
+          'terra14qj6ejeuqmgtx63fujulzcvnr290wcjmmfkvqdqh5p4vjdkuewzsyagufs',
+        // kujira
+        localConnection: 'connection-3',
+        // terra
+        remoteConnection: 'connection-13',
+        // kujira
+        localChannel: 'channel-141',
+        // terra
+        remoteChannel: 'channel-333',
+      },
+      [ChainId.ArchwayMainnet]: {
+        // kujira
+        note: 'kujira1q4r43ywst620wc9valw592nxs8k2a7vlsawkws0tz8x5675aaxxs5etvt8',
+        // kujira
+        listener:
+          'kujira1fh29pj58cnkgjjnpwqc6rxfy3gnj3tj3hvdsmcn49e4cgz6x0skqldaxms',
+        // archway
+        voice:
+          'archway1hnt7vrz40qy8lnz9577z0dxw6nedvgmxtqxqvt0ayts6e256v7cq3yzmlg',
+        // kujira
+        localConnection: 'connection-110',
+        // archway
+        remoteConnection: 'connection-12',
+        // kujira
+        localChannel: 'channel-133',
+        // archway
+        remoteChannel: 'channel-90',
+      },
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
@@ -1202,7 +1354,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 4062,
       CwTokenSwap: 4063,
-      CwTokenfactoryIssuerOsmosis: 4065,
+      CwTokenfactoryIssuerMain: 4065,
       CwVesting: 4066,
       DaoCore: 4067,
       DaoMigrator: 4068,
@@ -1250,7 +1402,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 5841,
       CwTokenSwap: 5842,
-      CwTokenfactoryIssuerOsmosis: 5843,
+      CwTokenfactoryIssuerMain: 5843,
       CwVesting: 5844,
       DaoCore: 5845,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -1292,7 +1444,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 3461,
       CwTokenSwap: 3462,
-      CwTokenfactoryIssuerOsmosis: 3463,
+      CwTokenfactoryIssuerMain: 3463,
       CwVesting: 3464,
       DaoCore: 3465,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -1336,7 +1488,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V240
       CwPayrollFactory: 3,
       CwTokenSwap: 4,
-      CwTokenfactoryIssuerOsmosis: 65,
+      CwTokenfactoryIssuerMain: 65,
       CwTokenfactoryIssuerCosmWasm: 5,
       CwVesting: 6,
       DaoCore: 7,

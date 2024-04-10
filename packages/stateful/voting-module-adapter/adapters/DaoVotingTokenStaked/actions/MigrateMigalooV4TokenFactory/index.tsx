@@ -48,8 +48,7 @@ export const makeMigrateMigalooV4TokenFactoryAction: ActionMaker<
           wasm: {
             migrate: {
               contract_addr: tokenFactoryIssuerAddress,
-              new_code_id:
-                chainContext.config.codeIds.CwTokenfactoryIssuerOsmosis,
+              new_code_id: chainContext.config.codeIds.CwTokenfactoryIssuerMain,
               msg: {},
             },
           },

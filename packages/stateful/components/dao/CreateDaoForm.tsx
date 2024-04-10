@@ -1,6 +1,7 @@
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
+import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import {
   FormProvider,
@@ -21,6 +22,7 @@ import {
   ImageSelector,
   Loader,
   TooltipInfoIcon,
+  WarningCard,
   useAppContext,
   useCachedLoadable,
   useDaoNavHelpers,
@@ -28,11 +30,13 @@ import {
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
+  ActionKey,
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoPageMode,
   DaoParentInfo,
   DaoTabId,
+  GovernanceProposalActionData,
   NewDao,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
@@ -46,8 +50,10 @@ import {
   convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   findWasmAttributeValue,
+  getDisplayNameForChainId,
   getFallbackImage,
   getFundsFromDaoInstantiateMsg,
+  getGovProposalPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
@@ -55,6 +61,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { ExecuteData } from '../../actions/core/smart_contracting/Execute/Component'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -139,10 +146,16 @@ export const InnerCreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
 
+  const router = useRouter()
   const chainContext = useSupportedChainContext()
   const {
     chainId,
-    config: { factoryContractAddress, codeIds },
+    config: {
+      name: chainGovName,
+      factoryContractAddress,
+      codeIds,
+      createViaGovernance,
+    },
   } = chainContext
 
   const { goToDao } = useDaoNavHelpers()
@@ -297,6 +310,8 @@ export const InnerCreateDaoForm = ({
     // Override with SubDAO button if necessary.
     submitValue === CreateDaoSubmitValue.Create && makingSubDao
       ? t('button.createSubDao')
+      : submitValue === CreateDaoSubmitValue.Create && createViaGovernance
+      ? t('button.continue')
       : t(submitValue)
 
   //! Adapters and message generators
@@ -455,7 +470,51 @@ export const InnerCreateDaoForm = ({
 
     // Create the DAO.
     if (submitterValue === CreateDaoSubmitValue.Create) {
-      if (isWalletConnected) {
+      if (createViaGovernance) {
+        if (instantiateMsgError) {
+          toast.error(processError(instantiateMsgError))
+          return
+        } else if (!instantiateMsg) {
+          toast.error(t('error.loadingData'))
+          return
+        }
+
+        setCreating(true)
+
+        // Redirect to prefilled chain governance prop page.
+        router.push(
+          getGovProposalPath(chainGovName, 'create', {
+            prefill: encodeJsonToBase64({
+              chainId,
+              title: `Create DAO: ${name.trim()}`,
+              description: 'This proposal creates a new DAO.',
+              _actionData: [
+                {
+                  _id: 'create',
+                  actionKey: ActionKey.Execute,
+                  data: {
+                    chainId,
+                    address: factoryContractAddress,
+                    message: JSON.stringify(
+                      {
+                        instantiate_contract_with_self_admin: {
+                          code_id: codeIds.DaoCore,
+                          instantiate_msg: encodeJsonToBase64(instantiateMsg),
+                          label: instantiateMsg.name,
+                        },
+                      },
+                      null,
+                      2
+                    ),
+                    funds: [],
+                    cw20: false,
+                  } as ExecuteData,
+                },
+              ],
+            } as Partial<GovernanceProposalActionData>),
+          })
+        )
+      } else if (isWalletConnected) {
         setCreating(true)
         try {
           const coreAddress = await toast.promise(createDaoWithFactory(), {
@@ -688,7 +747,7 @@ export const InnerCreateDaoForm = ({
               watch={form.watch}
             />
 
-            <p className="primary-text mt-6 text-text-tertiary">
+            <p className="primary-text text-text-tertiary mt-6">
               {t('form.addAnImage')}
             </p>
           </div>
@@ -705,7 +764,7 @@ export const InnerCreateDaoForm = ({
 
         {/* Divider line shown after first page. */}
         {pageIndex > 0 && (
-          <div className="mb-7 h-[1px] w-full bg-border-base"></div>
+          <div className="bg-border-base mb-7 h-[1px] w-full"></div>
         )}
 
         <div className="mb-14">
@@ -742,8 +801,19 @@ export const InnerCreateDaoForm = ({
             )}
         </div>
 
+        {submitValue === CreateDaoSubmitValue.Create && createViaGovernance && (
+          <div className="flex flex-col items-end mb-8 -mt-4">
+            <WarningCard
+              className="max-w-md"
+              content={t('info.daoCreationRequiresChainGovProp', {
+                chain: getDisplayNameForChainId(chainId),
+              })}
+            />
+          </div>
+        )}
+
         <div
-          className="flex flex-row items-center border-y border-border-secondary py-7"
+          className="border-border-secondary flex flex-row items-center border-y py-7 gap-8"
           // justify-end doesn't work in tailwind for some reason
           style={{
             justifyContent: showBack ? 'space-between' : 'flex-end',
@@ -756,7 +826,7 @@ export const InnerCreateDaoForm = ({
               value={CreateDaoSubmitValue.Back}
               variant="secondary"
             >
-              <ArrowBack className="!h-4 !w-4 text-icon-primary" />
+              <ArrowBack className="text-icon-primary !h-4 !w-4" />
               <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}

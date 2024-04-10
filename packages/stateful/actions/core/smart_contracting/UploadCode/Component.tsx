@@ -88,7 +88,7 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
   }, [data, sha256Checksum, updateSha256Checksum])
 
   const onSelect = async (file: File) => {
-    if (!file.name.endsWith('.wasm')) {
+    if (!file.name.endsWith('.wasm') && !file.name.endsWith('.gz')) {
       toast.error(t('error.invalidWasmFile'))
       return
     }

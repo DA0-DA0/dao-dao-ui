@@ -148,6 +148,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   createWithCw20?: boolean
   /**
+   * Whether or not to create a DAO through chain governance.
+   */
+  createViaGovernance?: boolean
+  /**
    * Whether or not this chain has an indexer.
    */
   noIndexer?: boolean
@@ -176,7 +180,7 @@ export type CodeIdConfig = {
   // https://github.com/DA0-DA0/dao-contracts
   CwPayrollFactory: number
   CwTokenSwap: number
-  CwTokenfactoryIssuerOsmosis: number
+  CwTokenfactoryIssuerMain: number
   CwVesting: number
   DaoCore: number
   DaoMigrator: number

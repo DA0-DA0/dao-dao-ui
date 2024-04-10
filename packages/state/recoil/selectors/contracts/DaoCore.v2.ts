@@ -10,6 +10,7 @@ import {
   AccountType,
   GenericTokenBalance,
   GenericTokenBalanceWithOwner,
+  IndexerDumpState,
   PolytoneProxies,
   TokenType,
   WithChainId,
@@ -241,7 +242,7 @@ export const _cw721TokenListSelector = selectorFamily<
 // Reduced to only the necessary subset which can be provided by both the
 // indexer and chain.
 export const dumpStateSelector = selectorFamily<
-  DumpStateResponse | undefined,
+  DumpStateResponse | IndexerDumpState | undefined,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['dumpState']>
   }

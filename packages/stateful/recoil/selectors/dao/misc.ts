@@ -1,10 +1,5 @@
 import uniq from 'lodash.uniq'
-import {
-  RecoilValueReadOnly,
-  selectorFamily,
-  waitForAll,
-  waitForAllSettled,
-} from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -25,6 +20,7 @@ import {
   ContractVersionInfo,
   DaoInfo,
   DaoPageMode,
+  DaoParentInfo,
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   Feature,
@@ -33,6 +29,8 @@ import {
   StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
+import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
+import { ConfigResponse as DaoCoreV2ConfigResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
@@ -40,9 +38,12 @@ import {
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getDaoProposalPath,
   getDisplayNameForChainId,
+  getFallbackImage,
   getImageUrlForChainId,
   getSupportedChainConfig,
   getSupportedFeatures,
+  isFeatureSupportedByVersion,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
@@ -155,14 +156,16 @@ export const daoPotentialSubDaosSelector = selectorFamily<
     },
 })
 
-export const daoInfoSelector: (param: {
-  chainId: string
-  coreAddress: string
-  ignoreAdmins?: string[] | undefined
-}) => RecoilValueReadOnly<DaoInfo> = selectorFamily({
+export const daoInfoSelector = selectorFamily<
+  DaoInfo,
+  {
+    chainId: string
+    coreAddress: string
+  }
+>({
   key: 'daoInfo',
   get:
-    ({ chainId, coreAddress, ignoreAdmins }) =>
+    ({ chainId, coreAddress }) =>
     ({ get }) => {
       const dumpState = get(
         DaoCoreV2Selectors.dumpStateSelector({
@@ -264,57 +267,16 @@ export const daoInfoSelector: (param: {
 
       const { admin } = dumpState
 
-      let parentDaoInfo
-      let parentSubDaos
-      if (admin && admin !== coreAddress) {
-        if (
-          get(
-            isDaoSelector({
-              address: admin,
-              chainId,
-            })
-          ) &&
-          !ignoreAdmins?.includes(admin)
-        ) {
-          parentDaoInfo = get(
-            daoInfoSelector({
-              chainId,
-              coreAddress: admin,
-              ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
-            })
-          )
-
-          if (parentDaoInfo.supportedFeatures[Feature.SubDaos]) {
-            parentSubDaos = get(
-              DaoCoreV2Selectors.listAllSubDaosSelector({
-                contractAddress: admin,
+      const parentDao: DaoParentInfo | null =
+        admin && admin !== coreAddress
+          ? get(
+              daoParentInfoSelector({
                 chainId,
+                parentAddress: admin,
+                childAddress: coreAddress,
               })
-            ).map(({ addr }) => addr)
-          }
-        } else if (
-          get(
-            addressIsModuleSelector({
-              chainId,
-              address: admin,
-              moduleName: 'gov',
-            })
-          )
-        ) {
-          // Chain module account.
-          const chainConfig = getSupportedChainConfig(chainId)
-          parentDaoInfo = chainConfig && {
-            chainId,
-            coreAddress: chainConfig.name,
-            coreVersion: ContractVersion.Gov,
-            name: getDisplayNameForChainId(chainId),
-            imageUrl: getImageUrlForChainId(chainId),
-            admin: '',
-            registeredSubDao: false,
-          }
-          parentSubDaos = CHAIN_SUBDAOS[chainId] ?? []
-        }
-      }
+            ) || null
+          : null
 
       const daoInfo: DaoInfo = {
         chainId,
@@ -333,22 +295,121 @@ export const daoInfoSelector: (param: {
         items,
         polytoneProxies,
         accounts,
-        parentDao: parentDaoInfo
-          ? {
-              chainId: parentDaoInfo.chainId,
-              coreAddress: parentDaoInfo.coreAddress,
-              coreVersion: parentDaoInfo.coreVersion,
-              name: parentDaoInfo.name,
-              imageUrl: parentDaoInfo.imageUrl || null,
-              parentDao: parentDaoInfo.parentDao,
-              admin: parentDaoInfo.admin,
-              registeredSubDao: !!parentSubDaos?.includes(coreAddress),
-            }
-          : null,
+        parentDao,
         admin,
       }
 
       return daoInfo
+    },
+})
+
+/**
+ * Attempt to fetch the info needed to describe a parent DAO. Returns undefined
+ * if not a DAO nor the chain gov module account.
+ */
+export const daoParentInfoSelector = selectorFamily<
+  DaoParentInfo | undefined,
+  WithChainId<{
+    parentAddress: string
+    /**
+     * To determine if the parent has registered the child, pass the child. This
+     * will set `registeredSubDao` appropriately. Otherwise, if undefined,
+     * `registeredSubDao` will be set to false.
+     */
+    childAddress?: string
+  }>
+>({
+  key: 'daoParentInfo',
+  get:
+    ({ chainId, parentAddress, childAddress }) =>
+    ({ get }) => {
+      // If address is a DAO contract...
+      if (
+        get(
+          isDaoSelector({
+            chainId,
+            address: parentAddress,
+          })
+        )
+      ) {
+        const parentAdmin = get(
+          DaoCoreV2Selectors.adminSelector({
+            chainId,
+            contractAddress: parentAddress,
+            params: [],
+          })
+        )
+        const {
+          info: { version },
+        } = get(
+          contractInfoSelector({
+            chainId,
+            contractAddress: parentAddress,
+          })
+        )
+        const parentVersion = parseContractVersion(version)
+
+        if (parentVersion) {
+          const {
+            name,
+            image_url,
+          }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
+            // Both v1 and v2 have a config query.
+            DaoCoreV2Selectors.configSelector({
+              chainId,
+              contractAddress: parentAddress,
+              params: [],
+            })
+          )
+
+          // Check if parent has registered the child DAO as a SubDAO.
+          const registeredSubDao =
+            childAddress &&
+            isFeatureSupportedByVersion(Feature.SubDaos, parentVersion)
+              ? get(
+                  DaoCoreV2Selectors.listAllSubDaosSelector({
+                    contractAddress: parentAddress,
+                    chainId,
+                  })
+                ).some(({ addr }) => addr === childAddress)
+              : false
+
+          return {
+            chainId,
+            coreAddress: parentAddress,
+            coreVersion: parentVersion,
+            name,
+            imageUrl: image_url || getFallbackImage(parentAddress),
+            admin: parentAdmin ?? '',
+            registeredSubDao,
+          }
+        }
+
+        // If address is the chain's x/gov module account...
+      } else if (
+        get(
+          addressIsModuleSelector({
+            chainId,
+            address: parentAddress,
+            moduleName: 'gov',
+          })
+        )
+      ) {
+        const chainConfig = getSupportedChainConfig(chainId)
+        return (
+          chainConfig && {
+            chainId,
+            coreAddress: chainConfig.name,
+            coreVersion: ContractVersion.Gov,
+            name: getDisplayNameForChainId(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            admin: '',
+            registeredSubDao:
+              !!childAddress &&
+              !!CHAIN_SUBDAOS[chainId]?.includes(childAddress),
+          }
+        )
+      }
     },
 })
 
