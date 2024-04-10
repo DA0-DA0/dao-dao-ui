@@ -118,8 +118,13 @@ let output = (chainId: string) => {
       ({ chainId, polytone }) =>
         `  # polytone from ${chainId} (voice)\n  ["wasm.${polytone.voice}", "${polytone.remoteChannel}"]`
     ),
+    ...isolatedFroms.map(
+      (from) =>
+        `\n${from.chainId}:\n  # polytone to ${chainId} (note)\n  ["wasm.${from.polytone.note}", "${from.polytone.localChannel}"]`
+    ),
   ]
 
+  console.log('\n' + chainId + ':')
   console.log(lines.join(',\n'))
 }
 
