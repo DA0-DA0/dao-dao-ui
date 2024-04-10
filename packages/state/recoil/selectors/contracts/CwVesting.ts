@@ -193,6 +193,7 @@ export const stakeHistorySelector = selectorFamily<
           formula: 'cwVesting/stakeHistory',
           chainId,
           id: anyId + thisId,
+          noFallback: true,
         })
       )
     },
@@ -212,6 +213,7 @@ export const unbondingDurationSecondsSelector = selectorFamily<
           contractAddress,
           formula: 'cwVesting/unbondingDurationSeconds',
           chainId,
+          noFallback: true,
         })
       ),
 })

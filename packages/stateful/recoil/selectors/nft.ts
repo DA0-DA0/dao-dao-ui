@@ -346,6 +346,7 @@ export const walletLazyNftCardInfosSelector = selectorFamily<
           walletAddress,
           formula: 'nft/collections',
           id,
+          noFallback: true,
         })
       )
       if (!collections || !Array.isArray(collections)) {
@@ -402,6 +403,7 @@ export const walletStakedLazyNftCardInfosSelector = selectorFamily<
           walletAddress,
           formula: 'nft/stakedWithDaos',
           id,
+          noFallback: true,
         })
       )
       if (!collections || !Array.isArray(collections)) {

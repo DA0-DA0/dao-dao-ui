@@ -33,39 +33,80 @@ import {
 } from '../atoms'
 
 export type QueryIndexerParams = QueryIndexerOptions & {
-  // Refresh by changing this value.
+  /**
+   * Refresh by changing this value.
+   */
   id?: number
+  /**
+   * If there is no fallback query available, still query even if indexer is
+   * behind. Defaults to `false`.
+   */
+  noFallback?: boolean
 }
 
 export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
   key: 'queryIndexer',
-  get: (options) => async () => {
-    try {
-      return await queryIndexer(options)
-    } catch (err) {
-      // If the indexer fails, return null since many indexer queries fallback
-      // to the chain. If an error other than no indexer for chain, log it.
-      if (
-        !(err instanceof Error) ||
-        err.message !== CommonError.NoIndexerForChain
-      ) {
-        console.error(err)
+  get:
+    (options) =>
+    async ({ get }) => {
+      const indexerUp = get(
+        indexerUpStatusSelector({
+          chainId: options.chainId,
+          // Don't refresh this automatically on a period, since some selectors
+          // that are not cached will use this, and they will cause annoying
+          // flickering in the UI. Ideally, we replace all `useRecoilValue`
+          // blocking hooks with `useCachedLoadingWithError` hooks that cache
+          // data during updates. Once that happens, we can remove this. But
+          // that might not happen for a while...
+          noRefresh: true,
+          // Manually refresh.
+          id: options.id,
+        })
+      )
+      // If indexer is behind and there is a fallback, return null.
+      if (!indexerUp.caughtUp && !options.noFallback) {
+        return null
       }
 
-      return null
-    }
-  },
+      try {
+        return await queryIndexer(options)
+      } catch (err) {
+        // If the indexer fails, return null since many indexer queries fallback
+        // to the chain. If an error other than no indexer for chain, log it.
+        if (
+          !(err instanceof Error) ||
+          err.message !== CommonError.NoIndexerForChain
+        ) {
+          console.error(err)
+        }
+
+        return null
+      }
+    },
 })
 
 export const indexerUpStatusSelector = selectorFamily<
   IndexerUpStatus,
-  WithChainId<{}>
+  WithChainId<{
+    /**
+     * If true, does not refresh the indexer status. Defaults to false. This is
+     * useful if you want to check the indexer status one time. The refresh
+     * occurs periodically to update status on the status page.
+     */
+    noRefresh?: boolean
+    /**
+     * Change this value to manually refresh.
+     */
+    id?: number
+  }>
 >({
   key: 'indexerUpStatus',
   get:
-    (params) =>
+    ({ noRefresh = false, ...params }) =>
     async ({ get }) => {
-      get(refreshIndexerUpStatusAtom)
+      if (!noRefresh) {
+        get(refreshIndexerUpStatusAtom)
+      }
 
       return await queryIndexerUpStatus(params)
     },
@@ -185,6 +226,7 @@ export const openProposalsSelector = selectorFamily<
           chainId,
           id,
           args: { address },
+          noFallback: true,
         })
       )
       return openProposals ?? []
@@ -209,6 +251,7 @@ export const walletProposalStatsSelector = selectorFamily<
           formula: 'proposals/stats',
           chainId,
           id,
+          noFallback: true,
         })
       )
 
@@ -234,6 +277,7 @@ export const walletAdminOfDaosSelector = selectorFamily<
           chainId,
           walletAddress,
           formula: 'daos/adminOf',
+          noFallback: true,
         })
       )
 
@@ -299,6 +343,7 @@ export const indexerFeaturedDaosSelector = selectorFamily<
           queryGenericIndexerSelector({
             chainId,
             formula: 'featuredDaos',
+            noFallback: true,
           })
         ) || []
 

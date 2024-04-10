@@ -66,6 +66,7 @@ export const remoteControllerForPolytoneProxySelector = selectorFamily<
           args: {
             address: proxy,
           },
+          noFallback: true,
         })
       ),
 })

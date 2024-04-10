@@ -31,6 +31,8 @@ export const contractInstantiateTimeSelector = selectorFamily<
           contractAddress: address,
           chainId,
           formula: 'instantiatedAt',
+          // This never changes, so query even if the indexer is behind.
+          noFallback: true,
         })
       )
       // Null when indexer fails.

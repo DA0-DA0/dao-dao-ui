@@ -1583,6 +1583,7 @@ export const validatorSlashesSelector = selectorFamily<
           validatorOperatorAddress,
           chainId,
           formula: 'staking/slashes',
+          noFallback: true,
         })
       )) ?? [],
 })

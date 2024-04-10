@@ -253,6 +253,7 @@ export const topStakersSelector = selectorFamily<
               limit,
             },
             id,
+            noFallback: true,
           })
         ) ?? undefined
       )

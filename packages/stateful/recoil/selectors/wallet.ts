@@ -214,6 +214,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
               walletAddress,
               formula: 'tokens/list',
               id,
+              noFallback: true,
             })
           )
         )
@@ -397,6 +398,7 @@ export const walletDaosSelector = selectorFamily<
           chainId,
           walletAddress: address,
           formula: 'daos/memberOf',
+          noFallback: true,
         })
       )
       if (!daos || !Array.isArray(daos)) {

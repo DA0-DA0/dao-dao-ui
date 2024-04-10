@@ -264,6 +264,7 @@ export const topStakersSelector = selectorFamily<
             ...queryClientParams,
             formula: 'daoVotingNativeStaked/topStakers',
             id,
+            noFallback: true,
           })
         ) ?? undefined
       )

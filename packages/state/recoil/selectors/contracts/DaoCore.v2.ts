@@ -1441,6 +1441,7 @@ export const approvalDaosSelector = selectorFamily<
           chainId,
           contractAddress,
           formula: 'daoCore/approvalDaos',
+          noFallback: true,
         })
       ),
 })

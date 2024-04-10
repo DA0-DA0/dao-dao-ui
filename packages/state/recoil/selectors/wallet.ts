@@ -33,6 +33,7 @@ export const walletCw20BalancesSelector = selectorFamily<
             walletAddress,
             formula: 'tokens/list',
             id,
+            noFallback: true,
           })
         ) ?? []
 
@@ -69,6 +70,7 @@ export const walletTokenDaoStakedDenomsSelector = selectorFamily<
           chainId,
           walletAddress,
           formula: 'daos/memberOf',
+          noFallback: true,
         })
       )
       if (!daos || !Array.isArray(daos) || daos.length === 0) {

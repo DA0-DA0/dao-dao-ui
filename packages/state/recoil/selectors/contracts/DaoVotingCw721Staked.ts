@@ -157,6 +157,7 @@ export const stakerForNftSelector = selectorFamily<
           args: {
             tokenId,
           },
+          noFallback: true,
         })
       ),
 })
@@ -189,6 +190,7 @@ export const topStakersSelector = selectorFamily<
               limit,
             },
             id,
+            noFallback: true,
           })
         ) ?? undefined
       )

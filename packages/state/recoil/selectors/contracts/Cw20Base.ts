@@ -381,6 +381,7 @@ export const daosSelector = selectorFamily<string[], QueryClientParams>({
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'cw20/daos',
+          noFallback: true,
         })
       ) ?? [],
 })

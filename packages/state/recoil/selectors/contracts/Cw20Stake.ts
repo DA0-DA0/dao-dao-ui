@@ -428,6 +428,7 @@ export const topStakersSelector = selectorFamily<
               oraichainStakingToken,
             },
             id,
+            noFallback: true,
           })
         ) ?? undefined
       )

@@ -37,6 +37,7 @@ export const vestingPaymentsOwnedBySelector = selectorFamily<
           chainId,
           walletAddress: address,
           formula: 'vesting/ownerOf',
+          noFallback: true,
         })
       )
 
