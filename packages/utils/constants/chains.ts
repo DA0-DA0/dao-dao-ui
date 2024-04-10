@@ -1311,6 +1311,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // terra
         remoteChannel: 'channel-333',
       },
+      [ChainId.ArchwayMainnet]: {
+        // kujira
+        note: 'kujira1q4r43ywst620wc9valw592nxs8k2a7vlsawkws0tz8x5675aaxxs5etvt8',
+        // kujira
+        listener:
+          'kujira1fh29pj58cnkgjjnpwqc6rxfy3gnj3tj3hvdsmcn49e4cgz6x0skqldaxms',
+        // archway
+        voice:
+          'archway1hnt7vrz40qy8lnz9577z0dxw6nedvgmxtqxqvt0ayts6e256v7cq3yzmlg',
+        // kujira
+        localConnection: 'connection-110',
+        // archway
+        remoteConnection: 'connection-12',
+        // kujira
+        localChannel: 'channel-133',
+        // archway
+        remoteChannel: 'channel-90',
+      },
     },
   },
   {
