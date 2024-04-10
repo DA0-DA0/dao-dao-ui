@@ -70,7 +70,7 @@ export const TreasuryHistoryGraph = ({
   const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
   const [range, setRange] = useState<TokenPriceHistoryRange>(
-    TokenPriceHistoryRange.Month
+    TokenPriceHistoryRange.Day
   )
 
   const treasuryValueHistory = useCachedLoadingWithError(
