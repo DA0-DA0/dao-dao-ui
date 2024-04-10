@@ -8,7 +8,7 @@ import {
   ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentProps, useCallback, useEffect } from 'react'
+import { ComponentProps, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
@@ -24,6 +24,7 @@ import {
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useExecuteAt,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
@@ -212,21 +213,10 @@ const InnerProposalStatusAndInfo = ({
   })
 
   const awaitNextBlock = useAwaitNextBlock()
-  // Refresh proposal and list of proposals (for list status) once voting ends.
-  useEffect(() => {
-    if (
-      statusKey !== ProposalStatusEnum.Open ||
-      !timestampInfo?.expirationDate
-    ) {
-      return
-    }
-
-    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
-    if (msRemaining < 0) {
-      return
-    }
-
-    const timeout = setTimeout(() => {
+  // Refresh proposal and list of proposals (for list status) once voting or
+  // veto period ends.
+  useExecuteAt({
+    fn: () => {
       // Refresh immediately so that the timestamp countdown re-renders and
       // hides itself.
       refreshProposal()
@@ -234,15 +224,14 @@ const InnerProposalStatusAndInfo = ({
       // and refresh the list of all proposals so the status gets updated there
       // as well.
       awaitNextBlock().then(refreshProposalAndAll)
-    }, msRemaining)
-    return () => clearTimeout(timeout)
-  }, [
-    timestampInfo?.expirationDate,
-    statusKey,
-    refreshProposal,
-    refreshProposalAndAll,
-    awaitNextBlock,
-  ])
+    },
+    date:
+      statusKey === ProposalStatusEnum.Open
+        ? timestampInfo?.expirationDate
+        : statusKey === 'veto_timelock'
+        ? vetoTimelockExpiration
+        : undefined,
+  })
 
   const { vetoEnabled, canBeVetoed, vetoOrEarlyExecute, vetoInfoItems } =
     useProposalVetoState({
