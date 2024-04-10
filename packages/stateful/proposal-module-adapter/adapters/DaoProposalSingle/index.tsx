@@ -1,4 +1,8 @@
-import { ContractVersion, ProposalModuleAdapter } from '@dao-dao/types'
+import {
+  ContractVersion,
+  PreProposeModuleType,
+  ProposalModuleAdapter,
+} from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
@@ -101,7 +105,8 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             ...props,
           }),
         depositInfo: depositInfoSelector,
-        ...(options.proposalModule.prePropose
+        ...(options.proposalModule.prePropose?.type ===
+        PreProposeModuleType.Approval
           ? {
               reversePreProposePendingProposalInfos: (props) =>
                 reversePreProposePendingProposalInfosSelector({
