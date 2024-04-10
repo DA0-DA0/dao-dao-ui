@@ -43,7 +43,7 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
-  encodeMessageAsBase64,
+  encodeJsonToBase64,
   getAccount,
   getChainAddressForActionOptions,
   makeWasmMessage,
@@ -527,7 +527,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
                     ? 'update_service'
                     : 'register_to_service']: {
                     service_name: 'rebalancer',
-                    data: encodeMessageAsBase64({
+                    data: encodeJsonToBase64({
                       // Common options.
                       ...({
                         base_denom: baseDenom,
