@@ -11,12 +11,14 @@ import {
   SigningCosmWasmClientOptions,
   UploadResult,
   createWasmAminoConverters,
+  wasmTypes,
 } from '@cosmjs/cosmwasm-stargate'
 import { sha256 } from '@cosmjs/crypto'
 import { toBech32, toHex } from '@cosmjs/encoding'
 import {
   EncodeObject,
   OfflineSigner,
+  Registry,
   isOfflineDirectSigner,
 } from '@cosmjs/proto-signing'
 import {
@@ -25,6 +27,7 @@ import {
   GasPrice,
   StdFee,
   createDefaultAminoConverters,
+  defaultRegistryTypes as defaultStargateTypes,
   logs,
 } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
@@ -44,6 +47,11 @@ import {
   SignerData,
   TxResponse,
 } from 'secretjs'
+
+import {
+  secretAminoConverters,
+  secretProtoRegistry,
+} from '@dao-dao/types/protobuf'
 
 const isDeliverTxFailure = (result: TxResponse) => !!result.code
 const createDeliverTxResponseErrorMessage = (result: TxResponse) =>
@@ -106,15 +114,35 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     options: SigningCosmWasmClientOptions,
     secretOptions: CreateSecretNetworkClientOptions
   ) {
-    super(cometClient, signer, options)
+    const registry = new Registry([
+      // Fallback to default from @cosmjs/cosmwasm-stargate if not provided.
+      ...Object.entries(
+        options.registry?.['register'] || [
+          ...defaultStargateTypes,
+          ...wasmTypes,
+        ]
+      ),
+      // Add Secret Network types to existing ones.
+      ...secretProtoRegistry,
+    ])
 
-    // Copied from SigningCosmWasmClient constructor.
-    const {
-      aminoTypes = new AminoTypes({
+    const aminoTypes = new AminoTypes({
+      // Fallback to default from @cosmjs/cosmwasm-stargate if not provided.
+      ...(options.aminoTypes?.['register'] || {
         ...createDefaultAminoConverters(),
         ...createWasmAminoConverters(),
       }),
-    } = options
+      // Add Secret Network amino types to existing ones.
+      ...secretAminoConverters,
+    })
+
+    super(cometClient, signer, {
+      ...options,
+      registry,
+      aminoTypes,
+    })
+
+    // TODO(secret): do we need this variable?
     this.secretAminoTypes = aminoTypes
     this.secretSigner = signer
     this.secretGasPrice = options.gasPrice
