@@ -10,7 +10,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { Coin, CosmosMsgFor_Empty, cwMsgToEncodeObject } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, makeWasmMessage } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  isSecretNetwork,
+  makeWasmMessage,
+} from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
@@ -74,6 +78,11 @@ export const useInstantiateAndExecute = (
 
       if (!address || !chain) {
         throw new Error(t('error.logInToContinue'))
+      }
+
+      // Ensure active chain is not Secret Network.
+      if (isSecretNetwork(chain.chain_id)) {
+        throw new Error('Secret Network does not support instantiate2.')
       }
 
       // Get the checksum of the contract code.
