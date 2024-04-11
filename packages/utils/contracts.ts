@@ -6,7 +6,7 @@ import {
   isDeliverTxFailure,
 } from '@cosmjs/stargate'
 import { parseRawLog } from '@cosmjs/stargate/build/logs'
-import { SecretNetworkClient, toUtf8 } from 'secretjs'
+import { toUtf8 } from 'secretjs'
 
 import { ContractVersion } from '@dao-dao/types'
 import {
@@ -16,6 +16,7 @@ import {
 
 import { findEventsAttributeValue } from './client'
 import { CHAIN_GAS_MULTIPLIER } from './constants'
+import { SecretSigningCosmWasmClient } from './secret'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
 
@@ -37,10 +38,10 @@ export const indexToProposalModulePrefix = (index: number) => {
   return prefix
 }
 
-type SupportedClient =
-  | SigningCosmWasmClient
+export type SupportedCosmWasmClient =
   | SigningStargateClient
-  | SecretNetworkClient
+  | SigningCosmWasmClient
+  | SecretSigningCosmWasmClient
 
 /**
  * Instantiate a smart contract from any supported client.
@@ -51,7 +52,7 @@ type SupportedClient =
  * no longer reliable.
  */
 export const instantiateSmartContract = async (
-  client: SupportedClient | (() => Promise<SupportedClient>),
+  client: SupportedCosmWasmClient | (() => Promise<SupportedCosmWasmClient>),
   sender: string,
   codeId: number,
   label: string,
@@ -63,32 +64,19 @@ export const instantiateSmartContract = async (
 ): Promise<string> => {
   client = typeof client === 'function' ? await client() : client
 
-  if (client instanceof SecretNetworkClient) {
-    const { transactionHash, arrayLog } =
-      await client.tx.compute.instantiateContract(
-        {
-          sender,
-          code_id: codeId,
-          label,
-          init_msg: msg,
-          init_funds: funds,
-          code_hash: undefined,
-          admin: typeof admin === 'string' ? admin : undefined,
-        },
-        {
-          memo,
-          // TODO(secret): fee ???
-          gasLimit: fee,
-        }
-      )
-
-    const contractAddress = arrayLog?.find(
-      (log) => log.type === 'message' && log.key === 'contract_address'
-    )?.value
-
-    if (!contractAddress) {
-      throw new Error(`Contract address not found for TX: ${transactionHash}`)
-    }
+  if (client instanceof SecretSigningCosmWasmClient) {
+    const { contractAddress } = await client.instantiate(
+      sender,
+      codeId,
+      msg,
+      label,
+      fee,
+      {
+        funds,
+        admin: typeof admin === 'string' ? admin : undefined,
+        memo,
+      }
+    )
 
     return contractAddress
   } else {
@@ -135,7 +123,7 @@ export const instantiateSmartContract = async (
  * Execute a smart contract from any supported client.
  */
 export const executeSmartContract = async (
-  client: SupportedClient | (() => Promise<SupportedClient>),
+  client: SupportedCosmWasmClient | (() => Promise<SupportedCosmWasmClient>),
   sender: string,
   contractAddress: string,
   msg: object,
@@ -145,32 +133,8 @@ export const executeSmartContract = async (
 ): Promise<ExecuteResult> => {
   client = typeof client === 'function' ? await client() : client
 
-  if (client instanceof SecretNetworkClient) {
-    const result = await client.tx.compute.executeContract(
-      {
-        sender,
-        contract_address: contractAddress,
-        msg,
-        sent_funds: funds,
-        code_hash: undefined,
-      },
-      {
-        memo,
-        // TODO(secret): fee ???
-        gasLimit: fee,
-      }
-    )
-
-    const parsedLogs = parseRawLog(result.rawLog)
-
-    return {
-      logs: parsedLogs,
-      height: result.height,
-      transactionHash: result.transactionHash,
-      events: result.jsonLog?.flatMap((log) => log.events) || [],
-      gasWanted: BigInt(Math.round(result.gasWanted)),
-      gasUsed: BigInt(Math.round(result.gasUsed)),
-    }
+  if (client instanceof SecretSigningCosmWasmClient) {
+    return await client.execute(sender, contractAddress, msg, fee, memo, funds)
   } else {
     const result = await client.signAndBroadcast(
       sender,

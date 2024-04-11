@@ -1,9 +1,9 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { atom, atomFamily } from 'recoil'
 
 import { ChainId } from '@dao-dao/types'
 import {
   MAINNET,
+  SupportedCosmWasmClient,
   getConfiguredChains,
   getSupportedChains,
 } from '@dao-dao/utils'
@@ -11,7 +11,7 @@ import {
 import { localStorageEffect } from '../effects'
 
 export const signingCosmWasmClientAtom = atomFamily<
-  SigningCosmWasmClient | undefined,
+  SupportedCosmWasmClient | undefined,
   { chainId: string }
 >({
   key: 'signingCosmWasmClient',
