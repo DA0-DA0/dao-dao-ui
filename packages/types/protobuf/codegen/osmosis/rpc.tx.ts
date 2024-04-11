@@ -66,6 +66,9 @@ export const createRPCMsgClient = async ({
     tokenfactory: {
       v1beta1: new (await import("./tokenfactory/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     },
+    txfees: {
+      v1beta1: new (await import("./txfees/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
+    },
     valsetpref: {
       v1beta1: new (await import("./valset-pref/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     }

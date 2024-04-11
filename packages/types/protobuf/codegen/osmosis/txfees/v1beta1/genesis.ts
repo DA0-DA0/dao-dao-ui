@@ -1,10 +1,13 @@
 //@ts-nocheck
 import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** GenesisState defines the txfees module's genesis state. */
 export interface GenesisState {
   basedenom: string;
   feetokens: FeeToken[];
+  /** params is the container of txfees parameters. */
+  params: Params | undefined;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.txfees.v1beta1.GenesisState";
@@ -14,6 +17,8 @@ export interface GenesisStateProtoMsg {
 export interface GenesisStateAmino {
   basedenom?: string;
   feetokens?: FeeTokenAmino[];
+  /** params is the container of txfees parameters. */
+  params?: ParamsAmino | undefined;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/txfees/genesis-state";
@@ -23,11 +28,13 @@ export interface GenesisStateAminoMsg {
 export interface GenesisStateSDKType {
   basedenom: string;
   feetokens: FeeTokenSDKType[];
+  params: ParamsSDKType | undefined;
 }
 function createBaseGenesisState(): GenesisState {
   return {
     basedenom: "",
-    feetokens: []
+    feetokens: [],
+    params: Params.fromPartial({})
   };
 }
 export const GenesisState = {
@@ -38,6 +45,9 @@ export const GenesisState = {
     }
     for (const v of message.feetokens) {
       FeeToken.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -54,6 +64,9 @@ export const GenesisState = {
         case 2:
           message.feetokens.push(FeeToken.decode(reader, reader.uint32(), useInterfaces));
           break;
+        case 4:
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -65,6 +78,7 @@ export const GenesisState = {
     const message = createBaseGenesisState();
     message.basedenom = object.basedenom ?? "";
     message.feetokens = object.feetokens?.map(e => FeeToken.fromPartial(e)) || [];
+    message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -73,6 +87,9 @@ export const GenesisState = {
       message.basedenom = object.basedenom;
     }
     message.feetokens = object.feetokens?.map(e => FeeToken.fromAmino(e)) || [];
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
     return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
@@ -83,6 +100,7 @@ export const GenesisState = {
     } else {
       obj.feetokens = [];
     }
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

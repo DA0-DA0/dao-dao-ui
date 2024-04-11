@@ -153,6 +153,34 @@ export interface QueryBaseDenomResponseAminoMsg {
 export interface QueryBaseDenomResponseSDKType {
   base_denom: string;
 }
+export interface QueryEipBaseFeeRequest {}
+export interface QueryEipBaseFeeRequestProtoMsg {
+  typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeRequest";
+  value: Uint8Array;
+}
+export interface QueryEipBaseFeeRequestAmino {}
+export interface QueryEipBaseFeeRequestAminoMsg {
+  type: "osmosis/txfees/query-eip-base-fee-request";
+  value: QueryEipBaseFeeRequestAmino;
+}
+export interface QueryEipBaseFeeRequestSDKType {}
+export interface QueryEipBaseFeeResponse {
+  baseFee: string;
+}
+export interface QueryEipBaseFeeResponseProtoMsg {
+  typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeResponse";
+  value: Uint8Array;
+}
+export interface QueryEipBaseFeeResponseAmino {
+  base_fee?: string;
+}
+export interface QueryEipBaseFeeResponseAminoMsg {
+  type: "osmosis/txfees/query-eip-base-fee-response";
+  value: QueryEipBaseFeeResponseAmino;
+}
+export interface QueryEipBaseFeeResponseSDKType {
+  base_fee: string;
+}
 function createBaseQueryFeeTokensRequest(): QueryFeeTokensRequest {
   return {};
 }
@@ -690,6 +718,131 @@ export const QueryBaseDenomResponse = {
     return {
       typeUrl: "/osmosis.txfees.v1beta1.QueryBaseDenomResponse",
       value: QueryBaseDenomResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryEipBaseFeeRequest(): QueryEipBaseFeeRequest {
+  return {};
+}
+export const QueryEipBaseFeeRequest = {
+  typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeRequest",
+  encode(_: QueryEipBaseFeeRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryEipBaseFeeRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryEipBaseFeeRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryEipBaseFeeRequest>): QueryEipBaseFeeRequest {
+    const message = createBaseQueryEipBaseFeeRequest();
+    return message;
+  },
+  fromAmino(_: QueryEipBaseFeeRequestAmino): QueryEipBaseFeeRequest {
+    const message = createBaseQueryEipBaseFeeRequest();
+    return message;
+  },
+  toAmino(_: QueryEipBaseFeeRequest, useInterfaces: boolean = false): QueryEipBaseFeeRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryEipBaseFeeRequestAminoMsg): QueryEipBaseFeeRequest {
+    return QueryEipBaseFeeRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryEipBaseFeeRequest, useInterfaces: boolean = false): QueryEipBaseFeeRequestAminoMsg {
+    return {
+      type: "osmosis/txfees/query-eip-base-fee-request",
+      value: QueryEipBaseFeeRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryEipBaseFeeRequestProtoMsg, useInterfaces: boolean = false): QueryEipBaseFeeRequest {
+    return QueryEipBaseFeeRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryEipBaseFeeRequest): Uint8Array {
+    return QueryEipBaseFeeRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryEipBaseFeeRequest): QueryEipBaseFeeRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeRequest",
+      value: QueryEipBaseFeeRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryEipBaseFeeResponse(): QueryEipBaseFeeResponse {
+  return {
+    baseFee: ""
+  };
+}
+export const QueryEipBaseFeeResponse = {
+  typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeResponse",
+  encode(message: QueryEipBaseFeeResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.baseFee !== "") {
+      writer.uint32(10).string(Decimal.fromUserInput(message.baseFee, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryEipBaseFeeResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryEipBaseFeeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.baseFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryEipBaseFeeResponse>): QueryEipBaseFeeResponse {
+    const message = createBaseQueryEipBaseFeeResponse();
+    message.baseFee = object.baseFee ?? "";
+    return message;
+  },
+  fromAmino(object: QueryEipBaseFeeResponseAmino): QueryEipBaseFeeResponse {
+    const message = createBaseQueryEipBaseFeeResponse();
+    if (object.base_fee !== undefined && object.base_fee !== null) {
+      message.baseFee = object.base_fee;
+    }
+    return message;
+  },
+  toAmino(message: QueryEipBaseFeeResponse, useInterfaces: boolean = false): QueryEipBaseFeeResponseAmino {
+    const obj: any = {};
+    obj.base_fee = message.baseFee;
+    return obj;
+  },
+  fromAminoMsg(object: QueryEipBaseFeeResponseAminoMsg): QueryEipBaseFeeResponse {
+    return QueryEipBaseFeeResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryEipBaseFeeResponse, useInterfaces: boolean = false): QueryEipBaseFeeResponseAminoMsg {
+    return {
+      type: "osmosis/txfees/query-eip-base-fee-response",
+      value: QueryEipBaseFeeResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryEipBaseFeeResponseProtoMsg, useInterfaces: boolean = false): QueryEipBaseFeeResponse {
+    return QueryEipBaseFeeResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryEipBaseFeeResponse): Uint8Array {
+    return QueryEipBaseFeeResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryEipBaseFeeResponse): QueryEipBaseFeeResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.txfees.v1beta1.QueryEipBaseFeeResponse",
+      value: QueryEipBaseFeeResponse.encode(message).finish()
     };
   }
 };
