@@ -4,6 +4,7 @@ import {
   CodeDetails,
   Contract,
   ContractCodeHistoryEntry,
+  ExecuteInstruction,
   InstantiateOptions,
   InstantiateResult,
   JsonObject,
@@ -15,15 +16,9 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { sha256 } from '@cosmjs/crypto'
 import { toBech32, toHex } from '@cosmjs/encoding'
-import {
-  EncodeObject,
-  OfflineSigner,
-  Registry,
-  isOfflineDirectSigner,
-} from '@cosmjs/proto-signing'
+import { OfflineSigner, Registry } from '@cosmjs/proto-signing'
 import {
   AminoTypes,
-  DeliverTxResponse,
   GasPrice,
   StdFee,
   createDefaultAminoConverters,
@@ -33,8 +28,6 @@ import {
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { CometClient, HttpEndpoint, connectComet } from '@cosmjs/tendermint-rpc'
 import { assert } from '@cosmjs/utils'
-import { SignMode } from 'cosmjs-types/cosmos/tx/signing/v1beta1/signing'
-import { TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import {
   AccessConfig,
   ContractCodeHistoryOperationType,
@@ -43,8 +36,8 @@ import {
 import pako from 'pako'
 import {
   CreateClientOptions as CreateSecretNetworkClientOptions,
+  MsgExecuteContract,
   SecretNetworkClient,
-  SignerData,
   TxResponse,
 } from 'secretjs'
 
@@ -65,6 +58,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
   private readonly secretNetworkClient: SecretNetworkClient | undefined
   private readonly secretCodesCache = new Map<number, CodeDetails>()
 
+  // TODO(secret): do we need these variables?
   private readonly secretSigner: OfflineSigner
   private readonly secretAminoTypes: AminoTypes
   private readonly secretGasPrice: GasPrice | undefined
@@ -142,7 +136,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
       aminoTypes,
     })
 
-    // TODO(secret): do we need this variable?
+    // TODO(secret): do we need these variables?
     this.secretAminoTypes = aminoTypes
     this.secretSigner = signer
     this.secretGasPrice = options.gasPrice
@@ -360,11 +354,17 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
   public async upload(
     senderAddress: string,
     wasmCode: Uint8Array,
-    _fee: StdFee | 'auto' | number,
+    fee: StdFee | 'auto' | number,
     memo = '',
     // Unused.
     _instantiatePermission?: AccessConfig
   ): Promise<UploadResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
+      )
+    }
+
     const result =
       await this.forceGetSecretNetworkClient().tx.compute.storeCode(
         {
@@ -374,6 +374,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
           builder: '',
         },
         {
+          gasLimit: fee,
           gasPriceInFeeDenom:
             this.secretGasPrice?.amount.toFloatApproximation(),
           memo,
@@ -409,9 +410,15 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     codeId: number,
     msg: JsonObject,
     label: string,
-    _fee: StdFee | 'auto' | number,
+    fee: StdFee | 'auto' | number,
     options: InstantiateOptions = {}
   ): Promise<InstantiateResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
+      )
+    }
+
     const result =
       await this.forceGetSecretNetworkClient().tx.compute.instantiateContract(
         {
@@ -423,6 +430,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
           admin: options.admin,
         },
         {
+          gasLimit: fee,
           gasPriceInFeeDenom:
             this.secretGasPrice?.amount.toFloatApproximation(),
           memo: options.memo,
@@ -468,9 +476,15 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     senderAddress: string,
     contractAddress: string,
     newAdmin: string,
-    _fee: StdFee | 'auto' | number,
+    fee: StdFee | 'auto' | number,
     memo = ''
   ): Promise<ChangeAdminResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
+      )
+    }
+
     const result =
       await this.forceGetSecretNetworkClient().tx.compute.updateAdmin(
         {
@@ -479,6 +493,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
           new_admin: newAdmin,
         },
         {
+          gasLimit: fee,
           gasPriceInFeeDenom:
             this.secretGasPrice?.amount.toFloatApproximation(),
           memo,
@@ -504,9 +519,15 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
   public async clearAdmin(
     senderAddress: string,
     contractAddress: string,
-    _fee: StdFee | 'auto' | number,
+    fee: StdFee | 'auto' | number,
     memo = ''
   ): Promise<ChangeAdminResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
+      )
+    }
+
     const result =
       await this.forceGetSecretNetworkClient().tx.compute.clearAdmin(
         {
@@ -514,6 +535,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
           contract_address: contractAddress,
         },
         {
+          gasLimit: fee,
           gasPriceInFeeDenom:
             this.secretGasPrice?.amount.toFloatApproximation(),
           memo,
@@ -541,9 +563,15 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     contractAddress: string,
     codeId: number,
     migrateMsg: JsonObject,
-    _fee: StdFee | 'auto' | number,
+    fee: StdFee | 'auto' | number,
     memo = ''
   ): Promise<ChangeAdminResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
+      )
+    }
+
     const result =
       await this.forceGetSecretNetworkClient().tx.compute.migrateContract(
         {
@@ -553,6 +581,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
           msg: migrateMsg,
         },
         {
+          gasLimit: fee,
           gasPriceInFeeDenom:
             this.secretGasPrice?.amount.toFloatApproximation(),
           memo,
@@ -575,231 +604,51 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     }
   }
 
-  // TODO(secret): signAndBroadcast, signAndBroadcastSync, signAmino, signDirect
-
   /**
-   * Creates a transaction with the given messages, fee, memo and timeout height. Then signs and broadcasts the transaction.
-   *
-   * @param signerAddress The address that will sign transactions using this instance. The signer must be able to sign with this address.
-   * @param messages
-   * @param fee
-   * @param memo
-   * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
+   * Like `execute` but allows executing multiple messages in one transaction.
    */
-  public async signAndBroadcast(
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    _fee: StdFee | 'auto' | number,
-    memo = '',
-    timeoutHeight?: bigint
-  ): Promise<DeliverTxResponse> {
-    let usedFee: StdFee
-    if (fee == 'auto' || typeof fee === 'number') {
-      assertDefined(
-        this.gasPrice,
-        'Gas price must be set in the client options when auto gas is used.'
-      )
-      const gasEstimation = await this.simulate(signerAddress, messages, memo)
-      // Starting with Cosmos SDK 0.47, we see many cases in which 1.3 is not enough anymore
-      // E.g. https://github.com/cosmos/cosmos-sdk/issues/16020
-      const multiplier = typeof fee === 'number' ? fee : 1.4
-      usedFee = calculateFee(
-        Math.round(gasEstimation * multiplier),
-        this.gasPrice
-      )
-    } else {
-      usedFee = fee
-    }
-    const txRaw = await this.sign(
-      signerAddress,
-      messages,
-      usedFee,
-      memo,
-      undefined,
-      timeoutHeight
-    )
-    const txBytes = TxRaw.encode(txRaw).finish()
-    return this.broadcastTx(
-      txBytes,
-      this.broadcastTimeoutMs,
-      this.broadcastPollIntervalMs
-    )
-  }
-
-  /**
-   * Creates a transaction with the given messages, fee, memo and timeout height. Then signs and broadcasts the transaction.
-   *
-   * This method is useful if you want to send a transaction in broadcast,
-   * without waiting for it to be placed inside a block, because for example
-   * I would like to receive the hash to later track the transaction with another tool.
-   *
-   * @param signerAddress The address that will sign transactions using this instance. The signer must be able to sign with this address.
-   * @param messages
-   * @param fee
-   * @param memo
-   * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
-   *
-   * @returns Returns the hash of the transaction
-   */
-  public async signAndBroadcastSync(
-    signerAddress: string,
-    messages: readonly EncodeObject[],
+  public async executeMultiple(
+    senderAddress: string,
+    instructions: readonly ExecuteInstruction[],
     fee: StdFee | 'auto' | number,
-    memo = '',
-    timeoutHeight?: bigint
-  ): Promise<string> {
-    let usedFee: StdFee
-    if (fee == 'auto' || typeof fee === 'number') {
-      assertDefined(
-        this.gasPrice,
-        'Gas price must be set in the client options when auto gas is used.'
+    memo = ''
+  ): Promise<ChangeAdminResult> {
+    if (typeof fee !== 'number') {
+      throw new Error(
+        'Secret Network signing client requires a numeric fee to use as the gasLimit.'
       )
-      const gasEstimation = await this.simulate(signerAddress, messages, memo)
-      const multiplier = typeof fee === 'number' ? fee : 1.3
-      usedFee = calculateFee(
-        Math.round(gasEstimation * multiplier),
-        this.gasPrice
-      )
-    } else {
-      usedFee = fee
     }
-    const txRaw = await this.sign(
-      signerAddress,
-      messages,
-      usedFee,
+
+    const msgs = instructions.map(
+      ({ contractAddress, msg, funds }) =>
+        new MsgExecuteContract({
+          sender: senderAddress,
+          contract_address: contractAddress,
+          msg,
+          sent_funds: [...(funds || [])],
+          code_hash: undefined,
+        })
+    )
+
+    const result = await this.forceGetSecretNetworkClient().tx.broadcast(msgs, {
+      gasLimit: fee,
+      gasPriceInFeeDenom: this.secretGasPrice?.amount.toFloatApproximation(),
       memo,
-      undefined,
-      timeoutHeight
-    )
-    const txBytes = TxRaw.encode(txRaw).finish()
-    return this.broadcastTxSync(txBytes)
-  }
-
-  private async signAmino(
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: StdFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData,
-    timeoutHeight?: bigint
-  ): Promise<TxRaw> {
-    assert(!isOfflineDirectSigner(this.secretSigner))
-    const accountFromSigner = (await this.secretSigner.getAccounts()).find(
-      (account) => account.address === signerAddress
-    )
-    if (!accountFromSigner) {
-      throw new Error('Failed to retrieve account from signer')
-    }
-
-    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON
-
-    const msgs = await Promise.all(
-      messages.map(async (msg) => {
-        await this.populateCodeHash(msg)
-        return msg.toAmino(this.encryptionUtils)
-      })
-    )
-    const signDoc = makeSignDocAmino(
-      msgs,
-      fee,
-      chainId,
-      memo,
-      accountNumber,
-      sequence
-    )
-
-    let signed: StdSignDoc
-    let signature: StdSignature
-
-    if (!simulate) {
-      ;({ signature, signed } = await this.wallet.signAmino(
-        account.address,
-        signDoc
-      ))
-    } else {
-      signed = signDoc
-      signature = getSimulateSignature()
-    }
-
-    const txBody = {
-      type_url: '/cosmos.tx.v1beta1.TxBody',
-      value: {
-        messages: await Promise.all(
-          messages.map(async (msg, index) => {
-            await this.populateCodeHash(msg)
-            const asProto: ProtoMsg = await msg.toProto(this.encryptionUtils)
-
-            return asProto
-          })
-        ),
-        memo: signed.memo, // memo might have been changed by the wallet before signing
-      },
-    }
-    const txBodyBytes = await this.encodeTx(txBody)
-    const signedGasLimit = Number(signed.fee.gas)
-    const signedSequence = Number(signed.sequence)
-    const pubkey = await encodePubkey(encodeSecp256k1Pubkey(account.pubkey))
-    const signedAuthInfoBytes = await makeAuthInfoBytes(
-      [{ pubkey, sequence: signedSequence }],
-      signed.fee.amount,
-      signedGasLimit,
-      signed.fee.granter,
-      signMode
-    )
-    return TxRaw.fromPartial({
-      body_bytes: txBodyBytes,
-      auth_info_bytes: signedAuthInfoBytes,
-      signatures: [fromBase64(signature.signature)],
     })
-  }
 
-  private async signDirect(
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: StdFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData,
-    timeoutHeight?: bigint
-  ): Promise<TxRaw> {
-    assert(isOfflineDirectSigner(this.signer))
-    const accountFromSigner = (await this.signer.getAccounts()).find(
-      (account) => account.address === signerAddress
-    )
-    if (!accountFromSigner) {
-      throw new Error('Failed to retrieve account from signer')
+    if (isDeliverTxFailure(result)) {
+      throw new Error(createDeliverTxResponseErrorMessage(result))
     }
-    const pubkey = encodePubkey(encodeSecp256k1Pubkey(accountFromSigner.pubkey))
-    const txBody: TxBodyEncodeObject = {
-      typeUrl: '/cosmos.tx.v1beta1.TxBody',
-      value: {
-        messages: messages,
-        memo: memo,
-        timeoutHeight: timeoutHeight,
-      },
+
+    const parsedLogs = logs.parseRawLog(result.rawLog)
+
+    return {
+      logs: parsedLogs,
+      height: result.height,
+      transactionHash: result.transactionHash,
+      events: result.jsonLog?.flatMap((log) => log.events) || [],
+      gasWanted: BigInt(Math.round(result.gasWanted)),
+      gasUsed: BigInt(Math.round(result.gasUsed)),
     }
-    const txBodyBytes = this.registry.encode(txBody)
-    const gasLimit = Int53.fromString(fee.gas).toNumber()
-    const authInfoBytes = makeAuthInfoBytes(
-      [{ pubkey, sequence }],
-      fee.amount,
-      gasLimit,
-      fee.granter,
-      fee.payer
-    )
-    const signDoc = makeSignDoc(
-      txBodyBytes,
-      authInfoBytes,
-      chainId,
-      accountNumber
-    )
-    const { signature, signed } = await this.signer.signDirect(
-      signerAddress,
-      signDoc
-    )
-    return TxRaw.fromPartial({
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
-      signatures: [fromBase64(signature.signature)],
-    })
   }
 }
