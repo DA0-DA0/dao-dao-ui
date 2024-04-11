@@ -71,7 +71,7 @@ export const useProposalVetoState = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningClient } = useWallet()
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
   const [vetoLoading, setVetoLoading] = useState<
@@ -168,7 +168,7 @@ export const useProposalVetoState = ({
         })
 
         await executeSmartContract(
-          await getSigningCosmWasmClient(),
+          getSigningClient,
           walletAddress,
           proposalModule.address,
           cwMsgToEncodeObject(
@@ -215,7 +215,7 @@ export const useProposalVetoState = ({
     neutronTimelockOverrule,
     router,
     getDaoProposalPath,
-    getSigningCosmWasmClient,
+    getSigningClient,
     proposalModule.address,
     proposalNumber,
     onVetoSuccess,
@@ -250,7 +250,7 @@ export const useProposalVetoState = ({
         })
 
         await executeSmartContract(
-          await getSigningCosmWasmClient(),
+          getSigningClient,
           walletAddress,
           proposalModule.address,
           cwMsgToEncodeObject(
@@ -294,7 +294,7 @@ export const useProposalVetoState = ({
   }, [
     vetoerEntity,
     matchingWalletVetoer,
-    getSigningCosmWasmClient,
+    getSigningClient,
     proposalModule.address,
     proposalNumber,
     onExecuteSuccess,

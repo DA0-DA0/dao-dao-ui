@@ -44,7 +44,7 @@ export const useCreateCw1Whitelist = ({
   const { t } = useTranslation()
   const {
     address: walletAddress,
-    getSigningCosmWasmClient,
+    getSigningClient,
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useWallet({
     chainId: _chainId,
@@ -77,7 +77,7 @@ export const useCreateCw1Whitelist = ({
         }
 
         const contractAddress = await instantiateSmartContract(
-          await getSigningCosmWasmClient(),
+          getSigningClient,
           walletAddress,
           cw1WhitelistCodeId,
           contractLabel,
@@ -103,7 +103,7 @@ export const useCreateCw1Whitelist = ({
       bech32Prefix,
       contractLabel,
       cw1WhitelistCodeId,
-      getSigningCosmWasmClient,
+      getSigningClient,
       t,
       walletAddress,
     ]

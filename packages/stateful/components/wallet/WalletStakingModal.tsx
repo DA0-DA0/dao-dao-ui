@@ -39,7 +39,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningStargateClient } = useWallet()
 
   if (!nativeToken) {
     throw new Error(t('error.missingNativeToken'))
@@ -108,7 +108,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
     setLoading(true)
     try {
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
+      const signingClient = await getSigningStargateClient()
 
       const microAmount = convertDenomToMicroDenomStringWithDecimals(
         amount,
@@ -116,7 +116,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       )
 
       if (mode === StakingMode.Stake) {
-        await signingCosmWasmClient.signAndBroadcast(
+        await signingClient.signAndBroadcast(
           walletAddress,
           [
             cwMsgToEncodeObject(
@@ -134,7 +134,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           CHAIN_GAS_MULTIPLIER
         )
       } else if (mode === StakingMode.Unstake) {
-        await signingCosmWasmClient.signAndBroadcast(
+        await signingClient.signAndBroadcast(
           walletAddress,
           [
             cwMsgToEncodeObject(

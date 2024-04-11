@@ -61,7 +61,7 @@ export const PressEditor = ({
 
   const {
     address: walletAddress = '',
-    getSigningCosmWasmClient,
+    getSigningClient,
     chain,
   } = useWallet({
     chainId,
@@ -86,12 +86,11 @@ export const PressEditor = ({
     setInstantiating(true)
     try {
       const codeId = getSupportedChainConfig(chainId)?.codeIds?.Cw721Base
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
 
       const name = `${daoName}'s Press`
       const contractAddress = codeId
         ? await instantiateSmartContract(
-            signingCosmWasmClient,
+            getSigningClient,
             walletAddress,
             codeId,
             name,

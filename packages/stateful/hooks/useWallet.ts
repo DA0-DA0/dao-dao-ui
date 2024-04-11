@@ -1,9 +1,11 @@
 import { Chain } from '@chain-registry/types'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
+import { SecretNetworkClient } from 'secretjs'
 
 import {
   walletChainIdAtom,
@@ -14,7 +16,12 @@ import {
   useChainContextIfAvailable,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
+import {
+  getLcdForChainId,
+  getSupportedChains,
+  isSecretNetwork,
+  maybeGetChainForChainId,
+} from '@dao-dao/utils'
 
 export type UseWalletOptions = {
   /**
@@ -38,6 +45,14 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
   chain: Chain
   account: WalletAccount | undefined
   hexPublicKey: LoadingData<string>
+  /**
+   * Fetch the Secret Network signing client for the current wallet.
+   */
+  getSecretNetworkSigningClient: () => SecretNetworkClient
+  /**
+   * Fetch the relevant signing client for the current wallet.
+   */
+  getSigningClient: () => Promise<SigningCosmWasmClient | SecretNetworkClient>
 }
 
 export const useWallet = ({
@@ -167,27 +182,52 @@ export const useWallet = ({
   ])
 
   const response = useMemo(
-    (): UseWalletReturn => ({
-      ...walletChainRef.current,
-      chainWallet:
-        walletChainRef.current.chainWallet ||
-        // Fallback to getting chain wallet from repo if not set on walletChain.
-        // This won't be set if the walletChain is disconnected.
-        (mainWalletRef.current
-          ? getWalletRepo(chain.chain_name).getWallet(
-              mainWalletRef.current.walletName
-            )
-          : undefined),
-      connect,
-      // Use chain from our version of the chain-registry.
-      chain,
-      account,
-      hexPublicKey: hexPublicKeyData
-        ? { loading: false, data: hexPublicKeyData }
-        : !hexPublicKeyFromChain.loading && hexPublicKeyFromChain.data
-        ? { loading: false, data: hexPublicKeyFromChain.data }
-        : { loading: true },
-    }),
+    (): UseWalletReturn => {
+      // Get Secret Network signing client with Keplr's encryption utils.
+      const getSecretNetworkSigningClient = () => {
+        if (!isSecretNetwork(chain.chain_id)) {
+          throw new Error('Not on Secret Network')
+        }
+
+        return new SecretNetworkClient({
+          url: getLcdForChainId(chain.chain_id),
+          chainId: chain.chain_id,
+          wallet: walletChainRef.current.getOfflineSignerAmino(),
+          walletAddress: walletChainRef.current.address,
+          encryptionUtils: window.keplr?.getEnigmaUtils(chain.chain_id),
+        })
+      }
+
+      // Get relevant signing client based on chain.
+      const getSigningClient = async () =>
+        isSecretNetwork(chain.chain_id)
+          ? getSecretNetworkSigningClient()
+          : await walletChainRef.current.getSigningCosmWasmClient()
+
+      return {
+        ...walletChainRef.current,
+        chainWallet:
+          walletChainRef.current.chainWallet ||
+          // Fallback to getting chain wallet from repo if not set on walletChain.
+          // This won't be set if the walletChain is disconnected.
+          (mainWalletRef.current
+            ? getWalletRepo(chain.chain_name).getWallet(
+                mainWalletRef.current.walletName
+              )
+            : undefined),
+        connect,
+        // Use chain from our version of the chain-registry.
+        chain,
+        account,
+        hexPublicKey: hexPublicKeyData
+          ? { loading: false, data: hexPublicKeyData }
+          : !hexPublicKeyFromChain.loading && hexPublicKeyFromChain.data
+          ? { loading: false, data: hexPublicKeyFromChain.data }
+          : { loading: true },
+        getSecretNetworkSigningClient,
+        getSigningClient,
+      }
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       connect,
