@@ -185,7 +185,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         throw new Error(t('error.logInToContinue'))
       }
 
-      const signingCosmWasmClient = await chainWallet.getSigningCosmWasmClient()
+      const signingCosmWasmClient = await chainWallet.getSigningStargateClient()
       await signingCosmWasmClient.signAndBroadcast(
         chainWallet.address,
         (lazyInfo.loading ? [] : lazyInfo.data.stakingInfo!.stakes).map(

@@ -31,7 +31,7 @@ export const MintNftRenderer = ({
   const { chain_id: chainId } = useChain()
   const {
     address: walletAddress = '',
-    getSigningCosmWasmClient,
+    getSigningClient,
     isWalletConnected,
   } = useWallet()
 
@@ -68,7 +68,7 @@ export const MintNftRenderer = ({
     setMinting(true)
     try {
       await executeSmartContract(
-        await getSigningCosmWasmClient(),
+        getSigningClient,
         walletAddress,
         contract,
         JSON.parse(msg.replaceAll('{{wallet}}', walletAddress))

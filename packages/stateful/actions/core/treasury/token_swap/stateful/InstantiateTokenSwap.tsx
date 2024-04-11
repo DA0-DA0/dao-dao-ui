@@ -51,7 +51,7 @@ export const InstantiateTokenSwap: ActionComponent<
   }
 
   const { setValue } = useFormContext()
-  const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
+  const { address: walletAddress, getSigningClient } = useWallet()
 
   const selfPartyTokenBalances = useTokenBalances()
 
@@ -120,9 +120,8 @@ export const InstantiateTokenSwap: ActionComponent<
         },
       }
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
       const contractAddress = await instantiateSmartContract(
-        signingCosmWasmClient,
+        getSigningClient,
         walletAddress,
         cwTokenSwapCodeId,
         'Token Swap',
@@ -151,11 +150,11 @@ export const InstantiateTokenSwap: ActionComponent<
     }
   }, [
     cwTokenSwapCodeId,
+    getSigningClient,
     props.data,
     props.fieldNamePrefix,
     selfAddress,
     setValue,
-    getSigningCosmWasmClient,
     t,
     walletAddress,
   ])

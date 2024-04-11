@@ -42,7 +42,7 @@ export const DaoTokenDepositModal = ({
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
-  const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
+  const { isWalletConnected, address, getSigningStargateClient } = useWallet({
     chainId: token.chainId,
     // Only attempt connection when the modal is visible.
     attemptConnection: props.visible,
@@ -109,8 +109,8 @@ export const DaoTokenDepositModal = ({
         )
 
         if (token.type === 'native') {
-          const signingCosmWasmClient = await getSigningCosmWasmClient()
-          await signingCosmWasmClient.sendTokens(
+          const signingClient = await getSigningStargateClient()
+          await signingClient.sendTokens(
             address,
             depositAddress,
             coins(microAmount, token.denomOrAddress),
@@ -154,7 +154,7 @@ export const DaoTokenDepositModal = ({
       refreshDaoBalances,
       refreshWalletBalances,
       setAmount,
-      getSigningCosmWasmClient,
+      getSigningStargateClient,
       t,
       token,
       transferCw20,
