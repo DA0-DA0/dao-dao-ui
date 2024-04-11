@@ -26,6 +26,8 @@ import {
   isValidBech32Address,
 } from '@dao-dao/utils'
 
+// TODO(secret): prevent simulating if it contains compute/wasm messages
+
 // Simulate executing Cosmos messages on-chain. We can't just use the simulate
 // function on SigningCosmWasmClient or SigningStargateClient because they
 // include signer info from the wallet. We may want to simulate these messages
