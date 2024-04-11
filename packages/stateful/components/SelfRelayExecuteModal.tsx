@@ -88,7 +88,7 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.StargazeMainnet]: 2 * 10 ** 6,
   [ChainId.NeutronMainnet]: 0.5 * 10 ** 6,
   [ChainId.TerraMainnet]: 0.1 * 10 ** 6,
-  [ChainId.MigalooMainnet]: 2 * 10 ** 6,
+  [ChainId.MigalooMainnet]: 4 * 10 ** 6,
   [ChainId.KujiraMainnet]: 0.1 * 10 ** 6,
   [ChainId.OraichainMainnet]: 0.1 * 10 ** 6,
   [ChainId.ChihuahuaMainnet]: 1000 * 10 ** 6,
