@@ -15,7 +15,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { WidgetRendererProps } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
+import { executeSmartContract, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
 import { MintNftData } from './types'
@@ -67,12 +67,11 @@ export const MintNftRenderer = ({
 
     setMinting(true)
     try {
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-      await signingCosmWasmClient.execute(
+      await executeSmartContract(
+        await getSigningCosmWasmClient(),
         walletAddress,
         contract,
-        JSON.parse(msg.replaceAll('{{wallet}}', walletAddress)),
-        CHAIN_GAS_MULTIPLIER
+        JSON.parse(msg.replaceAll('{{wallet}}', walletAddress))
       )
     } catch (err) {
       console.error(err)
