@@ -16,21 +16,21 @@ import * as _311 from "./stargaze/mint/v1beta1/genesis";
 import * as _312 from "./stargaze/mint/v1beta1/mint";
 import * as _313 from "./stargaze/mint/v1beta1/query";
 import * as _314 from "./stargaze/mint/v1beta1/tx";
-import * as _561 from "./stargaze/alloc/v1beta1/tx.amino";
-import * as _562 from "./stargaze/cron/v1/tx.amino";
-import * as _563 from "./stargaze/globalfee/v1/tx.amino";
-import * as _564 from "./stargaze/alloc/v1beta1/tx.registry";
-import * as _565 from "./stargaze/cron/v1/tx.registry";
-import * as _566 from "./stargaze/globalfee/v1/tx.registry";
-import * as _567 from "./stargaze/alloc/v1beta1/query.rpc.Query";
-import * as _568 from "./stargaze/cron/v1/query.rpc.Query";
-import * as _569 from "./stargaze/globalfee/v1/query.rpc.Query";
-import * as _570 from "./stargaze/mint/v1beta1/query.rpc.Query";
-import * as _571 from "./stargaze/alloc/v1beta1/tx.rpc.msg";
-import * as _572 from "./stargaze/cron/v1/tx.rpc.msg";
-import * as _573 from "./stargaze/globalfee/v1/tx.rpc.msg";
-import * as _622 from "./rpc.query";
-import * as _623 from "./rpc.tx";
+import * as _575 from "./stargaze/alloc/v1beta1/tx.amino";
+import * as _576 from "./stargaze/cron/v1/tx.amino";
+import * as _577 from "./stargaze/globalfee/v1/tx.amino";
+import * as _578 from "./stargaze/alloc/v1beta1/tx.registry";
+import * as _579 from "./stargaze/cron/v1/tx.registry";
+import * as _580 from "./stargaze/globalfee/v1/tx.registry";
+import * as _581 from "./stargaze/alloc/v1beta1/query.rpc.Query";
+import * as _582 from "./stargaze/cron/v1/query.rpc.Query";
+import * as _583 from "./stargaze/globalfee/v1/query.rpc.Query";
+import * as _584 from "./stargaze/mint/v1beta1/query.rpc.Query";
+import * as _585 from "./stargaze/alloc/v1beta1/tx.rpc.msg";
+import * as _586 from "./stargaze/cron/v1/tx.rpc.msg";
+import * as _587 from "./stargaze/globalfee/v1/tx.rpc.msg";
+import * as _649 from "./rpc.query";
+import * as _650 from "./rpc.tx";
 export namespace publicawesome {
   export namespace stargaze {
     export namespace alloc {
@@ -39,10 +39,10 @@ export namespace publicawesome {
         ..._298,
         ..._299,
         ..._300,
-        ..._561,
-        ..._564,
-        ..._567,
-        ..._571
+        ..._575,
+        ..._578,
+        ..._581,
+        ..._585
       };
     }
     export namespace cron {
@@ -52,10 +52,10 @@ export namespace publicawesome {
         ..._303,
         ..._304,
         ..._305,
-        ..._562,
-        ..._565,
-        ..._568,
-        ..._572
+        ..._576,
+        ..._579,
+        ..._582,
+        ..._586
       };
     }
     export namespace globalfee {
@@ -65,10 +65,10 @@ export namespace publicawesome {
         ..._308,
         ..._309,
         ..._310,
-        ..._563,
-        ..._566,
-        ..._569,
-        ..._573
+        ..._577,
+        ..._580,
+        ..._583,
+        ..._587
       };
     }
     export namespace mint {
@@ -77,12 +77,12 @@ export namespace publicawesome {
         ..._312,
         ..._313,
         ..._314,
-        ..._570
+        ..._584
       };
     }
   }
   export const ClientFactory = {
-    ..._622,
-    ..._623
+    ..._649,
+    ..._650
   };
 }
