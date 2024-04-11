@@ -49,36 +49,44 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
   get:
     (options) =>
     async ({ get }) => {
-      const indexerUp = get(
-        indexerUpStatusSelector({
-          chainId: options.chainId,
-          // Don't refresh this automatically on a period, since some selectors
-          // that are not cached will use this, and they will cause annoying
-          // flickering in the UI. Ideally, we replace all `useRecoilValue`
-          // blocking hooks with `useCachedLoadingWithError` hooks that cache
-          // data during updates. Once that happens, we can remove this. But
-          // that might not happen for a while...
-          noRefresh: true,
-          // Manually refresh.
-          id: options.id,
-        })
-      )
-      // If indexer is behind and there is a fallback, return null.
-      if (!indexerUp.caughtUp && !options.noFallback) {
-        return null
+      try {
+        const indexerUp = get(
+          indexerUpStatusSelector({
+            chainId: options.chainId,
+            // Don't refresh this automatically on a period, since some
+            // selectors that are not cached will use this, and they will cause
+            // annoying flickering in the UI. Ideally, we replace all
+            // `useRecoilValue` blocking hooks with `useCachedLoadingWithError`
+            // hooks that cache data during updates. Once that happens, we can
+            // remove this. But that might not happen for a while...
+            noRefresh: true,
+            // Manually refresh.
+            id: options.id,
+          })
+        )
+
+        // If indexer is behind and there is a fallback, return null.
+        if (!indexerUp.caughtUp && !options.noFallback) {
+          return null
+        }
+      } catch (err) {
+        // If no indexer for chain, return null.
+        if (
+          err instanceof Error &&
+          err.message === CommonError.NoIndexerForChain
+        ) {
+          return null
+        }
+
+        // Throw other errors. Recoil throws promises when waiting for other
+        // selectors to finish, and we don't want to prevent that.
+        throw err
       }
 
       try {
         return await queryIndexer(options)
       } catch (err) {
-        // If the indexer fails, return null since many indexer queries fallback
-        // to the chain. If an error other than no indexer for chain, log it.
-        if (
-          !(err instanceof Error) ||
-          err.message !== CommonError.NoIndexerForChain
-        ) {
-          console.error(err)
-        }
+        console.error(err)
 
         return null
       }
