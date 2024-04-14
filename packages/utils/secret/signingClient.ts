@@ -57,10 +57,6 @@ const createDeliverTxResponseErrorMessage = (result: TxResponse) =>
 export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
   private readonly secretNetworkClient: SecretNetworkClient | undefined
   private readonly secretCodesCache = new Map<number, CodeDetails>()
-
-  // TODO(secret): do we need these variables?
-  private readonly secretSigner: OfflineSigner
-  private readonly secretAminoTypes: AminoTypes
   private readonly secretGasPrice: GasPrice | undefined
 
   /**
@@ -136,9 +132,6 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
       aminoTypes,
     })
 
-    // TODO(secret): do we need these variables?
-    this.secretAminoTypes = aminoTypes
-    this.secretSigner = signer
     this.secretGasPrice = options.gasPrice
 
     this.secretNetworkClient = new SecretNetworkClient(secretOptions)
