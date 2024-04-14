@@ -16,7 +16,8 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/types/actions'
+  makeStargateMessage,
+} from '@dao-dao/types'
 import { MsgRevoke } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { MsgVote as MsgVoteV1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/tx'
 import { MsgVote as MsgVoteV1Beta1 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
@@ -24,7 +25,6 @@ import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
-  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
