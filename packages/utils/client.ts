@@ -1,9 +1,11 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { StargateClient, logs } from '@cosmjs/stargate'
 import {
+  Comet38Client,
   HttpBatchClient,
   Tendermint34Client,
   Tendermint37Client,
+  connectComet,
 } from '@cosmjs/tendermint-rpc'
 
 type ChainClientRoutes<T> = {
@@ -62,8 +64,11 @@ export const cosmWasmClientRouter = new ChainClientRouter({
     const httpClient = new HttpBatchClient(rpcEndpoint)
     const tmClient = await (
       (
-        await connectTendermintClient(rpcEndpoint)
-      ).constructor as typeof Tendermint34Client | typeof Tendermint37Client
+        await connectComet(rpcEndpoint)
+      ).constructor as
+        | typeof Tendermint34Client
+        | typeof Tendermint37Client
+        | typeof Comet38Client
     ).create(httpClient)
 
     return await CosmWasmClient.create(tmClient)
@@ -78,8 +83,11 @@ export const stargateClientRouter = new ChainClientRouter({
     const httpClient = new HttpBatchClient(rpcEndpoint)
     const tmClient = await (
       (
-        await connectTendermintClient(rpcEndpoint)
-      ).constructor as typeof Tendermint34Client | typeof Tendermint37Client
+        await connectComet(rpcEndpoint)
+      ).constructor as
+        | typeof Tendermint34Client
+        | typeof Tendermint37Client
+        | typeof Comet38Client
     ).create(httpClient)
 
     return await StargateClient.create(tmClient, {})
@@ -105,20 +113,4 @@ export const findWasmAttributeValue = (
         attributes.some(({ key }) => key === attributeKey)
     )
   return wasmEvent?.attributes.find(({ key }) => key === attributeKey)!.value
-}
-
-// Connect the correct tendermint client based on the node's version.
-export const connectTendermintClient = async (endpoint: string) => {
-  // Tendermint/CometBFT 0.34/0.37 auto-detection. Starting with 0.37 we seem to
-  // get reliable versions again 🎉 Using 0.34 as the fallback.
-  let tmClient
-  const tm37Client = await Tendermint37Client.connect(endpoint)
-  const version = (await tm37Client.status()).nodeInfo.version
-  if (version.startsWith('0.37.')) {
-    tmClient = tm37Client
-  } else {
-    tm37Client.disconnect()
-    tmClient = await Tendermint34Client.connect(endpoint)
-  }
-  return tmClient
 }
