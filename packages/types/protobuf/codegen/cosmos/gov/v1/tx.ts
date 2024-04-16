@@ -601,8 +601,6 @@ export const MsgSubmitProposal = {
     const obj: any = {};
     if (message.messages.length) {
       obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
-    } else {
-      obj.messages = [];
     }
     if (message.initialDeposit) {
       obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);

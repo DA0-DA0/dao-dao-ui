@@ -56,7 +56,7 @@ index 9eb780900..70b01f2fc 100644
    },
    fromAminoMsg(object: MetadataAminoMsg): Metadata {
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 6c5cc594d..72e20f771 100644
+index 6c5cc594d..774bdbe5c 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,8 @@
@@ -79,18 +79,20 @@ index 6c5cc594d..72e20f771 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -598,8 +599,8 @@ export const MsgSubmitProposal = {
+@@ -598,10 +599,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
 -    if (message.messages) {
 -      obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
+-    } else {
+-      obj.messages = [];
 +    if (message.messages.length) {
 +      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
-     } else {
-       obj.messages = [];
      }
-@@ -612,7 +613,9 @@ export const MsgSubmitProposal = {
+     if (message.initialDeposit) {
+       obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+@@ -612,7 +611,9 @@ export const MsgSubmitProposal = {
      obj.metadata = message.metadata;
      obj.title = message.title;
      obj.summary = message.summary;
@@ -101,7 +103,7 @@ index 6c5cc594d..72e20f771 100644
      return obj;
    },
    fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-@@ -911,7 +914,7 @@ export const MsgVote = {
+@@ -911,7 +912,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
