@@ -106,6 +106,9 @@ telescope({
           'regen.intertx.v1',
           'alliance.alliance',
           'circle.cctp.v1',
+          'kujira.denom',
+          'kujira.oracle',
+          'kujira.scheduler',
         ],
       },
       // excluded: {

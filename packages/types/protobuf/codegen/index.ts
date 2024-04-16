@@ -22,6 +22,8 @@ export * from "./ibc/bundle";
 export * from "./ibc/client";
 export * from "./juno/bundle";
 export * from "./juno/client";
+export * from "./kujira/bundle";
+export * from "./kujira/client";
 export * from "./neutron/bundle";
 export * from "./neutron/client";
 export * from "./osmosis/bundle";
