@@ -82,7 +82,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SetUpApproverData> = (
     }
   }
 
-  const parsedMsg = decodeJsonFromBase64(info.msg)
+  const parsedMsg = decodeJsonFromBase64(info.msg, true)
   if (
     !info.label.endsWith(`${DaoProposalSingleAdapterId}_approver`) ||
     !objectMatchesStructure(parsedMsg, {
@@ -104,7 +104,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SetUpApproverData> = (
   }
 
   const parsedPreProposeMsg = decodeJsonFromBase64(
-    parsedMsg.pre_propose_info.module_may_propose.info.msg
+    parsedMsg.pre_propose_info.module_may_propose.info.msg,
+    true
   )
   if (
     !objectMatchesStructure(parsedPreProposeMsg, {

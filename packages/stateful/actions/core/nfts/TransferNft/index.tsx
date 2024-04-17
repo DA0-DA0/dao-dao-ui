@@ -157,7 +157,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
 
           executeSmartContract: true,
           smartContractMsg: JSON.stringify(
-            decodeJsonFromBase64(msg.wasm.execute.msg.send_nft.msg),
+            decodeJsonFromBase64(msg.wasm.execute.msg.send_nft.msg, true),
             null,
             2
           ),

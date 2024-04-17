@@ -92,6 +92,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
       ? govProposalsSelector({
           status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
           chainId,
+          limit: 100,
         })
       : constSelector(undefined)
   )

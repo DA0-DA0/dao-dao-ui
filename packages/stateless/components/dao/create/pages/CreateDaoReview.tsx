@@ -3,7 +3,11 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext, DaoInfoCard } from '@dao-dao/types'
-import { decodeJsonFromBase64, processError } from '@dao-dao/utils'
+import {
+  decodeJsonFromBase64,
+  objectMatchesStructure,
+  processError,
+} from '@dao-dao/utils'
 
 import { CosmosMessageDisplay } from '../../../CosmosMessageDisplay'
 import { Checkbox } from '../../../inputs/Checkbox'
@@ -47,10 +51,15 @@ export const CreateDaoReview = ({
 
         // Convert encoded pre_propose_info message back to readable JSON.
         if (
-          'pre_propose_info' in msg &&
-          'module_may_propose' in msg.pre_propose_info &&
-          'info' in msg.pre_propose_info.module_may_propose &&
-          'msg' in msg.pre_propose_info.module_may_propose.info
+          objectMatchesStructure(msg, {
+            pre_propose_info: {
+              module_may_propose: {
+                info: {
+                  msg: {},
+                },
+              },
+            },
+          })
         ) {
           msg.pre_propose_info.module_may_propose.info.msg =
             decodeJsonFromBase64(

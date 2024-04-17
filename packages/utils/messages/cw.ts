@@ -99,7 +99,7 @@ export const decodeMessage = (msg: CosmosMsgFor_Empty): Record<string, any> => {
     if (msgType && isBinaryType(msgType)) {
       const base64MsgContainer = (msg.wasm as any)[msgType]
       if (base64MsgContainer && 'msg' in base64MsgContainer) {
-        const parsedMsg = decodeJsonFromBase64(base64MsgContainer.msg)
+        const parsedMsg = decodeJsonFromBase64(base64MsgContainer.msg, true)
         if (parsedMsg) {
           return {
             ...msg,

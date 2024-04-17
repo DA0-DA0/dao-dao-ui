@@ -233,7 +233,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
     }) &&
     // Use common key to identify CW20s being sent to token swaps from this
     // DAO DAO action.
-    CW20_SEND_MSG_KEY in decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
+    CW20_SEND_MSG_KEY in
+      decodeJsonFromBase64(msg.wasm.execute.msg.send.msg, true)
   ) {
     return {
       match: true,

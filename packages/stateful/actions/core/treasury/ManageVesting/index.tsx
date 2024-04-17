@@ -874,7 +874,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
         },
       }) &&
       objectMatchesStructure(
-        decodeJsonFromBase64(msg.wasm.execute.msg.send.msg),
+        decodeJsonFromBase64(msg.wasm.execute.msg.send.msg, true),
         {
           instantiate_payroll_contract: instantiateStructure,
         }
@@ -934,8 +934,10 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
       // isCw20Begin
       else {
         // Extract instantiate message from cw20 send message.
-        instantiateMsg = decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
-          .instantiate_payroll_contract.instantiate_msg as VestingInstantiateMsg
+        instantiateMsg = decodeJsonFromBase64(
+          msg.wasm.execute.msg.send.msg,
+          true
+        ).instantiate_payroll_contract?.instantiate_msg as VestingInstantiateMsg
       }
     }
 

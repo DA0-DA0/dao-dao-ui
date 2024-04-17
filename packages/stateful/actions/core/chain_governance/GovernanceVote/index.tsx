@@ -68,6 +68,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       ? govProposalsSelector({
           status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
           chainId,
+          limit: 100,
         })
       : constSelector(undefined)
   )

@@ -221,7 +221,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
             : msg.wasm.execute.contract_addr,
           message: JSON.stringify(
             isCw20
-              ? decodeJsonFromBase64(msg.wasm.execute.msg.send.msg)
+              ? decodeJsonFromBase64(msg.wasm.execute.msg.send.msg, true)
               : msg.wasm.execute.msg,
             undefined,
             2

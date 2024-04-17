@@ -225,7 +225,7 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
             admin: msg.stargate.value.admin,
             code_id: Number(msg.stargate.value.codeId),
             label: msg.stargate.value.label,
-            msg: decodeJsonFromBase64(toBase64(msg.stargate.value.msg)),
+            msg: decodeJsonFromBase64(toBase64(msg.stargate.value.msg), true),
             funds: msg.stargate.value.funds,
             fix_msg: msg.stargate.value.fixMsg,
             salt: fromUtf8(msg.stargate.value.salt),

@@ -7,13 +7,25 @@ export const encodeJsonToBase64 = (object: any) =>
   toBase64(toUtf8(JSON.stringify(object)))
 
 /**
- * Decode base64 string into JSON object.
+ * Decode base64 string into JSON object. If `fallbackToString` is true and
+ * JSON parse fails, decoded string is returned.
  */
-export const decodeJsonFromBase64 = (base64String?: string) => {
+export const decodeJsonFromBase64 = (
+  base64String?: string,
+  fallbackToString = false
+) => {
   if (base64String) {
     const jsonMessage = fromUtf8(fromBase64(base64String))
-    if (jsonMessage) {
-      return JSON.parse(jsonMessage)
+    try {
+      if (jsonMessage) {
+        return JSON.parse(jsonMessage)
+      }
+    } catch (err) {
+      if (fallbackToString) {
+        return jsonMessage
+      }
+
+      throw err
     }
   }
 }
