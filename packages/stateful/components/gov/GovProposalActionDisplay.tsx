@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { DataObject } from '@mui/icons-material'
+import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
   ActionsRenderer,
+  Button,
   CosmosMessageDisplay,
   Loader,
 } from '@dao-dao/stateless'
@@ -53,13 +55,25 @@ const InnerGovProposalActionDisplay = ({
 
   const actionsForMatching = useActionsForMatching()
 
-  const decodedMessages = useMemo(
-    () =>
-      content.version === GovProposalVersion.V1_BETA_1
-        ? []
-        : decodeMessages(content.decodedMessages),
-    [content]
-  )
+  const [showRaw, setShowRaw] = useState(false)
+
+  const { decodedMessages, rawDecodedMessages } = useMemo(() => {
+    const decodedMessages =
+      content.version === GovProposalVersion.V1
+        ? decodeMessages(content.decodedMessages)
+        : []
+
+    const rawDecodedMessages = JSON.stringify(
+      decodedMessages.map(decodeRawDataForDisplay),
+      null,
+      2
+    )
+
+    return {
+      decodedMessages,
+      rawDecodedMessages,
+    }
+  }, [content])
 
   // Call relevant action hooks in the same order every time.
   const actionData = decodedMessages
@@ -139,12 +153,23 @@ const InnerGovProposalActionDisplay = ({
 
       {content.version === GovProposalVersion.V1 &&
       content.decodedMessages?.length ? (
-        <ActionsRenderer
-          SuspenseLoader={SuspenseLoader}
-          actionData={actionData}
-          hideCopyLink={hideCopyLink}
-          onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-        />
+        <div className="space-y-3">
+          <ActionsRenderer
+            SuspenseLoader={SuspenseLoader}
+            actionData={actionData}
+            hideCopyLink={hideCopyLink}
+            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+          />
+
+          <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
+            <DataObject className="text-icon-secondary" />
+            <p className="secondary-text">
+              {showRaw ? t('button.hideRawData') : t('button.showRawData')}
+            </p>
+          </Button>
+
+          {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
+        </div>
       ) : null}
     </>
   )

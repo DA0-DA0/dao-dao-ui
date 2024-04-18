@@ -1,4 +1,4 @@
-import { AnalyticsOutlined, Check } from '@mui/icons-material'
+import { Check, DataObject } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -139,7 +139,7 @@ export const MultipleChoiceOptionViewer = ({
             onClick={() => setShowRaw(!showRaw)}
             variant="ghost"
           >
-            <AnalyticsOutlined className="text-icon-secondary" />
+            <DataObject className="text-icon-secondary" />
             <p className="secondary-text">
               {showRaw ? t('button.hideRawData') : t('button.showRawData')}
             </p>

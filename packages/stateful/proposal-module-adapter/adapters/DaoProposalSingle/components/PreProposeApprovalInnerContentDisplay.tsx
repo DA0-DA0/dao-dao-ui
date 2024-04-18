@@ -1,4 +1,4 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import { DataObject } from '@mui/icons-material'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -102,7 +102,7 @@ const InnerPreProposeApprovalInnerContentDisplay = ({
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
-        <AnalyticsOutlined className="text-icon-secondary" />
+        <DataObject className="text-icon-secondary" />
         <p className="secondary-text">
           {showRaw ? t('button.hideRawData') : t('button.showRawData')}
         </p>

@@ -1,4 +1,4 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import { DataObject } from '@mui/icons-material'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -62,8 +62,13 @@ const InnerProposalInnerContentDisplay = ({
   const [showRaw, setShowRaw] = useState(false)
   const { chainId, coreVersion } = useDaoInfoContext()
 
-  const decodedMessages = useMemo(() => {
-    const decoded = decodeMessages(proposal.msgs)
+  const { decodedMessages, rawDecodedMessages } = useMemo(() => {
+    let decodedMessages = decodeMessages(proposal.msgs)
+    const rawDecodedMessages = JSON.stringify(
+      decodedMessages.map(decodeRawDataForDisplay),
+      null,
+      2
+    )
 
     // Unwrap `timelock_proposal` execute in Neutron SubDAOs.
     try {
@@ -72,8 +77,8 @@ const InnerProposalInnerContentDisplay = ({
         coreVersion === ContractVersion.V2AlphaNeutronFork
       ) {
         if (
-          decoded.length === 1 &&
-          objectMatchesStructure(decoded[0], {
+          decodedMessages.length === 1 &&
+          objectMatchesStructure(decodedMessages[0], {
             wasm: {
               execute: {
                 contract_addr: {},
@@ -89,7 +94,7 @@ const InnerProposalInnerContentDisplay = ({
           })
         ) {
           const innerDecoded = decodeMessages(
-            decoded[0].wasm.execute.msg.timelock_proposal.msgs
+            decodedMessages[0].wasm.execute.msg.timelock_proposal.msgs
           )
           if (
             innerDecoded.length === 1 &&
@@ -107,7 +112,7 @@ const InnerProposalInnerContentDisplay = ({
               },
             })
           ) {
-            return decodeMessages(
+            decodedMessages = decodeMessages(
               innerDecoded[0].wasm.execute.msg.execute_timelocked_msgs.msgs
             )
           }
@@ -117,12 +122,11 @@ const InnerProposalInnerContentDisplay = ({
       console.error('Neutron timelock_proposal unwrap error', error)
     }
 
-    return decoded
+    return {
+      decodedMessages,
+      rawDecodedMessages,
+    }
   }, [chainId, coreVersion, proposal.msgs])
-  const rawDecodedMessages = useMemo(
-    () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
-    [decodedMessages]
-  )
 
   // If no msgs, set seen all action pages to true so that the user can vote.
   const [markedSeen, setMarkedSeen] = useState(false)
@@ -188,7 +192,7 @@ const InnerProposalInnerContentDisplay = ({
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
-        <AnalyticsOutlined className="text-icon-secondary" />
+        <DataObject className="text-icon-secondary" />
         <p className="secondary-text">
           {showRaw ? t('button.hideRawData') : t('button.showRawData')}
         </p>
