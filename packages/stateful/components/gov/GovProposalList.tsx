@@ -2,10 +2,14 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { govProposalsSelector } from '@dao-dao/state/recoil'
+import {
+  govProposalsSelector,
+  searchedDecodedGovProposalsSelector,
+} from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
   useCachedLoading,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
@@ -157,35 +161,71 @@ export const GovProposalList = () => {
         openGovProposalsVotingPeriod.data.proposals.length -
         govProposalsDepositPeriod.data.proposals.length
 
+  const [search, setSearch] = useState('')
+  const showingSearchResults = !!search && search.length > 0
+  const searchedGovProposals = useCachedLoadingWithError(
+    showingSearchResults
+      ? searchedDecodedGovProposalsSelector({
+          chainId: chain.chain_id,
+          query: search,
+          limit: 20,
+        })
+      : undefined
+  )
+
   return (
     <StatelessProposalList
       DiscordNotifierConfigureModal={undefined}
       LinkWrapper={LinkWrapper}
       ProposalLine={GovProposalLine}
-      canLoadMore={page < maxPage}
+      canLoadMore={!showingSearchResults && page < maxPage}
       createNewProposalHref={asPath + '/create'}
       daosWithVetoableProposals={[]}
       isMember={true}
       loadMore={goToNextPage}
       loadingMore={
-        openGovProposalsVotingPeriod.loading ||
-        govProposalsDepositPeriod.loading ||
-        loadingAllGovProposals.loading ||
-        !!loadingAllGovProposals.updating
+        showingSearchResults
+          ? searchedGovProposals.loading || !!searchedGovProposals.updating
+          : openGovProposalsVotingPeriod.loading ||
+            govProposalsDepositPeriod.loading ||
+            loadingAllGovProposals.loading ||
+            !!loadingAllGovProposals.updating
       }
-      openProposals={openProposals}
-      sections={[
-        {
-          title: t('title.depositPeriod'),
-          proposals: depositPeriodProposals,
-          defaultCollapsed: true,
-        },
-        {
-          title: t('title.history'),
-          proposals: historyProposals,
-          total: historyCount,
-        },
-      ]}
+      openProposals={showingSearchResults ? [] : openProposals}
+      searchBarProps={{
+        value: search,
+        onChange: (e) => setSearch(e.target.value),
+      }}
+      sections={
+        showingSearchResults
+          ? [
+              {
+                title: t('title.results'),
+                proposals:
+                  searchedGovProposals.loading || searchedGovProposals.errored
+                    ? []
+                    : searchedGovProposals.data.proposals.map(
+                        (proposal): GovProposalLineProps => ({
+                          proposalId: proposal.id.toString(),
+                          proposal,
+                        })
+                      ),
+              },
+            ]
+          : [
+              {
+                title: t('title.depositPeriod'),
+                proposals: depositPeriodProposals,
+                defaultCollapsed: true,
+              },
+              {
+                title: t('title.history'),
+                proposals: historyProposals,
+                total: historyCount,
+              },
+            ]
+      }
+      showingSearchResults={showingSearchResults}
     />
   )
 }

@@ -132,8 +132,8 @@ export const searchGovProposals = async ({
         .join(' AND '),
       offset,
       limit,
-      // Most recent at the top.
-      sort: ['value.id:desc'],
+      // Most recent at the top if no query passed.
+      sort: query ? undefined : ['value.id:desc'],
     }
   )
 
