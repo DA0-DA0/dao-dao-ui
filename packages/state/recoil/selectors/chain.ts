@@ -70,6 +70,7 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
+import { SearchGovProposalsOptions } from '../../indexer'
 import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
@@ -80,6 +81,7 @@ import {
 import {
   queryGenericIndexerSelector,
   queryValidatorIndexerSelector,
+  searchGovProposalsSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
 import { walletTokenDaoStakedDenomsSelector } from './wallet'
@@ -700,6 +702,59 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
     },
 })
 
+/**
+ * Search gov proposals in the indexer and decode their content.
+ */
+export const searchedDecodedGovProposalsSelector = selectorFamily<
+  {
+    proposals: GovProposalWithDecodedContent[]
+    total: number
+  },
+  SearchGovProposalsOptions
+>({
+  key: 'searchedDecodedGovProposals',
+  get:
+    (options) =>
+    async ({ get }) => {
+      get(refreshGovProposalsAtom(options.chainId))
+
+      const supportsV1Gov = get(
+        chainSupportsV1GovModuleSelector({ chainId: options.chainId })
+      )
+
+      const { results, total } = get(searchGovProposalsSelector(options))
+
+      const proposals = (
+        await Promise.allSettled(
+          results.map(async ({ value: { id, data } }) =>
+            decodeGovProposal(
+              supportsV1Gov
+                ? {
+                    version: GovProposalVersion.V1,
+                    id: BigInt(id),
+                    proposal: ProposalV1.decode(fromBase64(data)),
+                  }
+                : {
+                    version: GovProposalVersion.V1_BETA_1,
+                    id: BigInt(id),
+                    proposal: ProposalV1Beta1.decode(
+                      fromBase64(data),
+                      undefined,
+                      true
+                    ),
+                  }
+            )
+          )
+        )
+      ).flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
+
+      return {
+        proposals,
+        total,
+      }
+    },
+})
+
 // Queries the chain for governance proposals, defaulting to those that are
 // currently open for voting.
 export const govProposalsSelector = selectorFamily<
@@ -715,174 +770,114 @@ export const govProposalsSelector = selectorFamily<
 >({
   key: 'govProposals',
   get:
-    ({
-      status = ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-      offset,
-      limit,
-      chainId,
-    }) =>
+    ({ status, offset, limit, chainId }) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
+      // Try to load from indexer first.
+      const indexerProposals = get(
+        waitForAllSettled([
+          searchedDecodedGovProposalsSelector({
+            chainId,
+            status,
+            offset,
+            limit,
+          }),
+        ])
+      )[0].valueMaybe()
+
+      if (indexerProposals?.proposals.length) {
+        return indexerProposals
+      }
+
+      // Fallback to querying chain if indexer failed.
       const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
       let v1Proposals: ProposalV1[] | undefined
       let v1Beta1Proposals: ProposalV1Beta1[] | undefined
       let total = 0
 
-      // Try to load from indexer first.
-      const indexerProposals:
-        | {
-            proposals: {
-              id: string
-              data: string
-            }[]
-            total: number
-          }
-        | undefined = get(
-        queryGenericIndexerSelector({
-          chainId,
-          formula: 'gov/reverseProposals',
-          args: {
-            limit,
-            offset,
-          },
-        })
-      )
-
-      if (indexerProposals?.proposals.length) {
-        if (supportsV1Gov) {
-          v1Proposals = indexerProposals.proposals.flatMap(
-            ({ data }): ProposalV1 | [] => {
-              try {
-                const proposal = ProposalV1.decode(fromBase64(data))
-
-                if (
-                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
-                  proposal.status === status
-                ) {
-                  return proposal
-                }
-              } catch {}
-
-              return []
-            }
-          )
-
-          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
-            total = indexerProposals.total
-          } else {
-            total = v1Proposals.length
-          }
-        } else {
-          v1Beta1Proposals = indexerProposals.proposals.flatMap(
-            ({ data }): ProposalV1Beta1 | [] => {
-              try {
-                const proposal = ProposalV1Beta1.decode(
-                  fromBase64(data),
-                  undefined,
-                  true
-                )
-
-                if (
-                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
-                  proposal.status === status
-                ) {
-                  return proposal
-                }
-              } catch {}
-
-              return []
-            }
-          )
-
-          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
-            total = indexerProposals.total
-          } else {
-            total = v1Beta1Proposals.length
-          }
-        }
-
-        // Fallback to querying chain if indexer failed.
-      } else {
-        const client = get(cosmosRpcClientForChainSelector(chainId))
-        if (supportsV1Gov) {
-          try {
-            if (limit === undefined && offset === undefined) {
-              v1Proposals = await getAllRpcResponse(
-                client.gov.v1.proposals,
-                {
-                  proposalStatus: status,
-                  voter: '',
-                  depositor: '',
-                  pagination: undefined,
-                },
-                'proposals',
-                true
-              )
-              total = v1Proposals.length
-            } else {
-              const response = await client.gov.v1.proposals({
-                proposalStatus: status,
-                voter: '',
-                depositor: '',
-                pagination: {
-                  key: new Uint8Array(),
-                  offset: BigInt(offset || 0),
-                  limit: BigInt(limit || 0),
-                  countTotal: true,
-                  reverse: true,
-                },
-              })
-              v1Proposals = response.proposals
-              total = Number(response.pagination?.total || 0)
-            }
-          } catch (err) {
-            // Fallback to v1beta1 query if v1 not supported.
-            if (
-              !(err instanceof Error) ||
-              !err.message.includes('unknown query path')
-            ) {
-              // Rethrow other errors.
-              throw err
-            }
-          }
-        }
-
-        if (!v1Proposals) {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+      if (supportsV1Gov) {
+        try {
           if (limit === undefined && offset === undefined) {
-            v1Beta1Proposals = await getAllRpcResponse(
-              client.gov.v1beta1.proposals,
+            v1Proposals = await getAllRpcResponse(
+              client.gov.v1.proposals,
               {
-                proposalStatus: status,
+                proposalStatus:
+                  status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                 voter: '',
                 depositor: '',
                 pagination: undefined,
               },
               'proposals',
-              true,
               true
             )
-            total = v1Beta1Proposals.length
+            total = v1Proposals.length
           } else {
-            const response = await client.gov.v1beta1.proposals(
-              {
-                proposalStatus: status,
-                voter: '',
-                depositor: '',
-                pagination: {
-                  key: new Uint8Array(),
-                  offset: BigInt(offset || 0),
-                  limit: BigInt(limit || 0),
-                  countTotal: true,
-                  reverse: true,
-                },
+            const response = await client.gov.v1.proposals({
+              proposalStatus:
+                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+              voter: '',
+              depositor: '',
+              pagination: {
+                key: new Uint8Array(),
+                offset: BigInt(offset || 0),
+                limit: BigInt(limit || 0),
+                countTotal: true,
+                reverse: true,
               },
-              true
-            )
-            v1Beta1Proposals = response.proposals
+            })
+            v1Proposals = response.proposals
             total = Number(response.pagination?.total || 0)
           }
+        } catch (err) {
+          // Fallback to v1beta1 query if v1 not supported.
+          if (
+            !(err instanceof Error) ||
+            !err.message.includes('unknown query path')
+          ) {
+            // Rethrow other errors.
+            throw err
+          }
+        }
+      }
+
+      if (!v1Proposals) {
+        if (limit === undefined && offset === undefined) {
+          v1Beta1Proposals = await getAllRpcResponse(
+            client.gov.v1beta1.proposals,
+            {
+              proposalStatus:
+                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+              voter: '',
+              depositor: '',
+              pagination: undefined,
+            },
+            'proposals',
+            true,
+            true
+          )
+          total = v1Beta1Proposals.length
+        } else {
+          const response = await client.gov.v1beta1.proposals(
+            {
+              proposalStatus:
+                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+              voter: '',
+              depositor: '',
+              pagination: {
+                key: new Uint8Array(),
+                offset: BigInt(offset || 0),
+                limit: BigInt(limit || 0),
+                countTotal: true,
+                reverse: true,
+              },
+            },
+            true
+          )
+          v1Beta1Proposals = response.proposals
+          total = Number(response.pagination?.total || 0)
         }
       }
 

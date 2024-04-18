@@ -11,6 +11,7 @@ import {
 import { useDaoInfoContext, useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
+import { SearchBar, SearchBarProps } from '../inputs'
 import { LineLoaders } from '../LineLoader'
 import { NoContent } from '../NoContent'
 import { VetoableProposals } from './VetoableProposals'
@@ -72,6 +73,15 @@ export type ProposalListProps<T extends { proposalId: string }> = {
   ProposalLine: ComponentType<T>
   DiscordNotifierConfigureModal: ComponentType | undefined
   LinkWrapper: ComponentType<LinkWrapperProps>
+
+  /**
+   * Optionally display a search bar.
+   */
+  searchBarProps?: SearchBarProps
+  /**
+   * Whether or not search results are showing.
+   */
+  showingSearchResults?: boolean
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
@@ -86,6 +96,8 @@ export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
+  searchBarProps,
+  showingSearchResults,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
@@ -119,6 +131,14 @@ export const ProposalList = <T extends { proposalId: string }>({
           <DiscordNotifierConfigureModal />
         )}
       </div>
+
+      {searchBarProps && (
+        <SearchBar
+          placeholder={t('info.searchProposalsPlaceholder')}
+          {...searchBarProps}
+          containerClassName={clsx(searchBarProps.className, '-mt-2 mb-8')}
+        />
+      )}
 
       {proposalsExist ? (
         <>
@@ -193,9 +213,19 @@ export const ProposalList = <T extends { proposalId: string }>({
         <NoContent
           Icon={HowToVoteRounded}
           actionNudge={t('info.createFirstOneQuestion')}
-          body={t('info.noProposalsYet')}
-          buttonLabel={t('button.newProposal')}
-          href={isMember ? createNewProposalHref : undefined}
+          body={
+            showingSearchResults
+              ? t('info.noProposalsFound')
+              : t('info.noProposalsToVoteOnYet')
+          }
+          buttonLabel={
+            showingSearchResults ? undefined : t('button.newProposal')
+          }
+          href={
+            isMember && !showingSearchResults
+              ? createNewProposalHref
+              : undefined
+          }
         />
       )}
     </div>
