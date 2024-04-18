@@ -68,12 +68,6 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       ? govProposalsSelector({
           status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
           chainId,
-          // No need to load more than 50 proposals when trying to find
-          // proposals currently being voted on. The alternative is to load all
-          // proposals, which is not ideal. Ideally, this is pre-indexed and we
-          // can query only the proposals in the voting period instead of having
-          // to filter locally.
-          limit: 50,
         })
       : constSelector(undefined)
   )
