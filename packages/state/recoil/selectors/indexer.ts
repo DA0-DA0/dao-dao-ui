@@ -17,14 +17,17 @@ import {
 
 import {
   DaoSearchResult,
+  GovProposalSearchResult,
   QueryIndexerOptions,
   QuerySnapperOptions,
   SearchDaosOptions,
+  SearchGovProposalsOptions,
   loadMeilisearchClient,
   queryIndexer,
   queryIndexerUpStatus,
   querySnapper,
   searchDaos,
+  searchGovProposals,
 } from '../../indexer'
 import {
   refreshIndexerUpStatusAtom,
@@ -209,6 +212,17 @@ export const searchDaosSelector = selectorFamily<
 >({
   key: 'searchDaos',
   get: (options) => async () => await searchDaos(options),
+})
+
+export const searchGovProposalsSelector = selectorFamily<
+  {
+    results: GovProposalSearchResult[]
+    total: number
+  },
+  SearchGovProposalsOptions
+>({
+  key: 'searchGovProposals',
+  get: (options) => async () => await searchGovProposals(options),
 })
 
 export const openProposalsSelector = selectorFamily<

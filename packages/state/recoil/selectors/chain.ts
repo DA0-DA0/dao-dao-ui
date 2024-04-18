@@ -66,6 +66,7 @@ import {
   getAllRpcResponse,
   getNativeTokenForChainId,
   getRpcForChainId,
+  getSupportedChainConfig,
   retry,
   stargateClientRouter,
 } from '@dao-dao/utils'
@@ -80,6 +81,7 @@ import {
 import {
   queryGenericIndexerSelector,
   queryValidatorIndexerSelector,
+  searchGovProposalsSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
 import { walletTokenDaoStakedDenomsSelector } from './wallet'
@@ -715,12 +717,7 @@ export const govProposalsSelector = selectorFamily<
 >({
   key: 'govProposals',
   get:
-    ({
-      status = ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-      offset,
-      limit,
-      chainId,
-    }) =>
+    ({ status, offset, limit, chainId }) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
@@ -731,76 +728,51 @@ export const govProposalsSelector = selectorFamily<
       let total = 0
 
       // Try to load from indexer first.
-      const indexerProposals:
+      let indexerProposals:
         | {
-            proposals: {
-              id: string
-              data: string
-            }[]
-            total: number
-          }
-        | undefined = get(
-        queryGenericIndexerSelector({
-          chainId,
-          formula: 'gov/reverseProposals',
-          args: {
-            limit,
+            id: string
+            data: string
+          }[]
+        | undefined
+      const supportedChainConfig = getSupportedChainConfig(chainId)
+      if (supportedChainConfig && !supportedChainConfig.noIndexer) {
+        const { results, total: indexerTotal } = get(
+          searchGovProposalsSelector({
+            chainId,
+            status,
             offset,
-          },
-        })
-      )
+            limit,
+          })
+        )
 
-      if (indexerProposals?.proposals.length) {
+        indexerProposals = results.map(({ value }) => ({
+          id: value.id,
+          data: value.data,
+        }))
+        total = indexerTotal
+      }
+
+      if (indexerProposals?.length) {
         if (supportsV1Gov) {
-          v1Proposals = indexerProposals.proposals.flatMap(
+          v1Proposals = indexerProposals.flatMap(
             ({ data }): ProposalV1 | [] => {
               try {
-                const proposal = ProposalV1.decode(fromBase64(data))
-
-                if (
-                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
-                  proposal.status === status
-                ) {
-                  return proposal
-                }
+                return ProposalV1.decode(fromBase64(data))
               } catch {}
 
               return []
             }
           )
-
-          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
-            total = indexerProposals.total
-          } else {
-            total = v1Proposals.length
-          }
         } else {
-          v1Beta1Proposals = indexerProposals.proposals.flatMap(
+          v1Beta1Proposals = indexerProposals.flatMap(
             ({ data }): ProposalV1Beta1 | [] => {
               try {
-                const proposal = ProposalV1Beta1.decode(
-                  fromBase64(data),
-                  undefined,
-                  true
-                )
-
-                if (
-                  status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED ||
-                  proposal.status === status
-                ) {
-                  return proposal
-                }
+                return ProposalV1Beta1.decode(fromBase64(data), undefined, true)
               } catch {}
 
               return []
             }
           )
-
-          if (status === ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED) {
-            total = indexerProposals.total
-          } else {
-            total = v1Beta1Proposals.length
-          }
         }
 
         // Fallback to querying chain if indexer failed.
@@ -812,7 +784,8 @@ export const govProposalsSelector = selectorFamily<
               v1Proposals = await getAllRpcResponse(
                 client.gov.v1.proposals,
                 {
-                  proposalStatus: status,
+                  proposalStatus:
+                    status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                   voter: '',
                   depositor: '',
                   pagination: undefined,
@@ -823,7 +796,8 @@ export const govProposalsSelector = selectorFamily<
               total = v1Proposals.length
             } else {
               const response = await client.gov.v1.proposals({
-                proposalStatus: status,
+                proposalStatus:
+                  status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                 voter: '',
                 depositor: '',
                 pagination: {
@@ -854,7 +828,8 @@ export const govProposalsSelector = selectorFamily<
             v1Beta1Proposals = await getAllRpcResponse(
               client.gov.v1beta1.proposals,
               {
-                proposalStatus: status,
+                proposalStatus:
+                  status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                 voter: '',
                 depositor: '',
                 pagination: undefined,
@@ -867,7 +842,8 @@ export const govProposalsSelector = selectorFamily<
           } else {
             const response = await client.gov.v1beta1.proposals(
               {
-                proposalStatus: status,
+                proposalStatus:
+                  status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                 voter: '',
                 depositor: '',
                 pagination: {

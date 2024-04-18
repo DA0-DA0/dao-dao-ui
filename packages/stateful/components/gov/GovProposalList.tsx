@@ -24,11 +24,6 @@ export const GovProposalList = () => {
     govProposalsSelector({
       chainId: chain.chain_id,
       status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
-      // No need to load more than 50 proposals when trying to find proposals
-      // currently being voted on. The alternative is to load all proposals,
-      // which is not ideal. Ideally, this is pre-indexed and we can query only
-      // the proposals in the voting period instead of having to filter locally.
-      limit: 50,
     }),
     {
       proposals: [],
@@ -40,11 +35,6 @@ export const GovProposalList = () => {
     govProposalsSelector({
       chainId: chain.chain_id,
       status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-      // No need to load more than 50 proposals when trying to find proposals in
-      // the deposit period. The alternative is to load all proposals, which is
-      // not ideal. Ideally, this is pre-indexed and we can query only the
-      // proposals in the voting period instead of having to filter locally.
-      limit: 50,
     }),
     {
       proposals: [],
@@ -164,8 +154,8 @@ export const GovProposalList = () => {
     govProposalsDepositPeriod.loading
       ? 0
       : loadingAllGovProposals.data.total -
-        openGovProposalsVotingPeriod.data.total -
-        govProposalsDepositPeriod.data.total
+        openGovProposalsVotingPeriod.data.proposals.length -
+        govProposalsDepositPeriod.data.proposals.length
 
   return (
     <StatelessProposalList
