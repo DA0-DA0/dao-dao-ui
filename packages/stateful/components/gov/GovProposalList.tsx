@@ -13,6 +13,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { chainIsIndexed } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
@@ -23,6 +24,7 @@ export const GovProposalList = () => {
   const { t } = useTranslation()
   const chain = useChain()
   const { asPath } = useRouter()
+  const hasIndexer = chainIsIndexed(chain.chain_id)
 
   const openGovProposalsVotingPeriod = useCachedLoading(
     govProposalsSelector({
@@ -162,7 +164,7 @@ export const GovProposalList = () => {
         govProposalsDepositPeriod.data.proposals.length
 
   const [search, setSearch] = useState('')
-  const showingSearchResults = !!search && search.length > 0
+  const showingSearchResults = hasIndexer && !!search && search.length > 0
   const searchedGovProposals = useCachedLoadingWithError(
     showingSearchResults
       ? searchedDecodedGovProposalsSelector({
@@ -192,10 +194,15 @@ export const GovProposalList = () => {
             !!loadingAllGovProposals.updating
       }
       openProposals={showingSearchResults ? [] : openProposals}
-      searchBarProps={{
-        value: search,
-        onChange: (e) => setSearch(e.target.value),
-      }}
+      searchBarProps={
+        // Cannot search without an indexer on the chain.
+        hasIndexer
+          ? {
+              value: search,
+              onChange: (e) => setSearch(e.target.value),
+            }
+          : undefined
+      }
       sections={
         showingSearchResults
           ? [

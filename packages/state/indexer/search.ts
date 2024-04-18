@@ -7,7 +7,7 @@ import {
   INACTIVE_DAO_NAMES,
   SEARCH_API_KEY,
   SEARCH_HOST,
-  getSupportedChainConfig,
+  chainIsIndexed,
 } from '@dao-dao/utils'
 
 let _client: MeiliSearch | undefined
@@ -47,8 +47,7 @@ export const searchDaos = async ({
 }: SearchDaosOptions): Promise<DaoSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
-  const config = getSupportedChainConfig(chainId)
-  if (!config || config.noIndexer) {
+  if (!chainIsIndexed(chainId)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
@@ -117,8 +116,7 @@ export const searchGovProposals = async ({
 }> => {
   const client = await loadMeilisearchClient()
 
-  const config = getSupportedChainConfig(chainId)
-  if (!config || config.noIndexer) {
+  if (!chainIsIndexed(chainId)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 

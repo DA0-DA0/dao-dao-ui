@@ -7,7 +7,7 @@ import {
   BatchClient,
   CommonError,
   INDEXER_URL,
-  getSupportedChainConfig,
+  chainIsIndexed,
 } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<
@@ -47,9 +47,7 @@ export const queryIndexer = async <T = any>({
   times,
   chainId,
 }: QueryIndexerOptions): Promise<T | undefined> => {
-  // Only supported chains have an indexer.
-  const chainConfig = getSupportedChainConfig(chainId)
-  if (!chainConfig || chainConfig.noIndexer) {
+  if (!chainIsIndexed(chainId)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
@@ -101,9 +99,7 @@ export const queryIndexer = async <T = any>({
 export const queryIndexerUpStatus = async ({
   chainId,
 }: WithChainId<{}>): Promise<IndexerUpStatus> => {
-  // Only supported chains have an indexer.
-  const chainConfig = getSupportedChainConfig(chainId)
-  if (!chainConfig || chainConfig.noIndexer) {
+  if (!chainIsIndexed(chainId)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
