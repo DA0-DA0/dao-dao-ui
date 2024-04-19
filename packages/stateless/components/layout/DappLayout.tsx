@@ -28,6 +28,7 @@ import { IDockItem } from './DockItem'
 
 export const DappLayout = ({
   navigationProps,
+  inboxCount,
   connect,
   DockWallet,
   ButtonLink,
@@ -60,6 +61,15 @@ export const DappLayout = ({
     // Only toggle on route change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPathDelta])
+
+  const chainsDockItem: IDockItem = {
+    key: 'chains',
+    href: getGovPath(chainConfig.name),
+    pathnames: '/gov/[chain]/[[...slug]]',
+    labelI18nKey: 'title.chains',
+    IconUnselected: WidgetsOutlined,
+    IconSelected: WidgetsRounded,
+  }
 
   return (
     <div className="relative z-[1] mx-auto flex h-full w-full max-w-7xl flex-row items-stretch overflow-hidden pt-safe">
@@ -97,26 +107,17 @@ export const DappLayout = ({
             {
               key: 'home',
               href: '/',
-              pathnames: ['/', '/[chain]'],
+              pathnames: ['/[[...tab]]'],
               labelI18nKey: 'title.home',
-              IconUnselected: HomeOutlined,
-              IconSelected: HomeRounded,
+              IconUnselected: navigationProps.walletConnected
+                ? DockWallet
+                : HomeOutlined,
+              IconSelected: navigationProps.walletConnected
+                ? DockWallet
+                : HomeRounded,
+              compact: navigationProps.walletConnected,
             },
-            {
-              key: 'search',
-              onClick: navigationProps.setCommandModalVisible,
-              labelI18nKey: 'title.search',
-              IconUnselected: SearchOutlined,
-              IconSelected: SearchOutlined,
-            },
-            {
-              key: 'chains',
-              href: getGovPath(chainConfig.name),
-              pathnames: '/gov/[chain]/[[...slug]]',
-              labelI18nKey: 'title.chains',
-              IconUnselected: WidgetsOutlined,
-              IconSelected: WidgetsRounded,
-            },
+            // TODO: move tabs from the profile home page to the bottom bar
             ...(navigationProps.walletConnected
               ? ([
                   {
@@ -126,21 +127,12 @@ export const DappLayout = ({
                     labelI18nKey: 'title.notifications',
                     IconUnselected: Notifications,
                     IconSelected: Notifications,
-                    badge:
-                      !navigationProps.inboxCount.loading &&
-                      navigationProps.inboxCount.data > 0,
+                    badge: !inboxCount.loading && inboxCount.data > 0,
                   },
-                  {
-                    key: 'profile',
-                    href: '/me',
-                    pathnames: ['/me/[[...tab]]'],
-                    labelI18nKey: 'title.profile',
-                    IconUnselected: DockWallet,
-                    IconSelected: DockWallet,
-                    compact: true,
-                  },
+                  chainsDockItem,
                 ] as IDockItem[])
               : ([
+                  chainsDockItem,
                   {
                     key: 'login',
                     onClick: connect,
@@ -150,6 +142,13 @@ export const DappLayout = ({
                     brand: true,
                   },
                 ] as IDockItem[])),
+            {
+              key: 'search',
+              onClick: navigationProps.setCommandModalVisible,
+              labelI18nKey: 'title.search',
+              IconUnselected: SearchOutlined,
+              IconSelected: SearchOutlined,
+            },
           ]}
         />
       </main>

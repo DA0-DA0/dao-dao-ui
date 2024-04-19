@@ -1,39 +1,43 @@
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
+import { walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainPickerPopup,
   Logo,
   Home as StatelessHome,
 } from '@dao-dao/stateless'
-import { getSupportedChainConfig, getSupportedChains } from '@dao-dao/utils'
-
-import { useFeed } from '../../feed'
 import {
-  useLoadingFeaturedDaoCardInfos,
-  useLoadingFollowingDaoCardInfos,
-  useWallet,
-} from '../../hooks'
+  SITE_URL,
+  getSupportedChainConfig,
+  getSupportedChains,
+} from '@dao-dao/utils'
+
+import { useLoadingFeaturedDaoCardInfos, useWallet } from '../../hooks'
 import { DaoCard } from '../dao'
-import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
+import { Profile } from './Profile'
 
 export const Home = () => {
   const { t } = useTranslation()
   const { isWalletConnected } = useWallet()
   const router = useRouter()
 
-  const { chain } = router.query
+  const _tab = router.query.tab
+  const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
 
-  // If defined, on a chain-only home page.
-  const chainId = chain
-    ? getSupportedChains().find(({ name }) => name === chain)?.chainId
+  // If defined, try to find matching chain. If found, show chain-only page.
+  const chainId = tabPath
+    ? getSupportedChains().find(({ name }) => name === tabPath)?.chainId
     : undefined
 
-  // Update wallet chain ID to the current chain if on a chain-only home page.
+  // Show profile page if wallet connected and not on a chain-only page.
+  const onProfilePage = isWalletConnected && !chainId
+
+  // Update wallet chain ID to the current chain if on a chain-only page.
   const setWalletChainId = useSetRecoilState(walletChainIdAtom)
   useEffect(() => {
     if (chainId) {
@@ -41,31 +45,7 @@ export const Home = () => {
     }
   }, [chainId, setWalletChainId])
 
-  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
-
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos(chainId)
-  const followingDaosLoading = useLoadingFollowingDaoCardInfos(chainId)
-  const feed = useFeed(
-    chainId
-      ? {
-          filter: {
-            chainId,
-          },
-        }
-      : undefined
-  )
-
-  const openSearch = useCallback(
-    () => setCommandModalVisible(true),
-    [setCommandModalVisible]
-  )
-
-  // Pre-fetch chain-only pages.
-  useEffect(() => {
-    getSupportedChains().forEach(({ name }) => {
-      router.prefetch('/' + name)
-    })
-  }, [router])
 
   const chainPicker = (
     <ChainPickerPopup
@@ -90,29 +70,41 @@ export const Home = () => {
 
   return (
     <>
-      <PageHeaderContent
-        centerNode={<div className="md:hidden">{chainPicker}</div>}
-        rightNode={<div className="hidden md:block">{chainPicker}</div>}
-        title={t('title.home')}
-        titleClassName="hidden md:block"
+      <NextSeo
+        openGraph={{
+          url: SITE_URL + router.asPath,
+        }}
       />
 
-      <StatelessHome
-        connected={isWalletConnected}
-        featuredDaosProps={{
-          Component: DaoCard,
-          items: featuredDaosLoading,
-        }}
-        feedProps={{
-          state: feed,
-          LinkWrapper,
-        }}
-        followingDaosProps={{
-          DaoCard,
-          openSearch,
-          followingDaos: followingDaosLoading,
-        }}
-      />
+      {onProfilePage ? (
+        <>
+          <PageHeaderContent title={t('title.home')} />
+
+          <Profile />
+        </>
+      ) : (
+        <>
+          <NextSeo
+            openGraph={{
+              url: SITE_URL + router.asPath,
+            }}
+          />
+
+          <PageHeaderContent
+            centerNode={<div className="md:hidden">{chainPicker}</div>}
+            rightNode={<div className="hidden md:block">{chainPicker}</div>}
+            title={t('title.home')}
+            titleClassName="hidden md:block"
+          />
+
+          <StatelessHome
+            featuredDaosProps={{
+              Component: DaoCard,
+              items: featuredDaosLoading,
+            }}
+          />
+        </>
+      )}
     </>
   )
 }

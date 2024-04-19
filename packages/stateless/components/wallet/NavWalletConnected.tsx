@@ -1,7 +1,6 @@
 import {
   Logout,
   NotificationsOutlined,
-  Person,
   Tag,
   WarningAmberRounded,
 } from '@mui/icons-material'
@@ -198,11 +197,6 @@ export const NavWalletConnected = ({
           sections={[
             {
               buttons: [
-                {
-                  label: t('button.yourProfile'),
-                  Icon: Person,
-                  href: '/me',
-                },
                 {
                   label: t('button.copyAddress'),
                   Icon: Tag,

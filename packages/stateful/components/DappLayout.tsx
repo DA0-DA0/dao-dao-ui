@@ -156,20 +156,21 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         ButtonLink={ButtonLink}
         DockWallet={DockWallet}
         connect={openView}
+        inboxCount={
+          inbox.loading ||
+          // Prevent hydration errors by loading until mounted.
+          !mountedInBrowser
+            ? {
+                loading: true,
+              }
+            : {
+                loading: false,
+                data: inbox.items.length,
+              }
+        }
         navigationProps={{
           walletConnected: isWalletConnected,
           LinkWrapper,
-          inboxCount:
-            inbox.loading ||
-            // Prevent hydration errors by loading until mounted.
-            !mountedInBrowser
-              ? {
-                  loading: true,
-                }
-              : {
-                  loading: false,
-                  data: inbox.items.length,
-                },
           setCommandModalVisible: () => setCommandModalVisible(true),
           followingDaos: mountedInBrowser
             ? followingDaoDropdownInfos.loading

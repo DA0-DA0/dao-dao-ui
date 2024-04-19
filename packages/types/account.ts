@@ -53,6 +53,7 @@ export type Account = NativeAccount | PolytoneAccount | IcaAccount
  */
 export enum AccountTabId {
   Home = 'home',
+  Wallet = 'wallet',
   Daos = 'daos',
   Actions = 'actions',
 }

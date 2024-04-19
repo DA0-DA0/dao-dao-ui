@@ -5,6 +5,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Home } from '@dao-dao/stateful'
+import { AccountTabId } from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
 export default Home
@@ -16,10 +17,25 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => ({
 })
 
 export const getStaticPaths: GetStaticPaths = () => ({
-  paths: getSupportedChains().map(({ name }) => ({
-    params: {
-      chain: name,
+  paths: [
+    // Index page with no tab specified.
+    {
+      params: {
+        tab: [],
+      },
     },
-  })),
+    // All tabs.
+    ...Object.values(AccountTabId).map((tab) => ({
+      params: {
+        tab: [tab],
+      },
+    })),
+    // All chains.
+    ...getSupportedChains().map(({ name }) => ({
+      params: {
+        tab: [name],
+      },
+    })),
+  ],
   fallback: false,
 })

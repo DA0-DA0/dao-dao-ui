@@ -1,15 +1,12 @@
 import { useRouter } from 'next/router'
-import { ComponentType, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   AccountTab,
   AccountTabId,
-  StatefulConnectWalletProps,
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 
-import { TabBar, WalletProfileHeader, WarningCard } from '../components'
+import { TabBar, WalletProfileHeader } from '../components'
 
 export type ProfileProps = {
   tabs: AccountTab[]
@@ -20,36 +17,10 @@ export type ProfileProps = {
   | 'updateProfile'
   | 'mergeProfileType'
   | 'openMergeProfilesModal'
-> &
-  (
-    | {
-        connected: false
-        connect: () => Promise<void>
-        ConnectWallet: ComponentType<StatefulConnectWalletProps>
-      }
-    | {
-        connected: true
-        connect?: never
-        ConnectWallet?: never
-      }
-  )
+>
 
-export const Profile = ({
-  tabs,
-  connected,
-  connect,
-  ConnectWallet,
-  ...headerProps
-}: ProfileProps) => {
-  const { t } = useTranslation()
+export const Profile = ({ tabs, ...headerProps }: ProfileProps) => {
   const router = useRouter()
-
-  // Pre-fetch tabs.
-  useEffect(() => {
-    Object.values(AccountTabId).forEach((tab) => {
-      router.prefetch(`/me/${tab}`)
-    })
-  }, [router])
 
   const _tab = router.query.tab
   const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
@@ -66,28 +37,18 @@ export const Profile = ({
 
   return (
     <div className="flex flex-col items-stretch gap-6">
-      <WalletProfileHeader editable {...headerProps}>
-        {!connected && <ConnectWallet variant="ghost" />}
-      </WalletProfileHeader>
+      <WalletProfileHeader editable {...headerProps} />
 
       <TabBar
         onSelect={(tab) =>
-          router.replace(`/me/${tab}`, undefined, { shallow: true })
+          router.replace(`/${tab}`, undefined, { shallow: true })
         }
         selectedTabId={selectedTabId}
         tabs={tabs}
       />
 
       {/* Don't render a tab unless it is visible. */}
-      {connected ? (
-        selectedTab && <selectedTab.Component />
-      ) : (
-        <WarningCard
-          className="self-center mt-4"
-          content={t('info.logInToViewPage')}
-          onClick={connect}
-        />
-      )}
+      {selectedTab && <selectedTab.Component />}
     </div>
   )
 }

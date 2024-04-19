@@ -15,9 +15,6 @@ export const ACCOUNT_PAGE_DESCRIPTION =
 export const NOTIFICATIONS_PAGE_TITLE = 'Notifications'
 export const NOTIFICATIONS_PAGE_DESCRIPTION =
   'View notifications in your followed DAOs.'
-export const PROFILE_PAGE_TITLE = 'Profile'
-export const PROFILE_PAGE_DESCRIPTION =
-  'View your tokens, NFTs, and DAOs, and perform actions from your wallet.'
 export const STATUS_PAGE_TITLE = 'Status'
 export const STATUS_PAGE_DESCRIPTION = "Check the status of DAO DAO's services."
 

@@ -4,8 +4,6 @@ import {
   HomeOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  NotificationsOutlined,
-  PersonOutline,
   Search,
   WidgetsOutlined,
 } from '@mui/icons-material'
@@ -50,7 +48,6 @@ const getForceCompact = () =>
 
 export const DappNavigation = ({
   setCommandModalVisible,
-  inboxCount,
   followingDaos,
   walletConnected,
   compact,
@@ -67,7 +64,7 @@ export const DappNavigation = ({
       toggle: toggleResponsive,
     },
   } = useAppContext()
-  const { asPath } = useRouter()
+  const { pathname, asPath } = useRouter()
   const { config: chainConfig } = useConfiguredChainContext()
 
   // Use screen resize to determine when compact should be forced on or off.
@@ -195,6 +192,7 @@ export const DappNavigation = ({
             compact={compact}
             href="/"
             label={t('title.home')}
+            selected={pathname === '[...tab]'}
           />
 
           <Row
@@ -206,34 +204,9 @@ export const DappNavigation = ({
             selected={asPath.startsWith(getGovPath(''))}
           />
 
-          {/* Only show me, inbox, and following when connected. */}
+          {/* Only show following when connected. */}
           {walletConnected && (
             <>
-              <Row
-                Icon={PersonOutline}
-                LinkWrapper={LinkWrapper}
-                compact={compact}
-                href="/me"
-                label={t('title.profile')}
-                selected={asPath.startsWith('/me')}
-              />
-
-              <Row
-                Icon={NotificationsOutlined}
-                LinkWrapper={LinkWrapper}
-                compact={compact}
-                href="/notifications"
-                label={
-                  !inboxCount.loading && inboxCount.data > 0
-                    ? t('title.notificationsWithCount', {
-                        count: inboxCount.data,
-                      })
-                    : t('title.notifications')
-                }
-                loading={inboxCount.loading}
-                showBadge={!inboxCount.loading && inboxCount.data > 0}
-              />
-
               <Row
                 Icon={CheckRounded}
                 LinkWrapper={LinkWrapper}
@@ -273,9 +246,9 @@ export const DappNavigation = ({
                         LinkWrapper={LinkWrapper}
                         compact={compact}
                         dao={dao}
-                        imageClassName="h-8 w-8 md:h-6 md:w-6"
-                        labelClassName="text-base md:text-sm"
-                        labelContainerClassName="gap-3 md:gap-2"
+                        imageClassName="h-6 w-6"
+                        labelClassName="text-sm"
+                        labelContainerClassName="gap-2"
                       />
                     ))}
 

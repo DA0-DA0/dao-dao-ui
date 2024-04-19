@@ -83,8 +83,13 @@ const config = {
       permanent: false,
     },
     {
-      source: '/me/tx',
-      destination: '/me/actions',
+      source: '/me/:slug*',
+      destination: '/:slug*',
+      permanent: false,
+    },
+    {
+      source: '/tx',
+      destination: '/actions',
       permanent: false,
     },
   ],

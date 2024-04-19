@@ -27,10 +27,6 @@ const Template: ComponentStory<typeof DappNavigation> = (args) => {
 // stories. Ensure this has all props.
 export const DefaultArgs: DappNavigationProps = {
   walletConnected: true,
-  inboxCount: {
-    loading: false,
-    data: 5,
-  },
   setCommandModalVisible: () => alert('command!'),
   followingDaos: {
     loading: false,
@@ -170,7 +166,6 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...DefaultArgs,
-  inboxCount: { loading: true },
   followingDaos: { loading: true },
 }
 Loading.parameters = Default.parameters

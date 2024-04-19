@@ -1,10 +1,9 @@
 import {
   ExtensionRounded,
   GroupRounded,
+  HomeRounded,
   WalletRounded,
 } from '@mui/icons-material'
-import { NextPage } from 'next'
-import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,9 +25,6 @@ import {
 } from '@dao-dao/stateless'
 import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
 import {
-  PROFILE_PAGE_DESCRIPTION,
-  PROFILE_PAGE_TITLE,
-  SITE_URL,
   getConfiguredChainConfig,
   getConfiguredChains,
   transformBech32Address,
@@ -37,19 +33,27 @@ import {
 import { WalletActionsProvider } from '../../actions/react/provider'
 import { useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import { ConnectWallet } from '../ConnectWallet'
-import { PageHeaderContent } from '../PageHeaderContent'
-import { ProfileActions, ProfileWallet } from '../profile'
-import { ProfileDaos } from '../profile/ProfileDaos'
+import {
+  ProfileActions,
+  ProfileDaos,
+  ProfileHome,
+  ProfileWallet,
+} from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const Me: NextPage = () => {
+export const Profile = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
   const tabs: AccountTab[] = [
     {
       id: AccountTabId.Home,
+      label: t('title.home'),
+      Icon: HomeRounded,
+      Component: ProfileHome,
+    },
+    {
+      id: AccountTabId.Wallet,
       label: t('title.wallet'),
       Icon: WalletRounded,
       Component: ProfileWallet,
@@ -68,11 +72,7 @@ export const Me: NextPage = () => {
     },
   ]
 
-  const {
-    address: walletAddress = '',
-    isWalletConnected,
-    connect,
-  } = useWallet()
+  const { address: walletAddress = '' } = useWallet()
   const {
     profile,
     updateProfile: { go: updateProfile },
@@ -134,21 +134,9 @@ export const Me: NextPage = () => {
 
   return (
     <>
-      <NextSeo
-        description={PROFILE_PAGE_DESCRIPTION}
-        openGraph={{
-          url: SITE_URL + router.asPath,
-          title: PROFILE_PAGE_TITLE,
-          description: PROFILE_PAGE_DESCRIPTION,
-        }}
-        title={PROFILE_PAGE_TITLE}
-      />
-
-      <PageHeaderContent title={t('title.profile')} />
-
       {!configuredChainConfig ? (
         <PageLoader />
-      ) : isWalletConnected ? (
+      ) : (
         // Refresh all children when chain changes since state varies by chain.
         <ChainProvider key={walletChainId} chainId={walletChainId}>
           <WalletActionsProvider
@@ -162,7 +150,6 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessProfile
-                connected
                 mergeProfileType={
                   profileMergeOptions.length === 0
                     ? undefined
@@ -179,14 +166,6 @@ export const Me: NextPage = () => {
             </SuspenseLoader>
           </WalletActionsProvider>
         </ChainProvider>
-      ) : (
-        <StatelessProfile
-          ConnectWallet={ConnectWallet}
-          connect={connect}
-          connected={false}
-          profile={undefined}
-          tabs={tabs}
-        />
       )}
     </>
   )
