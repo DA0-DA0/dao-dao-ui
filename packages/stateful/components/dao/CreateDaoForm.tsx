@@ -419,7 +419,7 @@ export const InnerCreateDaoForm = ({
       throw new Error(t('error.loadingData'))
     }
 
-    const { logs } = await instantiateWithFactory(
+    const { events } = await instantiateWithFactory(
       {
         codeId: codeIds.DaoCore,
         instantiateMsg: encodeJsonToBase64(instantiateMsg),
@@ -430,7 +430,7 @@ export const InnerCreateDaoForm = ({
       getFundsFromDaoInstantiateMsg(instantiateMsg)
     )
     return findWasmAttributeValue(
-      logs,
+      events,
       factoryContractAddress,
       'set contract admin as itself'
     )!

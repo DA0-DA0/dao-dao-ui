@@ -1,5 +1,5 @@
 import { parseCoins } from '@cosmjs/proto-signing'
-import { IndexedTx } from '@cosmjs/stargate'
+import { Event, IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
@@ -25,13 +25,7 @@ type TreasuryTransactionsParams = WithChainId<{
 interface TreasuryTransaction {
   tx: IndexedTx
   timestamp: Date | undefined
-  events: {
-    type: string
-    attributes: {
-      key: string
-      value: string
-    }[]
-  }[]
+  events: readonly Event[]
 }
 
 export const treasuryTransactionsSelector = selectorFamily<
@@ -63,33 +57,24 @@ export const treasuryTransactionsSelector = selectorFamily<
         )
       )
 
-      return (
-        txs
-          .map((tx, index) => {
-            let events
-            try {
-              events = JSON.parse(tx.rawLog)[0].events
-            } catch {
-              return
-            }
-
-            return {
-              tx,
-              timestamp: txDates[index],
-              events,
-            }
+      return txs
+        .map(
+          (tx, index): TreasuryTransaction => ({
+            tx,
+            timestamp: txDates[index],
+            events: tx.events,
           })
-          .filter(Boolean) as TreasuryTransaction[]
-      ).sort((a, b) =>
-        // Sort descending by timestamp, putting undefined timestamps last.
-        b.timestamp && a.timestamp
-          ? b.timestamp.getTime() - a.timestamp.getTime()
-          : !a.timestamp
-          ? 1
-          : !b.timestamp
-          ? -1
-          : b.tx.height - a.tx.height
-      )
+        )
+        .sort((a, b) =>
+          // Sort descending by timestamp, putting undefined timestamps last.
+          b.timestamp && a.timestamp
+            ? b.timestamp.getTime() - a.timestamp.getTime()
+            : !a.timestamp
+            ? 1
+            : !b.timestamp
+            ? -1
+            : b.tx.height - a.tx.height
+        )
     },
 })
 

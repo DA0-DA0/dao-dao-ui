@@ -1,5 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { StargateClient, logs } from '@cosmjs/stargate'
+import { Event, StargateClient } from '@cosmjs/stargate'
 import {
   Comet38Client,
   HttpBatchClient,
@@ -94,23 +94,23 @@ export const stargateClientRouter = new ChainClientRouter({
   },
 })
 
-// In response logs from a transaction with a wasm event, gets the attribute key
-// for a given contract address.
+/**
+ * In response events from a transaction with a wasm event, gets the attribute
+ * key for a given contract address.
+ */
 export const findWasmAttributeValue = (
-  logs: readonly logs.Log[],
+  events: readonly Event[],
   contractAddress: string,
   attributeKey: string
 ): string | undefined => {
-  const wasmEvent = logs
-    .flatMap((log) => log.events)
-    .find(
-      ({ type, attributes }) =>
-        type === 'wasm' &&
-        attributes.some(
-          ({ key, value }) =>
-            key === '_contract_address' && value === contractAddress
-        ) &&
-        attributes.some(({ key }) => key === attributeKey)
-    )
+  const wasmEvent = events.find(
+    ({ type, attributes }) =>
+      type === 'wasm' &&
+      attributes.some(
+        ({ key, value }) =>
+          key === '_contract_address' && value === contractAddress
+      ) &&
+      attributes.some(({ key }) => key === attributeKey)
+  )
   return wasmEvent?.attributes.find(({ key }) => key === attributeKey)!.value
 }

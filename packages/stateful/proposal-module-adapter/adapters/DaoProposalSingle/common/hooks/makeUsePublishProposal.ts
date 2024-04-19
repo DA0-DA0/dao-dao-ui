@@ -362,12 +362,12 @@ export const makeUsePublishProposal =
         const proposalNumber = Number(
           (isPreProposeApprovalProposal && proposalModule.prePropose
             ? findWasmAttributeValue(
-                response.logs,
+                response.events,
                 proposalModule.prePropose.address,
                 'id'
               )
             : findWasmAttributeValue(
-                response.logs,
+                response.events,
                 proposalModule.address,
                 'proposal_id'
               )) ?? -1

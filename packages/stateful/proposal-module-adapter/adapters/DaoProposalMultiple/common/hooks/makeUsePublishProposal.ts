@@ -1,4 +1,3 @@
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -347,7 +346,7 @@ export const makeUsePublishProposal =
           choices,
         }
 
-        let response: ExecuteResult = proposalModule.prePropose
+        let { events } = proposalModule.prePropose
           ? await doProposePrePropose(
               {
                 msg: {
@@ -371,7 +370,7 @@ export const makeUsePublishProposal =
 
         const proposalNumber = Number(
           findWasmAttributeValue(
-            response.logs,
+            events,
             proposalModule.address,
             'proposal_id'
           ) ?? -1
