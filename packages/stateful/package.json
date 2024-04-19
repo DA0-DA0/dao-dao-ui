@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@confio/relayer": "^0.12.0",
-    "@cosmjs/cosmwasm-stargate": "^0.32.1",
-    "@cosmjs/encoding": "^0.32.1",
-    "@cosmjs/proto-signing": "^0.32.1",
-    "@cosmjs/stargate": "^0.32.1",
+    "@cosmjs/cosmwasm-stargate": "^0.32.3",
+    "@cosmjs/encoding": "^0.32.3",
+    "@cosmjs/proto-signing": "^0.32.3",
+    "@cosmjs/stargate": "^0.32.3",
     "@cosmos-kit/coin98": "^2.6.10",
     "@cosmos-kit/compass": "^2.6.9",
     "@cosmos-kit/core": "^2.8.9",
@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.17.1",
-    "@cosmjs/amino": "^0.32.1",
+    "@cosmjs/amino": "^0.32.3",
     "@dao-dao/config": "2.4.0-rc.8",
     "@dao-dao/types": "2.4.0-rc.8",
     "@storybook/react": "^6.5.10",
