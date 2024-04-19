@@ -1,4 +1,4 @@
-import { ArrowOutwardRounded, Code, Twitter } from '@mui/icons-material'
+import { ArrowOutwardRounded, Code, Dns, Twitter } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -30,6 +30,11 @@ export const Footer = () => {
         Icon={GithubIcon}
         href="https://github.com/DA0-DA0"
         name={t('title.github')}
+      />
+      <FooterItem
+        Icon={Dns}
+        href="https://daodao.zone/status"
+        name={t('title.status')}
       />
     </div>
   )
