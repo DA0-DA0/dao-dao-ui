@@ -1,6 +1,6 @@
 // eslint-disable-next-line regex/invalid
 import { Chain } from '@chain-registry/types'
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
@@ -334,4 +334,20 @@ export type NestedActionsEditorFormData = {
 
   // Internal action data so that errors are added to main form.
   _actionData?: ActionKeyAndData[]
+}
+
+export type ActionsProviderProps = {
+  children: ReactNode | ReactNode[]
+}
+
+export type WalletActionsProviderProps = ActionsProviderProps & {
+  // If passed, will override the connected wallet address.
+  address?: string
+}
+
+export type GovActionsProviderProps = ActionsProviderProps & {
+  /**
+   * Optionally override loader node.
+   */
+  loader?: ReactNode
 }

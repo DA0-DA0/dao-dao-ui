@@ -3,15 +3,9 @@ import clsx from 'clsx'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonProps } from '@dao-dao/types'
+import { DisconnectWalletProps } from '@dao-dao/types'
 
 import { Button } from '../buttons'
-
-export interface DisconnectWalletProps
-  extends Partial<Omit<ButtonProps, 'onClick'>> {
-  onDisconnect?: () => void
-  className?: string
-}
 
 export const DisconnectWallet = forwardRef<
   HTMLButtonElement,

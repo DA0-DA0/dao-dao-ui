@@ -33,8 +33,4 @@ export type DappNavigationProps = {
    * The LinkWrapper stateful component.
    */
   LinkWrapper: ComponentType<LinkWrapperProps>
-  /**
-   * The SidebarWallet stateful component.
-   */
-  SidebarWallet: ComponentType
 }

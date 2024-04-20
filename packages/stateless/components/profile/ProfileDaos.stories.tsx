@@ -8,15 +8,15 @@ import { FeaturedDaos as FeaturedDaosScrollerStory } from '../HorizontalScroller
 import { DefaultArgs as NavigationStoryArgs } from '../layout/DappNavigation.stories'
 import { LinkWrapper } from '../LinkWrapper'
 import { makeProps as makeProposalLineProps } from '../proposal/ProposalLine.stories'
-import { ProfileHome } from './ProfileHome'
+import { ProfileDaos } from './ProfileDaos'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileHome',
-  component: ProfileHome,
-} as ComponentMeta<typeof ProfileHome>
+  title: 'DAO DAO / packages / stateless / components / profile / ProfileDaos',
+  component: ProfileDaos,
+} as ComponentMeta<typeof ProfileDaos>
 
-const Template: ComponentStory<typeof ProfileHome> = (args) => (
-  <ProfileHome {...args} />
+const Template: ComponentStory<typeof ProfileDaos> = (args) => (
+  <ProfileDaos {...args} />
 )
 
 export const Default = Template.bind({})

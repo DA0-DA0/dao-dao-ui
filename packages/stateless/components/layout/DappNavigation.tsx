@@ -5,7 +5,6 @@ import {
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   Search,
-  WidgetsOutlined,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
@@ -14,9 +13,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types'
-import { SITE_TITLE, getGovPath } from '@dao-dao/utils'
+import { SITE_TITLE } from '@dao-dao/utils'
 
-import { useConfiguredChainContext, usePlatform } from '../../hooks'
+import { usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Logo } from '../logo/Logo'
@@ -54,7 +53,6 @@ export const DappNavigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-  SidebarWallet,
 }: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -64,8 +62,7 @@ export const DappNavigation = ({
       toggle: toggleResponsive,
     },
   } = useAppContext()
-  const { pathname, asPath } = useRouter()
-  const { config: chainConfig } = useConfiguredChainContext()
+  const { pathname } = useRouter()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -162,8 +159,6 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet />
-
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>
           <Row
@@ -192,16 +187,7 @@ export const DappNavigation = ({
             compact={compact}
             href="/"
             label={t('title.home')}
-            selected={pathname === '[...tab]'}
-          />
-
-          <Row
-            Icon={WidgetsOutlined}
-            LinkWrapper={LinkWrapper}
-            compact={compact}
-            href={getGovPath(chainConfig.name)}
-            label={t('title.chains')}
-            selected={asPath.startsWith(getGovPath(''))}
+            selected={pathname === '/[[...tab]]'}
           />
 
           {/* Only show following when connected. */}

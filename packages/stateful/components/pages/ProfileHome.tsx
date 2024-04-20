@@ -1,7 +1,6 @@
 import {
   ExtensionRounded,
   GroupRounded,
-  HomeRounded,
   WalletRounded,
 } from '@mui/icons-material'
 import { useRouter } from 'next/router'
@@ -17,52 +16,36 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
-  Loader,
   PageLoader,
-  Profile as StatelessProfile,
+  ProfileHome as StatelessProfileHome,
   useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
 import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
-import {
-  getConfiguredChainConfig,
-  getConfiguredChains,
-  transformBech32Address,
-} from '@dao-dao/utils'
+import { getConfiguredChainConfig, getConfiguredChains } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
 import { useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import {
-  ProfileActions,
-  ProfileDaos,
-  ProfileHome,
-  ProfileWallet,
-} from '../profile'
+import { ProfileActions, ProfileDaos, ProfileWallet } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const Profile = () => {
+export const ProfileHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
   const tabs: AccountTab[] = [
     {
-      id: AccountTabId.Home,
-      label: t('title.home'),
-      Icon: HomeRounded,
-      Component: ProfileHome,
+      id: AccountTabId.Daos,
+      label: t('title.daos'),
+      Icon: GroupRounded,
+      Component: ProfileDaos,
     },
     {
       id: AccountTabId.Wallet,
       label: t('title.wallet'),
       Icon: WalletRounded,
       Component: ProfileWallet,
-    },
-    {
-      id: AccountTabId.Daos,
-      label: t('title.daos'),
-      Icon: GroupRounded,
-      Component: ProfileDaos,
     },
     {
       id: AccountTabId.Actions,
@@ -72,7 +55,7 @@ export const Profile = () => {
     },
   ]
 
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress } = useWallet()
   const {
     profile,
     updateProfile: { go: updateProfile },
@@ -139,32 +122,23 @@ export const Profile = () => {
       ) : (
         // Refresh all children when chain changes since state varies by chain.
         <ChainProvider key={walletChainId} chainId={walletChainId}>
-          <WalletActionsProvider
-            address={
-              // Convert address to prevent blink on chain switch.
-              walletAddress
-                ? transformBech32Address(walletAddress, walletChainId)
-                : undefined
+          <StatelessProfileHome
+            SuspenseLoader={SuspenseLoader}
+            WalletActionsProvider={WalletActionsProvider}
+            mergeProfileType={
+              profileMergeOptions.length === 0
+                ? undefined
+                : profileMergeOptions.length === 1
+                ? 'add'
+                : 'merge'
             }
-          >
-            {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
-            <SuspenseLoader fallback={<Loader />}>
-              <StatelessProfile
-                mergeProfileType={
-                  profileMergeOptions.length === 0
-                    ? undefined
-                    : profileMergeOptions.length === 1
-                    ? 'add'
-                    : 'merge'
-                }
-                openMergeProfilesModal={() => setMergeProfilesVisible(true)}
-                openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
-                profile={profile}
-                tabs={tabs}
-                updateProfile={updateProfile}
-              />
-            </SuspenseLoader>
-          </WalletActionsProvider>
+            openMergeProfilesModal={() => setMergeProfilesVisible(true)}
+            openProfileNftUpdate={() => setUpdateProfileNftVisible(true)}
+            profile={profile}
+            tabs={tabs}
+            updateProfile={updateProfile}
+            walletAddress={walletAddress}
+          />
         </ChainProvider>
       )}
     </>

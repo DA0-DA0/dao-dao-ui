@@ -4,8 +4,6 @@ import {
   Notifications,
   SearchOutlined,
   Sensors,
-  WidgetsOutlined,
-  WidgetsRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
@@ -15,10 +13,8 @@ import {
   PAGE_PADDING_BOTTOM_CLASSES,
   PAGE_PADDING_HORIZONTAL_CLASSES,
   PAGE_PADDING_TOP_CLASSES,
-  getGovPath,
 } from '@dao-dao/utils'
 
-import { useConfiguredChainContext } from '../../hooks'
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { useAppContext } from './AppContext'
@@ -36,7 +32,6 @@ export const DappLayout = ({
 }: DappLayoutProps) => {
   const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
   const { responsiveNavigation, setPageHeaderRef } = useAppContext()
-  const { config: chainConfig } = useConfiguredChainContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -62,13 +57,51 @@ export const DappLayout = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPathDelta])
 
-  const chainsDockItem: IDockItem = {
-    key: 'chains',
-    href: getGovPath(chainConfig.name),
-    pathnames: '/gov/[chain]/[[...slug]]',
-    labelI18nKey: 'title.chains',
-    IconUnselected: WidgetsOutlined,
-    IconSelected: WidgetsRounded,
+  const searchDockItem: IDockItem = {
+    key: 'search',
+    onClick: navigationProps.setCommandModalVisible,
+    labelI18nKey: 'title.search',
+    IconUnselected: SearchOutlined,
+    IconSelected: SearchOutlined,
+  }
+
+  const homeDockItem: IDockItem = {
+    key: 'home',
+    href: '/',
+    pathnames: ['/[[...tab]]'],
+    labelI18nKey: 'title.home',
+    IconUnselected: HomeOutlined,
+    IconSelected: HomeRounded,
+    compact: navigationProps.walletConnected,
+  }
+
+  const notificationsDockItem: IDockItem = {
+    key: 'notifications',
+    href: '/notifications',
+    pathnames: ['/notifications/[[...slug]]'],
+    labelI18nKey: 'title.notifications',
+    IconUnselected: Notifications,
+    IconSelected: Notifications,
+    badge: !inboxCount.loading && inboxCount.data > 0,
+  }
+
+  const profileDockItem: IDockItem = {
+    key: 'profile',
+    href: '/profile',
+    pathnames: '/profile',
+    labelI18nKey: 'title.profile',
+    IconUnselected: DockWallet,
+    IconSelected: DockWallet,
+    compact: navigationProps.walletConnected,
+  }
+
+  const logInDockItem: IDockItem = {
+    key: 'login',
+    onClick: connect,
+    labelI18nKey: 'button.logIn',
+    IconUnselected: Sensors,
+    IconSelected: Sensors,
+    brand: true,
   }
 
   return (
@@ -104,51 +137,11 @@ export const DappLayout = ({
         <DappDock
           ButtonLink={ButtonLink}
           items={[
-            {
-              key: 'home',
-              href: '/',
-              pathnames: ['/[[...tab]]'],
-              labelI18nKey: 'title.home',
-              IconUnselected: navigationProps.walletConnected
-                ? DockWallet
-                : HomeOutlined,
-              IconSelected: navigationProps.walletConnected
-                ? DockWallet
-                : HomeRounded,
-              compact: navigationProps.walletConnected,
-            },
-            // TODO: move tabs from the profile home page to the bottom bar
+            homeDockItem,
+            searchDockItem,
             ...(navigationProps.walletConnected
-              ? ([
-                  {
-                    key: 'notifications',
-                    href: '/notifications',
-                    pathnames: ['/notifications/[[...slug]]'],
-                    labelI18nKey: 'title.notifications',
-                    IconUnselected: Notifications,
-                    IconSelected: Notifications,
-                    badge: !inboxCount.loading && inboxCount.data > 0,
-                  },
-                  chainsDockItem,
-                ] as IDockItem[])
-              : ([
-                  chainsDockItem,
-                  {
-                    key: 'login',
-                    onClick: connect,
-                    labelI18nKey: 'button.logIn',
-                    IconUnselected: Sensors,
-                    IconSelected: Sensors,
-                    brand: true,
-                  },
-                ] as IDockItem[])),
-            {
-              key: 'search',
-              onClick: navigationProps.setCommandModalVisible,
-              labelI18nKey: 'title.search',
-              IconUnselected: SearchOutlined,
-              IconSelected: SearchOutlined,
-            },
+              ? [notificationsDockItem, profileDockItem]
+              : [logInDockItem]),
           ]}
         />
       </main>

@@ -11,6 +11,7 @@ import {
   Home as StatelessHome,
 } from '@dao-dao/stateless'
 import {
+  SITE_TITLE,
   SITE_URL,
   getSupportedChainConfig,
   getSupportedChains,
@@ -18,8 +19,9 @@ import {
 
 import { useLoadingFeaturedDaoCardInfos, useWallet } from '../../hooks'
 import { DaoCard } from '../dao'
+import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { Profile } from './Profile'
+import { ProfileHome } from './ProfileHome'
 
 export const Home = () => {
   const { t } = useTranslation()
@@ -78,18 +80,23 @@ export const Home = () => {
 
       {onProfilePage ? (
         <>
-          <PageHeaderContent title={t('title.home')} />
+          <PageHeaderContent
+            centerNode={
+              // Show DAO DAO logo in header on mobile.
+              <LinkWrapper
+                className="flex flex-row items-center gap-2 md:hidden"
+                href="/"
+              >
+                <Logo size={28} />
+                <p className="header-text">{SITE_TITLE}</p>
+              </LinkWrapper>
+            }
+          />
 
-          <Profile />
+          <ProfileHome />
         </>
       ) : (
         <>
-          <NextSeo
-            openGraph={{
-              url: SITE_URL + router.asPath,
-            }}
-          />
-
           <PageHeaderContent
             centerNode={<div className="md:hidden">{chainPicker}</div>}
             rightNode={<div className="hidden md:block">{chainPicker}</div>}

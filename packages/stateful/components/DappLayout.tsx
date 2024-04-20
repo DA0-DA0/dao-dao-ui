@@ -34,7 +34,7 @@ import {
 import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
-import { DockWallet, SidebarWallet } from './NavWallet'
+import { DockWallet } from './NavWallet'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -187,7 +187,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
-          SidebarWallet,
         }}
       >
         {children}

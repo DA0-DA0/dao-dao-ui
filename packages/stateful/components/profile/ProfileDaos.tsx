@@ -1,43 +1,45 @@
-import { useTranslation } from 'react-i18next'
+import { useCallback } from 'react'
+import { useSetRecoilState } from 'recoil'
 
-import { getSupportedChains } from '@dao-dao/utils'
+import { commandModalVisibleAtom } from '@dao-dao/state/recoil'
+import { ProfileDaos as StatelessProfileDaos } from '@dao-dao/stateless'
 
-import { useProfile } from '../../hooks'
+import { useFeed } from '../../feed'
+import { useLoadingFollowingDaoCardInfos, useProfile } from '../../hooks'
+import { DaoCard } from '../dao/DaoCard'
+import { LinkWrapper } from '../LinkWrapper'
 import { WalletDaos } from '../wallet'
 import { ProfileAddChains } from './ProfileAddChains'
 
 export const ProfileDaos = () => {
-  const { t } = useTranslation()
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
+
+  const followingDaosLoading = useLoadingFollowingDaoCardInfos()
+  const feed = useFeed()
 
   const { chains } = useProfile({
     onlySupported: true,
   })
 
-  const missingChains =
-    !chains.loading && chains.data.length < getSupportedChains().length
+  const openSearch = useCallback(
+    () => setCommandModalVisible(true),
+    [setCommandModalVisible]
+  )
 
   return (
-    <>
-      <WalletDaos
-        chainWallets={
-          chains.loading || chains.data.length === 0
-            ? { loading: true, errored: false }
-            : {
-                loading: false,
-                errored: false,
-                data: chains.data,
-              }
-        }
-      />
-
-      {missingChains && (
-        <ProfileAddChains
-          className="self-end mt-4"
-          onlySupported
-          prompt={t('button.addChains')}
-          promptTooltip={t('info.supportedChainDaosNotShowingUpPrompt')}
-        />
-      )}
-    </>
+    <StatelessProfileDaos
+      ProfileAddChains={ProfileAddChains}
+      WalletDaos={WalletDaos}
+      chains={chains}
+      feedProps={{
+        state: feed,
+        LinkWrapper,
+      }}
+      followingDaosProps={{
+        DaoCard,
+        openSearch,
+        followingDaos: followingDaosLoading,
+      }}
+    />
   )
 }
