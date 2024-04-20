@@ -15,7 +15,10 @@ export const ProfileDaos = ({ ProfileFeed, WalletDaos }: ProfileDaosProps) => {
     <div>
       <ProfileFeed />
 
-      <p className="title-text text-lg mt-8 mb-2">{t('title.yourDaos')}</p>
+      <div className="flex flex-col gap-1 mt-8 mb-3">
+        <p className="title-text text-lg">{t('title.yourDaos')}</p>
+        <p className="caption-text">{t('info.yourDaosDescription')}</p>
+      </div>
 
       <WalletDaos />
     </div>

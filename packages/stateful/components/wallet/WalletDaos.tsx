@@ -1,3 +1,4 @@
+import uniqBy from 'lodash.uniqby'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useSetRecoilState, waitForAny } from 'recoil'
@@ -71,18 +72,26 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
             return []
           }
 
-          const [memberOf, following] = loadable.contents
+          const [memberOf, following] = loadable.contents.map(
+            (value) => value.valueMaybe() || []
+          )
 
-          return [
-            ...(memberOf.valueMaybe()?.map((props) => ({
-              ...props,
-              isMember: true,
-            })) || []),
-            ...(following.valueMaybe()?.map((props) => ({
-              ...props,
-              isFollowed: true,
-            })) || []),
-          ]
+          const memberDaos = new Set(
+            memberOf.map(({ coreAddress }) => coreAddress)
+          )
+          const followingDaos = new Set(
+            following.map(({ coreAddress }) => coreAddress)
+          )
+
+          // Combine DAOs and remove duplicates.
+          return uniqBy(
+            [...memberOf, ...following],
+            (dao) => dao.coreAddress
+          ).map((props) => ({
+            ...props,
+            isMember: memberDaos.has(props.coreAddress),
+            isFollowed: followingDaos.has(props.coreAddress),
+          }))
         })
         .sort((a, b) => a.name.localeCompare(b.name))
   )
