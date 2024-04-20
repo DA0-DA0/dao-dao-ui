@@ -21,6 +21,7 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
 export const makeProps = (id = 1): DaoCardProps => ({
   chainId: CHAIN_ID,
   coreAddress: 'daoCoreAddress',
+  coreVersion: ContractVersion.V242,
   name: 'Modern DAO',
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',

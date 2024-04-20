@@ -19,6 +19,7 @@ let id = 0
 const makeFeaturedDao = (): DaoCardInfo => ({
   chainId: CHAIN_ID,
   coreAddress: 'coreAddress' + ++id,
+  coreVersion: ContractVersion.V2Alpha,
   name: 'Modern DAO ' + id,
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
