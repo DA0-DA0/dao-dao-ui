@@ -1,48 +1,64 @@
 import { WarningRounded } from '@mui/icons-material'
 import Fuse from 'fuse.js'
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LazyDaoCardProps, WalletDaosProps } from '@dao-dao/types'
+import {
+  FilterFn,
+  LazyDaoCardProps,
+  TypedOption,
+  WalletDaosProps,
+} from '@dao-dao/types'
 
-import { useQuerySyncedState, useSearchFilter } from '../../hooks'
-import { Collapsible } from '../Collapsible'
+import { useButtonPopupFilter, useSearchFilter } from '../../hooks'
 import { DaoCardLoader } from '../dao/DaoCard'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { SearchBar } from '../inputs'
-import { Logo } from '../logo'
 import { NoContent } from '../NoContent'
-import { ChainPickerPopup } from '../popup'
+import { ButtonPopup } from '../popup/ButtonPopup'
 
 export const WalletDaos = ({
-  chainIds,
   daos,
   LazyDaoCard,
-  onChainSelect,
+  openSearch,
+  includesFollowing,
 }: WalletDaosProps) => {
   const { t } = useTranslation()
 
   const allDaos = daos.loading || daos.errored || !daos.data ? [] : daos.data
-  const { searchBarProps, filteredData } = useSearchFilter({
+
+  const filterOptions = useMemo(
+    (): TypedOption<FilterFn<LazyDaoCardProps>>[] => [
+      {
+        label: t('title.following'),
+        value: ({ isFollowed }) => isFollowed,
+      },
+      {
+        label: t('title.membership'),
+        value: ({ isMember }) => isMember,
+      },
+      {
+        label: t('title.all'),
+        value: () => true,
+      },
+    ],
+    [t]
+  )
+
+  const {
+    filteredData: filteredDaos,
+    buttonPopupProps: filterDaosButtonProps,
+  } = useButtonPopupFilter({
     data: allDaos,
+    options: filterOptions,
+  })
+
+  const { searchBarProps, filteredData: searchedDaos } = useSearchFilter({
+    data: filteredDaos,
     filterableKeys: FILTERABLE_KEYS,
     querySyncedParam: 'dq',
   })
-
-  const [chainId, setChainId] = useQuerySyncedState<string | undefined>({
-    param: 'dqc',
-    defaultValue: undefined,
-  })
-
-  const [showingInactive, setShowingInactive] = useState(false)
-
-  const filteredDaos = chainId
-    ? filteredData.filter(({ item }) => item.chainId === chainId)
-    : filteredData
-
-  const activeDaos = filteredDaos.filter(({ item }) => !item.isInactive)
-  const inactiveDaos = filteredDaos.filter(({ item }) => item.isInactive)
 
   return (
     <div className="flex flex-col gap-5">
@@ -53,22 +69,9 @@ export const WalletDaos = ({
           {...searchBarProps}
         />
 
-        <ChainPickerPopup
-          NoneIcon={Logo}
-          chains={{
-            type: 'custom',
-            chainIds: chainIds.loading || chainIds.errored ? [] : chainIds.data,
-          }}
-          noneLabel={t('info.allChains')}
-          onSelect={(chainId) => {
-            setChainId(chainId)
-            if (chainId) {
-              onChainSelect?.(chainId)
-            }
-          }}
-          selectedChainId={chainId}
-          showNone
-        />
+        {includesFollowing && (
+          <ButtonPopup position="left" {...filterDaosButtonProps} />
+        )}
       </div>
 
       {daos.loading ? (
@@ -79,34 +82,20 @@ export const WalletDaos = ({
         </GridCardContainer>
       ) : daos.errored ? (
         <ErrorPage error={daos.error} />
-      ) : activeDaos.length > 0 || inactiveDaos.length > 0 ? (
-        <>
-          {activeDaos.length > 0 && (
-            <GridCardContainer>
-              {activeDaos.map(({ item: dao }) => (
-                <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
-              ))}
-            </GridCardContainer>
-          )}
-
-          {inactiveDaos.length > 0 && (
-            <Collapsible
-              defaultCollapsed={!showingInactive}
-              label={t('title.inactiveDaos')}
-              noContentIndent
-              onExpand={(expanded) => setShowingInactive(expanded)}
-              tooltip={t('info.inactiveDaosTooltip')}
-            >
-              <GridCardContainer>
-                {inactiveDaos.map(({ item: dao }) => (
-                  <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
-                ))}
-              </GridCardContainer>
-            </Collapsible>
-          )}
-        </>
+      ) : searchedDaos.length > 0 ? (
+        <GridCardContainer>
+          {searchedDaos.map(({ item: dao }) => (
+            <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
+          ))}
+        </GridCardContainer>
       ) : (
-        <NoContent Icon={WarningRounded} body={t('info.nothingFound')} />
+        <NoContent
+          Icon={WarningRounded}
+          actionNudge={t('info.wouldYouLikeToSearchQuestion')}
+          body={t('info.nothingFound')}
+          buttonLabel={t('button.searchDaos')}
+          onClick={openSearch}
+        />
       )}
     </div>
   )

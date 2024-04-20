@@ -46,5 +46,16 @@ export type LazyDaoCardProps = Pick<
   DaoCardProps,
   'chainId' | 'coreAddress' | 'name' | 'description' | 'imageUrl' | 'className'
 > & {
+  /**
+   * Whether or not this DAO is inactive.
+   */
   isInactive?: boolean
+  /**
+   * Whether or not the current wallet is a member of this DAO.
+   */
+  isMember?: boolean
+  /**
+   * Whether or not this DAO is being followed by the current wallet.
+   */
+  isFollowed?: boolean
 }

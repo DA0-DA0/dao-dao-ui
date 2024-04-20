@@ -1,63 +1,23 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  LoadingData,
-  ProfileChain,
-  StatefulProfileAddChainsProps,
-  StatefulWalletDaosProps,
-} from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
-
-import { FollowingDaos, FollowingDaosProps } from '../dao/FollowingDaos'
-import { Feed, FeedProps } from '../Feed'
+import { StatefulWalletDaosProps } from '@dao-dao/types'
 
 export type ProfileDaosProps = {
-  followingDaosProps: FollowingDaosProps
-  feedProps: FeedProps
-  chains: LoadingData<ProfileChain[]>
+  ProfileFeed: ComponentType
   WalletDaos: ComponentType<StatefulWalletDaosProps>
-  ProfileAddChains: ComponentType<StatefulProfileAddChainsProps>
 }
 
-export const ProfileDaos = ({
-  followingDaosProps,
-  feedProps,
-  chains,
-  WalletDaos,
-  ProfileAddChains,
-}: ProfileDaosProps) => {
+export const ProfileDaos = ({ ProfileFeed, WalletDaos }: ProfileDaosProps) => {
   const { t } = useTranslation()
 
-  const missingChains =
-    !chains.loading && chains.data.length < getSupportedChains().length
-
   return (
-    <div className="space-y-8">
-      <Feed {...feedProps} />
+    <div>
+      <ProfileFeed />
 
-      <FollowingDaos {...followingDaosProps} />
+      <p className="title-text text-lg mt-8 mb-2">{t('title.yourDaos')}</p>
 
-      <WalletDaos
-        chainWallets={
-          chains.loading || chains.data.length === 0
-            ? { loading: true, errored: false }
-            : {
-                loading: false,
-                errored: false,
-                data: chains.data,
-              }
-        }
-      />
-
-      {missingChains && (
-        <ProfileAddChains
-          className="self-end mt-4"
-          onlySupported
-          prompt={t('button.addChains')}
-          promptTooltip={t('info.supportedChainDaosNotShowingUpPrompt')}
-        />
-      )}
+      <WalletDaos />
     </div>
   )
 }
