@@ -25,11 +25,12 @@ import {
   ICA_CHAINS_TX_PREFIX,
   POLYTONE_CONFIG_PER_CHAIN,
   getChainForChainId,
+  getConfiguredChainConfig,
   secp256k1PublicKeyToBech32Address,
   tokensEqual,
 } from '@dao-dao/utils'
 
-import { cosmosRpcClientForChainSelector } from './chain'
+import { cosmosRpcClientForChainSelector, moduleAddressSelector } from './chain'
 import {
   isContractSelector,
   isDaoSelector,
@@ -62,6 +63,17 @@ export const accountsSelector = selectorFamily<
   get:
     ({ chainId, address, includeIcaChains }) =>
     ({ get }) => {
+      const chainConfig = getConfiguredChainConfig(chainId)
+      // In case address is the name of a chain, get the gov module address.
+      if (chainConfig?.name === address) {
+        address = get(
+          moduleAddressSelector({
+            chainId,
+            name: 'gov',
+          })
+        )
+      }
+
       const [isDao, isPolytoneProxy] = get(
         waitForAll([
           isDaoSelector({

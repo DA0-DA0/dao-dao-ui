@@ -7,7 +7,6 @@ import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
-  govProposalCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
@@ -16,7 +15,6 @@ import {
 import {
   BetaWarningModal,
   ChainProvider,
-  GovProposalCreatedModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
@@ -68,8 +66,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   )
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
-  const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
-    useRecoilState(govProposalCreatedCardPropsAtom)
 
   const { rootCommandContextMaker, inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
@@ -223,18 +219,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             }}
             modalProps={{
               onClose: () => setProposalCreatedCardProps(undefined),
-            }}
-          />
-        )}
-
-        {govProposalCreatedCardProps && (
-          <GovProposalCreatedModal
-            itemProps={{
-              ...govProposalCreatedCardProps,
-              LinkWrapper,
-            }}
-            modalProps={{
-              onClose: () => setGovProposalCreatedCardProps(undefined),
             }}
           />
         )}

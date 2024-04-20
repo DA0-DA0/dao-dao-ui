@@ -1,6 +1,7 @@
 import { ComponentType } from 'react'
 
 import { DaoParentInfo, PolytoneProxies } from '../dao'
+import { ContractVersion } from '../features'
 import { LoadingData } from '../misc'
 import { LinkWrapperProps } from './LinkWrapper'
 
@@ -14,6 +15,7 @@ export interface DaoCardInfoLazyData {
 export interface DaoCardInfo {
   chainId: string
   coreAddress: string
+  coreVersion: ContractVersion
   name: string
   description: string
   imageUrl: string
@@ -44,7 +46,13 @@ export interface DaoCardProps extends DaoCardInfo {
 
 export type LazyDaoCardProps = Pick<
   DaoCardProps,
-  'chainId' | 'coreAddress' | 'name' | 'description' | 'imageUrl' | 'className'
+  | 'chainId'
+  | 'coreAddress'
+  | 'coreVersion'
+  | 'name'
+  | 'description'
+  | 'imageUrl'
+  | 'className'
 > & {
   /**
    * Whether or not this DAO is inactive.

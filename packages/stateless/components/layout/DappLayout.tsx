@@ -1,5 +1,4 @@
 import {
-  HomeOutlined,
   HomeRounded,
   Notifications,
   SearchOutlined,
@@ -70,7 +69,7 @@ export const DappLayout = ({
     href: '/',
     pathnames: ['/[[...tab]]'],
     labelI18nKey: 'title.home',
-    IconUnselected: HomeOutlined,
+    IconUnselected: HomeRounded,
     IconSelected: HomeRounded,
     compact: navigationProps.walletConnected,
   }

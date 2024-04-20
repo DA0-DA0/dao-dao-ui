@@ -1,7 +1,6 @@
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
-import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import {
   FormProvider,
@@ -14,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
+import { fetchContractInfo } from '@dao-dao/state/utils'
 import {
   Button,
   ChainProvider,
@@ -31,6 +31,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
+  ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoPageMode,
@@ -53,11 +54,11 @@ import {
   getDisplayNameForChainId,
   getFallbackImage,
   getFundsFromDaoInstantiateMsg,
-  getGovProposalPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
   makeValidateMsg,
+  parseContractVersion,
   processError,
 } from '@dao-dao/utils'
 
@@ -146,7 +147,6 @@ export const InnerCreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
 
-  const router = useRouter()
   const chainContext = useSupportedChainContext()
   const {
     chainId,
@@ -158,7 +158,7 @@ export const InnerCreateDaoForm = ({
     },
   } = chainContext
 
-  const { goToDao } = useDaoNavHelpers()
+  const { goToDao, goToDaoProposal } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos(chainId)
 
   const { mode } = useAppContext()
@@ -482,38 +482,36 @@ export const InnerCreateDaoForm = ({
         setCreating(true)
 
         // Redirect to prefilled chain governance prop page.
-        router.push(
-          getGovProposalPath(chainGovName, 'create', {
-            prefill: encodeJsonToBase64({
-              chainId,
-              title: `Create DAO: ${name.trim()}`,
-              description: 'This proposal creates a new DAO.',
-              _actionData: [
-                {
-                  _id: 'create',
-                  actionKey: ActionKey.Execute,
-                  data: {
-                    chainId,
-                    address: factoryContractAddress,
-                    message: JSON.stringify(
-                      {
-                        instantiate_contract_with_self_admin: {
-                          code_id: codeIds.DaoCore,
-                          instantiate_msg: encodeJsonToBase64(instantiateMsg),
-                          label: instantiateMsg.name,
-                        },
+        goToDaoProposal(chainGovName, 'create', {
+          prefill: encodeJsonToBase64({
+            chainId,
+            title: `Create DAO: ${name.trim()}`,
+            description: 'This proposal creates a new DAO.',
+            _actionData: [
+              {
+                _id: 'create',
+                actionKey: ActionKey.Execute,
+                data: {
+                  chainId,
+                  address: factoryContractAddress,
+                  message: JSON.stringify(
+                    {
+                      instantiate_contract_with_self_admin: {
+                        code_id: codeIds.DaoCore,
+                        instantiate_msg: encodeJsonToBase64(instantiateMsg),
+                        label: instantiateMsg.name,
                       },
-                      null,
-                      2
-                    ),
-                    funds: [],
-                    cw20: false,
-                  } as ExecuteData,
-                },
-              ],
-            } as Partial<GovernanceProposalActionData>),
-          })
-        )
+                    },
+                    null,
+                    2
+                  ),
+                  funds: [],
+                  cw20: false,
+                } as ExecuteData,
+              },
+            ],
+          } as Partial<GovernanceProposalActionData>),
+        })
       } else if (isWalletConnected) {
         setCreating(true)
         try {
@@ -522,6 +520,11 @@ export const InnerCreateDaoForm = ({
             success: t('success.daoCreatedPleaseWait'),
             error: (err) => processError(err),
           })
+
+          const info = await fetchContractInfo(chainId, coreAddress)
+          const coreVersion =
+            (info && parseContractVersion(info.version)) ||
+            ContractVersion.Unknown
 
           // Don't set following on SDA. Only dApp.
           if (mode !== DaoPageMode.Sda) {
@@ -589,6 +592,7 @@ export const InnerCreateDaoForm = ({
           setDaoCreatedCardProps({
             chainId,
             coreAddress,
+            coreVersion,
             name,
             description,
             imageUrl: imageUrl || getFallbackImage(coreAddress),

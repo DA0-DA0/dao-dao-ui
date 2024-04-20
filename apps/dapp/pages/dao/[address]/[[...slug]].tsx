@@ -5,20 +5,30 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import React from 'react'
 
 import {
+  ChainGovernanceDappHome,
   DaoDappHome,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  NeutronGovernanceHome,
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { DaoPageMode } from '@dao-dao/types'
-import { SITE_URL, getDaoPath } from '@dao-dao/utils'
+import { ChainId, ContractVersion, DaoPageMode } from '@dao-dao/types'
+import { SITE_URL, getDaoPath, getDisplayNameForChainId } from '@dao-dao/utils'
 
 const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <DaoDappHome />
+    {props.serializedInfo?.coreVersion === ContractVersion.Gov ? (
+      props.serializedInfo.chainId === ChainId.NeutronMainnet ? (
+        <NeutronGovernanceHome />
+      ) : (
+        <ChainGovernanceDappHome />
+      )
+    ) : (
+      <DaoDappHome />
+    )}
   </DaoPageWrapper>
 )
 
@@ -32,7 +42,15 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
   appMode: DaoPageMode.Dapp,
-  getProps: async ({ coreAddress }) => ({
+  getProps: async ({ chain, coreVersion, coreAddress }) => ({
     url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress),
+    followingTitle:
+      coreVersion === ContractVersion.Gov ? 'Governance' : undefined,
+    overrideDescription:
+      coreVersion === ContractVersion.Gov
+        ? `The native chain governance for ${getDisplayNameForChainId(
+            chain.chain_id
+          )}.`
+        : undefined,
   }),
 })

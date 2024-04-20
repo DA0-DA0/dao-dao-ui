@@ -436,6 +436,12 @@ export const getConfiguredChains = ({
     ...config,
   }))
 
+/**
+ * Find configured chain with governance module by name.
+ */
+export const getConfiguredGovChainByName = (govName: string) =>
+  getConfiguredChains().find(({ name, noGov }) => name === govName && !noGov)
+
 export const getIbcTransferInfoFromConnection = (
   sourceChainId: string,
   sourceConnectionId: string

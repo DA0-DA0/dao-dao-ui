@@ -1,5 +1,4 @@
 export * from './Account'
-export * from './ChainGovernanceHome'
 export * from './DaoDappHome'
 export * from './DaoSdaHome'
 export * from './EditProfile'

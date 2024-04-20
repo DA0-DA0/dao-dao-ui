@@ -2,7 +2,6 @@ import {
   Account,
   AccountType,
   BreadcrumbCrumb,
-  ContractVersion,
   DaoDropdownInfo,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
@@ -11,7 +10,6 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import { getSupportedChainConfig } from './chain'
-import { getGovPath } from './url'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -21,9 +19,7 @@ export const getParentDaoBreadcrumbs = (
     ? [
         ...getParentDaoBreadcrumbs(getDaoPath, parentDao.parentDao),
         {
-          href: (parentDao.coreVersion === ContractVersion.Gov
-            ? getGovPath
-            : getDaoPath)(parentDao.coreAddress),
+          href: getDaoPath(parentDao.coreAddress),
           label: parentDao.name,
         },
       ]

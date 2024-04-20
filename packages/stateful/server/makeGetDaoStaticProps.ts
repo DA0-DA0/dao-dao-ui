@@ -1,4 +1,5 @@
 import { Chain } from '@chain-registry/types'
+import { fromBase64 } from '@cosmjs/encoding'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -21,15 +22,18 @@ import {
   DaoPageMode,
   DaoParentInfo,
   Feature,
+  GovProposalVersion,
+  GovProposalWithDecodedContent,
   IndexerDumpState,
   InfoResponse,
   PolytoneProxies,
   ProposalModule,
+  ProposalV1,
+  ProposalV1Beta1,
+  SupportedFeatureMap,
 } from '@dao-dao/types'
-import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
 import {
   Config,
-  ConfigResponse as ConfigV2Response,
   ListItemsResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -47,8 +51,11 @@ import {
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   addressIsModule,
   cosmWasmClientRouter,
+  cosmosSdkVersionIs46OrHigher,
+  decodeGovProposal,
   getChainForChainId,
   getChainIdForAddress,
+  getConfiguredGovChainByName,
   getDaoPath,
   getDisplayNameForChainId,
   getImageUrlForChainId,
@@ -89,7 +96,6 @@ interface GetDaoStaticPropsMakerOptions {
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
-    config: ConfigV1Response | ConfigV2Response
     chain: Chain
     coreAddress: string
     coreVersion: ContractVersion
@@ -128,6 +134,93 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     )
 
     const coreAddress = _coreAddress ?? context.params?.address
+
+    // Check if address is actually the name of a chain so we can resolve the
+    // gov module.
+    const chainConfig =
+      coreAddress && typeof coreAddress === 'string'
+        ? getConfiguredGovChainByName(coreAddress)
+        : undefined
+
+    // Load chain gov module.
+    if (chainConfig) {
+      const { name: chainName, chain, accentColor } = chainConfig
+
+      // Must be called after server side translations has been awaited, because
+      // props may use the `t` function, and it won't be available until after.
+      const {
+        leadingTitle,
+        followingTitle,
+        overrideTitle,
+        overrideDescription,
+        additionalProps,
+        url,
+      } =
+        (await getProps?.({
+          context,
+          t: serverT,
+          chain,
+          coreAddress: chainName,
+          coreVersion: ContractVersion.Gov,
+          proposalModules: [],
+        })) ?? {}
+
+      const props: DaoPageWrapperProps = {
+        ...i18nProps,
+        url: url ?? null,
+        title:
+          overrideTitle ??
+          [
+            leadingTitle?.trim(),
+            getDisplayNameForChainId(chain.chain_id),
+            followingTitle?.trim(),
+          ]
+            .filter(Boolean)
+            .join(' | '),
+        description: overrideDescription ?? '',
+        accentColor,
+        serializedInfo: {
+          chainId: chain.chain_id,
+          coreAddress: chainConfig.name,
+          coreVersion: ContractVersion.Gov,
+          supportedFeatures: Object.values(Feature).reduce(
+            (acc, feature) => ({
+              ...acc,
+              [feature]: false,
+            }),
+            {} as SupportedFeatureMap
+          ),
+          votingModuleAddress: '',
+          votingModuleContractName: '',
+          proposalModules: [],
+          name: getDisplayNameForChainId(chain.chain_id),
+          description: overrideDescription ?? '',
+          imageUrl: getImageUrlForChainId(chain.chain_id),
+          created: null,
+          isActive: true,
+          activeThreshold: null,
+          items: {},
+          polytoneProxies: {},
+          accounts: [
+            {
+              type: AccountType.Native,
+              chainId: chain.chain_id,
+              address: chainConfig.name,
+            },
+          ],
+          parentDao: null,
+          admin: '',
+        },
+        ...additionalProps,
+      }
+
+      return {
+        props,
+        // Regenerate the page at most once per `revalidate` seconds. Serves
+        // cached copy and refreshes in background.
+        revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
+      }
+    }
 
     // Get chain ID for address based on prefix.
     let decodedChainId: string
@@ -280,7 +373,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           (await getProps?.({
             context,
             t: serverT,
-            config,
             chain: getChainForChainId(chainId),
             coreAddress,
             coreVersion,
@@ -436,6 +528,7 @@ export const makeGetDaoProposalStaticProps = ({
       context: { params = {} },
       t,
       chain,
+      coreVersion,
       coreAddress,
       proposalModules,
     }) => {
@@ -450,6 +543,163 @@ export const makeGetDaoProposalStaticProps = ({
           },
         }
       }
+
+      // Gov module.
+      if (coreVersion === ContractVersion.Gov) {
+        const url = getProposalUrlPrefix(params) + proposalId
+
+        const client = await retry(
+          10,
+          async (attempt) =>
+            (
+              await cosmos.ClientFactory.createRPCQueryClient({
+                rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
+              })
+            ).cosmos
+        )
+        const cosmosSdkVersion =
+          (
+            await client.base.tendermint.v1beta1.getNodeInfo()
+          ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
+        const supportsV1Gov = cosmosSdkVersionIs46OrHigher(cosmosSdkVersion)
+
+        let proposal: GovProposalWithDecodedContent | null = null
+        try {
+          // Try to load from indexer first.
+          const indexerProposal:
+            | {
+                id: string
+                data: string
+              }
+            | undefined = await queryIndexer({
+            chainId: chain.chain_id,
+            type: 'generic',
+            formula: 'gov/proposal',
+            args: {
+              id: proposalId,
+            },
+          })
+
+          if (indexerProposal) {
+            if (supportsV1Gov) {
+              proposal = await decodeGovProposal({
+                version: GovProposalVersion.V1,
+                id: BigInt(proposalId),
+                proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
+              })
+            } else {
+              proposal = await decodeGovProposal({
+                version: GovProposalVersion.V1_BETA_1,
+                id: BigInt(proposalId),
+                proposal: ProposalV1Beta1.decode(
+                  fromBase64(indexerProposal.data),
+                  undefined,
+                  true
+                ),
+              })
+            }
+          }
+        } catch (err) {
+          console.error(err)
+          // Report to Sentry.
+          processError(err)
+        }
+
+        // Fallback to querying chain if indexer failed.
+        if (!proposal) {
+          try {
+            if (supportsV1Gov) {
+              try {
+                const proposalV1 = (
+                  await client.gov.v1.proposal({
+                    proposalId: BigInt(proposalId),
+                  })
+                ).proposal
+                if (!proposalV1) {
+                  throw new Error('NOT_FOUND')
+                }
+
+                proposal = await decodeGovProposal({
+                  version: GovProposalVersion.V1,
+                  id: BigInt(proposalId),
+                  proposal: proposalV1,
+                })
+              } catch (err) {
+                // Fallback to v1beta1 query if v1 not supported.
+                if (
+                  !(err instanceof Error) ||
+                  !err.message.includes('unknown query path')
+                ) {
+                  // Rethrow other errors.
+                  throw err
+                }
+              }
+            }
+
+            if (!proposal) {
+              const proposalV1Beta1 = (
+                await client.gov.v1beta1.proposal(
+                  {
+                    proposalId: BigInt(proposalId),
+                  },
+                  true
+                )
+              ).proposal
+              if (!proposalV1Beta1) {
+                throw new Error('NOT_FOUND')
+              }
+
+              proposal = await decodeGovProposal({
+                version: GovProposalVersion.V1_BETA_1,
+                id: BigInt(proposalId),
+                proposal: proposalV1Beta1,
+              })
+            }
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              (error.message.includes("doesn't exist: key not found") ||
+                error.message === 'NOT_FOUND')
+            ) {
+              return {
+                url,
+                followingTitle: t('title.proposalNotFound'),
+                // Excluding `proposalId` indicates not found.
+                additionalProps: {
+                  proposalId: null,
+                },
+              }
+            }
+
+            console.error(error)
+            // Report to Sentry.
+            processError(error)
+            // Throw error to trigger 500.
+            throw new Error(t('error.unexpectedError'))
+          }
+        }
+
+        return {
+          url,
+          followingTitle: proposal.title,
+          overrideDescription: removeMarkdown(proposal.description).slice(
+            0,
+            MAX_META_CHARS_PROPOSAL_DESCRIPTION
+          ),
+          additionalProps: {
+            proposalInfo: {
+              id: proposal.id.toString(),
+              title: proposal.title,
+              description: proposal.description,
+              expiration: null,
+              createdAtEpoch: null,
+              createdByAddress: '',
+            } as CommonProposalInfo,
+          },
+        }
+      }
+
+      // DAO.
 
       let proposalInfo: CommonProposalInfo | null = null
       try {

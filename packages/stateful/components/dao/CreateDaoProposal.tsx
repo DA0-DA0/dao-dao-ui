@@ -354,7 +354,7 @@ const InnerCreateDaoProposal = ({
       setLatestProposalSave({})
 
       // Navigate to proposal (underneath the creation modal).
-      goToDaoProposal(info.dao.coreAddressOrId, info.id)
+      goToDaoProposal(info.dao.coreAddress, info.id)
     },
     [
       deleteDraft,

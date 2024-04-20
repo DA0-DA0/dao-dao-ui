@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BreadcrumbsProps, ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { getGovPath } from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   useChainContextIfAvailable,
@@ -41,8 +41,8 @@ export const Breadcrumbs = ({
         daoInfo.coreVersion === ContractVersion.Gov && chainContext?.base
         ? [
             {
-              href: getGovPath(chainContext.base.name, homeTab?.id),
-              label: chainContext.chain.pretty_name,
+              href: getDaoPath(chainContext.base.name, homeTab?.id),
+              label: getDisplayNameForChainId(chainContext.base.chainId),
             },
           ]
         : // Non-chain governance breadcrumbs. Normal DAOs.

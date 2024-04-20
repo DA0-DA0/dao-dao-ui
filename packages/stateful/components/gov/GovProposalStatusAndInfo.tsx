@@ -27,6 +27,7 @@ import {
   useCachedLoading,
   useChain,
   useConfiguredChainContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -44,7 +45,7 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
-  getGovPath,
+  getDisplayNameForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -105,7 +106,7 @@ const InnerGovProposalStatusAndInfo = ({
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId, pretty_name: chainPrettyName },
+    chain: { chain_id: chainId },
     config: { name: chainConfigName },
   } = useConfiguredChainContext()
   const {
@@ -113,6 +114,7 @@ const InnerGovProposalStatusAndInfo = ({
     address: walletAddress = '',
     getSigningStargateClient,
   } = useWallet()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const {
     id: proposalId,
@@ -145,11 +147,11 @@ const InnerGovProposalStatusAndInfo = ({
       label: t('title.dao'),
       Value: (props) => (
         <ButtonLink
-          href={getGovPath(chainConfigName)}
+          href={getDaoPath(chainConfigName)}
           variant="underline"
           {...props}
         >
-          {chainPrettyName}
+          {getDisplayNameForChainId(chainId)}
         </ButtonLink>
       ),
     },
@@ -354,6 +356,7 @@ const InnerProposalStatusAndInfoLoader = (
     config: { name },
     chain,
   } = useConfiguredChainContext()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
@@ -363,8 +366,8 @@ const InnerProposalStatusAndInfoLoader = (
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink href={getGovPath(name)} variant="underline" {...props}>
-          {chain.pretty_name}
+        <ButtonLink href={getDaoPath(name)} variant="underline" {...props}>
+          {getDisplayNameForChainId(chain.chain_id)}
         </ButtonLink>
       ),
     },

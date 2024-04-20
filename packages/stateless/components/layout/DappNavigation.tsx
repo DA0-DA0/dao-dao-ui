@@ -1,7 +1,7 @@
 import {
   Add,
   CheckRounded,
-  HomeOutlined,
+  Home,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   Search,
@@ -182,7 +182,7 @@ export const DappNavigation = ({
           />
 
           <Row
-            Icon={HomeOutlined}
+            Icon={Home}
             LinkWrapper={LinkWrapper}
             compact={compact}
             href="/"

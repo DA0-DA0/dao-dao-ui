@@ -3,11 +3,11 @@ import {
   GovProposalWalletVote,
   ProposalLine as StatelessProposalLine,
   useConfiguredChainContext,
+  useDaoNavHelpers,
   useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { getGovProposalPath } from '@dao-dao/utils'
 
 import { useLoadingGovProposalWalletVoteInfo } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
@@ -22,6 +22,7 @@ export const GovProposalLine = (props: GovProposalLineProps) => {
   const {
     config: { name },
   } = useConfiguredChainContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const loadingTimestampInfo = useLoadingGovProposalTimestampInfo(
     proposal.proposal
@@ -34,7 +35,7 @@ export const GovProposalLine = (props: GovProposalLineProps) => {
       Status={(props) => (
         <GovProposalStatus {...props} status={proposal.proposal.status} />
       )}
-      href={getGovProposalPath(name, proposalId)}
+      href={getDaoProposalPath(name, proposalId)}
       proposalNumber={Number(proposalId)}
       proposalPrefix=""
       timestampDisplay={

@@ -92,6 +92,12 @@ const config = {
       destination: '/actions',
       permanent: false,
     },
+    // Redirect all gov subpages to the dao subpage, but leave /gov alone.
+    {
+      source: '/gov/:chain/:slug*',
+      destination: '/dao/:chain/:slug*',
+      permanent: false,
+    },
   ],
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {

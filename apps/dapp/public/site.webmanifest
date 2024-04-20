@@ -30,12 +30,6 @@
       "short_name": "Notifications",
       "description": "View notifications",
       "url": "/notifications?s=pwa"
-    },
-    {
-      "name": "Governance",
-      "short_name": "Governance",
-      "description": "View native chain governance",
-      "url": "/gov?s=pwa"
     }
   ]
 }

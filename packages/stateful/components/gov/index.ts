@@ -1,7 +1,6 @@
 export * from './CreateGovProposal'
 export * from './GovCommunityPoolTab'
 export * from './GovInfoBar'
-export * from './GovPageWrapper'
 export * from './GovProposal'
 export * from './GovProposalActionDisplay'
 export * from './GovProposalLine'

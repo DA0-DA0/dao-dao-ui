@@ -772,7 +772,7 @@ export const SelfRelayExecuteModal = ({
 
               console.error(
                 t('error.failedToRelayPackets', {
-                  chain: chain.pretty_name,
+                  chain: getDisplayNameForChainId(chain.chain_id),
                 }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
                 err
               )
@@ -872,7 +872,7 @@ export const SelfRelayExecuteModal = ({
 
               console.error(
                 t('error.failedToRelayAcks', {
-                  chain: chain.pretty_name,
+                  chain: getDisplayNameForChainId(chain.chain_id),
                 }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
                 err
               )

@@ -47,12 +47,3 @@ export const proposalCreatedCardPropsAtom = atom<
   key: 'proposalCreatedCardProps',
   default: undefined,
 })
-
-// When set, shows gov proposal created modal with these props for the
-// ProposalCard shown.
-export const govProposalCreatedCardPropsAtom = atom<
-  ProposalCreatedCardProps | undefined
->({
-  key: 'govProposalCreatedCardProps',
-  default: undefined,
-})

@@ -2,7 +2,6 @@ import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
-  contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
 } from '@dao-dao/state'
@@ -12,23 +11,16 @@ import {
   DaoDropdownInfo,
   DaoInfo,
   Feature,
-  IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
-import { DumpStateResponse as CwCoreV1DumpStateResponse } from '@dao-dao/types/contracts/CwCore.v1'
-import { DumpStateResponse as DaoCoreV2DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  CHAIN_SUBDAOS,
   getFallbackImage,
   isFeatureSupportedByVersion,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
-import {
-  daoCoreProposalModulesSelector,
-  daoInfoSelector,
-  daoParentInfoSelector,
-} from './misc'
+import { daoCoreProposalModulesSelector, daoInfoSelector } from './misc'
 
 export const daoCardInfoSelector = selectorFamily<
   DaoCardInfo | undefined,
@@ -38,95 +30,23 @@ export const daoCardInfoSelector = selectorFamily<
   get:
     ({ coreAddress, chainId }) =>
     ({ get }) => {
-      const dumpedState:
-        | CwCoreV1DumpStateResponse
-        | IndexerDumpState
-        | DaoCoreV2DumpStateResponse
-        | undefined = get(
-        // Both v1 and v2 have a dump_state query.
-        DaoCoreV2Selectors.dumpStateSelector({
+      const daoInfo = get(
+        daoInfoSelector({
           chainId,
-          contractAddress: coreAddress,
-          params: [],
+          coreAddress,
         })
       )
-      // If undefined, probably invalid contract address.
-      if (!dumpedState) {
-        return
-      }
-
-      const { config, admin } = dumpedState
-
-      // Indexer may return a createdAt string, in which case don't query again.
-      const established: Date | undefined =
-        'createdAt' in dumpedState &&
-        (dumpedState as IndexerDumpState).createdAt
-          ? new Date((dumpedState as IndexerDumpState).createdAt)
-          : get(
-              contractInstantiateTimeSelector({ address: coreAddress, chainId })
-            )
-
-      const polytoneProxies = get(
-        DaoCoreV2Selectors.polytoneProxiesSelector({
-          chainId,
-          contractAddress: coreAddress,
-        })
-      )
-
-      // Get parent DAO if exists.
-      let parentDao: DaoCardInfo['parentDao'] = undefined
-      if (
-        admin &&
-        // A DAO without a parent DAO may be its own admin.
-        admin !== coreAddress
-      ) {
-        // Indexer may return `adminInfo`, in which case don't query again. If
-        // null, there is no admin to load. Otherwise. If not null, query
-        // chain.
-        if ('adminInfo' in dumpedState && dumpedState.adminInfo !== undefined) {
-          if (dumpedState.adminInfo) {
-            const {
-              admin: adminAdmin,
-              info,
-              config: { name, image_url },
-              registeredSubDao = false,
-            } = dumpedState.adminInfo
-            const coreVersion = info && parseContractVersion(info.version)
-
-            if (coreVersion) {
-              parentDao = {
-                chainId,
-                coreAddress: admin,
-                coreVersion,
-                name,
-                imageUrl: image_url || getFallbackImage(admin),
-                admin: adminAdmin ?? '',
-                registeredSubDao,
-              }
-            }
-          }
-
-          // If indexer didn't return adminInfo or doesn't exist, query chain.
-        } else {
-          parentDao = get(
-            daoParentInfoSelector({
-              chainId,
-              parentAddress: admin,
-              childAddress: coreAddress,
-            })
-          )
-        }
-      }
 
       return {
         chainId,
         coreAddress,
-        name: config.name,
-        description: config.description,
-        imageUrl: config.image_url || getFallbackImage(coreAddress),
-        polytoneProxies,
-        established,
-        parentDao,
+        coreVersion: daoInfo.coreVersion,
+        name: daoInfo.name,
+        description: daoInfo.description,
+        imageUrl: daoInfo.imageUrl || getFallbackImage(coreAddress),
+        polytoneProxies: daoInfo.polytoneProxies,
+        established: daoInfo.created,
+        parentDao: daoInfo.parentDao ?? undefined,
         tokenDecimals: 6,
         tokenSymbol: '',
         showingEstimatedUsdValue: true,
@@ -242,6 +162,29 @@ export const subDaoInfosSelector = selectorFamily<
             daoInfoSelector({
               chainId,
               coreAddress: addr,
+            })
+          )
+        )
+      )
+    },
+})
+
+export const chainSubDaoInfosSelector = selectorFamily<
+  DaoInfo[],
+  { chainId: string }
+>({
+  key: 'chainSubDaoInfos',
+  get:
+    ({ chainId }) =>
+    ({ get }) => {
+      const subDaos = CHAIN_SUBDAOS[chainId] || []
+
+      return get(
+        waitForAll(
+          subDaos.map((coreAddress) =>
+            daoInfoSelector({
+              chainId,
+              coreAddress,
             })
           )
         )

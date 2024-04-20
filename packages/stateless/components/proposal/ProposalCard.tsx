@@ -2,15 +2,12 @@ import clsx from 'clsx'
 import removeMarkdown from 'remove-markdown'
 
 import { ProposalCardProps } from '@dao-dao/types/components/ProposalCard'
-import { getGovProposalPath } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 
-export * from '@dao-dao/types/components/ProposalCard'
-
 export const ProposalCard = ({
-  dao: { type, name, coreAddressOrId, imageUrl },
+  dao: { name, coreAddress, imageUrl },
   id,
   title,
   description,
@@ -25,16 +22,10 @@ export const ProposalCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'relative flex w-full flex-col rounded-md bg-background-secondary ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
+        'bg-background-secondary hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus relative flex w-full flex-col rounded-md ring-1 ring-inset ring-transparent transition-all',
         className
       )}
-      href={
-        type === 'dao'
-          ? getDaoProposalPath(coreAddressOrId, id)
-          : type === 'gov'
-          ? getGovProposalPath(coreAddressOrId, id)
-          : undefined
-      }
+      href={getDaoProposalPath(coreAddress, id)}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -43,7 +34,7 @@ export const ProposalCard = ({
           LinkWrapper={LinkWrapper}
           blur
           className="self-center"
-          coreAddress={coreAddressOrId}
+          coreAddress={coreAddress}
           daoName={name}
           imageClassName="!w-full !h-full"
           imageUrl={imageUrl}
@@ -58,17 +49,17 @@ export const ProposalCard = ({
             {id}
           </p>
         </DaoImage>
-        <p className="primary-text text-center text-text-body">{title}</p>
+        <p className="primary-text text-text-body text-center">{title}</p>
         <p className="secondary-text line-clamp-4 break-words">
           {removeMarkdown(description)}
         </p>
       </div>
 
-      <div className="flex flex-col gap-2 self-stretch border-t border-border-secondary py-5 px-6">
+      <div className="border-border-secondary flex flex-col gap-2 self-stretch border-t py-5 px-6">
         {info.map(({ Icon, label }, index) => (
           <div key={index} className="flex flex-row items-center gap-5">
-            <Icon className="!h-5 !w-5 !text-icon-secondary" />
-            <p className="caption-text font-mono text-text-secondary">
+            <Icon className="!text-icon-secondary !h-5 !w-5" />
+            <p className="caption-text text-text-secondary font-mono">
               {label}
             </p>
           </div>

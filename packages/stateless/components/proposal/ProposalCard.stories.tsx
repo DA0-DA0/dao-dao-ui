@@ -1,8 +1,10 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalCardProps } from '@dao-dao/types'
+
 import { LinkWrapper } from '../LinkWrapper'
-import { ProposalCard, ProposalCardProps } from './ProposalCard'
+import { ProposalCard } from './ProposalCard'
 
 export default {
   title:
@@ -19,9 +21,8 @@ const Template: ComponentStory<typeof ProposalCard> = (args) => (
 
 export const makeProps = (): ProposalCardProps => ({
   dao: {
-    type: 'dao',
     name: 'DAO',
-    coreAddressOrId: 'daoCoreAddress',
+    coreAddress: 'daoCoreAddress',
     imageUrl: '/dog.jpg',
   },
   id: 'A13',

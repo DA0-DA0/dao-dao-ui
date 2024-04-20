@@ -8,8 +8,16 @@ import {
   CommandModalContextSectionItem,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
+  ContractVersion,
 } from '@dao-dao/types'
-import { getFallbackImage, getSupportedChains } from '@dao-dao/utils'
+import {
+  getConfiguredChains,
+  getDisplayNameForChainId,
+  getFallbackImage,
+  getImageUrlForChainId,
+  getSupportedChains,
+  parseContractVersion,
+} from '@dao-dao/utils'
 
 import {
   useLoadingFeaturedDaoCardInfos,
@@ -57,35 +65,51 @@ export const useFollowingAndFilteredDaosSections = ({
   )
 
   // Use query results if filter is present.
-  const daos = options.filter
-    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents.flat())
-        .filter(({ value }) => !!value?.config)
-        .map(
-          ({
-            chainId,
-            id: coreAddress,
-            value: {
-              config: { name, image_url },
-              proposalCount,
-            },
-          }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
-            chainId,
-            coreAddress,
-            name,
-            imageUrl: image_url || getFallbackImage(coreAddress),
-            // If DAO has no proposals, make it less visible and give it a
-            // tooltip to indicate that it may not be active.
-            ...(proposalCount === 0 && {
-              className: 'opacity-50',
-              tooltip: t('info.inactiveDaoTooltip'),
-              sortLast: true,
-            }),
-          })
-        )
-    : // Otherwise when filter is empty, display featured DAOs.
-    featuredDaosLoading.loading
-    ? []
-    : featuredDaosLoading.data
+  const daos = [
+    ...(options.filter
+      ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents.flat())
+          .filter(({ value }) => !!value?.config)
+          .map(
+            ({
+              chainId,
+              id: coreAddress,
+              value: {
+                config: { name, image_url },
+                version,
+                proposalCount,
+              },
+            }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
+              chainId,
+              coreAddress,
+              coreVersion: parseContractVersion(version.version),
+              name,
+              imageUrl: image_url || getFallbackImage(coreAddress),
+              // If DAO has no proposals, make it less visible and give it a
+              // tooltip to indicate that it may not be active.
+              ...(proposalCount === 0 && {
+                className: 'opacity-50',
+                tooltip: t('info.inactiveDaoTooltip'),
+                sortLast: true,
+              }),
+            })
+          )
+      : // Otherwise when filter is empty, display featured DAOs.
+      featuredDaosLoading.loading
+      ? []
+      : featuredDaosLoading.data),
+    // Add configured chains.
+    ...getConfiguredChains()
+      .filter(({ noGov }) => !noGov)
+      .map(
+        ({ chain }): CommandModalDaoInfo => ({
+          chainId: chain.chain_id,
+          coreAddress: chain.chain_name,
+          coreVersion: ContractVersion.Gov,
+          name: getDisplayNameForChainId(chain.chain_id),
+          imageUrl: getImageUrlForChainId(chain.chain_id),
+        })
+      ),
+  ]
 
   // When filter present, use search results. Otherwise use featured DAOs.
   const daosLoading = options.filter

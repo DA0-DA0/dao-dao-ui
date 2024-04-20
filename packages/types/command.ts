@@ -1,6 +1,8 @@
 import { ComponentType, ReactNode } from 'react'
 import { TFunction } from 'react-i18next'
 
+import { ContractVersion } from './features'
+
 export type StatefulCommandModalProps = {
   visible: boolean
   setVisible: (visible: boolean) => void
@@ -72,6 +74,7 @@ export type CommandModalContextMaker<MakerOptions extends {} = {}> = (
 export type CommandModalDaoInfo = {
   chainId: string
   coreAddress: string
+  coreVersion: ContractVersion | undefined
   name: string
   imageUrl: string
 }

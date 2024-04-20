@@ -15,9 +15,9 @@ import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/go
 
 import { GovActionsProvider } from '../../actions'
 import { useLoadingGovProposal } from '../../hooks'
+import { DaoProposalProps } from '../dao/DaoPageWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { GovProposalPageWrapperProps } from './GovPageWrapper'
 import { GovProposalContentDisplay } from './GovProposalContentDisplay'
 import {
   GovProposalStatusAndInfo,
@@ -115,19 +115,19 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   )
 }
 
-export const GovProposal = ({
-  proposalId,
-}: Pick<GovProposalPageWrapperProps, 'proposalId'>) => {
+export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
   const { chain_id: chainId } = useChain()
   const proposalLoading = useCachedLoading(
-    govProposalSelector({
-      chainId,
-      proposalId: Number(proposalId),
-    }),
+    proposalInfo
+      ? govProposalSelector({
+          chainId,
+          proposalId: Number(proposalInfo.id),
+        })
+      : undefined,
     undefined
   )
 
-  return proposalId ? (
+  return proposalInfo ? (
     <SuspenseLoader
       fallback={<PageLoader />}
       forceFallback={proposalLoading.loading || !proposalLoading.data}

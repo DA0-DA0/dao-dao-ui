@@ -10,6 +10,7 @@ import {
 import {
   DaoCoreV2Selectors,
   accountsSelector,
+  contractInfoSelector,
   genericTokenSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -21,6 +22,8 @@ import {
 import {
   AccountTxSave,
   AccountType,
+  ContractVersion,
+  ContractVersionInfo,
   LazyDaoCardProps,
   LazyNftCardInfo,
   TokenCardInfo,
@@ -37,6 +40,7 @@ import {
   getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { followingDaosSelector } from './dao/following'
@@ -392,6 +396,7 @@ export const lazyWalletDaosSelector = selectorFamily<
     ({ get }) => {
       const daos: {
         dao: string
+        info: ContractVersionInfo
         config: Config
         proposalCount: number
       }[] = get(
@@ -407,9 +412,11 @@ export const lazyWalletDaosSelector = selectorFamily<
       }
 
       const lazyDaoCards = daos.map(
-        ({ dao, config, proposalCount }): LazyDaoCardProps => ({
+        ({ dao, info, config, proposalCount }): LazyDaoCardProps => ({
           chainId,
           coreAddress: dao,
+          coreVersion:
+            parseContractVersion(info.version) || ContractVersion.Unknown,
           name: config.name,
           description: config.description,
           imageUrl: config.image_url || getFallbackImage(dao),
@@ -441,26 +448,36 @@ export const lazyWalletFollowingDaosSelector = selectorFamily<
       const daosWithConfigs = get(
         waitForAny(
           daos.map((dao) =>
-            DaoCoreV2Selectors.configSelector({
-              chainId,
-              contractAddress: dao,
-              params: [],
-            })
+            waitForAll([
+              contractInfoSelector({
+                chainId,
+                contractAddress: dao,
+              }),
+              DaoCoreV2Selectors.configSelector({
+                chainId,
+                contractAddress: dao,
+                params: [],
+              }),
+            ])
           )
         )
       ).flatMap((loadable, index) =>
-        loadable.contents
+        loadable.state === 'hasValue'
           ? {
               coreAddress: daos[index],
-              config: loadable.contents,
+              coreVersion:
+                parseContractVersion(loadable.contents[0].info.version) ||
+                ContractVersion.Unknown,
+              config: loadable.contents[1],
             }
           : []
       )
 
       const lazyDaoCards = daosWithConfigs.map(
-        ({ coreAddress, config }): LazyDaoCardProps => ({
+        ({ coreAddress, coreVersion, config }): LazyDaoCardProps => ({
           chainId,
           coreAddress,
+          coreVersion,
           name: config.name,
           description: config.description,
           imageUrl: config.image_url || getFallbackImage(coreAddress),
