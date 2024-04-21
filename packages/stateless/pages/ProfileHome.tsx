@@ -10,6 +10,7 @@ import {
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 import {
+  PAGE_PADDING_HORIZONTAL_CLASSES,
   UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
@@ -79,8 +80,9 @@ export const ProfileHome = ({
           'sticky z-20 flex flex-col items-stretch bg-background-base',
           UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
           // Only undo horizontal page padding on mobile, not desktop.
-          'md:!mx-0',
-          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
+          'md:!mx-0 md:!px-0',
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
+          PAGE_PADDING_HORIZONTAL_CLASSES
         )}
       >
         <TabBar

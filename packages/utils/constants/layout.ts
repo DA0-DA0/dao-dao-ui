@@ -9,8 +9,7 @@ export const PAGE_PADDING_RIGHT_CLASS = 'pr-6'
 /**
  * The page content's horizontal padding used in `DappLayout` and `SdaLayout`.
  */
-export const PAGE_PADDING_HORIZONTAL_CLASSES =
-  PAGE_PADDING_LEFT_CLASS + ' ' + PAGE_PADDING_RIGHT_CLASS
+export const PAGE_PADDING_HORIZONTAL_CLASSES = `${PAGE_PADDING_LEFT_CLASS} ${PAGE_PADDING_RIGHT_CLASS}`
 /**
  * Classes usable by page content to undo the default horizontal page padding.
  * Some pages may need to set their own padding or add content that stretches
