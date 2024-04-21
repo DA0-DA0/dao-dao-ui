@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 
-import { searchDaosSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { navigatingToHrefAtom, searchDaosSelector } from '@dao-dao/state/recoil'
+import { useCachedLoadable, useDaoNavHelpers } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
   CommandModalContextSectionItem,
@@ -43,6 +43,7 @@ export const useFollowingAndFilteredDaosSections = ({
   const chains = getSupportedChains()
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const followingDaosLoading = useLoadingFollowingDaoCardInfos()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const queryResults = useCachedLoadable(
     options.filter
@@ -64,6 +65,8 @@ export const useFollowingAndFilteredDaosSections = ({
         )
       : undefined
   )
+
+  const navigatingToHref = useRecoilValue(navigatingToHrefAtom)
 
   // Use query results if filter is present.
   const daos = [
@@ -92,6 +95,7 @@ export const useFollowingAndFilteredDaosSections = ({
                 tooltip: t('info.inactiveDaoTooltip'),
                 sortLast: true,
               }),
+              loading: navigatingToHref === getDaoPath(coreAddress),
             })
           )
       : // Otherwise when filter is empty, display featured DAOs.
@@ -99,17 +103,38 @@ export const useFollowingAndFilteredDaosSections = ({
       ? []
       : featuredDaosLoading.data),
     // Add configured chains.
-    ...getConfiguredChains()
-      .filter(({ noGov }) => !noGov)
-      .map(
-        ({ chain }): CommandModalDaoInfo => ({
-          chainId: chain.chain_id,
-          coreAddress: mustGetConfiguredChainConfig(chain.chain_id).name,
+    ...getConfiguredChains().flatMap(
+      ({
+        chainId,
+        noGov,
+      }): CommandModalContextSectionItem<CommandModalDaoInfo> | [] => {
+        if (noGov) {
+          return []
+        }
+
+        const chainName = mustGetConfiguredChainConfig(chainId).name
+        // Ignore chain if followed since they show up in a separate section.
+        if (
+          !followingDaosLoading.loading &&
+          followingDaosLoading.data.some(
+            (following) =>
+              following.chainId === chainId &&
+              following.coreVersion === ContractVersion.Gov
+          )
+        ) {
+          return []
+        }
+
+        return {
+          chainId,
+          coreAddress: chainName,
           coreVersion: ContractVersion.Gov,
-          name: getDisplayNameForChainId(chain.chain_id),
-          imageUrl: getImageUrlForChainId(chain.chain_id),
-        })
-      ),
+          name: getDisplayNameForChainId(chainId),
+          imageUrl: getImageUrlForChainId(chainId),
+          loading: navigatingToHref === getDaoPath(chainName),
+        }
+      }
+    ),
   ]
 
   // When filter present, use search results. Otherwise use featured DAOs.
