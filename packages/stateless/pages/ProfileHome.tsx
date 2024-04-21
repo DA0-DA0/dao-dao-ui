@@ -60,6 +60,18 @@ export const ProfileHome = ({
   // Auto scroll to top of tab on change.
   const { tabBarRef, tabContainerRef } = useTabBarScrollReset({
     selectedTabId,
+    // On mobile, account for top margin of container. The offsets correspond to
+    // the margins set by `UNDO_PAGE_PADDING_TOP_CLASSES`.
+    scrollOffset:
+      typeof window !== 'undefined'
+        ? // Below the `sm` tailwind selector, the smaller margin takes effect (-mt-6).
+          window.innerWidth < 640
+          ? -24
+          : // Above `sm` and below the `md` tailwind selector, the larger margin takes effect (sm:-mt-10).
+          window.innerWidth < 768
+          ? -40
+          : undefined
+        : undefined,
   })
 
   return (
@@ -103,9 +115,7 @@ export const ProfileHome = ({
       {/* Don't render a tab unless visible. */}
       {selectedTab && (
         <div
-          className={clsx(
-            'grow flex flex-col justify-start items-stretch pb-4 pt-6'
-          )}
+          className="grow flex flex-col justify-start items-stretch pb-4 pt-6"
           ref={tabContainerRef}
         >
           <WalletActionsProvider

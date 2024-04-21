@@ -9,6 +9,10 @@ export type UseTabBarScrollResetOptions = {
    * The selected tab.
    */
   selectedTabId: string
+  /**
+   * Optionally offset the scroll.
+   */
+  scrollOffset?: number
 }
 
 export type UseTabBarScrollResetReturn = {
@@ -31,6 +35,7 @@ export type UseTabBarScrollResetReturn = {
  */
 export const useTabBarScrollReset = ({
   selectedTabId,
+  scrollOffset = 0,
 }: UseTabBarScrollResetOptions): UseTabBarScrollResetReturn => {
   const pageHeaderRef = useAppContextIfAvailable()?.pageHeaderRef
 
@@ -74,10 +79,16 @@ export const useTabBarScrollReset = ({
       top:
         tabContainerRef.current.offsetTop +
         scrollableParentPaddingTop -
-        tabBarRect.height,
+        tabBarRect.height +
+        scrollOffset,
       behavior: 'smooth',
     })
-  }, [pageHeaderRef, selectedTabId])
+
+    // Only scroll when tab changes (i.e. changes in scrollOffset should only
+    // take effect after a tab change).
+    //
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTabId])
 
   return {
     tabBarRef,
