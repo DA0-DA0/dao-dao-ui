@@ -283,6 +283,7 @@ export const ActionEditor = ({
                     if (scrollToNewActions) {
                       node.scrollIntoView({
                         behavior: 'smooth',
+                        block: 'center',
                       })
                     }
                   }
