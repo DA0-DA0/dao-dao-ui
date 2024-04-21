@@ -10,9 +10,6 @@ import {
   WalletProfileHeaderProps,
 } from '@dao-dao/types'
 import {
-  PAGE_PADDING_BOTTOM_CLASSES,
-  PAGE_PADDING_HORIZONTAL_CLASSES,
-  UNDO_PAGE_PADDING_BOTTOM_CLASSES,
   UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES,
   UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
@@ -63,11 +60,9 @@ export const ProfileHome = ({
     <div
       className={clsx(
         'relative z-[1] flex flex-col items-stretch gap-6 min-h-full',
-        // Only undo page padding on mobile, not desktop.
-        'md:!m-0',
-        UNDO_PAGE_PADDING_TOP_CLASSES,
-        UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
-        UNDO_PAGE_PADDING_BOTTOM_CLASSES
+        // Only undo top page padding on mobile, not desktop.
+        'md:!mt-0',
+        UNDO_PAGE_PADDING_TOP_CLASSES
       )}
     >
       {/* Only show on desktop. On mobile, shows on EditProfile page. */}
@@ -82,9 +77,10 @@ export const ProfileHome = ({
           // Stick to the top when the tab content scrolls down. Use higher z
           // index to make sure this stays above tab content.
           'sticky z-20 flex flex-col items-stretch bg-background-base',
-          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP
-          // UNDO_PAGE_PADDING_HORIZONTAL_CLASSES,
-          // PAGE_PADDING_HORIZONTAL_CLASSES
+          UNDO_PAGE_PADDING_TOP_CLASSES_WITH_TOP,
+          // Only undo horizontal page padding on mobile, not desktop.
+          'md:!mx-0',
+          UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
         )}
       >
         <TabBar
@@ -100,11 +96,7 @@ export const ProfileHome = ({
       {selectedTab && (
         <div
           className={clsx(
-            'grow flex flex-col justify-start items-stretch mb-4',
-            // Redo horizontal and bottom page padding on mobile, not desktop.
-            'md:!px-0 md:!pb-0',
-            PAGE_PADDING_HORIZONTAL_CLASSES,
-            PAGE_PADDING_BOTTOM_CLASSES
+            'grow flex flex-col justify-start items-stretch mb-4'
           )}
         >
           <WalletActionsProvider
