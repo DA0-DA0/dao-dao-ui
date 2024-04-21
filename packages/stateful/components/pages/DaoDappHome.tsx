@@ -1,17 +1,15 @@
-import { Add, ArrowOutwardRounded } from '@mui/icons-material'
+import { Add } from '@mui/icons-material'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   DaoDappTabbedHome,
   FollowingToggle,
-  useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
-  ContractVersion,
   DaoDappTabbedHomeProps,
   DaoTabId,
   DaoTabWithComponent,
@@ -28,7 +26,6 @@ import {
   useMembership,
 } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
-import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -46,7 +43,6 @@ export const InnerDaoDappHome = ({
 }: InnerDaoDappHomeProps) => {
   const { t } = useTranslation()
   const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-  const { config: chainConfig } = useConfiguredChainContext()
 
   const daoInfo = useDaoInfoContext()
 
@@ -113,37 +109,26 @@ export const InnerDaoDappHome = ({
           current: daoInfo.name,
         }}
         rightNode={
-          daoInfo.coreVersion === ContractVersion.Gov ? (
-            chainConfig?.explorerUrlTemplates?.gov ? (
-              // Go to governance page of chain explorer.
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={chainConfig.explorerUrlTemplates.gov}
-                variant="ghost"
-              />
-            ) : undefined
-          ) : (
-            <>
-              {/* Show propose button on desktop. */}
-              <ButtonLink
-                className="hidden md:block"
-                contentContainerClassName="text-text-body text-base !gap-1.5"
-                href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
-                variant="ghost"
-              >
-                <Add className="!h-5 !w-5 !text-icon-primary" />
-                {t('button.propose')}
-              </ButtonLink>
+          <>
+            {/* Show propose button on desktop. */}
+            <ButtonLink
+              className="hidden md:block"
+              contentContainerClassName="text-text-body text-base !gap-1.5"
+              href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
+              variant="ghost"
+            >
+              <Add className="!h-5 !w-5 !text-icon-primary" />
+              {t('button.propose')}
+            </ButtonLink>
 
-              {/* Show follow button on mobile. */}
-              <FollowingToggle
-                {...follow}
-                className="md:hidden"
-                contentContainerClassName="text-text-body text-sm"
-                variant="ghost"
-              />
-            </>
-          )
+            {/* Show follow button on mobile. */}
+            <FollowingToggle
+              {...follow}
+              className="md:hidden"
+              contentContainerClassName="text-text-body text-sm"
+              variant="ghost"
+            />
+          </>
         }
       />
 
