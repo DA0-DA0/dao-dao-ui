@@ -2,9 +2,9 @@ import uniq from 'lodash.uniq'
 import { useCallback, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { refreshFollowingDaosAtom } from '@dao-dao/state'
+import { refreshFollowingDaosAtom, walletChainIdAtom } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import {
@@ -36,10 +36,18 @@ export type UseFollowingDaosReturn = {
 export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { t } = useTranslation()
 
+  // Get the main connected wallet chain ID and use it to manage the profile,
+  // since the user may be following a chain that the wallet has not connected
+  // to before. This will likely happen when interacting with chain governance
+  // on non-DAO DAO supported chains.
+  const walletChainId = useRecoilValue(walletChainIdAtom)
+
   // Don't load chain-specific profile because the wallet may not be connected
   // to that chain and thus the correct profile won't load. Instead, fetch the
   // chains from the currently connected profile and find the correct one.
-  const { connected, connecting, chains } = useProfile()
+  const { connected, connecting, chains } = useProfile({
+    chainId: walletChainId,
+  })
 
   // Get current hex public key from profile's chains, falling back to the
   // profile's first chain if the current chain is not found.
@@ -82,10 +90,12 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { ready, postRequest } = useCfWorkerAuthPostRequest(
     KVPK_API_BASE,
     'Update Following',
-    chainId
+    walletChainId
   )
 
-  const { profile, addChains } = useManageProfile()
+  const { profile, addChains } = useManageProfile({
+    chainId: walletChainId,
+  })
 
   // Turn this into a reference so we can use it in `setFollowing` without
   // memoizing.

@@ -80,13 +80,11 @@ export const useLoadingFeaturedDaoCardInfos = (
 }
 
 export const useLoadingFollowingDaoCardInfos = (
-  // If passed, will only load DAOs from this chain. Otherwise, will load
-  // from all chains.
+  // If passed, will only load DAOs from this chain. Otherwise, will load from
+  // all chains.
   chainId?: string
 ): LoadingData<DaoCardInfo[]> => {
-  const { chains } = useProfile({
-    onlySupported: true,
-  })
+  const { chains } = useProfile()
   const filteredChains = chains.loading
     ? []
     : chains.data.filter((chain) => !chainId || chainId === chain.chainId)

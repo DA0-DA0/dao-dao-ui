@@ -13,7 +13,7 @@ import {
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { ChainId, ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { SITE_URL, getDaoPath, getDisplayNameForChainId } from '@dao-dao/utils'
+import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   children: _,
@@ -42,15 +42,9 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
   appMode: DaoPageMode.Dapp,
-  getProps: async ({ chain, coreVersion, coreAddress }) => ({
+  getProps: async ({ coreVersion, coreAddress }) => ({
     url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress),
     followingTitle:
       coreVersion === ContractVersion.Gov ? 'Governance' : undefined,
-    overrideDescription:
-      coreVersion === ContractVersion.Gov
-        ? `The native chain governance for ${getDisplayNameForChainId(
-            chain.chain_id
-          )}.`
-        : undefined,
   }),
 })

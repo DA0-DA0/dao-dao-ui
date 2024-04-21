@@ -46,7 +46,14 @@ import {
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
 
-// Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
+/**
+ * An object that represents a DAO across the app.
+ *
+ * If `coreVersion` is `ContractVersion.Gov`, then this DAO refers to a chain's
+ * native x/gov module governance. The `coreAddress` should be set to the
+ * configured `name` of the chain in the config, which is used in the URL to
+ * link to this DAO's page.
+ */
 export type DaoInfo = {
   chainId: string
   coreAddress: string

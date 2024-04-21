@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
-import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { FeedDaoWithItems, FeedFilter, FeedState } from '@dao-dao/types'
-import { getFallbackImage } from '@dao-dao/utils'
 
+import { lazyDaoCardPropsSelector } from '../../recoil'
 import { getSources } from '../core'
 
 export type UseFeedOptions = {
@@ -117,22 +116,21 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
       }
     }, [memoizedSources])
 
-  // Get DAO configs for all DAOs found.
-  const daoConfigs = useCachedLoadable(
+  // Get info for all DAOs found.
+  const daoLazyCardProps = useCachedLoadable(
     waitForAll(
       sourceDaosWithItems.map(({ chainId, coreAddress }) =>
-        configSelector({
+        lazyDaoCardPropsSelector({
           chainId,
-          contractAddress: coreAddress,
-          params: [],
+          coreAddress,
         })
       )
     )
   )
 
-  // Combine DAO configs with DAOs and items.
+  // Combine DAO info with DAOs and items.
   const daosWithItems = useMemo(() => {
-    if (daoConfigs.state !== 'hasValue') {
+    if (daoLazyCardProps.state !== 'hasValue') {
       return []
     }
 
@@ -142,14 +140,12 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
           { chainId, coreAddress, items },
           index
         ): FeedDaoWithItems | undefined =>
-          daoConfigs.contents[index] && {
+          daoLazyCardProps.contents[index] && {
             dao: {
               chainId,
               coreAddress,
-              name: daoConfigs.contents[index].name,
-              imageUrl:
-                daoConfigs.contents[index].image_url ||
-                getFallbackImage(coreAddress),
+              name: daoLazyCardProps.contents[index].name,
+              imageUrl: daoLazyCardProps.contents[index].imageUrl,
             },
             items,
           }
@@ -157,7 +153,7 @@ export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
       .filter(
         (daoWithItems): daoWithItems is FeedDaoWithItems => !!daoWithItems
       )
-  }, [daoConfigs, sourceDaosWithItems])
+  }, [daoLazyCardProps, sourceDaosWithItems])
 
   return {
     loading: sources.some(({ data: { loading } }) => loading),

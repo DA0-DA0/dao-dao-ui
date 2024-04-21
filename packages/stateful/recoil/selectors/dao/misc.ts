@@ -38,14 +38,16 @@ import {
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
+  getChainGovernanceDaoDescription,
   getConfiguredChainConfig,
   getDaoProposalPath,
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
-  getSupportedChainConfig,
   getSupportedFeatures,
+  isConfiguredChainName,
   isFeatureSupportedByVersion,
+  mustGetConfiguredChainConfig,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -171,30 +173,14 @@ export const daoInfoSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
-      const chainConfig = getConfiguredChainConfig(chainId)
-      const isGovModule =
-        !!chainConfig &&
-        // If coreAddress is name of configured chain...
-        (chainConfig?.name === coreAddress ||
-          // Or if the address is the gov module of the chain...
-          get(
-            addressIsModuleSelector({
-              chainId,
-              address: coreAddress,
-              moduleName: 'gov',
-            })
-          ))
-
-      if (isGovModule) {
-        const govModuleAddress =
-          chainConfig.name === coreAddress
-            ? get(
-                moduleAddressSelector({
-                  chainId,
-                  name: 'gov',
-                })
-              )
-            : coreAddress
+      // Native chain governance.
+      if (isConfiguredChainName(chainId, coreAddress)) {
+        const govModuleAddress = get(
+          moduleAddressSelector({
+            chainId,
+            name: 'gov',
+          })
+        )
         const accounts = get(
           accountsSelector({
             chainId,
@@ -204,7 +190,7 @@ export const daoInfoSelector = selectorFamily<
 
         return {
           chainId,
-          coreAddress: chainConfig.name,
+          coreAddress: mustGetConfiguredChainConfig(chainId).name,
           coreVersion: ContractVersion.Gov,
           supportedFeatures: Object.values(Feature).reduce(
             (acc, feature) => ({
@@ -217,7 +203,7 @@ export const daoInfoSelector = selectorFamily<
           votingModuleContractName: '',
           proposalModules: [],
           name: getDisplayNameForChainId(chainId),
-          description: '',
+          description: getChainGovernanceDaoDescription(chainId),
           imageUrl: getImageUrlForChainId(chainId),
           created: undefined,
           isActive: true,
@@ -460,7 +446,7 @@ export const daoParentInfoSelector = selectorFamily<
           })
         )
       ) {
-        const chainConfig = getSupportedChainConfig(chainId)
+        const chainConfig = getConfiguredChainConfig(chainId)
         return (
           chainConfig && {
             chainId,

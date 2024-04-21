@@ -16,6 +16,7 @@ import {
   getFallbackImage,
   getImageUrlForChainId,
   getSupportedChains,
+  mustGetConfiguredChainConfig,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -103,7 +104,7 @@ export const useFollowingAndFilteredDaosSections = ({
       .map(
         ({ chain }): CommandModalDaoInfo => ({
           chainId: chain.chain_id,
-          coreAddress: chain.chain_name,
+          coreAddress: mustGetConfiguredChainConfig(chain.chain_id).name,
           coreVersion: ContractVersion.Gov,
           name: getDisplayNameForChainId(chain.chain_id),
           imageUrl: getImageUrlForChainId(chain.chain_id),

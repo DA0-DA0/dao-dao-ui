@@ -122,9 +122,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useAutoRefreshData()
 
   //! Following DAOs
-  const { chains } = useProfile({
-    onlySupported: true,
-  })
+  const { chains } = useProfile()
   const followingDaoDropdownInfos = useCachedLoading(
     !chains.loading
       ? waitForAll(

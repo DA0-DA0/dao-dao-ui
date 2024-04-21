@@ -8,6 +8,7 @@ import {
   StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
+import { isConfiguredChainName } from '@dao-dao/utils'
 
 import { LinkWrapper, ProposalLine } from '../../../components'
 import {
@@ -25,10 +26,13 @@ export const feedVetoableProposalsSelector = selectorFamily<
     ({ get }) => {
       const followingDaos = get(
         followingDaosSelector({
-          walletPublicKey: hexPublicKey,
           chainId,
+          walletPublicKey: hexPublicKey,
         })
       )
+        // A chain's x/gov module cannot have vetoable proposals.
+        .filter((dao) => !isConfiguredChainName(chainId, dao))
+
       const followingDaoConfigs = get(
         waitForAll(
           followingDaos.map((coreAddress) =>

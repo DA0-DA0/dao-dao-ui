@@ -36,7 +36,12 @@ export const MAX_NUM_PROPOSAL_CHOICES = 20
 // Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 
-// Following DAOs
+/**
+ * Prefix for the following DAOs storage in kvpk. A DAO is being followed if
+ * `following:CHAIN_ID:KEY` is set, where KEY is a DAO's core address or the
+ * name of a chain, which represents following the chain's native governance
+ * (x/gov module).
+ */
 export const FOLLOWING_DAOS_PREFIX = 'following:'
 
 // The key for the item in the DAO core contract that contains the payroll

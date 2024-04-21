@@ -14,7 +14,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
-  ContractVersion,
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
@@ -118,10 +117,9 @@ export const DaoPageWrapper = ({
     [serializedInfo, accounts]
   )
 
-  // Load DAO info once static props are loaded so it's more up to date, if not
-  // a chain governance page which has no DAO info.
+  // Load DAO info once static props are loaded so it's more up to date.
   const loadingDaoInfo = useCachedLoadingWithError(
-    serializedInfo && serializedInfo.coreVersion !== ContractVersion.Gov
+    serializedInfo
       ? daoInfoSelector({
           chainId: serializedInfo.chainId,
           coreAddress: serializedInfo.coreAddress,

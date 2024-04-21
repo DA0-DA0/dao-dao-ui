@@ -26,7 +26,6 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
   const { chain_id: chainId } = useChain()
   const { connected, chains } = useProfile({
     address,
-    onlySupported: true,
   })
 
   const missingChains =
@@ -114,7 +113,6 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
       {missingChains && connected && (
         <ProfileAddChains
           className="self-end"
-          onlySupported
           prompt={t('button.addChains')}
           promptTooltip={t('info.supportedChainDaosNotShowingUpPrompt')}
         />

@@ -6,6 +6,7 @@ import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getTokenForChainIdAndDenom,
+  isConfiguredChainName,
 } from '@dao-dao/utils'
 
 import {
@@ -155,6 +156,11 @@ export const daoTvlSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
+      // Native chain x/gov module.
+      if (isConfiguredChainName(chainId, coreAddress)) {
+        return get(communityPoolTvlSelector({ chainId }))
+      }
+
       const timestamp = new Date()
 
       const { total: amount } = get(

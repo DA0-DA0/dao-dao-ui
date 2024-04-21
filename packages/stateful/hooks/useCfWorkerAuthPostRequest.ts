@@ -9,7 +9,10 @@ import { useWallet } from './useWallet'
 // Cloudflare KV is slow to update, so keep track of the last successful nonce
 // that worked so we don't have to wait for the nonce query to update. Make this
 // a global variable so it persists across all hook uses.
-const lastSuccessfulNonceForApi: Record<string, number | undefined> = {}
+const lastSuccessfulNonceForApiAndPublicKey: Record<
+  string,
+  number | undefined
+> = {}
 
 /**
  * Hook that makes it easy to interact with our various Cloudflare Workers that
@@ -80,7 +83,8 @@ export const useCfWorkerAuthPostRequest = (
 
     // If nonce was already used, manually increment.
     let nonce = nonceResponse.nonce
-    const lastSuccessfulNonce = lastSuccessfulNonceForApi[apiBase] ?? -1
+    const lastSuccessfulNonce =
+      lastSuccessfulNonceForApiAndPublicKey[apiBase + ':' + hexPublicKey] ?? -1
     if (nonce <= lastSuccessfulNonce) {
       nonce = lastSuccessfulNonce + 1
     }
@@ -138,7 +142,8 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       // If succeeded, store nonce.
-      lastSuccessfulNonceForApi[apiBase] = nonce
+      lastSuccessfulNonceForApiAndPublicKey[apiBase + ':' + hexPublicKey] =
+        nonce
 
       // If response OK, return response body.
       return await response.json()

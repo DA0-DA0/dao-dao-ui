@@ -6,18 +6,13 @@ import {
   useDaoNavHelpers,
   useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
-import { GovProposalWithDecodedContent } from '@dao-dao/types'
+import { StatefulGovProposalLineProps } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposalWalletVoteInfo } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
 
-export type GovProposalLineProps = {
-  proposalId: string
-  proposal: GovProposalWithDecodedContent
-}
-
-export const GovProposalLine = (props: GovProposalLineProps) => {
+export const GovProposalLine = (props: StatefulGovProposalLineProps) => {
   const { proposalId, proposal } = props
   const {
     config: { name },

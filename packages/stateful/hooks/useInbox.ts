@@ -12,9 +12,7 @@ import { useProfile } from './useProfile'
 import { useOnWebSocketMessage } from './useWebSocket'
 
 export const useInbox = (): InboxState => {
-  const { chains, uniquePublicKeys } = useProfile({
-    onlySupported: true,
-  })
+  const { chains, uniquePublicKeys } = useProfile()
 
   const setRefresh = useSetRecoilState(refreshInboxItemsAtom)
   const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])

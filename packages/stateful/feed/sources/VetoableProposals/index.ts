@@ -28,9 +28,7 @@ export const VetoableProposals: FeedSource<
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const { chains } = useProfile({
-      onlySupported: true,
-    })
+    const { chains } = useProfile()
     const filteredChains = chains.loading
       ? []
       : chains.data.filter(
@@ -71,8 +69,8 @@ export const VetoableProposals: FeedSource<
             ({ chainId }, index) =>
               followingDaosLoadable.contents[index]?.map((coreAddress) =>
                 webSocketChannelNameForDao({
-                  coreAddress,
                   chainId,
+                  coreAddress,
                 })
               ) || []
           )

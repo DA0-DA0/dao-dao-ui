@@ -1,6 +1,7 @@
 import uniq from 'lodash.uniq'
 import {
   atomFamily,
+  constSelector,
   selectorFamily,
   waitForAll,
   waitForAllSettled,
@@ -11,6 +12,7 @@ import { DaoDropdownInfo, ProposalModule, WithChainId } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
   KVPK_API_BASE,
+  isConfiguredChainName,
   keepSubDaosInDropdown,
   subDaoExistsInDropdown,
 } from '@dao-dao/utils'
@@ -139,13 +141,16 @@ export const followingDaosWithProposalModulesSelector = selectorFamily<
     (params) =>
     ({ get }) => {
       const following = get(followingDaosSelector(params))
+
       const proposalModules = get(
         waitForAll(
           following.map((coreAddress) =>
-            daoCoreProposalModulesSelector({
-              coreAddress,
-              chainId: params.chainId,
-            })
+            isConfiguredChainName(params.chainId, coreAddress)
+              ? constSelector([])
+              : daoCoreProposalModulesSelector({
+                  chainId: params.chainId,
+                  coreAddress,
+                })
           )
         )
       )

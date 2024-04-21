@@ -12,11 +12,12 @@ import {
   useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
+import { StatefulGovProposalLineProps } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { chainIsIndexed } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../LinkWrapper'
-import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
+import { GovProposalLine } from './GovProposalLine'
 
 const PROPSALS_PER_PAGE = 20
 
@@ -91,7 +92,7 @@ export const GovProposalList = () => {
   }, [loadingAllGovProposals, maxPage])
 
   const [historyProposals, setHistoryProposals] = useState<
-    GovProposalLineProps[]
+    StatefulGovProposalLineProps[]
   >([])
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export const GovProposalList = () => {
           prop.proposal.status === ProposalStatus.PROPOSAL_STATUS_FAILED
       )
       .map(
-        (proposal): GovProposalLineProps => ({
+        (proposal): StatefulGovProposalLineProps => ({
           proposalId: proposal.id.toString(),
           proposal,
         })
@@ -128,7 +129,7 @@ export const GovProposalList = () => {
     ? []
     : openGovProposalsVotingPeriod.data.proposals
         .map(
-          (proposal): GovProposalLineProps => ({
+          (proposal): StatefulGovProposalLineProps => ({
             proposalId: proposal.id.toString(),
             proposal,
           })
@@ -143,7 +144,7 @@ export const GovProposalList = () => {
     ? []
     : govProposalsDepositPeriod.data.proposals
         .map(
-          (proposal): GovProposalLineProps => ({
+          (proposal): StatefulGovProposalLineProps => ({
             proposalId: proposal.id.toString(),
             proposal,
           })
@@ -212,7 +213,7 @@ export const GovProposalList = () => {
                   searchedGovProposals.loading || searchedGovProposals.errored
                     ? []
                     : searchedGovProposals.data.proposals.map(
-                        (proposal): GovProposalLineProps => ({
+                        (proposal): StatefulGovProposalLineProps => ({
                           proposalId: proposal.id.toString(),
                           proposal,
                         })

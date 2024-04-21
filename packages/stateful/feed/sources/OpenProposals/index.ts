@@ -8,24 +8,23 @@ import {
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
+import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { ProposalLine } from '../../../components/ProposalLine'
 import { useOnWebSocketMessage, useProfile } from '../../../hooks'
 import { followingDaosSelector } from '../../../recoil'
+import { OpenProposalsProposalLine } from './OpenProposalsProposalLineProps'
 import { feedOpenProposalsSelector } from './state'
+import { OpenProposalsProposalLineProps } from './types'
 
-export const OpenProposals: FeedSource<StatefulProposalLineProps> = {
+export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
   id: 'open_proposals',
-  Renderer: ProposalLine,
+  Renderer: OpenProposalsProposalLine,
   useData: (filter) => {
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const { chains } = useProfile({
-      onlySupported: true,
-    })
+    const { chains } = useProfile()
     const filteredChains = chains.loading
       ? []
       : chains.data.filter(
@@ -67,8 +66,8 @@ export const OpenProposals: FeedSource<StatefulProposalLineProps> = {
             ({ chainId }, index) =>
               followingDaosLoadable.contents[index]?.map((coreAddress) =>
                 webSocketChannelNameForDao({
-                  coreAddress,
                   chainId,
+                  coreAddress,
                 })
               ) || []
           )

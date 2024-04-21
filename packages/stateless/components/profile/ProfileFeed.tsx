@@ -62,7 +62,7 @@ export const ProfileFeed = ({
         <div className="flex flex-col gap-4">
           {daosWithItems.map(({ dao, items }) => (
             <Collapsible
-              key={dao.coreAddress}
+              key={dao.chainId + ':' + dao.coreAddress}
               imageUrl={dao.imageUrl}
               label={dao.name}
               link={{

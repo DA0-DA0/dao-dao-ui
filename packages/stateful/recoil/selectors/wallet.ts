@@ -8,9 +8,7 @@ import {
 } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
   accountsSelector,
-  contractInfoSelector,
   genericTokenSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -43,6 +41,7 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
+import { lazyDaoCardPropsSelector } from './dao'
 import { followingDaosSelector } from './dao/following'
 import {
   walletLazyNftCardInfosSelector,
@@ -445,46 +444,15 @@ export const lazyWalletFollowingDaosSelector = selectorFamily<
         })
       )
 
-      const daosWithConfigs = get(
+      return get(
         waitForAny(
           daos.map((dao) =>
-            waitForAll([
-              contractInfoSelector({
-                chainId,
-                contractAddress: dao,
-              }),
-              DaoCoreV2Selectors.configSelector({
-                chainId,
-                contractAddress: dao,
-                params: [],
-              }),
-            ])
+            lazyDaoCardPropsSelector({
+              chainId,
+              coreAddress: dao,
+            })
           )
         )
-      ).flatMap((loadable, index) =>
-        loadable.state === 'hasValue'
-          ? {
-              coreAddress: daos[index],
-              coreVersion:
-                parseContractVersion(loadable.contents[0].info.version) ||
-                ContractVersion.Unknown,
-              config: loadable.contents[1],
-            }
-          : []
-      )
-
-      const lazyDaoCards = daosWithConfigs.map(
-        ({ coreAddress, coreVersion, config }): LazyDaoCardProps => ({
-          chainId,
-          coreAddress,
-          coreVersion,
-          name: config.name,
-          description: config.description,
-          imageUrl: config.image_url || getFallbackImage(coreAddress),
-          isInactive: INACTIVE_DAO_NAMES.includes(config.name),
-        })
-      )
-
-      return lazyDaoCards
+      ).flatMap((loadable) => loadable.valueMaybe() || [])
     },
 })

@@ -54,6 +54,7 @@ import {
   cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getChainForChainId,
+  getChainGovernanceDaoDescription,
   getChainIdForAddress,
   getConfiguredGovChainByName,
   getDaoPath,
@@ -165,6 +166,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           proposalModules: [],
         })) ?? {}
 
+      const description =
+        overrideDescription ?? getChainGovernanceDaoDescription(chain.chain_id)
       const props: DaoPageWrapperProps = {
         ...i18nProps,
         url: url ?? null,
@@ -177,11 +180,11 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ]
             .filter(Boolean)
             .join(' | '),
-        description: overrideDescription ?? '',
+        description,
         accentColor,
         serializedInfo: {
           chainId: chain.chain_id,
-          coreAddress: chainConfig.name,
+          coreAddress: chainName,
           coreVersion: ContractVersion.Gov,
           supportedFeatures: Object.values(Feature).reduce(
             (acc, feature) => ({
@@ -194,7 +197,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           votingModuleContractName: '',
           proposalModules: [],
           name: getDisplayNameForChainId(chain.chain_id),
-          description: overrideDescription ?? '',
+          description,
           imageUrl: getImageUrlForChainId(chain.chain_id),
           created: null,
           isActive: true,
@@ -216,9 +219,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       return {
         props,
-        // Regenerate the page at most once per `revalidate` seconds. Serves
-        // cached copy and refreshes in background.
-        revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
+        // No need to regenerate this page as the props for a chain's DAO are
+        // constant. The values above can only change when a new version of the
+        // frontend is deployed, in which case the static pages will regenerate.
+        revalidate: false,
       }
     }
 
