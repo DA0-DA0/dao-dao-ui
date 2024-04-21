@@ -18,7 +18,7 @@ import {
 } from '@dao-dao/utils'
 
 import { Loader, TabBar, WalletProfileHeader } from '../components'
-import { useChain } from '../hooks'
+import { useChain, useTabBarScrollReset } from '../hooks'
 
 export type ProfileHomeProps = {
   tabs: AccountTab[]
@@ -57,10 +57,15 @@ export const ProfileHome = ({
       : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
+  // Auto scroll to top of tab on change.
+  const { tabBarRef, tabContainerRef } = useTabBarScrollReset({
+    selectedTabId,
+  })
+
   return (
     <div
       className={clsx(
-        'relative z-[1] flex flex-col items-stretch gap-6 min-h-full',
+        'relative z-[1] flex flex-col items-stretch min-h-full',
         // Only undo top page padding on mobile, not desktop.
         'md:!mt-0',
         UNDO_PAGE_PADDING_TOP_CLASSES
@@ -68,7 +73,7 @@ export const ProfileHome = ({
     >
       {/* Only show on desktop. On mobile, shows on EditProfile page. */}
       <WalletProfileHeader
-        className="hidden md:flex"
+        className="hidden md:flex mb-6"
         editable
         {...headerProps}
       />
@@ -89,6 +94,7 @@ export const ProfileHome = ({
           onSelect={(tab) =>
             router.replace(`/${tab}`, undefined, { shallow: true })
           }
+          ref={tabBarRef}
           selectedTabId={selectedTabId}
           tabs={tabs}
         />
@@ -98,8 +104,9 @@ export const ProfileHome = ({
       {selectedTab && (
         <div
           className={clsx(
-            'grow flex flex-col justify-start items-stretch mb-4'
+            'grow flex flex-col justify-start items-stretch pb-4 pt-6'
           )}
+          ref={tabContainerRef}
         >
           <WalletActionsProvider
             address={

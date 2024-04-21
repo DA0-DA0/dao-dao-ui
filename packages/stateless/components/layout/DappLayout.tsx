@@ -29,17 +29,22 @@ export const DappLayout = ({
   ButtonLink,
   children,
 }: DappLayoutProps) => {
-  const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
+  const {
+    router: { pathname, asPath },
+    getDaoPath,
+    getDaoFromPath,
+  } = useDaoNavHelpers()
   const { responsiveNavigation, setPageHeaderRef } = useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
   // On DAO or non-DAO route change, close responsive bars and scroll to top.
   // When staying on the same DAO page, likely switching between tabs, so no
-  // need to reset scroll to the top.
-  const scrollPathDelta = router.asPath.startsWith(getDaoPath(''))
+  // need to reset scroll to the top. DAO tab scroll is handled in the DAO home
+  // page component.
+  const scrollPathDelta = asPath.startsWith(getDaoPath(''))
     ? getDaoFromPath()
-    : router.asPath
+    : pathname
   useEffect(() => {
     responsiveNavigation.enabled && responsiveNavigation.toggle()
 
