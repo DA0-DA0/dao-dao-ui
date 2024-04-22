@@ -42,15 +42,17 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
   }, [setRefreshProposalsId])
 
   const loadingProposal = useCachedLoading(
-    DaoProposalSingleCommonSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      chainId,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    }),
+    !isPreProposeApprovalProposal
+      ? DaoProposalSingleCommonSelectors.proposalSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+          params: [
+            {
+              proposalId: proposalNumber,
+            },
+          ],
+        })
+      : constSelector(undefined),
     undefined
   )
 

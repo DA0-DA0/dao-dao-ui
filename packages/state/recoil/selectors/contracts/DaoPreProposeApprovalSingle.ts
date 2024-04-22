@@ -7,8 +7,15 @@ import {
   HooksResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 
-import { DaoPreProposeApprovalSingleQueryClient } from '../../../contracts/DaoPreProposeApprovalSingle'
-import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
+import {
+  DaoPreProposeApprovalSingleClient,
+  DaoPreProposeApprovalSingleQueryClient,
+} from '../../../contracts/DaoPreProposeApprovalSingle'
+import {
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -26,6 +33,31 @@ export const queryClient = selectorFamily<
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoPreProposeApprovalSingleQueryClient(client, contractAddress)
+    },
+  dangerouslyAllowMutability: true,
+})
+
+export type ExecuteClientParams = WithChainId<{
+  contractAddress: string
+  sender: string
+}>
+
+export const executeClient = selectorFamily<
+  DaoPreProposeApprovalSingleClient | undefined,
+  ExecuteClientParams
+>({
+  key: 'daoPreProposeApprovalSingleExecuteClient',
+  get:
+    ({ chainId, contractAddress, sender }) =>
+    ({ get }) => {
+      const client = get(signingCosmWasmClientAtom({ chainId }))
+      if (!client) return
+
+      return new DaoPreProposeApprovalSingleClient(
+        client,
+        sender,
+        contractAddress
+      )
     },
   dangerouslyAllowMutability: true,
 })

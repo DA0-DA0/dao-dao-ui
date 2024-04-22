@@ -2,12 +2,17 @@ import {
   AccountCircleOutlined,
   HourglassTopRounded,
   RotateRightOutlined,
+  ThumbDown,
+  ThumbUp,
   ThumbUpOutlined,
   WhereToVoteOutlined,
 } from '@mui/icons-material'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   Logo,
   PreProposeApprovalProposalStatusMap,
   ProposalStatusAndInfoProps,
@@ -21,15 +26,20 @@ import {
   PreProposeApprovalProposalWithMeteadata,
   PreProposeModuleType,
 } from '@dao-dao/types'
-import { keyFromPreProposeStatus } from '@dao-dao/utils'
+import { keyFromPreProposeStatus, processError } from '@dao-dao/utils'
 
 import {
   ButtonLink,
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
+import { DaoPreProposeApprovalSingleHooks } from '../../../../hooks'
+import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useLoadingPreProposeApprovalProposal } from '../hooks'
+import {
+  useLoadingPreProposeApprovalProposal,
+  useProposalRefreshers,
+} from '../hooks'
 import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
 export const PreProposeApprovalProposalStatusAndInfo = (
@@ -64,6 +74,14 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
   const {
     proposalModule: { prefix, prePropose },
   } = useProposalModuleAdapterOptions()
+  const { isWalletConnected, address = '' } = useWallet()
+  const { refreshProposalAndAll } = useProposalRefreshers()
+
+  const [loading, setLoading] = useState<'approve' | 'reject' | false>(false)
+  const doExtension = DaoPreProposeApprovalSingleHooks.useExtension({
+    contractAddress: prePropose?.address ?? '',
+    sender: address,
+  })
 
   if (!prePropose || prePropose.type !== PreProposeModuleType.Approval) {
     return null
@@ -173,7 +191,98 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
     context: statusKey,
   })
 
+  const approve = async () => {
+    if (!isWalletConnected) {
+      toast.error(t('error.logInToContinue'))
+      return
+    }
+
+    setLoading('approve')
+    try {
+      await doExtension({
+        msg: {
+          approve: {
+            id: proposal.approval_id,
+          },
+        },
+      })
+
+      toast.success(t('success.proposalApproved'))
+
+      refreshProposalAndAll()
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const reject = async () => {
+    if (!isWalletConnected) {
+      toast.error(t('error.logInToContinue'))
+      return
+    }
+
+    setLoading('reject')
+    try {
+      await doExtension({
+        msg: {
+          reject: {
+            id: proposal.approval_id,
+          },
+        },
+      })
+
+      toast.success(t('success.proposalRejected'))
+
+      refreshProposalAndAll()
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <StatelessProposalStatusAndInfo {...props} info={info} status={status} />
+    <StatelessProposalStatusAndInfo
+      {...props}
+      action={
+        // If connected wallet is the approver, show buttons to approve or
+        // reject the pending proposal.
+        isWalletConnected && address === prePropose.config.approver
+          ? {
+              header: (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    center
+                    loading={loading === 'approve'}
+                    onClick={approve}
+                    size="lg"
+                    variant="secondary"
+                  >
+                    <ThumbUp className="!h-5 !w-5" />
+                    {t('button.approve')}
+                  </Button>
+
+                  <Button
+                    center
+                    loading={loading === 'reject'}
+                    onClick={reject}
+                    size="lg"
+                    variant="secondary"
+                  >
+                    <ThumbDown className="!h-5 !w-5" />
+                    {t('button.reject')}
+                  </Button>
+                </div>
+              ),
+            }
+          : undefined
+      }
+      info={info}
+      status={status}
+    />
   )
 }
