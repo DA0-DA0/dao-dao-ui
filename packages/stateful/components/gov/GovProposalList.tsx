@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
 import {
   govProposalsSelector,
+  refreshGovProposalsAtom,
   searchedDecodedGovProposalsSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -16,6 +18,7 @@ import { StatefulGovProposalLineProps } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { chainIsIndexed } from '@dao-dao/utils'
 
+import { useOnCurrentDaoWebSocketMessage } from '../../hooks/useWebSocket'
 import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine } from './GovProposalLine'
 
@@ -26,6 +29,14 @@ export const GovProposalList = () => {
   const chain = useChain()
   const { asPath } = useRouter()
   const hasIndexer = chainIsIndexed(chain.chain_id)
+
+  // Refresh all proposals on proposal WebSocket messages.
+  const setRefreshGovProposalsId = useSetRecoilState(
+    refreshGovProposalsAtom(chain.chain_id)
+  )
+  useOnCurrentDaoWebSocketMessage('proposal', () =>
+    setRefreshGovProposalsId((id) => id + 1)
+  )
 
   const openGovProposalsVotingPeriod = useCachedLoading(
     govProposalsSelector({

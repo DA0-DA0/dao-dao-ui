@@ -8,7 +8,7 @@ import {
   indexerWebSocketSelector,
   mountedInBrowserAtom,
 } from '@dao-dao/state/recoil'
-import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfoContext, useUpdatingRef } from '@dao-dao/stateless'
 import { ParametersExceptFirst } from '@dao-dao/types'
 import {
   objectMatchesStructure,
@@ -142,8 +142,7 @@ export const useOnWebSocketMessage = (
   // Store callback in ref so it can be used in the effect without having to
   // reapply the handler on every re-render. This avoids having to pass in a
   // memoized `useCallback` function to prevent additional re-renders.
-  const callbackRef = useRef<OnMessageCallback>(onMessage)
-  callbackRef.current = onMessage
+  const callbackRef = useUpdatingRef<OnMessageCallback>(onMessage)
 
   const [listening, setListening] = useState(false)
 
@@ -178,7 +177,7 @@ export const useOnWebSocketMessage = (
       channels.forEach((channel) => channel.unbind('broadcast', handler))
       setListening(false)
     }
-  }, [channels, memoizedExpectedTypeOrTypes])
+  }, [callbackRef, channels, memoizedExpectedTypeOrTypes])
 
   // Store listening in ref so the fallback function can access it within the
   // same instance of the function without re-rendering.
@@ -205,7 +204,7 @@ export const useOnWebSocketMessage = (
 
       callbackRef.current(data ?? defaultFallbackDataRef.current ?? {}, true)
     },
-    []
+    [callbackRef]
   )
 
   return {
@@ -220,14 +219,13 @@ export const useOnDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
 ) =>
   useOnWebSocketMessage(
-    [webSocketChannelNameForDao({ coreAddress, chainId })],
+    [webSocketChannelNameForDao({ chainId, coreAddress })],
     ...args
   )
 
 export const useOnCurrentDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
 ) => {
-  const { chain_id: chainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { chainId, coreAddress } = useDaoInfoContext()
   return useOnDaoWebSocketMessage(chainId, coreAddress, ...args)
 }

@@ -30,6 +30,7 @@ import {
   searchGovProposals,
 } from '../../indexer'
 import {
+  refreshGovProposalsAtom,
   refreshIndexerUpStatusAtom,
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
@@ -222,7 +223,12 @@ export const searchGovProposalsSelector = selectorFamily<
   SearchGovProposalsOptions
 >({
   key: 'searchGovProposals',
-  get: (options) => async () => await searchGovProposals(options),
+  get:
+    (options) =>
+    async ({ get }) => {
+      get(refreshGovProposalsAtom(options.chainId))
+      return await searchGovProposals(options)
+    },
 })
 
 export const openProposalsSelector = selectorFamily<

@@ -42,9 +42,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
   appMode: DaoPageMode.Dapp,
-  getProps: async ({ coreVersion, coreAddress }) => ({
+  getProps: async ({ coreAddress }) => ({
     url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress),
-    followingTitle:
-      coreVersion === ContractVersion.Gov ? 'Governance' : undefined,
   }),
 })

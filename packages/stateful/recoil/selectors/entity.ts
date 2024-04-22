@@ -17,6 +17,7 @@ import {
   getChainForChainId,
   getFallbackImage,
   getImageUrlForChainId,
+  isConfiguredChainName,
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
@@ -34,17 +35,19 @@ export const entitySelector: (
 ) => RecoilValueReadOnly<Entity> = selectorFamily({
   key: 'entity',
   get:
-    ({ address, chainId, ignoreEntities }) =>
+    ({ chainId, address, ignoreEntities }) =>
     ({ get }) => {
       const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
 
       // Check if address is module account.
       const moduleName = get(
-        moduleNameForAddressSelector({
-          chainId,
-          address,
-        })
-      )
+        waitForAllSettled([
+          moduleNameForAddressSelector({
+            chainId,
+            address,
+          }),
+        ])
+      )[0].valueMaybe()
       if (moduleName) {
         const entity: Entity = {
           type: EntityType.Module,
@@ -59,10 +62,12 @@ export const entitySelector: (
       const [isDao, isPolytoneProxy, cw1WhitelistAdmins] = address
         ? get(
             waitForAllSettled([
-              isDaoSelector({
-                chainId,
-                address,
-              }),
+              isConfiguredChainName(chainId, address)
+                ? constSelector(true)
+                : isDaoSelector({
+                    chainId,
+                    address,
+                  }),
               isPolytoneProxySelector({
                 chainId,
                 address,
@@ -85,21 +90,21 @@ export const entitySelector: (
           // Try to load config assuming the address is a DAO.
           isDao?.state === 'hasValue' && isDao.contents
             ? daoInfoSelector({
-                coreAddress: address,
                 chainId,
+                coreAddress: address,
               })
             : constSelector(undefined),
           isPolytoneProxy?.state === 'hasValue' && isPolytoneProxy.contents
             ? daoInfoFromPolytoneProxySelector({
-                proxy: address,
                 chainId,
+                proxy: address,
               })
             : constSelector(undefined),
           // Try to load profile assuming the address is a wallet.
           address && isValidWalletAddress(address, bech32Prefix)
             ? profileSelector({
-                address,
                 chainId,
+                address,
               })
             : constSelector(undefined),
           // Try to load all contained entities for cw1-whitelist.
@@ -110,8 +115,8 @@ export const entitySelector: (
                   ignoreEntities?.includes(entityAddress)
                     ? // Placeholder entity to prevent infinite loop.
                       constSelector({
-                        type: EntityType.Wallet,
                         chainId,
+                        type: EntityType.Wallet,
                         address: entityAddress,
                         name: null,
                         imageUrl: getFallbackImage(entityAddress),
