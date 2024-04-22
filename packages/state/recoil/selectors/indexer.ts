@@ -7,6 +7,7 @@ import {
   IndexerUpStatus,
   WithChainId,
 } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   CommonError,
   WEB_SOCKET_PUSHER_APP_KEY,
@@ -227,6 +228,10 @@ export const searchGovProposalsSelector = selectorFamily<
     (options) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(options.chainId))
+      if (options.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
+        get(refreshOpenProposalsAtom)
+      }
+
       return await searchGovProposals(options)
     },
 })

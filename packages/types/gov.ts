@@ -74,7 +74,7 @@ export type GovProposalWithDecodedContent =
   | GovProposalV1Beta1WithDecodedContent
   | GovProposalV1WithDecodedMessages
 
-export type GovProposalWithMetadata = GovProposal & {
+export type GovProposalWithMetadata = GovProposalWithDecodedContent & {
   timestampInfo: ProposalTimestampInfo
   votesInfo: GovProposalVotesInfo
   walletVoteInfo: LoadingData<GovProposalWalletVoteInfo>

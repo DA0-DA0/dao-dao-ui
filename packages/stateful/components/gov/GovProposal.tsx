@@ -12,11 +12,12 @@ import {
   Popup,
   Proposal,
   ProposalNotFound,
-  useCachedLoading,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { DaoTabId, GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
+import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
 import {
@@ -72,6 +73,13 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
       // If the current proposal updated...
       if (proposalId === proposal.id.toString()) {
         setRefreshGovProposalsId((id) => id + 1)
+
+        // Manually revalidate static props.
+        fetch(
+          `/api/revalidate?d=${mustGetConfiguredChainConfig(
+            chainId
+          )}&p=${proposalId}`
+        )
 
         if (status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
           toast.success(t('success.proposalOpenForVoting'))
@@ -150,22 +158,21 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
 
 export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
   const { chain_id: chainId } = useChain()
-  const proposalLoading = useCachedLoading(
+  const proposalLoading = useCachedLoadingWithError(
     proposalInfo
       ? govProposalSelector({
           chainId,
           proposalId: Number(proposalInfo.id),
         })
-      : undefined,
-    undefined
+      : undefined
   )
 
   return proposalInfo ? (
     <SuspenseLoader
       fallback={<PageLoader />}
-      forceFallback={proposalLoading.loading || !proposalLoading.data}
+      forceFallback={proposalLoading.loading || proposalLoading.errored}
     >
-      {!proposalLoading.loading && proposalLoading.data && (
+      {!proposalLoading.loading && !proposalLoading.errored && (
         <InnerGovProposal proposal={proposalLoading.data} />
       )}
     </SuspenseLoader>

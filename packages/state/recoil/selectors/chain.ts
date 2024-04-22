@@ -76,6 +76,7 @@ import {
   refreshGovProposalsAtom,
   refreshIbcDataAtom,
   refreshNativeTokenStakingInfoAtom,
+  refreshOpenProposalsAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
 import {
@@ -716,8 +717,6 @@ export const searchedDecodedGovProposalsSelector = selectorFamily<
   get:
     (options) =>
     async ({ get }) => {
-      get(refreshGovProposalsAtom(options.chainId))
-
       const supportsV1Gov = get(
         chainSupportsV1GovModuleSelector({ chainId: options.chainId })
       )
@@ -770,9 +769,12 @@ export const govProposalsSelector = selectorFamily<
 >({
   key: 'govProposals',
   get:
-    ({ status, offset, limit, chainId }) =>
+    ({ chainId, status, offset, limit }) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
+      if (status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
+        get(refreshOpenProposalsAtom)
+      }
 
       // Try to load from indexer first.
       const indexerProposals = get(
@@ -914,7 +916,7 @@ export const govProposalSelector = selectorFamily<
   get:
     ({ proposalId, chainId }) =>
     async ({ get }) => {
-      get(refreshGovProposalsAtom(chainId))
+      const id = get(refreshGovProposalsAtom(chainId))
 
       const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
@@ -932,18 +934,21 @@ export const govProposalSelector = selectorFamily<
           args: {
             id: proposalId,
           },
+          id,
         })
       )
 
+      let govProposal: GovProposalWithDecodedContent | undefined
+
       if (indexerProposal) {
         if (supportsV1Gov) {
-          return await decodeGovProposal({
+          govProposal = await decodeGovProposal({
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
           })
         } else {
-          return await decodeGovProposal({
+          govProposal = await decodeGovProposal({
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal: ProposalV1Beta1.decode(
@@ -956,53 +961,70 @@ export const govProposalSelector = selectorFamily<
       }
 
       // Fallback to querying chain if indexer failed.
-      const client = get(cosmosRpcClientForChainSelector(chainId))
+      if (!govProposal) {
+        const client = get(cosmosRpcClientForChainSelector(chainId))
 
-      if (supportsV1Gov) {
-        try {
-          const proposal = (
-            await client.gov.v1.proposal({
-              proposalId: BigInt(proposalId),
+        if (supportsV1Gov) {
+          try {
+            const proposal = (
+              await client.gov.v1.proposal({
+                proposalId: BigInt(proposalId),
+              })
+            ).proposal
+            if (!proposal) {
+              throw new Error('Proposal not found')
+            }
+
+            govProposal = await decodeGovProposal({
+              version: GovProposalVersion.V1,
+              id: BigInt(proposalId),
+              proposal,
             })
+          } catch (err) {
+            // Fallback to v1beta1 query if v1 not supported.
+            if (
+              !(err instanceof Error) ||
+              !err.message.includes('unknown query path')
+            ) {
+              // Rethrow other errors.
+              throw err
+            }
+          }
+        }
+
+        if (!govProposal) {
+          const proposal = (
+            await client.gov.v1beta1.proposal(
+              {
+                proposalId: BigInt(proposalId),
+              },
+              true
+            )
           ).proposal
           if (!proposal) {
             throw new Error('Proposal not found')
           }
 
-          return await decodeGovProposal({
-            version: GovProposalVersion.V1,
+          govProposal = await decodeGovProposal({
+            version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal,
           })
-        } catch (err) {
-          // Fallback to v1beta1 query if v1 not supported.
-          if (
-            !(err instanceof Error) ||
-            !err.message.includes('unknown query path')
-          ) {
-            // Rethrow other errors.
-            throw err
-          }
         }
       }
 
-      const proposal = (
-        await client.gov.v1beta1.proposal(
-          {
-            proposalId: BigInt(proposalId),
-          },
-          true
-        )
-      ).proposal
-      if (!proposal) {
-        throw new Error('Proposal not found')
+      // If gov proposal is in deposit or voting period, refresh when open
+      // proposals refresh since it may have just opened (for voting) or closed.
+      if (
+        govProposal.proposal.status ===
+          ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
+        govProposal.proposal.status ===
+          ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+      ) {
+        get(refreshOpenProposalsAtom)
       }
 
-      return await decodeGovProposal({
-        version: GovProposalVersion.V1_BETA_1,
-        id: BigInt(proposalId),
-        proposal,
-      })
+      return govProposal
     },
 })
 
