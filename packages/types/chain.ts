@@ -72,6 +72,7 @@ export enum ChainId {
   ChihuahuaMainnet = 'chihuahua-1',
   OraichainMainnet = 'Oraichain',
   ArchwayMainnet = 'archway-1',
+  InjectiveMainnet = 'injective-1',
 }
 
 export type BaseChainConfig = {

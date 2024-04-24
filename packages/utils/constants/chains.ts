@@ -96,6 +96,9 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         DaoProposalMultiple: 2461,
       },
     },
+    // No IBC connection with:
+    // - Injective
+    // - Neutron
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // juno
@@ -452,6 +455,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // archway
         remoteChannel: 'channel-43',
       },
+      [ChainId.InjectiveMainnet]: {
+        // osmosis
+        note: 'osmo16passct926eern05hzuf46g9809cvavhxv9qw9rm5wnu9fk0gfxs2v37x7',
+        // osmosis
+        listener:
+          'osmo1c6htfqceqr4vuln2ryrs7sk6mkdvqrgt5j5vlw8x5ql0cjvy29ls5dkyll',
+        // injective
+        voice: 'inj1kt7anwm5wy9e8grq04z46z08yqd49ewq97g8f0',
+        // osmosis
+        localConnection: 'connection-1298',
+        // injective
+        remoteConnection: 'connection-14',
+        // osmosis
+        localChannel: 'channel-73927',
+        // injective
+        remoteChannel: 'channel-266',
+      },
     },
   },
   {
@@ -602,6 +622,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-47',
         // archway
         remoteChannel: 'channel-85',
+      },
+      [ChainId.InjectiveMainnet]: {
+        // neutron
+        note: 'neutron1565ewvznhrw3t96ztv8gan3ykr7262gjrl4xy449mhgvl5h6gdkq027r4c',
+        // neutron
+        listener:
+          'neutron1ga58f9hz8v8fjtpspmtrmakpdapc2jdddhszpwg0dfjuwg8xt5fqgud73l',
+        // injective
+        voice: 'inj1ac4y7r7ec47jh9re379ejcl942a9c5k6f23yqa',
+        // neutron
+        localConnection: 'connection-58',
+        // injective
+        remoteConnection: 'connection-220',
+        // neutron
+        localChannel: 'channel-4188',
+        // injective
+        remoteChannel: 'channel-271',
       },
     },
   },
@@ -945,6 +982,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // chihuahua
         // remoteClient: '07-tendermint-126',
       },
+      [ChainId.InjectiveMainnet]: {
+        // migaloo
+        note: 'migaloo1e63cld4ex3062nvrx8f6dald97c5f9am3y8eledc0za7tvyzc7usvn3nwr',
+        // migaloo
+        listener:
+          'migaloo1mdz2smpj6hs4caerx0sch2hdvs2zj4eryr7unv9vqrrfw7xjuz6qd5j38z',
+        // injective
+        voice: 'inj1ql2qpt5uudppa33yf0p03fssxtkhqawxdw4czf',
+        // migaloo
+        localConnection: 'connection-8',
+        // injective
+        remoteConnection: 'connection-123',
+        // migaloo
+        localChannel: 'channel-117',
+        // injective
+        remoteChannel: 'channel-264',
+      },
     },
   },
   {
@@ -1093,6 +1147,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-270',
         // archway
         remoteChannel: 'channel-54',
+      },
+      [ChainId.InjectiveMainnet]: {
+        // terra
+        note: 'terra1pmhsahmn5eymdn07yahp9692jnqyh54f7pak82v4nwzylgfrvkaq8grraa',
+        // terra
+        listener:
+          'terra1m2xgx2n6wu5lw2zk3sxpyyr7f75fe9v32u3av9lfl6h64mutw96qztacj9',
+        // injective
+        voice: 'inj1eksx0xjfzdcvesfq0kk7fcdv534ajrmccg27ah',
+        // terra
+        localConnection: 'connection-311',
+        // injective
+        remoteConnection: 'connection-202',
+        // terra
+        localChannel: 'channel-397',
+        // injective
+        remoteChannel: 'channel-272',
       },
     },
   },
