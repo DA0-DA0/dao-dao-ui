@@ -772,7 +772,10 @@ export const govProposalsSelector = selectorFamily<
     ({ chainId, status, offset, limit }) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
-      if (status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
+      if (
+        status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
+        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+      ) {
         get(refreshOpenProposalsAtom)
       }
 

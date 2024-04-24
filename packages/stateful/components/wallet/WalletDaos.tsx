@@ -1,7 +1,12 @@
 import uniqBy from 'lodash.uniqby'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useSetRecoilState, waitForAny } from 'recoil'
+import {
+  constSelector,
+  useSetRecoilState,
+  waitForAll,
+  waitForAny,
+} from 'recoil'
 
 import { commandModalVisibleAtom } from '@dao-dao/state/recoil'
 import {
@@ -9,8 +14,8 @@ import {
   useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
-import { LazyDaoCardProps, StatefulWalletDaosProps } from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
+import { StatefulWalletDaosProps } from '@dao-dao/types'
+import { getSupportedChains, serializeDaoSource } from '@dao-dao/utils'
 
 import { useProfile } from '../../hooks/useProfile'
 import {
@@ -24,7 +29,7 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
   const { t } = useTranslation()
 
   const { chain_id: chainId } = useChain()
-  const { connected, chains } = useProfile({
+  const { connected, chains, uniquePublicKeys } = useProfile({
     address,
   })
 
@@ -32,67 +37,61 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
     !chains.loading && chains.data.length < getSupportedChains().length
 
   const walletDaos = useCachedLoadingWithError(
-    chains.loading
+    chains.loading || uniquePublicKeys.loading
       ? undefined
       : // If no chains and an address is passed, just use the current chain.
       chains.data.length === 0 && address
-      ? waitForAny([
+      ? waitForAll([
           waitForAny([
             lazyWalletDaosSelector({
               chainId,
               address,
             }),
-            // Can't load following DAOs if there are no chains and thus no
-            // public key to load from.
-            constSelector([]),
           ]),
+          // Can't load following DAOs if there are no chains and thus no public
+          // key to load from.
+          constSelector([]),
         ])
-      : waitForAny(
-          chains.data.map(({ chainId, address, publicKey }) =>
-            waitForAny([
+      : waitForAll([
+          waitForAny(
+            chains.data.map(({ chainId, address }) =>
               lazyWalletDaosSelector({
                 chainId,
                 address,
-              }),
-              // If wallet connected, load following.
-              connected
-                ? lazyWalletFollowingDaosSelector({
-                    chainId,
-                    publicKey,
+              })
+            )
+          ),
+          // If wallet connected, load following.
+          connected
+            ? waitForAll(
+                uniquePublicKeys.data.map(({ publicKey }) =>
+                  lazyWalletFollowingDaosSelector({
+                    walletPublicKey: publicKey,
                   })
-                : constSelector([]),
-            ])
-          )
-        ),
-    (data) =>
-      data
-        .flatMap((loadable): LazyDaoCardProps[] => {
-          if (loadable.state !== 'hasValue') {
-            return []
-          }
+                )
+              )
+            : constSelector([]),
+        ]),
+    ([memberOfLoadable, allFollowing]) => {
+      const memberOf = memberOfLoadable.flatMap((l) => l.valueMaybe() || [])
+      const following = allFollowing.flat()
 
-          const [memberOf, following] = loadable.contents.map(
-            (value) => value.valueMaybe() || []
-          )
+      const memberDaos = new Set(memberOf.map((dao) => serializeDaoSource(dao)))
+      const followingDaos = new Set(
+        following.map((dao) => serializeDaoSource(dao))
+      )
 
-          const memberDaos = new Set(
-            memberOf.map(({ coreAddress }) => coreAddress)
-          )
-          const followingDaos = new Set(
-            following.map(({ coreAddress }) => coreAddress)
-          )
-
-          // Combine DAOs and remove duplicates.
-          return uniqBy(
-            [...memberOf, ...following],
-            (dao) => dao.coreAddress
-          ).map((props) => ({
-            ...props,
-            isMember: memberDaos.has(props.coreAddress),
-            isFollowed: followingDaos.has(props.coreAddress),
-          }))
-        })
+      // Combine DAOs and remove duplicates.
+      return uniqBy([...memberOf, ...following], (dao) =>
+        serializeDaoSource(dao)
+      )
+        .map((props) => ({
+          ...props,
+          isMember: memberDaos.has(serializeDaoSource(props)),
+          isFollowed: followingDaos.has(serializeDaoSource(props)),
+        }))
         .sort((a, b) => a.name.localeCompare(b.name))
+    }
   )
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)

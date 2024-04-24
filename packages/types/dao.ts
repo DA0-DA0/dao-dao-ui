@@ -93,9 +93,14 @@ export type DaoParentInfo = {
 // Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo
 // loaded via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to
 // be fed into DaoPageWrapper and available in the UI via DaoInfoContext.
-export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
+export type DaoInfoSerializable = Omit<DaoInfo, 'created'> & {
   // Created needs to be serialized and de-serialized.
   created: string | null
+}
+
+export type DaoSource = {
+  chainId: string
+  coreAddress: string
 }
 
 export enum PreProposeModuleType {

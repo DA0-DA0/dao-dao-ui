@@ -338,18 +338,18 @@ export const daoDropdownInfoSelector: (
 
       // DAOs.
 
-      const version = get(
-        contractVersionSelector({
-          chainId,
-          contractAddress: coreAddress,
-        })
-      )
-      const config = get(
-        DaoCoreV2Selectors.configSelector({
-          chainId,
-          contractAddress: coreAddress,
-          params: [],
-        })
+      const [version, config] = get(
+        waitForAll([
+          contractVersionSelector({
+            chainId,
+            contractAddress: coreAddress,
+          }),
+          DaoCoreV2Selectors.configSelector({
+            chainId,
+            contractAddress: coreAddress,
+            params: [],
+          }),
+        ])
       )
 
       const subDaos = isFeatureSupportedByVersion(Feature.SubDaos, version)

@@ -10,7 +10,7 @@ export type InboxState = {
 export type InboxLoadedItem = {
   id: string
   timestamp: string | undefined
-  chainId: string | undefined
+  chainId: string
   data: unknown
 }
 
@@ -118,9 +118,9 @@ export type InboxMainItemRendererProps = {
    */
   checked: boolean
   /**
-   * Check handler. Called with the item ID.
+   * Check handler. Called with the item.
    */
-  onCheck: (id: string) => void
+  onCheck: (item: InboxLoadedItem) => void
   /**
    * Optionally style things a bit more compact. Used in the popup.
    */
@@ -181,7 +181,12 @@ export type InboxConfig = {
 export type InboxApi = {
   ready: boolean
   updating: boolean
-  clear: (idOrIds: string | string[]) => Promise<boolean>
+  clear: (
+    items: {
+      chainId: string
+      id: string
+    }[]
+  ) => Promise<boolean>
   loadConfig: () => Promise<boolean>
   updateConfig: (
     data: InboxUpdateConfig,
@@ -205,7 +210,7 @@ export type InboxApiWithUi = {
   /**
    * The callback that toggles the checked status of an inbox item.
    */
-  onCheck: (id: string) => void
+  onCheck: (item: InboxLoadedItem) => void
   /**
    * A function that uses the verification code in the URL query params and
    * attempts to verify.

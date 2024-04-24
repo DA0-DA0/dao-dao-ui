@@ -159,7 +159,7 @@ export const InnerCreateDaoForm = ({
   } = chainContext
 
   const { goToDao, goToDaoProposal } = useDaoNavHelpers()
-  const { setFollowing } = useFollowingDaos(chainId)
+  const { setFollowing } = useFollowingDaos()
 
   const { mode } = useAppContext()
 
@@ -528,7 +528,10 @@ export const InnerCreateDaoForm = ({
 
           // Don't set following on SDA. Only dApp.
           if (mode !== DaoPageMode.Sda) {
-            setFollowing(coreAddress)
+            setFollowing({
+              chainId,
+              coreAddress,
+            })
           }
 
           // New wallet balances will not appear until the next block.

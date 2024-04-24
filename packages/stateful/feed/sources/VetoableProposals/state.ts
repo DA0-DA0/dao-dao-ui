@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAny } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { VetoableProposalsProps } from '@dao-dao/stateless'
@@ -6,7 +6,6 @@ import {
   DaoPageMode,
   FeedSourceDaoWithItems,
   StatefulProposalLineProps,
-  WithChainId,
 } from '@dao-dao/types'
 import { isConfiguredChainName } from '@dao-dao/utils'
 
@@ -18,24 +17,40 @@ import {
 
 export const feedVetoableProposalsSelector = selectorFamily<
   FeedSourceDaoWithItems<VetoableProposalsProps<StatefulProposalLineProps>>[],
-  WithChainId<{ hexPublicKey: string }>
+  {
+    /**
+     * The hex public keys to load from.
+     */
+    publicKeys: string[]
+  }
 >({
   key: 'feedVetoableProposals',
   get:
-    ({ hexPublicKey, chainId }) =>
+    ({ publicKeys }) =>
     ({ get }) => {
       const followingDaos = get(
-        followingDaosSelector({
-          chainId,
-          walletPublicKey: hexPublicKey,
-        })
+        waitForAny(
+          publicKeys.map((walletPublicKey) =>
+            followingDaosSelector({
+              walletPublicKey,
+            })
+          )
+        )
       )
+        .flatMap((l) => l.valueMaybe() || [])
         // A chain's x/gov module cannot have vetoable proposals.
-        .filter((dao) => !isConfiguredChainName(chainId, dao))
+        .filter(
+          ({ chainId, coreAddress }) =>
+            !isConfiguredChainName(chainId, coreAddress)
+        )
+
+      if (followingDaos.length === 0) {
+        return []
+      }
 
       const followingDaoConfigs = get(
-        waitForAll(
-          followingDaos.map((coreAddress) =>
+        waitForAny(
+          followingDaos.map(({ chainId, coreAddress }) =>
             DaoCoreV2Selectors.configSelector({
               chainId,
               contractAddress: coreAddress,
@@ -46,8 +61,8 @@ export const feedVetoableProposalsSelector = selectorFamily<
       )
 
       const daosWithVetoableProposalsPerDao = get(
-        waitForAll(
-          followingDaos.map((coreAddress) =>
+        waitForAny(
+          followingDaos.map(({ chainId, coreAddress }) =>
             daosWithDropdownVetoableProposalListSelector({
               chainId,
               coreAddress,
@@ -60,33 +75,36 @@ export const feedVetoableProposalsSelector = selectorFamily<
 
       return daosWithVetoableProposalsPerDao.flatMap(
         (
-          daosWithVetoableProposals,
+          daosWithVetoableProposalsLoadable,
           index
         ):
           | FeedSourceDaoWithItems<
               VetoableProposalsProps<StatefulProposalLineProps>
             >
-          | [] =>
-          daosWithVetoableProposals.length
+          | [] => {
+          const daosWithVetoableProposals =
+            daosWithVetoableProposalsLoadable.valueMaybe() || []
+          const daoName = followingDaoConfigs[index].valueMaybe()?.name
+
+          return daosWithVetoableProposals.length && daoName
             ? {
-                chainId,
-                coreAddress: followingDaos[index],
+                ...followingDaos[index],
                 // Just one vetoable proposals section, since the component
                 // groups by DAOs automatically.
                 items: [
                   {
                     pending: false,
                     props: {
-                      daoName: followingDaoConfigs[index].name,
+                      daoName,
                       daosWithVetoableProposals,
                       ProposalLine,
                       LinkWrapper,
-                      className: 'mt-4 ml-4 first:mt-0',
                     },
                   },
                 ],
               }
             : []
+        }
       )
     },
 })

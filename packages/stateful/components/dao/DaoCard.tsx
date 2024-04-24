@@ -2,7 +2,8 @@ import {
   DaoCard as StatelessDaoCard,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
+import { DaoSource } from '@dao-dao/types'
+import { DaoCardInfo, FollowState } from '@dao-dao/types/components/DaoCard'
 
 import { useFollowingDaos, useProfile } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
@@ -15,7 +16,7 @@ export const DaoCard = (props: DaoCardInfo) => {
   const { chains } = useProfile()
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos(props.chainId)
+    useFollowingDaos()
 
   const lazyData = useCachedLoading(
     daoCardInfoLazyDataSelector({
@@ -32,18 +33,24 @@ export const DaoCard = (props: DaoCardInfo) => {
     }
   )
 
+  const followedDao: DaoSource = {
+    chainId: props.chainId,
+    coreAddress: props.coreAddress,
+  }
+  const follow: FollowState = {
+    following: isFollowing(followedDao),
+    updatingFollowing,
+    onFollow: () =>
+      isFollowing(followedDao)
+        ? setUnfollowing(followedDao)
+        : setFollowing(followedDao),
+  }
+
   return (
     <StatelessDaoCard
       {...props}
       LinkWrapper={LinkWrapper}
-      follow={{
-        following: isFollowing(props.coreAddress),
-        updatingFollowing,
-        onFollow: () =>
-          isFollowing(props.coreAddress)
-            ? setUnfollowing(props.coreAddress)
-            : setFollowing(props.coreAddress),
-      }}
+      follow={follow}
       lazyData={lazyData}
     />
   )

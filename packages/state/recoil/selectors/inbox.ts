@@ -4,9 +4,12 @@ import {
   InboxItemType,
   InboxLoadedItem,
   InboxLoadedItemWithData,
-  WithChainId,
 } from '@dao-dao/types'
-import { INBOX_API_BASE } from '@dao-dao/utils'
+import {
+  INBOX_API_BASE,
+  MAINNET,
+  maybeGetChainForChainId,
+} from '@dao-dao/utils'
 
 import { refreshInboxItemsAtom } from '../atoms'
 
@@ -22,18 +25,25 @@ export const temporaryClearedInboxItemsAtom = atomFamily<string[], string>({
 
 export const inboxItemsSelector = selectorFamily<
   InboxLoadedItemWithData[],
-  WithChainId<{
-    walletAddress: string
-    // Optional type filter.
+  {
+    walletBech32Hash: string
+    /**
+     * Any chain that the bech32 hash is used with in case an item doesn't have
+     * chain ID set. This is needed to clear the inbox item later.
+     */
+    fallbackChainId: string
+    /**
+     * Optional type filter.
+     */
     type?: InboxItemType
-  }>
+  }
 >({
   key: 'inboxItems',
   get:
-    ({ walletAddress, type, chainId }) =>
+    ({ walletBech32Hash, fallbackChainId, type }) =>
     async ({ get }) => {
       const temporaryClearedInboxLoadedItemWithDatas = get(
-        temporaryClearedInboxItemsAtom(walletAddress)
+        temporaryClearedInboxItemsAtom(walletBech32Hash)
       )
 
       get(refreshInboxItemsAtom)
@@ -41,10 +51,9 @@ export const inboxItemsSelector = selectorFamily<
       // Optional filters.
       const query = new URLSearchParams({
         ...(type ? { type } : {}),
-        ...(chainId ? { chainId } : {}),
       })
       const response = await fetch(
-        INBOX_API_BASE + `/load/${walletAddress}?${query.toString()}`
+        INBOX_API_BASE + `/load/bech32/${walletBech32Hash}?${query.toString()}`
       )
 
       if (response.ok) {
@@ -59,14 +68,21 @@ export const inboxItemsSelector = selectorFamily<
               ({
                 type: item.id.split('/')[0] as InboxItemType,
                 ...item,
+                chainId: item.chainId || fallbackChainId,
               } as InboxLoadedItemWithData)
           )
-          .filter(
-            (item): item is InboxLoadedItemWithData =>
-              !!item &&
+          .flatMap((item) => {
+            const { network_type } = maybeGetChainForChainId(item.chainId) ?? {}
+
+            return item &&
               // Filter out items that were cleared.
-              !temporaryClearedInboxLoadedItemWithDatas.includes(item.id)
-          )
+              !temporaryClearedInboxLoadedItemWithDatas.includes(item.id) &&
+              network_type &&
+              // Only get followed DAOs that match the current network type.
+              (network_type === 'mainnet') === MAINNET
+              ? item
+              : []
+          })
 
         return items
       } else {

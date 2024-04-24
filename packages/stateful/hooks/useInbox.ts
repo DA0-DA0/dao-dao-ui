@@ -5,14 +5,14 @@ import {
   inboxItemsSelector,
   refreshInboxItemsAtom,
 } from '@dao-dao/state/recoil'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { InboxState } from '@dao-dao/types'
 
 import { useProfile } from './useProfile'
 import { useOnWebSocketMessage } from './useWebSocket'
 
 export const useInbox = (): InboxState => {
-  const { chains, uniquePublicKeys } = useProfile()
+  const { uniquePublicKeys } = useProfile()
 
   const setRefresh = useSetRecoilState(refreshInboxItemsAtom)
   const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
@@ -32,36 +32,36 @@ export const useInbox = (): InboxState => {
     return () => clearInterval(interval)
   }, [refresh])
 
-  const itemsLoading = useCachedLoading(
-    !chains.loading
+  const itemsLoading = useCachedLoadingWithError(
+    !uniquePublicKeys.loading
       ? waitForAll(
-          chains.data.map(({ chainId, address }) =>
+          uniquePublicKeys.data.map(({ bech32Hash, chains }) =>
             inboxItemsSelector({
-              chainId,
-              walletAddress: address,
+              walletBech32Hash: bech32Hash,
+              fallbackChainId: chains[0].chainId,
             })
           )
         )
       : undefined,
-    []
-  )
-
-  const items = itemsLoading.loading ? [] : itemsLoading.data.flat()
-  // Sort all items.
-  items.sort((a, b) =>
-    a.timestamp && b.timestamp
-      ? new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      : a.timestamp
-      ? -1
-      : b.timestamp
-      ? 1
-      : 0
+    (data) =>
+      data
+        .flat()
+        .sort((a, b) =>
+          a.timestamp && b.timestamp
+            ? new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+            : a.timestamp
+            ? -1
+            : b.timestamp
+            ? 1
+            : 0
+        )
   )
 
   return {
     loading: itemsLoading.loading,
-    refreshing: itemsLoading.loading || itemsLoading.updating || false,
-    items,
+    refreshing: itemsLoading.loading || !!itemsLoading.updating,
+    items:
+      itemsLoading.loading || itemsLoading.errored ? [] : itemsLoading.data,
     refresh,
   }
 }

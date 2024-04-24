@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { IconButton, Tooltip, useAppContext } from '@dao-dao/stateless'
-import { InboxApiWithUi } from '@dao-dao/types'
+import { InboxApiWithUi, InboxLoadedItem } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../components'
@@ -65,10 +65,10 @@ export const useInboxApiWithUi = ({
   const [checked, setChecked] = useState({} as Record<string, boolean>)
   const countChecked = Object.values(checked).filter(Boolean).length
   const onCheck = useCallback(
-    (id: string) =>
+    (item: InboxLoadedItem) =>
       setChecked((prev) => ({
         ...prev,
-        [id]: !prev[id],
+        [item.chainId + ':' + item.id]: !prev[item.chainId + ':' + item.id],
       })),
     []
   )
@@ -79,9 +79,14 @@ export const useInboxApiWithUi = ({
     try {
       // If none checked, clear all.
       const toClear = !countChecked
-        ? inbox.items.map(({ id }) => id)
-        : Object.entries(checked).flatMap(([id, checked]) =>
-            checked ? [id] : []
+        ? inbox.items
+        : Object.entries(checked).flatMap(([key, checked]) =>
+            checked
+              ? {
+                  chainId: key.split(':')[0],
+                  id: key.split(':')[1],
+                }
+              : []
           )
 
       if (toClear.length && (await api.clear(toClear))) {

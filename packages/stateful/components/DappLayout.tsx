@@ -122,13 +122,12 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useAutoRefreshData()
 
   //! Following DAOs
-  const { chains } = useProfile()
+  const { uniquePublicKeys } = useProfile()
   const followingDaoDropdownInfos = useCachedLoading(
-    !chains.loading
+    !uniquePublicKeys.loading
       ? waitForAll(
-          chains.data.map(({ chainId, publicKey }) =>
+          uniquePublicKeys.data.map(({ publicKey }) =>
             followingDaoDropdownInfosSelector({
-              chainId,
               walletPublicKey: publicKey,
               // If not compact, remove any SubDAO from the top level that
               // exists as a SubDAO of another followed DAO at the top level.

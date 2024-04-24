@@ -431,28 +431,22 @@ export const lazyWalletDaosSelector = selectorFamily<
 // Get lazy card info for DAOs this wallet is following.
 export const lazyWalletFollowingDaosSelector = selectorFamily<
   LazyDaoCardProps[],
-  WithChainId<{ publicKey: string }>
+  { walletPublicKey: string }
 >({
   key: 'lazyWalletFollowingDaos',
   get:
-    ({ chainId, publicKey }) =>
+    ({ walletPublicKey }) =>
     ({ get }) => {
       const daos = get(
         followingDaosSelector({
-          chainId,
-          walletPublicKey: publicKey,
+          walletPublicKey,
         })
       )
 
-      return get(
-        waitForAny(
-          daos.map((dao) =>
-            lazyDaoCardPropsSelector({
-              chainId,
-              coreAddress: dao,
-            })
-          )
-        )
-      ).flatMap((loadable) => loadable.valueMaybe() || [])
+      return daos.length > 0
+        ? get(
+            waitForAny(daos.map((dao) => lazyDaoCardPropsSelector(dao)))
+          ).flatMap((loadable) => loadable.valueMaybe() || [])
+        : []
     },
 })

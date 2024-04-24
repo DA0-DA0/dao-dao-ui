@@ -1,16 +1,11 @@
 import { useCallback } from 'react'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-  waitForAll,
-} from 'recoil'
+import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
   VetoableProposalsProps,
-  useCachedLoadable,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
@@ -24,55 +19,55 @@ export const VetoableProposals: FeedSource<
 > = {
   id: 'vetoable_proposals',
   Renderer,
-  useData: (filter) => {
+  useData: () => {
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const { chains } = useProfile()
-    const filteredChains = chains.loading
-      ? []
-      : chains.data.filter(
-          ({ chainId }) => !filter?.chainId || chainId === filter.chainId
-        )
+    const { uniquePublicKeys } = useProfile()
 
-    const daosWithItemsLoadable = useCachedLoadable(
-      !chains.loading
-        ? waitForAll(
-            filteredChains.map(({ chainId, publicKey }) =>
-              feedVetoableProposalsSelector({
-                chainId,
-                hexPublicKey: publicKey,
-              })
-            )
-          )
-        : undefined
+    const daosWithItemsLoadable = useCachedLoadingWithError(
+      uniquePublicKeys.loading
+        ? undefined
+        : uniquePublicKeys.data.length > 0
+        ? feedVetoableProposalsSelector({
+            publicKeys: uniquePublicKeys.data.map(({ publicKey }) => publicKey),
+          })
+        : constSelector([]),
+      (data) =>
+        data.map((d) => ({
+          ...d,
+          items: d.items.map((i) => ({
+            ...i,
+            props: {
+              ...i.props,
+              className: 'mt-4 ml-4 first:mt-0',
+            },
+          })),
+        }))
     )
 
-    const followingDaosLoadable = useRecoilValueLoadable(
-      !chains.loading
+    const followingDaosLoadable = useCachedLoadingWithError(
+      !uniquePublicKeys.loading
         ? waitForAll(
-            filteredChains.map(({ chainId, publicKey }) =>
+            uniquePublicKeys.data.map(({ publicKey }) =>
               followingDaosSelector({
-                chainId,
                 walletPublicKey: publicKey,
               })
             )
           )
-        : constSelector([])
+        : undefined,
+      (data) => data.flat()
     )
 
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
-      !chains.loading && followingDaosLoadable.state === 'hasValue'
-        ? filteredChains.flatMap(
-            ({ chainId }, index) =>
-              followingDaosLoadable.contents[index]?.map((coreAddress) =>
-                webSocketChannelNameForDao({
-                  chainId,
-                  coreAddress,
-                })
-              ) || []
+      !followingDaosLoadable.loading && !followingDaosLoadable.errored
+        ? followingDaosLoadable.data.map(({ chainId, coreAddress }) =>
+            webSocketChannelNameForDao({
+              chainId,
+              coreAddress,
+            })
           )
         : [],
       ['proposal', 'vote'],
@@ -80,14 +75,13 @@ export const VetoableProposals: FeedSource<
     )
 
     return {
-      loading: daosWithItemsLoadable.state === 'loading',
+      loading: daosWithItemsLoadable.loading,
       refreshing:
-        daosWithItemsLoadable.state === 'hasValue' &&
-        daosWithItemsLoadable.updating,
+        !daosWithItemsLoadable.loading && !!daosWithItemsLoadable.updating,
       daosWithItems:
-        daosWithItemsLoadable.state === 'hasValue'
-          ? daosWithItemsLoadable.contents.flat()
-          : [],
+        daosWithItemsLoadable.loading || daosWithItemsLoadable.errored
+          ? []
+          : daosWithItemsLoadable.data,
       refresh,
     }
   },

@@ -23,7 +23,7 @@ export type FeedSourceData<Data extends unknown = any> = {
 export type FeedSource<Data extends unknown = any> = {
   id: string
   Renderer: ComponentType<Data>
-  useData: (filter: FeedFilter) => FeedSourceData<Data>
+  useData: () => FeedSourceData<Data>
 }
 
 export type FeedItem<Data extends unknown = any> = FeedSourceItem<Data> & {

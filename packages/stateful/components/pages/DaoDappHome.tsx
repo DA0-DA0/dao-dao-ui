@@ -47,8 +47,11 @@ export const InnerDaoDappHome = ({
   const daoInfo = useDaoInfoContext()
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos(daoInfo.chainId)
-  const following = isFollowing(daoInfo.coreAddress)
+    useFollowingDaos()
+  const following = isFollowing({
+    chainId: daoInfo.chainId,
+    coreAddress: daoInfo.coreAddress,
+  })
 
   // Just a type-check because some tabs are loaded at the beginning.
   const tabs = loadingTabs.loading ? undefined : loadingTabs.data
@@ -95,9 +98,10 @@ export const InnerDaoDappHome = ({
   const follow: FollowState = {
     following,
     onFollow: () =>
-      following
-        ? setUnfollowing(daoInfo.coreAddress)
-        : setFollowing(daoInfo.coreAddress),
+      (following ? setUnfollowing : setFollowing)({
+        chainId: daoInfo.chainId,
+        coreAddress: daoInfo.coreAddress,
+      }),
     updatingFollowing,
   }
 

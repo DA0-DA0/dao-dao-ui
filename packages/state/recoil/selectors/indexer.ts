@@ -228,7 +228,10 @@ export const searchGovProposalsSelector = selectorFamily<
     (options) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(options.chainId))
-      if (options.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
+      if (
+        options.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
+        options.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+      ) {
         get(refreshOpenProposalsAtom)
       }
 

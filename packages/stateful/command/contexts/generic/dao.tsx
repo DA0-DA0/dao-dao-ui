@@ -50,8 +50,11 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const loadingTabs = useLoadingTabs()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-      useFollowingDaos(chainId)
-    const following = isFollowing(coreAddress)
+      useFollowingDaos()
+    const following = isFollowing({
+      chainId,
+      coreAddress,
+    })
 
     const [copied, setCopied] = useState<string | undefined>()
     // Debounce clearing copied.
@@ -139,7 +142,10 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name: following ? t('button.unfollow') : t('button.follow'),
           Icon: CheckRounded,
           onChoose: () =>
-            following ? setUnfollowing(coreAddress) : setFollowing(coreAddress),
+            (following ? setUnfollowing : setFollowing)({
+              chainId,
+              coreAddress,
+            }),
           loading: updatingFollowing,
         },
         ...accounts.map(({ chainId, address }) => ({

@@ -32,7 +32,7 @@ export const JoinedDaoRenderer = ({
 
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
-  const { setFollowing, updatingFollowing } = useFollowingDaos(chainId)
+  const { setFollowing, updatingFollowing } = useFollowingDaos()
 
   const timestampFormatter = useTranslatedTimeDeltaFormatter({
     words: false,
@@ -94,7 +94,10 @@ export const JoinedDaoRenderer = ({
           onClick={(e) => {
             e.stopPropagation()
             setLoadingFollowing(true)
-            setFollowing(dao).then((success) => {
+            setFollowing({
+              chainId,
+              coreAddress: dao,
+            }).then((success) => {
               if (success) {
                 clear()
               }

@@ -16,6 +16,7 @@ import {
   INBOX_API_BASE,
   WEB_PUSH_PUBLIC_KEY,
   processError,
+  toBech32Hash,
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
@@ -29,7 +30,7 @@ export const useInboxApi = (): InboxApi => {
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryClearedInboxItemsAtom(address)
+    temporaryClearedInboxItemsAtom(toBech32Hash(address))
   )
 
   const [updating, setUpdating] = useState(false)
@@ -79,7 +80,12 @@ export const useInboxApi = (): InboxApi => {
   }, [serviceWorker.ready, serviceWorker.registration])
 
   const clear = useCallback(
-    async (idOrIds: string | string[]) => {
+    async (
+      items: {
+        chainId: string
+        id: string
+      }[]
+    ) => {
       if (!ready) {
         toast.error(t('error.logInToContinue'))
         return false
@@ -91,16 +97,27 @@ export const useInboxApi = (): InboxApi => {
       setUpdating(true)
 
       try {
-        const ids = [idOrIds].flat()
-        await postRequest(
-          '/clear',
-          {
-            ids,
-          },
-          'Clear Inbox Items'
+        // Group by chain ID.
+        const idsToClear = items.reduce(
+          (acc, { chainId, id }) => ({
+            ...acc,
+            [chainId]: [...(acc[chainId] ?? []), ...[id].flat()],
+          }),
+          {} as Record<string, string[]>
         )
 
-        setTemporary((prev) => [...prev, ...ids])
+        for (const [chainId, ids] of Object.entries(idsToClear)) {
+          await postRequest(
+            '/clear',
+            {
+              ids,
+            },
+            'Clear Inbox Items',
+            chainId
+          )
+        }
+
+        setTemporary((prev) => [...prev, ...items.flatMap(({ id }) => id)])
 
         return true
       } catch (err) {
