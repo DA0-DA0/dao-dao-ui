@@ -1,5 +1,7 @@
-import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { fromBase64, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
+import JSON5 from 'json5'
+import cloneDeep from 'lodash.clonedeep'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -135,29 +137,68 @@ export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
 
-// This function mutates its input message.
-export const makeWasmMessage = (message: {
+/**
+ * Encode relevant components of wasm messages into base64 strings as the chain
+ * expects.
+ */
+export const makeWasmMessage = (msg: {
   wasm: any
 }): {
   wasm: WasmMsg
 } => {
-  // We need to encode Wasm Execute, Instantiate, and Migrate messages.
-  let msg = message
-  if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = encodeJsonToBase64(message.wasm.execute.msg)
-  } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = encodeJsonToBase64(message.wasm.instantiate.msg)
-  } else if (message?.wasm?.instantiate2) {
-    msg.wasm.instantiate2.msg = encodeJsonToBase64(
-      message.wasm.instantiate2.msg
-    )
-    msg.wasm.instantiate2.salt = toBase64(
-      toUtf8(message.wasm.instantiate2.salt)
-    )
-  } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = encodeJsonToBase64(message.wasm.migrate.msg)
+  msg = cloneDeep(msg)
+
+  // We need to encode Wasm Execute, Instantiate, and Migrate messages. Messages
+  // such as update or clear admin pass through without modification.
+  if (
+    objectMatchesStructure(msg, {
+      wasm: {
+        execute: {
+          msg: {},
+        },
+      },
+    }) &&
+    typeof msg.wasm.execute.msg !== 'string'
+  ) {
+    msg.wasm.execute.msg = encodeJsonToBase64(msg.wasm.execute.msg)
+  } else if (
+    objectMatchesStructure(msg, {
+      wasm: {
+        instantiate: {
+          msg: {},
+        },
+      },
+    }) &&
+    typeof msg.wasm.instantiate.msg !== 'string'
+  ) {
+    msg.wasm.instantiate.msg = encodeJsonToBase64(msg.wasm.instantiate.msg)
+  } else if (
+    objectMatchesStructure(msg, {
+      wasm: {
+        instantiate2: {
+          msg: {},
+          salt: {},
+        },
+      },
+    })
+  ) {
+    if (typeof msg.wasm.instantiate2.msg !== 'string') {
+      msg.wasm.instantiate2.msg = encodeJsonToBase64(msg.wasm.instantiate2.msg)
+    }
+    msg.wasm.instantiate2.salt = toBase64(toUtf8(msg.wasm.instantiate2.salt))
+  } else if (
+    objectMatchesStructure(msg, {
+      wasm: {
+        migrate: {
+          msg: {},
+        },
+      },
+    }) &&
+    typeof msg.wasm.migrate.msg !== 'string'
+  ) {
+    msg.wasm.migrate.msg = encodeJsonToBase64(msg.wasm.migrate.msg)
   }
-  // Messages such as update or clear admin pass through without modification.
+
   return msg
 }
 
@@ -199,6 +240,55 @@ export const makeBankMessage = (
     to_address: to,
   },
 })
+
+/**
+ * Convert stringified JSON object into CosmWasm-formatted Cosmos message. Used
+ * by the Custom action component to encode generic a JSON string.
+ */
+export const convertJsonToCWCosmosMsg = (value: string): CosmosMsgFor_Empty => {
+  let msg = JSON5.parse(value)
+
+  // Convert the wasm message component to base64 if necessary.
+  if (
+    objectMatchesStructure(msg, {
+      wasm: {},
+    })
+  ) {
+    msg = makeWasmMessage(msg)
+  }
+
+  // Encode JSON stargate message if needed.
+  if (
+    objectMatchesStructure(msg, {
+      stargate: {
+        typeUrl: {},
+        value: {},
+      },
+    })
+  ) {
+    msg = makeStargateMessage(msg)
+  }
+
+  // If msg is in the encoded stargate format, validate it.
+  if (
+    objectMatchesStructure(msg, {
+      stargate: {
+        type_url: {},
+        value: {},
+      },
+    })
+  ) {
+    if (typeof msg.stargate.value !== 'string') {
+      throw new Error('stargate `value` must be a base64-encoded string')
+    }
+
+    // Ensure value is valid base64 by attempting to decode it and throwing
+    // error on failure.
+    fromBase64(msg.stargate.value)
+  }
+
+  return msg
+}
 
 export enum StakingActionType {
   Delegate = 'delegate',

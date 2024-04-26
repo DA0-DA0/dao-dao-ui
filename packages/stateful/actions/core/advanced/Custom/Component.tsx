@@ -1,5 +1,4 @@
 import { Check, Close } from '@mui/icons-material'
-import JSON5 from 'json5'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -9,10 +8,10 @@ import {
   FilterableItemPopup,
   useChain,
 } from '@dao-dao/stateless'
-import { ChainId, PROTOBUF_TYPES, makeStargateMessage } from '@dao-dao/types'
+import { ChainId, PROTOBUF_TYPES } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  makeWasmMessage,
+  convertJsonToCWCosmosMsg,
   objectMatchesStructure,
   validateCosmosMsg,
 } from '@dao-dao/utils'
@@ -90,23 +89,9 @@ export const CustomComponent: ActionComponent = ({
         readOnly={!isCreating}
         transform={isCreating ? undefined : transformLongKeys}
         validation={[
-          (v: string) => {
-            let msg
+          (value: string) => {
             try {
-              msg = JSON5.parse(v)
-            } catch (e: any) {
-              return e.message as string
-            }
-
-            try {
-              if (msg.wasm) {
-                msg = makeWasmMessage(msg)
-              }
-              if (msg.stargate) {
-                msg = makeStargateMessage(msg)
-              }
-
-              validateCosmosMsg(msg)
+              validateCosmosMsg(convertJsonToCWCosmosMsg(value))
             } catch (err) {
               return err instanceof Error ? err.message : `${err}`
             }
@@ -118,7 +103,7 @@ export const CustomComponent: ActionComponent = ({
 
       {errors?.message ? (
         <div className="flex flex-col gap-1">
-          <p className="flex items-center gap-1 text-sm text-text-interactive-error">
+          <p className="text-text-interactive-error flex items-center gap-1 text-sm">
             <Close className="!h-5 !w-5" />{' '}
             <span>{errors.message.message}</span>
           </p>
@@ -134,7 +119,7 @@ export const CustomComponent: ActionComponent = ({
           </a>
         </div>
       ) : (
-        <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
+        <p className="text-text-interactive-valid flex items-center gap-1 text-sm">
           <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
