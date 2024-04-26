@@ -104,7 +104,7 @@ export const AppsTab = () => {
       maybeMakePolytoneExecuteMessage(
         currentChainId,
         chainId,
-        protobufToCwMsg(msg).msg
+        protobufToCwMsg(msg, false).msg
       )
     )
     setMsgs(messages)
