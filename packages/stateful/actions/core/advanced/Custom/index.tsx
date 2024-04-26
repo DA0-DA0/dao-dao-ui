@@ -1,3 +1,4 @@
+import { fromBase64 } from '@cosmjs/encoding'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
@@ -10,7 +11,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { CustomComponent as Component, CustomData } from './Component'
 
@@ -34,10 +35,35 @@ const useTransformToCosmos: UseTransformToCosmos<CustomData> = () =>
     if (msg.wasm) {
       msg = makeWasmMessage(msg)
     }
-    // Encode the stargate message.
-    if (msg.stargate) {
+    // Encode JSON stargate message if needed.
+    if (
+      objectMatchesStructure(msg, {
+        stargate: {
+          typeUrl: {},
+          value: {},
+        },
+      })
+    ) {
       msg = makeStargateMessage(msg)
     }
+    // If msg is in the encoded stargate format, validate it.
+    if (
+      objectMatchesStructure(msg, {
+        stargate: {
+          type_url: {},
+          value: {},
+        },
+      })
+    ) {
+      if (typeof msg.stargate.value !== 'string') {
+        throw new Error('stargate `value` must be a base64-encoded string')
+      }
+
+      // Ensure value is valid base64 by attempting to decode it and throwing
+      // error on failure.
+      fromBase64(msg.stargate.value)
+    }
+
     return msg
   }, [])
 
