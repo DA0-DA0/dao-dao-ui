@@ -65,6 +65,7 @@ export enum ChainId {
   StargazeTestnet = 'elgafar-1',
   NeutronMainnet = 'neutron-1',
   TerraMainnet = 'phoenix-1',
+  TerraClassicMainnet = 'columbus-5',
   MigalooMainnet = 'migaloo-1',
   MigalooTestnet = 'narwhal-2',
   NobleMainnet = 'noble-1',

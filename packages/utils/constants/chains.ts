@@ -1628,6 +1628,10 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://terra-rpc.polkachu.com',
     rest: 'https://terra-api.polkachu.com',
   },
+  [ChainId.TerraClassicMainnet]: {
+    rpc: 'https://terra-classic-rpc.publicnode.com',
+    rest: 'https://terra-classic-rest.publicnode.com',
+  },
   [ChainId.MigalooMainnet]: {
     rpc: 'https://migaloo-rpc.polkachu.com',
     rest: 'https://migaloo-api.polkachu.com',
@@ -1789,9 +1793,16 @@ chains
       }
     }
 
+    // Rename Terra Classic since its chain registry name is `terra` but that's
+    // taken by Terra 2 since it's a configured chain.
+    const name =
+      chain.chain_id === ChainId.TerraClassicMainnet
+        ? 'terraclassic'
+        : chain.chain_name
+
     CONFIGURED_CHAINS.push({
       chainId: chain.chain_id,
-      name: chain.chain_name,
+      name,
       mainnet: chain.network_type === 'mainnet',
       accentColor: '',
       noGov: NO_GOV_CHAIN_IDS.includes(chain.chain_id),
