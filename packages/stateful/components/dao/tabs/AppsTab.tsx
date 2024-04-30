@@ -10,6 +10,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { v4 as uuidv4 } from 'uuid'
 
+import { OverrideHandler } from '@dao-dao/cosmiframe'
 import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
@@ -126,7 +127,7 @@ export const AppsTab = () => {
     setMsgs(messages)
   }
 
-  const enableAndConnect = (chainIds: string | string[]) =>
+  const enableAndConnect = (chainIds: string | string[]): OverrideHandler =>
     [chainIds].flat().some((chainId) => addressForChainId(chainId))
       ? {
           type: 'success',
@@ -150,11 +151,6 @@ export const AppsTab = () => {
         ? toAccessibleImageUrl(imageUrl)
         : SITE_URL + getFallbackImage(coreAddress),
     },
-    accountReplacement: async (chainId) => ({
-      username: name,
-      address: addressForChainId(chainId),
-      pubkey: await getPubKey(chainId),
-    }),
     walletClientOverrides: {
       // @ts-ignore
       signAmino: (_chainId: string, signer: string, signDoc: StdSignDoc) => {
@@ -209,48 +205,25 @@ export const AppsTab = () => {
         } as SimpleAccount,
       }),
     },
-    aminoSignerOverrides: {
-      signAmino: (signerAddress, signDoc) => {
-        decodeAmino(signerAddress, signDoc)
-
-        return {
-          type: 'error',
-          error: 'Handled by DAO browser.',
-        }
-      },
-      getAccounts: async () => ({
-        type: 'success',
-        // Will be overridden by `accountReplacement` function for the
-        // appropriate chain, so just put filler data.
-        value: [
-          {
-            address: coreAddress,
-            algo: 'secp256k1',
-            pubkey: await getPubKey(currentChainId),
-          },
-          ...(await Promise.all(
-            Object.entries(polytoneProxies).map(async ([chainId, address]) => ({
-              address,
-              algo: 'secp256k1',
-              pubkey: await getPubKey(chainId),
-            }))
-          )),
-        ] as AccountData[],
-      }),
-    },
-    directSignerOverrides: {
+    signerOverrides: {
       signDirect: (signerAddress, signDoc) => {
         decodeDirect(signerAddress, signDoc.bodyBytes)
 
         return {
           type: 'error',
-          error: 'Handled by DAO browser.',
+          error: 'Handled by DAO.',
+        }
+      },
+      signAmino: (signerAddress, signDoc) => {
+        decodeAmino(signerAddress, signDoc)
+
+        return {
+          type: 'error',
+          error: 'Handled by DAO.',
         }
       },
       getAccounts: async () => ({
         type: 'success',
-        // Will be overridden by `accountReplacement` function for the
-        // appropriate chain, so just put filler data.
         value: [
           {
             address: coreAddress,
@@ -276,7 +249,7 @@ export const AppsTab = () => {
     // some dApps if simulation fails...
     let pubKey
     try {
-      pubKey = (await wallet.client.getAccount?.(chainId))?.pubkey
+      pubKey = (await wallet.client?.getAccount?.(chainId))?.pubkey
     } catch {
       pubKey = new Uint8Array([0x02, ...[...new Array(32)].map(() => 0)])
     }
