@@ -1,0 +1,30 @@
+syntax = "proto3";
+package pstake.liquidstakeibc.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "pstake/liquidstakeibc/v1beta1/params.proto";
+import "pstake/liquidstakeibc/v1beta1/liquidstakeibc.proto";
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/liquidstakeibc/types";
+
+// GenesisState defines the liquidstakeibc module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+
+  // initial host chain list
+  repeated HostChain host_chains = 2;
+
+  // initial deposit list
+  repeated Deposit deposits = 3;
+
+  // initial unbondings
+  repeated Unbonding unbondings = 4;
+
+  // initial user unbondings
+  repeated UserUnbonding user_unbondings = 5;
+
+  // validator unbondings
+  repeated ValidatorUnbonding validator_unbondings = 6;
+}

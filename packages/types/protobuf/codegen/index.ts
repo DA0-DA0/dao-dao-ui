@@ -28,6 +28,8 @@ export * from "./neutron/bundle";
 export * from "./neutron/client";
 export * from "./osmosis/bundle";
 export * from "./osmosis/client";
+export * from "./pstake/bundle";
+export * from "./pstake/client";
 export * from "./publicawesome/bundle";
 export * from "./publicawesome/client";
 export * from "./regen/bundle";

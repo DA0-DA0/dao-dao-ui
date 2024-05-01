@@ -1,0 +1,335 @@
+syntax = "proto3";
+package pstake.liquidstakeibc.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/staking/v1beta1/staking.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/liquidstakeibc/types";
+
+message HostChain {
+  option (gogoproto.goproto_stringer) = true;
+
+  // host chain id
+  string chain_id = 1;
+  // ibc connection id
+  string connection_id = 2;
+  // module params
+  HostChainLSParams params = 3;
+  // native token denom
+  string host_denom = 4;
+  // ibc connection channel id
+  string channel_id = 5;
+  // ibc connection port id
+  string port_id = 6;
+  // delegation host account
+  ICAAccount delegation_account = 7;
+  // reward host account
+  ICAAccount rewards_account = 8;
+  // validator set
+  repeated Validator validators = 9;
+  // minimum ls amount
+  string minimum_deposit = 10 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  // redemption rate
+  string c_value = 11 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // previous redemption rate
+  string last_c_value = 12 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // undelegation epoch factor
+  int64 unbonding_factor = 13;
+  // whether the chain is ready to accept delegations or not
+  bool active = 14;
+  // factor limit for auto-compounding, daily periodic rate (APY / 365s)
+  string auto_compound_factor = 15 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // host chain flags
+  HostChainFlags flags = 16;
+  // non-compoundable chain reward params
+  RewardParams reward_params = 17;
+}
+
+message HostChainFlags { bool lsm = 1; }
+
+message RewardParams {
+  // rewards denom on the host chain
+  string denom = 1;
+  // entity which will convert rewards to the host denom
+  string destination = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message HostChainLSParams {
+  string deposit_fee = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string restake_fee = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string unstake_fee = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string redemption_fee = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  // LSM validator cap
+  //  Should be used only when HostChainFlag.Lsm == true, orelse default
+  string lsm_validator_cap = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // LSM bond factor
+  //  Should be used only when HostChainFlag.Lsm == true, orelse default
+  string lsm_bond_factor = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // UndelegateEntries
+  uint32 max_entries = 8;
+  // amount skew that is acceptable before redelegating
+  string redelegation_acceptable_delta = 9 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string upper_c_value_limit = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // upper limit for the c value of the host chain
+
+  string lower_c_value_limit = 11 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // lower limit for the c value of the host chain
+}
+
+message ICAAccount {
+  enum ChannelState {
+    // ICA channel is being created
+    ICA_CHANNEL_CREATING = 0;
+    // ICA is established and the account can be used
+    ICA_CHANNEL_CREATED = 1;
+  }
+
+  // address of the ica on the controller chain
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // token balance of the ica
+  cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  // owner string
+  string owner = 3;
+  ChannelState channel_state = 4;
+}
+
+message Validator {
+  // valoper address
+  string operator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // validator status
+  string status = 2;
+  // validator weight in the set
+  string weight = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // amount delegated by the module to the validator
+  string delegated_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  // the validator token exchange rate, total bonded tokens divided by total
+  // shares issued
+  string exchange_rate = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // the unbonding epoch number when the validator transitioned into the state
+  int64 unbonding_epoch = 6;
+  // whether the validator can accept delegations or not, default true for
+  // non-lsm chains
+  bool delegable = 7;
+}
+
+message Deposit {
+  enum DepositState {
+    // no action has been initiated on the deposit
+    DEPOSIT_PENDING = 0;
+    // deposit sent to the host chain delegator address
+    DEPOSIT_SENT = 1;
+    // deposit received by the host chain delegator address
+    DEPOSIT_RECEIVED = 2;
+    // delegation submitted for the deposit on the host chain
+    DEPOSIT_DELEGATING = 3;
+  }
+
+  // deposit target chain
+  string chain_id = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+  // epoch number of the deposit
+  int64 epoch = 3;
+  // state
+  DepositState state = 4;
+  // sequence id of the ibc transaction
+  string ibc_sequence_id = 5;
+}
+
+message LSMDeposit {
+  enum LSMDepositState {
+    // no action has been initiated on the deposit
+    DEPOSIT_PENDING = 0;
+    // deposit sent to the host chain delegator address
+    DEPOSIT_SENT = 1;
+    // deposit received by the host chain delegator address
+    DEPOSIT_RECEIVED = 2;
+    // deposit started the untokenization process
+    DEPOSIT_UNTOKENIZING = 3;
+  }
+
+  // deposit target chain
+  string chain_id = 1;
+  // this is calculated when liquid staking [lsm_shares *
+  // validator_exchange_rate]
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  // LSM token shares, they are mapped 1:1 with the delegator shares that are
+  // tokenized https://github.com/iqlusioninc/cosmos-sdk/pull/19
+  string shares = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // LSM token denom
+  string denom = 4;
+  // LSM token ibc denom
+  string ibc_denom = 5;
+  // address of the delegator
+  string delegator_address = 6;
+  // state o the deposit
+  LSMDepositState state = 7;
+  // sequence id of the ibc transaction
+  string ibc_sequence_id = 8;
+}
+
+message Unbonding {
+  enum UnbondingState {
+    // no action has been initiated on the unbonding
+    UNBONDING_PENDING = 0;
+    // unbonding action has been sent to the host chain
+    UNBONDING_INITIATED = 1;
+    // unbonding is waiting for the maturing period of the host chain
+    UNBONDING_MATURING = 2;
+    // unbonding has matured and is ready to transfer from the host chain
+    UNBONDING_MATURED = 3;
+    // unbonding is on the persistence chain and can be claimed
+    UNBONDING_CLAIMABLE = 4;
+    // unbonding has failed
+    UNBONDING_FAILED = 5;
+  }
+
+  // unbonding target chain
+  string chain_id = 1;
+  // epoch number of the unbonding record
+  int64 epoch_number = 2;
+  // time when the unbonding matures and can be collected
+  google.protobuf.Timestamp mature_time = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+  // stk token amount that is burned with the unbonding
+  cosmos.base.v1beta1.Coin burn_amount = 4 [ (gogoproto.nullable) = false ];
+  // host token amount that is being unbonded
+  cosmos.base.v1beta1.Coin unbond_amount = 5 [ (gogoproto.nullable) = false ];
+  // sequence id of the ibc transaction
+  string ibc_sequence_id = 6;
+  // state of the unbonding during the process
+  UnbondingState state = 7;
+}
+
+message UserUnbonding {
+  // unbonding target chain
+  string chain_id = 1;
+  // epoch when the unbonding started
+  int64 epoch_number = 2;
+  // address which requested the unbonding
+  string address = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // stk token amount that is being unbonded
+  cosmos.base.v1beta1.Coin stk_amount = 4 [ (gogoproto.nullable) = false ];
+  // host token amount that is being unbonded
+  cosmos.base.v1beta1.Coin unbond_amount = 5 [ (gogoproto.nullable) = false ];
+}
+
+message ValidatorUnbonding {
+  // unbonding target chain
+  string chain_id = 1;
+  // epoch when the unbonding started
+  int64 epoch_number = 2;
+  // time when the unbonding matures and can be collected
+  google.protobuf.Timestamp mature_time = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+  // address of the validator that is being unbonded
+  string validator_address = 4
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // amount unbonded from the validator
+  cosmos.base.v1beta1.Coin amount = 5 [ (gogoproto.nullable) = false ];
+  // sequence id of the ibc transaction
+  string ibc_sequence_id = 6;
+}
+
+message KVUpdate {
+  string key = 1;
+  string value = 2;
+}
+
+message Redelegations {
+  string chain_i_d = 1;
+  repeated cosmos.staking.v1beta1.Redelegation redelegations = 2;
+}
+
+message RedelegateTx {
+  enum RedelegateTxState {
+
+    // redelegate txn sent
+    REDELEGATE_SENT = 0;
+    // redelegate txn acked
+    REDELEGATE_ACKED = 1;
+  }
+
+  // target chain
+  string chain_id = 1;
+
+  string ibc_sequence_id = 2;
+  // state of the unbonding during the process
+  RedelegateTxState state = 3;
+}

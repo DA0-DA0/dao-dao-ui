@@ -111,6 +111,10 @@ telescope({
           'kujira.denom',
           'kujira.oracle',
           'kujira.scheduler',
+          'pstake.liquidstake.v1beta1',
+          'pstake.liquidstakeibc.v1beta1',
+          'pstake.lscosmos.v1beta1',
+          'pstake.ratesync.v1beta1',
         ],
       },
       // excluded: {

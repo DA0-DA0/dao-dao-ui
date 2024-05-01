@@ -1,0 +1,71 @@
+syntax = "proto3";
+package pstake.ratesync.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "pstake/liquidstakeibc/v1beta1/liquidstakeibc.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/ratesync/types";
+
+// HostChain defines the ratesync module's HostChain state.
+message HostChain {
+  // unique id
+  uint64 i_d = 1;
+  string chain_i_d = 2; // not really required, just easier readability
+  string connection_i_d = 3;
+  pstake.liquidstakeibc.v1beta1.ICAAccount i_c_a_account = 4
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+  Feature features = 5
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+  string transfer_channel_i_d = 6;
+  string transfer_port_i_d = 7;
+}
+
+message Feature {
+  // triggers on hooks
+  LiquidStake liquid_stake_i_b_c = 1
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+
+  // triggers on hour epoch
+  LiquidStake liquid_stake = 2
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+
+  // add more features
+}
+
+enum InstantiationState {
+  // Not Initiated
+  INSTANTIATION_NOT_INITIATED = 0;
+  // Initiated
+  INSTANTIATION_INITIATED = 1;
+  // we should have an address
+  INSTANTIATION_COMPLETED = 2;
+}
+
+enum FeatureType {
+  LIQUID_STAKE_IBC = 0;
+  LIQUID_STAKE = 1;
+}
+
+message LiquidStake {
+  FeatureType feature_type = 1;
+
+  // needs to be uploaded before hand
+  uint64 code_i_d = 2;
+  // state of instantiation, do not support gov based instantiation. (need ICA
+  // to be at least admin)
+  InstantiationState instantiation = 3;
+  // address of instantiated contract.
+  string contract_address = 4;
+  // allow * as default for all denoms in case of lsibc, or default bond denom
+  // in case of ls.
+  repeated string denoms = 5;
+
+  bool enabled = 6;
+}
+
+// aim to keep this smaller than 256 MaxCharLen in ICA memo.
+message ICAMemo {
+  FeatureType feature_type = 1;
+  uint64 host_chain_i_d = 2;
+}

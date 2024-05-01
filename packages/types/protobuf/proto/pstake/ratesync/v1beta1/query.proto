@@ -1,0 +1,52 @@
+syntax = "proto3";
+package pstake.ratesync.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "pstake/ratesync/v1beta1/params.proto";
+import "pstake/ratesync/v1beta1/ratesync.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/ratesync/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pstake/ratesync/v1beta1/params";
+  }
+
+  // Queries a list of Chain items.
+  rpc HostChain(QueryGetHostChainRequest) returns (QueryGetHostChainResponse) {
+    option (google.api.http).get =
+        "/pstake-native/v2/ratesync/host_chain/{i_d}";
+  }
+  rpc AllHostChains(QueryAllHostChainsRequest)
+      returns (QueryAllHostChainsResponse) {
+    option (google.api.http).get = "/pstake-native/v2/ratesync/host_chains";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryGetHostChainRequest { uint64 i_d = 1; }
+
+message QueryGetHostChainResponse {
+  HostChain host_chain = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAllHostChainsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllHostChainsResponse {
+  repeated HostChain host_chains = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

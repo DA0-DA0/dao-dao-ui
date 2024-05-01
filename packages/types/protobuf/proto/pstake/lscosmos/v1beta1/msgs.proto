@@ -1,0 +1,138 @@
+syntax = "proto3";
+package pstake.lscosmos.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/msg/v1/msg.proto";
+import "pstake/lscosmos/v1beta1/lscosmos.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/lscosmos/types";
+
+// Msg defines the lsCosmos services.
+service Msg {
+  option deprecated = true;
+
+  rpc LiquidStake(MsgLiquidStake) returns (MsgLiquidStakeResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/LiquidStake";
+  }
+
+  rpc LiquidUnstake(MsgLiquidUnstake) returns (MsgLiquidUnstakeResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/LiquidUnstake";
+  }
+
+  rpc Redeem(MsgRedeem) returns (MsgRedeemResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/Redeem";
+  }
+
+  rpc Claim(MsgClaim) returns (MsgClaimResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/Claim";
+  }
+
+  rpc RecreateICA(MsgRecreateICA) returns (MsgRecreateICAResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/RecreateICA";
+  }
+
+  rpc JumpStart(MsgJumpStart) returns (MsgJumpStartResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/JumpStart";
+  }
+
+  rpc ChangeModuleState(MsgChangeModuleState)
+      returns (MsgChangeModuleStateResponse) {
+    option (google.api.http).post =
+        "/pstake/lscosmos/v1beta1/ChangeModuleState";
+  }
+
+  rpc ReportSlashing(MsgReportSlashing) returns (MsgReportSlashingResponse) {
+    option (google.api.http).post = "/pstake/lscosmos/v1beta1/ReportSlashing";
+  }
+}
+
+message MsgLiquidStake {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+
+  string delegator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgLiquidStakeResponse {}
+
+message MsgLiquidUnstake {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+
+  string delegator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgLiquidUnstakeResponse {}
+
+message MsgRedeem {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+
+  string delegator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgRedeemResponse {}
+
+message MsgClaim {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+
+  string delegator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message MsgClaimResponse {}
+
+message MsgRecreateICA {
+  option (cosmos.msg.v1.signer) = "from_address";
+
+  string from_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message MsgRecreateICAResponse {}
+
+message MsgJumpStart {
+  option (cosmos.msg.v1.signer) = "pstake_address";
+
+  string pstake_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string chain_i_d = 2;
+  string connection_i_d = 3;
+  string transfer_channel = 4;
+  string transfer_port = 5;
+  string base_denom = 6;
+  string mint_denom = 7;
+  string min_deposit = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  AllowListedValidators allow_listed_validators = 9
+      [ (gogoproto.nullable) = false ];
+  PstakeParams pstake_params = 10 [ (gogoproto.nullable) = false ];
+  HostAccounts host_accounts = 11 [ (gogoproto.nullable) = false ];
+}
+
+message MsgJumpStartResponse {}
+
+message MsgChangeModuleState {
+  option (cosmos.msg.v1.signer) = "pstake_address";
+
+  string pstake_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  bool module_state = 2;
+}
+
+message MsgChangeModuleStateResponse {}
+
+message MsgReportSlashing {
+  option (cosmos.msg.v1.signer) = "pstake_address";
+
+  string pstake_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string validator_address = 2;
+}
+
+message MsgReportSlashingResponse {}

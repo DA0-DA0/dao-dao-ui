@@ -1,0 +1,31 @@
+syntax = "proto3";
+package pstake.lscosmos.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "pstake/lscosmos/v1beta1/params.proto";
+import "pstake/lscosmos/v1beta1/lscosmos.proto";
+import "pstake/lscosmos/v1beta1/governance_proposal.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/lscosmos/types";
+
+// GenesisState defines the lscosmos module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+
+  // this line is used by starport scaffolding # genesis/proto/state
+  bool module_enabled = 2;
+  HostChainParams host_chain_params = 3 [ (gogoproto.nullable) = false ];
+  AllowListedValidators allow_listed_validators = 4
+      [ (gogoproto.nullable) = false ];
+  DelegationState delegation_state = 5 [ (gogoproto.nullable) = false ];
+  HostChainRewardAddress host_chain_reward_address = 6
+      [ (gogoproto.nullable) = false ];
+  IBCAmountTransientStore i_b_c_amount_transient_store = 7
+      [ (gogoproto.nullable) = false ];
+  repeated UnbondingEpochCValue unbonding_epoch_c_values = 8
+      [ (gogoproto.nullable) = false ];
+  repeated DelegatorUnbondingEpochEntry delegator_unbonding_epoch_entries = 9
+      [ (gogoproto.nullable) = false ];
+  HostAccounts host_accounts = 10 [ (gogoproto.nullable) = false ];
+}

@@ -1,0 +1,284 @@
+syntax = "proto3";
+package pstake.lscosmos.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "pstake/lscosmos/v1beta1/params.proto";
+import "pstake/lscosmos/v1beta1/genesis.proto";
+import "pstake/lscosmos/v1beta1/governance_proposal.proto";
+import "pstake/lscosmos/v1beta1/lscosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/lscosmos/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  option deprecated = true;
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/params";
+  }
+  // AllState returns all state of module, aka, genesis export.
+  rpc AllState(QueryAllStateRequest) returns (QueryAllStateResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/all_state";
+  }
+
+  rpc HostChainParams(QueryHostChainParamsRequest)
+      returns (QueryHostChainParamsResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/host_chain_params";
+  }
+
+  rpc DelegationState(QueryDelegationStateRequest)
+      returns (QueryDelegationStateResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/delegation_state";
+  }
+
+  rpc AllowListedValidators(QueryAllowListedValidatorsRequest)
+      returns (QueryAllowListedValidatorsResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/allow_listed_validators";
+  }
+
+  rpc CValue(QueryCValueRequest) returns (QueryCValueResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/c_value";
+  }
+
+  rpc ModuleState(QueryModuleStateRequest) returns (QueryModuleStateResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/module_state";
+  }
+
+  rpc IBCTransientStore(QueryIBCTransientStoreRequest)
+      returns (QueryIBCTransientStoreResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/ibc_transient_store";
+  }
+
+  rpc Unclaimed(QueryUnclaimedRequest) returns (QueryUnclaimedResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/unclaimed/{delegator_address}";
+  }
+
+  rpc FailedUnbondings(QueryFailedUnbondingsRequest)
+      returns (QueryFailedUnbondingsResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/failed_unbondings/{delegator_address}";
+  }
+
+  rpc PendingUnbondings(QueryPendingUnbondingsRequest)
+      returns (QueryPendingUnbondingsResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/pending_unbondings/{delegator_address}";
+  }
+
+  rpc UnbondingEpochCValue(QueryUnbondingEpochCValueRequest)
+      returns (QueryUnbondingEpochCValueResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/unbonding_epoch_c_value/{epoch_number}";
+  }
+
+  rpc HostAccountUndelegation(QueryHostAccountUndelegationRequest)
+      returns (QueryHostAccountUndelegationResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/host_account_undelegation/{epoch_number}";
+  }
+
+  rpc DelegatorUnbondingEpochEntry(QueryDelegatorUnbondingEpochEntryRequest)
+      returns (QueryDelegatorUnbondingEpochEntryResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/delegator_unbonding_epoch_entry/"
+        "{delegator_address}/{epoch_number}";
+  }
+
+  rpc HostAccounts(QueryHostAccountsRequest)
+      returns (QueryHostAccountsResponse) {
+    option (google.api.http).get = "/pstake/lscosmos/v1beta1/host_accounts";
+  }
+
+  rpc DepositModuleAccount(QueryDepositModuleAccountRequest)
+      returns (QueryDepositModuleAccountResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/deposit_module_account";
+  }
+
+  rpc DelegatorUnbondingEpochEntries(
+      QueryAllDelegatorUnbondingEpochEntriesRequest)
+      returns (QueryAllDelegatorUnbondingEpochEntriesResponse) {
+    option (google.api.http).get =
+        "/pstake/lscosmos/v1beta1/delegator_unbonding_epoch_entries/"
+        "{delegator_address}";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAllStateRequest is request type for the Query/AllState RPC method.
+message QueryAllStateRequest {}
+
+// QueryAllStateResponse is response type for the Query/AllState RPC method.
+message QueryAllStateResponse {
+  // params holds all the parameters of this module.
+  GenesisState genesis = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryHostChainParamsRequest is request for the Ouery/HostChainParams methods.
+message QueryHostChainParamsRequest {}
+
+// QueryHostChainParamsResponse is response for the Ouery/HostChainParams
+// methods.
+message QueryHostChainParamsResponse {
+  HostChainParams host_chain_params = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryDelegationStateRequest is request for the Ouery/DelegationState methods.
+message QueryDelegationStateRequest {}
+
+// QueryDelegationStateResponse is response for the Ouery/DelegationState
+// methods.
+message QueryDelegationStateResponse {
+  DelegationState delegation_state = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryListedValidatorsRequest is a request for the Query/AllowListedValidators
+// methods.
+message QueryAllowListedValidatorsRequest {}
+
+// QueryListedValidatorsResponse is a response for the
+// Query/AllowListedValidators methods.
+message QueryAllowListedValidatorsResponse {
+  AllowListedValidators allow_listed_validators = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryCValueRequest is a request for the Query/CValue methods.
+message QueryCValueRequest {}
+
+// QueryCValueRequest is a response for the Query/CValue methods.
+message QueryCValueResponse {
+  string c_value = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// QueryModuleStateRequest is a request for the Query/ModuleState methods.
+message QueryModuleStateRequest {}
+
+// QueryModuleStateRequest is a response for the Query/ModuleState methods.
+message QueryModuleStateResponse { bool module_state = 1; }
+
+// QueryIBCTransientStoreRequest is a request for the Query/IBCTransientStore
+// methods.
+message QueryIBCTransientStoreRequest {}
+
+// QueryIBCTransientStoreRequest is a response for the Query/IBCTransientStore
+// methods.
+message QueryIBCTransientStoreResponse {
+  IBCAmountTransientStore i_b_c_transient_store = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryUnclaimedRequest is a request for the Query/Unclaimed methods.
+message QueryUnclaimedRequest { string delegator_address = 1; }
+// QueryUnclaimedResponse is a response for the Query/Unclaimed methods.
+message QueryUnclaimedResponse {
+  repeated UnbondingEpochCValue unclaimed = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryFailedUnbondingsRequest is a request for the Query/FailedUnbondings
+// methods.
+message QueryFailedUnbondingsRequest { string delegator_address = 1; }
+
+// QueryFailedUnbondingsResponse a response for the Query/FailedUnbondings
+// methods.
+message QueryFailedUnbondingsResponse {
+  repeated UnbondingEpochCValue failed_unbondings = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryPendingUnbondingsRequest is a request for the Query/PendingUnbondings
+// methods.
+message QueryPendingUnbondingsRequest { string delegator_address = 1; }
+
+// QueryPendingUnbondingsResponse is a response for the Query/PendingUnbondings
+// methods.
+message QueryPendingUnbondingsResponse {
+  repeated UnbondingEpochCValue pending_unbondings = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryUnbondingEpochCValueRequest is a request for the
+// Query/UnbondingEpochCValue methods.
+message QueryUnbondingEpochCValueRequest { int64 epoch_number = 1; }
+
+// QueryUnbondingEpochCValueResponse is a response for the
+// Query/UnbondingEpochCValue methods.
+message QueryUnbondingEpochCValueResponse {
+  UnbondingEpochCValue unbonding_epoch_c_value = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryHostAccountUndelegationRequest is a request for the
+// Query/HostAccountUndelegation methods.
+message QueryHostAccountUndelegationRequest { int64 epoch_number = 1; }
+
+// QueryHostAccountUndelegationResponse is a response for the
+// Query/HostAccountUndelegation methods.
+message QueryHostAccountUndelegationResponse {
+  HostAccountUndelegation host_account_undelegation = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryDelegatorUnbondingEpochEntryRequest is a request for the
+// Query/DelegatorUnbondingEpochEntry methods.
+message QueryDelegatorUnbondingEpochEntryRequest {
+  string delegator_address = 1;
+  int64 epoch_number = 2;
+}
+
+// QueryDelegatorUnbondingEpochEntryResponse is a response for the
+// Query/DelegatorUnbondingEpochEntry methods.
+message QueryDelegatorUnbondingEpochEntryResponse {
+  DelegatorUnbondingEpochEntry delegator_unboding_epoch_entry = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+// QueryHostAccountsRequest is a request for the Query/HostAccounts methods.
+message QueryHostAccountsRequest {}
+
+// QueryHostAccountsResponse is a response for the Query/HostAccounts methods.
+message QueryHostAccountsResponse {
+  HostAccounts host_accounts = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryDepositModuleAccountRequest is a request for the
+// Query/DepositModuleAccount methods.
+message QueryDepositModuleAccountRequest {}
+
+// QueryDepositModuleAccountResponse is a response for the
+// Query/DepositModuleAccount methods.
+message QueryDepositModuleAccountResponse {
+  cosmos.base.v1beta1.Coin balance = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAllDelegatorUnbondingEpochEntriesRequest is a request for the
+// Query/DelegatorUnbondingEpochEntries methods.
+message QueryAllDelegatorUnbondingEpochEntriesRequest {
+  string delegator_address = 1;
+}
+
+// QueryAllDelegatorUnbondingEpochEntriesResponse is a response for the
+// Query/DelegatorUnbondingEpochEntries methods.
+message QueryAllDelegatorUnbondingEpochEntriesResponse {
+  repeated DelegatorUnbondingEpochEntry delegator_unbonding_epoch_entries = 1
+      [ (gogoproto.nullable) = false ];
+}

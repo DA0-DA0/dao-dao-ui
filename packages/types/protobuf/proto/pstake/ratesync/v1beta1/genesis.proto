@@ -1,0 +1,14 @@
+syntax = "proto3";
+package pstake.ratesync.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "pstake/ratesync/v1beta1/params.proto";
+import "pstake/ratesync/v1beta1/ratesync.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/ratesync/types";
+
+// GenesisState defines the ratesync module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated HostChain host_chains = 2 [ (gogoproto.nullable) = false ];
+}

@@ -1,0 +1,194 @@
+syntax = "proto3";
+package pstake.liquidstakeibc.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+import "pstake/liquidstakeibc/v1beta1/params.proto";
+import "pstake/liquidstakeibc/v1beta1/liquidstakeibc.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/liquidstakeibc/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pstake/liquidstakeibc/v1beta1/params";
+  }
+
+  // Queries a HostChain by id.
+  rpc HostChain(QueryHostChainRequest) returns (QueryHostChainResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/host_chain/{chain_id}";
+  }
+
+  // Queries for all the HostChains.
+  rpc HostChains(QueryHostChainsRequest) returns (QueryHostChainsResponse) {
+    option (google.api.http).get = "/pstake/liquidstakeibc/v1beta1/host_chains";
+  }
+
+  // Queries for all the deposits for a host chain.
+  rpc Deposits(QueryDepositsRequest) returns (QueryDepositsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/deposits/{chain_id}";
+  }
+
+  // Queries for all the deposits for a host chain.
+  rpc LSMDeposits(QueryLSMDepositsRequest) returns (QueryLSMDepositsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/lsm_deposits/{chain_id}";
+  }
+
+  // Queries all unbondings for a host chain.
+  rpc Unbondings(QueryUnbondingsRequest) returns (QueryUnbondingsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/unbondings/{chain_id}";
+  }
+
+  // Queries an unbonding for a host chain.
+  rpc Unbonding(QueryUnbondingRequest) returns (QueryUnbondingResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/unbonding/{chain_id}/{epoch}";
+  }
+
+  // Queries all unbondings for a delegator address.
+  rpc UserUnbondings(QueryUserUnbondingsRequest)
+      returns (QueryUserUnbondingsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/user_unbondings/{address}";
+  }
+
+  // Queries all unbondings for a host chain.
+  rpc HostChainUserUnbondings(QueryHostChainUserUnbondingsRequest)
+      returns (QueryHostChainUserUnbondingsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/user_unbondings/{chain_id}";
+  }
+
+  // Queries all validator unbondings for a host chain.
+  rpc ValidatorUnbondings(QueryValidatorUnbondingRequest)
+      returns (QueryValidatorUnbondingResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/validator_unbondings/{chain_id}";
+  }
+
+  // Queries for a host chain deposit account balance.
+  rpc DepositAccountBalance(QueryDepositAccountBalanceRequest)
+      returns (QueryDepositAccountBalanceResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/deposit_account_balance/{chain_id}";
+  }
+
+  // Queries for a host chain exchange rate between the host token and the stk
+  // token.
+  rpc ExchangeRate(QueryExchangeRateRequest)
+      returns (QueryExchangeRateResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/exchange_rate/{chain_id}";
+  }
+
+  // Queries for a host chain redelegation entries on the host token delegation
+  // acct.
+  rpc Redelegations(QueryRedelegationsRequest)
+      returns (QueryRedelegationsResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/redelegations/{chain_id}";
+  }
+
+  // Queries for a host chain redelegation-txs for the host token.
+  rpc RedelegationTx(QueryRedelegationTxRequest)
+      returns (QueryRedelegationTxResponse) {
+    option (google.api.http).get =
+        "/pstake/liquidstakeibc/v1beta1/redelegation_tx/{chain_id}";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryHostChainRequest { string chain_id = 1; }
+
+message QueryHostChainResponse {
+  HostChain host_chain = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryHostChainsRequest {}
+
+message QueryHostChainsResponse { repeated HostChain host_chains = 1; }
+
+message QueryDepositsRequest { string chain_id = 1; }
+
+message QueryDepositsResponse { repeated Deposit deposits = 1; }
+
+message QueryLSMDepositsRequest { string chain_id = 1; }
+
+message QueryLSMDepositsResponse { repeated LSMDeposit deposits = 1; }
+
+message QueryUnbondingsRequest { string chain_id = 1; }
+
+message QueryUnbondingsResponse { repeated Unbonding unbondings = 1; }
+
+message QueryUnbondingRequest {
+  string chain_id = 1;
+  int64 epoch = 2;
+}
+
+message QueryUnbondingResponse { Unbonding unbonding = 1; }
+
+message QueryUserUnbondingsRequest { string address = 1; }
+
+message QueryUserUnbondingsResponse {
+  repeated UserUnbonding user_unbondings = 1;
+}
+
+message QueryHostChainUserUnbondingsRequest {
+  string chain_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryHostChainUserUnbondingsResponse {
+  repeated UserUnbonding user_unbondings = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryValidatorUnbondingRequest { string chain_id = 1; }
+
+message QueryValidatorUnbondingResponse {
+  repeated ValidatorUnbonding validator_unbondings = 1;
+}
+
+message QueryDepositAccountBalanceRequest { string chain_id = 1; }
+
+message QueryDepositAccountBalanceResponse {
+  cosmos.base.v1beta1.Coin balance = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryExchangeRateRequest { string chain_id = 1; }
+
+message QueryExchangeRateResponse {
+  string rate = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (cosmos_proto.scalar) = "cosmos.Dec"
+  ];
+}
+
+message QueryRedelegationsRequest { string chain_id = 1; }
+
+message QueryRedelegationsResponse {
+  liquidstakeibc.v1beta1.Redelegations redelegations = 1;
+}
+
+message QueryRedelegationTxRequest { string chain_id = 1; }
+
+message QueryRedelegationTxResponse {
+  repeated liquidstakeibc.v1beta1.RedelegateTx redelegation_tx = 1;
+}

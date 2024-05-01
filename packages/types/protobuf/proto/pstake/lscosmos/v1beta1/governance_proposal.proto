@@ -1,0 +1,69 @@
+syntax = "proto3";
+package pstake.lscosmos.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "pstake/lscosmos/v1beta1/lscosmos.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/lscosmos/types";
+
+option (gogoproto.equal_all) = true;
+option (gogoproto.stringer_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MinDepositAndFeeChangeProposal {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_stringer) = false;
+  option deprecated = true;
+
+  string title = 1;
+  string description = 2;
+  string min_deposit = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string pstake_deposit_fee = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string pstake_restake_fee = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string pstake_unstake_fee = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string pstake_redemption_fee = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message PstakeFeeAddressChangeProposal {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_stringer) = false;
+  option deprecated = true;
+
+  string title = 1;
+  string description = 2;
+  string pstake_fee_address = 3
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message AllowListedValidatorSetChangeProposal {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_stringer) = false;
+  option deprecated = true;
+
+  string title = 1;
+  string description = 2;
+  AllowListedValidators allow_listed_validators = 3
+      [ (gogoproto.nullable) = false ];
+}

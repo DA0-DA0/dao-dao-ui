@@ -1,0 +1,35 @@
+syntax = "proto3";
+package pstake.ratesync.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/ratesync/types";
+
+// msg blob for instantiate contract.
+message InstantiateLiquidStakeRateContract {
+  string admin = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string transfer_channel_i_d = 2;
+  string transfer_port_i_d = 3;
+}
+
+// wrapper for liquidstakerate as wasm msg should be marshalled as encodedMsg =
+// { wasmMsg: { wasm MsgDetails } }
+message ExecuteLiquidStakeRate {
+  LiquidStakeRate liquid_stake_rate = 1 [ (gogoproto.nullable) = false ];
+}
+
+// msg blob for execute contract.
+message LiquidStakeRate {
+  string default_bond_denom = 1;
+  string stk_denom = 2;
+  // cvalue = default_bond_denom_price/stk_denom_price
+  // cvalue = stk_denom_supply/default_bond_denom_supply
+  string c_value = 3 [
+    (gogoproto.nullable) = false,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+  int64 controller_chain_time = 4;
+}

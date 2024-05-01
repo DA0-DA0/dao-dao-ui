@@ -1,0 +1,14 @@
+syntax = "proto3";
+package pstake.ratesync.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/ratesync/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  string admin = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}

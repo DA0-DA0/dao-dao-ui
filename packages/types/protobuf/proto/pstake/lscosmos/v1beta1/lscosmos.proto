@@ -1,0 +1,168 @@
+syntax = "proto3";
+package pstake.lscosmos.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos_proto/cosmos.proto";
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/lscosmos/types";
+
+option (gogoproto.equal_all) = true;
+option (gogoproto.stringer_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message AllowListedValidators {
+  repeated AllowListedValidator allow_listed_validators = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"allow_lised_validators\""
+  ];
+}
+
+message AllowListedValidator {
+
+  // validator_address defines the bech32-encoded address the allowlisted
+  // validator
+  string validator_address = 1 [
+    (cosmos_proto.scalar) = "cosmos.AddressString",
+    (gogoproto.moretags) = "yaml:\"validator_address\""
+  ];
+
+  // target_weight specifies the target weight for liquid staking, unstaking
+  // amount, which is a value for calculating the real weight to be derived
+  // according to the active status
+  string target_weight = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.moretags) = "yaml:\"target_weight\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message PstakeParams {
+  string pstake_deposit_fee = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string pstake_restake_fee = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string pstake_unstake_fee = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string pstake_redemption_fee = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ]; // protocol fee in percentage
+  string pstake_fee_address = 5
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// HostChainParams go into the DB
+message HostChainParams {
+  option (gogoproto.goproto_stringer) = true;
+
+  string chain_i_d = 1;
+  string connection_i_d = 2;
+  string transfer_channel = 3;
+  string transfer_port = 4;
+  string base_denom = 5;
+  string mint_denom = 6;
+  string min_deposit = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  PstakeParams pstake_params = 8 [ (gogoproto.nullable) = false ];
+}
+
+// DelegationState stores module account balance, ica account balance,
+// delegation state, undelegation state
+message DelegationState {
+  // This field is necessary as the address of not blocked for send coins,
+  // we only should care about funds that have come via proper channels.
+  repeated cosmos.base.v1beta1.Coin host_delegation_account_balance = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string host_chain_delegation_address = 2
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  repeated HostAccountDelegation host_account_delegations = 3
+      [ (gogoproto.nullable) = false ];
+  repeated HostAccountUndelegation host_account_undelegations = 4
+      [ (gogoproto.nullable) = false ];
+}
+
+message HostAccountDelegation {
+  option (gogoproto.goproto_stringer) = true;
+
+  string validator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message HostAccountUndelegation {
+  int64 epoch_number = 1;
+  cosmos.base.v1beta1.Coin total_undelegation_amount = 2
+      [ (gogoproto.nullable) = false ];
+  google.protobuf.Timestamp completion_time = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+  repeated UndelegationEntry undelegation_entries = 4
+      [ (gogoproto.nullable) = false ];
+}
+
+message UndelegationEntry {
+  option (gogoproto.goproto_stringer) = true;
+  string validator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message HostChainRewardAddress {
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message IBCAmountTransientStore {
+  // ibc_transfer stores only tokens which have ibc denoms "ibc/HEXHASH"
+  repeated cosmos.base.v1beta1.Coin i_b_c_transfer = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // ica_delegate stores only token which has staking baseDenom
+  cosmos.base.v1beta1.Coin i_c_a_delegate = 2 [ (gogoproto.nullable) = false ];
+
+  repeated TransientUndelegationTransfer undelegaton_complete_i_b_c_transfer = 3
+      [ (gogoproto.nullable) = false ];
+}
+
+message TransientUndelegationTransfer {
+  int64 epoch_number = 1;
+  cosmos.base.v1beta1.Coin amount_unbonded = 2 [ (gogoproto.nullable) = false ];
+}
+
+message UnbondingEpochCValue {
+  int64 epoch_number = 1;
+
+  // c_value = stk_burn.Amount/amount_unbonded.Amount
+  cosmos.base.v1beta1.Coin s_t_k_burn = 2 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin amount_unbonded = 3 [ (gogoproto.nullable) = false ];
+  bool is_matured = 4;
+  bool is_failed = 5;
+}
+
+message DelegatorUnbondingEpochEntry {
+  string delegator_address = 1
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  int64 epoch_number = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+}
+
+message HostAccounts {
+  string delegator_account_owner_i_d = 1;
+  string rewards_account_owner_i_d = 2;
+}

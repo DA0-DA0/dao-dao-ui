@@ -1,0 +1,25 @@
+syntax = "proto3";
+package pstake.liquidstakeibc.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/persistenceOne/pstake-native/v2/x/liquidstakeibc/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "pstake/x/liquidstakeibc/Params";
+
+  string admin_address = 1
+      [ (cosmos_proto.scalar) =
+            "cosmos.AddressString" ]; // protocol admin address
+
+  string fee_address = 2 [ (cosmos_proto.scalar) =
+                               "cosmos.AddressString" ]; // protocol fee address
+
+  // fields 3 and 4 were migrated to on-chain params.
+  // check https://github.com/persistenceOne/pstake-native/pull/732.
+  reserved 3; // upper_c_value_limit
+  reserved 4; // lower_c_value_limit
+}
