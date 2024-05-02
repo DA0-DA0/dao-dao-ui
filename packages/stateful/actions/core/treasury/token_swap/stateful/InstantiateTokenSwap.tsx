@@ -15,6 +15,7 @@ import {
 } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
   instantiateSmartContract,
@@ -78,19 +79,19 @@ export const InstantiateTokenSwap: ActionComponent<
               ? {
                   cw20: {
                     contract_addr: selfParty.denomOrAddress,
-                    amount: convertDenomToMicroDenomWithDecimals(
+                    amount: convertDenomToMicroDenomStringWithDecimals(
                       selfParty.amount,
                       selfParty.decimals
-                    ).toString(),
+                    ),
                   },
                 }
               : {
                   native: {
                     denom: selfParty.denomOrAddress,
-                    amount: convertDenomToMicroDenomWithDecimals(
+                    amount: convertDenomToMicroDenomStringWithDecimals(
                       selfParty.amount,
                       selfParty.decimals
-                    ).toString(),
+                    ),
                   },
                 },
         },

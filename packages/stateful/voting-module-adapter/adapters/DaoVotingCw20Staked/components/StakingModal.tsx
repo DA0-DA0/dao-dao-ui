@@ -173,10 +173,10 @@ const InnerStakingModal = ({
 
         try {
           await doCw20SendAndExecute({
-            amount: convertDenomToMicroDenomWithDecimals(
+            amount: convertDenomToMicroDenomStringWithDecimals(
               amount,
               governanceToken.decimals
-            ).toString(),
+            ),
             contract: stakingContractToExecute,
             msg: encodeJsonToBase64({
               [isOraichainCustomStaking ? 'bond' : 'stake']: {},

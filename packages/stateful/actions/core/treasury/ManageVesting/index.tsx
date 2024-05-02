@@ -658,8 +658,8 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
               start_time:
                 begin.startDate && !isNaN(Date.parse(begin.startDate))
                   ? // milliseconds => nanoseconds
-                    Math.round(
-                      new Date(begin.startDate).getTime() * 1e6
+                    BigInt(
+                      Math.round(new Date(begin.startDate).getTime() * 1e6)
                     ).toString()
                   : '',
               title: begin.title,

@@ -329,7 +329,7 @@ export const maybeMakePolytoneExecuteMessage = (
         msg: {
           execute: {
             msgs: msg ? [msg].flat() : [],
-            timeout_seconds: IBC_TIMEOUT_SECONDS.toString(),
+            timeout_seconds: BigInt(IBC_TIMEOUT_SECONDS).toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
               receiver: polytoneConnection?.listener,

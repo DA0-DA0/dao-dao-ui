@@ -8,7 +8,7 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.
 import { InstantiateMsg as DaoProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DaoProposalSingleAdapterId,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
   encodeJsonToBase64,
@@ -46,10 +46,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     | DaoPreProposeApprovalSingleInstantiateMsg = {
     deposit_info: proposalDeposit.enabled
       ? {
-          amount: convertDenomToMicroDenomWithDecimals(
+          amount: convertDenomToMicroDenomStringWithDecimals(
             proposalDeposit.amount,
             decimals
-          ).toString(),
+          ),
           denom:
             proposalDeposit.type === 'voting_module_token'
               ? {

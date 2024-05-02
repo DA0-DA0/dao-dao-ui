@@ -24,7 +24,6 @@ import {
 } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
@@ -121,10 +120,10 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
               contract_addr: address,
               funds: funds.map(({ denom, amount }, index) => ({
                 denom,
-                amount: convertDenomToMicroDenomWithDecimals(
+                amount: convertDenomToMicroDenomStringWithDecimals(
                   amount,
                   fundsTokens[index]!.decimals
-                ).toString(),
+                ),
               })),
               msg,
             },

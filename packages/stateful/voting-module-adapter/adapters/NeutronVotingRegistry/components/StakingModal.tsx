@@ -22,7 +22,6 @@ import { BaseStakingModalProps } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
   tokensEqual,
@@ -205,10 +204,10 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            amount: convertDenomToMicroDenomWithDecimals(
+            amount: convertDenomToMicroDenomStringWithDecimals(
               amount,
               selectedVault.bondToken.decimals
-            ).toString(),
+            ),
           })
 
           // New balances will not appear until the next block.

@@ -26,7 +26,7 @@ import {
 import {
   ContractName,
   DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   isValidBech32Address,
@@ -246,10 +246,10 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
             update_config: {
               deposit_info: depositRequired
                 ? {
-                    amount: convertDenomToMicroDenomWithDecimals(
+                    amount: convertDenomToMicroDenomStringWithDecimals(
                       depositInfo.amount,
                       depositInfo.token?.decimals ?? 0
-                    ).toString(),
+                    ),
                     denom:
                       depositInfo.type === 'voting_module_token'
                         ? {

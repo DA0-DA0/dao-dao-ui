@@ -89,7 +89,10 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
     setValue((fieldNamePrefix + 'address') as 'address', address)
     setValue((fieldNamePrefix + 'validator') as 'validator', validator)
     // Milliseconds to nanoseconds.
-    setValue((fieldNamePrefix + 'time') as 'time', (timeMs * 1e6).toString())
+    setValue(
+      (fieldNamePrefix + 'time') as 'time',
+      BigInt(timeMs * 1e6).toString()
+    )
     setValue(
       (fieldNamePrefix + 'amount') as 'amount',
       unregisteredAmount.toString()
@@ -232,7 +235,7 @@ const RenderVest = ({
                 }
                 selected={
                   data.address === vestingContractAddress &&
-                  data.time === (slash.timeMs * 1e6).toString() &&
+                  data.time === BigInt(slash.timeMs * 1e6).toString() &&
                   data.duringUnbonding === slash.duringUnbonding
                 }
               />,

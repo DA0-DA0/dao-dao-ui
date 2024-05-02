@@ -129,7 +129,7 @@ export const getVestingValidatorSlashes = (
               registration.validator === validatorOperatorAddress &&
               registration.time ===
                 // milliseconds to nanoseconds
-                (Number(slash.registeredBlockTimeUnixMs) * 1e6).toString()
+                BigInt(Number(slash.registeredBlockTimeUnixMs) * 1e6).toString()
           ) ?? []
         const registeredStaked = registeredSlashes.reduce(
           (acc, slash) =>

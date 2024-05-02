@@ -253,7 +253,7 @@ export const GovernanceConfigurationInput = ({
       'creator.data.existingTokenSupply',
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
-          ? existingGovernanceTokenSupply.contents.toString()
+          ? BigInt(existingGovernanceTokenSupply.contents).toString()
           : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
     )

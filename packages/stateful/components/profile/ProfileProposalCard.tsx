@@ -131,7 +131,7 @@ export const ProfileProposalCard = () => {
             cantVoteOnProposal
             maxGovernanceTokenDeposit={
               maxGovernanceTokenProposalModuleDeposit > 0
-                ? maxGovernanceTokenProposalModuleDeposit.toString()
+                ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
                 : undefined
             }
           />

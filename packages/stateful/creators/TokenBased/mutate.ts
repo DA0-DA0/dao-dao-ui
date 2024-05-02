@@ -7,6 +7,7 @@ import {
 import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   encodeJsonToBase64,
@@ -59,22 +60,25 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       ({ weight, members }) =>
         members.map(({ address }) => ({
           address,
-          amount: convertDenomToMicroDenomWithDecimals(
+          amount: convertDenomToMicroDenomStringWithDecimals(
             // Governance Token-based DAOs distribute tier weights evenly
             // amongst members.
             (weight / members.length / 100) * initialSupply,
             NEW_DAO_TOKEN_DECIMALS
-          ).toString(),
+          ),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the remaining tokens
     // after the member weights are distributed.
-    const microInitialTreasuryBalance = (
+    const microInitialTreasuryBalance = BigInt(
       convertDenomToMicroDenomWithDecimals(
         initialSupply,
         NEW_DAO_TOKEN_DECIMALS
       ) -
-      microInitialBalances.reduce((acc, { amount }) => acc + Number(amount), 0)
+        microInitialBalances.reduce(
+          (acc, { amount }) => acc + Number(amount),
+          0
+        )
     ).toString()
 
     votingModuleAdapterInstantiateMsg = isNative

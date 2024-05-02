@@ -71,8 +71,8 @@ export const computeCompensation = (
           const nativeTokens = attribute.nativeTokens.map(
             ({ denom, amount }): AnyToken => ({
               denomOrAddress: denom,
-              amount: Math.floor(
-                Number(amount) * proportionalCompensation
+              amount: BigInt(
+                Math.floor(Number(amount) * proportionalCompensation)
               ).toString(),
             })
           )
@@ -80,8 +80,8 @@ export const computeCompensation = (
           const cw20Tokens = attribute.cw20Tokens.map(
             ({ address, amount }): AnyToken => ({
               denomOrAddress: address,
-              amount: Math.floor(
-                Number(amount) * proportionalCompensation
+              amount: BigInt(
+                Math.floor(Number(amount) * proportionalCompensation)
               ).toString(),
             })
           )

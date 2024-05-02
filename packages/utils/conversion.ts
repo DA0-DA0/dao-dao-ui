@@ -70,7 +70,7 @@ export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
 }
 
 export const zeroPad = (num: number, target: number) => {
-  const s = num.toString()
+  const s = BigInt(num).toString()
   if (s.length >= target) {
     return s
   }

@@ -308,7 +308,7 @@ export const makeUsePublishProposal =
           if (remainingAllowanceNeeded) {
             try {
               await increaseCw20DepositAllowance({
-                amount: remainingAllowanceNeeded.toString(),
+                amount: BigInt(remainingAllowanceNeeded).toString(),
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.

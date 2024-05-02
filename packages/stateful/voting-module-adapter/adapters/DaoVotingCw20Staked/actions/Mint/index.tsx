@@ -35,7 +35,7 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
         governanceToken.decimals
       )
       return makeExecutableMintMessage(
-        makeMintMessage(amount.toString(), data.to),
+        makeMintMessage(BigInt(amount).toString(), data.to),
         governanceToken.denomOrAddress
       )
     },

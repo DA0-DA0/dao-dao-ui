@@ -18,7 +18,7 @@ import {
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   convertMicroDenomToDenomWithDecimals,
@@ -226,10 +226,10 @@ export const makeUpdateProposalConfigV1ActionMaker =
                     ...(data.depositInfo &&
                       data.depositRequired && {
                         deposit_info: {
-                          deposit: convertDenomToMicroDenomWithDecimals(
+                          deposit: convertDenomToMicroDenomStringWithDecimals(
                             data.depositInfo.deposit,
                             voteConversionDecimals
-                          ).toString(),
+                          ),
                           refund_failed_proposals:
                             data.depositInfo.refundFailedProposals,
                           token: { voting_module_token: {} },

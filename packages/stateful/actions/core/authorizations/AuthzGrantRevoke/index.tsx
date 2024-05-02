@@ -36,7 +36,7 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
@@ -345,10 +345,10 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
           // MaxFundsLimit
           // CombinedLimit
           amounts: funds.map(({ denom, amount }) => ({
-            amount: convertDenomToMicroDenomWithDecimals(
+            amount: convertDenomToMicroDenomStringWithDecimals(
               amount,
               getTokenForChainIdAndDenom(chainId, denom).decimals
-            ).toString(),
+            ),
             denom,
           })),
         })
@@ -362,10 +362,10 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
             msg: msgTypeUrl,
             // SendAuthorization
             spendLimit: funds.map(({ denom, amount }) => ({
-              amount: convertDenomToMicroDenomWithDecimals(
+              amount: convertDenomToMicroDenomStringWithDecimals(
                 amount,
                 getTokenForChainIdAndDenom(chainId, denom).decimals
-              ).toString(),
+              ),
               denom,
             })),
             allowList: [],

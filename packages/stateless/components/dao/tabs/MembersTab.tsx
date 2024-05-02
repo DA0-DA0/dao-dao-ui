@@ -298,7 +298,9 @@ export const MembersTab = ({
               ...members.data.map(
                 ({ address, balance, votingPowerPercent }) => [
                   address,
-                  balance.loading ? '...' : balance.data.amount.toString(),
+                  balance.loading
+                    ? '...'
+                    : BigInt(balance.data.amount).toString(),
                   votingPowerPercent.loading ? '...' : votingPowerPercent.data,
                 ]
               ),

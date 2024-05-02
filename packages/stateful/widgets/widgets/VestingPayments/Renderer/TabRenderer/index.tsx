@@ -135,7 +135,7 @@ export const TabRenderer = ({
                                 address: vestingContractAddress,
                                 validator: validatorOperatorAddress,
                                 // Milliseconds to nanoseconds.
-                                time: (slash.timeMs * 1e6).toString(),
+                                time: BigInt(slash.timeMs * 1e6).toString(),
                                 amount: slash.unregisteredAmount.toString(),
                                 duringUnbonding: slash.duringUnbonding,
                               },

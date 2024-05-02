@@ -3,7 +3,7 @@ import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from '@dao-dao/
 import { InstantiateMsg as DaoProposalMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DaoProposalMultipleAdapterId,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
   encodeJsonToBase64,
@@ -39,10 +39,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     {
       deposit_info: proposalDeposit.enabled
         ? {
-            amount: convertDenomToMicroDenomWithDecimals(
+            amount: convertDenomToMicroDenomStringWithDecimals(
               proposalDeposit.amount,
               decimals
-            ).toString(),
+            ),
             denom:
               proposalDeposit.type === 'voting_module_token'
                 ? {

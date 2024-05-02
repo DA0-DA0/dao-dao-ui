@@ -11,7 +11,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
+import { convertDenomToMicroDenomStringWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
@@ -105,18 +105,18 @@ export const NewSurveyForm = () => {
               if (cw20Decimals !== undefined) {
                 cw20Tokens.push({
                   address: denomOrAddress,
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     amount,
                     cw20Decimals
-                  ).toString(),
+                  ),
                 })
               } else if (nativeDecimals !== undefined) {
                 nativeTokens.push({
                   denom: denomOrAddress,
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     amount,
                     nativeDecimals
-                  ).toString(),
+                  ),
                 })
               } else {
                 // Should never happen, but just in case.
