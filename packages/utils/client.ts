@@ -114,3 +114,19 @@ export const findWasmAttributeValue = (
   )
   return wasmEvent?.attributes.find(({ key }) => key === attributeKey)!.value
 }
+
+/**
+ * In response events from a transaction, gets the first attribute value for an
+ * attribute key in the first event of a given type.
+ */
+export const findEventsAttributeValue = (
+  events: readonly Event[],
+  eventType: string,
+  attributeKey: string
+): string | undefined =>
+  events.flatMap(
+    ({ type, attributes }) =>
+      (type === eventType &&
+        attributes.find(({ key }) => key === attributeKey)) ||
+      []
+  )[0]?.value

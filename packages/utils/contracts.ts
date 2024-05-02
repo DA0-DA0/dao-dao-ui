@@ -1,9 +1,9 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Coin, SigningStargateClient } from '@cosmjs/stargate'
-import { findAttribute, parseRawLog } from '@cosmjs/stargate/build/logs'
 
 import { ContractVersion, cwMsgToEncodeObject } from '@dao-dao/types'
 
+import { findEventsAttributeValue } from './client'
 import { CHAIN_GAS_MULTIPLIER } from './constants'
 import { encodeJsonToBase64 } from './messages'
 
@@ -42,7 +42,7 @@ export const instantiateSmartContract = async (
   funds?: Coin[],
   admin?: string | null
 ): Promise<string> => {
-  const { rawLog } = await client.signAndBroadcast(
+  const { events } = await client.signAndBroadcast(
     sender,
     [
       cwMsgToEncodeObject(
@@ -64,11 +64,15 @@ export const instantiateSmartContract = async (
     CHAIN_GAS_MULTIPLIER
   )
 
-  const contractAddress = findAttribute(
-    parseRawLog(rawLog),
+  const contractAddress = findEventsAttributeValue(
+    events,
     'instantiate',
     '_contract_address'
-  ).value
+  )
+
+  if (!contractAddress) {
+    throw new Error('Contract address not found')
+  }
 
   return contractAddress
 }
