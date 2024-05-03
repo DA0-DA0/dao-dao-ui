@@ -370,7 +370,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description: '',
           // Report to Sentry.
           error: processError(error, {
-            forceCapture: true,
             tags: {
               coreAddress,
               coreVersion: coreVersion ?? '<undefined>',

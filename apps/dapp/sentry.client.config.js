@@ -40,5 +40,7 @@ Sentry.init({
     'out of gas in location',
     'Load failed',
     "'defineProperty' on proxy: trap returned falsish for property 'request'",
+    'Keplr not found',
+    'No wallet exists',
   ],
 })
