@@ -42,5 +42,6 @@ Sentry.init({
     "'defineProperty' on proxy: trap returned falsish for property 'request'",
     'Keplr not found',
     'No wallet exists',
+    'No internet connection',
   ],
 })
