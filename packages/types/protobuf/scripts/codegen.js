@@ -115,6 +115,7 @@ telescope({
           'pstake.liquidstakeibc.v1beta1',
           'pstake.lscosmos.v1beta1',
           'pstake.ratesync.v1beta1',
+          'cosmos.adminmodule.adminmodule',
         ],
       },
       // excluded: {

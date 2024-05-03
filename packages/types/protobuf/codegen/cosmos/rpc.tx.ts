@@ -5,6 +5,9 @@ export const createRPCMsgClient = async ({
   rpc: Rpc;
 }) => ({
   cosmos: {
+    adminmodule: {
+      adminmodule: new (await import("./adminmodule/adminmodule/tx.rpc.msg")).MsgClientImpl(rpc)
+    },
     auth: {
       v1beta1: new (await import("./auth/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     },

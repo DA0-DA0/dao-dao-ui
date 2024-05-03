@@ -56,7 +56,7 @@ index 9eb780900..70b01f2fc 100644
    },
    fromAminoMsg(object: MetadataAminoMsg): Metadata {
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 6c5cc594d..774bdbe5c 100644
+index d46b64a0f..fd09961b2 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,7 +1,8 @@
@@ -70,7 +70,7 @@ index 6c5cc594d..774bdbe5c 100644
  import { Timestamp } from "../../../google/protobuf/timestamp";
  import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
-@@ -577,7 +578,7 @@ export const MsgSubmitProposal = {
+@@ -578,7 +579,7 @@ export const MsgSubmitProposal = {
    },
    fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
      const message = createBaseMsgSubmitProposal();
@@ -79,7 +79,7 @@ index 6c5cc594d..774bdbe5c 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -598,10 +599,8 @@ export const MsgSubmitProposal = {
+@@ -599,10 +600,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
@@ -92,7 +92,7 @@ index 6c5cc594d..774bdbe5c 100644
      }
      if (message.initialDeposit) {
        obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
-@@ -612,7 +611,9 @@ export const MsgSubmitProposal = {
+@@ -613,7 +612,9 @@ export const MsgSubmitProposal = {
      obj.metadata = message.metadata;
      obj.title = message.title;
      obj.summary = message.summary;
@@ -103,7 +103,7 @@ index 6c5cc594d..774bdbe5c 100644
      return obj;
    },
    fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-@@ -911,7 +912,7 @@ export const MsgVote = {
+@@ -912,7 +913,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
@@ -113,7 +113,7 @@ index 6c5cc594d..774bdbe5c 100644
      if (object.metadata !== undefined && object.metadata !== null) {
        message.metadata = object.metadata;
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-index 0a7aa8cc5..2451cbfd8 100644
+index 3a2a34091..cced669c2 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
 @@ -1,7 +1,7 @@
@@ -125,7 +125,7 @@ index 0a7aa8cc5..2451cbfd8 100644
  import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
  import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
  import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
-@@ -471,7 +471,7 @@ export const MsgVote = {
+@@ -472,7 +472,7 @@ export const MsgVote = {
        message.voter = object.voter;
      }
      if (object.option !== undefined && object.option !== null) {
