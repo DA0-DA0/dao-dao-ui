@@ -259,3 +259,83 @@ index fe58afb74..f0e94453b 100644
  import { Timestamp } from "../../../google/protobuf/timestamp";
  import { BinaryReader, BinaryWriter } from "../../../binary";
  import { toTimestamp, fromTimestamp } from "../../../helpers";
+diff --git b/packages/types/protobuf/codegen/secret/compute/v1beta1/query.rpc.Query.ts a/packages/types/protobuf/codegen/secret/compute/v1beta1/query.rpc.Query.ts
+index a1a896a5e..264b5385f 100644
+--- b/packages/types/protobuf/codegen/secret/compute/v1beta1/query.rpc.Query.ts
++++ a/packages/types/protobuf/codegen/secret/compute/v1beta1/query.rpc.Query.ts
+@@ -14,7 +14,7 @@ export interface Query {
+   /** Query a specific contract code by id */
+   code(request: QueryByCodeIdRequest): Promise<QueryCodeResponse>;
+   /** Query all contract codes on-chain */
+-  codes(request?: google.protobuf.Empty): Promise<QueryCodesResponse>;
++  codes(request?: Empty): Promise<QueryCodesResponse>;
+   /** Query code hash by contract address */
+   codeHashByContractAddress(request: QueryByContractAddressRequest): Promise<QueryCodeHashResponse>;
+   /** Query code hash by code id */
+@@ -61,8 +61,8 @@ export class QueryClientImpl implements Query {
+     const promise = this.rpc.request("secret.compute.v1beta1.Query", "Code", data);
+     return promise.then(data => QueryCodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+-  codes(request: google.protobuf.Empty = {}, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
+-    const data = google.protobuf.Empty.encode(request).finish();
++  codes(request: Empty = {}, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
++    const data = Empty.encode(request).finish();
+     const promise = this.rpc.request("secret.compute.v1beta1.Query", "Codes", data);
+     return promise.then(data => QueryCodesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+@@ -108,7 +108,7 @@ export const createRpcQueryExtension = (base: QueryClient) => {
+     code(request: QueryByCodeIdRequest, useInterfaces: boolean = true): Promise<QueryCodeResponse> {
+       return queryService.code(request, useInterfaces);
+     },
+-    codes(request?: google.protobuf.Empty, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
++    codes(request?: Empty, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
+       return queryService.codes(request, useInterfaces);
+     },
+     codeHashByContractAddress(request: QueryByContractAddressRequest, useInterfaces: boolean = true): Promise<QueryCodeHashResponse> {
+diff --git b/packages/types/protobuf/codegen/secret/registration/v1beta1/query.rpc.Query.ts a/packages/types/protobuf/codegen/secret/registration/v1beta1/query.rpc.Query.ts
+index cefd5a01c..9617817a2 100644
+--- b/packages/types/protobuf/codegen/secret/registration/v1beta1/query.rpc.Query.ts
++++ a/packages/types/protobuf/codegen/secret/registration/v1beta1/query.rpc.Query.ts
+@@ -7,9 +7,9 @@ import { QueryEncryptedSeedRequest, QueryEncryptedSeedResponse } from "./query";
+ /** Query provides defines the gRPC querier service */
+ export interface Query {
+   /** Returns the key used for transactions */
+-  txKey(request?: google.protobuf.Empty): Promise<Key>;
++  txKey(request?: Empty): Promise<Key>;
+   /** Returns the key used for registration */
+-  registrationKey(request?: google.protobuf.Empty): Promise<Key>;
++  registrationKey(request?: Empty): Promise<Key>;
+   /** Returns the encrypted seed for a registered node by public key */
+   encryptedSeed(request: QueryEncryptedSeedRequest): Promise<QueryEncryptedSeedResponse>;
+ }
+@@ -21,13 +21,13 @@ export class QueryClientImpl implements Query {
+     this.registrationKey = this.registrationKey.bind(this);
+     this.encryptedSeed = this.encryptedSeed.bind(this);
+   }
+-  txKey(request: google.protobuf.Empty = {}, useInterfaces: boolean = true): Promise<Key> {
+-    const data = google.protobuf.Empty.encode(request).finish();
++  txKey(request: Empty = {}, useInterfaces: boolean = true): Promise<Key> {
++    const data = Empty.encode(request).finish();
+     const promise = this.rpc.request("secret.registration.v1beta1.Query", "TxKey", data);
+     return promise.then(data => Key.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+-  registrationKey(request: google.protobuf.Empty = {}, useInterfaces: boolean = true): Promise<Key> {
+-    const data = google.protobuf.Empty.encode(request).finish();
++  registrationKey(request: Empty = {}, useInterfaces: boolean = true): Promise<Key> {
++    const data = Empty.encode(request).finish();
+     const promise = this.rpc.request("secret.registration.v1beta1.Query", "RegistrationKey", data);
+     return promise.then(data => Key.decode(new BinaryReader(data), undefined, useInterfaces));
+   }
+@@ -41,10 +41,10 @@ export const createRpcQueryExtension = (base: QueryClient) => {
+   const rpc = createProtobufRpcClient(base);
+   const queryService = new QueryClientImpl(rpc);
+   return {
+-    txKey(request?: google.protobuf.Empty, useInterfaces: boolean = true): Promise<Key> {
++    txKey(request?: Empty, useInterfaces: boolean = true): Promise<Key> {
+       return queryService.txKey(request, useInterfaces);
+     },
+-    registrationKey(request?: google.protobuf.Empty, useInterfaces: boolean = true): Promise<Key> {
++    registrationKey(request?: Empty, useInterfaces: boolean = true): Promise<Key> {
+       return queryService.registrationKey(request, useInterfaces);
+     },
+     encryptedSeed(request: QueryEncryptedSeedRequest, useInterfaces: boolean = true): Promise<QueryEncryptedSeedResponse> {

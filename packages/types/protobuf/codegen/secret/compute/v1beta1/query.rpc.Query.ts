@@ -14,7 +14,7 @@ export interface Query {
   /** Query a specific contract code by id */
   code(request: QueryByCodeIdRequest): Promise<QueryCodeResponse>;
   /** Query all contract codes on-chain */
-  codes(request?: google.protobuf.Empty): Promise<QueryCodesResponse>;
+  codes(request?: Empty): Promise<QueryCodesResponse>;
   /** Query code hash by contract address */
   codeHashByContractAddress(request: QueryByContractAddressRequest): Promise<QueryCodeHashResponse>;
   /** Query code hash by code id */
@@ -61,8 +61,8 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("secret.compute.v1beta1.Query", "Code", data);
     return promise.then(data => QueryCodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  codes(request: google.protobuf.Empty = {}, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
-    const data = google.protobuf.Empty.encode(request).finish();
+  codes(request: Empty = {}, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
+    const data = Empty.encode(request).finish();
     const promise = this.rpc.request("secret.compute.v1beta1.Query", "Codes", data);
     return promise.then(data => QueryCodesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
@@ -108,7 +108,7 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     code(request: QueryByCodeIdRequest, useInterfaces: boolean = true): Promise<QueryCodeResponse> {
       return queryService.code(request, useInterfaces);
     },
-    codes(request?: google.protobuf.Empty, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
+    codes(request?: Empty, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
       return queryService.codes(request, useInterfaces);
     },
     codeHashByContractAddress(request: QueryByContractAddressRequest, useInterfaces: boolean = true): Promise<QueryCodeHashResponse> {
