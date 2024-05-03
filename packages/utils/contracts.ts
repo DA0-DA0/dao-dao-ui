@@ -1,10 +1,5 @@
 import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import {
-  Coin,
-  DeliverTxResponse,
-  SigningStargateClient,
-  isDeliverTxFailure,
-} from '@cosmjs/stargate'
+import { Coin, DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate'
 import { parseRawLog } from '@cosmjs/stargate/build/logs'
 import { toUtf8 } from 'secretjs'
 
@@ -39,7 +34,6 @@ export const indexToProposalModulePrefix = (index: number) => {
 }
 
 export type SupportedCosmWasmClient =
-  | SigningStargateClient
   | SigningCosmWasmClient
   | SecretSigningCosmWasmClient
 
