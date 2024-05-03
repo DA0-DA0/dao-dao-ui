@@ -1584,10 +1584,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       'kujira1v5vn69nlmkxcdlqc36ln6fyt6vpahpj9qp9ddt3vhurxsyastknqru9qkg',
     explorerUrlTemplates: {
       tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
-      // TODO(kujira-testnet): fix
-      gov: 'https://blue.kujira.network/govern',
-      // TODO(kujira-testnet): fix
-      govProp: 'https://blue.kujira.network/govern/REPLACE',
+      // TODO(kujira-testnet): fix once can link directly to testnet
+      // gov: 'https://blue.kujira.network/govern',
+      // TODO(kujira-testnet): fix once can link directly to testnet
+      // govProp: 'https://blue.kujira.network/govern/REPLACE',
       wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
     },
     codeIds: {
