@@ -113,6 +113,7 @@ export enum CommonError {
   DaoInactive = 'This DAO is inactive, which means insufficient voting power has been staked. You cannot create a proposal at this time.',
   ReconnectWallet = 'Please disconnect and reconnect your wallet.',
   ProposalTooLarge = 'Proposal is too large. Please remove actions or shorten the description.',
+  NoSuchContract = 'Contract not found.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -184,6 +185,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   ],
   [CommonError.ReconnectWallet]: [['Session', 'not established yet']],
   [CommonError.ProposalTooLarge]: [['proposal is', 'bytes, must be <=']],
+  [CommonError.NoSuchContract]: ['no such contract'],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,
