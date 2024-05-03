@@ -6,10 +6,17 @@ import { NextApiRequest } from 'next'
 // Returns contents of form from a Next.js API route request.
 export const parseForm = async (
   req: NextApiRequest,
-  { requireImage = false } = {}
+  {
+    requireImage = false,
+    /**
+     * Limit the maximum size of the uploaded image in megabytes. Defaults to 3.
+     */
+    maxFileSizeMb = 3,
+  } = {}
 ): Promise<{
   fields: Record<string, string | undefined>
   imageData: Buffer | undefined
+  imageExtension: string | undefined
   mimetype: string | undefined
 }> => {
   // Get fields and files from form.
@@ -17,9 +24,22 @@ export const parseForm = async (
     fields: Fields
     files: Files
   }>((resolve, reject) => {
-    new IncomingForm().parse(req, (err, fields, files) => {
+    new IncomingForm({
+      maxFileSize: maxFileSizeMb * 1024 * 1024,
+    }).parse(req, (err, fields, files) => {
       if (err) {
-        reject(err)
+        if (
+          err instanceof Error &&
+          err.message.includes('options.maxFileSize')
+        ) {
+          reject(
+            new Error(
+              `Your file is too large. The maximum size is ${maxFileSizeMb} MB.`
+            )
+          )
+        } else {
+          reject(err)
+        }
       } else {
         resolve({ fields, files })
       }
@@ -56,6 +76,9 @@ export const parseForm = async (
   return {
     fields,
     imageData,
+    imageExtension: file?.originalFilename?.includes('.')
+      ? file.originalFilename.split('.').slice(-1)[0]
+      : undefined,
     mimetype: file?.mimetype ?? undefined,
   }
 }

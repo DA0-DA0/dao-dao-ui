@@ -1,10 +1,8 @@
 import JSON5 from 'json5'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Blob, File, NFTStorage } from 'nft.storage'
-import { TokenInput } from 'nft.storage/dist/src/lib/interface'
+import { v4 as uuidv4 } from 'uuid'
 
-import { NFT_STORAGE_API_KEY } from '../constants'
-import { parseForm } from '../server'
+import { parseForm, uploadToFilebase } from '../server'
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,6 +13,7 @@ export default async function handler(
     const {
       fields: { name, description = '', extra: _extra },
       imageData,
+      imageExtension,
       mimetype,
     } = await parseForm(req, {
       requireImage: false,
@@ -35,16 +34,20 @@ export default async function handler(
       }
     }
 
-    // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/. This
-    // automatically uploads the image and creates/uploads a metadata.json file
-    // conforming to the ERC-1155 NFT standard.
-    const client = new NFTStorage({
-      token: NFT_STORAGE_API_KEY,
-    })
+    // Ensure image has extension if exists.
+    if (imageData && !imageExtension) {
+      return res.status(400).json({ error: 'No image extension found.' })
+    }
 
-    let cid: string
-    let metadataUrl: string
-    let imageUrl: string | undefined
+    const folder = uuidv4()
+
+    const imageCid = imageData
+      ? await uploadToFilebase(
+          imageData,
+          `${folder}/image.${imageExtension}`,
+          mimetype
+        )
+      : undefined
 
     const metadata = {
       ...extra,
@@ -55,26 +58,16 @@ export default async function handler(
       description: description || extra.description || '',
 
       // Add image if present.
-      ...(imageData && {
-        image: new Blob([imageData], { type: mimetype }),
-      }),
+      ...(imageCid && { image: `ipfs://${imageCid}` }),
     }
-    // If image exists and is not a string, upload it with metadata. Otherwise,
-    // manually upload metadata only. If image is a string, it is assumed to be
-    // a URL and will be used as the image URL in the metadata.
-    if (metadata.image && typeof metadata.image !== 'string') {
-      const storedMetadata = await client.store(metadata as TokenInput)
-      cid = storedMetadata.ipnft
-      metadataUrl = storedMetadata.url
-      imageUrl = storedMetadata.embed().image.toString()
-    } else {
-      const metadataJsonFilename = 'metadata.json'
-      cid = await client.storeDirectory([
-        new File([JSON.stringify(metadata, null, 2)], metadataJsonFilename),
-      ])
-      metadataUrl = `ipfs://${cid}/${metadataJsonFilename}`
-      imageUrl = typeof metadata.image === 'string' ? metadata.image : undefined
-    }
+
+    const cid = await uploadToFilebase(
+      JSON.stringify(metadata, null, 2),
+      `${folder}/metadata.json`,
+      'application/json'
+    )
+    const metadataUrl = `ipfs://${cid}`
+    const imageUrl = metadata.image
 
     return res.status(200).json({
       cid,

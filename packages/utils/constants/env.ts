@@ -42,7 +42,12 @@ export const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 
-export const NFT_STORAGE_API_KEY = process.env.NFT_STORAGE_API_KEY as string
+// Filebase
+export const FILEBASE_ACCESS_KEY_ID = process.env
+  .FILEBASE_ACCESS_KEY_ID as string
+export const FILEBASE_SECRET_ACCESS_KEY = process.env
+  .FILEBASE_SECRET_ACCESS_KEY as string
+export const FILEBASE_BUCKET = process.env.FILEBASE_BUCKET as string
 
 export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string

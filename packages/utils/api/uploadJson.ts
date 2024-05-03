@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Blob, NFTStorage } from 'nft.storage'
+import { v4 as uuidv4 } from 'uuid'
 
-import { NFT_STORAGE_API_KEY } from '../constants'
+import { uploadToFilebase } from '../server'
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,14 +14,10 @@ export default async function handler(
       })
     }
 
-    // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/.
-    const client = new NFTStorage({
-      token: NFT_STORAGE_API_KEY,
-    })
-    const cid = await client.storeBlob(
-      new Blob([JSON.stringify(req.body, null, 2)], {
-        type: 'application/json',
-      })
+    const cid = await uploadToFilebase(
+      JSON.stringify(req.body, null, 2),
+      `${uuidv4()}.json`,
+      'application/json'
     )
 
     return res.status(200).json({

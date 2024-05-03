@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Blob, NFTStorage } from 'nft.storage'
+import { v4 as uuidv4 } from 'uuid'
 
-import { NFT_STORAGE_API_KEY } from '../constants'
-import { parseForm } from '../server'
+import { parseForm, uploadToFilebase } from '../server'
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,20 +9,18 @@ export default async function handler(
 ) {
   try {
     // Parse image from form.
-    const { imageData, mimetype } = await parseForm(req, {
+    const { imageData, imageExtension, mimetype } = await parseForm(req, {
       requireImage: true,
     })
     // Type-check. Parser should throw error if no image is found.
-    if (!imageData) {
+    if (!imageData || !imageExtension) {
       throw new Error('No image found.')
     }
 
-    // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/.
-    const client = new NFTStorage({
-      token: NFT_STORAGE_API_KEY,
-    })
-    const cid = await client.storeBlob(
-      new Blob([imageData], { type: mimetype ?? undefined })
+    const cid = await uploadToFilebase(
+      imageData,
+      `${uuidv4()}.${imageExtension}`,
+      mimetype
     )
 
     return res.status(200).json({
