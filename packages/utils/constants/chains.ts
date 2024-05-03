@@ -1575,6 +1575,46 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 17,
     },
   },
+  {
+    chainId: ChainId.KujiraTestnet,
+    name: 'kujira',
+    mainnet: false,
+    accentColor: '#e53935',
+    factoryContractAddress:
+      'kujira1v5vn69nlmkxcdlqc36ln6fyt6vpahpj9qp9ddt3vhurxsyastknqru9qkg',
+    explorerUrlTemplates: {
+      tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
+      // TODO(kujira-testnet): fix
+      gov: 'https://blue.kujira.network/govern',
+      // TODO(kujira-testnet): fix
+      govProp: 'https://blue.kujira.network/govern/REPLACE',
+      wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 3361,
+      Cw4Group: 3362, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 3363,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 3365,
+      CwTokenSwap: 3366,
+      CwTokenfactoryIssuerMain: 3378,
+      CwVesting: 3367,
+      DaoCore: 3368,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 3370,
+      DaoPreProposeApprover: 3371,
+      DaoPreProposeMultiple: 3372,
+      DaoPreProposeSingle: 3373,
+      DaoProposalMultiple: 3374,
+      DaoProposalSingle: 3375,
+      DaoVotingCw4: 3376,
+      DaoVotingCw721Staked: 3377,
+      DaoVotingTokenStaked: 3379,
+    },
+  },
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -1643,6 +1683,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.KujiraMainnet]: {
     rpc: 'https://kujira-rpc.polkachu.com',
     rest: 'https://kujira-api.polkachu.com',
+  },
+  [ChainId.KujiraTestnet]: {
+    rpc: 'https://kujira-testnet-rpc.polkachu.com',
+    rest: 'https://kujira-testnet-api.polkachu.com',
   },
   [ChainId.ChihuahuaMainnet]: {
     rpc: 'https://chihuahua-rpc.polkachu.com',

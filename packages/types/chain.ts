@@ -70,6 +70,7 @@ export enum ChainId {
   MigalooTestnet = 'narwhal-2',
   NobleMainnet = 'noble-1',
   KujiraMainnet = 'kaiyo-1',
+  KujiraTestnet = 'harpoon-4',
   ChihuahuaMainnet = 'chihuahua-1',
   OraichainMainnet = 'Oraichain',
   ArchwayMainnet = 'archway-1',
