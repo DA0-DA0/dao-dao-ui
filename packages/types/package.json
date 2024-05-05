@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@chain-registry/types": "^0.17.1",
-    "@cosmos-kit/web3auth": "^2.6.0",
+    "@cosmos-kit/web3auth": "^2.6.3",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
     "react": "^18.2.0",
@@ -22,8 +22,8 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.8",
-    "@cosmology/telescope": "^1.4.12"
+    "@cosmology/telescope": "^1.4.12",
+    "@dao-dao/config": "2.4.0-rc.8"
   },
   "peerDependencies": {
     "next": "^12 || ^13",

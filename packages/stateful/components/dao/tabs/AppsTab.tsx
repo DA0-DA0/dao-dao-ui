@@ -1,4 +1,5 @@
 import { AccountData, StdSignDoc } from '@cosmjs/amino'
+import { fromBech32 } from '@cosmjs/encoding'
 import { DirectSignDoc, SimpleAccount, WalletAccount } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
 import cloneDeep from 'lodash.clonedeep'
@@ -26,6 +27,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   ActionKeyAndData,
   ActionKeyAndDataNoId,
   BaseNewProposalProps,
@@ -82,11 +84,31 @@ export const AppsTab = () => {
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
   const [fullScreen, setFullScreen] = useState(false)
 
-  const addressForChainId = (chainId: string) =>
-    getAccountAddress({
-      accounts,
-      chainId,
-    }) || ''
+  const addressForChainId = (chainId: string) => {
+    const address =
+      getAccountAddress({
+        accounts,
+        chainId,
+        types: [AccountType.Native, AccountType.Polytone],
+      }) ||
+      // Fallback to ICA if exists, but don't use if a native or polytone
+      // account exists.
+      getAccountAddress({
+        accounts,
+        chainId,
+        types: [AccountType.Ica],
+      })
+    if (!address) {
+      throw new Error(
+        t('error.daoMissingAccountsOnChains', {
+          daoName: name,
+          chains: getDisplayNameForChainId(chainId),
+          count: 1,
+        })
+      )
+    }
+    return address
+  }
   const chainIdForAddress = (address: string) =>
     getAccountChainId({
       accounts,
@@ -204,6 +226,22 @@ export const AppsTab = () => {
           username: name,
         } as SimpleAccount,
       }),
+      // Needed by Graz and other Keplr clients.
+      getKey: async (chainId: string) => {
+        const bech32Address = addressForChainId(chainId)
+        return {
+          type: 'success',
+          value: {
+            name,
+            algo: 'secp256k1',
+            pubkey: await getPubKey(chainId),
+            address: fromBech32(bech32Address).data,
+            bech32Address,
+            isNanoLedger: false,
+            isKeystone: false,
+          },
+        }
+      },
     },
     signerOverrides: {
       signDirect: (signerAddress, signDoc) => {
