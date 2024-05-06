@@ -17,6 +17,9 @@ export const NOTIFICATIONS_PAGE_DESCRIPTION =
   'View notifications in your followed DAOs.'
 export const STATUS_PAGE_TITLE = 'Status'
 export const STATUS_PAGE_DESCRIPTION = "Check the status of DAO DAO's services."
+export const CHAIN_GOVERNANCE_TITLE = 'Chain Governance'
+export const CHAIN_GOVERNANCE_DESCRIPTION =
+  'View and vote on proposals in chain governance.'
 
 // 3 days
 export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60

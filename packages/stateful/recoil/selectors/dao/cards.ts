@@ -27,7 +27,6 @@ import {
   getImageUrlForChainId,
   isConfiguredChainName,
   isFeatureSupportedByVersion,
-  mustGetConfiguredChainConfig,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -50,12 +49,12 @@ export const daoCardInfoSelector = selectorFamily<
       )
 
       return {
-        chainId,
-        coreAddress,
+        chainId: daoInfo.chainId,
+        coreAddress: daoInfo.coreAddress,
         coreVersion: daoInfo.coreVersion,
         name: daoInfo.name,
         description: daoInfo.description,
-        imageUrl: daoInfo.imageUrl || getFallbackImage(coreAddress),
+        imageUrl: daoInfo.imageUrl || getFallbackImage(daoInfo.coreAddress),
         polytoneProxies: daoInfo.polytoneProxies,
         established: daoInfo.created,
         parentDao: daoInfo.parentDao ?? undefined,
@@ -165,7 +164,7 @@ export const lazyDaoCardPropsSelector = selectorFamily<
       if (isConfiguredChainName(chainId, coreAddress)) {
         return {
           chainId,
-          coreAddress: mustGetConfiguredChainConfig(chainId).name,
+          coreAddress,
           coreVersion: ContractVersion.Gov,
           name: getDisplayNameForChainId(chainId),
           description: getChainGovernanceDaoDescription(chainId),

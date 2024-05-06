@@ -33,16 +33,19 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
   ) : daoCardInfo.errored || !daoCardInfo.data ? (
     <DaoCard
       {...props}
-      description={processError(
-        daoCardInfo.errored ? daoCardInfo.error : t('error.loadingData'),
-        {
-          forceCapture: false,
-        }
-      )}
+      description={
+        t('error.unexpectedError') +
+        '\n' +
+        processError(
+          daoCardInfo.errored ? daoCardInfo.error : t('error.loadingData'),
+          {
+            forceCapture: false,
+          }
+        )
+      }
       lazyData={{
         loading: true,
       }}
-      name={t('error.unexpectedError')}
       polytoneProxies={{}}
       showingEstimatedUsdValue={false}
       tokenDecimals={0}

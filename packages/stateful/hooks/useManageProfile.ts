@@ -428,7 +428,6 @@ export const useManageProfile = ({
             }
           })
         : []
-    console.log(profilesToMerge, otherChainWalletProfiles, profile)
 
     // Merge options are only needed if other profiles exist.
     let options: OtherProfile[] = []

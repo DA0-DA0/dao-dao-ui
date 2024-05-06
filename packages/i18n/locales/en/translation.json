@@ -1518,6 +1518,7 @@
     "canceled": "Canceled",
     "casting": "Casting",
     "chain": "Chain",
+    "chainGovernance": "Chain Governance",
     "chainModule": {
       "gov": "Governance Module"
     },

@@ -17,6 +17,7 @@ import {
   reverseLookupPolytoneProxySelector,
 } from '@dao-dao/state'
 import {
+  ChainId,
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
@@ -37,6 +38,7 @@ import {
   CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
+  NEUTRON_GOVERNANCE_DAO,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainGovernanceDaoDescription,
   getConfiguredChainConfig,
@@ -175,44 +177,49 @@ export const daoInfoSelector = selectorFamily<
     ({ get }) => {
       // Native chain governance.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        const govModuleAddress = get(
-          moduleAddressSelector({
-            chainId,
-            name: 'gov',
-          })
-        )
-        const accounts = get(
-          accountsSelector({
-            chainId,
-            address: govModuleAddress,
-          })
-        )
+        // Neutron uses an actual DAO so load it instead.
+        if (chainId === ChainId.NeutronMainnet) {
+          coreAddress = NEUTRON_GOVERNANCE_DAO
+        } else {
+          const govModuleAddress = get(
+            moduleAddressSelector({
+              chainId,
+              name: 'gov',
+            })
+          )
+          const accounts = get(
+            accountsSelector({
+              chainId,
+              address: govModuleAddress,
+            })
+          )
 
-        return {
-          chainId,
-          coreAddress: mustGetConfiguredChainConfig(chainId).name,
-          coreVersion: ContractVersion.Gov,
-          supportedFeatures: Object.values(Feature).reduce(
-            (acc, feature) => ({
-              ...acc,
-              [feature]: false,
-            }),
-            {} as SupportedFeatureMap
-          ),
-          votingModuleAddress: '',
-          votingModuleContractName: '',
-          proposalModules: [],
-          name: getDisplayNameForChainId(chainId),
-          description: getChainGovernanceDaoDescription(chainId),
-          imageUrl: getImageUrlForChainId(chainId),
-          created: undefined,
-          isActive: true,
-          activeThreshold: null,
-          items: {},
-          polytoneProxies: {},
-          accounts,
-          parentDao: null,
-          admin: '',
+          return {
+            chainId,
+            coreAddress: mustGetConfiguredChainConfig(chainId).name,
+            coreVersion: ContractVersion.Gov,
+            supportedFeatures: Object.values(Feature).reduce(
+              (acc, feature) => ({
+                ...acc,
+                [feature]: false,
+              }),
+              {} as SupportedFeatureMap
+            ),
+            votingModuleAddress: '',
+            votingModuleContractName: '',
+            proposalModules: [],
+            name: getDisplayNameForChainId(chainId),
+            description: getChainGovernanceDaoDescription(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            created: undefined,
+            isActive: true,
+            activeThreshold: null,
+            items: {},
+            polytoneProxies: {},
+            accounts,
+            parentDao: null,
+            admin: '',
+          }
         }
       }
 

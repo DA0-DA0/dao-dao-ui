@@ -193,7 +193,7 @@ export const getDisplayNameForChainId = (chainId: string): string =>
  * Get the description for a chain's native governance DAO.
  */
 export const getChainGovernanceDaoDescription = (chainId: string): string =>
-  `The native chain governance for ${getDisplayNameForChainId(chainId)}.`
+  `Native chain governance for ${getDisplayNameForChainId(chainId)}.`
 
 const cachedNativeTokens: Record<string, GenericToken | undefined> = {}
 export const getNativeTokenForChainId = (chainId: string): GenericToken => {
