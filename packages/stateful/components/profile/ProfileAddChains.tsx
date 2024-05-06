@@ -17,7 +17,7 @@ export const ProfileAddChains = (props: StatefulProfileAddChainsProps) => {
   const { chains } = useProfile()
   const {
     addChains,
-    merge: { otherProfiles },
+    merge: { needsMerge },
   } = useManageProfile()
 
   const form = useForm<ProfileAddChainsForm>({
@@ -26,8 +26,8 @@ export const ProfileAddChains = (props: StatefulProfileAddChainsProps) => {
     },
   })
 
-  // Cannot add chains while profiles that need merging exist.
-  if (otherProfiles.length > 0) {
+  // Cannot add chains while profiles need merging.
+  if (needsMerge) {
     return null
   }
 

@@ -863,7 +863,7 @@
     "activeThresholdDescription": "The amount of voting power that needs to be staked in order for the DAO to become active and thus allow proposals to be created.",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
-    "addToProfileExplanation": "Add the current wallet to your profile shown below.",
+    "addToProfileExplanation": "Add the current chain to your profile shown below.",
     "addWalletToProfile": "Add this wallet to your profile.",
     "addWalletToProfileToEdit": "You cannot edit your profile until you add this wallet. Click to add it.",
     "addedToDaoFollowPrompt": "You were added as a member to this DAO. Follow it to receive updates.",

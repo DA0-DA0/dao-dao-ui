@@ -1,6 +1,10 @@
 import { Chain } from '@chain-registry/types'
 
 export type PfpkProfile = {
+  /**
+   * Unique ID for this profile. Will be null if no profile has been created.
+   */
+  uuid: string | null
   nonce: number
   name: string | null
   nft: {

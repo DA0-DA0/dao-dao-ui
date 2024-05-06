@@ -1,5 +1,4 @@
 import { toHex } from '@cosmjs/encoding'
-import isEqual from 'lodash.isequal'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForNone } from 'recoil'
@@ -108,7 +107,7 @@ export type UseManageProfileReturn = {
      * searched by public key or address, regardless of if that public
      * key/address has been added for that chain.
      */
-    otherProfiles: OtherProfile[]
+    profilesToMerge: OtherProfile[]
     /**
      * The merge options presented to the user based on all the profiles found.
      * This combines the current profile and the other profiles, de-dupes them,
@@ -119,6 +118,11 @@ export type UseManageProfileReturn = {
      * empty.
      */
     options: OtherProfile[]
+    /**
+     * Whether or not merge is needed. This is equivalent to
+     * `profilesToMerge.length > 0`
+     */
+    needsMerge: boolean
   }
 }
 
@@ -394,9 +398,9 @@ export const useManageProfile = ({
   )
 
   const merge: UseManageProfileReturn['merge'] = useMemo(() => {
-    // Get all profiles attached to this wallet which do not have the current
-    // chain wallet registered.
-    const otherProfiles =
+    // Get all profiles attached to this wallet that are different from the
+    // current chain wallet profile.
+    const profilesToMerge =
       currentChainWallet &&
       !profile.loading &&
       !otherChainWalletProfiles.loading &&
@@ -404,15 +408,16 @@ export const useManageProfile = ({
         ? otherChainWalletProfiles.data.flatMap((loadable) => {
             const chainProfile = loadable.valueMaybe()
             if (
+              // If not yet loaded, ignore.
               !chainProfile ||
-              // Ignore if the current chain wallet is registered on this
-              // chain's profile, indicating that these are the same profile.
-              chainProfile.chains[currentChainWallet.chainId]?.address ===
-                address ||
-              // Ignore if the current profile has registered this chain wallet,
-              // indicating that these are the same profile.
-              profile.data.chains[chainProfile.source.chainId]?.address ===
-                chainProfile.source.address
+              // If profile exists, UUID matches current chain wallet profile
+              // and this chain wallet has been added to the profile, ignore. If
+              // profile does not exist or chain has not been explicitly added,
+              // we want to merge it into the current profile.
+              (chainProfile.uuid &&
+                chainProfile.uuid === profile.data.uuid &&
+                profile.data.chains[chainProfile.source.chainId]?.address ===
+                  chainProfile.source.address)
             ) {
               return []
             }
@@ -423,11 +428,13 @@ export const useManageProfile = ({
             }
           })
         : []
+    console.log(profilesToMerge, otherChainWalletProfiles, profile)
 
     // Merge options are only needed if other profiles exist.
     let options: OtherProfile[] = []
-    if (otherProfiles.length > 0) {
+    if (profilesToMerge.length > 0) {
       options = [
+        // Current chain wallet profile.
         ...(profile.loading
           ? []
           : [
@@ -437,7 +444,9 @@ export const useManageProfile = ({
                 profile: profile.data,
               },
             ]),
-        ...otherProfiles,
+        // Other profiles attached to this wallet that differ from the current
+        // chain wallet.
+        ...profilesToMerge,
       ]
         .sort((a, b) => {
           // Priority:
@@ -465,18 +474,17 @@ export const useManageProfile = ({
           // If all else equal, sort by nonce as a heuristic for which is older.
           return b.profile.nonce - a.profile.nonce
         })
-        // Remove duplicates by detecting which profiles have the same chains.
-        // Since they are all the same profile, we only need one.
+        // Remove duplicates. Since they are all the same profile, we only need
+        // one.
         .reduce((acc, otherProfile) => {
           if (
             !acc.some(
               ({ chainId, address, profile }) =>
+                // Check same chain/address.
                 (chainId === otherProfile.chainId &&
                   address === otherProfile.address) ||
-                // Make sure chains exist and this isn't an empty profile.
-                (Object.keys(profile.chains).length > 0 &&
-                  // Deep compare chains.
-                  isEqual(profile.chains, otherProfile.profile.chains))
+                // Check same profile UUID.
+                (!!profile.uuid && profile.uuid === otherProfile.profile.uuid)
             )
           ) {
             acc.push(otherProfile)
@@ -498,8 +506,9 @@ export const useManageProfile = ({
     }
 
     return {
-      otherProfiles,
+      profilesToMerge,
       options,
+      needsMerge: profilesToMerge.length > 0,
     }
   }, [
     address,
