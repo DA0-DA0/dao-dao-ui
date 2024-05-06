@@ -948,6 +948,7 @@
     "customActionDescription_dao": "Perform any custom action a wallet can.",
     "customActionDescription_gov": "Perform any custom action.",
     "customActionDescription_wallet": "Perform any custom action.",
+    "customAppWarning": "Apps must explicitly support DAO DAO app integration. Unless you are sure that an app is supported, it likely will not work. Custom app entry is primarily to help developers test new app integrations. Contact the app's developers if you want them to add DAO DAO support.",
     "daoAdminExecDescription": "Execute actions on behalf of a DAO with you as the admin. A parent DAO could use this to execute actions on behalf of a SubDAO.",
     "daoApproverExplanation": "An approver must approve proposals before they open for voting.",
     "daoCreationProcessExplanation": "Creating your DAO has never been this easy:",

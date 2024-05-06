@@ -17,6 +17,7 @@ import { Button } from '../../buttons'
 import { IconButton } from '../../icon_buttons'
 import { TextInput } from '../../inputs'
 import { Tooltip } from '../../tooltip'
+import { WarningCard } from '../../WarningCard'
 
 export type AppsTabProps = {
   iframeRef: RefCallback<HTMLIFrameElement | null>
@@ -114,6 +115,8 @@ const InnerAppsTab = ({
     ({ url: appUrl }) => appUrl === url || !appUrl
   )
 
+  const customSelected = selectedAppIndex === DAO_APPS.length - 1
+
   return (
     <div className={clsx('flex flex-col gap-2', className)}>
       <div
@@ -133,7 +136,7 @@ const InnerAppsTab = ({
                 'shrink-0 overflow-hidden border-2 !p-0 transition',
                 isCustom && 'border-dashed border-border-primary',
                 selected
-                  ? 'border-border-interactive-active'
+                  ? '!border-border-interactive-active'
                   : !isCustom && 'border-transparent'
               )}
               onClick={() => go(appUrl)}
@@ -164,6 +167,13 @@ const InnerAppsTab = ({
           )
         })}
       </div>
+
+      {customSelected && (
+        <WarningCard
+          className={clsx('mb-2', fullScreen && 'mx-safe-offset-4')}
+          content={t('info.customAppWarning')}
+        />
+      )}
 
       <div
         className={clsx(
