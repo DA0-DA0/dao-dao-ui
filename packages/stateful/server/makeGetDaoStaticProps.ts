@@ -49,6 +49,7 @@ import {
   LEGACY_URL_PREFIX,
   MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
+  NEUTRON_GOVERNANCE_DAO,
   addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs46OrHigher,
@@ -134,14 +135,20 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       ['translation']
     )
 
-    const coreAddress = _coreAddress ?? context.params?.address
+    let coreAddress = _coreAddress ?? context.params?.address
 
     // Check if address is actually the name of a chain so we can resolve the
     // gov module.
-    const chainConfig =
+    let chainConfig =
       coreAddress && typeof coreAddress === 'string'
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
+
+    // Render Neutron DAO instead of chain governance.
+    if (chainConfig?.chainId === ChainId.NeutronMainnet) {
+      coreAddress = NEUTRON_GOVERNANCE_DAO
+      chainConfig = undefined
+    }
 
     // Load chain gov module.
     if (chainConfig) {

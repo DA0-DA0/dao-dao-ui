@@ -9,10 +9,9 @@ import {
   DaoDappHome,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  NeutronGovernanceHome,
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { ChainId, ContractVersion, DaoPageMode } from '@dao-dao/types'
+import { ContractVersion, DaoPageMode } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
@@ -21,11 +20,7 @@ const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
 }) => (
   <DaoPageWrapper {...props}>
     {props.serializedInfo?.coreVersion === ContractVersion.Gov ? (
-      props.serializedInfo.chainId === ChainId.NeutronMainnet ? (
-        <NeutronGovernanceHome />
-      ) : (
-        <ChainGovernanceDappHome />
-      )
+      <ChainGovernanceDappHome />
     ) : (
       <DaoDappHome />
     )}
