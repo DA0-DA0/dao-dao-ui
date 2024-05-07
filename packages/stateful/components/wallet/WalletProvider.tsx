@@ -158,7 +158,10 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
   return (
     <ChainProvider
-      assetLists={assets}
+      assetLists={
+        // Temp fix for mismatched package types.
+        assets as any[]
+      }
       chains={chains}
       endpointOptions={{
         // Load all custom chain endpoints into wallet provider.

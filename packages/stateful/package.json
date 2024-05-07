@@ -49,7 +49,7 @@
     "@mui/material": "^5.10.3",
     "@walletconnect/browser-utils": "^1.8.0",
     "buffer": "^6.0.3",
-    "chain-registry": "1.26.0",
+    "chain-registry": "^1.46.8",
     "clsx": "^1.1.1",
     "file-saver": "^2.0.5",
     "fuse.js": "^6.6.2",
@@ -74,7 +74,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.17.1",
+    "@chain-registry/types": "^0.28.12",
     "@cosmjs/amino": "^0.32.3",
     "@dao-dao/config": "2.4.0-rc.8",
     "@dao-dao/types": "2.4.0-rc.8",

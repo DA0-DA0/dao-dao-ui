@@ -2069,7 +2069,7 @@
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-"@chain-registry/types@0.17.1", "@chain-registry/types@^0.17.0", "@chain-registry/types@^0.17.1":
+"@chain-registry/types@^0.17.0":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.17.1.tgz#0ac7bda6178d3917834578627f232a247fe5def8"
   integrity sha512-O0CgrtJgIlqXvZm1CqDZe/7jZz068O/uuCIoyDXCegFHK03rdHacKcDGwEIUuI0MNUf8YV3jdE4xHQMSAX+79w==
@@ -2080,6 +2080,11 @@
   version "0.28.11"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.28.11.tgz#be43fcd3d9489a5cb427cae1d25a274e210c252a"
   integrity sha512-pTsd6YGq+W6qnqWkWI7VxPYrx1T8B6usjlG5XmZxUJJFpB7HULot9WLPmcB/DEUxR8pekyiIN3x93761mql4sQ==
+
+"@chain-registry/types@^0.28.12":
+  version "0.28.12"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.28.12.tgz#b7530ef0d35806558380d196553bb54b4c85184e"
+  integrity sha512-wrcbKZ3Sz0bXGWBhF9igq+LAOn3PkQLh+VFaA3J1SAVE7nt0WFlRfkvu7WmLmnSJhLlAxdyf9jWu+yXSRvpscw==
 
 "@chain-registry/utils@^1.15.0", "@chain-registry/utils@^1.29.11":
   version "1.29.11"
@@ -11156,13 +11161,12 @@ ccount@^2.0.0:
   resolved "https://registry.yarnpkg.com/ccount/-/ccount-2.0.1.tgz#17a3bf82302e0870d6da43a01311a8bc02a3ecf5"
   integrity sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==
 
-chain-registry@1.26.0:
-  version "1.26.0"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.26.0.tgz#7422ed037bf9cb58c66f9ae00f91726b796977c7"
-  integrity sha512-GGcB1tHFBvpfBf5HIZ76kko+KvbK8ukG9a0fKNvnjoPRLxz8/7lTNebCCMr1DN/Y6lqpzWjzZRUmjFrUewWmsg==
+chain-registry@^1.46.8:
+  version "1.46.8"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.46.8.tgz#63d8e2c9ba2466ad4cec02bc734f93020cbbeb76"
+  integrity sha512-84+6NkPVKDfbfoyQjX+BdZ3roizmyt7yGQmTIIbj2WjgV2lEZyregaAeaU8RUhbEwCsEClhUCL7Oa5p6DRgJRQ==
   dependencies:
-    "@babel/runtime" "^7.21.0"
-    "@chain-registry/types" "^0.17.1"
+    "@chain-registry/types" "^0.28.12"
 
 chalk@3.0.0:
   version "3.0.0"
