@@ -40,14 +40,13 @@ import {
 import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   DaoProposalSingleAdapterId,
+  SITE_TITLE,
   SITE_URL,
   decodeMessages,
   getAccountAddress,
   getAccountChainId,
   getDisplayNameForChainId,
-  getFallbackImage,
   maybeMakePolytoneExecuteMessage,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../../actions'
@@ -66,7 +65,6 @@ export const AppsTab = () => {
   const { t } = useTranslation()
   const {
     name,
-    imageUrl,
     chainId: currentChainId,
     coreAddress,
     polytoneProxies,
@@ -167,11 +165,9 @@ export const AppsTab = () => {
         }
 
   const { wallet, iframeRef } = useIframe({
-    walletInfo: {
-      prettyName: name,
-      logo: imageUrl
-        ? toAccessibleImageUrl(imageUrl)
-        : SITE_URL + getFallbackImage(coreAddress),
+    metadata: {
+      name: SITE_TITLE,
+      imageUrl: SITE_URL + '/daodao.png',
     },
     walletClientOverrides: {
       // @ts-ignore
