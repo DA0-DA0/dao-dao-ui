@@ -1168,6 +1168,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    // Ensure this chain stays below Terra so that the logic in
+    // makeGetDaoStaticProps works with Terra Classic fallback.
     chainId: ChainId.TerraClassicMainnet,
     name: 'terraclassic',
     mainnet: true,

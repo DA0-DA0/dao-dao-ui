@@ -515,8 +515,9 @@ export const chainIsIndexed = (chainId: string): boolean =>
     (config) => config.chainId === chainId && !config.noIndexer
   )
 
-// Validates whether the address is for the current chain. If so, return
-// undefined. If not, return the correct subdomain.
+/**
+ * Returns the chain ID for the given address based on the prefix.
+ */
 export const getChainIdForAddress = (address: string): string => {
   const supportedChains = getSupportedChains()
 
