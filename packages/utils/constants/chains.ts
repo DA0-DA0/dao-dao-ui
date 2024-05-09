@@ -1168,6 +1168,46 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    // Ensure this chain stays below Terra so that the logic in
+    // makeGetDaoStaticProps works with Terra Classic fallback.
+    chainId: ChainId.TerraClassicMainnet,
+    name: 'terraclassic',
+    mainnet: true,
+    accentColor: '#ffd842',
+    factoryContractAddress:
+      'terra18d67ywrfwxq6924xdsg4ahrsjrtuvnu0q5v0ttj07fakw2thspps2fn9yy',
+    explorerUrlTemplates: {
+      tx: 'https://finder.terra.money/classic/tx/REPLACE',
+      gov: 'https://ping.pub/terra-luna/gov',
+      govProp: 'https://ping.pub/terra-luna/gov/REPLACE',
+      wallet: 'https://finder.terra.money/classic/address/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 8725,
+      Cw4Group: 8726, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 8727,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 8729,
+      CwTokenSwap: 8730,
+      CwTokenfactoryIssuerMain: 8742,
+      CwVesting: 8731,
+      DaoCore: 8732,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 8734,
+      DaoPreProposeApprover: 8735,
+      DaoPreProposeMultiple: 8736,
+      DaoPreProposeSingle: 8737,
+      DaoProposalMultiple: 8738,
+      DaoProposalSingle: 8739,
+      DaoVotingCw4: 8740,
+      DaoVotingCw721Staked: 8741,
+      DaoVotingTokenStaked: 8743,
+    },
+  },
+  {
     chainId: ChainId.OraichainMainnet,
     name: 'oraichain',
     mainnet: true,
@@ -1837,16 +1877,9 @@ chains
       }
     }
 
-    // Rename Terra Classic since its chain registry name is `terra` but that's
-    // taken by Terra 2 since it's a configured chain.
-    const name =
-      chain.chain_id === ChainId.TerraClassicMainnet
-        ? 'terraclassic'
-        : chain.chain_name
-
     CONFIGURED_CHAINS.push({
       chainId: chain.chain_id,
-      name,
+      name: chain.chain_name,
       mainnet: chain.network_type === 'mainnet',
       accentColor: '',
       noGov: NO_GOV_CHAIN_IDS.includes(chain.chain_id),

@@ -1,5 +1,5 @@
 import { Chain } from '@chain-registry/types'
-import type { GetStaticProps, Redirect } from 'next'
+import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
@@ -14,6 +14,7 @@ import {
   Account,
   AccountType,
   ActiveThreshold,
+  ChainId,
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
@@ -42,6 +43,7 @@ import {
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
   LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
+  MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   addressIsModule,
   cosmWasmClientRouter,
@@ -128,14 +130,14 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     const coreAddress = _coreAddress ?? context.params?.address
 
     // Get chain ID for address based on prefix.
-    let chainId: string
+    let decodedChainId: string
     try {
       // If invalid address, display not found.
       if (!coreAddress || typeof coreAddress !== 'string') {
         throw new Error('Invalid address')
       }
 
-      chainId = getChainIdForAddress(coreAddress)
+      decodedChainId = getChainIdForAddress(coreAddress)
 
       // Validation throws error if address prefix not recognized. Display not
       // found in this case.
@@ -152,236 +154,267 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
-    // If address is polytone proxy, redirect to DAO on native chain.
-    try {
-      const addressInfo = await queryIndexer<ContractVersionInfo>({
-        type: 'contract',
-        chainId,
-        address: coreAddress,
-        formula: 'info',
-      })
-      if (addressInfo && addressInfo.contract === ContractName.PolytoneProxy) {
-        // Get voice for this proxy on destination chain.
-        const voice = await queryIndexer({
+    const getForChainId = async (
+      chainId: string
+    ): Promise<GetStaticPropsResult<DaoPageWrapperProps>> => {
+      // If address is polytone proxy, redirect to DAO on native chain.
+      try {
+        const addressInfo = await queryIndexer<ContractVersionInfo>({
           type: 'contract',
           chainId,
-          // proxy
           address: coreAddress,
-          formula: 'polytone/proxy/instantiator',
+          formula: 'info',
         })
-
-        const dao = await queryIndexer({
-          type: 'contract',
-          chainId,
-          address: voice,
-          formula: 'polytone/voice/remoteController',
-          args: {
+        if (
+          addressInfo &&
+          addressInfo.contract === ContractName.PolytoneProxy
+        ) {
+          // Get voice for this proxy on destination chain.
+          const voice = await queryIndexer({
+            type: 'contract',
+            chainId,
             // proxy
             address: coreAddress,
-          },
-        })
-
-        return {
-          redirect: {
-            destination: getDaoPath(appMode, dao),
-            permanent: true,
-          },
-        }
-      }
-    } catch {
-      // If failed, ignore.
-    }
-
-    // Add to Sentry error tags if error occurs.
-    let coreVersion: ContractVersion | undefined
-    try {
-      const {
-        admin,
-        config,
-        version,
-        votingModule: { address: votingModuleAddress, info: votingModuleInfo },
-        activeProposalModules,
-        created,
-        isActive,
-        activeThreshold,
-        parentDao,
-        items: _items,
-        polytoneProxies,
-      } = await daoCoreDumpState(chainId, coreAddress, serverT)
-      coreVersion = version
-
-      // If no contract name, will display fallback voting module adapter.
-      const votingModuleContractName =
-        (votingModuleInfo &&
-          'contract' in votingModuleInfo &&
-          votingModuleInfo.contract) ||
-        'fallback'
-
-      // Get DAO proposal modules.
-      const proposalModules = await fetchProposalModules(
-        chainId,
-        coreAddress,
-        coreVersion,
-        activeProposalModules
-      )
-
-      // Convert items list into map.
-      const items = _items.reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value,
-        }),
-        {} as Record<string, string>
-      )
-
-      const accounts: Account[] = [
-        // Current chain.
-        {
-          chainId,
-          address: coreAddress,
-          type: AccountType.Native,
-        },
-        // Polytone.
-        ...Object.entries(polytoneProxies).map(
-          ([chainId, address]): Account => ({
-            chainId,
-            address,
-            type: AccountType.Polytone,
+            formula: 'polytone/proxy/instantiator',
           })
-        ),
-        // The above accounts are the ones we already have. The rest of the
-        // accounts are loaded once the page loads (in `DaoPageWrapper`) since
-        // they are more complex and will probably expand over time.
-      ]
 
-      // Must be called after server side translations has been awaited, because
-      // props may use the `t` function, and it won't be available until after.
-      const {
-        leadingTitle,
-        followingTitle,
-        overrideTitle,
-        overrideDescription,
-        overrideImageUrl,
-        additionalProps,
-        url,
-      } =
-        (await getProps?.({
-          context,
-          t: serverT,
+          const dao = await queryIndexer({
+            type: 'contract',
+            chainId,
+            address: voice,
+            formula: 'polytone/voice/remoteController',
+            args: {
+              // proxy
+              address: coreAddress,
+            },
+          })
+
+          return {
+            redirect: {
+              destination: getDaoPath(appMode, dao),
+              permanent: true,
+            },
+          }
+        }
+      } catch {
+        // If failed, ignore.
+      }
+
+      // Add to Sentry error tags if error occurs.
+      let coreVersion: ContractVersion | undefined
+      try {
+        const {
+          admin,
           config,
-          chain: getChainForChainId(chainId),
-          coreAddress,
-          coreVersion,
-          proposalModules,
-        })) ?? {}
-
-      const props: DaoPageWrapperProps = {
-        ...i18nProps,
-        url: url ?? null,
-        title:
-          overrideTitle ??
-          [leadingTitle?.trim(), config.name.trim(), followingTitle?.trim()]
-            .filter(Boolean)
-            .join(' | '),
-        description: overrideDescription ?? config.description,
-        accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
-        serializedInfo: {
-          chainId,
-          coreAddress,
-          coreVersion,
-          supportedFeatures: getSupportedFeatures(coreVersion),
-          votingModuleAddress,
-          votingModuleContractName,
-          proposalModules,
-          name: config.name,
-          description: config.description,
-          imageUrl: overrideImageUrl ?? config.image_url ?? null,
-          created: created?.toJSON() ?? null,
+          version,
+          votingModule: {
+            address: votingModuleAddress,
+            info: votingModuleInfo,
+          },
+          activeProposalModules,
+          created,
           isActive,
           activeThreshold,
-          items,
-          polytoneProxies,
-          accounts,
           parentDao,
-          admin: admin ?? null,
-        },
-        ...additionalProps,
-      }
+          items: _items,
+          polytoneProxies,
+        } = await daoCoreDumpState(chainId, coreAddress, serverT)
+        coreVersion = version
 
-      return {
-        props,
-        // Regenerate the page at most once per `revalidate` seconds. Serves
-        // cached copy and refreshes in background.
-        revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
-      }
-    } catch (error) {
-      // Redirect.
-      if (error instanceof RedirectError) {
-        return {
-          redirect: error.redirect,
-        }
-      }
+        // If no contract name, will display fallback voting module adapter.
+        const votingModuleContractName =
+          (votingModuleInfo &&
+            'contract' in votingModuleInfo &&
+            votingModuleInfo.contract) ||
+          'fallback'
 
-      // Redirect legacy DAOs (legacy multisigs redirected in next.config.js
-      // redirects list).
-      if (
-        error instanceof LegacyDaoError ||
-        (error instanceof Error &&
-          error.message.includes(
-            'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `dump_state`'
-          ))
-      ) {
-        return {
-          redirect: {
-            destination:
-              LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
-            permanent: false,
+        // Get DAO proposal modules.
+        const proposalModules = await fetchProposalModules(
+          chainId,
+          coreAddress,
+          coreVersion,
+          activeProposalModules
+        )
+
+        // Convert items list into map.
+        const items = _items.reduce(
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: value,
+          }),
+          {} as Record<string, string>
+        )
+
+        const accounts: Account[] = [
+          // Current chain.
+          {
+            chainId,
+            address: coreAddress,
+            type: AccountType.Native,
           },
+          // Polytone.
+          ...Object.entries(polytoneProxies).map(
+            ([chainId, address]): Account => ({
+              chainId,
+              address,
+              type: AccountType.Polytone,
+            })
+          ),
+          // The above accounts are the ones we already have. The rest of the
+          // accounts are loaded once the page loads (in `DaoPageWrapper`) since
+          // they are more complex and will probably expand over time.
+        ]
+
+        // Must be called after server side translations has been awaited,
+        // because props may use the `t` function, and it won't be available
+        // until after.
+        const {
+          leadingTitle,
+          followingTitle,
+          overrideTitle,
+          overrideDescription,
+          overrideImageUrl,
+          additionalProps,
+          url,
+        } =
+          (await getProps?.({
+            context,
+            t: serverT,
+            config,
+            chain: getChainForChainId(chainId),
+            coreAddress,
+            coreVersion,
+            proposalModules,
+          })) ?? {}
+
+        const props: DaoPageWrapperProps = {
+          ...i18nProps,
+          url: url ?? null,
+          title:
+            overrideTitle ??
+            [leadingTitle?.trim(), config.name.trim(), followingTitle?.trim()]
+              .filter(Boolean)
+              .join(' | '),
+          description: overrideDescription ?? config.description,
+          accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
+          serializedInfo: {
+            chainId,
+            coreAddress,
+            coreVersion,
+            supportedFeatures: getSupportedFeatures(coreVersion),
+            votingModuleAddress,
+            votingModuleContractName,
+            proposalModules,
+            name: config.name,
+            description: config.description,
+            imageUrl: overrideImageUrl ?? config.image_url ?? null,
+            created: created?.toJSON() ?? null,
+            isActive,
+            activeThreshold,
+            items,
+            polytoneProxies,
+            accounts,
+            parentDao,
+            admin: admin ?? null,
+          },
+          ...additionalProps,
         }
-      }
 
-      console.error(error)
+        return {
+          props,
+          // Regenerate the page at most once per `revalidate` seconds. Serves
+          // cached copy and refreshes in background.
+          revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
+        }
+      } catch (error) {
+        // Redirect.
+        if (error instanceof RedirectError) {
+          return {
+            redirect: error.redirect,
+          }
+        }
 
-      if (
-        error instanceof Error &&
-        (error.message.includes('contract: not found') ||
-          error.message.includes('Error parsing into type') ||
-          error.message.includes('decoding bech32 failed') ||
-          error.message.includes('dumpState reason: Unexpected token'))
-      ) {
-        // Excluding `info` will render DAONotFound.
+        // Redirect legacy DAOs (legacy multisigs redirected in next.config.js
+        // redirects list).
+        if (
+          error instanceof LegacyDaoError ||
+          (error instanceof Error &&
+            error.message.includes(
+              'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `dump_state`'
+            ))
+        ) {
+          return {
+            redirect: {
+              destination:
+                LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
+              permanent: false,
+            },
+          }
+        }
+
+        console.error(error)
+
+        if (
+          error instanceof Error &&
+          (error.message.includes('contract: not found') ||
+            error.message.includes('no such contract') ||
+            error.message.includes('Error parsing into type') ||
+            error.message.includes('decoding bech32 failed') ||
+            error.message.includes('dumpState reason: Unexpected token'))
+        ) {
+          // Excluding `info` will render DAONotFound.
+          return {
+            props: {
+              ...i18nProps,
+              title: 'DAO not found',
+              description: '',
+            },
+            // Regenerate the page at most once per second. Serves cached copy
+            // and refreshes in background.
+            revalidate: 1,
+          }
+        }
+
+        // Return error in props to trigger client-side 500 error.
         return {
           props: {
             ...i18nProps,
-            title: 'DAO not found',
+            title: serverT('title.500'),
             description: '',
+            // Report to Sentry.
+            error: processError(error, {
+              tags: {
+                coreAddress,
+                coreVersion: coreVersion ?? '<undefined>',
+              },
+              extra: { context },
+            }),
           },
           // Regenerate the page at most once per second. Serves cached copy and
           // refreshes in background.
           revalidate: 1,
         }
       }
-
-      // Return error in props to trigger client-side 500 error.
-      return {
-        props: {
-          ...i18nProps,
-          title: serverT('title.500'),
-          description: '',
-          // Report to Sentry.
-          error: processError(error, {
-            tags: {
-              coreAddress,
-              coreVersion: coreVersion ?? '<undefined>',
-            },
-            extra: { context },
-          }),
-        },
-        // Regenerate the page at most once per second. Serves cached copy and
-        // refreshes in background.
-        revalidate: 1,
-      }
     }
+
+    const result = await getForChainId(decodedChainId)
+
+    // If not found on Terra, try Terra Classic. Let redirects and errors
+    // through.
+    if (
+      MAINNET &&
+      'props' in result &&
+      // If no serialized info, no DAO found.
+      !result.props.serializedInfo &&
+      // Don't try Terra Classic if unexpected error occurred.
+      !result.props.error &&
+      // Only try Terra Classic if Terra failed.
+      decodedChainId === ChainId.TerraMainnet
+    ) {
+      return await getForChainId(ChainId.TerraClassicMainnet)
+    }
+
+    return result
   }
 
 interface GetDaoProposalStaticPropsMakerOptions
@@ -448,8 +481,8 @@ export const makeGetDaoProposalStaticProps = ({
           throw error
         }
 
-        // If ProposalModuleAdapterError, treat as 404 below.
-        // Otherwise display 500.
+        // If ProposalModuleAdapterError, treat as 404 below. Otherwise display
+        // 500.
         if (!(error instanceof ProposalModuleAdapterError)) {
           // Report to Sentry.
           processError(error)
