@@ -60,31 +60,32 @@ export const WalletUiWalletList = ({
     }
   }
 
-  const mobileWalletsRender = (
-    <div className="flex flex-col gap-2 border-b border-border-base py-6 px-8">
-      <p className="primary-text truncate">{t('title.mobileWallets')}</p>
-      <div className="grid grid-cols-3 gap-1">
-        {mobileWallets.map((wallet) => (
-          <Button
-            key={wallet.walletName}
-            className={clsx(
-              'grow !p-3 !pt-4',
-              isConnectingTo(wallet) && 'animate-pulse'
-            )}
-            contentContainerClassName="flex-col !gap-3 justify-center items-center"
-            onClick={makeWalletOnClick(wallet)}
-            variant="ghost"
-          >
-            <WalletLogo logo={wallet.walletInfo.logo} />
+  const mobileWalletsRender =
+    mobileWallets.length > 0 ? (
+      <div className="flex flex-col gap-2 border-b border-border-base py-6 px-8">
+        <p className="primary-text truncate">{t('title.mobileWallets')}</p>
+        <div className="grid grid-cols-3 gap-1">
+          {mobileWallets.map((wallet) => (
+            <Button
+              key={wallet.walletName}
+              className={clsx(
+                'grow !p-3 !pt-4',
+                isConnectingTo(wallet) && 'animate-pulse'
+              )}
+              contentContainerClassName="flex-col !gap-3 justify-center items-center"
+              onClick={makeWalletOnClick(wallet)}
+              variant="ghost"
+            >
+              <WalletLogo logo={wallet.walletInfo.logo} />
 
-            <p className="secondary-text text-center">
-              {wallet.walletInfo.prettyName}
-            </p>
-          </Button>
-        ))}
+              <p className="secondary-text text-center">
+                {wallet.walletInfo.prettyName}
+              </p>
+            </Button>
+          ))}
+        </div>
       </div>
-    </div>
-  )
+    ) : null
 
   return (
     <div className="flex flex-col">

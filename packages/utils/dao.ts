@@ -88,15 +88,11 @@ export const getAccountAddress = (
 export const getAccountChainId = ({
   accounts,
   address,
-  types = [AccountType.Native, AccountType.Polytone],
 }: {
   accounts: Account[]
   address: string
-  types?: AccountType[]
 }): string | undefined =>
-  accounts.find(
-    (account) => types.includes(account.type) && account.address === address
-  )?.chainId
+  accounts.find((account) => account.address === address)?.chainId
 
 /**
  * Filter DAO items by prefix and remove the prefix from the key.

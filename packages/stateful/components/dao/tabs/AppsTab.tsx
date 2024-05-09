@@ -1,4 +1,5 @@
 import { AccountData, StdSignDoc } from '@cosmjs/amino'
+import { fromBech32 } from '@cosmjs/encoding'
 import { DirectSignDoc, SimpleAccount, WalletAccount } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
 import cloneDeep from 'lodash.clonedeep'
@@ -10,6 +11,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { v4 as uuidv4 } from 'uuid'
 
+import { OverrideHandler } from '@dao-dao/cosmiframe'
 import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
@@ -25,6 +27,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   ActionKeyAndData,
   ActionKeyAndDataNoId,
   BaseNewProposalProps,
@@ -37,14 +40,13 @@ import {
 import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   DaoProposalSingleAdapterId,
+  SITE_TITLE,
   SITE_URL,
   decodeMessages,
   getAccountAddress,
   getAccountChainId,
   getDisplayNameForChainId,
-  getFallbackImage,
   maybeMakePolytoneExecuteMessage,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../../actions'
@@ -63,7 +65,6 @@ export const AppsTab = () => {
   const { t } = useTranslation()
   const {
     name,
-    imageUrl,
     chainId: currentChainId,
     coreAddress,
     polytoneProxies,
@@ -81,11 +82,31 @@ export const AppsTab = () => {
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
   const [fullScreen, setFullScreen] = useState(false)
 
-  const addressForChainId = (chainId: string) =>
-    getAccountAddress({
-      accounts,
-      chainId,
-    }) || ''
+  const addressForChainId = (chainId: string) => {
+    const address =
+      getAccountAddress({
+        accounts,
+        chainId,
+        types: [AccountType.Native, AccountType.Polytone],
+      }) ||
+      // Fallback to ICA if exists, but don't use if a native or polytone
+      // account exists.
+      getAccountAddress({
+        accounts,
+        chainId,
+        types: [AccountType.Ica],
+      })
+    if (!address) {
+      throw new Error(
+        t('error.daoMissingAccountsOnChains', {
+          daoName: name,
+          chains: getDisplayNameForChainId(chainId),
+          count: 1,
+        })
+      )
+    }
+    return address
+  }
   const chainIdForAddress = (address: string) =>
     getAccountChainId({
       accounts,
@@ -126,7 +147,7 @@ export const AppsTab = () => {
     setMsgs(messages)
   }
 
-  const enableAndConnect = (chainIds: string | string[]) =>
+  const enableAndConnect = (chainIds: string | string[]): OverrideHandler =>
     [chainIds].flat().some((chainId) => addressForChainId(chainId))
       ? {
           type: 'success',
@@ -144,17 +165,10 @@ export const AppsTab = () => {
         }
 
   const { wallet, iframeRef } = useIframe({
-    walletInfo: {
-      prettyName: name,
-      logo: imageUrl
-        ? toAccessibleImageUrl(imageUrl)
-        : SITE_URL + getFallbackImage(coreAddress),
+    metadata: {
+      name: SITE_TITLE,
+      imageUrl: SITE_URL + '/daodao.png',
     },
-    accountReplacement: async (chainId) => ({
-      username: name,
-      address: addressForChainId(chainId),
-      pubkey: await getPubKey(chainId),
-    }),
     walletClientOverrides: {
       // @ts-ignore
       signAmino: (_chainId: string, signer: string, signDoc: StdSignDoc) => {
@@ -208,49 +222,42 @@ export const AppsTab = () => {
           username: name,
         } as SimpleAccount,
       }),
-    },
-    aminoSignerOverrides: {
-      signAmino: (signerAddress, signDoc) => {
-        decodeAmino(signerAddress, signDoc)
-
+      // Needed by Graz and other Keplr clients.
+      getKey: async (chainId: string) => {
+        const bech32Address = addressForChainId(chainId)
         return {
-          type: 'error',
-          error: 'Handled by DAO browser.',
+          type: 'success',
+          value: {
+            name,
+            algo: 'secp256k1',
+            pubkey: await getPubKey(chainId),
+            address: fromBech32(bech32Address).data,
+            bech32Address,
+            isNanoLedger: false,
+            isKeystone: false,
+          },
         }
       },
-      getAccounts: async () => ({
-        type: 'success',
-        // Will be overridden by `accountReplacement` function for the
-        // appropriate chain, so just put filler data.
-        value: [
-          {
-            address: coreAddress,
-            algo: 'secp256k1',
-            pubkey: await getPubKey(currentChainId),
-          },
-          ...(await Promise.all(
-            Object.entries(polytoneProxies).map(async ([chainId, address]) => ({
-              address,
-              algo: 'secp256k1',
-              pubkey: await getPubKey(chainId),
-            }))
-          )),
-        ] as AccountData[],
-      }),
     },
-    directSignerOverrides: {
+    signerOverrides: {
       signDirect: (signerAddress, signDoc) => {
         decodeDirect(signerAddress, signDoc.bodyBytes)
 
         return {
           type: 'error',
-          error: 'Handled by DAO browser.',
+          error: 'Handled by DAO.',
+        }
+      },
+      signAmino: (signerAddress, signDoc) => {
+        decodeAmino(signerAddress, signDoc)
+
+        return {
+          type: 'error',
+          error: 'Handled by DAO.',
         }
       },
       getAccounts: async () => ({
         type: 'success',
-        // Will be overridden by `accountReplacement` function for the
-        // appropriate chain, so just put filler data.
         value: [
           {
             address: coreAddress,
@@ -276,7 +283,7 @@ export const AppsTab = () => {
     // some dApps if simulation fails...
     let pubKey
     try {
-      pubKey = (await wallet.client.getAccount?.(chainId))?.pubkey
+      pubKey = (await wallet.client?.getAccount?.(chainId))?.pubkey
     } catch {
       pubKey = new Uint8Array([0x02, ...[...new Array(32)].map(() => 0)])
     }

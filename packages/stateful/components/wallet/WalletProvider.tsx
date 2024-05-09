@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next'
 import { usePrevious } from 'react-use'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { isInIframe } from '@dao-dao/cosmiframe'
 import {
   isKeplrMobileWebAtom,
   mountedInBrowserAtom,
@@ -51,6 +52,16 @@ import { WalletUi } from './WalletUi'
 leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
 cosmosExtensionMetamaskWallets[0].walletInfo.prettyName =
   'MetaMask (Cosmos Extension)'
+
+const ALLOWED_IFRAME_PARENT_ORIGINS = [
+  'https://daodao.zone',
+  'https://dao.daodao.zone',
+  'https://app.osmosis.zone',
+]
+// Support localhost dev env and vercel preview links.
+if (!ALLOWED_IFRAME_PARENT_ORIGINS.includes(SITE_URL)) {
+  ALLOWED_IFRAME_PARENT_ORIGINS.push(SITE_URL)
+}
 
 export type WalletProviderProps = {
   children: ReactNode
@@ -126,39 +137,47 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     })()
   }, [mountedInBrowser, setIsKeplrMobileWeb])
 
-  const allWallets = [
-    ...leapMetamaskWallets,
-    // Alphabetize.
-    ...[
-      ...keplrWallets,
-      ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
-      ...stationWallets,
-      ...vectisWallets,
-      ...trustWallets,
-      ...cosmostationWallets,
-      ...coin98Wallets,
-      ...omniWallets,
-      ...shellWallets,
-      ...xdefiWallets,
-      ...okxWallets,
-      ...compassWallets,
-      ...frontierWallets,
-      ...cosmosExtensionMetamaskWallets,
-      ...exodusWallets,
-      ...ledgerWallets,
-      ...tailwindWallets,
-      ...ninjiWallets,
-      ...owalletWallets,
-    ].sort((a, b) =>
-      a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
-    ),
-    // Google, Apple, Discord, Twitter
-    ...web3AuthWallets,
-  ]
+  // If in iframe, show no wallets, which will make it only show the iframe
+  // wallet since that's installed by default.
+  const allWallets = isInIframe()
+    ? []
+    : [
+        ...leapMetamaskWallets,
+        // Alphabetize.
+        ...[
+          ...keplrWallets,
+          ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
+          ...stationWallets,
+          ...vectisWallets,
+          ...trustWallets,
+          ...cosmostationWallets,
+          ...coin98Wallets,
+          ...omniWallets,
+          ...shellWallets,
+          ...xdefiWallets,
+          ...okxWallets,
+          ...compassWallets,
+          ...frontierWallets,
+          ...cosmosExtensionMetamaskWallets,
+          ...exodusWallets,
+          ...ledgerWallets,
+          ...tailwindWallets,
+          ...ninjiWallets,
+          ...owalletWallets,
+        ].sort((a, b) =>
+          a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
+        ),
+        // Google, Apple, Discord, Twitter
+        ...web3AuthWallets,
+      ]
 
   return (
     <ChainProvider
-      assetLists={assets}
+      allowedIframeParentOrigins={ALLOWED_IFRAME_PARENT_ORIGINS}
+      assetLists={
+        // Temp fix for mismatched package types.
+        assets as any[]
+      }
       chains={chains}
       endpointOptions={{
         // Load all custom chain endpoints into wallet provider.

@@ -136,7 +136,8 @@ export const WalletUi = (props: WalletModalProps) => {
                     getChainForChainId(chainId),
                     [maybeGetAssetListForChainId(chainId)].filter(
                       (al): al is AssetList => !!al
-                    )
+                      // Temp fix for mismatched package types.
+                    ) as any[]
                   )
                 )
 
