@@ -482,10 +482,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     factoryContractAddress:
       'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/neutron/tx/REPLACE',
-      gov: 'https://ping.pub/neutron/gov',
-      govProp: 'https://ping.pub/neutron/gov/REPLACE',
-      wallet: 'https://ping.pub/neutron/account/REPLACE',
+      tx: 'https://neutron.celat.one/neutron-1/txs/REPLACE',
+      wallet: 'https://neutron.celat.one/neutron-1/accounts/REPLACE',
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
@@ -1655,6 +1653,42 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 3379,
     },
   },
+  {
+    chainId: ChainId.NeutronTestnet,
+    name: 'neutron',
+    mainnet: false,
+    accentColor: '#000000',
+    factoryContractAddress:
+      'neutron1gu2c0ddyrzk78cuzdlwwtz4c07mfyumx43wefe2fgtv5rf7fvlrq5upnkr',
+    explorerUrlTemplates: {
+      tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
+      wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 4618,
+      Cw4Group: 4619, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 4620,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 4622,
+      CwTokenSwap: 4623,
+      CwTokenfactoryIssuerMain: 4635,
+      CwVesting: 4624,
+      DaoCore: 4625,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 4627,
+      DaoPreProposeApprover: 4628,
+      DaoPreProposeMultiple: 4629,
+      DaoPreProposeSingle: 4630,
+      DaoProposalMultiple: 4631,
+      DaoProposalSingle: 4632,
+      DaoVotingCw4: 4633,
+      DaoVotingCw721Staked: 4634,
+      DaoVotingTokenStaked: 4636,
+    },
+  },
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -1699,6 +1733,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.NeutronMainnet]: {
     rpc: 'https://rpc-lb.neutron.org',
     rest: 'https://rest-lb.neutron.org',
+  },
+  [ChainId.NeutronTestnet]: {
+    rpc: 'https://rpc-falcron.pion-1.ntrn.tech',
+    rest: 'https://rest-falcron.pion-1.ntrn.tech',
   },
   [ChainId.CosmosHubMainnet]: {
     rpc: 'https://cosmos-rpc.polkachu.com',
