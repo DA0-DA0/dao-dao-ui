@@ -135,7 +135,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       ['translation']
     )
 
-    let coreAddress = _coreAddress ?? context.params?.address
+    let coreAddress = (_coreAddress ?? context.params?.address) as string
 
     // Check if address is actually the name of a chain so we can resolve the
     // gov module.
