@@ -290,7 +290,8 @@ export const makeGovernanceProposalAction: ActionMaker<
     // Governance module cannot participate in governance.
     context.type === ActionContextType.Gov ||
     // Neutron does not use the x/gov module.
-    currentChainId === ChainId.NeutronMainnet
+    currentChainId === ChainId.NeutronMainnet ||
+    currentChainId === ChainId.NeutronTestnet
   ) {
     return null
   }

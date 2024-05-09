@@ -70,7 +70,10 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   CommunityPoolDepositData
 > = ({ t, address, chain: { chain_id: currentChainId }, chainContext }) => {
   // Neutron does not use the x/distribution community pool.
-  if (currentChainId === ChainId.NeutronMainnet) {
+  if (
+    currentChainId === ChainId.NeutronMainnet ||
+    currentChainId === ChainId.NeutronTestnet
+  ) {
     return null
   }
 

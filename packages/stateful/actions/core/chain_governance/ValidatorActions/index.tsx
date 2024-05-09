@@ -48,7 +48,8 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
     // Governance module cannot run a validator.
     context.type === ActionContextType.Gov ||
     // Neutron does not have validators.
-    currentChainId === ChainId.NeutronMainnet
+    currentChainId === ChainId.NeutronMainnet ||
+    currentChainId === ChainId.NeutronTestnet
   ) {
     return null
   }

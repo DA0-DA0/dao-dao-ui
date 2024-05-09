@@ -207,6 +207,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const canManageStaking =
     // Neutron does not support staking.
     chainId !== ChainId.NeutronMainnet &&
+    chainId !== ChainId.NeutronTestnet &&
     (recipientIsWallet || recipientIsDao) &&
     // Vested token is native token of chain.
     token.denomOrAddress === getNativeTokenForChainId(chainId).denomOrAddress

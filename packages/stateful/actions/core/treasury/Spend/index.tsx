@@ -683,7 +683,8 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           msg = makeStargateMessage({
             stargate: {
               typeUrl:
-                fromChainId === ChainId.NeutronMainnet
+                fromChainId === ChainId.NeutronMainnet ||
+                fromChainId === ChainId.NeutronTestnet
                   ? NeutronMsgTransfer.typeUrl
                   : MsgTransfer.typeUrl,
               value: {
@@ -695,7 +696,8 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 timeoutTimestamp,
                 memo: '',
                 // Add Neutron IBC transfer fee if sending from Neutron.
-                ...(fromChainId === ChainId.NeutronMainnet && {
+                ...((fromChainId === ChainId.NeutronMainnet ||
+                  fromChainId === ChainId.NeutronTestnet) && {
                   fee: neutronTransferFee.loading
                     ? undefined
                     : neutronTransferFee.data?.fee,
@@ -717,11 +719,13 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           msg = makeStargateMessage({
             stargate: {
               typeUrl:
-                fromChainId === ChainId.NeutronMainnet
+                fromChainId === ChainId.NeutronMainnet ||
+                fromChainId === ChainId.NeutronTestnet
                   ? NeutronMsgTransfer.typeUrl
                   : MsgTransfer.typeUrl,
               value: {
-                ...(fromChainId === ChainId.NeutronMainnet
+                ...(fromChainId === ChainId.NeutronMainnet ||
+                fromChainId === ChainId.NeutronTestnet
                   ? NeutronMsgTransfer
                   : MsgTransfer
                 ).fromAmino({
@@ -740,7 +744,8 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                   timeout_height: undefined,
                 }),
                 // Add Neutron IBC transfer fee if sending from Neutron.
-                ...(fromChainId === ChainId.NeutronMainnet && {
+                ...((fromChainId === ChainId.NeutronMainnet ||
+                  fromChainId === ChainId.NeutronTestnet) && {
                   fee: neutronTransferFee.loading
                     ? undefined
                     : neutronTransferFee.data?.fee,

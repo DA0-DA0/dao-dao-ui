@@ -116,7 +116,8 @@ export const getImageUrlForChainId = (chainId: string): string => {
   const image =
     (chainId === ChainId.OsmosisMainnet ||
     chainId === ChainId.OsmosisTestnet ||
-    chainId === ChainId.NeutronMainnet
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
       ? nativeTokenImageUrl
       : chainImageUrl) ||
     nativeTokenImageUrl ||

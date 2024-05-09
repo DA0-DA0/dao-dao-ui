@@ -57,6 +57,7 @@ import { Packet } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/chan
 import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feerefunder/fee'
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
+  MAINNET,
   addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs46OrHigher,
@@ -202,7 +203,10 @@ export const neutronRpcClientSelector = selector({
       async (attempt) =>
         (
           await neutron.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(ChainId.NeutronMainnet, attempt - 1),
+            rpcEndpoint: getRpcForChainId(
+              MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet,
+              attempt - 1
+            ),
           })
         ).neutron
     ),
@@ -499,7 +503,9 @@ export const neutronIbcTransferFeeSelector = selector<
             uniqueDenoms.map((denom) =>
               genericTokenSelector({
                 type: TokenType.Native,
-                chainId: ChainId.NeutronMainnet,
+                chainId: MAINNET
+                  ? ChainId.NeutronMainnet
+                  : ChainId.NeutronTestnet,
                 denomOrAddress: denom,
               })
             )
@@ -576,7 +582,10 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
     ({ address, chainId }) =>
     async ({ get }) => {
       // Neutron does not have staking.
-      if (chainId === ChainId.NeutronMainnet) {
+      if (
+        chainId === ChainId.NeutronMainnet ||
+        chainId === ChainId.NeutronTestnet
+      ) {
         return {
           amount: '0',
           denom: getNativeTokenForChainId(chainId).denomOrAddress,
@@ -681,7 +690,10 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
     ({ chainId }) =>
     async ({ get }) => {
       // Neutron does not have staking.
-      if (chainId === ChainId.NeutronMainnet) {
+      if (
+        chainId === ChainId.NeutronMainnet ||
+        chainId === ChainId.NeutronTestnet
+      ) {
         return 0
       }
 

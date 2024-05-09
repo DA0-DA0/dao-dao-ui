@@ -482,7 +482,8 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
     // x/gov cannot stake.
     context.type === ActionContextType.Gov ||
     // Neutron does not support staking.
-    chainId === ChainId.NeutronMainnet
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
   ) {
     return null
   }
