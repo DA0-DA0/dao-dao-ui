@@ -59,11 +59,12 @@ export const DaoPageWrapper = ({
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Update walletChainId to whatever the current DAO is so the right address
   // appears in the sidebar.
+  const currentChainId = serializedInfo?.chainId
   useEffect(() => {
-    if (serializedInfo && serializedInfo.chainId !== walletChainId) {
-      setWalletChainId(serializedInfo.chainId)
+    if (currentChainId && currentChainId !== walletChainId) {
+      setWalletChainId(currentChainId)
     }
-  }, [serializedInfo, setWalletChainId, walletChainId])
+  }, [currentChainId, setWalletChainId, walletChainId])
 
   // Set theme's accentColor.
   useEffect(() => {
