@@ -144,10 +144,9 @@ export const contractInfoSelector = selectorFamily<
 
       // If indexer fails, fallback to querying chain.
       const client = get(cosmWasmClientForChainSelector(chainId))
-      const contractInfo = await client.queryContractRaw(
-        contractAddress,
-        toUtf8('contract_info')
-      )
+      const { data: contractInfo } = await client[
+        'forceGetQueryClient'
+      ]().wasm.queryContractRaw(contractAddress, toUtf8('contract_info'))
       if (contractInfo) {
         const info: InfoResponse = {
           info: JSON.parse(fromUtf8(contractInfo)),

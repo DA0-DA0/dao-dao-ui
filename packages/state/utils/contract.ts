@@ -48,10 +48,9 @@ export const fetchContractInfo = async (
       const client = await cosmWasmClientRouter.connect(
         getRpcForChainId(chainId)
       )
-      const contractInfo = await client.queryContractRaw(
-        contractAddress,
-        toUtf8('contract_info')
-      )
+      const { data: contractInfo } = await client[
+        'forceGetQueryClient'
+      ]().wasm.queryContractRaw(contractAddress, toUtf8('contract_info'))
       if (contractInfo) {
         info = JSON.parse(fromUtf8(contractInfo))
       }
