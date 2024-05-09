@@ -533,6 +533,7 @@ export const decodeCrossChainMessages = (
         return {
           type: 'polytone',
           data: decodedPolytone,
+          sender: srcAddress,
           srcConnection: decodedPolytone.polytoneConnection.localConnection,
           srcChannel: decodedPolytone.polytoneConnection.localChannel,
           srcPort: `wasm.${decodedPolytone.polytoneConnection.note}`,
@@ -552,6 +553,7 @@ export const decodeCrossChainMessages = (
         return {
           type: 'ica',
           data: decodedIca,
+          sender: srcAddress,
           srcConnection: ibcInfo.sourceChain.connection_id,
           srcPort: `icacontroller-${srcAddress}`,
           dstConnection: ibcInfo.destinationChain.connection_id,

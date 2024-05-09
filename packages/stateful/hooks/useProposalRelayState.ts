@@ -182,7 +182,7 @@ export const useProposalRelayState = ({
               contractAddress: decoded.data.polytoneConnection.listener,
               params: [
                 {
-                  initiator: coreAddress,
+                  initiator: decoded.sender,
                   initiatorMsg: decoded.data.initiatorMsg,
                 },
               ],

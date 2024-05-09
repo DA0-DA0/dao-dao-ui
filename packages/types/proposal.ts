@@ -104,6 +104,7 @@ export type DecodedCrossChainMessage =
   | {
       type: 'polytone'
       data: DecodedPolytoneMsgMatch
+      sender: string
       srcConnection: string
       srcChannel: string
       srcPort: string
@@ -114,6 +115,7 @@ export type DecodedCrossChainMessage =
   | {
       type: 'ica'
       data: DecodedIcaMsgMatch
+      sender: string
       srcConnection: string
       // Cannot determine srcChannel from decoded message.
       srcPort: string
