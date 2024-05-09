@@ -115,7 +115,7 @@ const InnerAppsTab = ({
     ({ url: appUrl }) => appUrl === url || !appUrl
   )
 
-  const customSelected = selectedAppIndex === DAO_APPS.length - 1
+  const customSelected = !!url && selectedAppIndex === DAO_APPS.length - 1
 
   return (
     <div className={clsx('flex flex-col gap-2', className)}>
