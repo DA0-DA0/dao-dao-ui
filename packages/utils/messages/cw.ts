@@ -526,40 +526,65 @@ export const decodeCrossChainMessages = (
   srcAddress: string,
   msgs: CosmosMsgFor_Empty[]
 ): DecodedCrossChainMessage[] =>
-  decodeMessages(msgs).flatMap((msg): DecodedCrossChainMessage | [] => {
-    const decodedPolytone = decodePolytoneExecuteMsg(srcChainId, msg, 'any')
-    if (decodedPolytone.match) {
-      return {
-        type: 'polytone',
-        data: decodedPolytone,
-        srcConnection: decodedPolytone.polytoneConnection.localConnection,
-        srcChannel: decodedPolytone.polytoneConnection.localChannel,
-        srcPort: `wasm.${decodedPolytone.polytoneConnection.note}`,
-        dstConnection: decodedPolytone.polytoneConnection.remoteConnection,
-        dstChannel: decodedPolytone.polytoneConnection.remoteChannel,
-        dstPort: `wasm.${decodedPolytone.polytoneConnection.voice}`,
+  decodeMessages(msgs).flatMap(
+    (msg): DecodedCrossChainMessage | DecodedCrossChainMessage[] => {
+      const decodedPolytone = decodePolytoneExecuteMsg(srcChainId, msg, 'any')
+      if (decodedPolytone.match) {
+        return {
+          type: 'polytone',
+          data: decodedPolytone,
+          srcConnection: decodedPolytone.polytoneConnection.localConnection,
+          srcChannel: decodedPolytone.polytoneConnection.localChannel,
+          srcPort: `wasm.${decodedPolytone.polytoneConnection.note}`,
+          dstConnection: decodedPolytone.polytoneConnection.remoteConnection,
+          dstChannel: decodedPolytone.polytoneConnection.remoteChannel,
+          dstPort: `wasm.${decodedPolytone.polytoneConnection.voice}`,
+        }
       }
-    }
 
-    const decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
-    if (decodedIca.match) {
-      const ibcInfo = getIbcTransferInfoBetweenChains(
-        srcChainId,
-        decodedIca.chainId
-      )
+      const decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
+      if (decodedIca.match) {
+        const ibcInfo = getIbcTransferInfoBetweenChains(
+          srcChainId,
+          decodedIca.chainId
+        )
 
-      return {
-        type: 'ica',
-        data: decodedIca,
-        srcConnection: ibcInfo.sourceChain.connection_id,
-        srcPort: `icacontroller-${srcAddress}`,
-        dstConnection: ibcInfo.destinationChain.connection_id,
-        dstPort: 'icahost',
+        return {
+          type: 'ica',
+          data: decodedIca,
+          srcConnection: ibcInfo.sourceChain.connection_id,
+          srcPort: `icacontroller-${srcAddress}`,
+          dstConnection: ibcInfo.destinationChain.connection_id,
+          dstPort: 'icahost',
+        }
       }
-    }
 
-    return []
-  })
+      // If DAO admin exec, recurse.
+      if (
+        objectMatchesStructure(msg, {
+          wasm: {
+            execute: {
+              contract_addr: {},
+              funds: {},
+              msg: {
+                execute_admin_msgs: {
+                  msgs: {},
+                },
+              },
+            },
+          },
+        })
+      ) {
+        return decodeCrossChainMessages(
+          srcChainId,
+          srcAddress,
+          msg.wasm.execute.msg.execute_admin_msgs.msgs
+        )
+      }
+
+      return []
+    }
+  )
 
 /**
  * Wrap the message in a cw1-whitelist execution message.
