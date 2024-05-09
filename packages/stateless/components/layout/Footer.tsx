@@ -2,6 +2,8 @@ import { ArrowOutwardRounded, Code, Dns, Twitter } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { SITE_URL } from '@dao-dao/utils'
+
 import { ButtonLink } from '../buttons'
 import { GithubIcon } from '../icons'
 import { DiscordIcon } from '../icons/DiscordIcon'
@@ -33,7 +35,7 @@ export const Footer = () => {
       />
       <FooterItem
         Icon={Dns}
-        href="https://daodao.zone/status"
+        href={SITE_URL + '/status'}
         name={t('title.status')}
       />
     </div>
