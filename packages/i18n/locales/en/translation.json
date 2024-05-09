@@ -865,7 +865,7 @@
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
     "addToProfileExplanation": "Add the current chain to your profile shown below.",
     "addWalletToProfile": "Add this wallet to your profile.",
-    "addWalletToProfileToEdit": "You cannot edit your profile until you add this wallet. Click to add it.",
+    "addWalletToProfileToEdit": "You cannot edit your profile until you add the chain your wallet is currently connected to. Click to add it.",
     "addedToDaoFollowPrompt": "You were added as a member to this DAO. Follow it to receive updates.",
     "advancedVotingConfigWarning": "These are advanced features. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "allChains": "All chains",
