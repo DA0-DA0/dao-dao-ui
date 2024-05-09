@@ -577,7 +577,7 @@ export const decodeCrossChainMessages = (
       ) {
         return decodeCrossChainMessages(
           srcChainId,
-          srcAddress,
+          msg.wasm.execute.contract_addr,
           msg.wasm.execute.msg.execute_admin_msgs.msgs
         )
       }
