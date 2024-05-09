@@ -37,30 +37,6 @@ export const getDaoProposalPath = (
   return base + query
 }
 
-// Create a path to a gov page.
-export const getGovPath = (
-  chain: string,
-  path?: string,
-  params?: Record<string, unknown>
-) => {
-  const base = `/gov/${chain}` + (path ? `/${path}` : '')
-  const query = params ? `?${queryString.stringify(params)}` : ''
-
-  return base + query
-}
-
-// Create a path to a gov proposal page.
-export const getGovProposalPath = (
-  chain: string,
-  proposalId: string,
-  params?: Record<string, unknown>
-) => {
-  const base = getGovPath(chain, `${DaoTabId.Proposals}/${proposalId}`)
-  const query = params ? `?${queryString.stringify(params)}` : ''
-
-  return base + query
-}
-
 // Create a path to an account's page.
 export const getAccountPath = (
   address: string,
@@ -73,10 +49,12 @@ export const getAccountPath = (
   return base + query
 }
 
-// Create a path for the Me page transaction builder with a pre-filled
+// Create a path for the profile transaction builder with a pre-filled
 // transaction form.
-export const getMeTxPrefillPath = (actions: ActionKeyAndDataNoId[]) => {
-  const base = '/me/actions'
+export const getActionBuilderPrefillPath = (
+  actions: ActionKeyAndDataNoId[]
+) => {
+  const base = '/actions'
   const query = `?${queryString.stringify({
     prefill: encodeJsonToBase64({
       actions: actions.map((action, index) => ({

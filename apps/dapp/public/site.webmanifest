@@ -22,7 +22,7 @@
     {
       "name": "Home",
       "short_name": "Home",
-      "description": "View featured and followed DAOs",
+      "description": "Home",
       "url": "/?s=pwa"
     },
     {
@@ -30,18 +30,6 @@
       "short_name": "Notifications",
       "description": "View notifications",
       "url": "/notifications?s=pwa"
-    },
-    {
-      "name": "Me",
-      "short_name": "Me",
-      "description": "Access your wallet and execute transactions",
-      "url": "/me?s=pwa"
-    },
-    {
-      "name": "Governance",
-      "short_name": "Governance",
-      "description": "View native chain governance",
-      "url": "/gov?s=pwa"
     }
   ]
 }

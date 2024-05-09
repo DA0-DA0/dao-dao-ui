@@ -16,7 +16,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { Feature } from '@dao-dao/types'
+import { ContractVersion, Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -26,8 +26,8 @@ import {
 import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
 import { DaoProvidersWithoutInfo } from '../../../components'
-import { useDaoTabs, useFollowingDaos } from '../../../hooks'
-import { subDaoInfosSelector } from '../../../recoil'
+import { useDaoTabs, useFollowingDaos, useGovDaoTabs } from '../../../hooks'
+import { chainSubDaoInfosSelector, subDaoInfosSelector } from '../../../recoil'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
@@ -36,19 +36,25 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
    */
   onDaoPage?: boolean
 }> = ({
-  dao: { chainId, coreAddress, name, imageUrl },
+  dao: { chainId, coreAddress, coreVersion, name, imageUrl },
   onDaoPage,
   ...options
 }) => {
+  const useLoadingTabs =
+    coreVersion === ContractVersion.Gov ? useGovDaoTabs : useDaoTabs
+
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
     const { accounts, supportedFeatures } = useDaoInfoContext()
-    const loadingTabs = useDaoTabs()
+    const loadingTabs = useLoadingTabs()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-      useFollowingDaos(chainId)
-    const following = isFollowing(coreAddress)
+      useFollowingDaos()
+    const following = isFollowing({
+      chainId,
+      coreAddress,
+    })
 
     const [copied, setCopied] = useState<string | undefined>()
     // Debounce clearing copied.
@@ -63,7 +69,11 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
     const subDaosLoading = useCachedLoading(
-      supportedFeatures[Feature.SubDaos]
+      coreVersion === ContractVersion.Gov
+        ? chainSubDaoInfosSelector({
+            chainId,
+          })
+        : supportedFeatures[Feature.SubDaos]
         ? subDaoInfosSelector({
             chainId,
             coreAddress,
@@ -132,7 +142,10 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name: following ? t('button.unfollow') : t('button.follow'),
           Icon: CheckRounded,
           onChoose: () =>
-            following ? setUnfollowing(coreAddress) : setFollowing(coreAddress),
+            (following ? setUnfollowing : setFollowing)({
+              chainId,
+              coreAddress,
+            }),
           loading: updatingFollowing,
         },
         ...accounts.map(({ chainId, address }) => ({
@@ -195,11 +208,13 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             ({
               chainId,
               coreAddress,
+              coreVersion,
               name,
               imageUrl,
             }): CommandModalDaoInfo => ({
               chainId,
               coreAddress,
+              coreVersion,
               name,
               imageUrl: imageUrl || getFallbackImage(coreAddress),
             })

@@ -33,7 +33,7 @@ import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
-import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
+import { DaoProposalProps } from './DaoPageWrapper'
 import { DaoPreProposeApprovalProposalContentDisplay } from './DaoPreProposeApprovalProposalContentDisplay'
 import { DaoProposalContentDisplay } from './DaoProposalContentDisplay'
 
@@ -328,7 +328,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 export const DaoProposal = ({
   proposalInfo,
   serializedInfo,
-}: Pick<DaoProposalPageWrapperProps, 'proposalInfo' | 'serializedInfo'>) =>
+}: DaoProposalProps) =>
   proposalInfo && serializedInfo ? (
     <ProposalModuleAdapterProvider
       key={

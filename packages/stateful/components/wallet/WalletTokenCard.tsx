@@ -32,7 +32,7 @@ import {
   CHAIN_GAS_MULTIPLIER,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
-  getMeTxPrefillPath,
+  getActionBuilderPrefillPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   isNativeIbcUsdc,
@@ -231,7 +231,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               Icon: PaymentRounded,
               label: t('button.spend'),
               closeOnClick: true,
-              href: getMeTxPrefillPath([
+              href: getActionBuilderPrefillPath([
                 {
                   actionKey: ActionKey.Spend,
                   data: {

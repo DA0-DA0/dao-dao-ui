@@ -7,7 +7,6 @@ import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
-  govProposalCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
@@ -16,7 +15,6 @@ import {
 import {
   BetaWarningModal,
   ChainProvider,
-  GovProposalCreatedModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
@@ -34,7 +32,7 @@ import {
 import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
-import { DockWallet, SidebarWallet } from './NavWallet'
+import { DockWallet } from './NavWallet'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -68,8 +66,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   )
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
-  const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
-    useRecoilState(govProposalCreatedCardPropsAtom)
 
   const { rootCommandContextMaker, inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
@@ -126,15 +122,12 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useAutoRefreshData()
 
   //! Following DAOs
-  const { chains } = useProfile({
-    onlySupported: true,
-  })
+  const { uniquePublicKeys } = useProfile()
   const followingDaoDropdownInfos = useCachedLoading(
-    !chains.loading
+    !uniquePublicKeys.loading
       ? waitForAll(
-          chains.data.map(({ chainId, publicKey }) =>
+          uniquePublicKeys.data.map(({ publicKey }) =>
             followingDaoDropdownInfosSelector({
-              chainId,
               walletPublicKey: publicKey,
               // If not compact, remove any SubDAO from the top level that
               // exists as a SubDAO of another followed DAO at the top level.
@@ -156,20 +149,21 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         ButtonLink={ButtonLink}
         DockWallet={DockWallet}
         connect={openView}
+        inboxCount={
+          inbox.loading ||
+          // Prevent hydration errors by loading until mounted.
+          !mountedInBrowser
+            ? {
+                loading: true,
+              }
+            : {
+                loading: false,
+                data: inbox.items.length,
+              }
+        }
         navigationProps={{
           walletConnected: isWalletConnected,
           LinkWrapper,
-          inboxCount:
-            inbox.loading ||
-            // Prevent hydration errors by loading until mounted.
-            !mountedInBrowser
-              ? {
-                  loading: true,
-                }
-              : {
-                  loading: false,
-                  data: inbox.items.length,
-                },
           setCommandModalVisible: () => setCommandModalVisible(true),
           followingDaos: mountedInBrowser
             ? followingDaoDropdownInfos.loading
@@ -186,7 +180,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           compact,
           setCompact,
           mountedInBrowser,
-          SidebarWallet,
         }}
       >
         {children}
@@ -223,18 +216,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             }}
             modalProps={{
               onClose: () => setProposalCreatedCardProps(undefined),
-            }}
-          />
-        )}
-
-        {govProposalCreatedCardProps && (
-          <GovProposalCreatedModal
-            itemProps={{
-              ...govProposalCreatedCardProps,
-              LinkWrapper,
-            }}
-            modalProps={{
-              onClose: () => setGovProposalCreatedCardProps(undefined),
             }}
           />
         )}

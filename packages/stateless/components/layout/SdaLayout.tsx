@@ -14,7 +14,7 @@ import { useAppContext } from './AppContext'
 import { SdaNavigation } from './SdaNavigation'
 
 export const SdaLayout = ({ navigationProps, children }: SdaLayoutProps) => {
-  const router = useRouter()
+  const { pathname } = useRouter()
   const { responsiveNavigation, setPageHeaderRef } = useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
@@ -34,7 +34,7 @@ export const SdaLayout = ({ navigationProps, children }: SdaLayoutProps) => {
 
     // Only toggle on route change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath])
+  }, [pathname])
 
   return (
     <div className="relative z-[1] mx-auto flex h-full w-full max-w-7xl flex-row items-stretch overflow-hidden pt-safe">

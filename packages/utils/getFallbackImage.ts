@@ -9,7 +9,7 @@ import { toBech32Hash } from './conversion'
 
 // fallback images in the public/placeholders directory.
 export const getFallbackImage = (identifier = '') => {
-  // If this is the Neutron governance address, return placeholder image.
+  // If this is the Neutron governance address, return chain image.
   if (identifier === NEUTRON_GOVERNANCE_DAO) {
     return getImageUrlForChainId(ChainId.NeutronMainnet)
   }

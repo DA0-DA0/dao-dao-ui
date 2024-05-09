@@ -4,7 +4,8 @@ import { ChainId, UnifiedProfile } from '@dao-dao/types'
 export const CHAIN_ID = ChainId.JunoMainnet
 
 export const WALLET_PROFILE_DATA: UnifiedProfile = {
-  nonce: 0,
+  uuid: 'uuid',
+  nonce: 1,
   name: '@Modern-Edamame',
   nft: null,
   chains: {},

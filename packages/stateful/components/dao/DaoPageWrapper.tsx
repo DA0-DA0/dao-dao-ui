@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useMemo } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { accountsSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
@@ -38,7 +38,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   setIcon?: (icon: string | undefined) => void
 }>
 
-export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
+export type DaoProposalProps = DaoPageWrapperProps & {
   proposalInfo: CommonProposalInfo | null
 }
 
@@ -57,8 +57,8 @@ export const DaoPageWrapper = ({
   const { setRootCommandContextMaker } = useAppContext()
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
-  // Update walletChainId to whatever the current DAO is so the right address
-  // appears in the sidebar.
+  // Update walletChainId to whatever the current DAO is to ensure we connect
+  // correctly.
   const currentChainId = serializedInfo?.chainId
   useEffect(() => {
     if (currentChainId && currentChainId !== walletChainId) {
@@ -68,7 +68,9 @@ export const DaoPageWrapper = ({
 
   // Set theme's accentColor.
   useEffect(() => {
-    if (!isReady || isFallback) return
+    if (!isReady || isFallback) {
+      return
+    }
 
     // Only set the accent color if we have enough contrast.
     if (accentColor) {
@@ -100,16 +102,20 @@ export const DaoPageWrapper = ({
       : undefined
   )
 
-  const info: DaoInfo | undefined = serializedInfo && {
-    ...serializedInfo,
-    accounts:
-      accounts.loading || accounts.errored
-        ? serializedInfo.accounts
-        : accounts.data,
-    created: serializedInfo.created
-      ? new Date(serializedInfo.created)
-      : undefined,
-  }
+  const info = useMemo(
+    (): DaoInfo | undefined =>
+      serializedInfo && {
+        ...serializedInfo,
+        accounts:
+          accounts.loading || accounts.errored
+            ? serializedInfo.accounts
+            : accounts.data,
+        created: serializedInfo.created
+          ? new Date(serializedInfo.created)
+          : undefined,
+      },
+    [serializedInfo, accounts]
+  )
 
   // Load DAO info once static props are loaded so it's more up to date.
   const loadingDaoInfo = useCachedLoadingWithError(
@@ -148,6 +154,7 @@ export const DaoPageWrapper = ({
           dao: {
             chainId: loadedInfo.chainId,
             coreAddress: loadedInfo.coreAddress,
+            coreVersion: loadedInfo.coreVersion,
             name: loadedInfo.name,
             imageUrl:
               loadedInfo.imageUrl || getFallbackImage(loadedInfo.coreAddress),
@@ -186,7 +193,7 @@ export const DaoPageWrapper = ({
       <SuspenseLoader fallback={<PageLoader />}>
         {loadedInfo ? (
           <DaoProviders info={loadedInfo}>
-            {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
+            {/* Suspend children to prevent unmounting and remounting the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}
             </SuspenseLoader>

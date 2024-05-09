@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { SidebarWallet } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 import { DappNavigationProps } from '@dao-dao/types'
@@ -27,10 +26,6 @@ const Template: ComponentStory<typeof DappNavigation> = (args) => {
 // stories. Ensure this has all props.
 export const DefaultArgs: DappNavigationProps = {
   walletConnected: true,
-  inboxCount: {
-    loading: false,
-    data: 5,
-  },
   setCommandModalVisible: () => alert('command!'),
   followingDaos: {
     loading: false,
@@ -155,7 +150,6 @@ export const DefaultArgs: DappNavigationProps = {
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
   LinkWrapper,
-  SidebarWallet,
 }
 
 export const Default = Template.bind({})
@@ -170,7 +164,6 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...DefaultArgs,
-  inboxCount: { loading: true },
   followingDaos: { loading: true },
 }
 Loading.parameters = Default.parameters

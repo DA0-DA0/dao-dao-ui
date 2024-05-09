@@ -37,9 +37,9 @@ import {
 } from 'recoil'
 
 import {
-  govProposalCreatedCardPropsAtom,
   govProposalSelector,
   latestProposalSaveAtom,
+  proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshGovProposalsAtom,
 } from '@dao-dao/state/recoil'
@@ -54,6 +54,7 @@ import {
   ProposalContentDisplay,
   Tooltip,
   useConfiguredChainContext,
+  useDaoNavHelpers,
   useHoldingKey,
 } from '@dao-dao/stateless'
 import {
@@ -78,7 +79,7 @@ import {
   formatDateTime,
   formatPercentOf100,
   formatTime,
-  getGovProposalPath,
+  getDisplayNameForChainId,
   getImageUrlForChainId,
   getRpcForChainId,
   getSignerOptions,
@@ -246,6 +247,7 @@ const InnerNewGovProposal = ({
     chain,
     chainWallet,
   } = useWallet()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const { context } = useActionOptions()
   if (context.type !== ActionContextType.Gov) {
@@ -261,8 +263,8 @@ const InnerNewGovProposal = ({
   const { address: walletAddress = '' } = useWallet()
   const { entity } = useEntity(walletAddress)
 
-  const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
-    useRecoilState(govProposalCreatedCardPropsAtom)
+  const [proposalCreatedCardProps, setProposalCreatedCardProps] =
+    useRecoilState(proposalCreatedCardPropsAtom)
 
   const setLatestProposalSave = useSetRecoilState(
     latestProposalSaveAtom(localStorageKey)
@@ -425,7 +427,7 @@ const InnerNewGovProposal = ({
                 : proposal.proposal.votingEndTime
 
             // Show modal.
-            setGovProposalCreatedCardProps({
+            setProposalCreatedCardProps({
               id: proposal.id.toString(),
               title: proposal.title,
               description: proposal.description,
@@ -452,9 +454,8 @@ const InnerNewGovProposal = ({
                   : []),
               ],
               dao: {
-                type: 'gov',
-                name: chainContext.chain.pretty_name,
-                coreAddressOrId: chainContext.config.name,
+                name: getDisplayNameForChainId(chainContext.chainId),
+                coreAddress: chainContext.config.name,
                 imageUrl: getImageUrlForChainId(chainContext.chainId),
               },
             })
@@ -467,7 +468,7 @@ const InnerNewGovProposal = ({
 
             // Navigate to proposal (underneath the creation modal).
             router.push(
-              getGovProposalPath(
+              getDaoProposalPath(
                 chainContext.config.name,
                 proposalId.toString()
               )
@@ -491,9 +492,8 @@ const InnerNewGovProposal = ({
         getOfflineSignerDirect,
         holdingAltForDirectSign,
         chainContext.chainId,
-        chainContext.chain.pretty_name,
         chainContext.config.name,
-        setGovProposalCreatedCardProps,
+        setProposalCreatedCardProps,
         context.params.threshold,
         context.params.quorum,
         refreshGovProposals,
@@ -513,7 +513,7 @@ const InnerNewGovProposal = ({
   copyDraftLinkRef.current = () => {
     navigator.clipboard.writeText(
       SITE_URL +
-        getGovProposalPath(chainContext.config.name, 'create', {
+        getDaoProposalPath(chainContext.config.name, 'create', {
           prefill: encodeJsonToBase64(proposalData),
         })
     )
@@ -525,13 +525,13 @@ const InnerNewGovProposal = ({
   saveLatestProposalRef.current = () =>
     setLatestProposalSave(
       // If created proposal, clear latest proposal save.
-      govProposalCreatedCardProps ? {} : cloneDeep(proposalData)
+      proposalCreatedCardProps ? {} : cloneDeep(proposalData)
     )
 
   // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
     // If created proposal, don't save.
-    if (govProposalCreatedCardProps) {
+    if (proposalCreatedCardProps) {
       return
     }
 
@@ -546,7 +546,7 @@ const InnerNewGovProposal = ({
       saveLatestProposalRef.current()
       saveQueuedRef.current = false
     }, 1000)
-  }, [govProposalCreatedCardProps, setLatestProposalSave, proposalData])
+  }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
 
   const [drafts, setDrafts] = useRecoilState(
     proposalDraftsAtom(localStorageKey)
@@ -671,7 +671,7 @@ const InnerNewGovProposal = ({
           </SuspenseLoader>
         </div>
 
-        <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
+        <div className="border-border-secondary flex flex-col gap-2 border-y py-6">
           <div className="flex flex-row items-center justify-between gap-6">
             <p className="title-text text-text-body">
               {t('info.reviewYourProposal')}
@@ -720,19 +720,19 @@ const InnerNewGovProposal = ({
           </div>
 
           {showSubmitErrorNote && (
-            <p className="secondary-text self-end text-right text-text-interactive-error">
+            <p className="secondary-text text-text-interactive-error self-end text-right">
               {t('error.correctErrorsAbove')}
             </p>
           )}
 
           {!!submitError && (
-            <p className="secondary-text self-end text-right text-text-interactive-error">
+            <p className="secondary-text text-text-interactive-error self-end text-right">
               {submitError}
             </p>
           )}
 
           {showPreview && (
-            <div className="mt-4 rounded-md border border-border-secondary p-6">
+            <div className="border-border-secondary mt-4 rounded-md border p-6">
               <ProposalContentDisplay
                 EntityDisplay={EntityDisplay}
                 createdAt={new Date()}

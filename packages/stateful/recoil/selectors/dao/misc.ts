@@ -10,12 +10,14 @@ import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
   isDaoSelector,
+  moduleAddressSelector,
   queryContractIndexerSelector,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
   reverseLookupPolytoneProxySelector,
 } from '@dao-dao/state'
 import {
+  ChainId,
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
@@ -27,6 +29,7 @@ import {
   IndexerDaoWithVetoableProposals,
   ProposalModule,
   StatefulProposalLineProps,
+  SupportedFeatureMap,
   WithChainId,
 } from '@dao-dao/types'
 import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
@@ -35,14 +38,18 @@ import {
   CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
+  NEUTRON_GOVERNANCE_DAO,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
+  getChainGovernanceDaoDescription,
+  getConfiguredChainConfig,
   getDaoProposalPath,
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
-  getSupportedChainConfig,
   getSupportedFeatures,
+  isConfiguredChainName,
   isFeatureSupportedByVersion,
+  mustGetConfiguredChainConfig,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -168,6 +175,56 @@ export const daoInfoSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
+      // Native chain governance.
+      if (isConfiguredChainName(chainId, coreAddress)) {
+        // Neutron uses an actual DAO so load it instead.
+        if (chainId === ChainId.NeutronMainnet) {
+          coreAddress = NEUTRON_GOVERNANCE_DAO
+        } else {
+          const govModuleAddress = get(
+            moduleAddressSelector({
+              chainId,
+              name: 'gov',
+            })
+          )
+          const accounts = get(
+            accountsSelector({
+              chainId,
+              address: govModuleAddress,
+            })
+          )
+
+          return {
+            chainId,
+            coreAddress: mustGetConfiguredChainConfig(chainId).name,
+            coreVersion: ContractVersion.Gov,
+            supportedFeatures: Object.values(Feature).reduce(
+              (acc, feature) => ({
+                ...acc,
+                [feature]: false,
+              }),
+              {} as SupportedFeatureMap
+            ),
+            votingModuleAddress: '',
+            votingModuleContractName: '',
+            proposalModules: [],
+            name: getDisplayNameForChainId(chainId),
+            description: getChainGovernanceDaoDescription(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            created: undefined,
+            isActive: true,
+            activeThreshold: null,
+            items: {},
+            polytoneProxies: {},
+            accounts,
+            parentDao: null,
+            admin: '',
+          }
+        }
+      }
+
+      // Otherwise get DAO info from contract.
+
       const dumpState = get(
         DaoCoreV2Selectors.dumpStateSelector({
           contractAddress: coreAddress,
@@ -396,7 +453,7 @@ export const daoParentInfoSelector = selectorFamily<
           })
         )
       ) {
-        const chainConfig = getSupportedChainConfig(chainId)
+        const chainConfig = getConfiguredChainConfig(chainId)
         return (
           chainConfig && {
             chainId,

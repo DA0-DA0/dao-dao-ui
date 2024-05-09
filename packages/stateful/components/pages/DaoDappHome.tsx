@@ -1,83 +1,58 @@
-import { Add, ArrowOutwardRounded } from '@mui/icons-material'
+import { Add } from '@mui/icons-material'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   DaoDappTabbedHome,
   FollowingToggle,
-  useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
-  ContractVersion,
+  DaoDappTabbedHomeProps,
   DaoTabId,
+  DaoTabWithComponent,
   Feature,
   FollowState,
+  LoadingData,
 } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
-import { useDaoTabs, useFollowingDaos, useMembership } from '../../hooks'
+import {
+  useDaoTabs,
+  useFollowingDaos,
+  useGovDaoTabs,
+  useMembership,
+} from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
-import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoDappHome = () => {
+export type InnerDaoDappHomeProps = Pick<
+  DaoDappTabbedHomeProps,
+  'parentProposalRecognizeSubDaoHref'
+> & {
+  loadingTabs: LoadingData<DaoTabWithComponent[]>
+}
+
+export const InnerDaoDappHome = ({
+  loadingTabs,
+  ...props
+}: InnerDaoDappHomeProps) => {
   const { t } = useTranslation()
   const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-  const { config: chainConfig } = useConfiguredChainContext()
 
   const daoInfo = useDaoInfoContext()
 
-  // If no parent, fallback to current DAO since it's already loaded from the
-  // above hook. We won't use this value unless there's a parent. It's redundant
-  // but has no effect.
-  const { isMember: isMemberOfParent = false } = useMembership(
-    daoInfo.parentDao ?? daoInfo
-  )
-
-  const parentProposalRecognizeSubDaoHref =
-    // Only show this prefill proposal link if the wallet is a member of the
-    // parent.
-    isMemberOfParent &&
-    // Only v2+ DAOs support SubDAOs.
-    daoInfo.supportedFeatures[Feature.SubDaos] &&
-    // Only show if the parent has not already registered this as a SubDAO.
-    daoInfo.parentDao &&
-    !daoInfo.parentDao.registeredSubDao
-      ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
-          prefill: getDaoProposalSinglePrefill({
-            title: t('title.recognizeSubDao', {
-              name: daoInfo.name,
-            }),
-            description: t('info.recognizeSubDaoDescription', {
-              name: daoInfo.name,
-            }),
-            actions: [
-              {
-                actionKey: ActionKey.ManageSubDaos,
-                data: {
-                  toAdd: [
-                    {
-                      addr: daoInfo.coreAddress,
-                    },
-                  ],
-                  toRemove: [],
-                },
-              },
-            ],
-          }),
-        })
-      : undefined
-
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos(daoInfo.chainId)
-  const following = isFollowing(daoInfo.coreAddress)
+    useFollowingDaos()
+  const following = isFollowing({
+    chainId: daoInfo.chainId,
+    coreAddress: daoInfo.coreAddress,
+  })
 
-  const loadingTabs = useDaoTabs()
   // Just a type-check because some tabs are loaded at the beginning.
   const tabs = loadingTabs.loading ? undefined : loadingTabs.data
   // Default to proposals tab for type-check, but should never happen as some
@@ -123,9 +98,10 @@ export const DaoDappHome = () => {
   const follow: FollowState = {
     following,
     onFollow: () =>
-      following
-        ? setUnfollowing(daoInfo.coreAddress)
-        : setFollowing(daoInfo.coreAddress),
+      (following ? setUnfollowing : setFollowing)({
+        chainId: daoInfo.chainId,
+        coreAddress: daoInfo.coreAddress,
+      }),
     updatingFollowing,
   }
 
@@ -137,50 +113,101 @@ export const DaoDappHome = () => {
           current: daoInfo.name,
         }}
         rightNode={
-          daoInfo.coreVersion === ContractVersion.Gov ? (
-            chainConfig?.explorerUrlTemplates?.gov ? (
-              // Go to governance page of chain explorer.
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={chainConfig.explorerUrlTemplates.gov}
-                variant="ghost"
-              />
-            ) : undefined
-          ) : (
-            <>
-              {/* Show propose button on desktop. */}
-              <ButtonLink
-                className="hidden md:block"
-                contentContainerClassName="text-text-body text-base !gap-1.5"
-                href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
-                variant="ghost"
-              >
-                <Add className="!h-5 !w-5 !text-icon-primary" />
-                {t('button.propose')}
-              </ButtonLink>
+          <>
+            {/* Show propose button on desktop. */}
+            <ButtonLink
+              className="hidden md:block"
+              contentContainerClassName="text-text-body text-base !gap-1.5"
+              href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
+              variant="ghost"
+            >
+              <Add className="!h-5 !w-5 !text-icon-primary" />
+              {t('button.propose')}
+            </ButtonLink>
 
-              {/* Show follow button on mobile. */}
-              <FollowingToggle
-                {...follow}
-                className="md:hidden"
-                contentContainerClassName="text-text-body text-sm"
-                variant="ghost"
-              />
-            </>
-          )
+            {/* Show follow button on mobile. */}
+            <FollowingToggle
+              {...follow}
+              className="md:hidden"
+              contentContainerClassName="text-text-body text-sm"
+              variant="ghost"
+            />
+          </>
         }
       />
 
       <DaoDappTabbedHome
+        {...props}
         ButtonLink={ButtonLink}
         LinkWrapper={LinkWrapper}
         SuspenseLoader={SuspenseLoader}
         follow={follow}
         onSelectTabId={onSelectTabId}
-        parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
         selectedTabId={tabId}
         tabs={tabs || []}
       />
     </>
   )
+}
+
+export const DaoDappHome = () => {
+  const { t } = useTranslation()
+  const { getDaoProposalPath } = useDaoNavHelpers()
+
+  const daoInfo = useDaoInfoContext()
+
+  // If no parent, fallback to current DAO since it's already loaded from the
+  // above hook. We won't use this value unless there's a parent. It's redundant
+  // but has no effect.
+  const { isMember: isMemberOfParent = false } = useMembership(
+    daoInfo.parentDao ?? daoInfo
+  )
+
+  const parentProposalRecognizeSubDaoHref =
+    // Only show this prefill proposal link if the wallet is a member of the
+    // parent.
+    isMemberOfParent &&
+    // Only v2+ DAOs support SubDAOs.
+    daoInfo.supportedFeatures[Feature.SubDaos] &&
+    // Only show if the parent has not already registered this as a SubDAO.
+    daoInfo.parentDao &&
+    !daoInfo.parentDao.registeredSubDao
+      ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
+          prefill: getDaoProposalSinglePrefill({
+            title: t('title.recognizeSubDao', {
+              name: daoInfo.name,
+            }),
+            description: t('info.recognizeSubDaoDescription', {
+              name: daoInfo.name,
+            }),
+            actions: [
+              {
+                actionKey: ActionKey.ManageSubDaos,
+                data: {
+                  toAdd: [
+                    {
+                      addr: daoInfo.coreAddress,
+                    },
+                  ],
+                  toRemove: [],
+                },
+              },
+            ],
+          }),
+        })
+      : undefined
+
+  const loadingTabs = useDaoTabs()
+
+  return (
+    <InnerDaoDappHome
+      loadingTabs={loadingTabs}
+      parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
+    />
+  )
+}
+
+export const ChainGovernanceDappHome = () => {
+  const loadingTabs = useGovDaoTabs()
+  return <InnerDaoDappHome loadingTabs={loadingTabs} />
 }

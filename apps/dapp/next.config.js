@@ -83,8 +83,19 @@ const config = {
       permanent: false,
     },
     {
-      source: '/me/tx',
-      destination: '/me/actions',
+      source: '/me/:slug*',
+      destination: '/:slug*',
+      permanent: false,
+    },
+    {
+      source: '/tx',
+      destination: '/actions',
+      permanent: false,
+    },
+    // Redirect all gov subpages to the dao subpage, but leave /gov alone.
+    {
+      source: '/gov/:chain/:slug*',
+      destination: '/dao/:chain/:slug*',
       permanent: false,
     },
   ],

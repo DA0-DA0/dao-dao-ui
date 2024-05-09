@@ -1,5 +1,4 @@
 export * from './GovernanceProposal'
-export * from './GovProposalCreatedModal'
 export * from './GovProposalStatus'
 export * from './GovProposalVoteDisplay'
 export * from './GovProposalWalletVote'

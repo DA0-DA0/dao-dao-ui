@@ -7,7 +7,7 @@ import {
   Loader,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { DaoInfo } from '@dao-dao/types'
+import { ContractVersion, DaoInfo } from '@dao-dao/types'
 
 import { DaoActionsProvider } from '../../actions'
 import { daoInfoSelector } from '../../recoil'
@@ -19,15 +19,12 @@ export type DaoProvidersProps = {
   children: ReactNode
 }
 
-export const DaoProviders = ({ info, children }: DaoProvidersProps) => (
-  // Add a unique key here to tell React to re-render everything when the
-  // `coreAddress` is changed, since for some insane reason, Next.js does not
-  // reset state when navigating between dynamic rotues. Even though the `info`
-  // value passed below changes, somehow no re-render occurs... unless the `key`
-  // prop is unique. See the issue below for more people compaining about this
-  // to no avail. https://github.com/vercel/next.js/issues/9992
-  <ChainProvider chainId={info.chainId}>
-    <DaoInfoContext.Provider key={info.coreAddress} value={info}>
+export const DaoProviders = ({ info, children }: DaoProvidersProps) => {
+  // Don't wrap chain governance in voting module or DAO actions provider.
+  const inner =
+    info.coreVersion === ContractVersion.Gov ? (
+      children
+    ) : (
       <VotingModuleAdapterProvider
         contractName={info.votingModuleContractName}
         options={{
@@ -38,9 +35,22 @@ export const DaoProviders = ({ info, children }: DaoProvidersProps) => (
       >
         <DaoActionsProvider>{children}</DaoActionsProvider>
       </VotingModuleAdapterProvider>
-    </DaoInfoContext.Provider>
-  </ChainProvider>
-)
+    )
+
+  return (
+    // Add a unique key here to tell React to re-render everything when the
+    // `coreAddress` is changed, since for some insane reason, Next.js does not
+    // reset state when navigating between dynamic rotues. Even though the
+    // `info` value passed below changes, somehow no re-render occurs... unless
+    // the `key` prop is unique. See the issue below for more people compaining
+    // about this to no avail. https://github.com/vercel/next.js/issues/9992
+    <ChainProvider chainId={info.chainId}>
+      <DaoInfoContext.Provider key={info.coreAddress} value={info}>
+        {inner}
+      </DaoInfoContext.Provider>
+    </ChainProvider>
+  )
+}
 
 export type DaoProvidersWithoutInfoProps = {
   chainId: string

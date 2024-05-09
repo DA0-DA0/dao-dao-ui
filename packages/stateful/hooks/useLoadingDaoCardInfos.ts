@@ -2,19 +2,14 @@ import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { DaoCardInfo, LoadingData } from '@dao-dao/types'
+import { DaoCardInfo, DaoSource, LoadingData } from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
 import { useProfile } from './useProfile'
 
 export const useLoadingDaoCardInfos = (
-  daos: LoadingData<
-    {
-      chainId: string
-      coreAddress: string
-    }[]
-  >,
+  daos: LoadingData<DaoSource[]>,
   alphabetize = false
 ): LoadingData<DaoCardInfo[]> => {
   // If `coreAddresses` is undefined, we're still loading DAOs.
@@ -80,23 +75,17 @@ export const useLoadingFeaturedDaoCardInfos = (
 }
 
 export const useLoadingFollowingDaoCardInfos = (
-  // If passed, will only load DAOs from this chain. Otherwise, will load
-  // from all chains.
+  // If passed, will only load DAOs from this chain. Otherwise, will load from
+  // all chains.
   chainId?: string
 ): LoadingData<DaoCardInfo[]> => {
-  const { chains } = useProfile({
-    onlySupported: true,
-  })
-  const filteredChains = chains.loading
-    ? []
-    : chains.data.filter((chain) => !chainId || chainId === chain.chainId)
+  const { uniquePublicKeys } = useProfile()
 
   const followingDaosLoading = useRecoilValueLoadable(
-    !chains.loading
+    !uniquePublicKeys.loading
       ? waitForAll(
-          filteredChains.map(({ chainId, publicKey }) =>
+          uniquePublicKeys.data.map(({ publicKey }) =>
             followingDaosSelector({
-              chainId,
               walletPublicKey: publicKey,
             })
           )
@@ -111,15 +100,9 @@ export const useLoadingFollowingDaoCardInfos = (
       ? { loading: false, data: [] }
       : {
           loading: false,
-          data: chains.loading
-            ? []
-            : filteredChains.flatMap(
-                ({ chainId }, index) =>
-                  followingDaosLoading.contents[index]?.map((coreAddress) => ({
-                    chainId,
-                    coreAddress,
-                  })) || []
-              ),
+          data: followingDaosLoading.contents.flatMap((following) =>
+            following.filter((f) => !chainId || f.chainId === chainId)
+          ),
         },
     // Alphabetize.
     true

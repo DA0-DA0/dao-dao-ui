@@ -7,8 +7,6 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Inbox } from '@dao-dao/stateful'
 import { InboxPageSlug } from '@dao-dao/types'
 
-// This is the dynamic Me page that allows specifying a tab. It can be accessed
-// via `/me/[tab]`.
 export default Inbox
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({

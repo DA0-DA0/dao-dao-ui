@@ -5,10 +5,6 @@ import { LazyDaoCardProps } from './DaoCard'
 
 export type WalletDaosProps = {
   /**
-   * All chains the DAOs are on.
-   */
-  chainIds: LoadingDataWithError<string[]>
-  /**
    * All DAOs.
    */
   daos: LoadingDataWithError<LazyDaoCardProps[]>
@@ -17,17 +13,20 @@ export type WalletDaosProps = {
    */
   LazyDaoCard: ComponentType<LazyDaoCardProps>
   /**
-   * Chain selection callback. This may be used to attempt to connect to a chain
-   * if not already connected.
+   * Optionally prompt to search for DAOs if nothing is found.
    */
-  onChainSelect?: (chainId: string) => void
+  openSearch?: () => void
+  /**
+   * Whether or not `daos` includes DAOs the profile follows. If so, additional
+   * filtering options will be available.
+   */
+  includesFollowing?: boolean
 }
 
-export type StatefulWalletDaosProps = Pick<WalletDaosProps, 'onChainSelect'> & {
-  chainWallets: LoadingDataWithError<
-    {
-      chainId: string
-      address: string
-    }[]
-  >
+export type StatefulWalletDaosProps = {
+  /**
+   * Optionally specify a wallet to fetch DAOs for. If not specified, will load
+   * from current wallet and add following DAOs.
+   */
+  address?: string
 }

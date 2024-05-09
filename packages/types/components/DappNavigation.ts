@@ -10,10 +10,6 @@ export type DappNavigationProps = {
    */
   setCommandModalVisible: () => void
   /**
-   * The number of notifications in the inbox.
-   */
-  inboxCount: LoadingData<number>
-  /**
    * The DAOs the wallet is following.
    */
   followingDaos: LoadingData<DaoDropdownInfo[]>
@@ -37,8 +33,4 @@ export type DappNavigationProps = {
    * The LinkWrapper stateful component.
    */
   LinkWrapper: ComponentType<LinkWrapperProps>
-  /**
-   * The SidebarWallet stateful component.
-   */
-  SidebarWallet: ComponentType
 }

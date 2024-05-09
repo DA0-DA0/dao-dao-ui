@@ -25,6 +25,7 @@ import {
 import { nftCardInfoSelector } from './nft'
 
 export const EMPTY_PFPK_PROFILE: PfpkProfile = {
+  uuid: null,
   // Disallows editing if we don't have correct nonce from server.
   nonce: -1,
   name: null,
@@ -203,6 +204,7 @@ export const profileSelector = selectorFamily<
 
       const pfpkProfile = get(pfpkProfileSelector(address))
       if (pfpkProfile) {
+        profile.uuid = pfpkProfile.uuid
         profile.nonce = pfpkProfile.nonce
         profile.name = pfpkProfile.name
         profile.nft = pfpkProfile.nft

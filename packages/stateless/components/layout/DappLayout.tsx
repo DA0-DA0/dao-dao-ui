@@ -1,11 +1,8 @@
 import {
-  HomeOutlined,
   HomeRounded,
   Notifications,
   SearchOutlined,
   Sensors,
-  WidgetsOutlined,
-  WidgetsRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
@@ -15,10 +12,8 @@ import {
   PAGE_PADDING_BOTTOM_CLASSES,
   PAGE_PADDING_HORIZONTAL_CLASSES,
   PAGE_PADDING_TOP_CLASSES,
-  getGovPath,
 } from '@dao-dao/utils'
 
-import { useConfiguredChainContext } from '../../hooks'
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { useAppContext } from './AppContext'
@@ -28,23 +23,28 @@ import { IDockItem } from './DockItem'
 
 export const DappLayout = ({
   navigationProps,
+  inboxCount,
   connect,
   DockWallet,
   ButtonLink,
   children,
 }: DappLayoutProps) => {
-  const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
+  const {
+    router: { pathname, asPath },
+    getDaoPath,
+    getDaoFromPath,
+  } = useDaoNavHelpers()
   const { responsiveNavigation, setPageHeaderRef } = useAppContext()
-  const { config: chainConfig } = useConfiguredChainContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
   // On DAO or non-DAO route change, close responsive bars and scroll to top.
   // When staying on the same DAO page, likely switching between tabs, so no
-  // need to reset scroll to the top.
-  const scrollPathDelta = router.asPath.startsWith(getDaoPath(''))
+  // need to reset scroll to the top. DAO tab scroll is handled in the DAO home
+  // page component.
+  const scrollPathDelta = asPath.startsWith(getDaoPath(''))
     ? getDaoFromPath()
-    : router.asPath
+    : pathname
   useEffect(() => {
     responsiveNavigation.enabled && responsiveNavigation.toggle()
 
@@ -60,6 +60,53 @@ export const DappLayout = ({
     // Only toggle on route change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPathDelta])
+
+  const searchDockItem: IDockItem = {
+    key: 'search',
+    onClick: navigationProps.setCommandModalVisible,
+    labelI18nKey: 'title.search',
+    IconUnselected: SearchOutlined,
+    IconSelected: SearchOutlined,
+  }
+
+  const homeDockItem: IDockItem = {
+    key: 'home',
+    href: '/',
+    pathnames: ['/[[...tab]]'],
+    labelI18nKey: 'title.home',
+    IconUnselected: HomeRounded,
+    IconSelected: HomeRounded,
+    compact: navigationProps.walletConnected,
+  }
+
+  const notificationsDockItem: IDockItem = {
+    key: 'notifications',
+    href: '/notifications',
+    pathnames: ['/notifications/[[...slug]]'],
+    labelI18nKey: 'title.notifications',
+    IconUnselected: Notifications,
+    IconSelected: Notifications,
+    badge: !inboxCount.loading && inboxCount.data > 0,
+  }
+
+  const profileDockItem: IDockItem = {
+    key: 'profile',
+    href: '/profile',
+    pathnames: '/profile',
+    labelI18nKey: 'title.profile',
+    IconUnselected: DockWallet,
+    IconSelected: DockWallet,
+    compact: navigationProps.walletConnected,
+  }
+
+  const logInDockItem: IDockItem = {
+    key: 'login',
+    onClick: connect,
+    labelI18nKey: 'button.logIn',
+    IconUnselected: Sensors,
+    IconSelected: Sensors,
+    brand: true,
+  }
 
   return (
     <div className="relative z-[1] mx-auto flex h-full w-full max-w-7xl flex-row items-stretch overflow-hidden pt-safe">
@@ -94,62 +141,11 @@ export const DappLayout = ({
         <DappDock
           ButtonLink={ButtonLink}
           items={[
-            {
-              key: 'home',
-              href: '/',
-              pathnames: ['/', '/[chain]'],
-              labelI18nKey: 'title.home',
-              IconUnselected: HomeOutlined,
-              IconSelected: HomeRounded,
-            },
-            {
-              key: 'search',
-              onClick: navigationProps.setCommandModalVisible,
-              labelI18nKey: 'title.search',
-              IconUnselected: SearchOutlined,
-              IconSelected: SearchOutlined,
-            },
-            {
-              key: 'chains',
-              href: getGovPath(chainConfig.name),
-              pathnames: '/gov/[chain]/[[...slug]]',
-              labelI18nKey: 'title.chains',
-              IconUnselected: WidgetsOutlined,
-              IconSelected: WidgetsRounded,
-            },
+            homeDockItem,
+            searchDockItem,
             ...(navigationProps.walletConnected
-              ? ([
-                  {
-                    key: 'notifications',
-                    href: '/notifications',
-                    pathnames: ['/notifications/[[...slug]]'],
-                    labelI18nKey: 'title.notifications',
-                    IconUnselected: Notifications,
-                    IconSelected: Notifications,
-                    badge:
-                      !navigationProps.inboxCount.loading &&
-                      navigationProps.inboxCount.data > 0,
-                  },
-                  {
-                    key: 'profile',
-                    href: '/me',
-                    pathnames: ['/me/[[...tab]]'],
-                    labelI18nKey: 'title.profile',
-                    IconUnselected: DockWallet,
-                    IconSelected: DockWallet,
-                    compact: true,
-                  },
-                ] as IDockItem[])
-              : ([
-                  {
-                    key: 'login',
-                    onClick: connect,
-                    labelI18nKey: 'button.logIn',
-                    IconUnselected: Sensors,
-                    IconSelected: Sensors,
-                    brand: true,
-                  },
-                ] as IDockItem[])),
+              ? [notificationsDockItem, profileDockItem]
+              : [logInDockItem]),
           ]}
         />
       </main>

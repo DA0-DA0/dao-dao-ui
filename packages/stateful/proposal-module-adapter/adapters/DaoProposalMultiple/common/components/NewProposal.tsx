@@ -195,9 +195,8 @@ export const NewProposal = ({
                       : []),
                   ],
                   dao: {
-                    type: 'dao',
                     name: daoName,
-                    coreAddressOrId: coreAddress,
+                    coreAddress,
                     imageUrl: daoImageUrl,
                   },
                 }
@@ -207,9 +206,8 @@ export const NewProposal = ({
                   description: newProposalData.description,
                   info: [],
                   dao: {
-                    type: 'dao',
                     name: daoName,
-                    coreAddressOrId: coreAddress,
+                    coreAddress,
                     imageUrl: daoImageUrl,
                   },
                 }

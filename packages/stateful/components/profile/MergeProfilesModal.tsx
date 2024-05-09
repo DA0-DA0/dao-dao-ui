@@ -98,18 +98,18 @@ const PerformMerge = ({ addingToOneProfile, onClose }: PerformMergeProps) => {
 
   const {
     addChains,
-    merge: { otherProfiles },
+    merge: { profilesToMerge },
   } = useManageProfile()
 
   const refreshProfiles = useRefreshProfile(
-    otherProfiles.map(({ address }) => address),
+    profilesToMerge.map(({ address }) => address),
     {
       loading: false,
-      data: otherProfiles.map(({ profile }) => profile),
+      data: profilesToMerge.map(({ profile }) => profile),
     }
   )
 
-  const chainsToAdd = otherProfiles.map(({ chainId }) => chainId)
+  const chainsToAdd = profilesToMerge.map(({ chainId }) => chainId)
 
   return (
     <Button

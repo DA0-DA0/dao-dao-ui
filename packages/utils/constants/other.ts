@@ -15,11 +15,11 @@ export const ACCOUNT_PAGE_DESCRIPTION =
 export const NOTIFICATIONS_PAGE_TITLE = 'Notifications'
 export const NOTIFICATIONS_PAGE_DESCRIPTION =
   'View notifications in your followed DAOs.'
-export const PROFILE_PAGE_TITLE = 'Profile'
-export const PROFILE_PAGE_DESCRIPTION =
-  'View your tokens, NFTs, and DAOs, and perform actions from your wallet.'
 export const STATUS_PAGE_TITLE = 'Status'
 export const STATUS_PAGE_DESCRIPTION = "Check the status of DAO DAO's services."
+export const CHAIN_GOVERNANCE_TITLE = 'Chain Governance'
+export const CHAIN_GOVERNANCE_DESCRIPTION =
+  'View and vote on proposals in chain governance.'
 
 // 3 days
 export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
@@ -39,7 +39,12 @@ export const MAX_NUM_PROPOSAL_CHOICES = 20
 // Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 
-// Following DAOs
+/**
+ * Prefix for the following DAOs storage in kvpk. A DAO is being followed if
+ * `following:CHAIN_ID:KEY` is set, where KEY is a DAO's core address or the
+ * name of a chain, which represents following the chain's native governance
+ * (x/gov module).
+ */
 export const FOLLOWING_DAOS_PREFIX = 'following:'
 
 // The key for the item in the DAO core contract that contains the payroll

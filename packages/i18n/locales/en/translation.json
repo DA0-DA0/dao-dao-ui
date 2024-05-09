@@ -863,9 +863,9 @@
     "activeThresholdDescription": "The amount of voting power that needs to be staked in order for the DAO to become active and thus allow proposals to be created.",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
-    "addToProfileExplanation": "Add the current wallet to your profile shown below.",
+    "addToProfileExplanation": "Add the current chain to your profile shown below.",
     "addWalletToProfile": "Add this wallet to your profile.",
-    "addWalletToProfileToEdit": "You cannot edit your profile until you add this wallet. Click to add it.",
+    "addWalletToProfileToEdit": "You cannot edit your profile until you add the chain your wallet is currently connected to. Click to add it.",
     "addedToDaoFollowPrompt": "You were added as a member to this DAO. Follow it to receive updates.",
     "advancedVotingConfigWarning": "These are advanced features. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "allChains": "All chains",
@@ -1396,6 +1396,7 @@
     "youAreMember": "You are a member",
     "your": "Your",
     "yourBalance": "Your balance",
+    "yourDaosDescription": "Find the DAOs you follow or are a member of below.",
     "yourVaultVotingPower": "Your voting power",
     "yourVaultVotingPowerTooltip": "The voting power within this voting vault owned by you."
   },
@@ -1463,7 +1464,10 @@
     "proposalClosed": "Proposal closed.",
     "proposalCreatedCompleteCompensationCycle": "Proposal published. Complete the compensation cycle by saving the proposal ID.",
     "proposalExecuted": "Executed. Updating data and refreshing page...",
+    "proposalOpenForVoting": "Proposal is open for voting.",
     "proposalOverruled": "Proposal overruled.",
+    "proposalPassed": "Proposal passed.",
+    "proposalPassedButExecutionFailed": "Proposal passed but execution failed.",
     "proposalRejected": "Proposal rejected.",
     "proposalSimulation": "Proposal simulated successfully. If executed right now, it would not fail.",
     "proposalVetoed": "Proposal vetoed.",
@@ -1514,6 +1518,7 @@
     "canceled": "Canceled",
     "casting": "Casting",
     "chain": "Chain",
+    "chainGovernance": "Chain Governance",
     "chainModule": {
       "gov": "Governance Module"
     },
@@ -1879,6 +1884,7 @@
     "winningChoice": "Winning choice",
     "withdrawTokenSwap": "Withdraw Token Swap",
     "withdrawValidatorCommission": "Claim validator commission",
+    "yourDaos": "Your DAOs",
     "yourNotifiers": "Your notifiers",
     "yourSubmission": "Your submission"
   },

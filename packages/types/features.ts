@@ -4,6 +4,8 @@
 export enum ContractVersion {
   // Used when referring to gov module. Placeholder to force into DaoInfo shape.
   Gov = 'gov',
+  // Placeholder when failed to detect.
+  Unknown = 'unknown',
 
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v1.0.0
   V1 = '0.1.0',

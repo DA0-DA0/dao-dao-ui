@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
@@ -19,7 +19,10 @@ import {
   ActionContext,
   ActionContextType,
   ActionOptions,
+  ActionsProviderProps,
+  GovActionsProviderProps,
   IActionsContext,
+  WalletActionsProviderProps,
 } from '@dao-dao/types'
 
 import { useProfile } from '../../hooks'
@@ -32,22 +35,6 @@ import {
   makeActionCategoriesWithLabel,
 } from '../core'
 import { ActionsContext } from './context'
-
-export type ActionsProviderProps = {
-  children: ReactNode | ReactNode[]
-}
-
-export type WalletActionsProviderProps = ActionsProviderProps & {
-  // If passed, will override the connected wallet address.
-  address?: string
-}
-
-export type GovActionsProviderProps = ActionsProviderProps & {
-  /**
-   * Optionally override loader node.
-   */
-  loader?: ReactNode
-}
 
 // Make sure this re-renders when the options change. You can do this by setting
 // a `key` on this component or one of its ancestors. See DaoPageWrapper.tsx

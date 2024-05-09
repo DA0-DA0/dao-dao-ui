@@ -19,14 +19,16 @@ export const ProfileWallet = () => {
   const accounts = useCachedLoadingWithError(
     chains.loading
       ? undefined
-      : waitForAny(
+      : chains.data.length > 0
+      ? waitForAny(
           chains.data.map(({ chainId, address }) =>
             accountsSelector({
               chainId,
               address,
             })
           )
-        ),
+        )
+      : constSelector([]),
     (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
   )
 

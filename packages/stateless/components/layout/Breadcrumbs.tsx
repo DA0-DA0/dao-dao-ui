@@ -3,14 +3,9 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { BreadcrumbsProps, ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { getGovPath } from '@dao-dao/utils'
+import { BreadcrumbsProps, DaoPageMode } from '@dao-dao/types'
 
-import {
-  useChainContextIfAvailable,
-  useDaoInfoContextIfAvailable,
-  useDaoNavHelpers,
-} from '../../hooks'
+import { useDaoInfoContextIfAvailable, useDaoNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'
@@ -27,7 +22,6 @@ export const Breadcrumbs = ({
   const { t } = useTranslation()
   // Allow using Breadcrumbs outside of DaoPageWrapper.
   const daoInfo = useDaoInfoContextIfAvailable()
-  const chainContext = useChainContextIfAvailable()
   const { mode } = useAppContext()
   const { getDaoPath } = useDaoNavHelpers()
 
@@ -37,16 +31,7 @@ export const Breadcrumbs = ({
     mode === DaoPageMode.Dapp
       ? home || !daoInfo
         ? [{ href: '/', label: t('title.home') }]
-        : // Special handling for chain governance breadcrumbs.
-        daoInfo.coreVersion === ContractVersion.Gov && chainContext?.base
-        ? [
-            {
-              href: getGovPath(chainContext.base.name, homeTab?.id),
-              label: chainContext.chain.pretty_name,
-            },
-          ]
-        : // Non-chain governance breadcrumbs. Normal DAOs.
-          [
+        : [
             {
               href:
                 // Link to home tab if available.

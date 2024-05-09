@@ -14,6 +14,11 @@ import { useWallet } from './useWallet'
 
 export type UseProfileOptions = {
   /**
+   * Optionally specify the chain to attempt to load from. Defaults to the
+   * current context.
+   */
+  chainId?: string
+  /**
    * The wallet address to get profile information for. Defaults to the
    * currently connected wallet.
    */
@@ -59,8 +64,18 @@ export type UseProfileReturn = {
    */
   uniquePublicKeys: LoadingData<
     {
+      /**
+       * The public key in hex.
+       */
       publicKey: string
+      /**
+       * The bech32 hash for the public key.
+       */
       bech32Hash: string
+      /**
+       * All chains that use this public key.
+       */
+      chains: ProfileChain[]
     }[]
   >
 }
@@ -70,6 +85,7 @@ export type UseProfileReturn = {
  * defaults to the currently connected wallet.
  */
 export const useProfile = ({
+  chainId,
   address,
   onlySupported = false,
 }: UseProfileOptions = {}): UseProfileReturn => {
@@ -80,6 +96,7 @@ export const useProfile = ({
     isWalletConnected,
     isWalletConnecting,
   } = useWallet({
+    chainId,
     loadAccount: true,
   })
 
@@ -145,6 +162,7 @@ export const useProfile = ({
     {
       publicKey: string
       bech32Hash: string
+      chains: ProfileChain[]
     }[]
   > = chains.loading
     ? {
@@ -160,6 +178,9 @@ export const useProfile = ({
         ).map(([publicKey, address]) => ({
           publicKey,
           bech32Hash: toBech32Hash(address),
+          chains: chains.data.flatMap((c) =>
+            c.publicKey === publicKey ? [c] : c
+          ),
         })),
       }
 

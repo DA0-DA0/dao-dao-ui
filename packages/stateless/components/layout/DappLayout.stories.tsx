@@ -22,6 +22,10 @@ export default {
 
 export const DefaultArgs: DappLayoutProps = {
   navigationProps: DappNavigatonStory.args as DappNavigationProps,
+  inboxCount: {
+    loading: false,
+    data: 5,
+  },
   connect: () => alert('connect'),
   DockWallet,
   ButtonLink,

@@ -5,18 +5,18 @@ import { useTranslation } from 'react-i18next'
 
 import { FeedState, LinkWrapperProps } from '@dao-dao/types'
 
-import { Collapsible, IconButton } from '../components'
-import { useDaoNavHelpers } from '../hooks'
+import { Collapsible, IconButton } from '..'
+import { useDaoNavHelpers } from '../../hooks'
 
-export type FeedProps = {
+export type ProfileFeedProps = {
   state: FeedState
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export const Feed = ({
+export const ProfileFeed = ({
   state: { loading, refreshing, refresh, daosWithItems },
   LinkWrapper,
-}: FeedProps) => {
+}: ProfileFeedProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
 
@@ -62,7 +62,7 @@ export const Feed = ({
         <div className="flex flex-col gap-4">
           {daosWithItems.map(({ dao, items }) => (
             <Collapsible
-              key={dao.coreAddress}
+              key={dao.chainId + ':' + dao.coreAddress}
               imageUrl={dao.imageUrl}
               label={dao.name}
               link={{

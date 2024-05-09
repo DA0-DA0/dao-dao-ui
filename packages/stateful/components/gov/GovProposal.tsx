@@ -1,23 +1,32 @@
 import { Dispatch, SetStateAction, useCallback, useRef } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
-import { govProposalSelector } from '@dao-dao/state/recoil'
+import {
+  govProposalSelector,
+  refreshGovProposalsAtom,
+} from '@dao-dao/state/recoil'
 import {
   PageLoader,
   Popup,
   Proposal,
   ProposalNotFound,
-  useCachedLoading,
+  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { DaoTabId, GovProposalWithDecodedContent } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
+import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
-import { useLoadingGovProposal } from '../../hooks'
+import {
+  useLoadingGovProposal,
+  useOnCurrentDaoWebSocketMessage,
+} from '../../hooks'
+import { DaoProposalProps } from '../dao/DaoPageWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { GovProposalPageWrapperProps } from './GovPageWrapper'
 import { GovProposalContentDisplay } from './GovProposalContentDisplay'
 import {
   GovProposalStatusAndInfo,
@@ -33,6 +42,7 @@ type InnerGovProposalProps = {
 
 const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   const proposalId = proposal.id.toString()
   const loadingProposal = useLoadingGovProposal(proposalId)
@@ -52,6 +62,37 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const setVoteOpenRef = useRef<
     (Dispatch<SetStateAction<boolean>> | null) | null
   >(null)
+
+  const setRefreshGovProposalsId = useSetRecoilState(
+    refreshGovProposalsAtom(chainId)
+  )
+  // Proposal status listener. Show alerts and refresh.
+  useOnCurrentDaoWebSocketMessage(
+    'proposal',
+    async ({ status, proposalId }) => {
+      // If the current proposal updated...
+      if (proposalId === proposal.id.toString()) {
+        setRefreshGovProposalsId((id) => id + 1)
+
+        // Manually revalidate static props.
+        fetch(
+          `/api/revalidate?d=${mustGetConfiguredChainConfig(
+            chainId
+          )}&p=${proposalId}`
+        )
+
+        if (status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
+          toast.success(t('success.proposalOpenForVoting'))
+        } else if (status === ProposalStatus.PROPOSAL_STATUS_PASSED) {
+          toast.success(t('success.proposalPassed'))
+        } else if (status === ProposalStatus.PROPOSAL_STATUS_FAILED) {
+          toast.success(t('success.proposalPassedButExecutionFailed'))
+        } else if (status === ProposalStatus.PROPOSAL_STATUS_REJECTED) {
+          toast.success(t('success.proposalRejected'))
+        }
+      }
+    }
+  )
 
   return (
     <>
@@ -115,24 +156,23 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   )
 }
 
-export const GovProposal = ({
-  proposalId,
-}: Pick<GovProposalPageWrapperProps, 'proposalId'>) => {
+export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
   const { chain_id: chainId } = useChain()
-  const proposalLoading = useCachedLoading(
-    govProposalSelector({
-      chainId,
-      proposalId: Number(proposalId),
-    }),
-    undefined
+  const proposalLoading = useCachedLoadingWithError(
+    proposalInfo
+      ? govProposalSelector({
+          chainId,
+          proposalId: Number(proposalInfo.id),
+        })
+      : undefined
   )
 
-  return proposalId ? (
+  return proposalInfo ? (
     <SuspenseLoader
       fallback={<PageLoader />}
-      forceFallback={proposalLoading.loading || !proposalLoading.data}
+      forceFallback={proposalLoading.loading || proposalLoading.errored}
     >
-      {!proposalLoading.loading && proposalLoading.data && (
+      {!proposalLoading.loading && !proposalLoading.errored && (
         <InnerGovProposal proposal={proposalLoading.data} />
       )}
     </SuspenseLoader>

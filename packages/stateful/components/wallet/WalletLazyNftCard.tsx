@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
-import { getMeTxPrefillPath, processError } from '@dao-dao/utils'
+import { getActionBuilderPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../actions'
 import { TransferNftData } from '../../actions/core/nfts/TransferNft/Component'
@@ -107,7 +107,7 @@ export const WalletLazyNftCard = (
                 Icon: SendRounded,
                 label: t('button.transfer'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath([
+                href: getActionBuilderPrefillPath([
                   {
                     actionKey: ActionKey.TransferNft,
                     data: {
@@ -123,7 +123,7 @@ export const WalletLazyNftCard = (
                 Icon: LocalFireDepartment,
                 label: t('button.burn'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath([
+                href: getActionBuilderPrefillPath([
                   {
                     actionKey: ActionKey.BurnNft,
                     data: {

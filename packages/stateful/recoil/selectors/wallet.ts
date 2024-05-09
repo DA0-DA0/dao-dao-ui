@@ -20,6 +20,8 @@ import {
 import {
   AccountTxSave,
   AccountType,
+  ContractVersion,
+  ContractVersionInfo,
   LazyDaoCardProps,
   LazyNftCardInfo,
   TokenCardInfo,
@@ -36,8 +38,11 @@ import {
   getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
+import { lazyDaoCardPropsSelector } from './dao'
+import { followingDaosSelector } from './dao/following'
 import {
   walletLazyNftCardInfosSelector,
   walletStakedLazyNftCardInfosSelector,
@@ -379,18 +384,18 @@ export const allWalletNftsSelector = selectorFamily<
     },
 })
 
-// Get DAOs this wallet is a member of.
-export const walletDaosSelector = selectorFamily<
+// Get lazy card info for DAOs this wallet is a member of.
+export const lazyWalletDaosSelector = selectorFamily<
   LazyDaoCardProps[],
-  // Can be any wallet address.
   WithChainId<{ address: string }>
 >({
-  key: 'walletDaos',
+  key: 'lazyWalletDaos',
   get:
     ({ chainId, address }) =>
     ({ get }) => {
       const daos: {
         dao: string
+        info: ContractVersionInfo
         config: Config
         proposalCount: number
       }[] = get(
@@ -405,20 +410,43 @@ export const walletDaosSelector = selectorFamily<
         return []
       }
 
-      const lazyDaoCards = daos
-        .map(
-          ({ dao, config, proposalCount }): LazyDaoCardProps => ({
-            chainId,
-            coreAddress: dao,
-            name: config.name,
-            description: config.description,
-            imageUrl: config.image_url || getFallbackImage(dao),
-            isInactive:
-              INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
-          })
-        )
-        .sort((a, b) => a.name.localeCompare(b.name))
+      const lazyDaoCards = daos.map(
+        ({ dao, info, config, proposalCount }): LazyDaoCardProps => ({
+          chainId,
+          coreAddress: dao,
+          coreVersion:
+            parseContractVersion(info.version) || ContractVersion.Unknown,
+          name: config.name,
+          description: config.description,
+          imageUrl: config.image_url || getFallbackImage(dao),
+          isInactive:
+            INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
+        })
+      )
 
       return lazyDaoCards
+    },
+})
+
+// Get lazy card info for DAOs this wallet is following.
+export const lazyWalletFollowingDaosSelector = selectorFamily<
+  LazyDaoCardProps[],
+  { walletPublicKey: string }
+>({
+  key: 'lazyWalletFollowingDaos',
+  get:
+    ({ walletPublicKey }) =>
+    ({ get }) => {
+      const daos = get(
+        followingDaosSelector({
+          walletPublicKey,
+        })
+      )
+
+      return daos.length > 0
+        ? get(
+            waitForAny(daos.map((dao) => lazyDaoCardPropsSelector(dao)))
+          ).flatMap((loadable) => loadable.valueMaybe() || [])
+        : []
     },
 })

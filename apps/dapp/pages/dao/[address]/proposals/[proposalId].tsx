@@ -6,18 +6,23 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import {
   DaoPageWrapper,
   DaoProposal,
-  DaoProposalPageWrapperProps,
+  DaoProposalProps,
+  GovProposal,
 } from '@dao-dao/stateful'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
-import { DaoPageMode } from '@dao-dao/types'
+import { ContractVersion, DaoPageMode } from '@dao-dao/types'
 import { SITE_URL, getDaoProposalPath } from '@dao-dao/utils'
 
-const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
+const ProposalPage: NextPage<DaoProposalProps> = ({
   children: _,
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <DaoProposal {...props} />
+    {props.serializedInfo?.coreVersion === ContractVersion.Gov ? (
+      <GovProposal {...props} />
+    ) : (
+      <DaoProposal {...props} />
+    )}
   </DaoPageWrapper>
 )
 

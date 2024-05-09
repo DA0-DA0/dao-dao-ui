@@ -100,19 +100,13 @@ export const NftSelectionModal = ({
   )
   const nftChains = uniqueChainIds.map(getChainForChainId)
   const filterOptions = useMemo(
-    () => [
+    (): TypedOption<FilterFn<{ chainId: string }>>[] => [
       {
-        id: 'all',
         label: t('title.all'),
         value: () => true,
       },
       ...nftChains.map(
-        (
-          chain
-        ): TypedOption<FilterFn<{ chainId: string }>> & {
-          id: string
-        } => ({
-          id: chain.chain_name,
+        (chain): TypedOption<FilterFn<{ chainId: string }>> => ({
           label: getDisplayNameForChainId(chain.chain_id),
           value: (nft) => nft.chainId === chain.chain_id,
         })

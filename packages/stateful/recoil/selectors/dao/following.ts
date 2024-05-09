@@ -1,17 +1,22 @@
 import uniq from 'lodash.uniq'
 import {
-  atomFamily,
+  atom,
+  constSelector,
   selectorFamily,
   waitForAll,
   waitForAllSettled,
 } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { DaoDropdownInfo, ProposalModule, WithChainId } from '@dao-dao/types'
+import { DaoDropdownInfo, DaoSource, ProposalModule } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
   KVPK_API_BASE,
+  MAINNET,
+  deserializeDaoSource,
+  isConfiguredChainName,
   keepSubDaosInDropdown,
+  maybeGetChainForChainId,
   subDaoExistsInDropdown,
 } from '@dao-dao/utils'
 
@@ -23,34 +28,36 @@ import { daoCoreProposalModulesSelector } from './misc'
 // session. This will be reset on page refresh. Set this right away so the UI
 // can update immediately even if the API takes up to a minute or two. Though
 // likely it only takes 10 seconds or so.
-export const temporaryFollowingDaosAtom = atomFamily<
-  {
-    following: string[]
-    unfollowing: string[]
-  },
-  string
->({
+export const temporaryFollowingDaosAtom = atom<{
+  /**
+   * Serialized DaoSources.
+   */
+  following: string[]
+  /**
+   * Serialized DaoSources.
+   */
+  unfollowing: string[]
+}>({
   key: 'temporaryFollowingDaos',
   default: { following: [], unfollowing: [] },
 })
 
 export const followingDaosSelector = selectorFamily<
-  string[],
-  WithChainId<{
+  DaoSource[],
+  {
     walletPublicKey: string
-  }>
+  }
 >({
   key: 'followingDaos',
   get:
-    ({ walletPublicKey, chainId }) =>
+    ({ walletPublicKey }) =>
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
 
-      const temporary = get(temporaryFollowingDaosAtom(walletPublicKey))
+      const tmp = get(temporaryFollowingDaosAtom)
 
       const response = await fetch(
-        KVPK_API_BASE +
-          `/list/${walletPublicKey}/${FOLLOWING_DAOS_PREFIX}${chainId}:`
+        KVPK_API_BASE + `/list/${walletPublicKey}/${FOLLOWING_DAOS_PREFIX}`
       )
 
       if (response.ok) {
@@ -61,19 +68,33 @@ export const followingDaosSelector = selectorFamily<
           }[]
         }
 
-        const _following = items.map(({ key }) => key.split(':').slice(-1)[0])
+        // Serialized DaoSources.
+        const currentFollowing = items.map(({ key }) =>
+          key.slice(FOLLOWING_DAOS_PREFIX.length)
+        )
+
         const following = uniq(
-          [..._following, ...temporary.following].filter(
-            (address) => !temporary.unfollowing.includes(address)
+          [...currentFollowing, ...tmp.following].filter(
+            (address) => !tmp.unfollowing.includes(address)
           )
         )
 
-        return following
+        return following.flatMap((daoSource) => {
+          const dao = deserializeDaoSource(daoSource)
+
+          // Only get followed DAOs that match the current network type.
+          const { network_type } = maybeGetChainForChainId(dao.chainId) ?? {}
+          return network_type && (network_type === 'mainnet') === MAINNET
+            ? dao
+            : []
+        })
       } else {
         throw new Error(
-          `Failed to fetch following daos: ${response.status}/${
-            response.statusText
-          } ${await response.text().catch(() => '')}`.trim()
+          `Failed to fetch following DAOs for ${walletPublicKey}: ${
+            response.status
+          }/${response.statusText} ${await response
+            .text()
+            .catch(() => '')}`.trim()
         )
       }
     },
@@ -81,27 +102,31 @@ export const followingDaosSelector = selectorFamily<
 
 export const followingDaoDropdownInfosSelector = selectorFamily<
   DaoDropdownInfo[],
-  WithChainId<{
+  {
     walletPublicKey: string
     /**
      * Whether or not to remove DAOs from the top-level that already exist as
      * SubDAOs (at any level of nesting) in another top-level DAO.
      */
     removeTopLevelSubDaos: boolean
-  }>
+  }
 >({
   key: 'followingDaoDropdownInfos',
   get:
-    ({ removeTopLevelSubDaos, ...params }) =>
+    ({ walletPublicKey, removeTopLevelSubDaos }) =>
     ({ get }) => {
-      const following = get(followingDaosSelector(params))
+      const following = get(
+        followingDaosSelector({
+          walletPublicKey,
+        })
+      )
 
       const daos = get(
         waitForAllSettled(
-          following.map((coreAddress) =>
+          following.map(({ chainId, coreAddress }) =>
             daoDropdownInfoSelector({
+              chainId,
               coreAddress,
-              chainId: params.chainId,
             })
           )
         )
@@ -128,30 +153,34 @@ export const followingDaoDropdownInfosSelector = selectorFamily<
 })
 
 export const followingDaosWithProposalModulesSelector = selectorFamily<
-  {
-    coreAddress: string
+  (DaoSource & {
     proposalModules: ProposalModule[]
-  }[],
-  WithChainId<{ walletPublicKey: string }>
+  })[],
+  {
+    walletPublicKey: string
+  }
 >({
   key: 'followingDaosWithProposalModules',
   get:
     (params) =>
     ({ get }) => {
       const following = get(followingDaosSelector(params))
+
       const proposalModules = get(
         waitForAll(
-          following.map((coreAddress) =>
-            daoCoreProposalModulesSelector({
-              coreAddress,
-              chainId: params.chainId,
-            })
+          following.map(({ chainId, coreAddress }) =>
+            isConfiguredChainName(chainId, coreAddress)
+              ? constSelector([])
+              : daoCoreProposalModulesSelector({
+                  chainId,
+                  coreAddress,
+                })
           )
         )
       )
 
-      return following.map((coreAddress, index) => ({
-        coreAddress,
+      return following.map((daoSource, index) => ({
+        ...daoSource,
         proposalModules: proposalModules[index],
       }))
     },

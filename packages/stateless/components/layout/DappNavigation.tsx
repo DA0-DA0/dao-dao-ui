@@ -1,13 +1,10 @@
 import {
   Add,
   CheckRounded,
-  HomeOutlined,
+  Home,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  NotificationsOutlined,
-  PersonOutline,
   Search,
-  WidgetsOutlined,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
@@ -16,9 +13,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types'
-import { SITE_TITLE, getGovPath } from '@dao-dao/utils'
+import { SITE_TITLE } from '@dao-dao/utils'
 
-import { useConfiguredChainContext, usePlatform } from '../../hooks'
+import { usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Logo } from '../logo/Logo'
@@ -50,14 +47,12 @@ const getForceCompact = () =>
 
 export const DappNavigation = ({
   setCommandModalVisible,
-  inboxCount,
   followingDaos,
   walletConnected,
   compact,
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-  SidebarWallet,
 }: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -67,8 +62,7 @@ export const DappNavigation = ({
       toggle: toggleResponsive,
     },
   } = useAppContext()
-  const { asPath } = useRouter()
-  const { config: chainConfig } = useConfiguredChainContext()
+  const { pathname } = useRouter()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -165,8 +159,6 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        <SidebarWallet />
-
         {/* If not compact, add some spacing. */}
         <div className={clsx(!compact && 'pt-2')}>
           <Row
@@ -190,50 +182,17 @@ export const DappNavigation = ({
           />
 
           <Row
-            Icon={HomeOutlined}
+            Icon={Home}
             LinkWrapper={LinkWrapper}
             compact={compact}
             href="/"
             label={t('title.home')}
+            selected={pathname === '/[[...tab]]'}
           />
 
-          <Row
-            Icon={WidgetsOutlined}
-            LinkWrapper={LinkWrapper}
-            compact={compact}
-            href={getGovPath(chainConfig.name)}
-            label={t('title.chains')}
-            selected={asPath.startsWith(getGovPath(''))}
-          />
-
-          {/* Only show me, inbox, and following when connected. */}
+          {/* Only show following when connected. */}
           {walletConnected && (
             <>
-              <Row
-                Icon={PersonOutline}
-                LinkWrapper={LinkWrapper}
-                compact={compact}
-                href="/me"
-                label={t('title.profile')}
-                selected={asPath.startsWith('/me')}
-              />
-
-              <Row
-                Icon={NotificationsOutlined}
-                LinkWrapper={LinkWrapper}
-                compact={compact}
-                href="/notifications"
-                label={
-                  !inboxCount.loading && inboxCount.data > 0
-                    ? t('title.notificationsWithCount', {
-                        count: inboxCount.data,
-                      })
-                    : t('title.notifications')
-                }
-                loading={inboxCount.loading}
-                showBadge={!inboxCount.loading && inboxCount.data > 0}
-              />
-
               <Row
                 Icon={CheckRounded}
                 LinkWrapper={LinkWrapper}
@@ -273,9 +232,9 @@ export const DappNavigation = ({
                         LinkWrapper={LinkWrapper}
                         compact={compact}
                         dao={dao}
-                        imageClassName="h-8 w-8 md:h-6 md:w-6"
-                        labelClassName="text-base md:text-sm"
-                        labelContainerClassName="gap-3 md:gap-2"
+                        imageClassName="h-6 w-6"
+                        labelClassName="text-sm"
+                        labelContainerClassName="gap-2"
                       />
                     ))}
 

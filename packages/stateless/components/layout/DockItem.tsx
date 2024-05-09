@@ -19,11 +19,11 @@ export type IDockItem = {
   /**
    * The icon to render when the item is not selected.
    */
-  IconUnselected: ComponentType<{ className: string }>
+  IconUnselected: ComponentType<{ className?: string }>
   /**
    * The icon to render when the item is selected.
    */
-  IconSelected: ComponentType<{ className: string }>
+  IconSelected: ComponentType<{ className?: string }>
   /**
    * Highlight this item with brand colors.
    */

@@ -189,6 +189,12 @@ export const getChainForChainName = (chainName: string): Chain => {
 export const getDisplayNameForChainId = (chainId: string): string =>
   maybeGetChainForChainId(chainId)?.pretty_name ?? chainId
 
+/**
+ * Get the description for a chain's native governance DAO.
+ */
+export const getChainGovernanceDaoDescription = (chainId: string): string =>
+  `Native chain governance for ${getDisplayNameForChainId(chainId)}.`
+
 const cachedNativeTokens: Record<string, GenericToken | undefined> = {}
 export const getNativeTokenForChainId = (chainId: string): GenericToken => {
   if (!cachedNativeTokens[chainId]) {
@@ -424,6 +430,17 @@ export const getConfiguredChainConfig = (
 ): BaseChainConfig | undefined =>
   CONFIGURED_CHAINS.find((config) => config.chainId === chainId)
 
+export const mustGetConfiguredChainConfig = (
+  chainId: string
+): BaseChainConfig => {
+  const config = getConfiguredChainConfig(chainId)
+  if (!config) {
+    throw new Error(`Unconfigured chain: ${chainId}`)
+  }
+
+  return config
+}
+
 export const getConfiguredChains = ({
   mainnet = MAINNET,
 }: {
@@ -435,6 +452,21 @@ export const getConfiguredChains = ({
     chain: getChainForChainId(config.chainId),
     ...config,
   }))
+
+/**
+ * Find configured chain with governance module by name.
+ */
+export const getConfiguredGovChainByName = (govName: string) =>
+  getConfiguredChains().find(({ name, noGov }) => name === govName && !noGov)
+
+/**
+ * Whether or not a given string is the configured name for a given chain. This
+ * is used to represent the x/gov module of a chain as a DAO.
+ */
+export const isConfiguredChainName = (chainId: string, key: string) => {
+  const chainConfig = getConfiguredChainConfig(chainId)
+  return !!chainConfig && key === chainConfig.name
+}
 
 export const getIbcTransferInfoFromConnection = (
   sourceChainId: string,

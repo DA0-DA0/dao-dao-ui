@@ -4,10 +4,11 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Me } from '@dao-dao/stateful'
+import { Home } from '@dao-dao/stateful'
 import { AccountTabId } from '@dao-dao/types'
+import { getSupportedChains } from '@dao-dao/utils'
 
-export default Me
+export default Home
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
@@ -27,6 +28,12 @@ export const getStaticPaths: GetStaticPaths = () => ({
     ...Object.values(AccountTabId).map((tab) => ({
       params: {
         tab: [tab],
+      },
+    })),
+    // All chains.
+    ...getSupportedChains().map(({ name }) => ({
+      params: {
+        tab: [name],
       },
     })),
   ],
