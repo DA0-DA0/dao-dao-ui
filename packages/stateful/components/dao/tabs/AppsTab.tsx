@@ -61,6 +61,12 @@ import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
 import { ProposalDaoInfoCards } from '../ProposalDaoInfoCards'
 
+// Wallet account secp256k1 public keys are expected to be 33 bytes starting
+// with 0x02 or 0x03. This will be used when simulating requests, but not when
+// signing since we intercept messages. This may cause problems with some dApps
+// if simulation fails...
+const EMPTY_PUB_KEY = new Uint8Array([0x02, ...[...new Array(32)].map(() => 0)])
+
 export const AppsTab = () => {
   const { t } = useTranslation()
   const {
@@ -218,7 +224,7 @@ export const AppsTab = () => {
         value: {
           address: addressForChainId(chainId),
           algo: 'secp256k1',
-          pubkey: await getPubKey(chainId),
+          pubkey: EMPTY_PUB_KEY,
           username: name,
         } as WalletAccount,
       }),
@@ -244,8 +250,10 @@ export const AppsTab = () => {
           value: {
             name,
             algo: 'secp256k1',
-            pubkey: await getPubKey(chainId),
-            address: fromBech32(bech32Address).data,
+            pubkey: EMPTY_PUB_KEY,
+            address: bech32Address
+              ? fromBech32(bech32Address).data
+              : new Uint8Array([]),
             bech32Address,
             isNanoLedger: false,
             isKeystone: false,
@@ -276,34 +284,17 @@ export const AppsTab = () => {
           {
             address: coreAddress,
             algo: 'secp256k1',
-            pubkey: await getPubKey(currentChainId),
+            pubkey: EMPTY_PUB_KEY,
           },
-          ...(await Promise.all(
-            Object.entries(polytoneProxies).map(async ([chainId, address]) => ({
-              address,
-              algo: 'secp256k1',
-              pubkey: await getPubKey(chainId),
-            }))
-          )),
+          ...Object.values(polytoneProxies).map((address) => ({
+            address,
+            algo: 'secp256k1',
+            pubkey: EMPTY_PUB_KEY,
+          })),
         ] as AccountData[],
       }),
     },
   })
-
-  const getPubKey = async (chainId: string) => {
-    // Wallet account secp256k1 public keys are expected to be 33 bytes starting
-    // with 0x02 or 0x03. This will be used when simulating requests, but not
-    // when signing since we intercept messages. This may cause problems with
-    // some dApps if simulation fails...
-    let pubKey
-    try {
-      pubKey = (await wallet.client?.getAccount?.(chainId))?.pubkey
-    } catch {
-      pubKey = new Uint8Array([0x02, ...[...new Array(32)].map(() => 0)])
-    }
-
-    return pubKey
-  }
 
   // Connect to iframe wallet on load if disconnected.
   const connectingRef = useRef(false)
