@@ -233,7 +233,12 @@ export const AppsTab = () => {
       }),
       // Needed by Graz and other Keplr clients.
       getKey: async (chainId: string) => {
-        const bech32Address = addressForChainId(chainId)
+        let bech32Address = ''
+        // Ignore invalid chains for now.
+        try {
+          bech32Address = addressForChainId(chainId)
+        } catch {}
+
         return {
           type: 'success',
           value: {
