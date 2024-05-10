@@ -101,12 +101,10 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         const serializedDaoSource = serializeDaoSource(dao)
 
         await postRequest(
-          '/setMany',
+          '/set',
           {
-            data: {
-              key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-              value: 1,
-            },
+            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
+            value: 1,
           },
           undefined,
           // Use DAO chain ID for following state to ensure we use the same
@@ -163,12 +161,10 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         const serializedDaoSource = serializeDaoSource(dao)
 
         await postRequest(
-          '/setMany',
+          '/set',
           {
-            data: {
-              key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-              value: null,
-            },
+            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
+            value: null,
           },
           undefined,
           // Use DAO chain ID for following state to ensure we use the same
