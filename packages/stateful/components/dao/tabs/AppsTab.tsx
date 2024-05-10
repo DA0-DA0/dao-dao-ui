@@ -128,12 +128,6 @@ export const AppsTab = () => {
         protobufToCwMsg(msg, false).msg
       )
     )
-    console.log(
-      'direct',
-      encodedMessages,
-      encodedMessages.map((msg) => protobufToCwMsg(msg, false).msg),
-      messages
-    )
     setMsgs(messages)
   }
   const decodeAmino = (sender: string, signDoc: StdSignDoc) => {
@@ -149,14 +143,6 @@ export const AppsTab = () => {
         chainId,
         decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
       )
-    )
-    console.log(
-      'amino',
-      signDoc.msgs,
-      signDoc.msgs.map(
-        (msg) => decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
-      ),
-      messages
     )
     setMsgs(messages)
   }

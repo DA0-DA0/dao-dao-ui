@@ -61,13 +61,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
 
   return useCallback(
     ({ chainId, address, message, funds, cw20 }: ExecuteData) => {
-      let msg
-      try {
-        msg = JSON5.parse(message)
-      } catch (err) {
-        console.error(`internal error. unparsable message: (${message})`, err)
-        return
-      }
+      const msg = JSON5.parse(message)
 
       const fundsTokens = funds.map(({ denom }) =>
         tokenBalances.loading

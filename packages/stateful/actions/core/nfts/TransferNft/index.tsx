@@ -1,3 +1,4 @@
+import JSON5 from 'json5'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
@@ -78,7 +79,7 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () => {
                 ? {
                     send_nft: {
                       contract: recipient,
-                      msg: encodeJsonToBase64(smartContractMsg),
+                      msg: encodeJsonToBase64(JSON5.parse(smartContractMsg)),
                       token_id: tokenId,
                     },
                   }
