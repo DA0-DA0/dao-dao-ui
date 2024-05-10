@@ -148,7 +148,16 @@ export const AppsTab = () => {
   }
 
   const enableAndConnect = (chainIds: string | string[]): OverrideHandler =>
-    [chainIds].flat().some((chainId) => addressForChainId(chainId))
+    [chainIds].flat().some((chainId) => {
+      try {
+        // Throws error if account not found.
+        addressForChainId(chainId)
+
+        return true
+      } catch {
+        return false
+      }
+    })
       ? {
           type: 'success',
         }
