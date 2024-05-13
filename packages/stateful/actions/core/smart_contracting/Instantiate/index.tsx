@@ -1,3 +1,4 @@
+import { fromUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
@@ -15,7 +16,11 @@ import {
   useCachedLoading,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { PolytoneConnection, TokenType } from '@dao-dao/types'
+import {
+  PolytoneConnection,
+  TokenType,
+  makeStargateMessage,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -25,11 +30,17 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgInstantiateContract as SecretMsgInstantiateContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
+  bech32AddressToBase64,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
+  encodeJsonToBase64,
   getChainAddressForActionOptions,
+  isDecodedStargateMsg,
+  isSecretNetwork,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -219,11 +230,15 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-}) => {
+export const makeInstantiateAction: ActionMaker<InstantiateData> = (
+  options
+) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<InstantiateData> = () => ({
     chainId: currentChainId,
     admin: address,
@@ -267,26 +282,44 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
           )
         }
 
+        const convertedFunds = funds.map(({ denom, amount }, index) => ({
+          denom,
+          amount: convertDenomToMicroDenomStringWithDecimals(
+            amount,
+            fundsTokens[index]!.decimals
+          ),
+        }))
+
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
-          makeWasmMessage({
-            wasm: {
-              instantiate: {
-                admin: admin || '',
-                code_id: codeId,
-                funds: funds.map(({ denom, amount }, index) => ({
-                  denom,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    amount,
-                    fundsTokens[index]!.decimals
-                  ),
-                })),
-                label,
-                msg,
-              },
-            },
-          })
+          isSecretNetwork(chainId)
+            ? makeStargateMessage({
+                stargate: {
+                  typeUrl: SecretMsgInstantiateContract.typeUrl,
+                  value: SecretMsgInstantiateContract.fromAmino({
+                    sender: bech32AddressToBase64(
+                      getChainAddressForActionOptions(options, chainId) || ''
+                    ),
+                    admin: admin || '',
+                    code_id: BigInt(codeId).toString(),
+                    init_funds: convertedFunds,
+                    label,
+                    init_msg: encodeJsonToBase64(msg),
+                  }),
+                },
+              })
+            : makeWasmMessage({
+                wasm: {
+                  instantiate: {
+                    admin: admin || '',
+                    code_id: codeId,
+                    funds: convertedFunds,
+                    label,
+                    msg,
+                  },
+                },
+              })
         )
       },
       [nativeBalances]
@@ -303,7 +336,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       msg = decodedPolytone.msg
     }
 
-    const isInstantiateMsg = objectMatchesStructure(msg, {
+    const isWasmInstantiateMsg = objectMatchesStructure(msg, {
       wasm: {
         instantiate: {
           code_id: {},
@@ -314,10 +347,20 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       },
     })
 
+    const isSecretInstantiateMsg =
+      isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === SecretMsgInstantiateContract.typeUrl
+
+    const funds: Coin[] | undefined = isWasmInstantiateMsg
+      ? msg.wasm.instantiate.funds
+      : isSecretInstantiateMsg
+      ? msg.stargate.value.initFunds
+      : undefined
+
     const fundTokens = useCachedLoadingWithError(
-      isInstantiateMsg
+      funds?.length
         ? waitForAll(
-            (msg.wasm.instantiate.funds as Coin[]).map(({ denom }) =>
+            funds.map(({ denom }) =>
               genericTokenSelector({
                 chainId,
                 type: TokenType.Native,
@@ -333,7 +376,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       return { match: false }
     }
 
-    return isInstantiateMsg
+    return isWasmInstantiateMsg
       ? {
           match: true,
           data: {
@@ -341,8 +384,39 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
             admin: msg.wasm.instantiate.admin ?? '',
             codeId: msg.wasm.instantiate.code_id,
             label: msg.wasm.instantiate.label,
-            message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
+            message: JSON.stringify(msg.wasm.instantiate.msg, null, 2),
             funds: (msg.wasm.instantiate.funds as Coin[]).map(
+              ({ denom, amount }, index) => ({
+                denom,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  fundTokens.data[index].decimals
+                ),
+              })
+            ),
+            _polytone: decodedPolytone.match
+              ? {
+                  chainId: decodedPolytone.chainId,
+                  note: decodedPolytone.polytoneConnection,
+                  initiatorMsg: decodedPolytone.initiatorMsg,
+                }
+              : undefined,
+          },
+        }
+      : isSecretInstantiateMsg
+      ? {
+          match: true,
+          data: {
+            chainId,
+            admin: msg.stargate.value.admin ?? '',
+            codeId: Number(msg.stargate.value.codeId),
+            label: msg.stargate.value.label,
+            message: JSON.stringify(
+              decodeJsonFromBase64(fromUtf8(msg.stargate.value.msg), true),
+              null,
+              2
+            ),
+            funds: (msg.stargate.value.initFunds as Coin[]).map(
               ({ denom, amount }, index) => ({
                 denom,
                 amount: convertMicroDenomToDenomWithDecimals(

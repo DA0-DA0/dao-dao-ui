@@ -8,6 +8,7 @@ import {
   DaoSupportedChainPickerInput,
   MushroomEmoji,
 } from '@dao-dao/stateless'
+import { makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -17,9 +18,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgUpdateAdmin as SecretMsgUpdateAdmin } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getChainForChainId,
+  isDecodedStargateMsg,
+  isSecretNetwork,
   isValidBech32Address,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -47,19 +52,35 @@ const useDefaults: UseDefaults<UpdateAdminData> = () => {
 }
 
 const useTransformToCosmos: UseTransformToCosmos<UpdateAdminData> = () => {
-  const currentChainId = useActionOptions().chain.chain_id
+  const options = useActionOptions()
 
   return useCallback(
     ({ chainId, contract, newAdmin }: UpdateAdminData) =>
-      maybeMakePolytoneExecuteMessage(currentChainId, chainId, {
-        wasm: {
-          update_admin: {
-            contract_addr: contract,
-            admin: newAdmin,
-          },
-        },
-      }),
-    [currentChainId]
+      maybeMakePolytoneExecuteMessage(
+        options.chain.chain_id,
+        chainId,
+        isSecretNetwork(chainId)
+          ? makeStargateMessage({
+              stargate: {
+                typeUrl: SecretMsgUpdateAdmin.typeUrl,
+                value: SecretMsgUpdateAdmin.fromAmino({
+                  sender:
+                    getChainAddressForActionOptions(options, chainId) || '',
+                  contract,
+                  new_admin: newAdmin,
+                }),
+              },
+            })
+          : {
+              wasm: {
+                update_admin: {
+                  contract_addr: contract,
+                  admin: newAdmin,
+                },
+              },
+            }
+      ),
+    [options]
   )
 }
 
@@ -87,6 +108,16 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
           chainId,
           contract: msg.wasm.update_admin.contract_addr,
           newAdmin: msg.wasm.update_admin.admin,
+        },
+      }
+    : isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === SecretMsgUpdateAdmin.typeUrl
+    ? {
+        match: true,
+        data: {
+          chainId,
+          contract: msg.stargate.value.contract,
+          newAdmin: msg.stargate.value.newAdmin,
         },
       }
     : {

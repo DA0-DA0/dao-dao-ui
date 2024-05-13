@@ -1,4 +1,5 @@
 import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { fromBech32, toBase64, toBech32 } from '@cosmjs/encoding'
 import { Coin, DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate'
 import { parseRawLog } from '@cosmjs/stargate/build/logs'
 import { toUtf8 } from 'secretjs'
@@ -9,6 +10,7 @@ import {
   MsgInstantiateContract,
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
+import { getChainForChainId } from './chain'
 import { findEventsAttributeValue } from './client'
 import { CHAIN_GAS_MULTIPLIER } from './constants'
 import { SecretSigningCosmWasmClient } from './secret'
@@ -164,3 +166,17 @@ export const executeSmartContract = async (
 
 const createDeliverTxResponseErrorMessage = (result: DeliverTxResponse) =>
   `Error when broadcasting tx ${result.transactionHash} at height ${result.height}. Code: ${result.code}; Raw log: ${result.rawLog}`
+
+/**
+ * Convert bech32 address data to address string for the given chain.
+ */
+export const bech32DataToAddress = (
+  chainId: string,
+  bech32Bytes: Uint8Array
+): string => toBech32(getChainForChainId(chainId).bech32_prefix, bech32Bytes)
+
+/**
+ * Convert bech32 address string to base64 string with bech32 data.
+ */
+export const bech32AddressToBase64 = (bech32Address: string): string =>
+  toBase64(fromBech32(bech32Address).data)
