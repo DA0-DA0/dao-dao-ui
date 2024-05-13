@@ -3,6 +3,7 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
+import { SecretUtils } from '@keplr-wallet/types'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
@@ -57,6 +58,10 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
   getSigningClient: () => Promise<
     SigningCosmWasmClient | SecretSigningCosmWasmClient
   >
+  /**
+   * Fetch SecretUtils from the wallet if available
+   */
+  getSecretUtils: () => SecretUtils
 }
 
 export const useWallet = ({
@@ -187,6 +192,16 @@ export const useWallet = ({
 
   const response = useMemo(
     (): UseWalletReturn => {
+      // TODO(secret): support different enigma utils sources based on connected
+      // wallet
+      const getSecretUtils = () => {
+        const secretUtils = window.keplr?.getEnigmaUtils(chain.chain_id)
+        if (!secretUtils) {
+          throw new Error('No Secret utils found')
+        }
+        return secretUtils
+      }
+
       // Get Secret Network signing client with Keplr's encryption utils.
       const getSecretSigningCosmWasmClient = async () => {
         if (!isSecretNetwork(chain.chain_id)) {
@@ -204,9 +219,7 @@ export const useWallet = ({
             chainId: chain.chain_id,
             wallet: signer,
             walletAddress: walletChainRef.current.address,
-            // TODO(secret): support different enigma utils sources based on
-            // connected wallet
-            encryptionUtils: window.keplr?.getEnigmaUtils(chain.chain_id),
+            encryptionUtils: getSecretUtils(),
           }
         )
       }
@@ -238,6 +251,7 @@ export const useWallet = ({
           : { loading: true },
         getSecretSigningCosmWasmClient,
         getSigningClient,
+        getSecretUtils,
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
