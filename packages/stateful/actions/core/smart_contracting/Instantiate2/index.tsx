@@ -33,6 +33,7 @@ import {
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
+  isSecretNetwork,
   maybeGetChainForChainId,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -142,7 +143,11 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
     context,
   } = options
 
-  if (context.type !== ActionContextType.Dao) {
+  if (
+    context.type !== ActionContextType.Dao ||
+    // Secret Network does not support instantiate2.
+    isSecretNetwork(currentChainId)
+  ) {
     return null
   }
 

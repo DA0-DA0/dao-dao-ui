@@ -27,14 +27,17 @@ import {
   Type,
 } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
+import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 
 import {
   getChainForChainName,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromConnection,
   getSupportedChainConfig,
+  isSecretNetwork,
 } from '../chain'
 import { IBC_TIMEOUT_SECONDS } from '../constants'
+import { bech32AddressToBase64 } from '../contracts'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { decodeJsonFromBase64, encodeJsonToBase64 } from './encoding'
@@ -136,6 +139,45 @@ export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
+
+/**
+ * Make a Cosmos message that executes a smart contract, intelligently encoded
+ * to support Secret Network if necessary.
+ */
+export const makeExecuteSmartContractMessage = ({
+  chainId,
+  sender,
+  contractAddress,
+  msg,
+  funds,
+}: {
+  chainId: string
+  sender: string
+  contractAddress: string
+  msg: Record<string, any>
+  funds?: Coin[]
+}): CosmosMsgFor_Empty =>
+  isSecretNetwork(chainId)
+    ? makeStargateMessage({
+        stargate: {
+          typeUrl: SecretMsgExecuteContract.typeUrl,
+          value: SecretMsgExecuteContract.fromAmino({
+            sender: bech32AddressToBase64(sender),
+            contract: bech32AddressToBase64(contractAddress),
+            sent_funds: funds || [],
+            msg: encodeJsonToBase64(msg),
+          }),
+        },
+      })
+    : makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: contractAddress,
+            funds: funds || [],
+            msg,
+          },
+        },
+      })
 
 /**
  * Encode relevant components of wasm messages into base64 strings as the chain

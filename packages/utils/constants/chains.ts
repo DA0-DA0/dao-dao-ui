@@ -2118,6 +2118,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#000000',
     factoryContractAddress: '',
     noIndexer: true,
+    createWithCw20: true,
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
       gov: 'https://testnet.ping.pub/secret/gov',
@@ -2126,29 +2127,33 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      Cw1Whitelist: 0,
-      Cw4Group: 5475,
-      // https://github.com/CosmWasm/cw-nfts
-      Cw721Base: 0,
+      // TODO(secret-testnet)
+      Cw1Whitelist: -1,
+      // SNIP20
+      Cw20Base: 7377,
+      Cw4Group: 7381,
+      // SNIP721
+      Cw721Base: 7385,
 
       // ContractVersion.V242
-      CwPayrollFactory: 0,
-      CwTokenSwap: 0,
-      CwTokenfactoryIssuerMain: 0,
-      CwVesting: 0,
-      DaoCore: 5472,
+      CwPayrollFactory: 7399,
+      CwTokenSwap: 7400,
+      CwTokenfactoryIssuerMain: -1, // uses snip20 instead
+      CwVesting: 7401,
+      DaoCore: 7396,
       DaoMigrator: -1,
-      DaoPreProposeApprovalSingle: 0,
-      DaoPreProposeApprover: 0,
-      DaoPreProposeMultiple: 0,
-      DaoPreProposeSingle: 5476,
-      DaoProposalMultiple: 0,
-      DaoProposalSingle: 5473,
-      DaoVotingCw4: 5474,
+      DaoPreProposeApprovalSingle: 7393,
+      DaoPreProposeApprover: 7394,
+      DaoPreProposeMultiple: 7390,
+      DaoPreProposeSingle: 7388,
+      DaoProposalMultiple: 7391,
+      DaoProposalSingle: 7389,
+      DaoVotingCw4: 7382,
       // SNIP721
-      DaoVotingCw721Staked: 0,
+      DaoVotingCw721Staked: 7395,
+      DaoVotingTokenStaked: -1, // uses snip20 instead
       // SNIP20
-      DaoVotingTokenStaked: 0,
+      DaoVotingCw20Staked: 7383,
     },
   },
 ]
