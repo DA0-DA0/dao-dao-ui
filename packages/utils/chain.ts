@@ -530,11 +530,22 @@ export const isSupportedChain = (chainId: string): boolean =>
 
 export const getSupportedChains = ({
   mainnet = MAINNET,
+  hasIndexer,
 }: {
+  /**
+   * Whether or not to fetch supported chains on mainnet or testnet. Defaults to
+   * MAINNET environment variable.
+   */
   mainnet?: boolean
+  /**
+   * Whether or not to filter by chains that have an indexer. Defaults to all.
+   */
+  hasIndexer?: boolean
 } = {}): SupportedChain[] =>
   SUPPORTED_CHAINS.filter(
-    (config) => mainnet === undefined || config.mainnet === mainnet
+    (config) =>
+      (mainnet === undefined || config.mainnet === mainnet) &&
+      (hasIndexer === undefined || hasIndexer === !config.noIndexer)
   ).map((config) => ({
     chain: getChainForChainId(config.chainId),
     ...config,

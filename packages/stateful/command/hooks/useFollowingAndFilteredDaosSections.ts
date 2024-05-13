@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, waitForAllSettled } from 'recoil'
 
 import { navigatingToHrefAtom, searchDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoNavHelpers } from '@dao-dao/stateless'
@@ -40,14 +40,14 @@ export const useFollowingAndFilteredDaosSections = ({
 }: UseFilteredDaosSectionOptions): CommandModalContextSection[] => {
   const { t } = useTranslation()
 
-  const chains = getSupportedChains()
+  const chains = getSupportedChains({ hasIndexer: true })
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const followingDaosLoading = useLoadingFollowingDaoCardInfos()
   const { getDaoPath } = useDaoNavHelpers()
 
   const queryResults = useCachedLoadable(
     options.filter
-      ? waitForAll(
+      ? waitForAllSettled(
           chains.map(({ chain }) =>
             searchDaosSelector({
               chainId: chain.chain_id,
@@ -71,7 +71,10 @@ export const useFollowingAndFilteredDaosSections = ({
   // Use query results if filter is present.
   const daos = [
     ...(options.filter
-      ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents.flat())
+      ? (queryResults.state !== 'hasValue'
+          ? []
+          : queryResults.contents.flatMap((l) => l.valueMaybe() || [])
+        )
           .filter(({ value }) => !!value?.config)
           .map(
             ({

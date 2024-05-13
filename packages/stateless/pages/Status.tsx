@@ -11,7 +11,7 @@ export type StatusProps = {
 export const Status = ({ ChainStatus }: StatusProps) => {
   const { t } = useTranslation()
 
-  const chains = getSupportedChains().filter((c) => !c.noIndexer)
+  const chains = getSupportedChains({ hasIndexer: true })
 
   return (
     <div className="flex flex-col gap-2">
