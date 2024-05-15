@@ -4,11 +4,11 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { CwAdminFactoryClient as ExecuteClient } from '@dao-dao/state/contracts/CwAdminFactory'
+import { SecretCwAdminFactoryClient as ExecuteClient } from '@dao-dao/state/contracts/SecretCwAdminFactory'
 import {
   ExecuteClientParams,
   executeClient,
-} from '@dao-dao/state/recoil/selectors/contracts/CwAdminFactory'
+} from '@dao-dao/state/recoil/selectors/contracts/SecretCwAdminFactory'
 import { useChain } from '@dao-dao/stateless'
 import { FunctionKeyOf } from '@dao-dao/types'
 
@@ -47,6 +47,6 @@ const wrapExecuteHook =
     )
   }
 
-export const useInstantiateWithAdminFactory = wrapExecuteHook(
+export const useInstantiateContractWithSelfAdmin = wrapExecuteHook(
   'instantiateContractWithSelfAdmin'
 )

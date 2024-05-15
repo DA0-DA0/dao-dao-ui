@@ -59,6 +59,7 @@ import {
   getSupportedChainConfig,
   getSupportedChains,
   instantiateSmartContract,
+  isSecretNetwork,
   makeValidateMsg,
   makeWasmMessage,
   parseContractVersion,
@@ -73,6 +74,7 @@ import {
 } from '../../creators/TokenBased/types'
 import {
   CwAdminFactoryHooks,
+  SecretCwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
   useQuerySyncedRecoilState,
@@ -159,6 +161,7 @@ export const InnerCreateDaoForm = ({
       name: chainGovName,
       factoryContractAddress,
       codeIds,
+      codeHashes,
       createViaGovernance,
     },
   } = chainContext
@@ -416,8 +419,13 @@ export const InnerCreateDaoForm = ({
   } = useWallet()
   const { refreshBalances } = useWalletBalances()
 
-  const instantiateWithFactory =
+  const instantiateWithSelfAdmin =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
+      contractAddress: factoryContractAddress,
+      sender: walletAddress ?? '',
+    })
+  const secretInstantiateWithSelfAdmin =
+    SecretCwAdminFactoryHooks.useInstantiateContractWithSelfAdmin({
       contractAddress: factoryContractAddress,
       sender: walletAddress ?? '',
     })
@@ -444,21 +452,44 @@ export const InnerCreateDaoForm = ({
         instantiateMsg.admin
       )
     } else {
-      const { events } = await instantiateWithFactory(
-        {
-          codeId: codeIds.DaoCore,
-          instantiateMsg: encodeJsonToBase64(instantiateMsg),
-          label: instantiateMsg.name,
-        },
-        CHAIN_GAS_MULTIPLIER,
-        undefined,
-        getFundsFromDaoInstantiateMsg(instantiateMsg)
-      )
-      return findWasmAttributeValue(
-        events,
-        factoryContractAddress,
-        'set contract admin as itself'
-      )!
+      if (isSecretNetwork(chainId)) {
+        const { events } = await secretInstantiateWithSelfAdmin(
+          {
+            moduleInfo: {
+              code_id: codeIds.DaoCore,
+              code_hash: codeHashes?.DaoCore ?? '',
+              msg: encodeJsonToBase64(instantiateMsg),
+              admin: { core_module: {} },
+              funds: [],
+              label: instantiateMsg.name,
+            },
+          },
+          undefined,
+          undefined,
+          getFundsFromDaoInstantiateMsg(instantiateMsg)
+        )
+        return findWasmAttributeValue(
+          events,
+          factoryContractAddress,
+          'set contract admin as itself'
+        )!
+      } else {
+        const { events } = await instantiateWithSelfAdmin(
+          {
+            codeId: codeIds.DaoCore,
+            instantiateMsg: encodeJsonToBase64(instantiateMsg),
+            label: instantiateMsg.name,
+          },
+          CHAIN_GAS_MULTIPLIER,
+          undefined,
+          getFundsFromDaoInstantiateMsg(instantiateMsg)
+        )
+        return findWasmAttributeValue(
+          events,
+          factoryContractAddress,
+          'set contract admin as itself'
+        )!
+      }
     }
   }
 

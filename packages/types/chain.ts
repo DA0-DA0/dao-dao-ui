@@ -152,6 +152,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   codeIds: CodeIdConfig
   /**
+   * Code hashes for IDs above. Only used by Secret Network.
+   */
+  codeHashes?: CodeHashConfig
+  /**
    * Whether or not to create DAOs with CW20s. The alternative is to use token
    * factory native tokens. Defaults to false.
    */
@@ -235,6 +239,8 @@ export type CodeIdConfig = {
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
 }
+
+export type CodeHashConfig = Partial<Record<keyof CodeIdConfig, string>>
 
 export type PolytoneConnection = {
   // Contract address of note on the local/current chain.
