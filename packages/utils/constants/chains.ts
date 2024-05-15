@@ -2116,7 +2116,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'secret',
     mainnet: false,
     accentColor: '#000000',
-    factoryContractAddress: '',
+    factoryContractAddress: 'secret13dk93ms25qu8j06pxn2p9yphzmsskpejtmddh0',
     noIndexer: true,
     createWithCw20: true,
     explorerUrlTemplates: {
