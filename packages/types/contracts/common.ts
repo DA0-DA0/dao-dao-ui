@@ -352,3 +352,68 @@ export type SecretAnyContractInfo = {
   addr: Addr
   code_hash: string
 }
+
+export type SecretCosmosMsgForEmpty =
+  | {
+      bank: BankMsg
+    }
+  | {
+      custom: Empty
+    }
+  | {
+      staking: StakingMsg
+    }
+  | {
+      distribution: DistributionMsg
+    }
+  | {
+      ibc: IbcMsg
+    }
+  | {
+      wasm: SecretWasmMsg
+    }
+  | {
+      gov: GovMsg
+    }
+  | {
+      finalize_tx: Empty
+    }
+  | StargateMsg
+export type SecretWasmMsg =
+  | {
+      execute: {
+        code_hash: string
+        contract_addr: string
+        msg: Binary
+        send: Coin[]
+      }
+    }
+  | {
+      instantiate: {
+        admin?: string | null
+        code_hash: string
+        code_id: number
+        label: string
+        msg: Binary
+        send: Coin[]
+      }
+    }
+  | {
+      migrate: {
+        code_hash: string
+        code_id: number
+        contract_addr: string
+        msg: Binary
+      }
+    }
+  | {
+      update_admin: {
+        admin: string
+        contract_addr: string
+      }
+    }
+  | {
+      clear_admin: {
+        contract_addr: string
+      }
+    }

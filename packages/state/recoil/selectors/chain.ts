@@ -50,9 +50,7 @@ import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tar
 import {
   MAINNET,
   SecretCosmWasmClient,
-  cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
-  addressIsModule,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
@@ -60,7 +58,6 @@ import {
   decodeGovProposal,
   getAllRpcResponse,
   getCosmWasmClientForChainId,
-  getLcdForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
   junoProtoRpcClientRouter,
@@ -68,8 +65,6 @@ import {
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
-  getRpcForChainId,
-  retry,
   secretCosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'

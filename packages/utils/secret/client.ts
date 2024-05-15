@@ -193,6 +193,28 @@ export class SecretCosmWasmClient extends CosmWasmClient {
   }
 
   /**
+   * Returns the code hash for a given contract address.
+   *
+   * Promise is rejected if no code hash found.
+   */
+  public async queryCodeHashForContractAddress(
+    address: string
+  ): Promise<string> {
+    const { code_hash } =
+      await this.forceGetSecretNetworkClient().query.compute.codeHashByContractAddress(
+        {
+          contract_address: address,
+        }
+      )
+
+    if (!code_hash) {
+      throw new Error(`No code hash found for address "${address}"`)
+    }
+
+    return code_hash
+  }
+
+  /**
    * Returns the data at the key if present (raw contract dependent storage data)
    * or null if no data at this key.
    *

@@ -17,6 +17,7 @@ import {
 import {
   BankMsg,
   CosmosMsgFor_Empty,
+  SecretCosmosMsgForEmpty,
   StargateMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
@@ -676,7 +677,9 @@ export const decodeCw1WhitelistExecuteMsg = (
   }
 }
 
-export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
+export const getFundsUsedInCwMessage = (
+  msg: CosmosMsgFor_Empty | SecretCosmosMsgForEmpty
+): Coin[] =>
   'bank' in msg
     ? 'send' in msg.bank
       ? msg.bank.send.amount
@@ -697,11 +700,15 @@ export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
       : []
     : 'wasm' in msg
     ? 'execute' in msg.wasm
-      ? msg.wasm.execute.funds
+      ? 'funds' in msg.wasm.execute
+        ? msg.wasm.execute.funds
+        : // Secret Network
+          msg.wasm.execute.send
       : 'instantiate' in msg.wasm
-      ? msg.wasm.instantiate.funds
-      : 'instantiate2' in msg.wasm
-      ? msg.wasm.instantiate2.funds
+      ? 'funds' in msg.wasm.instantiate
+        ? msg.wasm.instantiate.funds
+        : // Secret Network
+          msg.wasm.instantiate.send
       : []
     : isCosmWasmStargateMsg(msg)
     ? (() => {

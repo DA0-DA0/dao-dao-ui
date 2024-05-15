@@ -11,6 +11,7 @@ import {
   isSecretNetwork,
   isValidBech32Address,
   parseContractVersion,
+  secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
 import {
@@ -168,6 +169,22 @@ export const contractInfoSelector = selectorFamily<
       throw new Error(
         'Failed to query contract info for contract: ' + contractAddress
       )
+    },
+})
+
+/**
+ * Get code hash for a Secret Network contract.
+ */
+export const secretContractCodeHashSelector = selectorFamily<
+  string,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'secretContractCodeHash',
+  get:
+    ({ chainId, contractAddress }) =>
+    async () => {
+      const client = await secretCosmWasmClientRouter.connect(chainId)
+      return client.queryCodeHashForContractAddress(contractAddress)
     },
 })
 
