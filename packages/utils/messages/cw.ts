@@ -16,7 +16,6 @@ import {
 import {
   BankMsg,
   CosmosMsgFor_Empty,
-  MintMsg,
   StargateMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
@@ -201,29 +200,6 @@ export const makeWasmMessage = (msg: {
 
   return msg
 }
-
-export const makeExecutableMintMessage = (
-  msg: MintMsg,
-  contractAddress: string
-): CosmosMsgFor_Empty => ({
-  wasm: {
-    execute: {
-      contract_addr: contractAddress,
-      msg: encodeJsonToBase64(msg),
-      funds: [],
-    },
-  },
-})
-
-export const makeMintMessage = (
-  amount: string,
-  recipient: string
-): MintMsg => ({
-  mint: {
-    amount,
-    recipient,
-  },
-})
 
 export const makeBankMessage = (
   amount: string,

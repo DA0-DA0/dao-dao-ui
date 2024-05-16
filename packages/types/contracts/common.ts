@@ -291,13 +291,6 @@ export interface CheckedDepositInfo {
   refund_policy: DepositRefundPolicy
 }
 
-export interface MintMsg {
-  mint: {
-    amount: Uint128
-    recipient: string
-  }
-}
-
 /**
  * The proposal status enum variants that can be represented as strings. This
  * excludes enums containing values since they are objects.
