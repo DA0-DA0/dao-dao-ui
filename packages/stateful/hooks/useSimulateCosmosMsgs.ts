@@ -1,12 +1,10 @@
-import { constSelector, useRecoilCallback, useRecoilValue } from 'recoil'
+import { useCallback } from 'react'
+import { constSelector, useRecoilValue } from 'recoil'
 
-import {
-  DaoCoreV2Selectors,
-  cosmosRpcClientForChainSelector,
-} from '@dao-dao/state/recoil'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
 import {
-  CosmosMsgFor_Empty,
+  UnifiedCosmosMsg,
   cwMsgToEncodeObject,
   typesRegistry,
 } from '@dao-dao/types'
@@ -21,6 +19,7 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
+  cosmosProtoRpcClientRouter,
   decodeMessages,
   decodePolytoneExecuteMsg,
   isValidBech32Address,
@@ -40,68 +39,59 @@ import {
 export const useSimulateCosmosMsgs = (senderAddress: string) => {
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const polytoneProxies =
-    useRecoilValue(
-      isValidBech32Address(senderAddress, bech32Prefix)
-        ? DaoCoreV2Selectors.polytoneProxiesSelector({
-            chainId,
-            contractAddress: senderAddress,
-          })
-        : constSelector(undefined)
-    ) ?? {}
+  const polytoneProxies = useRecoilValue(
+    isValidBech32Address(senderAddress, bech32Prefix)
+      ? DaoCoreV2Selectors.polytoneProxiesSelector({
+          chainId,
+          contractAddress: senderAddress,
+        })
+      : constSelector(undefined)
+  )
 
-  const simulate = useRecoilCallback(
-    ({ snapshot }) =>
-      async (msgs: CosmosMsgFor_Empty[]): Promise<void> => {
-        // If no messages, nothing to simulate.
-        if (msgs.length === 0) {
-          return
-        }
+  const simulate = useCallback(
+    async (msgs: UnifiedCosmosMsg[]): Promise<void> => {
+      // If no messages, nothing to simulate.
+      if (msgs.length === 0) {
+        return
+      }
 
-        const cosmosRpcClient = await snapshot.getPromise(
-          cosmosRpcClientForChainSelector(chainId)
+      await doSimulation(chainId, msgs, senderAddress)
+
+      // Also simulate polytone messages on receiving chains.
+      const decodedPolytoneMessages = decodeMessages(msgs).flatMap((msg) => {
+        const decoded = decodePolytoneExecuteMsg(chainId, msg, 'any')
+        return decoded.match && decoded.cosmosMsg ? decoded : []
+      })
+
+      if (decodedPolytoneMessages.length) {
+        const polytoneGroupedByChainId = decodedPolytoneMessages.reduce(
+          (acc, decoded) => ({
+            ...acc,
+            [decoded.chainId]: [
+              ...(acc[decoded.chainId] ?? []),
+              ...decoded.cosmosMsgs,
+            ],
+          }),
+          {} as Record<string, UnifiedCosmosMsg[] | undefined>
         )
 
-        await doSimulation(cosmosRpcClient, msgs, senderAddress)
-
-        // Also simulate polytone messages on receiving chains.
-        const decodedPolytoneMessages = decodeMessages(msgs).flatMap((msg) => {
-          const decoded = decodePolytoneExecuteMsg(chainId, msg, 'any')
-          return decoded.match && decoded.cosmosMsg ? decoded : []
-        })
-
-        if (decodedPolytoneMessages.length) {
-          const polytoneGroupedByChainId = decodedPolytoneMessages.reduce(
-            (acc, decoded) => ({
-              ...acc,
-              [decoded.chainId]: [
-                ...(acc[decoded.chainId] ?? []),
-                ...decoded.cosmosMsgs,
-              ],
-            }),
-            {} as Record<string, CosmosMsgFor_Empty[] | undefined>
-          )
-
-          await Promise.all(
-            Object.entries(polytoneGroupedByChainId).map(
-              async ([chainId, msgs]) => {
-                const polytoneProxy = polytoneProxies[chainId]
-                const cosmosRpcClient = await snapshot.getPromise(
-                  cosmosRpcClientForChainSelector(chainId)
-                )
-                if (!polytoneProxy || !msgs?.length) {
-                  return
-                }
-
-                await doSimulation(cosmosRpcClient, msgs, polytoneProxy)
+        await Promise.all(
+          Object.entries(polytoneGroupedByChainId).map(
+            async ([chainId, msgs]) => {
+              const polytoneProxy = (polytoneProxies || {})[chainId]
+              if (!polytoneProxy || !msgs?.length) {
+                return
               }
-            )
-          )
-        }
 
-        // Unfortunately we can't simulate messages from an ICA for weird
-        // cosmos-sdk reasons... YOLO
-      },
+              await doSimulation(chainId, msgs, polytoneProxy)
+            }
+          )
+        )
+      }
+
+      // Unfortunately we can't simulate messages from an ICA for weird
+      // cosmos-sdk reasons... YOLO
+    },
     [chainId, polytoneProxies, senderAddress]
   )
 
@@ -109,14 +99,14 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
 }
 
 const doSimulation = async (
-  cosmosRpcClient: Awaited<
-    ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
-  >['cosmos'],
-  msgs: CosmosMsgFor_Empty[],
+  chainId: string,
+  msgs: UnifiedCosmosMsg[],
   senderAddress: string
 ) => {
+  const cosmosRpcClient = await cosmosProtoRpcClientRouter.connect(chainId)
+
   const encodedMsgs = msgs.map((msg) => {
-    const encoded = cwMsgToEncodeObject(msg, senderAddress)
+    const encoded = cwMsgToEncodeObject(chainId, msg, senderAddress)
     return typesRegistry.encodeAsAny(encoded)
   })
 

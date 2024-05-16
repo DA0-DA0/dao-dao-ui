@@ -7,7 +7,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { CosmosMsgFor_Empty, WidgetId } from '@dao-dao/types'
+import { UnifiedCosmosMsg, WidgetId } from '@dao-dao/types'
 import {
   makeBankMessage,
   makeWasmMessage,
@@ -185,14 +185,14 @@ export const OpenSurveySection = ({
         })
       )
 
-      const cosmosMsgs: CosmosMsgFor_Empty[] = contributions.flatMap(
+      const cosmosMsgs: UnifiedCosmosMsg[] = contributions.flatMap(
         ({ contributor, compensation }) =>
           compensation.compensationPerAttribute.flatMap(
-            ({ nativeTokens, cw20Tokens }): CosmosMsgFor_Empty[] => [
+            ({ nativeTokens, cw20Tokens }): UnifiedCosmosMsg[] => [
               ...nativeTokens
                 .filter(({ amount }) => amount !== '0')
                 .map(
-                  ({ denomOrAddress, amount }): CosmosMsgFor_Empty => ({
+                  ({ denomOrAddress, amount }): UnifiedCosmosMsg => ({
                     bank: makeBankMessage(
                       amount,
                       contributor.address,
@@ -203,7 +203,7 @@ export const OpenSurveySection = ({
               ...cw20Tokens
                 .filter(({ amount }) => amount !== '0')
                 .map(
-                  ({ denomOrAddress, amount }): CosmosMsgFor_Empty =>
+                  ({ denomOrAddress, amount }): UnifiedCosmosMsg =>
                     makeWasmMessage({
                       wasm: {
                         execute: {

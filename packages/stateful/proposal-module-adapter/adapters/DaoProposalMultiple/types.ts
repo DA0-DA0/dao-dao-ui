@@ -1,12 +1,12 @@
 import {
   ActionAndData,
   ActionKeyAndData,
-  CosmosMsgForEmpty,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
   ProposalTimestampInfo,
   ProposalVoteOption,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import {
   CheckedMultipleChoiceOption,
@@ -44,7 +44,7 @@ export interface PercentOrMajorityValue {
 export type ProcessedMultipleChoiceOption = {
   description: string
   index: number
-  msgs: CosmosMsgForEmpty[]
+  msgs: UnifiedCosmosMsg[]
   optionType: MultipleChoiceOptionType
   title: string
   turnoutVotePercentage: number

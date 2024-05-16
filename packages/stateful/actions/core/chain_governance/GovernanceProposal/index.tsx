@@ -412,7 +412,9 @@ export const makeGovernanceProposalAction: ActionMaker<
                       content: legacyContent,
                     }),
                   ]
-                : msgs.map((msg) => cwMsgToProtobuf(msg, govModuleAddress)),
+                : msgs.map((msg) =>
+                    cwMsgToProtobuf(chainId, msg, govModuleAddress)
+                  ),
               initialDeposit: deposit.map(({ amount, denom }) => ({
                 amount: BigInt(amount).toString(),
                 denom,
@@ -528,7 +530,10 @@ export const makeGovernanceProposalAction: ActionMaker<
 
     if (msg.stargate.typeUrl === MsgSubmitProposalV1.typeUrl) {
       const proposal = msg.stargate.value as MsgSubmitProposalV1
-      const decodedMessages = decodeGovProposalV1Messages(proposal.messages)
+      const decodedMessages = decodeGovProposalV1Messages(
+        chainId,
+        proposal.messages
+      )
 
       return {
         match: true,

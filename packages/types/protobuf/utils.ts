@@ -6,16 +6,17 @@
 // to @dao-dao/utils when telescope internally handles a type registry that can
 // encode the nested types like we do below.
 
+import { Chain } from '@chain-registry/types'
 import { AminoMsg } from '@cosmjs/amino'
-import { fromBase64, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, fromBech32, toBase64, toBech32 } from '@cosmjs/encoding'
 import { EncodeObject, GeneratedType, Registry } from '@cosmjs/proto-signing'
 import { AminoTypes } from '@cosmjs/stargate'
 
-import { DecodedStargateMsg } from '../chain'
+import { ChainId, DecodedStargateMsg } from '../chain'
 import {
-  CosmosMsgFor_Empty,
   VoteOption as CwVoteOption,
   StargateMsg,
+  UnifiedCosmosMsg,
 } from '../contracts'
 import {
   allianceAminoConverters,
@@ -78,6 +79,13 @@ import {
 } from './codegen/cosmwasm/wasm/v1/tx'
 import { Any } from './codegen/google/protobuf/any'
 import { UploadCosmWasmPoolCodeAndWhiteListProposal } from './codegen/osmosis/cosmwasmpool/v1beta1/gov'
+import {
+  MsgClearAdmin as SecretMsgClearAdmin,
+  MsgExecuteContract as SecretMsgExecuteContract,
+  MsgInstantiateContract as SecretMsgInstantiateContract,
+  MsgMigrateContract as SecretMsgMigrateContract,
+  MsgUpdateAdmin as SecretMsgUpdateAdmin,
+} from './codegen/secret/compute/v1beta1/msg'
 
 // Convert CosmWasm message to its encoded protobuf equivalent.
 export const cwMsgToProtobuf = (
@@ -92,14 +100,16 @@ export const cwMsgToProtobuf = (
 
 // Convert protobuf to its CosmWasm message equivalent.
 export const protobufToCwMsg = (
+  chain: Chain,
   ...params: Parameters<typeof decodeRawProtobufMsg>
 ): {
-  msg: CosmosMsgFor_Empty
+  msg: UnifiedCosmosMsg
   sender: string
-} => decodedStargateMsgToCw(decodeRawProtobufMsg(...params))
+} => decodedStargateMsgToCw(chain, decodeRawProtobufMsg(...params))
 
 export const cwMsgToEncodeObject = (
-  msg: CosmosMsgFor_Empty,
+  chainId: string,
+  msg: UnifiedCosmosMsg,
   sender: string
 ): EncodeObject => {
   if ('bank' in msg) {
@@ -200,38 +210,80 @@ export const cwMsgToEncodeObject = (
 
   if ('wasm' in msg) {
     const wasmMsg = msg.wasm
+    const isSecret =
+      chainId === ChainId.SecretMainnet || chainId === ChainId.SecretTestnet
 
-    // MsgStoreCodeEncodeObject missing from CosmosMsgFor_Empty.
+    // MsgStoreCodeEncodeObject missing from UnifiedCosmosMsg.
 
     if ('execute' in wasmMsg) {
+      if (isSecret !== 'send' in wasmMsg.execute) {
+        throw new Error('Unsupported Secret wasm module message.')
+      }
+
       const encodeObject: EncodeObject = {
-        typeUrl: MsgExecuteContract.typeUrl,
-        value: {
-          sender,
-          contract: wasmMsg.execute.contract_addr,
-          funds: wasmMsg.execute.funds,
-          msg: fromBase64(wasmMsg.execute.msg),
-        },
+        typeUrl:
+          'send' in wasmMsg.execute
+            ? SecretMsgExecuteContract.typeUrl
+            : MsgExecuteContract.typeUrl,
+        value:
+          'send' in wasmMsg.execute
+            ? ({
+                sender: fromBech32(sender).data,
+                contract: fromBech32(wasmMsg.execute.contract_addr).data,
+                msg: fromBase64(wasmMsg.execute.msg),
+                callbackCodeHash: wasmMsg.execute.code_hash,
+                sentFunds: wasmMsg.execute.send,
+                callbackSig: new Uint8Array(),
+              } as SecretMsgExecuteContract)
+            : ({
+                sender,
+                contract: wasmMsg.execute.contract_addr,
+                funds: wasmMsg.execute.funds,
+                msg: fromBase64(wasmMsg.execute.msg),
+              } as MsgExecuteContract),
       }
       return encodeObject
     }
 
     if ('instantiate' in wasmMsg) {
+      if (isSecret !== 'send' in wasmMsg.instantiate) {
+        throw new Error('Unsupported Secret wasm module message.')
+      }
+
       const encodeObject: EncodeObject = {
-        typeUrl: MsgInstantiateContract.typeUrl,
-        value: {
-          sender,
-          admin: wasmMsg.instantiate.admin ?? undefined,
-          codeId: BigInt(wasmMsg.instantiate.code_id),
-          label: wasmMsg.instantiate.label,
-          msg: fromBase64(wasmMsg.instantiate.msg),
-          funds: wasmMsg.instantiate.funds,
-        },
+        typeUrl:
+          'send' in wasmMsg.instantiate
+            ? SecretMsgInstantiateContract.typeUrl
+            : MsgInstantiateContract.typeUrl,
+        value:
+          'send' in wasmMsg.instantiate
+            ? ({
+                sender: fromBech32(sender).data,
+                callbackCodeHash: wasmMsg.instantiate.code_hash,
+                codeId: BigInt(wasmMsg.instantiate.code_id),
+                label: wasmMsg.instantiate.label,
+                initMsg: fromBase64(wasmMsg.instantiate.msg),
+                initFunds: wasmMsg.instantiate.send,
+                callbackSig: new Uint8Array(),
+                admin: wasmMsg.instantiate.admin ?? undefined,
+              } as SecretMsgInstantiateContract)
+            : ({
+                sender,
+                admin: wasmMsg.instantiate.admin ?? undefined,
+                codeId: BigInt(wasmMsg.instantiate.code_id),
+                label: wasmMsg.instantiate.label,
+                msg: fromBase64(wasmMsg.instantiate.msg),
+                funds: wasmMsg.instantiate.funds,
+              } as MsgInstantiateContract),
       }
       return encodeObject
     }
 
     if ('instantiate2' in wasmMsg) {
+      if (isSecret) {
+        throw new Error('Unsupported Secret wasm module message.')
+      }
+
       const encodeObject: EncodeObject = {
         typeUrl: MsgInstantiateContract2.typeUrl,
         value: {
@@ -249,37 +301,69 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('migrate' in wasmMsg) {
+      if (isSecret !== 'code_hash' in wasmMsg.migrate) {
+        throw new Error('Unsupported Secret wasm module message.')
+      }
+
       const encodeObject: EncodeObject = {
-        typeUrl: MsgMigrateContract.typeUrl,
-        value: {
-          sender,
-          contract: wasmMsg.migrate.contract_addr,
-          codeId: BigInt(wasmMsg.migrate.new_code_id),
-          msg: fromBase64(wasmMsg.migrate.msg),
-        },
+        typeUrl:
+          'code_hash' in wasmMsg.migrate
+            ? SecretMsgMigrateContract.typeUrl
+            : MsgMigrateContract.typeUrl,
+        value:
+          'code_hash' in wasmMsg.migrate
+            ? ({
+                sender,
+                contract: wasmMsg.migrate.contract_addr,
+                codeId: BigInt(wasmMsg.migrate.code_id),
+                msg: fromBase64(wasmMsg.migrate.msg),
+                callbackSig: new Uint8Array(),
+                callbackCodeHash: wasmMsg.migrate.code_hash,
+              } as SecretMsgMigrateContract)
+            : ({
+                sender,
+                contract: wasmMsg.migrate.contract_addr,
+                codeId: BigInt(wasmMsg.migrate.new_code_id),
+                msg: fromBase64(wasmMsg.migrate.msg),
+              } as MsgMigrateContract),
       }
       return encodeObject
     }
 
     if ('update_admin' in wasmMsg) {
       const encodeObject: EncodeObject = {
-        typeUrl: MsgUpdateAdmin.typeUrl,
-        value: {
-          sender,
-          newAdmin: wasmMsg.update_admin.admin,
-          contract: wasmMsg.update_admin.contract_addr,
-        },
+        typeUrl: isSecret
+          ? SecretMsgUpdateAdmin.typeUrl
+          : MsgUpdateAdmin.typeUrl,
+        value: isSecret
+          ? ({
+              sender,
+              newAdmin: wasmMsg.update_admin.admin,
+              contract: wasmMsg.update_admin.contract_addr,
+              callbackSig: new Uint8Array(),
+            } as SecretMsgUpdateAdmin)
+          : ({
+              sender,
+              newAdmin: wasmMsg.update_admin.admin,
+              contract: wasmMsg.update_admin.contract_addr,
+            } as MsgUpdateAdmin),
       }
       return encodeObject
     }
 
     if ('clear_admin' in wasmMsg) {
       const encodeObject: EncodeObject = {
-        typeUrl: MsgClearAdmin.typeUrl,
-        value: {
-          sender,
-          contract: wasmMsg.clear_admin.contract_addr,
-        },
+        typeUrl: isSecret ? SecretMsgClearAdmin.typeUrl : MsgClearAdmin.typeUrl,
+        value: isSecret
+          ? ({
+              sender,
+              contract: wasmMsg.clear_admin.contract_addr,
+              callbackSig: new Uint8Array(),
+            } as SecretMsgClearAdmin)
+          : ({
+              sender,
+              contract: wasmMsg.clear_admin.contract_addr,
+            } as MsgClearAdmin),
       }
       return encodeObject
     }
@@ -291,7 +375,7 @@ export const cwMsgToEncodeObject = (
     const govMsg = msg.gov
 
     // MsgDepositEncodeObject and MsgSubmitProposalEncodeObject missing from
-    // CosmosMsgFor_Empty.
+    // UnifiedCosmosMsg.
 
     if ('vote' in govMsg) {
       const encodeObject: EncodeObject = {
@@ -316,14 +400,14 @@ export const cwMsgToEncodeObject = (
 // `useDecodedCosmosMsg` hook in actions. That's because the default case with
 // `makeStargateMessage` needs a non-recursively encoded message due to
 // technicalities with nested protobufs.
-export const decodedStargateMsgToCw = ({
-  typeUrl,
-  value,
-}: DecodedStargateMsg['stargate']): {
-  msg: CosmosMsgFor_Empty
+export const decodedStargateMsgToCw = (
+  chain: Chain,
+  { typeUrl, value }: DecodedStargateMsg['stargate']
+): {
+  msg: UnifiedCosmosMsg
   sender: string
 } => {
-  let msg: CosmosMsgFor_Empty
+  let msg: UnifiedCosmosMsg
   let sender = ''
   switch (typeUrl) {
     case MsgSend.typeUrl:
@@ -403,6 +487,19 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
+    case SecretMsgExecuteContract.typeUrl:
+      msg = {
+        wasm: {
+          execute: {
+            code_hash: value.callbackCodeHash,
+            contract_addr: toBech32(chain.bech32_prefix, value.contract),
+            msg: toBase64(value.msg),
+            send: value.sentFunds,
+          },
+        },
+      }
+      sender = toBech32(chain.bech32_prefix, value.sender)
+      break
     case MsgInstantiateContract.typeUrl:
       msg = {
         wasm: {
@@ -416,6 +513,21 @@ export const decodedStargateMsgToCw = ({
         },
       }
       sender = value.sender
+      break
+    case SecretMsgInstantiateContract.typeUrl:
+      msg = {
+        wasm: {
+          instantiate: {
+            admin: value.admin,
+            code_hash: value.callbackCodeHash,
+            code_id: Number(value.codeId),
+            label: value.label,
+            msg: toBase64(value.initMsg),
+            send: value.initFunds,
+          },
+        },
+      }
+      sender = toBech32(chain.bech32_prefix, value.sender)
       break
     case MsgInstantiateContract2.typeUrl:
       msg = {
@@ -445,7 +557,21 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
+    case SecretMsgMigrateContract.typeUrl:
+      msg = {
+        wasm: {
+          migrate: {
+            code_hash: value.callbackCodeHash,
+            contract_addr: value.contract,
+            code_id: Number(value.codeId),
+            msg: toBase64(value.msg),
+          },
+        },
+      }
+      sender = value.sender
+      break
     case MsgUpdateAdmin.typeUrl:
+    case SecretMsgUpdateAdmin.typeUrl:
       msg = {
         wasm: {
           update_admin: {
@@ -457,6 +583,7 @@ export const decodedStargateMsgToCw = ({
       sender = value.sender
       break
     case MsgClearAdmin.typeUrl:
+    case SecretMsgClearAdmin.typeUrl:
       msg = {
         wasm: {
           clear_admin: {
@@ -498,7 +625,7 @@ export const decodedStargateMsgToCw = ({
 export const decodedStakingStargateMsgToCw = ({
   typeUrl,
   value,
-}: DecodedStargateMsg['stargate']): CosmosMsgFor_Empty | undefined => {
+}: DecodedStargateMsg['stargate']): UnifiedCosmosMsg | undefined => {
   switch (typeUrl) {
     case MsgDelegate.typeUrl:
       return {

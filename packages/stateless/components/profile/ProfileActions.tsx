@@ -21,10 +21,10 @@ import {
   AccountTxForm,
   AccountTxSave,
   ActionCategoryWithLabel,
-  CosmosMsgFor_Empty,
   LoadedActions,
   LoadingData,
   SuspenseLoaderProps,
+  UnifiedCosmosMsg,
   WalletChainSwitcherProps,
 } from '@dao-dao/types'
 import {
@@ -51,7 +51,7 @@ export type ProfileActionsProps = {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   formMethods: UseFormReturn<AccountTxForm, object>
-  execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
+  execute: (messages: UnifiedCosmosMsg[]) => Promise<void>
   loading: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string

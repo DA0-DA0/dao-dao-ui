@@ -12,7 +12,7 @@ import {
   SwordsEmoji,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { CosmosMsgForEmpty, TokenType } from '@dao-dao/types'
+import { TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -87,7 +87,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         )
       }
 
-      let executeMsg: CosmosMsgForEmpty | undefined
+      let executeMsg: UnifiedCosmosMsg | undefined
       if (cw20) {
         if (funds.length !== 1 || fundsTokens.length !== 1) {
           throw new Error(t('error.loadingData'))

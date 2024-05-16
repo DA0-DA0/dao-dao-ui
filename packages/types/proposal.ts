@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
-import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
+import { ProposalStatus, UnifiedCosmosMsg } from './contracts'
 import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 import { ProposalResponse } from './contracts/DaoProposalSingle.v2'
 import { Event } from './contracts/PolytoneListener'
@@ -50,10 +50,10 @@ export type DecodedPolytoneMsgMatch = {
   // The first message, or empty object if none.
   msg: Record<string, any>
   // The first message, or undefined if none.
-  cosmosMsg: CosmosMsgFor_Empty | undefined
+  cosmosMsg: UnifiedCosmosMsg | undefined
   // All messages.
   msgs: Record<string, any>[]
-  cosmosMsgs: CosmosMsgFor_Empty[]
+  cosmosMsgs: UnifiedCosmosMsg[]
   initiatorMsg: string
 }
 
@@ -79,7 +79,7 @@ export type DecodedIcaMsgMatch = {
   cosmosMsgWithSender:
     | {
         sender: string
-        msg: CosmosMsgFor_Empty
+        msg: UnifiedCosmosMsg
       }
     | undefined
   // All messages.
@@ -89,7 +89,7 @@ export type DecodedIcaMsgMatch = {
   }[]
   cosmosMsgsWithSenders: {
     sender: string
-    msg: CosmosMsgFor_Empty
+    msg: UnifiedCosmosMsg
   }[]
 }
 

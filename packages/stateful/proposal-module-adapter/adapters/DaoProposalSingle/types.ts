@@ -7,8 +7,8 @@ import {
   PercentOrMajorityValue,
   ProcessedTQ,
   ProposalTimestampInfo,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
@@ -20,7 +20,7 @@ export interface NewProposalForm {
 
 // Converted data from actions into Cosmos messages.
 export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
-  msgs: CosmosMsgFor_Empty[]
+  msgs: UnifiedCosmosMsg[]
 }
 
 export type DaoCreationExtraVotingConfig = {

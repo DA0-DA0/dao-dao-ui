@@ -172,6 +172,7 @@ export const useProposalVetoState = ({
           walletAddress,
           proposalModule.address,
           cwMsgToEncodeObject(
+            chainId,
             vetoerEntity.data.type === EntityType.Wallet
               ? msg
               : makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),
@@ -254,6 +255,7 @@ export const useProposalVetoState = ({
           walletAddress,
           proposalModule.address,
           cwMsgToEncodeObject(
+            chainId,
             vetoerEntity.data.type === EntityType.Wallet
               ? msg
               : makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),

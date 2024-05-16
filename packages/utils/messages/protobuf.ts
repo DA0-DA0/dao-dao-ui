@@ -16,6 +16,7 @@ import { MsgExecLegacyContent } from '@dao-dao/types/protobuf/codegen/cosmos/gov
 import { TextProposal } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 
+import { getChainForChainId } from '../chain'
 import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
 import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
@@ -23,11 +24,12 @@ import { isCosmWasmStargateMsg } from './cw'
 
 // Decode governance proposal v1 messages using a protobuf.
 export const decodeGovProposalV1Messages = (
+  chainId: string,
   messages: GovProposalV1['proposal']['messages']
 ): GovProposalV1DecodedMessages =>
   messages.map((msg) => {
     try {
-      return protobufToCwMsg(msg).msg
+      return protobufToCwMsg(getChainForChainId(chainId), msg).msg
     } catch (err) {
       // If protobuf not found, return raw stargate message.
       console.error(err)
@@ -74,6 +76,7 @@ export const decodeGovProposal = async (
   }
 
   const decodedMessages = decodeGovProposalV1Messages(
+    chainId,
     govProposal.proposal.messages.filter(
       ({ typeUrl }) => typeUrl !== MsgExecLegacyContent.typeUrl
     )

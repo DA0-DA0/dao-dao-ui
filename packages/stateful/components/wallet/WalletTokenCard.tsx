@@ -191,6 +191,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         (lazyInfo.loading ? [] : lazyInfo.data.stakingInfo!.stakes).map(
           ({ validator }) =>
             cwMsgToEncodeObject(
+              chainWallet.chainId,
               {
                 distribution: {
                   withdraw_delegator_reward: {

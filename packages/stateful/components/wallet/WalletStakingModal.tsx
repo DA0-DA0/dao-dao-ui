@@ -120,6 +120,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           walletAddress,
           [
             cwMsgToEncodeObject(
+              chainId,
               {
                 staking: {
                   delegate: {
@@ -138,6 +139,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           walletAddress,
           [
             cwMsgToEncodeObject(
+              chainId,
               {
                 staking: {
                   undelegate: {

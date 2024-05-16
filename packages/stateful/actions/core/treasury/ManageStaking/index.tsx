@@ -20,9 +20,9 @@ import {
 import {
   ChainId,
   Coin,
-  CosmosMsgForEmpty,
   LoadingData,
   TokenType,
+  UnifiedCosmosMsg,
   decodedStakingStargateMsgToCw,
   makeStargateMessage,
 } from '@dao-dao/types'
@@ -93,7 +93,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
         nativeToken.denomOrAddress
       )
 
-      let msg: CosmosMsgForEmpty
+      let msg: UnifiedCosmosMsg
       switch (stakeType) {
         case StakingActionType.Delegate:
           msg = makeStargateMessage({

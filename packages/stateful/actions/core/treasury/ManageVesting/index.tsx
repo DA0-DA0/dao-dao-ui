@@ -21,12 +21,12 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
-  CosmosMsgForEmpty,
   DurationUnits,
   DurationWithUnits,
   SegmentedControlsProps,
   TokenType,
   TypedOption,
+  UnifiedCosmosMsg,
   VestingContractVersion,
   VestingPaymentsWidgetData,
   WidgetId,
@@ -524,7 +524,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = (
       return useCallback(
         ({ mode, begin, registerSlash, cancel }: ManageVestingData) => {
           let chainId: string
-          let cosmosMsg: CosmosMsgForEmpty
+          let cosmosMsg: UnifiedCosmosMsg
 
           // Can only begin a vest if there is widget data available.
           if (mode === 'begin' && widgetData) {

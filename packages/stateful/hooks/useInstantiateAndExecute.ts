@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { Coin, CosmosMsgFor_Empty, cwMsgToEncodeObject } from '@dao-dao/types'
+import { Coin, UnifiedCosmosMsg, cwMsgToEncodeObject } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   isSecretNetwork,
@@ -96,7 +96,7 @@ export const useInstantiateAndExecute = (
         toUtf8(salt),
         chain.bech32_prefix
       )
-      const messages: CosmosMsgFor_Empty[] = [
+      const messages: UnifiedCosmosMsg[] = [
         // Instantiate the contract.
         makeWasmMessage({
           wasm: {
@@ -124,7 +124,9 @@ export const useInstantiateAndExecute = (
       const signingCosmWasmClient = await getSigningCosmWasmClient()
       const response = (await signingCosmWasmClient.signAndBroadcast(
         address,
-        messages.map((msg) => cwMsgToEncodeObject(msg, address)),
+        messages.map((msg) =>
+          cwMsgToEncodeObject(chain.chain_id, msg, address)
+        ),
         CHAIN_GAS_MULTIPLIER
         // cosmos-kit has an older version of the package. This is a workaround.
       )) as DeliverTxResponse

@@ -9,7 +9,7 @@ import {
   IChainContext,
   SupportedChainContext,
 } from './chain'
-import { CosmosMsgFor_Empty } from './contracts/common'
+import { UnifiedCosmosMsg } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
 import { PfpkProfile } from './profile'
@@ -149,7 +149,7 @@ export type UseDefaults<D extends {} = any> = () => D | Error | undefined
 
 export type UseTransformToCosmos<D extends {} = any> = () => (
   data: D
-) => CosmosMsgFor_Empty | undefined
+) => UnifiedCosmosMsg | undefined
 
 export interface DecodeCosmosMsgNoMatch {
   match: false
@@ -201,7 +201,7 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   order?: number
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
-  // Hook to make function to convert action data to CosmosMsgFor_Empty.
+  // Hook to make function to convert action data to UnifiedCosmosMsg.
   useTransformToCosmos: UseTransformToCosmos<Data>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
@@ -330,7 +330,7 @@ export type LoadedAction = {
 export type LoadedActions = Partial<Record<ActionKey, LoadedAction>>
 
 export type NestedActionsEditorFormData = {
-  msgs: CosmosMsgFor_Empty[]
+  msgs: UnifiedCosmosMsg[]
 
   // Internal action data so that errors are added to main form.
   _actionData?: ActionKeyAndData[]

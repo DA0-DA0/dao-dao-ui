@@ -417,3 +417,5 @@ export type SecretWasmMsg =
         contract_addr: string
       }
     }
+
+export type UnifiedCosmosMsg = CosmosMsgFor_Empty | SecretCosmosMsgForEmpty
