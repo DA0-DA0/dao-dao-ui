@@ -1,6 +1,6 @@
 import { atom, atomFamily } from 'recoil'
 
-import { ChainId } from '@dao-dao/types'
+import { ChainId, PermitForPermitData } from '@dao-dao/types'
 import {
   MAINNET,
   SupportedCosmWasmClient,
@@ -37,7 +37,7 @@ export const walletChainIdAtom = atom<string>({
  * storage.
  */
 export const secretNetworkPermitAtom = atomFamily<
-  string | undefined,
+  PermitForPermitData | undefined,
   {
     walletAddress: string
     dao: string

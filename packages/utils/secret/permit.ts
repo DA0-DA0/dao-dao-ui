@@ -1,9 +1,29 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 
+import { PermitForPermitData } from '@dao-dao/types'
+
+import { encodeJsonToBase64 } from '../messages'
+
 export type CreateSecretNetworkPermitOptions = {
+  /**
+   * Chain ID.
+   */
   chainId: string
+  /**
+   * Wallet address.
+   */
   address: string
+  /**
+   * Arbitrary string.
+   */
   key: string
+  /**
+   * Optional data object. Defaults to empty object.
+   */
+  data?: Record<string, any>
+  /**
+   * Offline Amino signer that corresponds with chain ID and wallet address.
+   */
   offlineSignerAmino: OfflineAminoSigner
 }
 
@@ -14,8 +34,11 @@ export const createSecretNetworkPermit = async ({
   chainId,
   address,
   key,
+  data = {},
   offlineSignerAmino,
-}: CreateSecretNetworkPermitOptions) => {
+}: CreateSecretNetworkPermitOptions): Promise<PermitForPermitData> => {
+  const encodedData = encodeJsonToBase64(data)
+
   // Generate data to sign.
   const signDoc = makeSignDoc(
     [
@@ -23,8 +46,7 @@ export const createSecretNetworkPermit = async ({
         type: 'signature_proof',
         value: {
           key,
-          // base64-encoded `{}` (empty JSON object)
-          data: 'e30=',
+          data: encodedData,
         },
       },
     ],
@@ -43,10 +65,22 @@ export const createSecretNetworkPermit = async ({
     0
   )
 
-  const { signature } = await offlineSignerAmino.signAmino(address, signDoc)
+  const { signed, signature } = await offlineSignerAmino.signAmino(
+    address,
+    signDoc
+  )
 
-  return {
-    signDoc,
+  const permit: PermitForPermitData = {
+    account_number: signed.account_number,
+    chain_id: signed.chain_id,
+    memo: signed.memo,
+    params: {
+      key,
+      data: encodedData,
+    },
+    sequence: signed.sequence,
     signature,
   }
+
+  return permit
 }

@@ -6,7 +6,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { useWallet } from '../../../../hooks/useWallet'
+import { useWalletWithSecretNetworkPermit } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
 
@@ -19,29 +19,44 @@ export const useLoadingWalletVoteInfo = ():
     proposalNumber,
     chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
-  const { address: walletAddress } = useWallet()
+  const {
+    isSecretNetwork,
+    address: walletAddress,
+    permit,
+  } = useWalletWithSecretNetworkPermit({
+    dao: coreAddress,
+  })
 
   const loadingProposal = useLoadingProposal()
 
   const walletVoteLoadable = useCachedLoadable(
-    walletAddress
+    (isSecretNetwork ? permit : walletAddress)
       ? DaoProposalMultipleSelectors.getVoteSelector({
           chainId,
           contractAddress: proposalModule.address,
-          params: [{ proposalId: proposalNumber, voter: walletAddress }],
+          params: [
+            {
+              proposalId: proposalNumber,
+              ...(isSecretNetwork
+                ? { auth: { permit } }
+                : { address: walletAddress }),
+            },
+          ],
         })
       : undefined
   )
 
   const walletVotingPowerWhenProposalCreatedLoadable = useCachedLoadable(
-    walletAddress && !loadingProposal.loading
+    (isSecretNetwork ? permit : walletAddress) && !loadingProposal.loading
       ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
           chainId,
           contractAddress: coreAddress,
           params: [
             {
-              address: walletAddress,
               height: loadingProposal.data.start_height,
+              ...(isSecretNetwork
+                ? { auth: { permit } }
+                : { address: walletAddress }),
             },
           ],
         })
@@ -62,8 +77,8 @@ export const useLoadingWalletVoteInfo = ():
       : undefined
   )
 
-  // Return undefined when not connected.
-  if (!walletAddress) {
+  // Return undefined when no permit.
+  if (!permit) {
     return undefined
   }
 

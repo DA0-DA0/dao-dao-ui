@@ -30,6 +30,7 @@ import {
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   IndexerDaoWithVetoableProposals,
+  PermitForPermitData,
   ProposalModule,
   StatefulProposalLineProps,
   WithChainId,
@@ -39,6 +40,7 @@ import {
   getDaoProposalPath,
   getSupportedChainConfig,
   isConfiguredChainName,
+  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
@@ -50,11 +52,13 @@ export const daoCardLazyDataSelector = selectorFamily<
   WithChainId<{
     coreAddress: string
     walletAddress?: string
+    // Secret Network
+    permit?: PermitForPermitData
   }>
 >({
   key: 'daoCardLazyData',
   get:
-    ({ coreAddress, chainId, walletAddress }) =>
+    ({ chainId, coreAddress, walletAddress, permit }) =>
     ({ get }) => {
       const { amount: tvl } = get(
         daoTvlSelector({
@@ -104,17 +108,22 @@ export const daoCardLazyDataSelector = selectorFamily<
 
       // DAO.
 
-      const walletVotingWeight = walletAddress
-        ? Number(
-            get(
-              DaoCoreV2Selectors.votingPowerAtHeightSelector({
-                chainId,
-                contractAddress: coreAddress,
-                params: [{ address: walletAddress }],
-              })
-            ).power
-          )
-        : 0
+      const walletVotingWeight =
+        walletAddress && (!isSecretNetwork(chainId) || permit)
+          ? Number(
+              get(
+                DaoCoreV2Selectors.votingPowerAtHeightSelector({
+                  chainId,
+                  contractAddress: coreAddress,
+                  params: [
+                    isSecretNetwork(chainId)
+                      ? { auth: { permit } }
+                      : { address: walletAddress },
+                  ],
+                })
+              ).power
+            )
+          : 0
 
       const proposalModules = get(
         daoCoreProposalModulesSelector({

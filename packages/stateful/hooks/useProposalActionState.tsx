@@ -14,6 +14,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  Auth,
   ChainId,
   LoadingData,
   PreProposeModuleType,
@@ -30,19 +31,27 @@ import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
 import { UseProposalRelayStateReturn } from './useProposalRelayState'
-import { useWallet } from './useWallet'
+import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
 
 export type UseProposalActionStateOptions = {
   relayState: UseProposalRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
   executeProposal: (
-    options: { proposalId: number },
+    options: {
+      proposalId: number
+      // Secret Network
+      auth?: Auth
+    },
     // No need.
     fee?: undefined,
     memo?: string | undefined
   ) => Promise<ExecuteResult>
-  closeProposal: (options: { proposalId: number }) => Promise<ExecuteResult>
+  closeProposal: (options: {
+    proposalId: number
+    // Secret Network
+    auth?: Auth
+  }) => Promise<ExecuteResult>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -72,7 +81,10 @@ export const useProposalActionState = ({
   } = useConfiguredChainContext()
   const { coreAddress, items } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected } = useWallet()
+  const { isSecretNetwork, isWalletConnected, getPermit } =
+    useWalletWithSecretNetworkPermit({
+      dao: coreAddress,
+    })
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -106,6 +118,11 @@ export const useProposalActionState = ({
       await executeProposal(
         {
           proposalId: proposalNumber,
+          ...(isSecretNetwork && {
+            auth: {
+              permit: await getPermit(),
+            },
+          }),
         },
         undefined,
         allowMemoOnExecute && memo ? memo : undefined
@@ -125,6 +142,8 @@ export const useProposalActionState = ({
     isWalletConnected,
     executeProposal,
     proposalNumber,
+    isSecretNetwork,
+    getPermit,
     allowMemoOnExecute,
     memo,
     onExecuteSuccess,
@@ -140,6 +159,11 @@ export const useProposalActionState = ({
     try {
       await closeProposal({
         proposalId: proposalNumber,
+        ...(isSecretNetwork && {
+          auth: {
+            permit: await getPermit(),
+          },
+        }),
       })
 
       await onCloseSuccess()
@@ -152,7 +176,14 @@ export const useProposalActionState = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
+  }, [
+    isWalletConnected,
+    closeProposal,
+    proposalNumber,
+    isSecretNetwork,
+    getPermit,
+    onCloseSuccess,
+  ])
 
   const showRelayStatus =
     !relayState.loading &&

@@ -13,7 +13,10 @@ import {
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../../components'
-import { useMembership, useWallet } from '../../../../../../hooks'
+import {
+  useMembership,
+  useWalletWithSecretNetworkPermit,
+} from '../../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
 import { CompletedSurvey, CompletedSurveyListing } from '../../types'
@@ -24,7 +27,13 @@ import { OpenSurveySection } from './OpenSurveySection'
 export const TabRenderer = () => {
   const { coreAddress } = useDaoInfoContext()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress = '', hexPublicKey } = useWallet({
+  const {
+    isSecretNetwork,
+    address: walletAddress,
+    permit,
+    hexPublicKey,
+  } = useWalletWithSecretNetworkPermit({
+    dao: coreAddress,
     loadAccount: true,
   })
   const { isMember = false } = useMembership({
@@ -47,7 +56,8 @@ export const TabRenderer = () => {
   // Get voting power at time of each completed survey creation to determine if
   // we can download the CSV or not.
   const loadingMembershipDuringCompletedSurveys = useCachedLoading(
-    loadingCompletedSurveys.loading || !walletAddress
+    loadingCompletedSurveys.loading ||
+      !(isSecretNetwork ? permit : walletAddress)
       ? undefined
       : waitForAll(
           loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
@@ -56,8 +66,10 @@ export const TabRenderer = () => {
               chainId,
               params: [
                 {
-                  address: walletAddress,
                   height: createdAtBlockHeight,
+                  ...(isSecretNetwork
+                    ? { auth: { permit } }
+                    : { address: walletAddress }),
                 },
               ],
             })

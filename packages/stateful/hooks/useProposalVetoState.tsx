@@ -34,7 +34,7 @@ import {
 import { ButtonLink, EntityDisplay } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useEntity } from './useEntity'
-import { useWallet } from './useWallet'
+import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
 
 export type UseProposalVetoStateOptions = {
   statusKey: ProposalStatusKey
@@ -71,7 +71,14 @@ export const useProposalVetoState = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '', getSigningClient } = useWallet()
+  const {
+    isSecretNetwork,
+    address: walletAddress = '',
+    permit,
+    getSigningClient,
+  } = useWalletWithSecretNetworkPermit({
+    dao: coreAddress,
+  })
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
   const [vetoLoading, setVetoLoading] = useState<
@@ -91,13 +98,17 @@ export const useProposalVetoState = ({
   )
   // This is the voting power the current wallet has in each of the DAO vetoers.
   const walletDaoVetoerMemberships = useCachedLoading(
-    !vetoerEntity.loading && walletAddress
+    !vetoerEntity.loading && (isSecretNetwork ? permit : walletAddress)
       ? waitForAll(
           vetoerDaoEntities.map((entity) =>
             DaoCoreV2Selectors.votingPowerAtHeightSelector({
               contractAddress: entity.address,
               chainId,
-              params: [{ address: walletAddress }],
+              params: [
+                isSecretNetwork
+                  ? { auth: { permit } }
+                  : { address: walletAddress },
+              ],
             })
           )
         )

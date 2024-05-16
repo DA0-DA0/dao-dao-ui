@@ -8,14 +8,22 @@ import { processError } from '@dao-dao/utils'
 import {
   CwProposalSingleV1Hooks,
   DaoProposalSingleV2Hooks,
+  useWalletWithSecretNetworkPermit,
 } from '../../../../hooks'
-import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
+  const { coreAddress, proposalModule, proposalNumber } =
+    useProposalModuleAdapterOptions()
+  const {
+    isSecretNetwork,
+    isWalletConnected,
+    address: walletAddress = '',
+    getPermit,
+  } = useWalletWithSecretNetworkPermit({
+    dao: coreAddress,
+  })
 
   const _castVote = (
     proposalModule.version === ContractVersion.V1
@@ -41,14 +49,24 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
   const castVote = useCallback(
     async (vote: Vote) => {
-      if (!isWalletConnected) return
+      if (!isWalletConnected) {
+        toast.error('Log in to continue.')
+        return
+      }
 
       setCastingVote(true)
 
       try {
+        const permit = await getPermit()
+
         await _castVote({
           proposalId: proposalNumber,
           vote,
+          ...(isSecretNetwork && {
+            auth: {
+              permit,
+            },
+          }),
         })
 
         await onSuccess?.()
@@ -62,7 +80,14 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
       // Loading will stop on success when vote data refreshes.
     },
-    [isWalletConnected, setCastingVote, _castVote, proposalNumber, onSuccess]
+    [
+      isWalletConnected,
+      getPermit,
+      _castVote,
+      proposalNumber,
+      isSecretNetwork,
+      onSuccess,
+    ]
   )
 
   return {
