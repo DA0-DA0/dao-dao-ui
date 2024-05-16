@@ -29,7 +29,7 @@ import {
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
-  useWallet,
+  useWalletWithSecretNetworkPermit,
 } from '../../../../../hooks'
 import {
   MakeUsePublishProposalOptions,
@@ -52,11 +52,13 @@ export const makeUsePublishProposal =
   () => {
     const { t } = useTranslation()
     const {
+      isSecretNetwork,
       isWalletConnected,
       address: walletAddress,
+      getPermit,
       getStargateClient,
-    } = useWallet({
-      chainId,
+    } = useWalletWithSecretNetworkPermit({
+      dao: coreAddress,
     })
     const { isMember = false } = useMembership({
       coreAddress,
@@ -352,6 +354,11 @@ export const makeUsePublishProposal =
                 msg: {
                   propose: proposalData,
                 },
+                ...(isSecretNetwork && {
+                  auth: {
+                    permit: await getPermit(),
+                  },
+                }),
               },
               CHAIN_GAS_MULTIPLIER,
               undefined,
@@ -395,6 +402,8 @@ export const makeUsePublishProposal =
         depositInfoCw20TokenAddress,
         depositInfoNativeTokenDenom,
         doProposePrePropose,
+        isSecretNetwork,
+        getPermit,
         doPropose,
         t,
         simulateMsgs,

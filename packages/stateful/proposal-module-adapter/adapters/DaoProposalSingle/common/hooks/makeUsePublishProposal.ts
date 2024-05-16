@@ -31,7 +31,7 @@ import {
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
-  useWallet,
+  useWalletWithSecretNetworkPermit,
 } from '../../../../../hooks'
 import {
   MakeUsePublishProposalOptions,
@@ -54,10 +54,14 @@ export const makeUsePublishProposal =
   () => {
     const { t } = useTranslation()
     const {
+      isSecretNetwork,
       isWalletConnected,
       address: walletAddress,
+      getPermit,
       getStargateClient,
-    } = useWallet()
+    } = useWalletWithSecretNetworkPermit({
+      dao: coreAddress,
+    })
     const { isMember = false } = useMembership({
       coreAddress,
     })
@@ -326,7 +330,14 @@ export const makeUsePublishProposal =
         // V1 does not support pre-propose
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
-            proposalData,
+            {
+              ...proposalData,
+              ...(isSecretNetwork && {
+                auth: {
+                  permit: await getPermit(),
+                },
+              }),
+            },
             CHAIN_GAS_MULTIPLIER,
             undefined,
             proposeFunds
@@ -342,13 +353,25 @@ export const makeUsePublishProposal =
                   msg: {
                     propose: proposalData,
                   },
+                  ...(isSecretNetwork && {
+                    auth: {
+                      permit: await getPermit(),
+                    },
+                  }),
                 },
                 CHAIN_GAS_MULTIPLIER,
                 undefined,
                 proposeFunds
               )
             : await doProposeV2(
-                proposalData,
+                {
+                  ...proposalData,
+                  ...(isSecretNetwork && {
+                    auth: {
+                      permit: await getPermit(),
+                    },
+                  }),
+                },
                 CHAIN_GAS_MULTIPLIER,
                 undefined,
                 proposeFunds
@@ -404,6 +427,8 @@ export const makeUsePublishProposal =
         doProposeV1,
         doProposePrePropose,
         doProposeV2,
+        getPermit,
+        isSecretNetwork,
       ]
     )
 
