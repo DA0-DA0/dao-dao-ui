@@ -1172,6 +1172,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'terraclassic',
     mainnet: true,
     accentColor: '#ffd842',
+    createWithCw20: true,
     factoryContractAddress:
       'terra18d67ywrfwxq6924xdsg4ahrsjrtuvnu0q5v0ttj07fakw2thspps2fn9yy',
     explorerUrlTemplates: {
@@ -1190,7 +1191,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V242
       CwPayrollFactory: 8729,
       CwTokenSwap: 8730,
-      CwTokenfactoryIssuerMain: 8742,
+      CwTokenfactoryIssuerMain: -1, // Not used
       CwVesting: 8731,
       DaoCore: 8732,
       DaoMigrator: -1,
@@ -1202,7 +1203,11 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoProposalSingle: 8739,
       DaoVotingCw4: 8740,
       DaoVotingCw721Staked: 8741,
-      DaoVotingTokenStaked: 8743,
+      DaoVotingTokenStaked: -1, // Not used
+
+      Cw20Base: 8785,
+      Cw20Stake: 8786,
+      DaoVotingCw20Staked: 8787,
     },
   },
   {
