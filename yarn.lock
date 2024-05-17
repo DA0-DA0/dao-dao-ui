@@ -2032,6 +2032,16 @@
     bfs-path "^1.0.2"
     cross-fetch "^3.1.5"
 
+"@chain-registry/client@^1.44.3":
+  version "1.44.3"
+  resolved "https://registry.yarnpkg.com/@chain-registry/client/-/client-1.44.3.tgz#660a8dba47724860a81d908dc45776dbd4f473d0"
+  integrity sha512-cf49fz+jZDXMpByAD/nSwF3dM+N7nnb9E42eAM6V9N8vrE/9Bwp963mzj8wY4oZpwJCaTL7ja2zq3OD0csfiXQ==
+  dependencies:
+    "@chain-registry/types" "^0.41.3"
+    "@chain-registry/utils" "^1.42.3"
+    bfs-path "^1.0.2"
+    cross-fetch "^3.1.5"
+
 "@chain-registry/cosmostation@1.26.0":
   version "1.26.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/cosmostation/-/cosmostation-1.26.0.tgz#0d3967b8d320168a5c9c7b56b3352dcf3f2945b0"
@@ -2062,6 +2072,11 @@
     "@keplr-wallet/crypto" "0.12.28"
     semver "^7.5.0"
 
+"@chain-registry/types@0.41.3", "@chain-registry/types@^0.41.3":
+  version "0.41.3"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.41.3.tgz#67e32805a281161fe0f283aaabb5133822e1b146"
+  integrity sha512-pmXgS9HJ1vEbZNdgsEMVEqxSki53e35gV+WHSMioXHnCz04tpyEGSa7CvE6mDY/J67NSpJvYr+So7pu27VH5FQ==
+
 "@chain-registry/types@^0.17.0":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.17.1.tgz#0ac7bda6178d3917834578627f232a247fe5def8"
@@ -2087,6 +2102,25 @@
     "@chain-registry/types" "^0.28.11"
     bignumber.js "9.1.1"
     sha.js "^2.4.11"
+
+"@chain-registry/utils@^1.42.3":
+  version "1.42.3"
+  resolved "https://registry.yarnpkg.com/@chain-registry/utils/-/utils-1.42.3.tgz#90ad49d19bc095e991fa89bffaa70eaa8d9e8618"
+  integrity sha512-IJYDwy4rXAZCYET+CJkFKViZIJNE3IE5h4E4Q2+qoRGxETAm3+INth3xKrghjWtIU3jVp5JONkroqhDANSkfMA==
+  dependencies:
+    "@chain-registry/types" "^0.41.3"
+    bignumber.js "9.1.2"
+    sha.js "^2.4.11"
+
+"@classic-terra/terra.proto@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@classic-terra/terra.proto/-/terra.proto-1.1.0.tgz#e314d89f59b49e79a04db25f66f658e5e5aa1890"
+  integrity sha512-bYhQG5LUaGF0KPRY9hYT/HEcd1QExZPQd6zLV/rQkCe/eDxfwFRLzZHpaaAdfWoAAZjsRWqJbUCqCg7gXBbJpw==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -2465,6 +2499,25 @@
     events "3.3.0"
     uuid "^9.0.1"
 
+"@cosmos-kit/core@^2.11.0":
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.11.0.tgz#50e228041d81a77a26df370643d675dc26190ee9"
+  integrity sha512-jYvy/0h5hveJqzD6emVDODEY3bVI2ZUfawZx1TrMJRjZ6gqn/GDwNB4JdsIuZx/pO/XB6FBjk1tf9WptyE9Y/A==
+  dependencies:
+    "@chain-registry/client" "^1.44.3"
+    "@chain-registry/types" "^0.41.3"
+    "@cosmjs/amino" "^0.32.3"
+    "@cosmjs/cosmwasm-stargate" "^0.32.3"
+    "@cosmjs/proto-signing" "^0.32.3"
+    "@cosmjs/stargate" "^0.32.3"
+    "@dao-dao/cosmiframe" "^0.1.0"
+    "@walletconnect/types" "2.11.0"
+    bowser "2.11.0"
+    cosmjs-types "^0.9.0"
+    events "3.3.0"
+    nock "13.5.4"
+    uuid "^9.0.1"
+
 "@cosmos-kit/cosmos-extension-metamask@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmos-extension-metamask/-/cosmos-extension-metamask-0.6.0.tgz#cfb98fcb57574b30d32234bdc8623916e0fa1876"
@@ -2544,6 +2597,23 @@
   integrity sha512-ouNG/oQZkbLvq9lhhQoHRkmAC1M3Dt/Cthfndlx2GPLGTqx/9mUbNU157tMu4AeSw7e5BDsYXgy0FTEHDWMs+A==
   dependencies:
     "@cosmos-kit/frontier-extension" "^2.7.0"
+
+"@cosmos-kit/galaxy-station-extension@^2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-extension/-/galaxy-station-extension-2.9.0.tgz#db0401dc4f2148aea13c3217e71f4ec8745f1048"
+  integrity sha512-L4q+6FnjQ4Udcn7T4fF06SAHjpGo0rMH0Uvnfyyavbvcq1qQVbrYVLeNDJK/81HBRgM303TLOZqu690YaOexpg==
+  dependencies:
+    "@chain-registry/types" "0.41.3"
+    "@cosmos-kit/core" "^2.11.0"
+    "@hexxagon/feather.js" "^1.0.9-beta.8"
+    "@hexxagon/station-connector" "^1.0.17"
+
+"@cosmos-kit/galaxy-station@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station/-/galaxy-station-2.8.0.tgz#28a638234ce300e1189929576d07d041c5ecb8c6"
+  integrity sha512-fEmUCbqXXqwDpo0yjqtRuPDC/Sgwja0RvPtcFeFu6TJQjHKOkk5FRF4R0ABZmFTt/UxPCL2IdXz02zyVxiE+2w==
+  dependencies:
+    "@cosmos-kit/galaxy-station-extension" "^2.9.0"
 
 "@cosmos-kit/keplr-extension@^2.9.0":
   version "2.9.0"
@@ -3911,6 +3981,34 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
+
+"@hexxagon/feather.js@^1.0.9-beta.8":
+  version "1.0.9-beta.8"
+  resolved "https://registry.yarnpkg.com/@hexxagon/feather.js/-/feather.js-1.0.9-beta.8.tgz#c0a67624f845a0da91232de2afe3c274b2a527e4"
+  integrity sha512-jkwwZOKGlEj72eAXO4dsLsMy8ySQJppnVMVIqyfFJuZ8w3uLe3yzS9cztv+A/pA8dcrrxf9ekXaFTA2J/FImxg==
+  dependencies:
+    "@classic-terra/terra.proto" "^1.1.0"
+    "@terra-money/legacy.proto" "npm:@terra-money/terra.proto@^0.1.7"
+    "@terra-money/terra.proto" "3.0.5"
+    axios "^0.27.2"
+    bech32 "^2.0.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bufferutil "^4.0.3"
+    decimal.js "^10.2.1"
+    jscrypto "^1.0.1"
+    readable-stream "^3.6.0"
+    secp256k1 "^4.0.2"
+    tmp "^0.2.1"
+    utf-8-validate "^5.0.5"
+    ws "^7.5.9"
+
+"@hexxagon/station-connector@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@hexxagon/station-connector/-/station-connector-1.0.17.tgz#59734345a2c84437622e6f100a9498f8d99bd470"
+  integrity sha512-VrwCSHUvLtJB93vyJeY1qI6zrDQC7RsxCylYMTU3QL7IJEAOVOdHkj29UmW+HdfrgiVnJhZx9yKuc/582DSZYw==
+  dependencies:
+    bech32 "^2.0.0"
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
@@ -7781,6 +7879,16 @@
   dependencies:
     bech32 "^2.0.0"
 
+"@terra-money/terra.proto@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@terra-money/terra.proto/-/terra.proto-3.0.5.tgz#96f17410a044459412491959b615c52faa2eb338"
+  integrity sha512-8tvT41qte2mpiNoHq2dMmV7soMxwf4ckuJ+F2pMrb7iVcqaBo30/dIfyTdFm5mEH5i5P6cTJggm+UlIZBSPhwQ==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
+
 "@terra-money/terra.proto@^4.0.3":
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/@terra-money/terra.proto/-/terra.proto-4.0.10.tgz#a5c5edce2f4a4eab046bf740edde871874443d10"
@@ -10544,7 +10652,7 @@ bignumber.js@9.1.1:
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.1.tgz#c4df7dc496bd849d4c9464344c1aa74228b4dac6"
   integrity sha512-pHm4LsMJ6lzgNGVfZHjMoO8sdoRhOzOH4MLmY65Jg70bpxCKu5iOHNJyfF6OyvYw7t8Fpf35RuzUyqnQsj8Vig==
 
-bignumber.js@^9.1.2:
+bignumber.js@9.1.2, bignumber.js@^9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
@@ -19073,6 +19181,15 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
+nock@13.5.4:
+  version "13.5.4"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-13.5.4.tgz#8918f0addc70a63736170fef7106a9721e0dc479"
+  integrity sha512-yAyTfdeNJGGBFxWdzSKCBYxs5FxLbCg5X5Q4ets974hcQzG1+qCxvIyOo4j2Ry6MUlhWVMX4OoYDefAIIwupjw==
+  dependencies:
+    debug "^4.1.0"
+    json-stringify-safe "^5.0.1"
+    propagate "^2.0.0"
+
 node-abi@^3.3.0:
   version "3.22.0"
   resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.22.0.tgz#00b8250e86a0816576258227edbce7bbe0039362"
@@ -20749,6 +20866,11 @@ prop-types@^15.0.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.13.1"
+
+propagate@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/propagate/-/propagate-2.0.1.tgz#40cdedab18085c792334e64f0ac17256d38f9a45"
+  integrity sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==
 
 property-information@^5.0.0, property-information@^5.3.0:
   version "5.6.0"

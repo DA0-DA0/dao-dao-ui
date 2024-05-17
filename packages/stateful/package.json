@@ -38,6 +38,7 @@
     "@cosmos-kit/vectis": "^2.8.0",
     "@cosmos-kit/web3auth": "^2.7.0",
     "@cosmos-kit/xdefi": "^2.7.0",
+    "@cosmos-kit/galaxy-station": "^2.8.0",
     "@dao-dao/i18n": "2.4.0-rc.8",
     "@dao-dao/state": "2.4.0-rc.8",
     "@dao-dao/stateless": "2.4.0-rc.8",
