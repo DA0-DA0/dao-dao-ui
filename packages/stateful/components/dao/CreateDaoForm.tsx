@@ -21,8 +21,8 @@ import {
   DaoHeader,
   ImageSelector,
   Loader,
+  StatusCard,
   TooltipInfoIcon,
-  WarningCard,
   useAppContext,
   useCachedLoadable,
   useDaoNavHelpers,
@@ -810,11 +810,12 @@ export const InnerCreateDaoForm = ({
 
         {submitValue === CreateDaoSubmitValue.Create && createViaGovernance && (
           <div className="flex flex-col items-end mb-8 -mt-4">
-            <WarningCard
+            <StatusCard
               className="max-w-md"
               content={t('info.daoCreationRequiresChainGovProp', {
                 chain: getDisplayNameForChainId(chainId),
               })}
+              style="warning"
             />
           </div>
         )}

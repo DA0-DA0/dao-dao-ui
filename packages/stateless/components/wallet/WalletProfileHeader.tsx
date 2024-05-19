@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { WalletProfileHeaderProps } from '@dao-dao/types'
 
 import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
-import { WarningCard } from '../WarningCard'
+import { StatusCard } from '../StatusCard'
 
 export const WalletProfileHeader = ({
   editable,
@@ -36,7 +36,7 @@ export const WalletProfileHeader = ({
         !profile.loading &&
         profile.data.nonce > -1 &&
         mergeProfileType && (
-          <WarningCard
+          <StatusCard
             className="max-w-xs mb-4 text-left"
             content={
               mergeProfileType === 'add'
@@ -45,6 +45,7 @@ export const WalletProfileHeader = ({
             }
             onClick={openMergeProfilesModal}
             size="sm"
+            style="warning"
           />
         )}
 

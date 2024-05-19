@@ -16,6 +16,7 @@ import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
 import { useWidgets } from '../../../../widgets'
 import { makeManageWidgetsAction } from '../../dao_appearance/ManageWidgets'
 import { ConfigureVestingPaymentsComponent as Component } from './Component'
+
 export const makeConfigureVestingPaymentsAction: ActionMaker<
   VestingPaymentsWidgetData
 > = (options) => {

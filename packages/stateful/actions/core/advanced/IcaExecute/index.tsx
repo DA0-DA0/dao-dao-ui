@@ -14,7 +14,7 @@ import {
   InputErrorMessage,
   Loader,
   RocketShipEmoji,
-  WarningCard,
+  StatusCard,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
@@ -228,7 +228,11 @@ const Component: ActionComponent = (props) => {
           </>
         ))}
 
-      <WarningCard className="max-w-xl" content={t('info.icaExperimental')} />
+      <StatusCard
+        className="max-w-xl"
+        content={t('info.icaExperimental')}
+        style="warning"
+      />
     </>
   )
 }

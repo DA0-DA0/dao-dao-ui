@@ -5,6 +5,7 @@ import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
 import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 import { ProposalResponse } from './contracts/DaoProposalSingle.v2'
+import { Event } from './contracts/PolytoneListener'
 import { DurationWithUnits } from './units'
 
 export type ProposalCreatedCardProps = Omit<
@@ -18,17 +19,15 @@ export type ProposalRelayState = {
    */
   hasCrossChainMessages: boolean
   /**
-   * The state for the decoded messages msgs that relayed successfully.
+   * The relay states for the decoded message packets.
    */
-  relayedMsgs: DecodedCrossChainMessage[]
-  /**
-   * The state for the decoded messages that are unrelayed.
-   */
-  unrelayedMsgs: DecodedCrossChainMessage[]
-  /**
-   * The state for the decoded messages that timed out.
-   */
-  timedOutMsgs: DecodedCrossChainMessage[]
+  states: {
+    all: CrossChainPacketInfoState[]
+    pending: (CrossChainPacketInfoStatePending & { index: number })[]
+    relayed: (CrossChainPacketInfoStateRelayed & { index: number })[]
+    errored: (CrossChainPacketInfoStateErrored & { index: number })[]
+    timedOut: (CrossChainPacketInfoStateTimedOut & { index: number })[]
+  }
   /**
    * Whether or not there are cross-chain messages that need to be self-relayed.
    * Most chains have relayers set up, so no need to self-relay on those chains.
@@ -100,29 +99,81 @@ export type DecodedIcaMsgNoMatch = {
 
 export type DecodedIcaMsg = DecodedIcaMsgNoMatch | DecodedIcaMsgMatch
 
-export type DecodedCrossChainMessage =
-  | {
-      type: 'polytone'
-      data: DecodedPolytoneMsgMatch
-      sender: string
-      srcConnection: string
-      srcChannel: string
-      srcPort: string
-      dstConnection: string
-      dstChannel: string
-      dstPort: string
-    }
-  | {
-      type: 'ica'
-      data: DecodedIcaMsgMatch
-      sender: string
-      srcConnection: string
-      // Cannot determine srcChannel from decoded message.
-      srcPort: string
-      dstConnection: string
-      // Cannot determine dstChannel from decoded message.
-      dstPort: string
-    }
+export enum CrossChainPacketInfoType {
+  Polytone = 'polytone',
+  Ica = 'ica',
+}
+
+export type PolytoneCrossChainPacketInfo = {
+  type: CrossChainPacketInfoType.Polytone
+  data: DecodedPolytoneMsgMatch
+  sender: string
+  srcConnection: string
+  srcChannel: string
+  srcPort: string
+  dstConnection: string
+  dstChannel: string
+  dstPort: string
+}
+
+export type IcaCrossChainPacketInfo = {
+  type: CrossChainPacketInfoType.Ica
+  data: DecodedIcaMsgMatch
+  sender: string
+  srcConnection: string
+  // Cannot determine srcChannel from decoded message.
+  srcPort: string
+  dstConnection: string
+  // Cannot determine dstChannel from decoded message.
+  dstPort: string
+}
+
+export type CrossChainPacketInfo =
+  | PolytoneCrossChainPacketInfo
+  | IcaCrossChainPacketInfo
+
+export enum CrossChainPacketInfoStatus {
+  Pending = 'pending',
+  Relayed = 'relayed',
+  Errored = 'errored',
+  TimedOut = 'timedOut',
+}
+
+export type CrossChainPacketInfoStatePending = {
+  status: CrossChainPacketInfoStatus.Pending
+  packet: CrossChainPacketInfo
+}
+
+export type CrossChainPacketInfoStateRelayed = {
+  status: CrossChainPacketInfoStatus.Relayed
+  packet: CrossChainPacketInfo
+  /**
+   * Execution events per message within the cross-chain packet.
+   */
+  msgResponses: {
+    events: Event[]
+  }[]
+}
+
+export type CrossChainPacketInfoStateErrored = {
+  status: CrossChainPacketInfoStatus.Errored
+  packet: CrossChainPacketInfo
+  /**
+   * The captured error string.
+   */
+  error: string
+}
+
+export type CrossChainPacketInfoStateTimedOut = {
+  status: CrossChainPacketInfoStatus.TimedOut
+  packet: CrossChainPacketInfo
+}
+
+export type CrossChainPacketInfoState =
+  | CrossChainPacketInfoStatePending
+  | CrossChainPacketInfoStateRelayed
+  | CrossChainPacketInfoStateErrored
+  | CrossChainPacketInfoStateTimedOut
 
 export enum ProcessedTQType {
   Majority,

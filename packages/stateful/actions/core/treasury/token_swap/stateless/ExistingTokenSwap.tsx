@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   CopyToClipboard,
+  StatusCard,
   TokenSwapStatus,
-  WarningCard,
 } from '@dao-dao/stateless'
 import { ActionComponent, TokenSwapStatusProps } from '@dao-dao/types'
 
@@ -41,9 +41,10 @@ export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
         value={tokenSwapContractAddress}
       />
 
-      <WarningCard
+      <StatusCard
         className="max-w-2xl self-center"
         content={t('info.tokenSwapWarning')}
+        style="warning"
       />
     </>
   )

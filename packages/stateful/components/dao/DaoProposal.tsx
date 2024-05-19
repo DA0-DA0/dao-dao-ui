@@ -298,7 +298,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       <SelfRelayExecuteModal
         // Placeholders that get overridden when the modal is opened.
         chainIds={[]}
-        crossChainMessages={[]}
+        crossChainPackets={[]}
         transaction={{
           type: 'execute',
           msgs: [],

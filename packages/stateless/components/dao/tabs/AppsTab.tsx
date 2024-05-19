@@ -16,8 +16,8 @@ import { useQuerySyncedState } from '../../../hooks'
 import { Button } from '../../buttons'
 import { IconButton } from '../../icon_buttons'
 import { TextInput } from '../../inputs'
+import { StatusCard } from '../../StatusCard'
 import { Tooltip } from '../../tooltip'
-import { WarningCard } from '../../WarningCard'
 
 export type AppsTabProps = {
   iframeRef: RefCallback<HTMLIFrameElement | null>
@@ -169,9 +169,10 @@ const InnerAppsTab = ({
       </div>
 
       {customSelected && (
-        <WarningCard
+        <StatusCard
           className={clsx('mb-2', fullScreen && 'mx-safe-offset-4')}
           content={t('info.customAppWarning')}
+          style="warning"
         />
       )}
 

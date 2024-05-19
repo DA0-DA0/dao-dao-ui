@@ -11,9 +11,9 @@ import {
   Button,
   ProfileImage,
   ProfileNameDisplayAndEditor,
+  StatusCard,
   Tooltip,
   WalletLogo,
-  WarningCard,
 } from '@dao-dao/stateless'
 
 import { useManageProfile } from '../../hooks'
@@ -42,9 +42,10 @@ export const WalletUiConnected = ({
   return (
     <div className="flex flex-col items-stretch gap-6">
       {isWeb3Auth && (
-        <WarningCard
+        <StatusCard
           content={t('info.socialLoginWarning', { context: 'onlySocial' })}
           size="sm"
+          style="warning"
         />
       )}
 

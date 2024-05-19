@@ -26,11 +26,14 @@ import {
 import {
   BaseProposalStatusAndInfoProps,
   CosmosMsgFor_Empty,
+  CrossChainPacketInfoState,
+  CrossChainPacketInfoStatus,
   LoadingData,
   ProposalRelayState,
   ProposalStatus,
   ProposalStatusEnum,
 } from '@dao-dao/types'
+import { ExecutionResponse } from '@dao-dao/types/contracts/PolytoneListener'
 import {
   decodeCrossChainMessages,
   makeWasmMessage,
@@ -78,19 +81,19 @@ export const useProposalRelayState = ({
   )
 
   // Decoded cross-chain execute messages.
-  const { crossChainMessages, dstChainIds } = useMemo(() => {
-    const crossChainMessages = decodeCrossChainMessages(
+  const { crossChainPackets, dstChainIds } = useMemo(() => {
+    const crossChainPackets = decodeCrossChainMessages(
       srcChainId,
       coreAddress,
       msgs
     )
 
     const dstChainIds = uniq(
-      crossChainMessages.map(({ data: { chainId } }) => chainId)
+      crossChainPackets.map(({ data: { chainId } }) => chainId)
     )
 
     return {
-      crossChainMessages,
+      crossChainPackets,
       dstChainIds,
     }
   }, [msgs, srcChainId, coreAddress])
@@ -100,7 +103,7 @@ export const useProposalRelayState = ({
     packetsLoadable.loading || packetsLoadable.errored
       ? undefined
       : waitForAll(
-          crossChainMessages.map(({ data: { chainId }, srcPort, dstPort }) => {
+          crossChainPackets.map(({ data: { chainId }, srcPort, dstPort }) => {
             const packetsToCommit = (packetsLoadable.data || []).filter(
               (packet) =>
                 packet.sourcePort === srcPort &&
@@ -125,7 +128,7 @@ export const useProposalRelayState = ({
     packetsLoadable.loading || packetsLoadable.errored
       ? undefined
       : waitForAll(
-          crossChainMessages.map(({ srcPort, dstPort }) => {
+          crossChainPackets.map(({ srcPort, dstPort }) => {
             const packetsToAck = (packetsLoadable.data || []).filter(
               (packet) =>
                 packet.sourcePort === srcPort &&
@@ -150,7 +153,7 @@ export const useProposalRelayState = ({
     packetsLoadable.loading || packetsLoadable.errored
       ? undefined
       : waitForAll(
-          crossChainMessages.map(({ data: { chainId }, srcPort, dstPort }) => {
+          crossChainPackets.map(({ data: { chainId }, srcPort, dstPort }) => {
             const packetsToAck = (packetsLoadable.data || []).filter(
               (packet) =>
                 packet.sourcePort === srcPort &&
@@ -175,7 +178,7 @@ export const useProposalRelayState = ({
   // Polytone relay results.
   const polytoneRelayResults = useCachedLoading(
     waitForAllSettled(
-      crossChainMessages.map((decoded) =>
+      crossChainPackets.map((decoded) =>
         decoded.type === 'polytone'
           ? PolytoneListenerSelectors.resultSelector({
               chainId: srcChainId,
@@ -193,9 +196,9 @@ export const useProposalRelayState = ({
     []
   )
 
-  // Get unrelayed and timed-out messages.
-  const { relayedMsgs, unrelayedMsgs, timedOutMsgs } = useMemo(() => {
-    const crossChainMessageStatuses =
+  // Get packet states.
+  const states = useMemo((): ProposalRelayState['states'] => {
+    const packetStates =
       packetsLoadable.loading ||
       packetsLoadable.errored ||
       unreceivedPackets.loading ||
@@ -203,87 +206,141 @@ export const useProposalRelayState = ({
       acksReceived.loading ||
       polytoneRelayResults.loading
         ? []
-        : crossChainMessages.flatMap((decoded, index) => {
-            if (decoded.type === 'polytone') {
-              const result = polytoneRelayResults.data[index]
+        : crossChainPackets.flatMap(
+            (packet, index): CrossChainPacketInfoState | [] => {
+              if (packet.type === 'polytone') {
+                const result = polytoneRelayResults.data[index]
 
-              return {
-                msg: decoded,
-                status:
-                  result.state === 'hasError' &&
+                return result.state === 'hasError' &&
                   result.contents instanceof Error &&
                   result.contents.message.includes(
                     'polytone::callbacks::CallbackMessage not found'
                   )
-                    ? 'unrelayed'
-                    : result.state === 'hasValue'
-                    ? objectMatchesStructure(result.contents, {
+                  ? {
+                      packet,
+                      status: CrossChainPacketInfoStatus.Pending,
+                    }
+                  : result.state === 'hasValue'
+                  ? objectMatchesStructure(result.contents, {
+                      callback: {
+                        result: {
+                          execute: {
+                            Ok: {},
+                          },
+                        },
+                      },
+                    })
+                    ? {
+                        packet,
+                        status: CrossChainPacketInfoStatus.Relayed,
+                        msgResponses: (
+                          (result.contents as any)!.callback.result.execute
+                            .Ok as ExecutionResponse
+                        ).result.map(({ events }) => ({ events })),
+                      }
+                    : objectMatchesStructure(result.contents, {
                         callback: {
                           result: {
                             execute: {
-                              Ok: {},
+                              Err: {},
                             },
                           },
                         },
                       })
-                      ? 'relayed'
-                      : objectMatchesStructure(result.contents, {
-                          callback: {
-                            result: {
-                              execute: {
-                                Err: {},
-                              },
-                            },
-                          },
-                        }) &&
-                        (result.contents?.callback.result as any).execute
-                          .Err === 'timeout'
-                      ? 'timedOut'
-                      : ''
-                    : '',
+                    ? (result.contents?.callback.result as any).execute.Err ===
+                      'timeout'
+                      ? {
+                          packet,
+                          status: CrossChainPacketInfoStatus.TimedOut,
+                        }
+                      : {
+                          packet,
+                          status: CrossChainPacketInfoStatus.Errored,
+                          error: (result.contents as any).callback.result
+                            .execute.Err,
+                        }
+                    : []
+                  : []
               }
-            }
 
-            if (decoded.type === 'ica') {
-              // Get latest timeout of packets from this source.
-              const latestPacketTimeout = Math.max(
-                0,
-                ...(packetsLoadable.data || [])
-                  .filter((packet) => packet.sourcePort === decoded.srcPort)
-                  .map((packet) => Number(packet.timeoutTimestamp))
-              )
+              if (packet.type === 'ica') {
+                // Get latest timeout of packets from this source.
+                const latestPacketTimeout = Math.max(
+                  0,
+                  ...(packetsLoadable.data || [])
+                    .filter((p) => p.sourcePort === packet.srcPort)
+                    .map((p) => Number(p.timeoutTimestamp))
+                )
 
-              return {
-                msg: decoded,
-                status:
-                  acksReceived.data[index]?.length &&
+                return acksReceived.data[index]?.length &&
                   acksReceived.data[index].every(Boolean)
-                    ? 'relayed'
-                    : unreceivedPackets.data[index]?.length &&
-                      unreceivedPackets.data[index].some(Boolean)
-                    ? Date.now() > Number(latestPacketTimeout) / 1e6
-                      ? 'timedOut'
-                      : 'unrelayed'
-                    : unreceivedAcks.data[index]?.length &&
-                      unreceivedAcks.data[index].some(Boolean)
-                    ? 'unrelayed'
-                    : // If could not find ack or packet, assume unrelayed.
-                      'unrelayed',
+                  ? {
+                      packet,
+                      status: CrossChainPacketInfoStatus.Relayed,
+                      // Cannot reliably fetch message events from ICA yet.
+                      msgResponses: [],
+                    }
+                  : unreceivedPackets.data[index]?.length &&
+                    unreceivedPackets.data[index].some(Boolean)
+                  ? Date.now() > Number(latestPacketTimeout) / 1e6
+                    ? {
+                        packet,
+                        status: CrossChainPacketInfoStatus.TimedOut,
+                      }
+                    : {
+                        packet,
+                        status: CrossChainPacketInfoStatus.Pending,
+                      }
+                  : unreceivedAcks.data[index]?.length &&
+                    unreceivedAcks.data[index].some(Boolean)
+                  ? {
+                      packet,
+                      status: CrossChainPacketInfoStatus.Pending,
+                    }
+                  : // If could not find ack or packet, assume pending.
+                    {
+                      packet,
+                      status: CrossChainPacketInfoStatus.Pending,
+                    }
               }
-            }
 
-            return []
-          })
+              return []
+            }
+          )
 
     return {
-      relayedMsgs: crossChainMessageStatuses.flatMap(({ msg, status }) =>
-        status === 'relayed' ? msg : []
+      all: packetStates,
+      pending: packetStates.flatMap((state, index) =>
+        state.status === CrossChainPacketInfoStatus.Pending
+          ? {
+              ...state,
+              index,
+            }
+          : []
       ),
-      unrelayedMsgs: crossChainMessageStatuses.flatMap(({ msg, status }) =>
-        status === 'unrelayed' ? msg : []
+      relayed: packetStates.flatMap((state, index) =>
+        state.status === CrossChainPacketInfoStatus.Relayed
+          ? {
+              ...state,
+              index,
+            }
+          : []
       ),
-      timedOutMsgs: crossChainMessageStatuses.flatMap(({ msg, status }) =>
-        status === 'timedOut' ? msg : []
+      errored: packetStates.flatMap((state, index) =>
+        state.status === CrossChainPacketInfoStatus.Errored
+          ? {
+              ...state,
+              index,
+            }
+          : []
+      ),
+      timedOut: packetStates.flatMap((state, index) =>
+        state.status === CrossChainPacketInfoStatus.TimedOut
+          ? {
+              ...state,
+              index,
+            }
+          : []
       ),
     }
   }, [
@@ -291,7 +348,7 @@ export const useProposalRelayState = ({
     unreceivedAcks,
     acksReceived,
     polytoneRelayResults,
-    crossChainMessages,
+    crossChainPackets,
     packetsLoadable,
   ])
 
@@ -307,15 +364,15 @@ export const useProposalRelayState = ({
       },
     useDeepCompareMemoize([srcChainId, dstChainIds])
   )
-  const anyUnrelayed = unrelayedMsgs.length > 0
+  const anyPending = states.pending.length > 0
   useEffect(() => {
-    if (!anyUnrelayed) {
+    if (!anyPending) {
       return
     }
 
     const interval = setInterval(refreshIbcData, 10 * 1000)
     return () => clearInterval(interval)
-  }, [anyUnrelayed, refreshIbcData])
+  }, [anyPending, refreshIbcData])
 
   const executedOverFiveMinutesAgo =
     status === ProposalStatusEnum.Executed &&
@@ -328,15 +385,15 @@ export const useProposalRelayState = ({
     acksReceived.loading ||
     polytoneRelayResults.loading
       ? undefined
-      : crossChainMessages.filter(
-          (decoded) =>
+      : crossChainPackets.filter(
+          (packet) =>
             // Not yet relayed.
-            unrelayedMsgs.includes(decoded) &&
+            states.pending.some((p) => p.packet === packet) &&
             // Executed a few minutes ago and still has not been relayed, or the
             // Polytone connection needs self-relay.
             (executedOverFiveMinutesAgo ||
-              (decoded.type === 'polytone' &&
-                !!decoded.data.polytoneConnection.needsSelfRelay))
+              (packet.type === 'polytone' &&
+                !!packet.data.polytoneConnection.needsSelfRelay))
         )
   const hasCrossChainMessagesNeedingSelfRelay =
     !!messagesNeedingSelfRelay?.length
@@ -368,7 +425,7 @@ export const useProposalRelayState = ({
               }),
             ],
           },
-      crossChainMessages: messagesNeedingSelfRelay,
+      crossChainPackets: messagesNeedingSelfRelay,
       chainIds: uniq(
         messagesNeedingSelfRelay.map(({ data: { chainId } }) => chainId)
       ),
@@ -385,10 +442,8 @@ export const useProposalRelayState = ({
     : {
         loading: false,
         data: {
-          hasCrossChainMessages: crossChainMessages.length > 0,
-          relayedMsgs,
-          unrelayedMsgs,
-          timedOutMsgs,
+          hasCrossChainMessages: crossChainPackets.length > 0,
+          states,
           needsSelfRelay: hasCrossChainMessagesNeedingSelfRelay,
           openSelfRelay: () =>
             status === ProposalStatusEnum.Executed && !loadingTxHash.loading

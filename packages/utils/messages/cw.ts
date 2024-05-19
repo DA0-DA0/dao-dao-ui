@@ -5,7 +5,8 @@ import cloneDeep from 'lodash.clonedeep'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  DecodedCrossChainMessage,
+  CrossChainPacketInfo,
+  CrossChainPacketInfoType,
   DecodedIcaMsg,
   DecodedPolytoneMsg,
   cwMsgToProtobuf,
@@ -501,13 +502,13 @@ export const decodeCrossChainMessages = (
   srcChainId: string,
   srcAddress: string,
   msgs: CosmosMsgFor_Empty[]
-): DecodedCrossChainMessage[] =>
+): CrossChainPacketInfo[] =>
   decodeMessages(msgs).flatMap(
-    (msg): DecodedCrossChainMessage | DecodedCrossChainMessage[] => {
+    (msg): CrossChainPacketInfo | CrossChainPacketInfo[] => {
       const decodedPolytone = decodePolytoneExecuteMsg(srcChainId, msg, 'any')
       if (decodedPolytone.match) {
         return {
-          type: 'polytone',
+          type: CrossChainPacketInfoType.Polytone,
           data: decodedPolytone,
           sender: srcAddress,
           srcConnection: decodedPolytone.polytoneConnection.localConnection,
@@ -527,7 +528,7 @@ export const decodeCrossChainMessages = (
         )
 
         return {
-          type: 'ica',
+          type: CrossChainPacketInfoType.Ica,
           data: decodedIca,
           sender: srcAddress,
           srcConnection: ibcInfo.sourceChain.connection_id,

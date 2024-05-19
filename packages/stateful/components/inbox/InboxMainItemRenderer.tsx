@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IconButton, Loader, Tooltip, WarningCard } from '@dao-dao/stateless'
+import { IconButton, Loader, StatusCard, Tooltip } from '@dao-dao/stateless'
 import {
   InboxItemRendererProps,
   InboxItemType,
@@ -63,7 +63,7 @@ export const InboxMainItemRenderer = ({
       </div>
     </div>
   ) : (
-    <WarningCard content={t('error.unknownInboxType')} />
+    <StatusCard content={t('error.unknownInboxType')} style="warning" />
   )
 }
 

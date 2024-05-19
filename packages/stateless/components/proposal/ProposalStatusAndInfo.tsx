@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { ProposalVoterProps } from '@dao-dao/types'
 
 import { Button } from '../buttons'
-import { InfoCard } from '../InfoCard'
+import { StatusCard } from '../StatusCard'
 import { ProposalVoteButton } from './ProposalVoteButton'
 
 export type ProposalStatusAndInfoProps<Vote extends unknown = unknown> = {
@@ -124,7 +124,9 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             </Button>
           )}
 
-          {action.description && <InfoCard content={action.description} />}
+          {action.description && (
+            <StatusCard content={action.description} size="xs" style="info" />
+          )}
         </div>
       )}
 
@@ -147,17 +149,23 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
           <div className="flex flex-col gap-1">
             {!vetoOrEarlyExecute.isNeutronOverrule &&
               vetoOrEarlyExecute.isVetoerDaoMember && (
-                <InfoCard
+                <StatusCard
                   content={t('info.vetoActionDaoMemberExplanation', {
                     context: vetoOrEarlyExecute.onEarlyExecute
                       ? 'withEarlyExecute'
                       : 'withoutEarlyExecute',
                   })}
+                  size="xs"
+                  style="info"
                 />
               )}
 
             {vetoOrEarlyExecute.onEarlyExecute && (
-              <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
+              <StatusCard
+                content={t('info.vetoEarlyExecuteExplanation')}
+                size="xs"
+                style="info"
+              />
             )}
           </div>
 

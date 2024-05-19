@@ -33,9 +33,9 @@ import { ErrorPage } from '../../error'
 import { LineLoaders } from '../../LineLoader'
 import { NftSection } from '../../nft/NftSection'
 import { ButtonPopup, FilterableItemPopup } from '../../popup'
+import { StatusCard } from '../../StatusCard'
 import { TokenLineHeader } from '../../token'
 import { Tooltip, TooltipInfoIcon } from '../../tooltip'
-import { WarningCard } from '../../WarningCard'
 
 export type TreasuryTabProps<T extends TokenCardInfo, N extends object> = {
   connected: boolean
@@ -284,17 +284,18 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
       {/* Show chain token load errors. */}
       {Object.entries(tokens).flatMap(([chainId, l]) =>
         l && l.errored ? (
-          <WarningCard
+          <StatusCard
             key={chainId}
             className="mt-6"
             content={t('error.loadingChainTokens', {
               chain: getDisplayNameForChainId(chainId),
             })}
+            style="warning"
           >
             <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
               {l.error instanceof Error ? l.error.message : l.error}
             </pre>
-          </WarningCard>
+          </StatusCard>
         ) : (
           []
         )

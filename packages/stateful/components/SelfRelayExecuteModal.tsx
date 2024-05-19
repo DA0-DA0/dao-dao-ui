@@ -115,7 +115,7 @@ type Relayer = {
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
-  crossChainMessages,
+  crossChainPackets,
   transaction,
   onSuccess,
   onClose,
@@ -582,7 +582,7 @@ export const SelfRelayExecuteModal = ({
 
     try {
       // Parse the packets from the execution TX events.
-      const packets = parsePacketsFromTendermintEvents(
+      const txPackets = parsePacketsFromTendermintEvents(
         currentExecuteTx.events
       ).map((packet) => ({
         packet,
@@ -602,14 +602,14 @@ export const SelfRelayExecuteModal = ({
 
         const { chain, client } = relayer
 
-        // Get the messages for this chain that need relaying.
-        const messages = crossChainMessages.filter(
+        // Get packets for this chain that need relaying.
+        const packets = crossChainPackets.filter(
           ({ data: { chainId } }) => chainId === chain.chain_id
         )
 
-        // Get packets for this chain that need relaying.
-        const chainPackets = packets.filter(({ packet }) =>
-          messages.some(
+        // Choose TX packets that match packets we want to relay.
+        const chainPackets = txPackets.filter(({ packet }) =>
+          packets.some(
             ({ srcPort, dstPort }) =>
               packet.sourcePort === srcPort &&
               packet.destinationPort === dstPort
@@ -1228,7 +1228,7 @@ export const SelfRelayExecuteModal = ({
                             />
 
                             <Tooltip title={t('info.funded')}>
-                              <Check className="!h-4 !w-4 text-icon-interactive-valid" />
+                              <Check className="text-icon-interactive-valid !h-4 !w-4" />
                             </Tooltip>
                           </div>
                         )}
@@ -1250,7 +1250,7 @@ export const SelfRelayExecuteModal = ({
             content: () =>
               status === RelayStatus.RelayErrored ? (
                 <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-                  <p className="break-all text-text-interactive-error">
+                  <p className="text-text-interactive-error break-all">
                     {relayError}
                   </p>
 
@@ -1277,7 +1277,7 @@ export const SelfRelayExecuteModal = ({
                           relaying.relayer.chain.chain_id
                         )}
                       >
-                        <div className="flex items-center justify-center rounded-l-full bg-background-base p-1">
+                        <div className="bg-background-base flex items-center justify-center rounded-l-full p-1">
                           <div
                             className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
                             style={{
@@ -1298,7 +1298,7 @@ export const SelfRelayExecuteModal = ({
                           relayers[0].chain.chain_id
                         )}
                       >
-                        <div className="flex items-center justify-center rounded-r-full bg-background-base p-1">
+                        <div className="bg-background-base flex items-center justify-center rounded-r-full p-1">
                           <div
                             className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
                             style={{
@@ -1384,7 +1384,7 @@ export const SelfRelayExecuteModal = ({
 
                             {empty ? (
                               <Tooltip title="Refunded">
-                                <Check className="!h-4 !w-4 text-icon-interactive-valid" />
+                                <Check className="text-icon-interactive-valid !h-4 !w-4" />
                               </Tooltip>
                             ) : (
                               <Loader fill={false} size={20} />

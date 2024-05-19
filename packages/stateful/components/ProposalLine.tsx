@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { ChainProvider, LineLoader, WarningCard } from '@dao-dao/stateless'
+import { ChainProvider, LineLoader, StatusCard } from '@dao-dao/stateless'
 import { StatefulProposalLineProps } from '@dao-dao/types'
 
 import {
@@ -46,7 +46,12 @@ const InnerProposalLine = ({
     ? PreProposeApprovalProposalLine
     : ProposalLine
   if (!Component) {
-    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+    return (
+      <StatusCard
+        content={t('error.unsupportedApprovalFailedRender')}
+        style="warning"
+      />
+    )
   }
 
   return (

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Loader,
   ProposalContentDisplay,
-  WarningCard,
+  StatusCard,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -66,7 +66,12 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
     : undefined
 
   if (!PreProposeApprovalInnerContentDisplay) {
-    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+    return (
+      <StatusCard
+        content={t('error.unsupportedApprovalFailedRender')}
+        style="warning"
+      />
+    )
   }
 
   if (

@@ -16,8 +16,8 @@ import {
   RadioInput,
   SegmentedControlsTitle,
   SelectInput,
+  StatusCard,
   TextInput,
-  WarningCard,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -114,7 +114,9 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         ]}
       />
 
-      {mode === 'grant' && <WarningCard content={t('info.authzWarning')} />}
+      {mode === 'grant' && (
+        <StatusCard content={t('info.authzWarning')} style="warning" />
+      )}
 
       <div className="flex flex-col gap-1">
         <InputLabel

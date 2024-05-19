@@ -23,11 +23,11 @@ import {
   RadioInput,
   RadioInputOption,
   SelectInput,
+  StatusCard,
   TextAreaInput,
   TextInput,
   TokenInput,
   VestingStepsLineGraph,
-  WarningCard,
 } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
@@ -295,11 +295,12 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         {isCreating &&
           !vestingManagerExists &&
           configureVestingPaymentActionDefaults && (
-            <WarningCard
+            <StatusCard
               className="max-w-lg"
               content={t('info.vestingManagerNeeded', {
                 chain: getDisplayNameForChainId(chainId),
               })}
+              style="warning"
             >
               <Button
                 disabled={crossChainAccountActionExists}
@@ -319,7 +320,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                   ? t('button.vestingManagerSetupActionAdded')
                   : t('button.addVestingManagerSetupAction')}
               </Button>
-            </WarningCard>
+            </StatusCard>
           )}
 
         <div className="space-y-2">

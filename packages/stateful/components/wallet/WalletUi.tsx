@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { walletChainIdAtom } from '@dao-dao/state'
-import { Modal, WarningCard } from '@dao-dao/stateless'
+import { Modal, StatusCard } from '@dao-dao/stateless'
 import {
   getChainForChainId,
   maybeGetAssetListForChainId,
@@ -87,15 +87,16 @@ export const WalletUi = (props: WalletModalProps) => {
       )}
       footerContent={
         isWalletError && errorMessage ? (
-          <WarningCard
+          <StatusCard
             content={
               errorMessage === "key doesn't exist"
                 ? t('info.configureWalletModalExplanation')
                 : processError(errorMessage, { forceCapture: false })
             }
+            style="warning"
           />
         ) : qrState === State.Error && qrErrorMessage ? (
-          <WarningCard content={qrErrorMessage} />
+          <StatusCard content={qrErrorMessage} style="warning" />
         ) : undefined
       }
       header={{

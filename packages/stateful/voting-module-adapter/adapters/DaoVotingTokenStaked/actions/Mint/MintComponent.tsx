@@ -11,7 +11,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   InputErrorMessage,
   NumberInput,
-  WarningCard,
+  StatusCard,
   useChain,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -135,9 +135,10 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 
   return (
     <>
-      <WarningCard
+      <StatusCard
         className="max-w-prose"
         content={t('info.mintExplanation')}
+        style="warning"
       />
 
       <div

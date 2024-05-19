@@ -4,7 +4,7 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
-import { Inbox as StatelessInbox, WarningCard } from '@dao-dao/stateless'
+import { Inbox as StatelessInbox, StatusCard } from '@dao-dao/stateless'
 import {
   NOTIFICATIONS_PAGE_DESCRIPTION,
   NOTIFICATIONS_PAGE_TITLE,
@@ -63,10 +63,11 @@ export const Inbox: NextPage = () => {
             inbox={inbox}
           />
         ) : (
-          <WarningCard
+          <StatusCard
             className="mx-auto max-w-max mt-10"
             content={t('info.logInToViewPage')}
             onClick={connect}
+            style="warning"
           />
         )}
       </div>

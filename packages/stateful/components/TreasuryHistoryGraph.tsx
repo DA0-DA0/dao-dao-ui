@@ -21,7 +21,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   Loader,
   SegmentedControls,
-  WarningCard,
+  StatusCard,
   useCachedLoadingWithError,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
@@ -298,21 +298,23 @@ export const TreasuryHistoryGraph = ({
           </div>
         ) : treasuryValueHistory.errored ? (
           <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
-            <WarningCard
+            <StatusCard
               className="max-w-lg bg-background-primary"
               content={
                 treasuryValueHistory.error instanceof Error
                   ? treasuryValueHistory.error.message
                   : `${treasuryValueHistory.error}`
               }
+              style="warning"
               textClassName="break-words"
             />
           </div>
         ) : treasuryValueHistory.data.timestamps.length === 0 ? (
           <div className="absolute top-0 bottom-0 right-0 left-0 flex animate-fade-in items-center justify-center">
-            <WarningCard
+            <StatusCard
               className="max-w-lg bg-background-primary"
               content={t('error.noTreasuryHistory')}
+              style="warning"
               textClassName="break-words"
             />
           </div>

@@ -8,7 +8,7 @@ import {
   IbcDestinationChainPicker,
   InputErrorMessage,
   Loader,
-  WarningCard,
+  StatusCard,
   useChain,
 } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
@@ -96,9 +96,10 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
           {polytoneChainIds.includes(destinationChainId) &&
           context.type === ActionContextType.Dao &&
           remove ? (
-            <WarningCard
+            <StatusCard
               className="max-w-xl"
               content={t('info.useNativeCrossChainAccountInstead')}
+              style="warning"
             >
               <Button
                 onClick={() => {
@@ -116,7 +117,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
               >
                 {t('button.switchAction')}
               </Button>
-            </WarningCard>
+            </StatusCard>
           ) : (
             isCreating &&
             !!destinationChainId &&
@@ -189,12 +190,13 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
           {createdAddressLoading.loading ? (
             <Loader fill={false} size={28} />
           ) : createdAddressLoading.errored ? (
-            <WarningCard
+            <StatusCard
               content={
                 createdAddressLoading.error instanceof Error
                   ? createdAddressLoading.error.message
                   : `${createdAddressLoading.error}`
               }
+              style="warning"
             />
           ) : createdAddressLoading.data ? (
             <CopyToClipboard
@@ -209,7 +211,11 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
         </div>
       )}
 
-      <WarningCard className="max-w-xl" content={t('info.icaExperimental')} />
+      <StatusCard
+        className="max-w-xl"
+        content={t('info.icaExperimental')}
+        style="warning"
+      />
     </>
   )
 }

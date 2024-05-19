@@ -20,9 +20,9 @@ import {
   Loader,
   NumberInput,
   SelectInput,
+  StatusCard,
   TokenAmountDisplay,
   TokenInput,
-  WarningCard,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import {
@@ -599,7 +599,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               {isCreating &&
                 !betterNonPfmIbcPath.loading &&
                 betterNonPfmIbcPath.data && (
-                  <WarningCard
+                  <StatusCard
                     className="max-w-xl"
                     content={
                       <div className="flex flex-col gap-3">
@@ -627,11 +627,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                         </div>
                       </div>
                     }
+                    style="warning"
                   />
                 )}
 
               {isCreating && !!missingAccountChainIds?.length && (
-                <WarningCard
+                <StatusCard
                   className="max-w-xl"
                   content={
                     <div className="flex flex-col items-start gap-3">
@@ -686,6 +687,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                       )}
                     </div>
                   }
+                  style="warning"
                 />
               )}
             </div>

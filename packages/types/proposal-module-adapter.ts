@@ -277,11 +277,11 @@ export type CommonProposalInfo = {
 
 export type BaseProposalStatusAndInfoProps = {
   inline?: boolean
-  // Open self-relay modal to execute a proposal and relay polytone IBC packets.
+  // Open self-relay modal to execute a proposal and relay IBC packets.
   openSelfRelayExecute: (
     props: Pick<
       SelfRelayExecuteModalProps,
-      'uniqueId' | 'chainIds' | 'crossChainMessages' | 'transaction'
+      'uniqueId' | 'chainIds' | 'crossChainPackets' | 'transaction'
     >
   ) => void
   onExecuteSuccess: () => void | Promise<void>

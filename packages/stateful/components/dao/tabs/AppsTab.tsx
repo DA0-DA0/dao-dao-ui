@@ -23,7 +23,7 @@ import {
   ProfileImage,
   ProfileNameDisplayAndEditor,
   AppsTab as StatelessAppsTab,
-  WarningCard,
+  StatusCard,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -331,8 +331,9 @@ export const AppsTab = () => {
       )}
     </>
   ) : (
-    <WarningCard
+    <StatusCard
       content={t('error.noSingleChoiceProposalModuleAppsDisabled')}
+      style="warning"
     />
   )
 }

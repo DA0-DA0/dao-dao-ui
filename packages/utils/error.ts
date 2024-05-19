@@ -114,6 +114,10 @@ export enum CommonError {
   ReconnectWallet = 'Please disconnect and reconnect your wallet.',
   ProposalTooLarge = 'Proposal is too large. Please remove actions or shorten the description.',
   NoSuchContract = 'Contract not found.',
+  ContractInstantiationFailed = 'Contract instantiation failed.',
+  ContractExecutionFailed = 'Contract execution failed.',
+  ContractMigrationFailed = 'Contract migration failed.',
+  InsufficientGas = 'Insufficient gas.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -185,7 +189,27 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   ],
   [CommonError.ReconnectWallet]: [['Session', 'not established yet']],
   [CommonError.ProposalTooLarge]: [['proposal is', 'bytes, must be <=']],
-  [CommonError.NoSuchContract]: ['no such contract'],
+  [CommonError.NoSuchContract]: [
+    'no such contract',
+    // wasm code format from polytone listener callback error
+    'codespace: wasm, code: 22',
+  ],
+  [CommonError.ContractInstantiationFailed]: [
+    // wasm code format from polytone listener callback error
+    'codespace: wasm, code: 4',
+  ],
+  [CommonError.ContractExecutionFailed]: [
+    // wasm code format from polytone listener callback error
+    'codespace: wasm, code: 5',
+  ],
+  [CommonError.ContractMigrationFailed]: [
+    // wasm code format from polytone listener callback error
+    'codespace: wasm, code: 11',
+  ],
+  [CommonError.InsufficientGas]: [
+    // wasm code format from polytone listener callback error
+    'codespace: wasm, code: 6',
+  ],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

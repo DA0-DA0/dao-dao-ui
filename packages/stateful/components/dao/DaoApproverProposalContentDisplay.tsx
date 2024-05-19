@@ -6,7 +6,7 @@ import {
   Loader,
   ProposalContentDisplay,
   ProposalContentDisplayProps,
-  WarningCard,
+  StatusCard,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -179,7 +179,12 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
   const { entity } = useEntity(creatorAddress)
 
   if (!PreProposeApprovalInnerContentDisplay) {
-    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+    return (
+      <StatusCard
+        content={t('error.unsupportedApprovalFailedRender')}
+        style="warning"
+      />
+    )
   }
 
   return (
