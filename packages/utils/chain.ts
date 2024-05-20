@@ -34,6 +34,64 @@ import {
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 
+// BitSong Testnet
+const bitSongTestnetChain: Chain = {
+  chain_name: 'bitsongtestnet',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'BitSong Testnet',
+  chain_id: 'bobnet',
+  bech32_prefix: 'bitsong',
+  bech32_config: {
+    bech32PrefixAccAddr: 'bitsong',
+    bech32PrefixAccPub: 'bitsongpub',
+    bech32PrefixValAddr: 'bitsongvaloper',
+    bech32PrefixValPub: 'bitsongvaloperpub',
+    bech32PrefixConsAddr: 'bitsongvalcons',
+    bech32PrefixConsPub: 'bitsongvalconspub',
+  },
+  slip44: 639,
+  logo_URIs: {
+    png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/btsg.png',
+  },
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'ubtsg',
+        fixed_min_gas_price: 0,
+        low_gas_price: 0,
+        average_gas_price: 0,
+        high_gas_price: 0,
+      },
+    ],
+  },
+  staking: {
+    staking_tokens: [
+      {
+        denom: 'ubtsg',
+      },
+    ],
+  },
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc-testnet.explorebitsong.com',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://lcd-testnet.explorebitsong.com',
+      },
+    ],
+  },
+}
+chains.push(bitSongTestnetChain)
+assets.push({
+  chain_name: bitSongTestnetChain.chain_name,
+  // Copy assets from BitSong mainnet.
+  assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
+})
+
 export const getRpcForChainId = (
   chainId: string,
   // Offset will try a different RPC from the list of available RPCs.
@@ -179,6 +237,7 @@ export const maybeGetChainForChainName = (
   chainName: string
 ): Chain | undefined =>
   chains.find(({ chain_name }) => chain_name === chainName)
+
 export const getChainForChainName = (chainName: string): Chain => {
   cachedChainsByName[chainName] ||= maybeGetChainForChainName(chainName)
   if (!cachedChainsByName[chainName]) {
