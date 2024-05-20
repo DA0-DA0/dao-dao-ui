@@ -50,7 +50,7 @@ const bitSongTestnetChain: Chain = {
     bech32PrefixConsAddr: 'bitsongvalcons',
     bech32PrefixConsPub: 'bitsongvalconspub',
   },
-  slip44: 118,
+  slip44: 639,
   logo_URIs: {
     png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/btsg.png',
   },
