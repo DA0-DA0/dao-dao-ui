@@ -74,9 +74,9 @@ export const GovernanceConfigurationInput = ({
 
   const {
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-    config: { createWithCw20 },
+    config,
   } = useSupportedChainContext()
-  const isCw20 = !!createWithCw20
+  const isCw20 = !!config.createWithCw20
 
   const {
     fields: tierFields,
@@ -89,13 +89,13 @@ export const GovernanceConfigurationInput = ({
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(cloneDeep(TokenBasedCreator.defaultConfig.tiers[0]))
+    appendTier(cloneDeep(TokenBasedCreator.makeDefaultConfig(config).tiers[0]))
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
     })
-  }, [appendTier])
+  }, [appendTier, config])
 
   // Load token factory denom creation fee.
   const tokenFactoryDenomCreationFeeLoading = useCachedLoading(
@@ -323,13 +323,18 @@ export const GovernanceConfigurationInput = ({
     <>
       <SegmentedControls
         className="mt-8 mb-4 w-max"
+        disabled={config.noCreateNewTokens}
         onSelect={(tokenType) => setValue('creator.data.tokenType', tokenType)}
         selected={data.tokenType}
         tabs={[
-          {
-            label: t('button.createAToken'),
-            value: GovernanceTokenType.New,
-          },
+          ...(config.noCreateNewTokens
+            ? []
+            : [
+                {
+                  label: t('button.createAToken'),
+                  value: GovernanceTokenType.New,
+                },
+              ]),
           {
             label: t('button.useExistingToken'),
             value: GovernanceTokenType.Existing,

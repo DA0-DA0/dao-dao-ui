@@ -153,6 +153,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   createWithCw20?: boolean
   /**
+   * Disallow creating new tokens for token-based DAOs. Defaults to false.
+   */
+  noCreateNewTokens?: boolean
+  /**
    * Whether or not to create a DAO through chain governance.
    */
   createViaGovernance?: boolean

@@ -1699,14 +1699,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'bitsong',
     mainnet: false,
     accentColor: '#c53381',
-    createWithCw20: true,
+    // No token factory on BitSong.
+    noCreateNewTokens: true,
     factoryContractAddress:
       'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 7,
-      Cw20Base: 24,
-      Cw20Stake: 25, // V240
       Cw4Group: 8, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 9,
@@ -1714,7 +1713,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V242
       CwPayrollFactory: 11,
       CwTokenSwap: 12,
-      CwTokenfactoryIssuerMain: -1,
+      CwTokenfactoryIssuerMain: 27,
       CwVesting: 13,
       DaoCore: 14,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
@@ -1726,8 +1725,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoProposalSingle: 21,
       DaoVotingCw4: 22,
       DaoVotingCw721Staked: 23,
-      DaoVotingTokenStaked: -1,
-      DaoVotingCw20Staked: 26, // V240
+      DaoVotingTokenStaked: 28,
     },
   },
 ]

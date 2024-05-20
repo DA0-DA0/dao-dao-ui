@@ -2,12 +2,17 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { TokenBasedCreator } from '@dao-dao/stateful/creators/TokenBased'
 import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   WalletProviderDecorator,
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoProposalSingleAdapterId, TokenBasedCreatorId } from '@dao-dao/utils'
+import {
+  DaoProposalSingleAdapterId,
+  TokenBasedCreatorId,
+  getSupportedChainConfig,
+} from '@dao-dao/utils'
 
 import { CreateDaoStart } from './CreateDaoStart'
 
@@ -21,9 +26,13 @@ export default {
       creator: {
         id: TokenBasedCreatorId,
         data: {
-          ...TokenBasedCreator.defaultConfig,
+          ...TokenBasedCreator.makeDefaultConfig(
+            getSupportedChainConfig(CHAIN_ID)!
+          ),
           newInfo: {
-            ...TokenBasedCreator.defaultConfig.newInfo,
+            ...TokenBasedCreator.makeDefaultConfig(
+              getSupportedChainConfig(CHAIN_ID)!
+            ).newInfo,
             symbol: 'TST',
             name: 'Test Token',
           },

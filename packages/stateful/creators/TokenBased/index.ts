@@ -18,7 +18,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     suppliesI18nKey: 'daoCreator.TokenBased.supplies',
     membershipI18nKey: 'daoCreator.TokenBased.membership',
   },
-  defaultConfig: {
+  makeDefaultConfig: ({ noCreateNewTokens = false }) => ({
     tiers: [
       {
         name: '',
@@ -30,7 +30,9 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
         ],
       },
     ],
-    tokenType: GovernanceTokenType.New,
+    tokenType: noCreateNewTokens
+      ? GovernanceTokenType.Existing
+      : GovernanceTokenType.New,
     newInfo: {
       initialSupply: 10000000,
       initialTreasuryPercent: 90,
@@ -47,7 +49,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
       type: 'percent',
       value: 10,
     },
-  },
+  }),
   governanceConfig: {
     Input: GovernanceConfigurationInput,
     Review: GovernanceConfigurationReview,

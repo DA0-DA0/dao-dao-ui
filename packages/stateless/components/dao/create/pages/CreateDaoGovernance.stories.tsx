@@ -1,12 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { TokenBasedCreator } from '@dao-dao/stateful/creators/TokenBased'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   WalletProviderDecorator,
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { TokenBasedCreatorId } from '@dao-dao/utils'
+import { TokenBasedCreatorId, getSupportedChainConfig } from '@dao-dao/utils'
 
 import { CreateDaoGovernance } from './CreateDaoGovernance'
 
@@ -23,7 +24,9 @@ export default {
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
       creator: {
         id: TokenBasedCreatorId,
-        data: TokenBasedCreator.defaultConfig,
+        data: TokenBasedCreator.makeDefaultConfig(
+          getSupportedChainConfig(CHAIN_ID)!
+        ),
       },
     }),
     makeDappLayoutDecorator(),

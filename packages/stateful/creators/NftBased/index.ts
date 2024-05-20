@@ -18,14 +18,14 @@ export const NftBasedCreator: DaoCreator = {
     suppliesI18nKey: 'daoCreator.NftBased.supplies',
     membershipI18nKey: 'daoCreator.NftBased.membership',
   },
-  defaultConfig: {
+  makeDefaultConfig: () => ({
     tokenType: GovernanceTokenType.Existing,
     existingGovernanceTokenDenomOrAddress: '',
     unstakingDuration: {
       value: 2,
       units: DurationUnits.Weeks,
     },
-  },
+  }),
   governanceConfig: {
     Input: GovernanceConfigurationInput,
     Review: GovernanceConfigurationReview,

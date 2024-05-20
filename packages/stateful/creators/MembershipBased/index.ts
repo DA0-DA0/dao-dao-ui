@@ -15,7 +15,7 @@ export const MembershipBasedCreator: DaoCreator = {
     suppliesI18nKey: 'daoCreator.MembershipBased.supplies',
     membershipI18nKey: 'daoCreator.MembershipBased.membership',
   },
-  defaultConfig: {
+  makeDefaultConfig: () => ({
     tiers: [
       {
         name: '',
@@ -27,7 +27,7 @@ export const MembershipBasedCreator: DaoCreator = {
         ],
       },
     ],
-  },
+  }),
   governanceConfig: {
     Input: GovernanceConfigurationInput,
     Review: GovernanceConfigurationReview,

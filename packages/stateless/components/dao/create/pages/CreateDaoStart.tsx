@@ -14,6 +14,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useSupportedChainContext } from '../../../../hooks'
 import { Button } from '../../../buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoCreatorCard } from '../DaoCreatorCard'
@@ -32,6 +33,7 @@ export const CreateDaoStart = ({
 }: CreateDaoContext) => {
   const { t } = useTranslation()
   const daoChainId = watch('chainId')
+  const { config: chainConfig } = useSupportedChainContext()
 
   const data = watch()
 
@@ -125,7 +127,7 @@ export const CreateDaoStart = ({
               suppliesI18nKey,
               membershipI18nKey,
             },
-            defaultConfig,
+            makeDefaultConfig,
           }) => (
             <DaoCreatorCard
               key={id}
@@ -137,7 +139,7 @@ export const CreateDaoStart = ({
                 resetField('creator', {
                   defaultValue: {
                     id,
-                    data: cloneDeep(defaultConfig),
+                    data: cloneDeep(makeDefaultConfig(chainConfig)),
                   },
                 })
               }

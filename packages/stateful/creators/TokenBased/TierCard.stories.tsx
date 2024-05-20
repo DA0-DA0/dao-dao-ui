@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { NewDao } from '@dao-dao/types'
-import { TokenBasedCreatorId } from '@dao-dao/utils'
+import { TokenBasedCreatorId, getSupportedChainConfig } from '@dao-dao/utils'
 
 import { TokenBasedCreator } from '.'
 import { makeDefaultNewDao } from '../../recoil/atoms'
@@ -27,7 +27,9 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
       ...makeDefaultNewDao(CHAIN_ID),
       creator: {
         id: TokenBasedCreatorId,
-        data: TokenBasedCreator.defaultConfig,
+        data: TokenBasedCreator.makeDefaultConfig(
+          getSupportedChainConfig(CHAIN_ID)!
+        ),
       },
     },
   })

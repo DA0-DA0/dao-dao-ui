@@ -9,6 +9,7 @@ import {
   InputErrorMessage,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -39,6 +40,7 @@ export const GovernanceConfigurationInput = ({
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
   const { address: walletAddress, isWalletConnected } = useWallet()
+  const { config: chainConfig } = useSupportedChainContext()
 
   const {
     fields: tierFields,
@@ -51,13 +53,15 @@ export const GovernanceConfigurationInput = ({
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(cloneDeep(MembershipBasedCreator.defaultConfig.tiers[0]))
+    appendTier(
+      cloneDeep(MembershipBasedCreator.makeDefaultConfig(chainConfig).tiers[0])
+    )
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
     })
-  }, [appendTier])
+  }, [appendTier, chainConfig])
 
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)

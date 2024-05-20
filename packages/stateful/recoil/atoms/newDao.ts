@@ -14,6 +14,7 @@ import {
   MembershipBasedCreatorId,
   convertCosmosVetoConfigToVeto,
   getNativeTokenForChainId,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import { MembershipBasedCreator } from '../../creators/MembershipBased'
@@ -31,7 +32,11 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
   imageUrl: undefined,
   creator: {
     id: MembershipBasedCreatorId,
-    data: cloneDeep(MembershipBasedCreator.defaultConfig),
+    data: cloneDeep(
+      MembershipBasedCreator.makeDefaultConfig(
+        getSupportedChainConfig(chainId)!
+      )
+    ),
   },
   // Default to single and multiple choice proposal configuration.
   proposalModuleAdapters: [

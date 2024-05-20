@@ -204,7 +204,7 @@ export const InnerCreateDaoForm = ({
     cached.creator.data = merge(
       {},
       // Start with defaults.
-      creator?.defaultConfig,
+      creator?.makeDefaultConfig(chainContext.config),
       // Overwrite with existing values.
       cached.creator.data
     )
@@ -238,7 +238,7 @@ export const InnerCreateDaoForm = ({
       // Use overrides passed into component.
       override
     )
-  }, [_newDaoAtom, chainId, override])
+  }, [_newDaoAtom, chainContext.config, chainId, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
