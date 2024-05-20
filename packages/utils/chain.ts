@@ -35,7 +35,7 @@ import {
 import { getFallbackImage } from './getFallbackImage'
 
 // BitSong Testnet
-chains.push({
+const bitSongTestnetChain: Chain = {
   chain_name: 'bitsongtestnet',
   status: 'live',
   network_type: 'testnet',
@@ -84,6 +84,12 @@ chains.push({
       },
     ],
   },
+}
+chains.push(bitSongTestnetChain)
+assets.push({
+  chain_name: bitSongTestnetChain.chain_name,
+  // Copy assets from BitSong mainnet.
+  assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
 })
 
 export const getRpcForChainId = (
