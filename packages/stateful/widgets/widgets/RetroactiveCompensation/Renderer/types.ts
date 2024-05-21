@@ -70,6 +70,11 @@ export interface CompletedSurveyListing {
 
 export interface ContributionRating {
   contributionId: number
+  /**
+   * Weight can be any number. The computation utility function normalizes
+   * weights so that the output weighted averages are in the range [0, 100].
+   */
+  weight: number
   // The position matches the position in the survey's attributes list.
   attributes: (number | null)[]
 }
@@ -99,6 +104,7 @@ export interface Contribution
 
 export interface RatingResponse {
   rater: string
+  raterVotingPower: string
   contributions: {
     id: number
     // The position matches the position in the survey's attributes list.
@@ -113,6 +119,11 @@ export interface Rating extends Omit<RatingResponse, 'rater'> {
 export interface RatingsResponse {
   contributions: ContributionResponse[]
   ratings: RatingResponse[]
+}
+
+export type RatingsResponseWithIdentities = {
+  contributions: Contribution[]
+  ratings: Rating[]
 }
 
 export interface ContributionCompensation {

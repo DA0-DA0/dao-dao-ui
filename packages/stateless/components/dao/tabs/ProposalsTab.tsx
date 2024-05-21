@@ -3,14 +3,18 @@ import { isMobile } from '@walletconnect/browser-utils'
 import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonLinkProps, DaoInfo } from '@dao-dao/types'
+import {
+  ButtonLinkProps,
+  DaoInfo,
+  StatefulProposalListProps,
+} from '@dao-dao/types'
 
 import { useDaoNavHelpers, usePlatform } from '../../../hooks'
 import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
   daoInfo: DaoInfo
-  ProposalList: ComponentType
+  ProposalList: ComponentType<StatefulProposalListProps>
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 

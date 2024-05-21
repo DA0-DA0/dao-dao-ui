@@ -30,11 +30,12 @@ export const ProposalLine = ({
 
 type InnerProposalLineProps = Pick<
   StatefulProposalLineProps,
-  'proposalViewUrl' | 'isPreProposeProposal'
+  'proposalViewUrl' | 'isPreProposeProposal' | 'onClick'
 >
 
 const InnerProposalLine = ({
   proposalViewUrl,
+  onClick,
   isPreProposeProposal,
 }: InnerProposalLineProps) => {
   const { t } = useTranslation()
@@ -56,7 +57,11 @@ const InnerProposalLine = ({
 
   return (
     <SuspenseLoader fallback={<LineLoader type="proposal" />}>
-      <Component LinkWrapper={LinkWrapper} href={proposalViewUrl} />
+      <Component
+        LinkWrapper={LinkWrapper}
+        href={proposalViewUrl}
+        onClick={onClick}
+      />
     </SuspenseLoader>
   )
 }

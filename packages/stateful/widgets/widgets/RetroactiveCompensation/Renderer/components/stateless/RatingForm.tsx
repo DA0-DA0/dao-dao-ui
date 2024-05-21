@@ -87,6 +87,8 @@ export const RatingForm = ({
       reset({
         ratings: data.contributions.map(({ id }) => ({
           contributionId: id,
+          // Weight doesn't matter since it's a projection based on one rating.
+          weight: 1,
           attributes: [
             // Try to find existing rating.
             ...(data.existingRatings.find(
@@ -100,7 +102,7 @@ export const RatingForm = ({
     }
   }, [data, ratings, reset, survey.attributes])
 
-  // Compute compensation for each contribution.
+  // Compute compensation for each contribution to display projection.
   const compensation: ContributionCompensation[] = data
     ? computeCompensation(
         data.contributions.map(({ id }) => id),

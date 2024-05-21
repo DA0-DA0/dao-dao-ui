@@ -7,5 +7,6 @@ export type StatefulProposalLineProps = {
   proposalModules: ProposalModule[]
   proposalId: string
   proposalViewUrl: string
+  onClick?: () => void
   isPreProposeProposal: boolean
 }

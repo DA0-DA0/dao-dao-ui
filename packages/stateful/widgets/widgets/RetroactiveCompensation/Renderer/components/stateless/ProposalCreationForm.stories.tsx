@@ -108,6 +108,7 @@ Default.args = {
           publicKey: 'raterPublicKey1',
           address: 'raterAddress1',
         },
+        raterVotingPower: '10',
         contributions: [
           {
             id: 1,
@@ -124,6 +125,7 @@ Default.args = {
           publicKey: 'raterPublicKey2',
           address: 'raterAddress2',
         },
+        raterVotingPower: '10',
         contributions: [
           {
             id: 1,

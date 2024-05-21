@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -24,6 +24,7 @@ import {
   ContributionWithCompensation,
   Rating,
   RatingsResponse,
+  RatingsResponseWithIdentities,
   StatefulOpenSurveySectionProps,
   SurveyStatus,
 } from '../../types'
@@ -72,6 +73,7 @@ export const OpenSurveySection = ({
 
   const [loading, setLoading] = useState(false)
   const [ratingFormData, setRatingFormData] = useState<ContributionRatingData>()
+  const [weightByVotingPower, setWeightByVotingPower] = useState<boolean>(true)
   const [proposalCreationFormData, setProposalCreationFormData] =
     useState<CompleteRatings>()
 
@@ -122,70 +124,65 @@ export const OpenSurveySection = ({
     }
   }, [bech32Prefix, coreAddress, postRequest])
 
-  const loadProposalCreationFormData = useCallback(async () => {
-    setLoading(true)
+  const [ratingsResponse, setRatingsResponse] =
+    useState<RatingsResponseWithIdentities>()
 
-    try {
-      // Fetch ratings.
-      const response: RatingsResponse = await postRequest(
-        `/${coreAddress}/ratings`
-      )
+  const updateProposalCreationFormData = useCallback(
+    (response: RatingsResponseWithIdentities | undefined = ratingsResponse) => {
+      if (!response) {
+        return
+      }
+
+      const { contributions: _contributions, ratings } = response
+
+      // Get max voting power so we can normalize weights.
+      const maxVotingPower = ratings.length
+        ? Math.max(...ratings.map((r) => Number(r.raterVotingPower)))
+        : 0
 
       // Compute compensation.
       const compensationPerContribution = computeCompensation(
-        response.contributions.map(({ id }) => id),
-        response.ratings.flatMap((rating) =>
-          rating.contributions.map(({ id, attributes }) => ({
+        _contributions.map(({ id }) => id),
+        ratings.flatMap((rating) => {
+          // Normalize a rater's ratings to be between 0 and 100, where 100 is
+          // the highest score they gave. If they ranked everyone 20, then
+          // they will all be normalized to 100.
+          const maxPerAttribute = status.survey.attributes.map((_, index) =>
+            Math.max(
+              0,
+              ...rating.contributions.map(
+                ({ attributes }) => attributes[index] || 0
+              )
+            )
+          )
+
+          return rating.contributions.map(({ id, attributes }) => ({
             contributionId: id,
-            attributes,
+            // Normalize weights to prevent them from getting too large and
+            // causing an overflow when summed together.
+            weight: weightByVotingPower
+              ? maxVotingPower === 0
+                ? 0
+                : Number(rating.raterVotingPower) / maxVotingPower
+              : // Set weight to 1 if not weighting by voting power.
+                1,
+            attributes: attributes.map((attribute, i) =>
+              attribute === null
+                ? null
+                : maxPerAttribute[i] === 0
+                ? 0
+                : (attribute / maxPerAttribute[i]) * 100
+            ),
           }))
-        ),
+        }),
         status.survey.attributes
       )
 
-      // Get addresses for contributor public keys, and compute compensation.
-      const contributions = await Promise.all(
-        response.contributions.map(
-          async (
-            { contributor: publicKey, ...contribution },
-            contributionIndex
-          ): Promise<ContributionWithCompensation> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
-
-            const compensation = compensationPerContribution[contributionIndex]
-
-            return {
-              ...contribution,
-              contributor: {
-                publicKey,
-                address,
-              },
-              compensation,
-            }
-          }
-        )
-      )
-
-      const ratings = await Promise.all(
-        response.ratings.map(
-          async ({ rater: publicKey, ...rating }): Promise<Rating> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
-
-            return {
-              ...rating,
-              rater: {
-                publicKey,
-                address,
-              },
-            }
-          }
-        )
+      const contributions = _contributions.map(
+        (c, index): ContributionWithCompensation => ({
+          ...c,
+          compensation: compensationPerContribution[index],
+        })
       )
 
       const cosmosMsgs: CosmosMsgFor_Empty[] = contributions.flatMap(
@@ -233,13 +230,89 @@ export const OpenSurveySection = ({
       }
 
       setProposalCreationFormData(completeRatings)
+    },
+    [ratingsResponse, status.survey.attributes, weightByVotingPower]
+  )
+
+  const loadRatingsAndProposalCreationFormData = useCallback(async () => {
+    setLoading(true)
+
+    try {
+      // Fetch ratings.
+      const response: RatingsResponse = await postRequest(
+        `/${coreAddress}/ratings`
+      )
+
+      // Get addresses for contributor and rater public keys.
+      const [contributions, ratings] = await Promise.all([
+        Promise.all(
+          response.contributions.map(
+            async ({
+              contributor: publicKey,
+              ...contribution
+            }): Promise<Contribution> => {
+              const address = await secp256k1PublicKeyToBech32Address(
+                publicKey,
+                bech32Prefix
+              )
+
+              return {
+                ...contribution,
+                contributor: {
+                  publicKey,
+                  address,
+                },
+              }
+            }
+          )
+        ),
+        Promise.all(
+          response.ratings.map(
+            async ({ rater: publicKey, ...rating }): Promise<Rating> => {
+              const address = await secp256k1PublicKeyToBech32Address(
+                publicKey,
+                bech32Prefix
+              )
+
+              return {
+                ...rating,
+                rater: {
+                  publicKey,
+                  address,
+                },
+              }
+            }
+          )
+        ),
+      ])
+
+      const responseWithIdentities: RatingsResponseWithIdentities = {
+        contributions,
+        ratings,
+      }
+
+      setRatingsResponse(responseWithIdentities)
+      updateProposalCreationFormData(responseWithIdentities)
     } catch (err) {
       console.error(err)
       toast.error(err instanceof Error ? err.message : JSON.stringify(err))
     } finally {
       setLoading(false)
     }
-  }, [bech32Prefix, coreAddress, postRequest, status.survey.attributes])
+  }, [bech32Prefix, coreAddress, updateProposalCreationFormData, postRequest])
+
+  // If proposal creation form data is defined and weight by vote power changes,
+  // recompute based on same ratings response.
+  useEffect(() => {
+    if (!proposalCreationFormData) {
+      return
+    }
+
+    updateProposalCreationFormData()
+
+    // Only update when weight by voting power changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weightByVotingPower])
 
   const onClick =
     status.survey.status === SurveyStatus.Inactive ||
@@ -249,7 +322,7 @@ export const OpenSurveySection = ({
       ? status.survey.status === SurveyStatus.AcceptingRatings
         ? loadRatingFormData
         : status.survey.status === SurveyStatus.AwaitingCompletion
-        ? loadProposalCreationFormData
+        ? loadRatingsAndProposalCreationFormData
         : undefined
       : undefined
 
@@ -276,7 +349,11 @@ export const OpenSurveySection = ({
     isMember &&
     proposalCreationFormData ? (
     <div className="pb-10">
-      <ProposalCreationForm data={proposalCreationFormData!} />
+      <ProposalCreationForm
+        data={proposalCreationFormData}
+        setWeightByVotingPower={setWeightByVotingPower}
+        weightByVotingPower={weightByVotingPower}
+      />
     </div>
   ) : (
     <StatelessOpenSurveySection

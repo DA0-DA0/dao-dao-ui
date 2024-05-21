@@ -52,7 +52,9 @@ export const listCompletedSurveysSelector = selectorFamily<
   key: 'listCompletedSurveys',
   get:
     ({ daoAddress }) =>
-    async () => {
+    async ({ get }) => {
+      get(refreshStatusAtom({ daoAddress }))
+
       const response = await fetch(`${API_BASE}/${daoAddress}/list`)
       // If not found, return undefined since there is no active survey.
       if (response.status === 404) {

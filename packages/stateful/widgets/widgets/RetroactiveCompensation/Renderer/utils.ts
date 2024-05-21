@@ -7,7 +7,7 @@ import {
 } from './types'
 
 // Distribute compensation per survey attribute among the contributions
-// according to the average ratings. Output array matches the order of
+// according to the weighted average ratings. Output array matches the order of
 // contributonIds input.
 export const computeCompensation = (
   contributionIds: number[],
@@ -17,27 +17,41 @@ export const computeCompensation = (
   // Compute average of ratings for contributions for each attribute.
   const contributionsWithAverageRatings = contributionIds.map(
     (contributionId) => {
+      const contributionRatings = ratings.filter(
+        (rating) => rating.contributionId === contributionId
+      )
+      // Sum weight per attribute, ignoring weights for abstains.
+      const totalWeightPerAttribute = surveyAttributes.map((_, index) =>
+        contributionRatings.reduce(
+          (sum, rating) =>
+            rating.attributes[index] === null ? sum : sum + rating.weight,
+          0
+        )
+      )
+
       // Each item is an array of attribute ratings for this contributor. The
       // order of attributes matches the attribute order in the survey.
-      const attributeRatings = ratings
-        .filter((rating) => rating.contributionId === contributionId)
-        .map((rating) => rating.attributes)
+      const weightedAttributeRatings = contributionRatings.map((rating) =>
+        rating.attributes.map((a, i) =>
+          a === null ? a : (a * rating.weight) / totalWeightPerAttribute[i]
+        )
+      )
 
-      // Average attribute rating for each attribute. If the ratings were
-      // [50, 100], the average is 75. If the ratings were [null, 50], the
-      // average is 50. If the ratings were [null, null], the average is 0.
+      // Weighted average attribute rating for each attribute. If the ratings
+      // were [50, 100] with equal weight, the average is 75. If the ratings
+      // were [null, 50], the average is 50. If the ratings were [null, null],
+      // the average is 0.
       const averageAttributeRatings = surveyAttributes.map(
         (_, attributeIndex) => {
-          const nonAbstainRatings = attributeRatings
+          const nonAbstainRatings = weightedAttributeRatings
             .map((ratings) => ratings[attributeIndex])
             .filter((rating) => typeof rating === 'number') as number[]
 
           // If all ratings are abstain, return 0.
           return nonAbstainRatings.length === 0
             ? 0
-            : // Otherwise, return average.
-              nonAbstainRatings.reduce((sum, rating) => sum + rating, 0) /
-                nonAbstainRatings.length
+            : // Otherwise, add together since weight was applied before.
+              nonAbstainRatings.reduce((sum, rating) => sum + rating, 0)
         }
       )
 

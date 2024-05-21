@@ -10,10 +10,12 @@ import {
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   CommonProposalListInfo,
   StatefulProposalLineProps,
+  StatefulProposalListProps,
 } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
@@ -47,7 +49,10 @@ type CommonProposalListInfoWithType = CommonProposalListInfo & {
   type: ProposalType
 }
 
-export const ProposalList = () => {
+export const ProposalList = ({
+  onClick,
+  hideVetoable = false,
+}: StatefulProposalListProps) => {
   const { t } = useTranslation()
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
@@ -95,12 +100,16 @@ export const ProposalList = () => {
     })
   )
   const daosWithVetoableProposals = useCachedLoadingWithError(
-    daosWithDropdownVetoableProposalListSelector({
-      chainId: chain.chain_id,
-      coreAddress,
-      daoPageMode: mode,
-    })
+    hideVetoable
+      ? undefined
+      : daosWithDropdownVetoableProposalListSelector({
+          chainId: chain.chain_id,
+          coreAddress,
+          daoPageMode: mode,
+        })
   )
+
+  const onClickRef = useUpdatingRef(onClick)
 
   const [loading, setLoading] = useState(true)
   const [canLoadMore, setCanLoadMore] = useState(true)
@@ -262,7 +271,12 @@ export const ProposalList = () => {
               coreAddress,
               proposalModules,
               proposalId: id,
-              proposalViewUrl: getDaoProposalPath(coreAddress, id),
+              proposalViewUrl: onClickRef.current
+                ? '#'
+                : getDaoProposalPath(coreAddress, id),
+              onClick: onClickRef.current
+                ? () => onClickRef.current?.({ proposalId: id })
+                : undefined,
               isPreProposeProposal:
                 type === ProposalType.PreProposePending ||
                 type === ProposalType.PreProposeCompleted,

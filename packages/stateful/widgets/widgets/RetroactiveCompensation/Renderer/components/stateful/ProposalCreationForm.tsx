@@ -13,7 +13,11 @@ import {
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
-import { EntityDisplay, SuspenseLoader } from '../../../../../../components'
+import {
+  EntityDisplay,
+  ProposalList,
+  SuspenseLoader,
+} from '../../../../../../components'
 import {
   useDaoProposalSinglePublishProposal,
   useEntity,
@@ -27,13 +31,20 @@ import { CompleteRatings } from '../../types'
 import {
   ProposalCreationFormData,
   ProposalCreationForm as StatelessProposalCreationForm,
+  ProposalCreationFormProps as StatelessProposalCreationFormProps,
 } from '../stateless/ProposalCreationForm'
 
-interface ProposalCreationFormProps {
+type ProposalCreationFormProps = {
   data: CompleteRatings
-}
+} & Pick<
+  StatelessProposalCreationFormProps,
+  'weightByVotingPower' | 'setWeightByVotingPower'
+>
 
-export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
+export const ProposalCreationForm = ({
+  data,
+  ...props
+}: ProposalCreationFormProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
@@ -75,24 +86,36 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
       setLoading(true)
 
       try {
-        // Propose.
-        const proposalData: NewProposalData = {
-          ...formData,
-          msgs: data.cosmosMsgs,
-        }
+        let proposalId = ''
+        if (formData.type === 'new') {
+          // Propose.
+          const proposalData: NewProposalData = {
+            ...formData.newProposal,
+            msgs: data.cosmosMsgs,
+          }
 
-        const { proposalId } = await publishProposal(proposalData)
-        toast.success(t('success.proposalCreatedCompleteCompensationCycle'))
+          proposalId = (await publishProposal(proposalData)).proposalId
+          toast.success(t('success.proposalCreatedCompleteCompensationCycle'))
+        } else if (formData.type === 'existing') {
+          proposalId = formData.existing
+        }
+        // 'none' will leave the proposal ID empty
 
         // Complete with proposal ID.
         await postRequest(`/${coreAddress}/complete`, { proposalId })
-        toast.success(t('success.compensationCycleCompleted'))
+        toast.success(
+          t('success.compensationCycleCompleted', {
+            context: proposalId ? 'withProposal' : 'noProposal',
+          })
+        )
 
         // Reload status on success.
         setRefreshStatus((id) => id + 1)
 
-        // Navigate to proposal.
-        goToDaoProposal(coreAddress, proposalId)
+        // Navigate to proposal if set.
+        if (proposalId) {
+          goToDaoProposal(coreAddress, proposalId)
+        }
 
         // Don't stop loading on success since we are now navigating.
       } catch (err) {
@@ -150,6 +173,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         tokenPrices.state === 'hasValue' && (
           <StatelessProposalCreationForm
             EntityDisplay={EntityDisplay}
+            ProposalList={ProposalList}
             completeRatings={data}
             entity={walletEntity}
             loading={loading || statusLoadable.updating}
@@ -157,6 +181,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
             status={statusLoadable.contents}
             tokenPrices={tokenPrices.contents}
             walletAddress={walletAddress}
+            {...props}
           />
         )}
     </SuspenseLoader>

@@ -161,6 +161,11 @@ export const TabRenderer = ({
                           )
                     }
                     survey={survey}
+                    tooltip={
+                      wasMemberDuringSurvey
+                        ? t('button.downloadSurveyCsv')
+                        : t('button.goToProposal')
+                    }
                   />
                 )
               })}

@@ -321,6 +321,7 @@ export type BaseProposalWalletVoteProps<T> = {
 
 export type BaseProposalLineProps = {
   href: string
+  onClick?: () => void
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 

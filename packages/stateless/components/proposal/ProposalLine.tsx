@@ -19,6 +19,7 @@ export interface ProposalLineProps {
   Status: ComponentType
   vote: ReactNode
   href: string
+  onClick?: () => void
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
   approvalContext?: ApprovalProposalContext
@@ -32,6 +33,7 @@ export const ProposalLine = ({
   Status,
   vote,
   href,
+  onClick,
   className,
   LinkWrapper,
   approvalContext,
@@ -42,6 +44,7 @@ export const ProposalLine = ({
       className
     )}
     href={href}
+    onClick={onClick}
   >
     {/* Desktop */}
     <div className="hidden h-12 flex-row items-center gap-6 p-3 md:flex">
