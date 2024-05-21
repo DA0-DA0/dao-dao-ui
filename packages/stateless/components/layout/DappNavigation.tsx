@@ -190,66 +190,60 @@ export const DappNavigation = ({
             selected={pathname === '/[[...tab]]'}
           />
 
-          {/* Only show following when connected. */}
-          {walletConnected && (
-            <>
+          {/* Only show following when connected and following DAOs loaded. */}
+          {walletConnected &&
+            !followingDaos.loading &&
+            followingDaos.data.length > 0 && (
               <Row
                 Icon={CheckRounded}
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 defaultExpanded
-                hideExpand={
-                  !followingDaos.loading && followingDaos.data.length === 0
-                }
                 label={t('title.following')}
-                loading={followingDaos.loading || followingDaos.updating}
+                loading={followingDaos.updating}
               >
-                {!followingDaos.loading && (
+                <div
+                  className={clsx(
+                    // 36rem is about the absolute height of all other elements
+                    // in the sidebar, so the remaining space is used for the
+                    // following DAOs. This number will need tweaking if the
+                    // sidebar changes.
+                    'no-scrollbar relative md:max-h-[calc(100dvh-36rem)] overflow-y-auto',
+                    compact && 'mt-1 w-min'
+                  )}
+                  ref={scrollableFollowingContainerRef}
+                >
+                  {/* Top border */}
                   <div
                     className={clsx(
-                      // 42rem is about the absolute height of all other
-                      // elements in the sidebar, so the remaining space is
-                      // used for the following DAOs. This number will need
-                      // tweaking if the sidebar changes.
-                      'relative md:max-h-[calc(100dvh-42rem)]',
-                      !followingDaos.loading && 'no-scrollbar overflow-y-auto',
-                      compact && 'mt-1 w-min'
+                      'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                      showFollowingTopBorder ? 'opacity-100' : 'opacity-0'
                     )}
-                    ref={scrollableFollowingContainerRef}
-                  >
-                    {/* Top border */}
-                    <div
-                      className={clsx(
-                        'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                        showFollowingTopBorder ? 'opacity-100' : 'opacity-0'
-                      )}
-                    ></div>
+                  ></div>
 
-                    {/* DAOs */}
-                    {followingDaos.data.map((dao, index) => (
-                      <DaoDropdown
-                        key={index}
-                        LinkWrapper={LinkWrapper}
-                        compact={compact}
-                        dao={dao}
-                        imageClassName="h-6 w-6"
-                        labelClassName="text-sm"
-                        labelContainerClassName="gap-2"
-                      />
-                    ))}
+                  {/* DAOs */}
+                  {followingDaos.data.map((dao, index) => (
+                    <DaoDropdown
+                      key={index}
+                      LinkWrapper={LinkWrapper}
+                      compact={compact}
+                      dao={dao}
+                      imageClassName="h-6 w-6"
+                      labelClassName="text-sm"
+                      labelContainerClassName="gap-2"
+                    />
+                  ))}
 
-                    {/* Bottom border */}
-                    <div
-                      className={clsx(
-                        'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                        showFollowingBottomBorder ? 'opacity-100' : 'opacity-0'
-                      )}
-                    ></div>
-                  </div>
-                )}
+                  {/* Bottom border */}
+                  <div
+                    className={clsx(
+                      'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                      showFollowingBottomBorder ? 'opacity-100' : 'opacity-0'
+                    )}
+                  ></div>
+                </div>
               </Row>
-            </>
-          )}
+            )}
 
           <Row
             Icon={Add}
