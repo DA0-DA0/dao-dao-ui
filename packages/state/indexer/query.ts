@@ -3,12 +3,7 @@ import {
   IndexerUpStatus,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  BatchClient,
-  CommonError,
-  INDEXER_URL,
-  chainIsIndexed,
-} from '@dao-dao/utils'
+import { CommonError, INDEXER_URL, chainIsIndexed } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<
   {
@@ -35,8 +30,6 @@ export type QueryIndexerOptions = WithChainId<
       }
   )
 >
-
-const indexerBatchClient = new BatchClient(INDEXER_URL + '/batch')
 
 export const queryIndexer = async <T = any>({
   type,
@@ -76,18 +69,26 @@ export const queryIndexer = async <T = any>({
     }),
   })
 
-  const url = `/${chainId}/${type}/${address}/${formula}?${params.toString()}`
-  const { status, body } = await indexerBatchClient.execute({
-    url,
-  })
+  const response = await fetch(
+    INDEXER_URL +
+      `/${chainId}/${type}/${address}/${formula}?${params.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
 
-  if (status >= 300) {
+  const body = await response.text()
+
+  if (response.status >= 300) {
     throw new Error(
-      `Error querying indexer for ${type}/${address}/${formula}: ${status} ${body}`.trim()
+      `Error querying indexer for ${type}/${address}/${formula}: ${response.status} ${body}`.trim()
     )
   }
 
-  if (status === 204) {
+  if (response.status === 204) {
     // If no content is returned, return undefined. This will happen if the
     // formula computed succesfully and outputted nothing (undefined or null).
     return undefined
