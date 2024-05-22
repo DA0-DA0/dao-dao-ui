@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll, waitForNone } from 'recoil'
+import { selectorFamily, waitForNone } from 'recoil'
 
 import {
   CommonNftSelectors,
@@ -7,106 +7,18 @@ import {
   nftUriDataSelector,
   queryWalletIndexerSelector,
   refreshWalletBalancesIdAtom,
-  refreshWalletStargazeNftsAtom,
   stargazeIndexerClient,
   stargazeTokenQuery,
-  stargazeTokensForOwnerQuery,
+  walletStargazeNftCardInfosSelector,
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
-import {
-  ChainId,
-  GenericToken,
-  NftCardInfo,
-  TokenType,
-  WithChainId,
-} from '@dao-dao/types'
+import { ChainId, NftCardInfo, TokenType, WithChainId } from '@dao-dao/types'
 import { LazyNftCardInfo, LoadingNfts } from '@dao-dao/types/nft'
 import {
-  MAINNET,
   STARGAZE_URL_BASE,
   getNftKey,
   nftCardInfoFromStargazeIndexerNft,
 } from '@dao-dao/utils'
-
-const STARGAZE_INDEXER_TOKENS_LIMIT = 100
-export const walletStargazeNftCardInfosSelector = selectorFamily<
-  NftCardInfo[],
-  string
->({
-  key: 'walletStargazeNftCardInfos',
-  get:
-    (walletAddress: string) =>
-    async ({ get }) => {
-      const chainId = MAINNET
-        ? ChainId.StargazeMainnet
-        : ChainId.StargazeTestnet
-
-      get(refreshWalletStargazeNftsAtom(walletAddress))
-
-      const nftCardInfos: NftCardInfo[] = []
-
-      while (true) {
-        const { error, data } = await stargazeIndexerClient.query({
-          query: stargazeTokensForOwnerQuery,
-          variables: {
-            ownerAddrOrName: walletAddress,
-            limit: STARGAZE_INDEXER_TOKENS_LIMIT,
-            offset: nftCardInfos.length,
-          },
-          // Don't cache since this recoil selector handles caching. If this
-          // selector is re-evaluated, it should be re-fetched since an NFT may
-          // have changed ownership.
-          fetchPolicy: 'no-cache',
-        })
-        const timestamp = new Date()
-
-        if (error) {
-          throw error
-        }
-
-        if (!data.tokens?.pageInfo) {
-          break
-        }
-
-        const genericTokens = get(
-          waitForAll(
-            data.tokens.tokens
-              .filter((token) => token.highestOffer?.offerPrice?.denom)
-              .map((token) =>
-                genericTokenSelector({
-                  chainId,
-                  type: TokenType.Native,
-                  denomOrAddress: token.highestOffer!.offerPrice!.denom!,
-                })
-              )
-          )
-        )
-
-        const genericTokensMap: Map<string, GenericToken> = new Map(
-          genericTokens.map((item) => [item.denomOrAddress, item])
-        )
-
-        nftCardInfos.push(
-          ...data.tokens.tokens.map((token) =>
-            nftCardInfoFromStargazeIndexerNft(
-              chainId,
-              token,
-              token.highestOffer?.offerPrice?.denom
-                ? genericTokensMap.get(token.highestOffer.offerPrice.denom)
-                : undefined,
-              timestamp
-            )
-          )
-        )
-
-        if (nftCardInfos.length === data.tokens.pageInfo.total) {
-          break
-        }
-      }
-
-      return nftCardInfos
-    },
-})
 
 export const nftCardInfoWithUriSelector = selectorFamily<
   NftCardInfo,
@@ -250,18 +162,20 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
       )
 
       return Object.entries(allNfts).reduce(
-        (acc, [chainId, { owner, collectionAddresses }]) => {
+        (acc, [chainId, { owners, collectionAddresses }]) => {
           collectionAddresses = Array.from(new Set(collectionAddresses))
 
           // Get all token IDs owned by the DAO for each collection.
           const nftCollectionTokenIds = get(
             waitForNone(
-              collectionAddresses.map((collectionAddress) =>
-                CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
-                  contractAddress: collectionAddress,
-                  chainId,
-                  owner,
-                })
+              collectionAddresses.flatMap((collectionAddress) =>
+                owners.map((owner) =>
+                  CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
+                    contractAddress: collectionAddress,
+                    chainId,
+                    owner,
+                  })
+                )
               )
             )
           )

@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import {
   constSelector,
   selectorFamily,
@@ -8,6 +9,7 @@ import {
 
 import {
   AccountType,
+  ChainId,
   GenericTokenBalance,
   GenericTokenBalanceWithOwner,
   IndexerDumpState,
@@ -38,6 +40,7 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  MAINNET,
   POLYTONE_CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
   getAccount,
@@ -70,6 +73,7 @@ import {
   isPolytoneProxySelector,
 } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
+import { walletStargazeNftCardInfosSelector } from '../nft'
 import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
 
@@ -935,23 +939,17 @@ export const allNativeCw721TokenListSelector = selectorFamily<
     },
 })
 
-// Get all cw721 collections stored in the items list for polytone proxies
-// across all chains.
-export const allPolytoneCw721CollectionsSelector = selectorFamily<
-  Record<
-    string,
-    {
-      proxy: string
-      collectionAddresses: string[]
-    }
-  >,
+// Get all cw721 collections stored in the items list across all chains. This
+// used to be specific to polytone but is now generic. Map chain ID to list of
+// collection addresses.
+export const allCrossChainCw721CollectionsSelector = selectorFamily<
+  Record<string, string[]>,
   QueryClientParams
 >({
-  key: 'daoCoreV2AllPolytoneCw721Collections',
+  key: 'daoCoreV2AllCrossChainCw721Collections',
   get:
     (queryClientParams) =>
     ({ get }) => {
-      const polytoneProxies = get(polytoneProxiesSelector(queryClientParams))
       const polytoneCw721Keys = get(
         listAllItemsWithPrefixSelector({
           ...queryClientParams,
@@ -959,45 +957,27 @@ export const allPolytoneCw721CollectionsSelector = selectorFamily<
         })
       )
 
-      const collectionsByChain = polytoneCw721Keys.reduce(
-        (acc, [key]) => {
-          const [chainId, collectionAddress] = key.split(':')
-          // If no polytone proxy for this chain, skip it. This should only
-          // happen if a key is manually set for a chain that does not have a
-          // polytone proxy.
-          if (!(chainId in polytoneProxies)) {
-            return acc
-          }
+      const collectionsByChain = polytoneCw721Keys.reduce((acc, [key]) => {
+        const [chainId, collectionAddress] = key.split(':')
 
-          if (!acc[chainId]) {
-            acc[chainId] = {
-              proxy: polytoneProxies[chainId],
-              collectionAddresses: [],
-            }
-          }
-          acc[chainId].collectionAddresses.push(collectionAddress)
+        if (!acc[chainId]) {
+          acc[chainId] = []
+        }
+        acc[chainId].push(collectionAddress)
 
-          return acc
-        },
-        {} as Record<
-          string,
-          {
-            proxy: string
-            collectionAddresses: string[]
-          }
-        >
-      )
+        return acc
+      }, {} as Record<string, string[]>)
 
       return collectionsByChain
     },
 })
 
-// Combine native and polytone NFT collections.
+// Combine native and cross-chain NFT collections.
 export const allCw721CollectionsSelector = selectorFamily<
   Record<
     string,
     {
-      owner: string
+      owners: string[]
       collectionAddresses: string[]
     }
   >,
@@ -1009,36 +989,81 @@ export const allCw721CollectionsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     ({ get }) => {
+      const accounts = get(
+        accountsSelector({
+          chainId: queryClientParams.chainId,
+          address: queryClientParams.contractAddress,
+        })
+      )
+
+      // Get NFTs on DAO's chain.
       const nativeCw721TokenList = get(
         allNativeCw721TokenListSelector(queryClientParams)
       )
-      const polytoneCw721Collections = get(
-        allPolytoneCw721CollectionsSelector(queryClientParams)
+
+      // Get NFTs for DAO's cross-chain accounts.
+      const crossChainCw721Collections = get(
+        allCrossChainCw721CollectionsSelector(queryClientParams)
       )
+
+      // Get NFTs from Stargaze's API.
+      const stargazeChainId = MAINNET
+        ? ChainId.StargazeMainnet
+        : ChainId.StargazeTestnet
+      const stargazeAccounts = accounts.filter(
+        (a) => a.chainId === stargazeChainId
+      )
+      const allStargazeNfts = stargazeAccounts.length
+        ? get(
+            waitForAll(
+              stargazeAccounts.map(({ address }) =>
+                walletStargazeNftCardInfosSelector(address)
+              )
+            )
+          ).flat()
+        : []
 
       // Start with native NFTs.
       let allNfts: Record<
         string,
         {
-          owner: string
+          owners: string[]
           collectionAddresses: string[]
         }
       > = {
         [queryClientParams.chainId]: {
-          owner: queryClientParams.contractAddress,
+          owners: accounts
+            .filter((a) => a.type === AccountType.Native)
+            .map((a) => a.address),
           collectionAddresses: nativeCw721TokenList,
         },
       }
 
-      // Add polytone NFTs.
-      Object.entries(polytoneCw721Collections).forEach(
-        ([chainId, { proxy, collectionAddresses }]) => {
+      // Add cross-chain NFTs.
+      Object.entries(crossChainCw721Collections).forEach(
+        ([chainId, collectionAddresses]) => {
           allNfts[chainId] = {
-            owner: proxy,
+            owners: accounts
+              .filter((a) => a.chainId === chainId)
+              .map((a) => a.address),
             collectionAddresses,
           }
         }
       )
+
+      // Add Stargaze NFTs.
+      if (allStargazeNfts.length) {
+        allNfts[stargazeChainId] = {
+          owners: uniq([
+            ...(allNfts[stargazeChainId]?.owners || []),
+            ...stargazeAccounts.map((a) => a.address),
+          ]),
+          collectionAddresses: uniq([
+            ...(allNfts[stargazeChainId]?.collectionAddresses || []),
+            ...allStargazeNfts.map((n) => n.collectionAddress),
+          ]),
+        }
+      }
 
       return allNfts
     },
@@ -1062,12 +1087,14 @@ export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
       // list of each collection.
       const collections = Object.entries(
         get(allCw721CollectionsSelector(queryClientParams))
-      ).flatMap(([chainId, { owner, collectionAddresses }]) =>
-        collectionAddresses.map((collectionAddress) => ({
-          owner,
-          collectionAddress,
-          chainId,
-        }))
+      ).flatMap(([chainId, { owners, collectionAddresses }]) =>
+        collectionAddresses.flatMap((collectionAddress) =>
+          owners.map((owner) => ({
+            owner,
+            collectionAddress,
+            chainId,
+          }))
+        )
       )
 
       // Get the minter for each collection.
