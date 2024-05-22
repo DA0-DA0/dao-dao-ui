@@ -46,7 +46,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
   const anyoneCanPropose = useCachedLoadingWithError(
     anyoneCanProposeSelector({
       chainId,
-      preProposeAddress: proposalModule?.address ?? null,
+      preProposeAddress: proposalModule.prePropose?.address ?? null,
     })
   )
   const depositTokenInfo = useCachedLoadingWithError(
