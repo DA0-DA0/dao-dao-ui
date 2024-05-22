@@ -900,12 +900,20 @@ const daoCoreDumpState = async (
   )
 
   try {
-    const indexerDumpedState = await queryIndexer<IndexerDumpState>({
-      type: 'contract',
-      address: coreAddress,
-      formula: 'daoCore/dumpState',
-      chainId,
-    })
+    const [indexerDumpedState, items] = await Promise.all([
+      queryIndexer<IndexerDumpState>({
+        type: 'contract',
+        address: coreAddress,
+        formula: 'daoCore/dumpState',
+        chainId,
+      }),
+      queryIndexer<ListItemsResponse>({
+        type: 'contract',
+        address: coreAddress,
+        formula: 'daoCore/listItems',
+        chainId,
+      }),
+    ])
 
     // Use data from indexer if present.
     if (indexerDumpedState) {
@@ -921,14 +929,6 @@ const daoCoreDumpState = async (
       if (!coreVersion) {
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }
-
-      const items =
-        (await queryIndexer<ListItemsResponse>({
-          type: 'contract',
-          address: coreAddress,
-          formula: 'daoCore/listItems',
-          chainId,
-        })) ?? []
 
       const { admin } = indexerDumpedState
 
@@ -978,7 +978,7 @@ const daoCoreDumpState = async (
           : undefined,
         isActive,
         activeThreshold,
-        items,
+        items: items || [],
         parentDao: parentDaoInfo
           ? {
               ...parentDaoInfo,
