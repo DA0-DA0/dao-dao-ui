@@ -83,9 +83,14 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
           return null
         }
 
-        // Throw other errors. Recoil throws promises when waiting for other
-        // selectors to finish, and we don't want to prevent that.
-        throw err
+        // Recoil throws promises when waiting for other selectors to finish,
+        // and we don't want to prevent that.
+        if (err instanceof Promise) {
+          throw err
+        }
+
+        console.error(err)
+        return null
       }
 
       try {
