@@ -127,12 +127,18 @@ export const makeGetProposalInfo =
       console.error(err)
     }
     // If indexer fails, fallback to querying block info from chain.
+
     if (!createdAtEpoch) {
-      createdAtEpoch = new Date(
-        (
-          await (await getCosmWasmClient()).getBlock(proposal.start_height)
-        ).header.time
-      ).getTime()
+      try {
+        createdAtEpoch = new Date(
+          (
+            await (await getCosmWasmClient()).getBlock(proposal.start_height)
+          ).header.time
+        ).getTime()
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
     }
 
     return {
