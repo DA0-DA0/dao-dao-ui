@@ -4,14 +4,18 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import {
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 
 import {
   latestProposalSaveAtom,
@@ -25,6 +29,7 @@ import {
   ProposalModuleSelector,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
@@ -72,27 +77,47 @@ export const CreateDaoProposal = () => {
     )
   })
 
-  return (
+  // Load saved proposal state once and then never re-render when it changes
+  // again, to avoid infinite re-render loops due to periodic form saving.
+  const [latestProposalSave, setLatestProposalSave] = useState<any>(undefined)
+  const loadLatestProposalSave = useRecoilCallback(
+    ({ snapshot }) =>
+      async () =>
+        setLatestProposalSave(
+          await snapshot.getPromise(latestProposalSaveAtom(daoInfo.coreAddress))
+        ),
+    [daoInfo.coreAddress]
+  )
+  useEffect(() => {
+    loadLatestProposalSave()
+  }, [loadLatestProposalSave])
+
+  return latestProposalSave ? (
     <ProposalModuleAdapterCommonProvider
       coreAddress={daoInfo.coreAddress}
       proposalModule={selectedProposalModule}
     >
       <InnerCreateDaoProposal
+        latestProposalSave={latestProposalSave}
         selectedProposalModule={selectedProposalModule}
         setSelectedProposalModule={setSelectedProposalModule}
       />
     </ProposalModuleAdapterCommonProvider>
+  ) : (
+    <PageLoader />
   )
 }
 
 type InnerCreateDaoProposalProps = {
   selectedProposalModule: ProposalModule
   setSelectedProposalModule: Dispatch<SetStateAction<ProposalModule>>
+  latestProposalSave: any
 }
 
 const InnerCreateDaoProposal = ({
   selectedProposalModule,
   setSelectedProposalModule,
+  latestProposalSave,
 }: InnerCreateDaoProposalProps) => {
   const { t } = useTranslation()
   const { goToDaoProposal, router, getDaoProposalPath } = useDaoNavHelpers()
@@ -109,59 +134,31 @@ const InnerCreateDaoProposal = ({
     },
   } = useProposalModuleAdapterCommonContext()
 
-  const [latestProposalSave, setLatestProposalSave] = useRecoilState(
-    latestProposalSaveAtom(daoInfo.coreAddress)
-  )
+  // Only set defaults once to prevent unnecessary useForm re-renders.
+  const [firstProposalSave] = useState(() => ({
+    ...makeDefaultNewProposalForm(),
+    ...cloneDeep(latestProposalSave),
+  }))
+
   const formMethods = useForm({
     mode: 'onChange',
-    // Don't clone every render.
-    defaultValues: useMemo(
-      () => ({
-        ...makeDefaultNewProposalForm(),
-        ...cloneDeep(latestProposalSave),
-      }),
-      [latestProposalSave, makeDefaultNewProposalForm]
-    ),
+    defaultValues: firstProposalSave,
   })
+  const { getValues, reset } = formMethods
+
+  const setLatestProposalSave = useSetRecoilState(
+    latestProposalSaveAtom(daoInfo.coreAddress)
+  )
 
   // Reset form to defaults and clear latest proposal save.
   const clear = useCallback(() => {
-    formMethods.reset(makeDefaultNewProposalForm())
+    reset(makeDefaultNewProposalForm())
     setLatestProposalSave({})
-  }, [formMethods, makeDefaultNewProposalForm, setLatestProposalSave])
+  }, [reset, makeDefaultNewProposalForm, setLatestProposalSave])
 
-  const [proposalCreatedCardProps, setProposalCreatedCardProps] =
-    useRecoilState(proposalCreatedCardPropsAtom)
-
-  const proposalData = formMethods.watch()
-
-  const saveQueuedRef = useRef(false)
-  const saveLatestProposalRef = useRef(() => {})
-  saveLatestProposalRef.current = () =>
-    setLatestProposalSave(
-      // If created proposal, clear latest proposal save.
-      proposalCreatedCardProps ? {} : cloneDeep(proposalData)
-    )
-
-  // Save latest data to atom and thus localStorage every second.
-  useEffect(() => {
-    // If created proposal, don't save.
-    if (proposalCreatedCardProps) {
-      return
-    }
-
-    // Queue save in 1 second if not already queued.
-    if (saveQueuedRef.current) {
-      return
-    }
-    saveQueuedRef.current = true
-
-    // Save in one second.
-    setTimeout(() => {
-      saveLatestProposalRef.current()
-      saveQueuedRef.current = false
-    }, 1000)
-  }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
+  const setProposalCreatedCardProps = useSetRecoilState(
+    proposalCreatedCardPropsAtom
+  )
 
   const loadPrefill = useCallback(
     ({ id, data }: ProposalPrefill<any>) => {
@@ -173,10 +170,10 @@ const InnerCreateDaoProposal = ({
 
       if (matchingProposalModule) {
         setSelectedProposalModule(matchingProposalModule)
-        formMethods.reset(data)
+        reset(data)
       }
     },
-    [daoInfo.proposalModules, formMethods, setSelectedProposalModule]
+    [daoInfo.proposalModules, reset, setSelectedProposalModule]
   )
 
   // Prefill form with data from parameter once ready.
@@ -223,7 +220,6 @@ const InnerCreateDaoProposal = ({
     router.query.prefill,
     router.isReady,
     daoInfo.proposalModules,
-    formMethods,
     prefillChecked,
     loadPrefill,
   ])
@@ -260,9 +256,8 @@ const InnerCreateDaoProposal = ({
     },
     [setDrafts]
   )
-  const unloadDraft = () => setDraftIndex(undefined)
+  const unloadDraft = useCallback(() => setDraftIndex(undefined), [])
 
-  const proposalName = formMethods.watch(newProposalFormTitleKey)
   const saveDraft = useCallback(() => {
     // Already saving to a selected draft.
     if (draft) {
@@ -270,24 +265,23 @@ const InnerCreateDaoProposal = ({
     }
 
     const newDraft: ProposalDraft = {
-      name: proposalName,
+      name: getValues(newProposalFormTitleKey),
       createdAt: Date.now(),
       lastUpdatedAt: Date.now(),
       proposal: {
         id: proposalModuleAdapterCommonId,
-        data: proposalData,
+        data: getValues(),
       },
     }
 
-    setDrafts([newDraft, ...drafts])
+    setDrafts((existing) => [newDraft, ...existing])
     setDraftIndex(0)
   }, [
     draft,
-    drafts,
-    proposalData,
+    getValues,
     proposalModuleAdapterCommonId,
     setDrafts,
-    proposalName,
+    newProposalFormTitleKey,
   ])
 
   // Debounce saving draft every 3 seconds.
@@ -305,12 +299,12 @@ const InnerCreateDaoProposal = ({
           index === draftIndex
             ? {
                 ...savedDraft,
-                name: proposalName,
+                name: getValues(newProposalFormTitleKey),
                 lastUpdatedAt: Date.now(),
                 proposal: {
                   id: proposalModuleAdapterCommonId,
                   // Deep clone to prevent values from becoming readOnly.
-                  data: cloneDeep(proposalData),
+                  data: cloneDeep(getValues()),
                 },
               }
             : savedDraft
@@ -320,15 +314,12 @@ const InnerCreateDaoProposal = ({
     }, 3000)
     // Debounce.
     return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    // Instance changes every time, so compare stringified verison.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    JSON.stringify(proposalData),
+    getValues,
     draftIndex,
     setDrafts,
-    proposalName,
     proposalModuleAdapterCommonId,
+    newProposalFormTitleKey,
   ])
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
@@ -372,7 +363,7 @@ const InnerCreateDaoProposal = ({
         getDaoProposalPath(daoInfo.coreAddress, 'create', {
           prefill: encodeJsonToBase64({
             id: proposalModuleAdapterCommonId,
-            data: proposalData,
+            data: getValues(),
           }),
         })
     )
@@ -422,7 +413,53 @@ const InnerCreateDaoProposal = ({
             </SuspenseLoader>
           }
         />
+
+        <FormSaver />
       </FormProvider>
     </>
   )
+}
+
+// Component responsible for listening to form changes and save it to local
+// storage periodically.
+const FormSaver = () => {
+  const { watch, getValues } = useFormContext()
+  const { coreAddress } = useDaoInfoContext()
+
+  const proposalCreatedCardProps = useRecoilValue(proposalCreatedCardPropsAtom)
+  const setLatestProposalSave = useSetRecoilState(
+    latestProposalSaveAtom(coreAddress)
+  )
+
+  const saveQueuedRef = useRef(false)
+  const saveLatestProposalRef = useUpdatingRef(() =>
+    setLatestProposalSave(
+      // If created proposal, clear latest proposal save.
+      proposalCreatedCardProps ? {} : cloneDeep(getValues())
+    )
+  )
+
+  const data = watch()
+
+  // Save latest data to atom (and thus localStorage) every second.
+  useEffect(() => {
+    // If created proposal, don't save.
+    if (proposalCreatedCardProps) {
+      return
+    }
+
+    // Queue save in 1 second if not already queued.
+    if (saveQueuedRef.current) {
+      return
+    }
+    saveQueuedRef.current = true
+
+    // Save in one second.
+    setTimeout(() => {
+      saveLatestProposalRef.current()
+      saveQueuedRef.current = false
+    }, 1000)
+  }, [proposalCreatedCardProps, saveLatestProposalRef, data])
+
+  return null
 }
