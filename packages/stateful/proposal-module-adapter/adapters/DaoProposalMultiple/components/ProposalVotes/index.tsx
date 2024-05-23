@@ -14,7 +14,7 @@ import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { useLoadingProposal, useLoadingVoteOptions } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
-const VOTES_PER_PAGE = 15
+const VOTES_PER_PAGE = 20
 
 export const ProposalVotes = ({ scrollElement }: BaseProposalVotesProps) => {
   const {
@@ -122,7 +122,7 @@ export const ProposalVotes = ({ scrollElement }: BaseProposalVotesProps) => {
     scrollElement,
     loadMore: loadVotes,
     disabled: loading || noMoreVotes,
-    infiniteScrollFactor: 0.2,
+    infiniteScrollFactor: 0.01,
   })
 
   return (

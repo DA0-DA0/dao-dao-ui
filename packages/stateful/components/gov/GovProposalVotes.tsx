@@ -22,7 +22,7 @@ import {
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-const VOTES_PER_PAGE = 10
+const VOTES_PER_PAGE = 20
 
 export type GovProposalVotesProps = BaseProposalVotesProps & {
   proposalId: string
@@ -93,7 +93,7 @@ const InnerGovProposalVotes = ({
     scrollElement,
     loadMore: loadVotes,
     disabled: loading || noMoreVotes,
-    infiniteScrollFactor: 0.2,
+    infiniteScrollFactor: 0.01,
   })
 
   return (
