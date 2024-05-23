@@ -53,7 +53,7 @@ Default.args = {
       {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}
     />
   ),
-  votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
+  VotesCast: () => <ProposalVotes {...makeProposalVotesProps()} />,
   contentDisplay: (
     <ProposalContentDisplayStory
       {...(ProposalContentDisplayStory.args as ProposalContentDisplayProps)}

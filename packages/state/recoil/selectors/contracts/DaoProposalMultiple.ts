@@ -366,6 +366,30 @@ export const listAllVotesSelector = selectorFamily<
   get:
     ({ proposalId, ...queryClientParams }) =>
     async ({ get }) => {
+      // Attempt to load all from indexer first.
+      const id =
+        get(refreshProposalsIdAtom) +
+        get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId,
+          })
+        )
+
+      const indexerVotes = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formula: 'daoProposalMultiple/listVotes',
+          args: {
+            proposalId,
+          },
+          id,
+        })
+      )
+      if (indexerVotes) {
+        return indexerVotes
+      }
+
       const votes: VoteInfo[] = []
 
       while (true) {
@@ -392,5 +416,39 @@ export const listAllVotesSelector = selectorFamily<
       }
 
       return votes
+    },
+})
+
+export const voteCountSelector = selectorFamily<
+  number | undefined,
+  QueryClientParams & {
+    proposalId: number
+  }
+>({
+  key: 'daoProposalMultipleVoteCount',
+  get:
+    ({ proposalId, ...queryClientParams }) =>
+    async ({ get }) => {
+      const id =
+        get(refreshProposalsIdAtom) +
+        get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId,
+          })
+        )
+
+      return (
+        get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula: 'daoProposalMultiple/voteCount',
+            args: {
+              proposalId,
+            },
+            id,
+          })
+        ) ?? undefined
+      )
     },
 })

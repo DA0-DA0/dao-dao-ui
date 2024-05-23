@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react'
 import { CSVLink } from 'react-csv'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -19,6 +20,7 @@ import {
   formatDateTimeTz,
   formatPercentOf100,
   getScrollableAncestor,
+  processError,
 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
@@ -42,11 +44,11 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   votingOpen: boolean
   footer?: ReactNode
   hideVotedAt?: boolean
-  hideDownload?: boolean
   /**
-   * All votes (non-paginated) for downloading the CSV.
+   * Function to fetch all votes (non-paginated) for downloading the CSV. If
+   * undefined, download link is hidden.
    */
-  allVotes: LoadingDataWithError<ProposalVote<Vote>[]>
+  getAllVotes?: () => Promise<ProposalVote<Vote>[]>
   /**
    * A function to convert the vote type into a string for the CSV.
    */
@@ -60,8 +62,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
   votingOpen,
   footer,
   hideVotedAt,
-  hideDownload,
-  allVotes,
+  getAllVotes,
   exportVoteTransformer,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
@@ -69,24 +70,32 @@ export const ProposalVotes = <Vote extends unknown = any>({
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: true })
 
   const votesLoadingOrUpdating = votes.loading || !!votes.updating
-  const votesWithDate =
-    votes.loading || votes.errored
-      ? []
-      : votes.data.sort(
-          (a, b) =>
-            // Sort descending by date, and those without a date last.
-            (b.votedAt?.getTime() ?? -Infinity) -
-            (a.votedAt?.getTime() ?? -Infinity)
-        )
-  const allVotesWithDate =
-    allVotes.loading || allVotes.errored
-      ? []
-      : allVotes.data.sort(
-          (a, b) =>
-            // Sort descending by date, and those without a date last.
-            (b.votedAt?.getTime() ?? -Infinity) -
-            (a.votedAt?.getTime() ?? -Infinity)
-        )
+
+  const [loadingAllVotes, setLoadingAllVotes] = useState(false)
+  const [allVotes, setAllVotes] = useState<ProposalVote<Vote>[]>()
+  const downloadVotes = async () => {
+    if (!getAllVotes) {
+      return
+    }
+
+    setLoadingAllVotes(true)
+
+    try {
+      const allVotes = (await getAllVotes()).sort(
+        (a, b) =>
+          // Sort descending by date, and those without a date last.
+          (b.votedAt?.getTime() ?? -Infinity) -
+          (a.votedAt?.getTime() ?? -Infinity)
+      )
+
+      setAllVotes(allVotes)
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err, { forceCapture: false }))
+    } finally {
+      setLoadingAllVotes(false)
+    }
+  }
 
   // If a new vote is added to existing votes and the window is scrolled to the
   // bottom, scroll to the bottom again to show the new vote.
@@ -122,8 +131,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
     setPrevVoteCount(newVoteCount)
   }, [prevVoteCount, votes])
-
-  const csvLinkRef = useRef<HTMLAnchorElement>()
 
   return (
     <>
@@ -161,7 +168,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
           </p>
 
           {/* Votes */}
-          {votesWithDate.map(
+          {(votes.loading || votes.errored ? [] : votes.data).map(
             (
               { votedAt, voterAddress, vote, votingPowerPercent, rationale },
               index
@@ -221,15 +228,19 @@ export const ProposalVotes = <Vote extends unknown = any>({
           )}
         </div>
 
-        {votes.loading && <Loader size={32} />}
+        {votes.loading ? (
+          <Loader size={32} />
+        ) : votes.updating ? (
+          <Loader className="mt-4" size={20} />
+        ) : null}
 
         {footer}
 
-        {!hideDownload && (
+        {!!getAllVotes && (
           <Button
             className="caption-text mt-6 self-end pr-1 text-right italic"
-            disabled={!csvLinkRef.current || allVotes.loading}
-            onClick={() => csvLinkRef.current?.click()}
+            loading={loadingAllVotes}
+            onClick={downloadVotes}
             variant="none"
           >
             {t('button.downloadVotesCsv')}
@@ -237,12 +248,12 @@ export const ProposalVotes = <Vote extends unknown = any>({
         )}
       </div>
 
-      {!hideDownload && (
+      {!!getAllVotes && allVotes && (
         <CSVLink
           className="hidden"
           data={[
             ['Timestamp', 'Voter', 'Voting Power', 'Vote', 'Rationale'],
-            ...allVotesWithDate.map(
+            ...allVotes.map(
               ({
                 votedAt,
                 voterAddress,
@@ -259,7 +270,11 @@ export const ProposalVotes = <Vote extends unknown = any>({
             ),
           ]}
           filename="votes.csv"
-          ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
+          ref={(ref: any) => {
+            // Download right away and clear.
+            ;(ref?.link as HTMLAnchorElement | undefined)?.click()
+            setAllVotes(undefined)
+          }}
         />
       )}
     </>

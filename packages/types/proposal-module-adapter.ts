@@ -96,7 +96,7 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
     ProposalVoter: ComponentType<BaseProposalVoterProps>
     ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
-    ProposalVotes: ComponentType
+    ProposalVotes: ComponentType<BaseProposalVotesProps>
     ProposalVoteTally: ComponentType
     ProposalLine: ComponentType<BaseProposalLineProps>
 
@@ -294,6 +294,13 @@ export type BaseProposalStatusAndInfoProps = {
 export type BaseProposalVoterProps = {
   onVoteSuccess: () => void | Promise<void>
 } & Pick<ProposalVoterProps, 'seenAllActionPages'>
+
+export type BaseProposalVotesProps = {
+  /**
+   * The proposal container that scrolls.
+   */
+  scrollElement: HTMLElement | null
+}
 
 export type BasePreProposeProposalStatusAndInfoProps = Pick<
   BaseProposalStatusAndInfoProps,

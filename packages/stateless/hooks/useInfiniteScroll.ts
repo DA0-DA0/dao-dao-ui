@@ -6,6 +6,10 @@ export type UseInfiniteScrollOptions = {
    */
   loadMore: () => void
   /**
+   * Optionally specify an element instead of using the ref in the return value.
+   */
+  scrollElement?: HTMLElement | null
+  /**
    * The infinite scroll factor is how close to the bottom the user has to be to
    * load more. 0 triggers loading when scrolled all the way to the bottom, and
    * 0.5 triggers loading when the user has half the screen remaining before the
@@ -37,14 +41,24 @@ export type UseInfiniteScrollReturn = {
  */
 export const useInfiniteScroll = ({
   loadMore,
+  scrollElement,
   infiniteScrollFactor = 1,
   disabled,
 }: UseInfiniteScrollOptions): UseInfiniteScrollReturn => {
-  const [element, setElement] = useState<HTMLElement | null>(null)
+  const [element, setElement] = useState<HTMLElement | null>(
+    scrollElement || null
+  )
   const infiniteScrollRef = useCallback(
     (node: HTMLElement | null) => setElement(node),
     [setElement]
   )
+
+  // Use scrollElement from options if exists.
+  useEffect(() => {
+    if (scrollElement !== undefined && element !== scrollElement) {
+      setElement(scrollElement)
+    }
+  }, [element, scrollElement])
 
   // Memoize loadMore in case it changes between renders.
   const loadMoreRef = useRef(loadMore)

@@ -272,6 +272,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             ? PreProposeApprovalProposalStatusAndInfo
             : CachedProposalStatusAndInfo
         }
+        VotesCast={isPreProposeApprovalProposal ? undefined : ProposalVotes}
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
             <DaoApproverProposalContentDisplay
@@ -292,7 +293,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         voteTally={
           isPreProposeApprovalProposal ? undefined : <ProposalVoteTally />
         }
-        votesCast={isPreProposeApprovalProposal ? undefined : <ProposalVotes />}
       />
 
       <SelfRelayExecuteModal

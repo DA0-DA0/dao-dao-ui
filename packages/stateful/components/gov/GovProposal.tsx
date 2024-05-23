@@ -15,7 +15,11 @@ import {
   useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
-import { DaoTabId, GovProposalWithDecodedContent } from '@dao-dao/types'
+import {
+  BaseProposalVotesProps,
+  DaoTabId,
+  GovProposalWithDecodedContent,
+} from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
 
@@ -94,6 +98,13 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
     }
   )
 
+  const GovVotesCast = useCallback(
+    (props: BaseProposalVotesProps) => (
+      <GovProposalVotes {...props} proposalId={proposalId} />
+    ),
+    [proposalId]
+  )
+
   return (
     <>
       <PageHeaderContent
@@ -137,20 +148,20 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
 
       <Proposal
         ProposalStatusAndInfo={ProposalStatusAndInfo}
+        VotesCast={
+          proposal.proposal.status ===
+            ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
+          proposal.proposal.status ===
+            ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+            ? GovVotesCast
+            : undefined
+        }
         contentDisplay={
           <GovActionsProvider>
             <GovProposalContentDisplay proposal={proposal} />
           </GovActionsProvider>
         }
         voteTally={<GovProposalVoteTally proposalId={proposalId} />}
-        votesCast={
-          (proposal.proposal.status ===
-            ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
-            proposal.proposal.status ===
-              ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) && (
-            <GovProposalVotes proposalId={proposalId} />
-          )
-        }
       />
     </>
   )

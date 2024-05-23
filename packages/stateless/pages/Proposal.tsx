@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useEffect } from 'react'
+import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
+import { BaseProposalVotesProps } from '@dao-dao/types'
 import {
   PAGE_PADDING_BOTTOM_CLASSES,
   PAGE_PADDING_HORIZONTAL_CLASSES,
@@ -10,15 +11,15 @@ import {
 
 export type ProposalProps = {
   voteTally: ReactNode
-  votesCast: ReactNode
   contentDisplay: ReactNode
+  VotesCast?: ComponentType<BaseProposalVotesProps>
   ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
 }
 
 export const Proposal = ({
   voteTally,
-  votesCast,
   contentDisplay,
+  VotesCast,
   ProposalStatusAndInfo,
 }: ProposalProps) => {
   // Scroll to hash manually if available since this component and thus the
@@ -39,6 +40,8 @@ export const Proposal = ({
       })
     }
   }, [])
+
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   return (
     // Undo page container padding so we can add those to our scrollable view
@@ -63,6 +66,7 @@ export const Proposal = ({
           PAGE_PADDING_BOTTOM_CLASSES,
           PAGE_PADDING_HORIZONTAL_CLASSES
         )}
+        ref={(ref) => setScrollElement(ref)}
       >
         <div className="mb-9">{contentDisplay}</div>
 
@@ -72,7 +76,11 @@ export const Proposal = ({
 
         <div>{voteTally}</div>
 
-        <div className="mt-8">{votesCast}</div>
+        {VotesCast && (
+          <div className="mt-8">
+            <VotesCast scrollElement={scrollElement} />
+          </div>
+        )}
       </div>
     </div>
   )
