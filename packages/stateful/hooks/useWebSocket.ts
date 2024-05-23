@@ -4,11 +4,16 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
+  indexerUpStatusSelector,
   indexerWebSocketChannelSubscriptionsAtom,
   indexerWebSocketSelector,
   mountedInBrowserAtom,
 } from '@dao-dao/state/recoil'
-import { useDaoInfoContext, useUpdatingRef } from '@dao-dao/stateless'
+import {
+  useCachedLoadingWithError,
+  useDaoInfoContext,
+  useUpdatingRef,
+} from '@dao-dao/stateless'
 import { ParametersExceptFirst } from '@dao-dao/types'
 import {
   objectMatchesStructure,
@@ -217,11 +222,25 @@ export const useOnDaoWebSocketMessage = (
   chainId: string,
   coreAddress: string,
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
-) =>
-  useOnWebSocketMessage(
+) => {
+  const indexerUp = useCachedLoadingWithError(
+    indexerUpStatusSelector({
+      chainId,
+    })
+  )
+  const response = useOnWebSocketMessage(
     [webSocketChannelNameForDao({ chainId, coreAddress })],
     ...args
   )
+  return {
+    ...response,
+    listening:
+      // Unless indexer is caught up, mark as not listening.
+      indexerUp.loading || indexerUp.errored || !indexerUp.data.caughtUp
+        ? false
+        : response.listening,
+  }
+}
 
 export const useOnCurrentDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
