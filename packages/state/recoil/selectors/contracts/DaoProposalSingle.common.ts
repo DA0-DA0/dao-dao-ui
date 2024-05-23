@@ -322,37 +322,3 @@ export const reverseProposalsSelector = selectorFamily<
       )
     },
 })
-
-export const voteCountSelector = selectorFamily<
-  number | undefined,
-  QueryClientParams & {
-    proposalId: number
-  }
->({
-  key: 'daoProposalSingleCommonVoteCount',
-  get:
-    ({ proposalId, ...queryClientParams }) =>
-    async ({ get }) => {
-      const id =
-        get(refreshProposalsIdAtom) +
-        get(
-          refreshProposalIdAtom({
-            address: queryClientParams.contractAddress,
-            proposalId,
-          })
-        )
-
-      return (
-        get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'daoProposalSingle/voteCount',
-            args: {
-              proposalId,
-            },
-            id,
-          })
-        ) ?? undefined
-      )
-    },
-})
