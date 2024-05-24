@@ -1758,6 +1758,7 @@
     "quorum": "Quorum",
     "ratioOfVotes": "Ratio of votes",
     "rawData": "Raw data",
+    "recentProposals": "Recent proposals",
     "recipient": "Recipient",
     "recognizeSubDao": "Recognize {{name}} as a SubDAO",
     "redelegate": "Redelegate",

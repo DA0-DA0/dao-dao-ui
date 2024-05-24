@@ -1,10 +1,11 @@
+import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { walletChainIdAtom } from '@dao-dao/state'
+import { DaoProposalSearchResult, walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainPickerPopup,
   Logo,
@@ -21,9 +22,14 @@ import { useLoadingFeaturedDaoCardInfos, useWallet } from '../../hooks'
 import { DaoCard } from '../dao'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
+import { LazyProposalLine } from '../ProposalLine'
 import { ProfileHome } from './ProfileHome'
 
-export const Home = () => {
+export type StatefulHomeProps = {
+  recentProposals: DaoProposalSearchResult[]
+}
+
+export const Home: NextPage<StatefulHomeProps> = ({ recentProposals }) => {
   const { t } = useTranslation()
   const { isWalletConnected } = useWallet()
   const router = useRouter()
@@ -105,10 +111,13 @@ export const Home = () => {
           />
 
           <StatelessHome
+            LazyProposalLine={LazyProposalLine}
+            LinkWrapper={LinkWrapper}
             featuredDaosProps={{
               Component: DaoCard,
               items: featuredDaosLoading,
             }}
+            recentProposals={recentProposals}
           />
         </>
       )}

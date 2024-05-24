@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { LazyProposalLine } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import { DaoCard, LinkWrapper } from '../components'
@@ -29,6 +30,9 @@ Default.args = {
       />
     ),
   },
+  recentProposals: [],
+  LazyProposalLine,
+  LinkWrapper,
 }
 Default.parameters = {
   design: {

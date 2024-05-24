@@ -10,3 +10,8 @@ export type StatefulProposalLineProps = {
   onClick?: () => void
   isPreProposeProposal: boolean
 }
+
+export type StatefulLazyProposalLineProps = Omit<
+  StatefulProposalLineProps,
+  'proposalModules' | 'proposalViewUrl'
+>
