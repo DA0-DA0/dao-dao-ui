@@ -83,6 +83,7 @@ export enum ChainId {
   OmniflixHubTestnet = 'flixnet-4',
   SecretMainnet = 'secret-4',
   SecretTestnet = 'pulsar-3',
+  Slay3rTestnet = 'slay3r-dev',
 }
 
 export type BaseChainConfig = {

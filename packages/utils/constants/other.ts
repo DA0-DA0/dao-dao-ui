@@ -104,6 +104,10 @@ export const ICA_CHAINS_TX_PREFIX = 'ica:'
 
 export const CHAIN_GAS_MULTIPLIER = 2
 
+// Slay3r DAO (Moonphase for now)
+export const SLAY3R_GOVERNANCE_DAO =
+  'slay3r14q8ykpzef95jx9n6gmdqkgtee75wtn753rd6uqej0yhznz0xkvzq7ukhkf'
+
 export const IPFS_GATEWAY_TEMPLATE = 'https://ipfs.daodao.zone/ipfs/PATH'
 
 export const SKIP_API_BASE = 'https://api.skip.money'
@@ -169,6 +173,7 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
   'no such contract',
   'not found',
   'unknown query path',
+  'Unsupported path',
   'decoding bech32 failed',
 ]
 

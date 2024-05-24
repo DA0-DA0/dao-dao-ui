@@ -15,6 +15,7 @@ import {
 
 import { NftBasedCreatorId } from './adapters'
 import { NEUTRON_GOVERNANCE_DAO } from './env'
+import { SLAY3R_GOVERNANCE_DAO } from './other'
 
 //! ----- Modified chain-registry -----
 let chains = [...chainRegistryChains]
@@ -74,6 +75,96 @@ assets.push({
   chain_name: omniFlixHubTestnetChain.chain_name,
   // Copy assets from OmniFlix Hub mainnet.
   assets: assets.find((a) => a.chain_name === 'omniflixhub')?.assets ?? [],
+})
+
+// Slay3r Testnet
+const slay3rTestnetChain: Chain = {
+  chain_name: 'slay3r-dev',
+  status: 'live',
+  network_type: 'testnet',
+  website: 'https://github.com/Lay3rLabs',
+  pretty_name: 'Slay3r',
+  chain_id: 'slay3r-dev',
+  bech32_prefix: 'slay3r',
+  daemon_name: 'wasmd',
+  key_algos: ['secp256k1'],
+  slip44: 118,
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'uslay',
+        fixed_min_gas_price: 0.075,
+        low_gas_price: 0.075,
+        average_gas_price: 0.1,
+        high_gas_price: 0.125,
+      },
+    ],
+  },
+  staking: {
+    staking_tokens: [
+      {
+        denom: 'uslay',
+      },
+    ],
+  },
+  logo_URIs: {
+    jpeg: '/chains/slay3r.jpeg',
+  },
+  description: 'Slay.',
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc.spinner.zone:443',
+        provider: 'Slay3r',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://lcd.spinner.zone:443',
+        provider: 'Slay3r',
+      },
+    ],
+    grpc: [
+      {
+        address: 'https://grpc.spinner.zone:443',
+        provider: 'Slay3r',
+      },
+    ],
+  },
+}
+chains.push(slay3rTestnetChain)
+assets.push({
+  chain_name: slay3rTestnetChain.chain_name,
+  assets: [
+    {
+      description: 'Slay.',
+      denom_units: [
+        {
+          denom: 'uslay',
+          exponent: 0,
+        },
+        {
+          denom: 'slay',
+          exponent: 6,
+        },
+      ],
+      base: 'uslay',
+      name: 'Slay3r',
+      display: 'slay',
+      symbol: 'SLAY3R',
+      logo_URIs: {
+        jpeg: '/chains/slay3r.jpeg',
+      },
+      images: [
+        {
+          jpeg: '/chains/slay3r.jpeg',
+        },
+      ],
+      socials: {
+        twitter: 'https://twitter.com/Lay3rLabs',
+      },
+    },
+  ],
 })
 
 // Remove thorchain and althea since they spam the console.
@@ -2365,6 +2456,41 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // unused
       CwTokenfactoryIssuerMain: '',
       DaoMigrator: '',
+    },
+  },
+  {
+    chainId: ChainId.Slay3rTestnet,
+    name: 'slay3r',
+    mainnet: false,
+    accentColor: '#c53381',
+    noIndexer: true,
+    factoryContractAddress:
+      'slay3r15c2ezlsksq9qywczs925setvdscatm99363e9fyg2sveqxw6vswqx7qx5u',
+    govContractAddress: SLAY3R_GOVERNANCE_DAO,
+    codeIdsVersion: ContractVersion.V242,
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 94,
+      Cw4Group: 40, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
+      Cw721Base: 41,
+
+      // ContractVersion.V242
+      CwPayrollFactory: 49,
+      CwTokenSwap: 51,
+      CwTokenfactoryIssuerMain: 53,
+      CwVesting: 55,
+      DaoCore: 57,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 61,
+      DaoPreProposeApprover: 63,
+      DaoPreProposeMultiple: 65,
+      DaoPreProposeSingle: 67,
+      DaoProposalMultiple: 73,
+      DaoProposalSingle: 75,
+      DaoVotingCw4: 85,
+      DaoVotingCw721Staked: 89,
+      DaoVotingTokenStaked: 93,
     },
   },
 ]

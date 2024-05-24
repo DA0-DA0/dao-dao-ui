@@ -603,7 +603,8 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
       } catch (err) {
         if (
           err instanceof Error &&
-          err.message.includes('unknown query path')
+          (err.message.includes('unknown query path') ||
+            err.message.includes('Unsupported path'))
         ) {
           return -1
         }
