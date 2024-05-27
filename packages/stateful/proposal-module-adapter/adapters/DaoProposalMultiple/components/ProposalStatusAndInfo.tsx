@@ -172,7 +172,7 @@ const InnerProposalStatusAndInfo = ({
     },
     date:
       statusKey === ProposalStatusEnum.Open
-        ? timestampInfo?.expirationDate
+        ? timestampInfo.expirationDate
         : statusKey === 'veto_timelock'
         ? vetoTimelockExpiration
         : undefined,
@@ -220,13 +220,15 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
-    ...(timestampInfo?.display
+    ...(timestampInfo.display
       ? ([
           {
             Icon: HourglassTopRounded,
             label: timestampInfo.display.label,
             Value: (props) => (
-              <p {...props}>{timestampInfo.display!.content}</p>
+              <Tooltip title={timestampInfo.display!.tooltip}>
+                <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
             ),
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])

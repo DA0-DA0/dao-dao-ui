@@ -225,6 +225,13 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
             <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
           ),
         }
+      : 'at_height' in proposal.expiration &&
+        proposal.expiration.at_height > blockHeightLoadable.contents
+      ? {
+          label: t('title.votingEndBlock'),
+          tooltip: t('info.votingEndBlockTooltip'),
+          content: BigInt(proposal.expiration.at_height).toLocaleString(),
+        }
       : undefined
     : executionDate
     ? {
@@ -240,7 +247,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       }
     : completionDate
     ? {
-        label: t('info.completed'),
+        label: t('title.completed'),
         tooltip: formatDateTimeTz(completionDate),
         content: formatDate(completionDate),
       }
@@ -251,13 +258,19 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
           // just in case...
           expirationDate.getTime() > Date.now()
             ? t('title.expires')
-            : t('info.completed'),
+            : t('title.completed'),
         tooltip: formatDateTimeTz(expirationDate),
         content: formatDate(expirationDate),
       }
+    : 'at_height' in proposal.expiration
+    ? {
+        label: t('title.blockCompleted'),
+        tooltip: t('info.votingEndedBlockTooltip'),
+        content: BigInt(proposal.expiration.at_height).toLocaleString(),
+      }
     : undefined
 
-  const timestampInfo: ProposalTimestampInfo | undefined = expirationDate && {
+  const timestampInfo: ProposalTimestampInfo = {
     display: dateDisplay,
     expirationDate,
   }

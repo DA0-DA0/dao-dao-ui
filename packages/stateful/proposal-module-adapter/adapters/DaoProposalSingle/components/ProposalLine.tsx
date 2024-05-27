@@ -78,7 +78,7 @@ const InnerProposalLine = ({
                 />
               ),
             }
-          : proposal.timestampInfo?.display
+          : proposal.timestampInfo.display
       }
       title={proposal.title}
       vote={

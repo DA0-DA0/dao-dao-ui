@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 import {
   ActionAndData,
   ActionKeyAndData,
@@ -7,6 +5,7 @@ import {
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
+  ProposalTimestampInfo,
   ProposalVoteOption,
 } from '@dao-dao/types'
 import {
@@ -98,17 +97,8 @@ export type UsePublishProposal = () => {
   simulationBypassExpiration: Date | undefined
 }
 
-export interface TimestampInfo {
-  display?: {
-    label: string
-    tooltip?: string
-    content: ReactNode
-  }
-  expirationDate: Date
-}
-
 export type ProposalWithMetadata = MultipleChoiceProposal & {
-  timestampInfo: TimestampInfo | undefined
+  timestampInfo: ProposalTimestampInfo
   votingOpen: boolean
   executedAt?: Date
   // If this proposal is in its veto timelock period, this is the date that the

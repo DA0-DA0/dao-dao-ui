@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -12,8 +11,16 @@ import {
   useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { LoadingData, ProposalStatusEnum } from '@dao-dao/types'
-import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
+import {
+  LoadingData,
+  ProposalStatusEnum,
+  ProposalTimestampInfo,
+} from '@dao-dao/types'
+import {
+  convertExpirationToDate,
+  formatDate,
+  formatDateTimeTz,
+} from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { ProposalWithMetadata } from '../types'
@@ -101,45 +108,63 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const executionDate = typeof executedAt === 'string' && new Date(executedAt)
   const closeDate = typeof closedAt === 'string' && new Date(closedAt)
 
-  const dateDisplay: { label: string; content: ReactNode } | undefined =
-    votingOpen
-      ? expirationDate && expirationDate.getTime() > Date.now()
-        ? {
-            label: vetoTimelockExpiration
-              ? t('title.votingTimeLeft')
-              : t('title.timeLeft'),
-            content: (
-              <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
-            ),
-          }
-        : undefined
-      : executionDate
+  const dateDisplay: ProposalTimestampInfo['display'] | undefined = votingOpen
+    ? expirationDate && expirationDate.getTime() > Date.now()
       ? {
-          label: t('proposalStatusTitle.executed'),
-          content: formatDate(executionDate),
+          label: vetoTimelockExpiration
+            ? t('title.votingTimeLeft')
+            : t('title.timeLeft'),
+          tooltip: formatDateTimeTz(expirationDate),
+          content: (
+            <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
+          ),
         }
-      : closeDate
+      : 'at_height' in proposal.expiration &&
+        proposal.expiration.at_height > blockHeightLoadable.contents
       ? {
-          label: t('proposalStatusTitle.closed'),
-          content: formatDate(closeDate),
-        }
-      : completionDate
-      ? {
-          label: t('info.completed'),
-          content: formatDate(completionDate),
-        }
-      : expirationDate
-      ? {
-          label:
-            // If voting is closed, expiration should not be in the future, but
-            // just in case...
-            expirationDate.getTime() > Date.now()
-              ? t('title.expires')
-              : t('info.completed'),
-          content: formatDate(expirationDate),
+          label: t('title.votingEndBlock'),
+          tooltip: t('info.votingEndBlockTooltip'),
+          content: BigInt(proposal.expiration.at_height).toLocaleString(),
         }
       : undefined
-  const timestampInfo = expirationDate && {
+    : executionDate
+    ? {
+        label: t('proposalStatusTitle.executed'),
+        tooltip: formatDateTimeTz(executionDate),
+        content: formatDate(executionDate),
+      }
+    : closeDate
+    ? {
+        label: t('proposalStatusTitle.closed'),
+        tooltip: formatDateTimeTz(closeDate),
+        content: formatDate(closeDate),
+      }
+    : completionDate
+    ? {
+        label: t('info.completed'),
+        tooltip: formatDateTimeTz(completionDate),
+        content: formatDate(completionDate),
+      }
+    : expirationDate
+    ? {
+        label:
+          // If voting is closed, expiration should not be in the future, but
+          // just in case...
+          expirationDate.getTime() > Date.now()
+            ? t('title.expires')
+            : t('title.completed'),
+        tooltip: formatDateTimeTz(expirationDate),
+        content: formatDate(expirationDate),
+      }
+    : 'at_height' in proposal.expiration
+    ? {
+        label: t('title.blockCompleted'),
+        tooltip: t('info.votingEndedBlockTooltip'),
+        content: BigInt(proposal.expiration.at_height).toLocaleString(),
+      }
+    : undefined
+
+  const timestampInfo: ProposalTimestampInfo = {
     display: dateDisplay,
     expirationDate,
   }

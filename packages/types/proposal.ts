@@ -240,5 +240,5 @@ export type ProposalTimestampInfo = {
     tooltip?: string
     content: ReactNode
   }
-  expirationDate: Date
+  expirationDate?: Date
 }

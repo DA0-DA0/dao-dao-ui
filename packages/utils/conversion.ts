@@ -295,7 +295,7 @@ export const convertExpirationToDate = (
   // For converting height to rough date.
   currentBlockHeight: number
 ): Date | undefined =>
-  'at_height' in expiration && currentBlockHeight > 0
+  'at_height' in expiration && currentBlockHeight > 0 && blocksPerYear > 0
     ? new Date(
         Date.now() +
           convertBlocksToSeconds(

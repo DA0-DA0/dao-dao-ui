@@ -98,7 +98,7 @@ export type UsePublishProposal = () => {
 }
 
 export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
-  timestampInfo: ProposalTimestampInfo | undefined
+  timestampInfo: ProposalTimestampInfo
   votingOpen: boolean
   executedAt?: Date
   // If this proposal was approved by a pre-propose-approver in another DAO,
