@@ -1,6 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
+import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 import {
   Control,
@@ -80,7 +81,10 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
       name={fieldName}
       render={({ field: { onChange, onBlur, value } }) => (
         <CodeMirror
-          className="rounded"
+          className={clsx(
+            'rounded',
+            readOnly && 'max-h-[min(32rem,75vh)] overflow-y-auto'
+          )}
           onBeforeChange={(_editor, _data, value) => onChange(value)}
           onBlur={(_instance, _event) => onBlur()}
           options={cmOptions}
