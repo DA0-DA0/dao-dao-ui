@@ -98,6 +98,22 @@ const config = {
       destination: '/dao/:chain/:slug*',
       permanent: false,
     },
+    // Rename Neutron proposal IDs from starting with N to A.
+    {
+      source:
+        '/dao/neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff/proposals/N:slug',
+      destination:
+        '/dao/neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff/proposals/A:slug',
+      permanent: true,
+    },
+    // Rename Neutron proposal IDs from starting with P to C.
+    {
+      source:
+        '/dao/neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff/proposals/P:slug',
+      destination:
+        '/dao/neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff/proposals/C:slug',
+      permanent: true,
+    },
   ],
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {
