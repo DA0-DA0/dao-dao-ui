@@ -21,11 +21,13 @@ export const useExecuteAt = ({ fn, date }: UseExecuteAtOptions) => {
   const fnRef = useUpdatingRef(fn)
 
   useEffect(() => {
-    if (!date) {
+    const dateTime = date?.getTime()
+    // Check if date defined and valid.
+    if (!dateTime || isNaN(dateTime)) {
       return
     }
 
-    const msRemaining = date.getTime() - Date.now()
+    const msRemaining = dateTime - Date.now()
     if (msRemaining < 0) {
       return
     }
