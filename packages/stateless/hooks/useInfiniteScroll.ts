@@ -1,4 +1,6 @@
-import { RefCallback, useCallback, useEffect, useRef, useState } from 'react'
+import { RefCallback, useCallback, useEffect, useState } from 'react'
+
+import { useUpdatingRef } from './useUpdatingRef'
 
 export type UseInfiniteScrollOptions = {
   /**
@@ -8,7 +10,7 @@ export type UseInfiniteScrollOptions = {
   /**
    * Optionally specify an element instead of using the ref in the return value.
    */
-  scrollElement?: HTMLElement | null
+  element?: HTMLElement | null
   /**
    * The infinite scroll factor is how close to the bottom the user has to be to
    * load more. 0 triggers loading when scrolled all the way to the bottom, and
@@ -27,42 +29,40 @@ export type UseInfiniteScrollOptions = {
 
 export type UseInfiniteScrollReturn = {
   /**
-   * The ref to set on the container.
+   * The ref to set on the element you want to track.
    */
   infiniteScrollRef: RefCallback<HTMLElement>
 }
 
 /**
- * A hook that triggers a callback when the user scrolls to the bottom of the
- * container, as determined by the bottom of the container reaching a certain
- * threshold below the bottom of the window.
+ * A hook that triggers a callback when the user scrolls to the bottom of an
+ * element, as determined by the bottom of the element reaching a certain
+ * threshold below the bottom of the window. This element should NOT be the
+ * scrollable container itself, but instead the element inside the container
+ * that contains the content.
  *
  * The returned `infiniteScrollRef` should be set on the container element.
  */
 export const useInfiniteScroll = ({
   loadMore,
-  scrollElement,
+  element: _element,
   infiniteScrollFactor = 1,
   disabled,
 }: UseInfiniteScrollOptions): UseInfiniteScrollReturn => {
-  const [element, setElement] = useState<HTMLElement | null>(
-    scrollElement || null
-  )
+  const [element, setElement] = useState<HTMLElement | null>(_element || null)
   const infiniteScrollRef = useCallback(
     (node: HTMLElement | null) => setElement(node),
     [setElement]
   )
 
-  // Use scrollElement from options if exists.
+  // Use _element from options if exists.
   useEffect(() => {
-    if (scrollElement !== undefined && element !== scrollElement) {
-      setElement(scrollElement)
+    if (_element !== undefined && element !== _element) {
+      setElement(_element)
     }
-  }, [element, scrollElement])
+  }, [element, _element])
 
-  // Memoize loadMore in case it changes between renders.
-  const loadMoreRef = useRef(loadMore)
-  loadMoreRef.current = loadMore
+  const loadMoreRef = useUpdatingRef(loadMore)
 
   useEffect(() => {
     if (
@@ -103,7 +103,7 @@ export const useInfiniteScroll = ({
     // waiting for them to bubble up.
     window.addEventListener('scroll', onScroll, true)
     return () => window.removeEventListener('scroll', onScroll, true)
-  }, [infiniteScrollFactor, disabled, element])
+  }, [infiniteScrollFactor, disabled, element, loadMoreRef])
 
   return {
     infiniteScrollRef,

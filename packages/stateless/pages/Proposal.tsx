@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useEffect, useState } from 'react'
+import { ComponentType, ReactNode, useEffect } from 'react'
 
 import { BaseProposalVotesProps } from '@dao-dao/types'
 import {
@@ -41,8 +41,6 @@ export const Proposal = ({
     }
   }, [])
 
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-
   return (
     // Undo page container padding so we can add those to our scrollable view
     // instead. Also set height to full height of parent and some overflow to
@@ -66,7 +64,6 @@ export const Proposal = ({
           PAGE_PADDING_BOTTOM_CLASSES,
           PAGE_PADDING_HORIZONTAL_CLASSES
         )}
-        ref={(ref) => setScrollElement(ref)}
       >
         <div className="mb-9">{contentDisplay}</div>
 
@@ -76,11 +73,7 @@ export const Proposal = ({
 
         <div>{voteTally}</div>
 
-        {VotesCast && (
-          <div className="mt-8">
-            <VotesCast scrollElement={scrollElement} />
-          </div>
-        )}
+        {VotesCast && <VotesCast className="mt-8" />}
       </div>
     </div>
   )

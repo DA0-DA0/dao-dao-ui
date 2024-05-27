@@ -297,9 +297,9 @@ export type BaseProposalVoterProps = {
 
 export type BaseProposalVotesProps = {
   /**
-   * The proposal container that scrolls.
+   * An optional class name.
    */
-  scrollElement: HTMLElement | null
+  className?: string
 }
 
 export type BasePreProposeProposalStatusAndInfoProps = Pick<

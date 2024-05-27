@@ -16,7 +16,7 @@ import { VoteDisplay } from './VoteDisplay'
 
 const VOTES_PER_PAGE = 20
 
-export const ProposalVotes = ({ scrollElement }: BaseProposalVotesProps) => {
+export const ProposalVotes = (props: BaseProposalVotesProps) => {
   const {
     chain: { chain_id: chainId },
     proposalModule: { address: proposalModuleAddress },
@@ -118,17 +118,17 @@ export const ProposalVotes = ({ scrollElement }: BaseProposalVotesProps) => {
         )
   )
 
-  useInfiniteScroll({
-    scrollElement,
+  const { infiniteScrollRef } = useInfiniteScroll({
     loadMore: loadVotes,
     disabled: loading || noMoreVotes,
-    infiniteScrollFactor: 0.01,
+    infiniteScrollFactor: 0.1,
   })
 
   return (
     <StatelessProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
+      containerRef={infiniteScrollRef}
       exportVoteTransformer={(vote) =>
         voteOptions.loading
           ? 'LOADING_ERROR'
@@ -148,6 +148,7 @@ export const ProposalVotes = ({ scrollElement }: BaseProposalVotesProps) => {
             }
       }
       votingOpen={!loadingProposal.loading && loadingProposal.data.votingOpen}
+      {...props}
     />
   )
 }

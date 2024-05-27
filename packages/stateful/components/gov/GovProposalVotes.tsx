@@ -36,7 +36,7 @@ export const GovProposalVotes = (props: GovProposalVotesProps) => (
 
 const InnerGovProposalVotes = ({
   proposalId,
-  scrollElement,
+  ...props
 }: GovProposalVotesProps) => {
   const { chain_id: chainId } = useChain()
 
@@ -89,17 +89,17 @@ const InnerGovProposalVotes = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useInfiniteScroll({
-    scrollElement,
+  const { infiniteScrollRef } = useInfiniteScroll({
     loadMore: loadVotes,
     disabled: loading || noMoreVotes,
-    infiniteScrollFactor: 0.01,
+    infiniteScrollFactor: 0.1,
   })
 
   return (
     <StatelessProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={GovProposalVoteDisplay}
+      containerRef={infiniteScrollRef}
       exportVoteTransformer={(vote) => voteOptionToJSON(vote)}
       hideVotedAt
       votes={
@@ -113,6 +113,7 @@ const InnerGovProposalVotes = ({
             }
       }
       votingOpen={false}
+      {...props}
     />
   )
 }

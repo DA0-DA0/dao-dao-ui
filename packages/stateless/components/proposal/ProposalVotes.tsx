@@ -3,6 +3,7 @@ import {
   ComponentType,
   Fragment,
   ReactNode,
+  RefCallback,
   useEffect,
   useRef,
   useState,
@@ -53,6 +54,14 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
    * A function to convert the vote type into a string for the CSV.
    */
   exportVoteTransformer: (vote: Vote) => string
+  /**
+   * Optional class names to apply to the container.
+   */
+  className?: string
+  /**
+   * Optional ref to apply to the container.
+   */
+  containerRef?: RefCallback<HTMLDivElement>
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -64,6 +73,8 @@ export const ProposalVotes = <Vote extends unknown = any>({
   hideVotedAt,
   getAllVotes,
   exportVoteTransformer,
+  className,
+  containerRef,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -100,18 +111,18 @@ export const ProposalVotes = <Vote extends unknown = any>({
   // If a new vote is added to existing votes and the window is scrolled to the
   // bottom, scroll to the bottom again to show the new vote.
   const [prevVoteCount, setPrevVoteCount] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const ourContainerRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const newVoteCount = votes.loading || votes.errored ? 0 : votes.data.length
     if (
       votes.loading ||
-      !containerRef.current ||
+      !ourContainerRef.current ||
       prevVoteCount === newVoteCount
     ) {
       return
     }
 
-    const parent = getScrollableAncestor(containerRef.current)
+    const parent = getScrollableAncestor(ourContainerRef.current)
     if (!parent) {
       return
     }
@@ -134,7 +145,13 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
   return (
     <>
-      <div className="flex flex-col gap-2" ref={containerRef}>
+      <div
+        className={clsx('flex flex-col gap-2', className)}
+        ref={(ref) => {
+          ourContainerRef.current = ref
+          containerRef?.(ref)
+        }}
+      >
         <div className="mb-4 flex flex-col gap-1">
           <p className="primary-text">{t('title.votesCast')}</p>
 
