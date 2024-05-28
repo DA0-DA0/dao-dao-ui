@@ -399,6 +399,10 @@ export type DaoCreationVotingConfigWithVeto = {
   veto: ProposalVetoConfig
 }
 
+export type DaoCreationVotingConfigWithProposalExecutionPolicy = {
+  onlyMembersExecute: boolean
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &
@@ -406,7 +410,8 @@ export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithVotingDuration &
   DaoCreationVotingConfigWithEnableMultipleChoice &
   DaoCreationVotingConfigWithApprover &
-  DaoCreationVotingConfigWithVeto
+  DaoCreationVotingConfigWithVeto &
+  DaoCreationVotingConfigWithProposalExecutionPolicy
 
 //! Other
 

@@ -71,6 +71,7 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
       refundPolicy: DepositRefundPolicy.OnlyPassed,
     },
     anyoneCanPropose: false,
+    onlyMembersExecute: true,
     allowRevoting: false,
     enableMultipleChoice: true,
     approver: {

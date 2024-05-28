@@ -31,6 +31,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       votingDuration,
       proposalDeposit,
       anyoneCanPropose,
+      onlyMembersExecute,
       allowRevoting,
       approver,
       veto,
@@ -99,7 +100,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     close_proposal_on_execution_failure: true,
     max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
     min_voting_period: null,
-    only_members_execute: true,
+    only_members_execute: !!onlyMembersExecute,
     pre_propose_info: {
       module_may_propose: {
         info: {
