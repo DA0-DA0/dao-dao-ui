@@ -24,6 +24,25 @@ cd dao-dao-ui
 yarn
 ```
 
+### Setup environment variables
+
+To run the server on mainnet, copy `.env.mainnet` to `.env.local` in the app
+folder you care about (likely `apps/dapp`).
+
+Copy `.env.testnet` instead if you want to run testnet.
+
+### Run dev server
+
+If you're here to work on any other part of the app, likely accessing live chain
+data, run the `yarn dev` script (equivalent to running `yarn dev` from the
+[`./apps/dapp`](./apps/dapp) package) to run the main app in development mode.
+
+```bash
+yarn dev
+```
+
+### Storybook
+
 If you're here to work on UI components in isolation, you will likely want to
 run the [Storybook](https://storybook.js.org/) server to mock up components and
 iterate quickly without having to access live chain data. Check out the
@@ -34,14 +53,6 @@ To start the Storybook server, run this command from the root of this monorepo:
 
 ```bash
 yarn storybook start
-```
-
-If you're here to work on any other part of the app, likely accessing live chain
-data, run the `yarn dev` script (equivalent to running `yarn dev` from the
-[`./apps/dapp`](./apps/dapp) package) to run the main app in development mode.
-
-```bash
-yarn dev
 ```
 
 If something is misconfigured, check out the docs for
