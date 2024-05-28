@@ -2,6 +2,11 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
+import {
+  lazyNftCardInfosForDaoSelector,
+  nftCardInfoSelector,
+  walletLazyNftCardInfosSelector,
+} from '@dao-dao/state/recoil'
 import { FireEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -23,11 +28,6 @@ import {
 } from '@dao-dao/utils'
 
 import { NftSelectionModal } from '../../../../components'
-import {
-  lazyNftCardInfosForDaoSelector,
-  nftCardInfoSelector,
-  walletLazyNftCardInfosSelector,
-} from '../../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
 import { useActionOptions } from '../../../react'
 import { BurnNft, BurnNftData } from './Component'

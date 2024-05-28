@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
+import { lazyDaoCardPropsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { FeedDaoWithItems, FeedState } from '@dao-dao/types'
 
-import { lazyDaoCardPropsSelector } from '../../recoil'
 import { getSources } from '../core'
 
 export const useFeed = (): FeedState => {

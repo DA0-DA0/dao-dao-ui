@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
-import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
+import {
+  daoVetoableDaosSelector,
+  refreshProposalsIdAtom,
+} from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
   useAppContext,
@@ -25,10 +28,7 @@ import {
   useOnWebSocketMessage,
 } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
-import {
-  daoVetoableDaosSelector,
-  daosWithDropdownVetoableProposalListSelector,
-} from '../recoil'
+import { daosWithDropdownVetoableProposalListSelector } from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { LinkWrapper } from './LinkWrapper'
 import { ProposalLine } from './ProposalLine'

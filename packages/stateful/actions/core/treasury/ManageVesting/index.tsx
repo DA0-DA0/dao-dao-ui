@@ -8,6 +8,9 @@ import {
   Cw1WhitelistSelectors,
   genericTokenSelector,
   nativeUnstakingDurationSecondsSelector,
+  vestingFactoryOwnerSelector,
+  vestingInfoSelector,
+  vestingInfosOwnedBySelector,
 } from '@dao-dao/state/recoil'
 import {
   Loader,
@@ -70,11 +73,6 @@ import {
   VestingPaymentCard,
 } from '../../../../components'
 import { useCreateCw1Whitelist } from '../../../../hooks'
-import {
-  vestingFactoryOwnerSelector,
-  vestingInfoSelector,
-  vestingInfosOwnedBySelector,
-} from '../../../../recoil/selectors/vesting'
 import { useWidget } from '../../../../widgets'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'

@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
 import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
 
-import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
+import {
+  followingDaosSelector,
+  refreshOpenProposalsAtom,
+} from '@dao-dao/state/recoil'
 import {
   useCachedLoadable,
   useCachedLoadingWithError,
@@ -10,7 +13,6 @@ import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
 import { useOnWebSocketMessage, useProfile } from '../../../hooks'
-import { followingDaosSelector } from '../../../recoil'
 import { OpenProposalsProposalLine } from './OpenProposalsProposalLineProps'
 import { feedOpenProposalsSelector } from './state'
 import { OpenProposalsProposalLineProps } from './types'

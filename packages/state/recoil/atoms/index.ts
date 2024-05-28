@@ -1,4 +1,5 @@
 export * from './chain'
+export * from './dao'
 export * from './loading'
 export * from './misc'
 export * from './nft'

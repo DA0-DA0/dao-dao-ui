@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
-import { refreshVestingAtom } from '@dao-dao/state/recoil'
+import {
+  refreshVestingAtom,
+  vestingInfosForFactorySelector,
+} from '@dao-dao/state/recoil'
 import {
   useCachedLoadingWithError,
   useChain,
@@ -23,7 +26,6 @@ import {
   VestingPaymentCard,
 } from '../../../../../components'
 import { useMembership } from '../../../../../hooks/useMembership'
-import { vestingInfosForFactorySelector } from '../../../../../recoil'
 import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 
 export const TabRenderer = ({

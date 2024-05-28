@@ -1,5 +1,5 @@
 import Pusher from 'pusher-js'
-import { atom, selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily } from 'recoil'
 
 import {
   Expiration,
@@ -326,13 +326,6 @@ export const walletAdminOfDaosSelector = selectorFamily<
         ? walletAdminOfDaos
         : []
     },
-})
-
-export const indexerWebSocketChannelSubscriptionsAtom = atom<
-  Partial<Record<string, number>>
->({
-  key: 'indexerWebSocketChannelSubscriptions',
-  default: {},
 })
 
 export const indexerWebSocketSelector = selector({

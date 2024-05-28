@@ -13,8 +13,11 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
+  hiddenBalancesSelector,
   refreshHiddenBalancesAtom,
   refreshNativeTokenStakingInfoAtom,
+  temporaryHiddenBalancesAtom,
+  tokenCardLazyInfoSelector,
 } from '@dao-dao/state'
 import {
   ChainProvider,
@@ -46,11 +49,6 @@ import {
   useWallet,
   useWalletBalances,
 } from '../../hooks'
-import {
-  hiddenBalancesSelector,
-  temporaryHiddenBalancesAtom,
-  tokenCardLazyInfoSelector,
-} from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { WalletFiatRampModal } from './WalletFiatRampModal'

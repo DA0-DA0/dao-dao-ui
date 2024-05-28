@@ -11,6 +11,7 @@ import {
   isDaoSelector,
   isPolytoneProxySelector,
   moduleNameForAddressSelector,
+  profileSelector,
 } from '@dao-dao/state/recoil'
 import { Entity, EntityType, WithChainId } from '@dao-dao/types'
 import {
@@ -22,7 +23,6 @@ import {
 } from '@dao-dao/utils'
 
 import { daoInfoFromPolytoneProxySelector, daoInfoSelector } from './dao'
-import { profileSelector } from './profile'
 
 // Load entity from address on chain, whether it's a wallet address, a DAO, or a
 // DAO's polytone account.

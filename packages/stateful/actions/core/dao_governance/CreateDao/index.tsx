@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { constSelector } from 'recoil'
 
+import { daoParentInfoSelector } from '@dao-dao/state/recoil'
 import {
   DaoEmoji,
   useCachedLoadingWithError,
@@ -17,7 +18,6 @@ import {
 import { decodeJsonFromBase64, objectMatchesStructure } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../../../../components'
-import { daoParentInfoSelector } from '../../../../recoil'
 import { CreateDaoComponent, CreateDaoData } from './Component'
 
 const Component: ActionComponent<undefined, CreateDaoData> = (props) => {

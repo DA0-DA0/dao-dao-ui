@@ -2,17 +2,6 @@ import uniq from 'lodash.uniq'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
-  Cw1WhitelistSelectors,
-  CwPayrollFactorySelectors,
-  CwVestingSelectors,
-  genericTokenSelector,
-  isContractSelector,
-  nativeDelegationInfoSelector,
-  queryWalletIndexerSelector,
-  refreshVestingAtom,
-  validatorSlashesSelector,
-} from '@dao-dao/state/recoil'
-import {
   TokenType,
   VestingInfo,
   VestingStep,
@@ -23,6 +12,17 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getVestingValidatorSlashes,
 } from '@dao-dao/utils'
+
+import { refreshVestingAtom } from '../atoms'
+import { nativeDelegationInfoSelector, validatorSlashesSelector } from './chain'
+import { isContractSelector } from './contract'
+import {
+  Cw1WhitelistSelectors,
+  CwPayrollFactorySelectors,
+  CwVestingSelectors,
+} from './contracts'
+import { queryWalletIndexerSelector } from './indexer'
+import { genericTokenSelector } from './token'
 
 export const vestingPaymentsOwnedBySelector = selectorFamily<
   string[],

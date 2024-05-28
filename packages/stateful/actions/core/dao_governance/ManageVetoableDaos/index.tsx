@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 
+import { daoVetoableDaosSelector } from '@dao-dao/state/recoil'
 import { ThumbDownEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
@@ -18,7 +19,6 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../components'
-import { daoVetoableDaosSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import {
   ManageVetoableDaosData,

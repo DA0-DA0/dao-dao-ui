@@ -8,7 +8,11 @@ import {
   waitForAny,
 } from 'recoil'
 
-import { commandModalVisibleAtom } from '@dao-dao/state/recoil'
+import {
+  commandModalVisibleAtom,
+  lazyWalletDaosSelector,
+  lazyWalletFollowingDaosSelector,
+} from '@dao-dao/state/recoil'
 import {
   WalletDaos as StatelessWalletDaos,
   useCachedLoadingWithError,
@@ -18,10 +22,6 @@ import { StatefulWalletDaosProps } from '@dao-dao/types'
 import { getSupportedChains, serializeDaoSource } from '@dao-dao/utils'
 
 import { useProfile } from '../../hooks/useProfile'
-import {
-  lazyWalletDaosSelector,
-  lazyWalletFollowingDaosSelector,
-} from '../../recoil'
 import { LazyDaoCard } from '../dao'
 import { ProfileAddChains } from '../profile/ProfileAddChains'
 

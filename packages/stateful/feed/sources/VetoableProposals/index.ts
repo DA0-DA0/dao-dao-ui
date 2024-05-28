@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
 import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
 
-import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
+import {
+  followingDaosSelector,
+  refreshOpenProposalsAtom,
+} from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
   VetoableProposalsProps,
@@ -11,7 +14,6 @@ import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
 import { useOnWebSocketMessage, useProfile } from '../../../hooks'
-import { followingDaosSelector } from '../../../recoil'
 import { feedVetoableProposalsSelector } from './state'
 
 export const VetoableProposals: FeedSource<

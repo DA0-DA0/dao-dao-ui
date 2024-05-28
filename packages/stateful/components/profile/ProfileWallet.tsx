@@ -1,16 +1,16 @@
 import { constSelector, waitForAny } from 'recoil'
 
-import { accountsSelector } from '@dao-dao/state/recoil'
+import {
+  accountsSelector,
+  hiddenBalancesSelector,
+  walletTokenCardInfosSelector,
+} from '@dao-dao/state/recoil'
 import {
   ProfileWallet as StatelessProfileWallet,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 
 import { useProfile } from '../../hooks'
-import {
-  hiddenBalancesSelector,
-  walletTokenCardInfosSelector,
-} from '../../recoil'
 import { WalletTokenLine } from '../wallet/WalletTokenLine'
 import { ProfileAddChains } from './ProfileAddChains'
 

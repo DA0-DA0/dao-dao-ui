@@ -1,46 +1,19 @@
 import uniq from 'lodash.uniq'
-import {
-  atom,
-  constSelector,
-  selectorFamily,
-  waitForAll,
-  waitForAllSettled,
-} from 'recoil'
+import { selectorFamily, waitForAllSettled } from 'recoil'
 
-import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { DaoDropdownInfo, DaoSource, ProposalModule } from '@dao-dao/types'
+import { DaoDropdownInfo, DaoSource } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
   KVPK_API_BASE,
   MAINNET,
   deserializeDaoSource,
-  isConfiguredChainName,
   keepSubDaosInDropdown,
   maybeGetChainForChainId,
   subDaoExistsInDropdown,
 } from '@dao-dao/utils'
 
-import { daoDropdownInfoSelector } from './cards'
-import { daoCoreProposalModulesSelector } from './misc'
-
-// Following API doesn't update right away due to Cloudflare KV Store latency,
-// so this serves to keep track of all successful updates for the current
-// session. This will be reset on page refresh. Set this right away so the UI
-// can update immediately even if the API takes up to a minute or two. Though
-// likely it only takes 10 seconds or so.
-export const temporaryFollowingDaosAtom = atom<{
-  /**
-   * Serialized DaoSources.
-   */
-  following: string[]
-  /**
-   * Serialized DaoSources.
-   */
-  unfollowing: string[]
-}>({
-  key: 'temporaryFollowingDaos',
-  default: { following: [], unfollowing: [] },
-})
+import { refreshFollowingDaosAtom, temporaryFollowingDaosAtom } from '../atoms'
+import { daoDropdownInfoSelector } from './dao'
 
 export const followingDaosSelector = selectorFamily<
   DaoSource[],
@@ -149,39 +122,5 @@ export const followingDaoDropdownInfosSelector = selectorFamily<
         )
 
       return infos
-    },
-})
-
-export const followingDaosWithProposalModulesSelector = selectorFamily<
-  (DaoSource & {
-    proposalModules: ProposalModule[]
-  })[],
-  {
-    walletPublicKey: string
-  }
->({
-  key: 'followingDaosWithProposalModules',
-  get:
-    (params) =>
-    ({ get }) => {
-      const following = get(followingDaosSelector(params))
-
-      const proposalModules = get(
-        waitForAll(
-          following.map(({ chainId, coreAddress }) =>
-            isConfiguredChainName(chainId, coreAddress)
-              ? constSelector([])
-              : daoCoreProposalModulesSelector({
-                  chainId,
-                  coreAddress,
-                })
-          )
-        )
-      )
-
-      return following.map((daoSource, index) => ({
-        ...daoSource,
-        proposalModules: proposalModules[index],
-      }))
     },
 })

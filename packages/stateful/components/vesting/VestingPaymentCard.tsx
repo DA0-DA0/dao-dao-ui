@@ -6,6 +6,7 @@ import { useSetRecoilState } from 'recoil'
 import {
   refreshVestingAtom,
   refreshWalletBalancesIdAtom,
+  tokenCardLazyInfoSelector,
 } from '@dao-dao/state/recoil'
 import {
   VestingPaymentCard as StatelessVestingPaymentCard,
@@ -33,7 +34,6 @@ import {
   useDistribute,
   useWithdrawDelegatorRewards,
 } from '../../hooks/contracts/CwVesting'
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { VestingStakingModal } from './VestingStakingModal'

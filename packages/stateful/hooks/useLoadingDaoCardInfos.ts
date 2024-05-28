@@ -1,11 +1,14 @@
 import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
+import {
+  followingDaosSelector,
+  indexerFeaturedDaosSelector,
+} from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, DaoSource, LoadingData } from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
-import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
+import { daoCardInfoSelector } from '../recoil'
 import { useProfile } from './useProfile'
 
 export const useLoadingDaoCardInfos = (

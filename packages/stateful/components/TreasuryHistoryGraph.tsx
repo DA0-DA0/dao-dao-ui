@@ -18,6 +18,7 @@ import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
+import { treasuryValueHistorySelector } from '@dao-dao/state'
 import {
   Loader,
   SegmentedControls,
@@ -35,8 +36,6 @@ import {
   serializeTokenSource,
   shortenTokenSymbol,
 } from '@dao-dao/utils'
-
-import { treasuryValueHistorySelector } from '../recoil'
 
 import 'chartjs-adapter-date-fns'
 

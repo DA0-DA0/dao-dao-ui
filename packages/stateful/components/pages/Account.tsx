@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   averageColorSelector,
+  profileSelector,
   walletHexPublicKeySelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -24,10 +25,10 @@ import {
   SITE_URL,
   getConfiguredChains,
   isValidBech32Address,
+  makeEmptyUnifiedProfile,
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { makeEmptyUnifiedProfile, profileSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'

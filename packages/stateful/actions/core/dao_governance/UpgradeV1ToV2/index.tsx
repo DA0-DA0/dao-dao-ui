@@ -4,6 +4,7 @@ import { useRecoilValueLoadable, waitForAll, waitForAllSettled } from 'recoil'
 import {
   DaoCoreV2Selectors,
   contractVersionSelector,
+  daoPotentialSubDaosSelector,
   isDaoSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -37,10 +38,7 @@ import {
   DaoProposalSingleAdapter,
   matchAndLoadCommon,
 } from '../../../../proposal-module-adapter'
-import {
-  daoCoreProposalModulesSelector,
-  daoPotentialSubDaosSelector,
-} from '../../../../recoil'
+import { daoCoreProposalModulesSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import { UpgradeV1ToV2Component, UpgradeV1ToV2Data } from './Component'
 

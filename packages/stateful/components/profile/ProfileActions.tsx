@@ -8,7 +8,12 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
+import {
+  meTransactionAtom,
+  refreshSavedTxsAtom,
+  savedTxsSelector,
+  temporarySavedTxsAtom,
+} from '@dao-dao/state'
 import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   ProfileActionsProps,
@@ -33,10 +38,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest, useWallet } from '../../hooks'
-import {
-  savedTxsSelector,
-  temporarySavedTxsAtom,
-} from '../../recoil/selectors/wallet'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
 

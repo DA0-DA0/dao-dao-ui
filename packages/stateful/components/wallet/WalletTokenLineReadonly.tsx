@@ -1,3 +1,4 @@
+import { tokenCardLazyInfoSelector } from '@dao-dao/state/recoil'
 import {
   TokenLine as StatelessTokenLine,
   useCachedLoading,
@@ -5,7 +6,6 @@ import {
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import { getDisplayNameForChainId } from '@dao-dao/utils'
 
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { WalletTokenCardReadonly } from './WalletTokenCardReadonly'
 
 export const WalletTokenLineReadonly = <T extends TokenCardInfo>(

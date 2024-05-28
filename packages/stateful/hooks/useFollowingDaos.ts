@@ -4,7 +4,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
-import { refreshFollowingDaosAtom } from '@dao-dao/state'
+import {
+  followingDaosSelector,
+  refreshFollowingDaosAtom,
+  temporaryFollowingDaosAtom,
+} from '@dao-dao/state'
 import { useCachedLoadingWithError, useUpdatingRef } from '@dao-dao/stateless'
 import { DaoSource } from '@dao-dao/types'
 import {
@@ -14,10 +18,6 @@ import {
   serializeDaoSource,
 } from '@dao-dao/utils'
 
-import {
-  followingDaosSelector,
-  temporaryFollowingDaosAtom,
-} from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useManageProfile } from './useManageProfile'
 import { useProfile } from './useProfile'

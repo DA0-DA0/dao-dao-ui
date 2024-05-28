@@ -1,4 +1,8 @@
 import {
+  lazyNftCardInfosForDaoSelector,
+  treasuryTokenCardInfosForDaoSelector,
+} from '@dao-dao/state'
+import {
   TreasuryTab as StatelessTreasuryTab,
   useCachedLoading,
   useDaoInfoContext,
@@ -9,10 +13,6 @@ import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
 import { useWallet } from '../../../hooks'
-import {
-  lazyNftCardInfosForDaoSelector,
-  treasuryTokenCardInfosForDaoSelector,
-} from '../../../recoil'
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
   useCw721CommonGovernanceTokenInfoIfExists,

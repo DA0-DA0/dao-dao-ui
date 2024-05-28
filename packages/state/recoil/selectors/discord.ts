@@ -1,17 +1,6 @@
-import { atom, atomFamily, selectorFamily } from 'recoil'
+import { atomFamily, selectorFamily } from 'recoil'
 
 import { DISCORD_NOTIFIER_API_BASE } from '@dao-dao/utils'
-
-import { localStorageEffectJSON } from '../effects'
-
-export const discordNotifierSetupAtom = atom<{
-  state: string
-  coreAddress: string
-} | null>({
-  key: 'discordNotifierSetup',
-  default: null,
-  effects: [localStorageEffectJSON],
-})
 
 type DiscordNotifierRegistrationsOptions = {
   chainId: string

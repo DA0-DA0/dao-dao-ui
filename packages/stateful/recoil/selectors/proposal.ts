@@ -6,7 +6,7 @@ import {
 } from '@dao-dao/state'
 import { NeutronTimelockOverrule, WithChainId } from '@dao-dao/types'
 
-import { daoCoreProposalModulesSelector } from './misc'
+import { daoCoreProposalModulesSelector } from './dao'
 
 /**
  * For the Neutron fork, retrieve the associated overrule proposal created in

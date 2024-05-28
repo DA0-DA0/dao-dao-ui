@@ -1,17 +1,27 @@
 import uniq from 'lodash.uniq'
-import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
+import {
+  constSelector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
   accountsSelector,
-  addressIsModuleSelector,
   contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
+  daoDropdownInfoSelector,
+  daoParentInfoSelector,
+  daoTvlSelector,
+  daoVetoableDaosSelector,
+  followingDaosSelector,
+  govProposalsSelector,
   isDaoSelector,
   moduleAddressSelector,
-  queryContractIndexerSelector,
+  nativeDelegatedBalanceSelector,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
   reverseLookupPolytoneProxySelector,
@@ -19,10 +29,12 @@ import {
 import {
   ChainId,
   ContractVersion,
-  ContractVersionInfo,
+  DaoCardInfo,
+  DaoCardInfoLazyData,
   DaoInfo,
   DaoPageMode,
   DaoParentInfo,
+  DaoSource,
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   Feature,
@@ -32,30 +44,255 @@ import {
   SupportedFeatureMap,
   WithChainId,
 } from '@dao-dao/types'
-import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as DaoCoreV2ConfigResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CHAIN_SUBDAOS,
-  DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   NEUTRON_GOVERNANCE_DAO,
-  VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainGovernanceDaoDescription,
-  getConfiguredChainConfig,
   getDaoProposalPath,
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
   getSupportedFeatures,
   isConfiguredChainName,
-  isFeatureSupportedByVersion,
   mustGetConfiguredChainConfig,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
-import { fetchProposalModules } from '../../../utils/fetchProposalModules'
-import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
-import { daoDropdownInfoSelector } from './cards'
+import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
+import { fetchProposalModules } from '../../utils/fetchProposalModules'
+import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
+
+export const daoCardInfoSelector = selectorFamily<
+  DaoCardInfo,
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoCardInfo',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) => {
+      const daoInfo = get(
+        daoInfoSelector({
+          chainId,
+          coreAddress,
+        })
+      )
+
+      return {
+        chainId: daoInfo.chainId,
+        coreAddress: daoInfo.coreAddress,
+        coreVersion: daoInfo.coreVersion,
+        name: daoInfo.name,
+        description: daoInfo.description,
+        imageUrl: daoInfo.imageUrl || getFallbackImage(daoInfo.coreAddress),
+        polytoneProxies: daoInfo.polytoneProxies,
+        established: daoInfo.created,
+        parentDao: daoInfo.parentDao ?? undefined,
+        tokenDecimals: 6,
+        tokenSymbol: '',
+        showingEstimatedUsdValue: true,
+        lazyData: { loading: true },
+      }
+    },
+})
+
+export const daoCardInfoLazyDataSelector = selectorFamily<
+  DaoCardInfoLazyData,
+  WithChainId<{
+    coreAddress: string
+    walletAddress?: string
+  }>
+>({
+  key: 'daoCardInfoLazyData',
+  get:
+    ({ coreAddress, chainId, walletAddress }) =>
+    ({ get }) => {
+      const { amount: tvl } = get(
+        daoTvlSelector({
+          chainId,
+          coreAddress,
+        })
+      )
+
+      // Native chain x/gov module.
+      if (isConfiguredChainName(chainId, coreAddress)) {
+        // Get proposal count by loading one proposal and getting the total.
+        const { total: proposalCount } = get(
+          govProposalsSelector({
+            chainId,
+            limit: 1,
+          })
+        )
+
+        const isMember = walletAddress
+          ? get(
+              nativeDelegatedBalanceSelector({
+                chainId,
+                address: walletAddress,
+              })
+            ).amount !== '0'
+          : false
+
+        return {
+          isMember,
+          tokenBalance: tvl,
+          proposalCount,
+        }
+      }
+
+      // DAO.
+
+      const walletVotingWeight = walletAddress
+        ? Number(
+            get(
+              DaoCoreV2Selectors.votingPowerAtHeightSelector({
+                chainId,
+                contractAddress: coreAddress,
+                params: [{ address: walletAddress }],
+              })
+            ).power
+          )
+        : 0
+
+      const proposalModules = get(
+        daoCoreProposalModulesSelector({
+          chainId,
+          coreAddress,
+        })
+      )
+      const proposalModuleCounts = get(
+        waitForAll(
+          proposalModules.map(({ address }) =>
+            proposalModuleAdapterProposalCountSelector({
+              chainId,
+              proposalModuleAddress: address,
+            })
+          )
+        )
+      ).filter(Boolean) as number[]
+
+      return {
+        isMember: walletVotingWeight > 0,
+        tokenBalance: tvl,
+        proposalCount: proposalModuleCounts.reduce(
+          (acc, curr) => acc + curr,
+          0
+        ),
+      }
+    },
+})
+
+export const subDaoCardInfosSelector = selectorFamily<
+  DaoCardInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'subDaoCardInfos',
+  get:
+    ({ coreAddress: contractAddress, chainId }) =>
+    ({ get }) => {
+      const subDaos = get(
+        DaoCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress,
+          chainId,
+        })
+      )
+
+      return get(
+        waitForAll(
+          subDaos.map(({ chainId, addr }) =>
+            daoCardInfoSelector({
+              chainId,
+              coreAddress: addr,
+            })
+          )
+        )
+      ).filter(Boolean) as DaoCardInfo[]
+    },
+})
+
+export const subDaoInfosSelector = selectorFamily<
+  DaoInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'subDaoInfos',
+  get:
+    ({ coreAddress: contractAddress, chainId }) =>
+    ({ get }) => {
+      const subDaos = get(
+        DaoCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress,
+          chainId,
+        })
+      )
+
+      return get(
+        waitForAll(
+          subDaos.map(({ chainId, addr }) =>
+            daoInfoSelector({
+              chainId,
+              coreAddress: addr,
+            })
+          )
+        )
+      )
+    },
+})
+
+export const chainSubDaoInfosSelector = selectorFamily<
+  DaoInfo[],
+  { chainId: string }
+>({
+  key: 'chainSubDaoInfos',
+  get:
+    ({ chainId }) =>
+    ({ get }) => {
+      const subDaos = CHAIN_SUBDAOS[chainId] || []
+
+      return get(
+        waitForAll(
+          subDaos.map((coreAddress) =>
+            daoInfoSelector({
+              chainId,
+              coreAddress,
+            })
+          )
+        )
+      )
+    },
+})
+
+export const followingDaosWithProposalModulesSelector = selectorFamily<
+  (DaoSource & {
+    proposalModules: ProposalModule[]
+  })[],
+  {
+    walletPublicKey: string
+  }
+>({
+  key: 'followingDaosWithProposalModules',
+  get:
+    (params) =>
+    ({ get }) => {
+      const following = get(followingDaosSelector(params))
+
+      const proposalModules = get(
+        waitForAll(
+          following.map(({ chainId, coreAddress }) =>
+            isConfiguredChainName(chainId, coreAddress)
+              ? constSelector([])
+              : daoCoreProposalModulesSelector({
+                  chainId,
+                  coreAddress,
+                })
+          )
+        )
+      )
+
+      return following.map((daoSource, index) => ({
+        ...daoSource,
+        proposalModules: proposalModules[index],
+      }))
+    },
+})
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -126,41 +363,6 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
           : undefined
 
       return cw20GovernanceTokenAddress
-    },
-})
-
-// Retrieve all potential SubDAOs of the DAO from the indexer.
-export const daoPotentialSubDaosSelector = selectorFamily<
-  string[],
-  WithChainId<{
-    coreAddress: string
-  }>
->({
-  key: 'daoPotentialSubDaos',
-  get:
-    ({ coreAddress, chainId }) =>
-    ({ get }) => {
-      const potentialSubDaos: {
-        contractAddress: string
-        info: ContractVersionInfo
-      }[] = get(
-        queryContractIndexerSelector({
-          chainId,
-          contractAddress: coreAddress,
-          formula: 'daoCore/potentialSubDaos',
-          noFallback: true,
-        })
-      )
-
-      // Filter out those that do not appear to be DAO contracts and also the
-      // contract itself since it is probably its own admin.
-      return potentialSubDaos
-        .filter(
-          ({ contractAddress, info }) =>
-            contractAddress !== coreAddress &&
-            DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
-        )
-        .map(({ contractAddress }) => contractAddress)
     },
 })
 
@@ -361,116 +563,6 @@ export const daoInfoSelector = selectorFamily<
     },
 })
 
-/**
- * Attempt to fetch the info needed to describe a parent DAO. Returns undefined
- * if not a DAO nor the chain gov module account.
- */
-export const daoParentInfoSelector = selectorFamily<
-  DaoParentInfo | undefined,
-  WithChainId<{
-    parentAddress: string
-    /**
-     * To determine if the parent has registered the child, pass the child. This
-     * will set `registeredSubDao` appropriately. Otherwise, if undefined,
-     * `registeredSubDao` will be set to false.
-     */
-    childAddress?: string
-  }>
->({
-  key: 'daoParentInfo',
-  get:
-    ({ chainId, parentAddress, childAddress }) =>
-    ({ get }) => {
-      // If address is a DAO contract...
-      if (
-        get(
-          isDaoSelector({
-            chainId,
-            address: parentAddress,
-          })
-        )
-      ) {
-        const parentAdmin = get(
-          DaoCoreV2Selectors.adminSelector({
-            chainId,
-            contractAddress: parentAddress,
-            params: [],
-          })
-        )
-        const {
-          info: { version },
-        } = get(
-          contractInfoSelector({
-            chainId,
-            contractAddress: parentAddress,
-          })
-        )
-        const parentVersion = parseContractVersion(version)
-
-        if (parentVersion) {
-          const {
-            name,
-            image_url,
-          }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
-            // Both v1 and v2 have a config query.
-            DaoCoreV2Selectors.configSelector({
-              chainId,
-              contractAddress: parentAddress,
-              params: [],
-            })
-          )
-
-          // Check if parent has registered the child DAO as a SubDAO.
-          const registeredSubDao =
-            childAddress &&
-            isFeatureSupportedByVersion(Feature.SubDaos, parentVersion)
-              ? get(
-                  DaoCoreV2Selectors.listAllSubDaosSelector({
-                    contractAddress: parentAddress,
-                    chainId,
-                  })
-                ).some(({ addr }) => addr === childAddress)
-              : false
-
-          return {
-            chainId,
-            coreAddress: parentAddress,
-            coreVersion: parentVersion,
-            name,
-            imageUrl: image_url || getFallbackImage(parentAddress),
-            admin: parentAdmin ?? '',
-            registeredSubDao,
-          }
-        }
-
-        // If address is the chain's x/gov module account...
-      } else if (
-        get(
-          addressIsModuleSelector({
-            chainId,
-            address: parentAddress,
-            moduleName: 'gov',
-          })
-        )
-      ) {
-        const chainConfig = getConfiguredChainConfig(chainId)
-        return (
-          chainConfig && {
-            chainId,
-            coreAddress: chainConfig.name,
-            coreVersion: ContractVersion.Gov,
-            name: getDisplayNameForChainId(chainId),
-            imageUrl: getImageUrlForChainId(chainId),
-            admin: '',
-            registeredSubDao:
-              !!childAddress &&
-              !!CHAIN_SUBDAOS[chainId]?.includes(childAddress),
-          }
-        )
-      }
-    },
-})
-
 export const daoInfoFromPolytoneProxySelector = selectorFamily<
   | {
       chainId: string
@@ -504,33 +596,6 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
         info,
       }
     },
-})
-
-/**
- * DAOs this DAO has enabled vetoable proposal listing for.
- */
-export const daoVetoableDaosSelector = selectorFamily<
-  { chainId: string; coreAddress: string }[],
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'daoVetoableDaos',
-  get:
-    ({ chainId, coreAddress }) =>
-    ({ get }) =>
-      get(
-        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
-          chainId,
-          contractAddress: coreAddress,
-          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
-        })
-      ).map(([key]) => {
-        const [chainId, coreAdress] = key.split(':')
-
-        return {
-          chainId,
-          coreAddress: coreAdress,
-        }
-      }),
 })
 
 /**

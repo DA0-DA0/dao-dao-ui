@@ -8,7 +8,10 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
+import {
+  refreshNativeTokenStakingInfoAtom,
+  tokenCardLazyInfoSelector,
+} from '@dao-dao/state'
 import {
   ChainProvider,
   TokenCard as StatelessTokenCard,
@@ -30,7 +33,6 @@ import {
   tokensEqual,
 } from '@dao-dao/utils'
 
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'

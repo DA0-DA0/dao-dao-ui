@@ -50,3 +50,10 @@ export const isKeplrMobileWebAtom = atom({
   key: 'isKeplrMobileWeb',
   default: false,
 })
+
+export const indexerWebSocketChannelSubscriptionsAtom = atom<
+  Partial<Record<string, number>>
+>({
+  key: 'indexerWebSocketChannelSubscriptions',
+  default: {},
+})

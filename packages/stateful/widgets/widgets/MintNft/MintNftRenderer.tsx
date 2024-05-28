@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
-import { CommonNftSelectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, nftCardInfoSelector } from '@dao-dao/state/recoil'
 import {
   Button,
   HorizontalScroller,
@@ -18,7 +18,6 @@ import { WidgetRendererProps } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
-import { nftCardInfoSelector } from '../../../recoil'
 import { MintNftData } from './types'
 
 export const MintNftRenderer = ({

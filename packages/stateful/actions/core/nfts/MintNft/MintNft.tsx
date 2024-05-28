@@ -5,6 +5,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import {
   CommonNftSelectors,
   DaoCoreV2Selectors,
+  nftCardInfoWithUriSelector,
   nftUriDataSelector,
 } from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading } from '@dao-dao/stateless'
@@ -17,7 +18,6 @@ import {
 import { getChainForChainId, isValidBech32Address } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
-import { nftCardInfoWithUriSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import { MintNft as StatelessMintNft } from './stateless/MintNft'
 import { MintNftData } from './types'

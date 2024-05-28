@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForNone } from 'recoil'
 
+import { profileSelector } from '@dao-dao/state'
 import { useCachedLoading, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   AddChainsFunction,
@@ -17,11 +18,11 @@ import {
   PFPK_API_BASE,
   SignedBody,
   getDisplayNameForChainId,
+  makeEmptyUnifiedProfile,
   makeManuallyResolvedPromise,
   signOffChainAuth,
 } from '@dao-dao/utils'
 
-import { makeEmptyUnifiedProfile, profileSelector } from '../recoil'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'

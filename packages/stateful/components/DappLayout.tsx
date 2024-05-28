@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
+  followingDaoDropdownInfosSelector,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
@@ -25,10 +26,7 @@ import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useAutoRefreshData, useProfile, useWallet } from '../hooks'
-import {
-  daoCreatedCardPropsAtom,
-  followingDaoDropdownInfosSelector,
-} from '../recoil'
+import { daoCreatedCardPropsAtom } from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'

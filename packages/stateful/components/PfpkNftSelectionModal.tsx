@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
+  allWalletNftsSelector,
   nftCardInfosForKeyAtom,
   updateProfileNftVisibleAtom,
 } from '@dao-dao/state/recoil'
@@ -40,7 +41,6 @@ import {
   useWallet,
   useWalletBalances,
 } from '../hooks'
-import { allWalletNftsSelector } from '../recoil'
 import { NftSelectionModal } from './nft'
 import { ProfileAddChains } from './profile'
 import { SuspenseLoader } from './SuspenseLoader'

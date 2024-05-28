@@ -1,14 +1,15 @@
+import { profileSelector } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
   MAINNET,
   getDisplayNameForChainId,
   isSupportedChain,
+  makeEmptyUnifiedProfile,
   maybeGetChainForChainId,
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { makeEmptyUnifiedProfile, profileSelector } from '../recoil'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 

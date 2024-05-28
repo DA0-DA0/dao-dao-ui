@@ -1,15 +1,15 @@
 import { forwardRef, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import { nftCardInfosForKeyAtom } from '@dao-dao/state/recoil'
+import {
+  nftCardInfoSelector,
+  nftCardInfosForKeyAtom,
+  nftStakerOrOwnerSelector,
+} from '@dao-dao/state/recoil'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { LazyNftCardProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
-import {
-  nftCardInfoSelector,
-  nftStakerOrOwnerSelector,
-} from '../../recoil/selectors/nft'
 import { NftCard, NftCardNoCollection, StakedNftCard } from './NftCard'
 
 export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(

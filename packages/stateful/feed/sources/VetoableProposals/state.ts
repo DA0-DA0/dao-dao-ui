@@ -1,6 +1,6 @@
 import { selectorFamily, waitForAny } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors, followingDaosSelector } from '@dao-dao/state'
 import { VetoableProposalsProps } from '@dao-dao/stateless'
 import {
   DaoPageMode,
@@ -10,10 +10,7 @@ import {
 import { isConfiguredChainName } from '@dao-dao/utils'
 
 import { LinkWrapper, ProposalLine } from '../../../components'
-import {
-  daosWithDropdownVetoableProposalListSelector,
-  followingDaosSelector,
-} from '../../../recoil'
+import { daosWithDropdownVetoableProposalListSelector } from '../../../recoil'
 
 export const feedVetoableProposalsSelector = selectorFamily<
   FeedSourceDaoWithItems<VetoableProposalsProps<StatefulProposalLineProps>>[],

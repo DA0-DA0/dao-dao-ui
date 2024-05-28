@@ -3,9 +3,13 @@ import { useMemo } from 'react'
 
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { Entity, EntityType, LoadingData } from '@dao-dao/types'
-import { getConfiguredChains, getFallbackImage } from '@dao-dao/utils'
+import {
+  getConfiguredChains,
+  getFallbackImage,
+  makeEmptyUnifiedProfile,
+} from '@dao-dao/utils'
 
-import { entitySelector, makeEmptyUnifiedProfile } from '../recoil'
+import { entitySelector } from '../recoil'
 
 export type UseEntityReturn = {
   /**

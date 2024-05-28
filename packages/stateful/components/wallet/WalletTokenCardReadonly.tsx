@@ -1,3 +1,4 @@
+import { tokenCardLazyInfoSelector } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
   TokenCard as StatelessTokenCard,
@@ -5,7 +6,6 @@ import {
 } from '@dao-dao/stateless'
 import { TokenCardInfo } from '@dao-dao/types'
 
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 

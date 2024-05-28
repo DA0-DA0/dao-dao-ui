@@ -1,6 +1,9 @@
 import { waitForAny } from 'recoil'
 
-import { communityPoolBalancesSelector } from '@dao-dao/state/recoil'
+import {
+  communityPoolBalancesSelector,
+  tokenCardLazyInfoSelector,
+} from '@dao-dao/state/recoil'
 import {
   ButtonPopup,
   ErrorPage,
@@ -19,7 +22,6 @@ import {
 } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {

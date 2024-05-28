@@ -11,6 +11,7 @@ import {
   DaoVotingCw721StakedSelectors,
   blockHeightSelector,
   contractVersionSelector,
+  nftCardInfoSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
@@ -23,7 +24,6 @@ import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
-import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
