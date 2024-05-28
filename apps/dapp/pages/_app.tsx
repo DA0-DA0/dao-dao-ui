@@ -21,6 +21,7 @@ import {
 import {
   AppContextProvider,
   DappLayout,
+  ReactQueryClientProvider,
   WalletProvider,
 } from '@dao-dao/stateful'
 import {
@@ -167,9 +168,13 @@ const DApp = (props: AppProps) => (
       }}
     />
 
-    <RecoilRoot>
-      <InnerApp {...props} />
-    </RecoilRoot>
+    <ReactQueryClientProvider
+      dehyratedState={props.pageProps.reactQueryDehydratedState}
+    >
+      <RecoilRoot>
+        <InnerApp {...props} />
+      </RecoilRoot>
+    </ReactQueryClientProvider>
   </>
 )
 

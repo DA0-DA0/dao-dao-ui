@@ -22,6 +22,7 @@ import {
   AppContextProvider,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ReactQueryClientProvider,
   SdaLayout,
   WalletProvider,
 } from '@dao-dao/stateful'
@@ -181,9 +182,13 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
         }}
       />
 
-      <RecoilRoot>
-        <InnerApp setIcon={setIcon} {...props} />
-      </RecoilRoot>
+      <ReactQueryClientProvider
+        dehyratedState={props.pageProps.reactQueryDehydratedState}
+      >
+        <RecoilRoot>
+          <InnerApp setIcon={setIcon} {...props} />
+        </RecoilRoot>
+      </ReactQueryClientProvider>
     </>
   )
 }

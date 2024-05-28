@@ -1,3 +1,4 @@
+import { DehydratedState } from '@tanstack/react-query'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect, useMemo } from 'react'
@@ -32,6 +33,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   info?: DaoInfo
   error?: string
   setIcon?: (icon: string | undefined) => void
+  reactQueryDehydratedState?: DehydratedState
 }>
 
 export type DaoProposalProps = DaoPageWrapperProps & {
