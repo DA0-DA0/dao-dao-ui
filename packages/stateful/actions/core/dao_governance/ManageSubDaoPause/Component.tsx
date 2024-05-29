@@ -27,7 +27,7 @@ export type ManageSubDaoPauseOptions = {
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
-export const ManageSubDaoPauseComponent: ActionComponent<
+export const BecomeSubDaoComponent: ActionComponent<
   ManageSubDaoPauseOptions
 > = ({
   fieldNamePrefix,

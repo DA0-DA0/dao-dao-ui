@@ -14,6 +14,7 @@ import { makeUpdatePreProposeConfigAction } from './UpdatePreProposeConfig'
 import { makeUpdateProposalConfigAction } from './UpdateProposalConfig'
 import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
 import { makeVetoOrEarlyExecuteDaoProposalAction } from './VetoOrEarlyExecuteDaoProposal'
+import { makeBecomeSubDaoAction } from './BecomeSubDao'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   t,
@@ -27,6 +28,7 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   actionMakers: [
     makeEnableMultipleChoiceAction,
     makeManageSubDaosAction,
+    makeBecomeSubDaoAction,
     makeManageStorageItemsAction,
     makeDaoAdminExecAction,
     makeUpgradeV1ToV2Action,

@@ -102,6 +102,8 @@ export enum ActionKey {
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
+  // Become SubDAO
+  BecomeSubDao = 'becomeSubDao',
 }
 
 export type ActionAndData = {
