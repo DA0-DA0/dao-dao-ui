@@ -1,5 +1,6 @@
 import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
+import { makeBecomeSubDaoAction } from './BecomeSubDao'
 import { makeCreateCrossChainAccountAction } from './CreateCrossChainAccount'
 import { makeCreateDaoAction } from './CreateDao'
 import { makeDaoAdminExecAction } from './DaoAdminExec'
@@ -14,7 +15,6 @@ import { makeUpdatePreProposeConfigAction } from './UpdatePreProposeConfig'
 import { makeUpdateProposalConfigAction } from './UpdateProposalConfig'
 import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
 import { makeVetoOrEarlyExecuteDaoProposalAction } from './VetoOrEarlyExecuteDaoProposal'
-import { makeBecomeSubDaoAction } from './BecomeSubDao'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   t,

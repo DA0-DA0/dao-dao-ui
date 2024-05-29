@@ -15,6 +15,6 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "admin": "<PARENTDAO ADDRESS>",
+  "admin": "<PARENTDAO ADDRESS>"
 }
 ```
