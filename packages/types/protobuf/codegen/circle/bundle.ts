@@ -1,29 +1,28 @@
-import * as _11 from "./cctp/v1/attester";
-import * as _12 from "./cctp/v1/burn_message";
-import * as _13 from "./cctp/v1/burning_and_minting_paused";
-import * as _14 from "./cctp/v1/events";
-import * as _15 from "./cctp/v1/genesis";
-import * as _16 from "./cctp/v1/max_message_body_size";
-import * as _17 from "./cctp/v1/message";
-import * as _18 from "./cctp/v1/nonce";
-import * as _19 from "./cctp/v1/params";
-import * as _20 from "./cctp/v1/per_message_burn_limit";
-import * as _21 from "./cctp/v1/query";
-import * as _22 from "./cctp/v1/remote_token_messenger";
-import * as _23 from "./cctp/v1/sending_and_receiving_messages_paused";
-import * as _24 from "./cctp/v1/signature_threshold";
-import * as _25 from "./cctp/v1/token_pair";
-import * as _26 from "./cctp/v1/tx";
-import * as _352 from "./cctp/v1/tx.amino";
-import * as _353 from "./cctp/v1/tx.registry";
-import * as _354 from "./cctp/v1/query.rpc.Query";
-import * as _355 from "./cctp/v1/tx.rpc.msg";
-import * as _585 from "./rpc.query";
-import * as _586 from "./rpc.tx";
+import * as _12 from "./cctp/v1/attester";
+import * as _13 from "./cctp/v1/burn_message";
+import * as _14 from "./cctp/v1/burning_and_minting_paused";
+import * as _15 from "./cctp/v1/events";
+import * as _16 from "./cctp/v1/genesis";
+import * as _17 from "./cctp/v1/max_message_body_size";
+import * as _18 from "./cctp/v1/message";
+import * as _19 from "./cctp/v1/nonce";
+import * as _20 from "./cctp/v1/params";
+import * as _21 from "./cctp/v1/per_message_burn_limit";
+import * as _22 from "./cctp/v1/query";
+import * as _23 from "./cctp/v1/remote_token_messenger";
+import * as _24 from "./cctp/v1/sending_and_receiving_messages_paused";
+import * as _25 from "./cctp/v1/signature_threshold";
+import * as _26 from "./cctp/v1/token_pair";
+import * as _27 from "./cctp/v1/tx";
+import * as _356 from "./cctp/v1/tx.amino";
+import * as _357 from "./cctp/v1/tx.registry";
+import * as _358 from "./cctp/v1/query.rpc.Query";
+import * as _359 from "./cctp/v1/tx.rpc.msg";
+import * as _590 from "./rpc.query";
+import * as _591 from "./rpc.tx";
 export namespace circle {
   export namespace cctp {
     export const v1 = {
-      ..._11,
       ..._12,
       ..._13,
       ..._14,
@@ -39,14 +38,15 @@ export namespace circle {
       ..._24,
       ..._25,
       ..._26,
-      ..._352,
-      ..._353,
-      ..._354,
-      ..._355
+      ..._27,
+      ..._356,
+      ..._357,
+      ..._358,
+      ..._359
     };
   }
   export const ClientFactory = {
-    ..._585,
-    ..._586
+    ..._590,
+    ..._591
   };
 }

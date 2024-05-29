@@ -116,6 +116,7 @@ telescope({
           'pstake.lscosmos.v1beta1',
           'pstake.ratesync.v1beta1',
           'cosmos.adminmodule.adminmodule',
+          'bitsong.fantoken',
         ],
       },
       // excluded: {
