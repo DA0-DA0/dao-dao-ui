@@ -1,6 +1,7 @@
 import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -70,5 +71,8 @@ export const makeBecomeSubDaoAction: ActionMaker<BecomeSubDaoData> = ({
     useTransformToCosmos,
     useDecodedCosmosMsg,
     notReusable: true,
+    // If parent DAO exists, hide this action.
+    hideFromPicker:
+      context.type === ActionContextType.Dao && context.info.parentDao !== null,
   }
 }
