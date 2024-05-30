@@ -9,16 +9,15 @@ import {
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
-import { BecomeSubDaoComponent, BecomeSubDaoData } from './Component'
+import { AcceptSubDaoComponent, AcceptSubDaoData } from './Component'
 
-const defaultBecomeSubDaoData = {
+const defaultAcceptSubDaoData = {
   address: '',
-  admin: '',
 }
 
-const useDefaults: UseDefaults<BecomeSubDaoData> = () => defaultBecomeSubDaoData
+const useDefaults: UseDefaults<AcceptSubDaoData> = () => defaultAcceptSubDaoData
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<AcceptSubDaoData> = (
   msg: Record<string, any>
 ) => {
   try {
@@ -26,7 +25,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
       match: true,
       data: {
         address: msg.wasm.execute.contract_addr,
-        admin: msg.wasm.execute.nominate_admin.admin,
       },
     }
   } catch (e) {
@@ -34,26 +32,22 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
   }
 }
 
-const Component: ActionComponent<undefined, BecomeSubDaoData> = (props) => {
-  return <BecomeSubDaoComponent {...props} options={{ AddressInput }} />
+const Component: ActionComponent<undefined, AcceptSubDaoData> = (props) => {
+  return <AcceptSubDaoComponent {...props} options={{ AddressInput }} />
 }
 
-export const makeBecomeSubDaoAction: ActionMaker<BecomeSubDaoData> = ({
+export const makeAcceptSubDaoAction: ActionMaker<AcceptSubDaoData> = ({
   t,
-  address,
-  context,
 }) => {
   function useTransformToCosmos() {
-    return ({ admin }: { admin: string }) =>
+    return ({ address }: { address: string }) =>
       makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: address,
             funds: [],
             msg: {
-              nominate_admin: {
-                admin,
-              },
+              accept_admin_nomination: {},
             },
           },
         },
@@ -61,10 +55,10 @@ export const makeBecomeSubDaoAction: ActionMaker<BecomeSubDaoData> = ({
   }
 
   return {
-    key: ActionKey.BecomeSubDao,
+    key: ActionKey.AcceptSubDao,
     Icon: FamilyEmoji,
-    label: t('title.becomeSubDao'),
-    description: t('info.becomeSubDaoDescription'),
+    label: t('title.acceptSubDao'),
+    description: t('info.acceptSubDaoDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

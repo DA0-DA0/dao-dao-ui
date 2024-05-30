@@ -103,6 +103,7 @@ export enum ActionKey {
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
   // Become SubDAO
+  AcceptSubDao = 'acceptSubDao',
   BecomeSubDao = 'becomeSubDao',
 }
 

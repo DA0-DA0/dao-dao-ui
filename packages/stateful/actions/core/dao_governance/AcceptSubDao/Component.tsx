@@ -10,37 +10,37 @@ import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
-export type BecomeSubDaoData = {
+export type AcceptSubDaoData = {
   address: string
-  admin: string
 }
 
-type BecomeSubDaoDataOptions = {
+type AcceptSubDaoDataOptions = {
   AddressInput: ComponentType<AddressInputProps<any>>
 }
 
-export const BecomeSubDaoComponent: ActionComponent<
-  BecomeSubDaoDataOptions,
-  BecomeSubDaoData
+export const AcceptSubDaoComponent: ActionComponent<
+  AcceptSubDaoDataOptions,
+  AcceptSubDaoData
 > = ({ fieldNamePrefix, errors, isCreating, options: { AddressInput } }) => {
   const { t } = useTranslation()
   const {
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  const { register, resetField } = useFormContext<BecomeSubDaoData>()
+  const { register, resetField } = useFormContext<AcceptSubDaoData>()
 
-  const adminFieldName = (fieldNamePrefix + 'admin') as 'admin'
+  const addressFieldName = (fieldNamePrefix + 'address') as 'address'
 
   return (
     <>
       <div className="flex flex-col items-stretch gap-1">
         <p className="max-w-prose pb-2">
-          {t('info.becomeSubDaoActionDescription')}
+          {t('info.acceptSubDaoActionDescription')}
         </p>
+
         <InputLabel
           className="py-2"
-          name={t('form.becomeSubDaoAdminInputLabel')}
+          name={t('form.acceptSubDaoAddressInputLabel')}
         />
 
         <div className="flex flex-row items-center gap-2">
@@ -49,8 +49,8 @@ export const BecomeSubDaoComponent: ActionComponent<
               <AddressInput
                 containerClassName="flex-1"
                 disabled={!isCreating}
-                error={errors?.admin}
-                fieldName={adminFieldName}
+                error={errors?.address}
+                fieldName={addressFieldName}
                 register={register}
                 validation={[
                   validateRequired,
@@ -61,14 +61,14 @@ export const BecomeSubDaoComponent: ActionComponent<
                 <IconButton
                   Icon={Close}
                   onClick={() => {
-                    resetField(adminFieldName)
+                    resetField(addressFieldName)
                   }}
                   size="sm"
                   variant="ghost"
                 />
               )}
             </div>
-            <InputErrorMessage error={errors?.admin} />
+            <InputErrorMessage error={errors?.address} />
           </div>
         </div>
       </div>
