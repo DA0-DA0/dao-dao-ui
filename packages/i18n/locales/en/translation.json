@@ -537,9 +537,9 @@
     "unsupportedWallet": "Unsupported wallet. Please use a different wallet."
   },
   "form": {
+    "acceptSubDaoAddressInputLabel": "SubDAO to approve",
     "addAnImage": "Add an image",
     "address": "Address",
-    "acceptSubDaoAddressInputLabel": "SubDAO to approve",
     "addressInputPlaceholder_any": "Search profile or DAO name or enter an address...",
     "addressInputPlaceholder_contract": "Search DAO name or enter an address...",
     "addressInputPlaceholder_wallet": "Search profile name or enter an address...",
@@ -897,6 +897,8 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "acceptSubDaoActionDescription": "Approve the ownership transfer request from your SubDAO. Be sure that your SubDAO has already requested to join your DAO through the \"Become SubDAO\" action.\"",
+    "acceptSubDaoDescription": "Approve SubDAO ownership transfer.",
     "acknowledgeServiceFee": "We acknowledge that {{fee}} will be charged from the treasury for registration to the rebalancer.",
     "acknowledgeServiceFee_none": "We acknowledge that there is no fee to register for the rebalancer.",
     "actionLibraryDescription": "Choose one or more actions to perform upon execution.",
@@ -946,8 +948,6 @@
     "available": "available",
     "availableBalance": "Available balance",
     "availableHistoryLoaded": "All available history has been loaded.",
-    "acceptSubDaoDescription": "Approve SubDAO ownership transfer.",
-    "acceptSubDaoActionDescription": "Approve the ownership transfer request from your SubDAO. Be sure that your SubDAO has already requested to join your DAO through the \"Become SubDAO\" action.\"",
     "becomeSubDaoActionDescription": "Provide your parent DAO address to request join as its SubDAO. Your parent DAO will need to approve your request to complete the ownership transfer.",
     "becomeSubDaoDescription": "Request to join DAO as SubDAO.",
     "betterNonPfmIbcPathAvailable": "A better path exists that unwinds the IBC token properly, but it requires hops that cannot be performed in a single proposal due to the configuration of one or more of the chains involved. You may safely use the direct path above, though it likely results in an undesirable IBC token on the final chain that will eventually need to be unwound. If you wish to unwind it manually, follow the path below by creating an individual proposal for the first hop, then a second proposal once the first one is passed and executed, and so on.",
@@ -1570,9 +1570,9 @@
   "title": {
     "404": "404: Not Found",
     "500": "500: Error",
+    "acceptSubDao": "Approve SubDAO join",
     "accepted": "Accepted",
     "acceptingSubmissions": "Accepting submissions",
-    "acceptSubDao": "Approve SubDAO join",
     "account": "Account",
     "actionLibrary": "Action Library",
     "actionNumber": "Action {{number}}",
