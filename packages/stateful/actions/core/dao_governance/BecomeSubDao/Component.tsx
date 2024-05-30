@@ -11,7 +11,6 @@ import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 import { useActionOptions } from '../../../react'
 
 export type BecomeSubDaoData = {
-  address: string
   admin: string
 }
 

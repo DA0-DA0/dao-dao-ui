@@ -13,7 +13,6 @@ import { AddressInput } from '../../../../components'
 import { BecomeSubDaoComponent, BecomeSubDaoData } from './Component'
 
 const defaultBecomeSubDaoData = {
-  address: '',
   admin: '',
 }
 
@@ -26,7 +25,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
     return {
       match: true,
       data: {
-        address: msg.wasm.execute.contract_addr,
         admin: msg.wasm.execute.nominate_admin.admin,
       },
     }
