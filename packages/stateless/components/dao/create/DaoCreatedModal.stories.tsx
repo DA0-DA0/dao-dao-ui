@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeProps as makeDaoCardProps } from '../DaoCard.stories'
+import { makeDaoCardProps } from '../DaoCard.stories'
 import { DaoCreatedModal } from './DaoCreatedModal'
 
 export default {
@@ -18,7 +18,13 @@ Default.args = {
   modalProps: {
     onClose: () => alert('close'),
   },
-  itemProps: makeDaoCardProps(),
+  itemProps: {
+    ...makeDaoCardProps(),
+    info: {
+      ...makeDaoCardProps().info,
+      parentDao: null,
+    },
+  },
 }
 Default.parameters = {
   design: {
@@ -30,5 +36,5 @@ Default.parameters = {
 export const SubDao = Template.bind({})
 SubDao.args = {
   ...Default.args,
-  subDao: true,
+  itemProps: makeDaoCardProps(),
 }

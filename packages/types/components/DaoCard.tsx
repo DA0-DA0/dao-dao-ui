@@ -1,59 +1,69 @@
 import { ComponentType } from 'react'
 
-import { DaoParentInfo, PolytoneProxies } from '../dao'
-import { ContractVersion } from '../features'
+import { DaoInfo } from '../dao'
 import { LoadingData } from '../misc'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
-export interface DaoCardInfoLazyData {
+export type DaoCardInfoLazyData = {
   isMember: boolean
-  tokenBalance: number
   proposalCount: number
+  /**
+   * Show a token line, typically TVL.
+   */
+  tokenWithBalance?: {
+    balance: number
+    symbol: string
+    decimals: number
+  }
 }
 
-export interface DaoCardInfo {
-  chainId: string
-  coreAddress: string
-  coreVersion: ContractVersion
-  name: string
-  description: string
-  imageUrl: string
-  polytoneProxies: PolytoneProxies
-  established?: Date
-  className?: string
-  showIsMember?: boolean
-  parentDao?: DaoParentInfo
-  tokenSymbol: string
-  showingEstimatedUsdValue: boolean
-  tokenDecimals: number
-
-  lazyData: LoadingData<DaoCardInfoLazyData>
-}
-
-export interface FollowState {
+export type FollowState = {
   following: boolean
   updatingFollowing: boolean
   onFollow: () => void
 }
 
-export interface DaoCardProps extends DaoCardInfo {
+export type DaoCardProps = {
+  info: DaoInfo
+  lazyData: LoadingData<DaoCardInfoLazyData>
+  follow: { hide: true } | ({ hide?: false } & FollowState)
+  LinkWrapper: ComponentType<LinkWrapperProps>
+  /**
+   * Whether or not to show the member checkmark if they're a member. Defaults
+   * to true.
+   */
+  showIsMember?: boolean
+  /**
+   * Whether or not the token loaded in lazy data is USD. Defaults to true.
+   */
+  showingEstimatedUsdValue?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
-  LinkWrapper: ComponentType<LinkWrapperProps>
-  follow: { hide: true } | ({ hide?: false } & FollowState)
+  /**
+   * Optional card class name.
+   */
+  className?: string
 }
 
-export type LazyDaoCardProps = Pick<
+export type StatefulDaoCardProps = Omit<
   DaoCardProps,
-  | 'chainId'
-  | 'coreAddress'
-  | 'coreVersion'
-  | 'name'
-  | 'description'
-  | 'imageUrl'
-  | 'className'
-> & {
+  'lazyData' | 'follow' | 'LinkWrapper'
+>
+
+export type LazyDaoCardProps = Omit<StatefulDaoCardProps, 'info'> & {
+  /**
+   * A smaller set of DAO info that doesn't need many queries.
+   */
+  info: Pick<
+    DaoInfo,
+    | 'chainId'
+    | 'coreAddress'
+    | 'coreVersion'
+    | 'name'
+    | 'description'
+    | 'imageUrl'
+  >
   /**
    * Whether or not this DAO is inactive.
    */

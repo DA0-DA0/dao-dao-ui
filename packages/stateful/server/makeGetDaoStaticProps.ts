@@ -60,6 +60,7 @@ import {
   getConfiguredGovChainByName,
   getDaoPath,
   getDisplayNameForChainId,
+  getFallbackImage,
   getImageUrlForChainId,
   getRpcForChainId,
   getSupportedChainConfig,
@@ -410,7 +411,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             proposalModules,
             name: config.name,
             description: config.description,
-            imageUrl: overrideImageUrl ?? config.image_url ?? null,
+            imageUrl:
+              overrideImageUrl ||
+              config.image_url ||
+              getFallbackImage(coreAddress),
             created: created?.toJSON() ?? null,
             isActive,
             activeThreshold,

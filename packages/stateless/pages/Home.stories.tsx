@@ -1,9 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { LazyProposalLine } from '@dao-dao/stateful'
+import { DaoCard } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { DaoCard, LinkWrapper } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { Home } from './Home'
 
@@ -21,25 +20,13 @@ Default.args = {
     proposals: 5678,
     votes: 90123,
     uniqueVoters: 4567,
+    chains: 10,
     tvl: 1234567890,
   },
   featuredDaosProps: {
     items: FeaturedDaosScrollerStory.args!.items!,
-    Component: (props) => (
-      <DaoCard
-        {...props}
-        LinkWrapper={LinkWrapper}
-        follow={{
-          following: true,
-          updatingFollowing: false,
-          onFollow: () => alert('follow ' + props.coreAddress),
-        }}
-      />
-    ),
+    Component: DaoCard,
   },
-  recentProposals: [],
-  LazyProposalLine,
-  LinkWrapper,
 }
 Default.parameters = {
   design: {

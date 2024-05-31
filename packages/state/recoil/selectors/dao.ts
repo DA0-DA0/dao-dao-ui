@@ -46,12 +46,14 @@ export const lazyDaoCardPropsSelector = selectorFamily<
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
         return {
-          chainId,
-          coreAddress,
-          coreVersion: ContractVersion.Gov,
-          name: getDisplayNameForChainId(chainId),
-          description: getChainGovernanceDaoDescription(chainId),
-          imageUrl: getImageUrlForChainId(chainId),
+          info: {
+            chainId,
+            coreAddress,
+            coreVersion: ContractVersion.Gov,
+            name: getDisplayNameForChainId(chainId),
+            description: getChainGovernanceDaoDescription(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+          },
         }
       }
 
@@ -82,12 +84,14 @@ export const lazyDaoCardPropsSelector = selectorFamily<
       }
 
       return {
-        chainId,
-        coreAddress,
-        coreVersion,
-        name: config.name,
-        description: config.description,
-        imageUrl: config.image_url || getFallbackImage(coreAddress),
+        info: {
+          chainId,
+          coreAddress,
+          coreVersion,
+          name: config.name,
+          description: config.description,
+          imageUrl: config.image_url || getFallbackImage(coreAddress),
+        },
         isInactive: INACTIVE_DAO_NAMES.includes(config.name),
       }
     },
@@ -119,8 +123,8 @@ export const daoDropdownInfoSelector: (
         return {
           chainId,
           coreAddress,
-          imageUrl: lazyInfo.imageUrl,
-          name: lazyInfo.name,
+          imageUrl: lazyInfo.info.imageUrl,
+          name: lazyInfo.info.name,
           subDaos: get(
             waitForAll(
               subDaos.map((subDaoAddress) =>

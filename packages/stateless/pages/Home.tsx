@@ -7,43 +7,26 @@ import {
   Public,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoProposalSearchResult } from '@dao-dao/state/indexer'
-import {
-  DaoCardInfo,
-  DaoDaoIndexerAllStats,
-  LinkWrapperProps,
-  StatefulLazyProposalLineProps,
-} from '@dao-dao/types'
+import { DaoDaoIndexerAllStats, StatefulDaoCardProps } from '@dao-dao/types'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
 import {
   DaoInfoCards,
   HorizontalScroller,
   HorizontalScrollerProps,
-  ProposalList,
 } from '../components'
 
 export type HomeProps = {
   stats: DaoDaoIndexerAllStats
   featuredDaosProps: Pick<
-    HorizontalScrollerProps<DaoCardInfo>,
+    HorizontalScrollerProps<StatefulDaoCardProps>,
     'Component' | 'items'
   >
-  recentProposals: DaoProposalSearchResult[]
-  LazyProposalLine: ComponentType<StatefulLazyProposalLineProps>
-  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export const Home = ({
-  stats,
-  featuredDaosProps,
-  recentProposals,
-  LazyProposalLine,
-  LinkWrapper,
-}: HomeProps) => {
+export const Home = ({ stats, featuredDaosProps }: HomeProps) => {
   const { t } = useTranslation()
 
   return (
@@ -69,15 +52,15 @@ export const Home = ({
               value: stats.votes.toLocaleString(),
             },
             {
-              Icon: PeopleOutlined,
-              label: t('title.uniqueVoters'),
-              value: stats.uniqueVoters.toLocaleString(),
-            },
-            {
               Icon: Link,
               label: t('title.chains'),
               tooltip: t('info.chainsDeployedTooltip'),
               value: stats.chains.toLocaleString(),
+            },
+            {
+              Icon: PeopleOutlined,
+              label: t('title.uniqueVoters'),
+              value: stats.uniqueVoters.toLocaleString(),
             },
             {
               Icon: LockOutlined,
@@ -116,30 +99,6 @@ export const Home = ({
           shadowClassName="w-[max((100%-64rem)/2,1.5rem)]"
         />
       </div>
-
-      <ProposalList<StatefulLazyProposalLineProps>
-        LinkWrapper={LinkWrapper}
-        ProposalLine={LazyProposalLine}
-        canLoadMore={false}
-        className="w-full mt-8"
-        daoName=""
-        daosWithVetoableProposals={[]}
-        isMember={false}
-        loadMore={() => {}}
-        loadingMore={false}
-        openProposals={recentProposals.flatMap(
-          ({ chainId, value: { dao, daoProposalId } }) =>
-            dao && daoProposalId
-              ? {
-                  chainId,
-                  coreAddress: dao,
-                  proposalId: daoProposalId,
-                  isPreProposeProposal: false,
-                }
-              : []
-        )}
-        sections={[]}
-      />
     </>
   )
 }

@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { DaoProposalSearchResult, walletChainIdAtom } from '@dao-dao/state'
+import { walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainPickerPopup,
   Logo,
@@ -19,22 +19,17 @@ import {
   getSupportedChains,
 } from '@dao-dao/utils'
 
-import { useLoadingFeaturedDaoCardInfos, useWallet } from '../../hooks'
+import { useLoadingFeaturedDaoCards, useWallet } from '../../hooks'
 import { DaoCard } from '../dao'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { LazyProposalLine } from '../ProposalLine'
 import { ProfileHome } from './ProfileHome'
 
 export type StatefulHomeProps = {
   stats: DaoDaoIndexerAllStats
-  recentProposals: DaoProposalSearchResult[]
 }
 
-export const Home: NextPage<StatefulHomeProps> = ({
-  stats,
-  recentProposals,
-}) => {
+export const Home: NextPage<StatefulHomeProps> = ({ stats }) => {
   const { t } = useTranslation()
   const { isWalletConnected } = useWallet()
   const router = useRouter()
@@ -58,7 +53,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
     }
   }, [chainId, setWalletChainId])
 
-  const featuredDaosLoading = useLoadingFeaturedDaoCardInfos(chainId)
+  const featuredDaosLoading = useLoadingFeaturedDaoCards(chainId)
 
   const chainPicker = (
     <ChainPickerPopup
@@ -116,13 +111,10 @@ export const Home: NextPage<StatefulHomeProps> = ({
           />
 
           <StatelessHome
-            LazyProposalLine={LazyProposalLine}
-            LinkWrapper={LinkWrapper}
             featuredDaosProps={{
               Component: DaoCard,
               items: featuredDaosLoading,
             }}
-            recentProposals={recentProposals}
             stats={stats}
           />
         </>

@@ -64,7 +64,7 @@ export type DaoInfo = {
   proposalModules: ProposalModule[]
   name: string
   description: string
-  imageUrl: string | null
+  imageUrl: string
   created: Date | undefined
   isActive: boolean
   activeThreshold: ActiveThreshold | null

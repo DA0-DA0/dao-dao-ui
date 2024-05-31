@@ -28,8 +28,6 @@ import {
 } from '@dao-dao/state'
 import {
   ChainId,
-  ContractVersion,
-  DaoCardInfo,
   DaoCardInfoLazyData,
   DaoInfo,
   DaoPageMode,
@@ -37,63 +35,25 @@ import {
   DaoSource,
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
-  Feature,
   IndexerDaoWithVetoableProposals,
   ProposalModule,
   StatefulProposalLineProps,
-  SupportedFeatureMap,
   WithChainId,
 } from '@dao-dao/types'
 import {
   CHAIN_SUBDAOS,
   DaoVotingCw20StakedAdapterId,
   NEUTRON_GOVERNANCE_DAO,
-  getChainGovernanceDaoDescription,
+  getDaoInfoForChainId,
   getDaoProposalPath,
-  getDisplayNameForChainId,
   getFallbackImage,
-  getImageUrlForChainId,
   getSupportedFeatures,
   isConfiguredChainName,
-  mustGetConfiguredChainConfig,
 } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
 import { fetchProposalModules } from '../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
-
-export const daoCardInfoSelector = selectorFamily<
-  DaoCardInfo,
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'daoCardInfo',
-  get:
-    ({ chainId, coreAddress }) =>
-    ({ get }) => {
-      const daoInfo = get(
-        daoInfoSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-
-      return {
-        chainId: daoInfo.chainId,
-        coreAddress: daoInfo.coreAddress,
-        coreVersion: daoInfo.coreVersion,
-        name: daoInfo.name,
-        description: daoInfo.description,
-        imageUrl: daoInfo.imageUrl || getFallbackImage(daoInfo.coreAddress),
-        polytoneProxies: daoInfo.polytoneProxies,
-        established: daoInfo.created,
-        parentDao: daoInfo.parentDao ?? undefined,
-        tokenDecimals: 6,
-        tokenSymbol: '',
-        showingEstimatedUsdValue: true,
-        lazyData: { loading: true },
-      }
-    },
-})
 
 export const daoCardInfoLazyDataSelector = selectorFamily<
   DaoCardInfoLazyData,
@@ -134,8 +94,12 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
 
         return {
           isMember,
-          tokenBalance: tvl,
           proposalCount,
+          tokenWithBalance: {
+            balance: tvl,
+            symbol: 'USD',
+            decimals: 2,
+          },
         }
       }
 
@@ -172,40 +136,16 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
 
       return {
         isMember: walletVotingWeight > 0,
-        tokenBalance: tvl,
         proposalCount: proposalModuleCounts.reduce(
           (acc, curr) => acc + curr,
           0
         ),
+        tokenWithBalance: {
+          balance: tvl,
+          symbol: 'USD',
+          decimals: 2,
+        },
       }
-    },
-})
-
-export const subDaoCardInfosSelector = selectorFamily<
-  DaoCardInfo[],
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'subDaoCardInfos',
-  get:
-    ({ coreAddress: contractAddress, chainId }) =>
-    ({ get }) => {
-      const subDaos = get(
-        DaoCoreV2Selectors.listAllSubDaosSelector({
-          contractAddress,
-          chainId,
-        })
-      )
-
-      return get(
-        waitForAll(
-          subDaos.map(({ chainId, addr }) =>
-            daoCardInfoSelector({
-              chainId,
-              coreAddress: addr,
-            })
-          )
-        )
-      ).filter(Boolean) as DaoCardInfo[]
     },
 })
 
@@ -396,32 +336,7 @@ export const daoInfoSelector = selectorFamily<
             })
           )
 
-          return {
-            chainId,
-            coreAddress: mustGetConfiguredChainConfig(chainId).name,
-            coreVersion: ContractVersion.Gov,
-            supportedFeatures: Object.values(Feature).reduce(
-              (acc, feature) => ({
-                ...acc,
-                [feature]: false,
-              }),
-              {} as SupportedFeatureMap
-            ),
-            votingModuleAddress: '',
-            votingModuleContractName: '',
-            proposalModules: [],
-            name: getDisplayNameForChainId(chainId),
-            description: getChainGovernanceDaoDescription(chainId),
-            imageUrl: getImageUrlForChainId(chainId),
-            created: undefined,
-            isActive: true,
-            activeThreshold: null,
-            items: {},
-            polytoneProxies: {},
-            accounts,
-            parentDao: null,
-            admin: '',
-          }
+          return getDaoInfoForChainId(chainId, accounts)
         }
       }
 
@@ -548,7 +463,7 @@ export const daoInfoSelector = selectorFamily<
         proposalModules,
         name: dumpState.config.name,
         description: dumpState.config.description,
-        imageUrl: dumpState.config.image_url || null,
+        imageUrl: dumpState.config.image_url || getFallbackImage(coreAddress),
         created,
         isActive,
         activeThreshold,

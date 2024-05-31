@@ -10,7 +10,7 @@ import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
 import { useMembership } from '../../../hooks'
-import { subDaoCardInfosSelector } from '../../../recoil'
+import { subDaoInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
@@ -23,7 +23,7 @@ export const SubDaosTab = () => {
 
   const subDaos = useCachedLoading(
     daoInfo.supportedFeatures[Feature.SubDaos]
-      ? subDaoCardInfosSelector({ chainId, coreAddress: daoInfo.coreAddress })
+      ? subDaoInfosSelector({ chainId, coreAddress: daoInfo.coreAddress })
       : // Passing undefined here returns an infinite loading state, which is
         // fine because it's never used.
         undefined,

@@ -8,12 +8,17 @@ import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
 import {
+  Account,
   BaseChainConfig,
   ChainId,
   ConfiguredChain,
+  ContractVersion,
+  DaoInfo,
+  Feature,
   GenericToken,
   SupportedChain,
   SupportedChainConfig,
+  SupportedFeatureMap,
   TokenType,
   Validator,
 } from '@dao-dao/types'
@@ -729,3 +734,36 @@ export const addressIsModule = async (
 
   return false
 }
+
+/**
+ * Get the DAO info object for a given chain ID.
+ */
+export const getDaoInfoForChainId = (
+  chainId: string,
+  accounts: Account[]
+): DaoInfo => ({
+  chainId,
+  coreAddress: mustGetConfiguredChainConfig(chainId).name,
+  coreVersion: ContractVersion.Gov,
+  supportedFeatures: Object.values(Feature).reduce(
+    (acc, feature) => ({
+      ...acc,
+      [feature]: false,
+    }),
+    {} as SupportedFeatureMap
+  ),
+  votingModuleAddress: '',
+  votingModuleContractName: '',
+  proposalModules: [],
+  name: getDisplayNameForChainId(chainId),
+  description: getChainGovernanceDaoDescription(chainId),
+  imageUrl: getImageUrlForChainId(chainId),
+  created: undefined,
+  isActive: true,
+  activeThreshold: null,
+  items: {},
+  polytoneProxies: {},
+  accounts,
+  parentDao: null,
+  admin: '',
+})

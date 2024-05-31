@@ -6,7 +6,7 @@ import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { ButtonLink } from '../../buttons'
 import { LinkWrapper } from '../../LinkWrapper'
 import { DaoCard } from '../DaoCard'
-import { makeProps as makeDaoCardProps } from '../DaoCard.stories'
+import { makeDaoCardProps } from '../DaoCard.stories'
 import { SubDaosTab } from './SubDaosTab'
 
 export default {
@@ -27,15 +27,16 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
           {...props}
           LinkWrapper={LinkWrapper}
           follow={{
-            following: following.includes(props.coreAddress),
+            following: following.includes(props.info.coreAddress),
             updatingFollowing: false,
             onFollow: () =>
               setFollowing((current) =>
-                current.includes(props.coreAddress)
-                  ? current.filter((a) => a !== props.coreAddress)
-                  : [...current, props.coreAddress]
+                current.includes(props.info.coreAddress)
+                  ? current.filter((a) => a !== props.info.coreAddress)
+                  : [...current, props.info.coreAddress]
               ),
           }}
+          lazyData={{ loading: true }}
         />
       )}
     />
@@ -49,22 +50,22 @@ Default.args = {
     loading: false,
     data: [
       {
-        ...makeDaoCardProps(1),
+        ...makeDaoCardProps(1).info,
         name: 'Development Fund',
         description: 'Manages our development and strategy.',
       },
       {
-        ...makeDaoCardProps(2),
+        ...makeDaoCardProps(2).info,
         name: 'Validator',
         description: 'Runs our validator.',
       },
       {
-        ...makeDaoCardProps(3),
+        ...makeDaoCardProps(3).info,
         name: 'Security',
         description: 'Protects us from those who seek to destroy us.',
       },
       {
-        ...makeDaoCardProps(4),
+        ...makeDaoCardProps(4).info,
         name: 'Meme Machine',
         description: 'Generates memeable content for the sake of the memes.',
       },

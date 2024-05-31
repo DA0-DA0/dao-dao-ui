@@ -140,8 +140,8 @@ export const useFeed = (): FeedState => {
             dao: {
               chainId,
               coreAddress,
-              name: daoLazyCardProps.contents[index].name,
-              imageUrl: daoLazyCardProps.contents[index].imageUrl,
+              name: daoLazyCardProps.contents[index].info.name,
+              imageUrl: daoLazyCardProps.contents[index].info.imageUrl,
             },
             items,
           }

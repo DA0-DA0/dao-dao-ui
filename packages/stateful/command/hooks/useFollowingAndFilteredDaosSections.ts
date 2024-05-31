@@ -21,8 +21,8 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  useLoadingFeaturedDaoCardInfos,
-  useLoadingFollowingDaoCardInfos,
+  useLoadingFeaturedDaoCards,
+  useLoadingFollowingDaos,
 } from '../../hooks'
 
 export interface UseFilteredDaosSectionOptions {
@@ -41,8 +41,8 @@ export const useFollowingAndFilteredDaosSections = ({
   const { t } = useTranslation()
 
   const chains = getSupportedChains({ hasIndexer: true })
-  const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
-  const followingDaosLoading = useLoadingFollowingDaoCardInfos()
+  const featuredDaosLoading = useLoadingFeaturedDaoCards()
+  const followingDaosLoading = useLoadingFollowingDaos()
   const { getDaoPath } = useDaoNavHelpers()
 
   const queryResults = useCachedLoadable(
@@ -104,7 +104,7 @@ export const useFollowingAndFilteredDaosSections = ({
       : // Otherwise when filter is empty, display featured DAOs.
       featuredDaosLoading.loading
       ? []
-      : featuredDaosLoading.data),
+      : featuredDaosLoading.data.map((d) => d.info)),
     // Add configured chains.
     ...getConfiguredChains().flatMap(
       ({

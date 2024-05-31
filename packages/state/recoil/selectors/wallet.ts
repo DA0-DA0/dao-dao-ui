@@ -526,13 +526,15 @@ export const lazyWalletDaosSelector = selectorFamily<
 
       const lazyDaoCards = daos.map(
         ({ dao, info, config, proposalCount }): LazyDaoCardProps => ({
-          chainId,
-          coreAddress: dao,
-          coreVersion:
-            parseContractVersion(info.version) || ContractVersion.Unknown,
-          name: config.name,
-          description: config.description,
-          imageUrl: config.image_url || getFallbackImage(dao),
+          info: {
+            chainId,
+            coreAddress: dao,
+            coreVersion:
+              parseContractVersion(info.version) || ContractVersion.Unknown,
+            name: config.name,
+            description: config.description,
+            imageUrl: config.image_url || getFallbackImage(dao),
+          },
           isInactive:
             INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
         })

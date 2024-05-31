@@ -23,8 +23,8 @@ export const DaoCreatedModal = ({
     useFollowingDaos()
 
   const followedDao: DaoSource = {
-    chainId: itemProps.chainId,
-    coreAddress: itemProps.coreAddress,
+    chainId: itemProps.info.chainId,
+    coreAddress: itemProps.info.coreAddress,
   }
   const follow: FollowState = {
     following: isFollowing(followedDao),
@@ -36,14 +36,12 @@ export const DaoCreatedModal = ({
   }
 
   return (
-    <ChainProvider chainId={itemProps.chainId}>
+    <ChainProvider chainId={itemProps.info.chainId}>
       <StatelessDaoCreatedModal
         {...props}
         itemProps={{
           ...itemProps,
-
           follow,
-
           LinkWrapper,
         }}
       />

@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
-import { ContractVersion, DaoCardProps } from '@dao-dao/types'
+import { ContractVersion, DaoCardProps, DaoInfo } from '@dao-dao/types'
 
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard } from './DaoCard'
@@ -9,7 +9,7 @@ import { DaoCard } from './DaoCard'
 export default {
   title: 'DAO DAO / packages / stateless / components / dao / DaoCard',
   component: DaoCard,
-  excludeStories: ['makeProps'],
+  excludeStories: ['makeDaoInfo', 'makeDaoCardProps'],
 } as ComponentMeta<typeof DaoCard>
 
 const Template: ComponentStory<typeof DaoCard> = (args) => (
@@ -18,54 +18,63 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
   </div>
 )
 
-export const makeProps = (id = 1): DaoCardProps => ({
+export const makeDaoInfo = (id = 1): DaoInfo => ({
   chainId: CHAIN_ID,
-  coreAddress: 'daoCoreAddress',
-  coreVersion: ContractVersion.V242,
-  name: 'Modern DAO',
+  coreAddress: 'coreAddress' + ++id,
+  coreVersion: ContractVersion.V2Alpha,
+  name: 'Modern DAO ' + id,
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
-  imageUrl: `/placeholders/${id % 5}.svg`,
+  imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
   polytoneProxies: {},
+  parentDao: {
+    chainId: CHAIN_ID,
+    coreAddress: 'parent',
+    coreVersion: ContractVersion.V2Alpha,
+    name: 'parent',
+    imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
+    admin: 'parent',
+    registeredSubDao: true,
+  },
+  supportedFeatures: {} as any,
+  votingModuleAddress: '',
+  votingModuleContractName: '',
+  proposalModules: [],
   // Random date in the past 12 months.
-  established: new Date(
+  created: new Date(
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
   ),
-  tokenDecimals: 6,
-  tokenSymbol: '',
-  showingEstimatedUsdValue: true,
+  isActive: true,
+  activeThreshold: null,
+  items: {},
+  accounts: [],
+  admin: '',
+})
 
+export const makeDaoCardProps = (id = 1): DaoCardProps => ({
+  info: makeDaoInfo(id),
   follow: {
     following: false,
     onFollow: () => alert('follow'),
     updatingFollowing: false,
   },
-
-  parentDao: {
-    chainId: CHAIN_ID,
-    coreAddress: 'parentDaoCoreAddress',
-    coreVersion: ContractVersion.V2Alpha,
-    name: 'parent',
-    imageUrl: 'https://moonphase.is/image.svg',
-    admin: 'parentDaoCoreAddress',
-    registeredSubDao: true,
-  },
-
   lazyData: {
     loading: false,
     data: {
-      tokenBalance: 120,
-      proposalCount: 25,
       isMember: Math.random() < 0.5,
+      proposalCount: 25,
+      tokenWithBalance: {
+        balance: 120,
+        tokenSymbol: 'USD',
+        tokenDecimals: 2,
+      },
     },
   },
-
-  showIsMember: true,
   LinkWrapper,
 })
 
 export const Default = Template.bind({})
-Default.args = makeProps()
+Default.args = makeDaoCardProps()
 Default.parameters = {
   design: {
     type: 'figma',
@@ -75,7 +84,7 @@ Default.parameters = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  ...makeProps(),
+  ...makeDaoCardProps(),
   lazyData: { loading: true },
 }
 Loading.parameters = {

@@ -84,8 +84,11 @@ export const WalletDaos = ({
         <ErrorPage error={daos.error} />
       ) : searchedDaos.length > 0 ? (
         <GridCardContainer>
-          {searchedDaos.map(({ item: dao }) => (
-            <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
+          {searchedDaos.map(({ item }) => (
+            <LazyDaoCard
+              key={item.info.chainId + item.info.coreAddress}
+              {...item}
+            />
           ))}
         </GridCardContainer>
       ) : (

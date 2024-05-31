@@ -37,12 +37,14 @@ export const ChainGovernanceList = ({
     })
     .map(
       ({ chainId, name }): LazyDaoCardProps => ({
-        chainId,
-        coreAddress: name,
-        coreVersion: ContractVersion.Gov,
-        description: getChainGovernanceDaoDescription(chainId),
-        imageUrl: getImageUrlForChainId(chainId),
-        name: getDisplayNameForChainId(chainId),
+        info: {
+          chainId,
+          coreAddress: name,
+          coreVersion: ContractVersion.Gov,
+          description: getChainGovernanceDaoDescription(chainId),
+          imageUrl: getImageUrlForChainId(chainId),
+          name: getDisplayNameForChainId(chainId),
+        },
       })
     )
 
@@ -61,8 +63,8 @@ export const ChainGovernanceList = ({
 
       {filteredChains.length > 0 ? (
         <GridCardContainer>
-          {filteredChains.map(({ item: props }) => (
-            <LazyDaoCard key={props.chainId} {...props} />
+          {filteredChains.map(({ item }) => (
+            <LazyDaoCard key={item.info.chainId} {...item} />
           ))}
         </GridCardContainer>
       ) : (
