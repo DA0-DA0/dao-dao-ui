@@ -469,7 +469,7 @@ export const daoInfoSelector = selectorFamily<
         name: dumpState.config.name,
         description: dumpState.config.description,
         imageUrl: dumpState.config.image_url || getFallbackImage(coreAddress),
-        created: created || null,
+        created: created?.getTime() || null,
         isActive,
         activeThreshold,
         items,

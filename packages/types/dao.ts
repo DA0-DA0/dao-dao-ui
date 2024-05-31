@@ -65,7 +65,7 @@ export type DaoInfo = {
   name: string
   description: string
   imageUrl: string
-  created: Date | null
+  created: number | null
   isActive: boolean
   activeThreshold: ActiveThreshold | null
   items: Record<string, string>

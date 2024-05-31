@@ -27,7 +27,7 @@ FeaturedDaos.args = {
         info: {
           ...makeDaoCardProps().info,
           name: 'DAO DAO',
-          created: new Date('August 11, 2022 16:20:00'),
+          created: new Date('August 11, 2022 16:20:00').getTime(),
         },
       },
       makeDaoCardProps(),
@@ -36,7 +36,7 @@ FeaturedDaos.args = {
         info: {
           ...makeDaoCardProps().info,
           name: 'DAO DAO',
-          created: new Date(),
+          created: Date.now(),
         },
       },
       {
@@ -44,7 +44,7 @@ FeaturedDaos.args = {
         info: {
           ...makeDaoCardProps().info,
           name: 'A different DAO',
-          created: new Date('August 11, 2022 16:20:00'),
+          created: new Date('August 11, 2022 16:20:00').getTime(),
         },
       },
       makeDaoCardProps(),

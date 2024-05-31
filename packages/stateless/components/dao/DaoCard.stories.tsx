@@ -41,9 +41,8 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
   votingModuleContractName: '',
   proposalModules: [],
   // Random date in the past 12 months.
-  created: new Date(
-    Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
-  ),
+  created:
+    Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000),
   isActive: true,
   activeThreshold: null,
   items: {},

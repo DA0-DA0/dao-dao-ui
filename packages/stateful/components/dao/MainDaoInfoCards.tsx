@@ -105,7 +105,7 @@ const InnerMainDaoInfoCards = () => {
               {
                 label: t('title.established'),
                 tooltip: t('info.establishedTooltip'),
-                value: formatDate(created),
+                value: formatDate(new Date(created)),
               },
             ]
           : []),

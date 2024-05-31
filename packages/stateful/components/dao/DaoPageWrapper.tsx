@@ -104,7 +104,6 @@ export const DaoPageWrapper = ({
         ..._info,
         accounts:
           accounts.loading || accounts.errored ? _info.accounts : accounts.data,
-        created: _info.created ? new Date(_info.created) : null,
       },
     [_info, accounts]
   )

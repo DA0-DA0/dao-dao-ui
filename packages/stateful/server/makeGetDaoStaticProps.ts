@@ -415,7 +415,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               overrideImageUrl ||
               config.image_url ||
               getFallbackImage(coreAddress),
-            created: created?.toJSON() ?? null,
+            created: created?.getTime() ?? null,
             isActive,
             activeThreshold,
             items,

@@ -91,8 +91,10 @@ export const DaoCard = ({
           size="sm"
         />
         <p className="primary-text mt-2 text-center">{name}</p>
-        {created && (
-          <p className="caption-text mt-1 text-center">{formatDate(created)}</p>
+        {!!created && (
+          <p className="caption-text mt-1 text-center">
+            {formatDate(new Date(created))}
+          </p>
         )}
       </div>
 

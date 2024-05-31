@@ -604,7 +604,7 @@ export const InnerCreateDaoForm = ({
               parentDao: parentDao || null,
               // Unused.
               supportedFeatures: {} as any,
-              created: new Date(),
+              created: Date.now(),
               votingModuleAddress: '',
               votingModuleContractName: '',
               proposalModules: [],
