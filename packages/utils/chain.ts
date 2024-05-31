@@ -587,6 +587,9 @@ export const mustGetSupportedChainConfig = (
 export const isSupportedChain = (chainId: string): boolean =>
   getSupportedChainConfig(chainId) !== undefined
 
+/**
+ * Get chains with DAO DAO deployed.
+ */
 export const getSupportedChains = ({
   mainnet = MAINNET,
   hasIndexer,

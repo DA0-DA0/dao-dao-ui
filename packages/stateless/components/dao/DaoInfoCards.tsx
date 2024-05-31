@@ -4,7 +4,12 @@ import { DaoInfoCardsProps } from '@dao-dao/types'
 
 import { TooltipInfoIcon } from '../tooltip'
 
-export const DaoInfoCards = ({ cards, className, wrap }: DaoInfoCardsProps) => (
+export const DaoInfoCards = ({
+  cards,
+  className,
+  wrap,
+  valueClassName,
+}: DaoInfoCardsProps) => (
   <div
     className={clsx(
       'grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4',
@@ -21,7 +26,7 @@ export const DaoInfoCards = ({ cards, className, wrap }: DaoInfoCardsProps) => (
       >
         <div className="flex flex-row items-center gap-1">
           {Icon && (
-            <div className="mr-0.5 !text-xl">
+            <div className="mr-0.5 !text-xl flex flex-row items-center">
               <Icon className="!h-4 !w-4" />
             </div>
           )}
@@ -36,7 +41,8 @@ export const DaoInfoCards = ({ cards, className, wrap }: DaoInfoCardsProps) => (
         <div
           className={clsx(
             'symbol-small-body-text min-w-0 truncate font-mono text-xs xs:text-sm',
-            wrap && '!whitespace-normal'
+            wrap && '!whitespace-normal',
+            valueClassName
           )}
         >
           {/* Make sure to render 0. */}

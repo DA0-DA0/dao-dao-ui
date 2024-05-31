@@ -42,3 +42,15 @@ export type IndexerUpStatus = {
   indexerBlock: IndexerUpBlock
   caughtUp: boolean
 }
+
+export type DaoDaoIndexerChainStats = {
+  daos: number
+  proposals: number
+  votes: number
+  uniqueVoters: number
+}
+
+export type DaoDaoIndexerAllStats = DaoDaoIndexerChainStats & {
+  chains: number
+  tvl: number
+}

@@ -11,6 +11,7 @@ import {
   Logo,
   Home as StatelessHome,
 } from '@dao-dao/stateless'
+import { DaoDaoIndexerAllStats } from '@dao-dao/types'
 import {
   SITE_TITLE,
   SITE_URL,
@@ -26,10 +27,14 @@ import { LazyProposalLine } from '../ProposalLine'
 import { ProfileHome } from './ProfileHome'
 
 export type StatefulHomeProps = {
+  stats: DaoDaoIndexerAllStats
   recentProposals: DaoProposalSearchResult[]
 }
 
-export const Home: NextPage<StatefulHomeProps> = ({ recentProposals }) => {
+export const Home: NextPage<StatefulHomeProps> = ({
+  stats,
+  recentProposals,
+}) => {
   const { t } = useTranslation()
   const { isWalletConnected } = useWallet()
   const router = useRouter()
@@ -118,6 +123,7 @@ export const Home: NextPage<StatefulHomeProps> = ({ recentProposals }) => {
               items: featuredDaosLoading,
             }}
             recentProposals={recentProposals}
+            stats={stats}
           />
         </>
       )}

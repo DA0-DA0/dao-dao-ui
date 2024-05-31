@@ -16,6 +16,13 @@ const Template: ComponentStory<typeof Home> = (args) => <Home {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
+  stats: {
+    daos: 1234,
+    proposals: 5678,
+    votes: 90123,
+    uniqueVoters: 4567,
+    tvl: 1234567890,
+  },
   featuredDaosProps: {
     items: FeaturedDaosScrollerStory.args!.items!,
     Component: (props) => (

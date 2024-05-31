@@ -4,10 +4,10 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { getRecentDaoProposals } from '@dao-dao/state'
+import { getRecentDaoProposals, querySnapper } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
-import { AccountTabId } from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
+import { AccountTabId, DaoDaoIndexerChainStats } from '@dao-dao/types'
+import { getSupportedChains, processError } from '@dao-dao/utils'
 
 export default Home
 
@@ -38,11 +38,35 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
     // Get N most recent across all chains.
     .slice(0, RECENT_PROPOSAL_LIMIT)
 
+  // Get stats and TVL.
+  const [tvl, stats] = await Promise.all([
+    querySnapper<number>({
+      query: 'daodao-all-tvl',
+    }),
+    querySnapper<DaoDaoIndexerChainStats>({
+      query: 'daodao-all-stats',
+    }),
+  ])
+
+  if (!tvl || !stats) {
+    processError('Failed to fetch TVL/stats for home page', {
+      forceCapture: true,
+    })
+    throw new Error('Failed to fetch stats.')
+  }
+
   return {
     props: {
       ...(await serverSideTranslations(locale, ['translation'])),
       recentProposals,
+      stats: {
+        ...stats,
+        chains: getSupportedChains().length,
+        tvl,
+      },
     },
+    // Revalidate every hour.
+    revalidate: 60 * 60,
   }
 }
 

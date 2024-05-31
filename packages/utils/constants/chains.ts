@@ -44,7 +44,9 @@ export const ibc: IBCInfo[] = [
   },
 ]
 
-// Chains which DAO DAO DAOs exist on.
+/**
+ * Chains where DAO DAO is deployed.
+ */
 export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   {
     chainId: ChainId.JunoMainnet,
