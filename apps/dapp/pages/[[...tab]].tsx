@@ -8,7 +8,6 @@ import { querySnapper } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
 import { AccountTabId, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
-  getConfiguredChains,
   getDaoInfoForChainId,
   getSupportedChains,
   processError,
@@ -19,8 +18,8 @@ export default Home
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
 }) => {
-  const chainDaos = getConfiguredChains().map(({ chainId }) =>
-    getDaoInfoForChainId(chainId, [])
+  const chainDaos = getSupportedChains().flatMap(({ chainId, noGov }) =>
+    noGov ? [] : getDaoInfoForChainId(chainId, [])
   )
 
   // Get stats and TVL.

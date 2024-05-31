@@ -511,12 +511,12 @@ export const getConfiguredChains = ({
 }: {
   mainnet?: boolean
 } = {}): ConfiguredChain[] =>
-  CONFIGURED_CHAINS.filter(
-    (config) => mainnet === undefined || config.mainnet === mainnet
-  ).map((config) => ({
-    chain: getChainForChainId(config.chainId),
-    ...config,
-  }))
+  CONFIGURED_CHAINS.filter((config) => config.mainnet === mainnet).map(
+    (config) => ({
+      chain: getChainForChainId(config.chainId),
+      ...config,
+    })
+  )
 
 /**
  * Find configured chain with governance module by name.
