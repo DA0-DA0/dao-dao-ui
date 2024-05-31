@@ -4,9 +4,13 @@ import { useTranslation } from 'react-i18next'
 
 import { CommandModalContextSection } from '@dao-dao/types'
 
+import { useWallet } from '../../hooks'
+
 export const useNavigationSection = (): CommandModalContextSection => {
   const { t } = useTranslation()
   const router = useRouter()
+
+  const { isWalletConnected } = useWallet()
 
   const navigationSection: CommandModalContextSection<{
     href: string
@@ -19,11 +23,15 @@ export const useNavigationSection = (): CommandModalContextSection => {
         Icon: HomeOutlined,
         href: '/',
       },
-      {
-        name: t('title.notifications'),
-        Icon: NotificationsOutlined,
-        href: '/notifications',
-      },
+      ...(isWalletConnected
+        ? [
+            {
+              name: t('title.notifications'),
+              Icon: NotificationsOutlined,
+              href: '/notifications',
+            },
+          ]
+        : []),
       {
         name: t('title.createADAO'),
         Icon: Add,

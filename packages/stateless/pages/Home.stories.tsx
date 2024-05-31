@@ -26,6 +26,7 @@ Default.args = {
   DaoCard,
   chainDaos: FeaturedDaosScrollerStory.args!.items!,
   featuredDaos: FeaturedDaosScrollerStory.args!.items!,
+  openSearch: () => alert('search'),
 }
 Default.parameters = {
   design: {

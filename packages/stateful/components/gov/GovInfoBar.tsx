@@ -1,20 +1,22 @@
 import { useTranslation } from 'react-i18next'
 
-import { communityPoolTvlSelector } from '@dao-dao/state'
+import { daoTvlSelector } from '@dao-dao/state'
 import {
   DaoInfoCards,
   TokenAmountDisplay,
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
+import { COMMUNITY_POOL_ADDRESS_PLACEHOLDER } from '@dao-dao/utils'
 
 export const GovInfoBar = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
-  const treasuryUsdcValueLoading = useCachedLoading(
-    communityPoolTvlSelector({
+  const treasuryUsdValueLoading = useCachedLoading(
+    daoTvlSelector({
       chainId,
+      coreAddress: COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
     }),
     {
       amount: -1,
@@ -31,17 +33,17 @@ export const GovInfoBar = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                treasuryUsdcValueLoading.loading
+                treasuryUsdValueLoading.loading
                   ? { loading: true }
                   : {
                       loading: false,
-                      data: treasuryUsdcValueLoading.data.amount,
+                      data: treasuryUsdValueLoading.data.amount,
                     }
               }
               dateFetched={
-                treasuryUsdcValueLoading.loading
+                treasuryUsdValueLoading.loading
                   ? undefined
-                  : treasuryUsdcValueLoading.data.timestamp
+                  : treasuryUsdValueLoading.data.timestamp
               }
               estimatedUsdValue
               hideApprox

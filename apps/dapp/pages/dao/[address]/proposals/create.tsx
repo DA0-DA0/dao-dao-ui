@@ -19,9 +19,9 @@ const ProposalCreatePage: NextPage<DaoPageWrapperProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    {!props.serializedInfo ? (
+    {!props.info ? (
       <PageLoader />
-    ) : props.serializedInfo.coreVersion === ContractVersion.Gov ? (
+    ) : props.info.coreVersion === ContractVersion.Gov ? (
       <CreateGovProposal />
     ) : (
       <CreateDaoProposal />

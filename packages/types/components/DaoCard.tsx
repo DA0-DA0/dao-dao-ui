@@ -5,7 +5,7 @@ import { LoadingData } from '../misc'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
-export type DaoCardInfoLazyData = {
+export type DaoCardLazyData = {
   isMember: boolean
   proposalCount: number
   /**
@@ -26,7 +26,7 @@ export type FollowState = {
 
 export type DaoCardProps = {
   info: DaoInfo
-  lazyData: LoadingData<DaoCardInfoLazyData>
+  lazyData: LoadingData<DaoCardLazyData>
   follow: { hide: true } | ({ hide?: false } & FollowState)
   LinkWrapper: ComponentType<LinkWrapperProps>
   /**

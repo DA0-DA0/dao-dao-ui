@@ -1,11 +1,11 @@
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { walletChainIdAtom } from '@dao-dao/state'
+import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainPickerPopup,
   Logo,
@@ -55,6 +55,12 @@ export const Home: NextPage<StatefulHomeProps> = ({ stats, chainDaos }) => {
   }, [chainId, setWalletChainId])
 
   const featuredDaosLoading = useLoadingFeaturedDaoCards(chainId)
+
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
+  const openSearch = useCallback(
+    () => setCommandModalVisible(true),
+    [setCommandModalVisible]
+  )
 
   const chainPicker = (
     <ChainPickerPopup
@@ -118,6 +124,7 @@ export const Home: NextPage<StatefulHomeProps> = ({ stats, chainDaos }) => {
               data: chainDaos.map((info) => ({ info })),
             }}
             featuredDaos={featuredDaosLoading}
+            openSearch={openSearch}
             stats={stats}
           />
         </>

@@ -130,6 +130,8 @@
     "earlyExecute": "Early execute",
     "enable": "Enable",
     "execute": "Execute",
+    "findAnotherDao": "Find another DAO",
+    "findDifferentChain": "Find a different chain",
     "follow": "Follow",
     "forceExecute": "Force execute",
     "forcePublish": "Force publish",

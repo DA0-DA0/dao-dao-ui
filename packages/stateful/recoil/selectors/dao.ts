@@ -28,7 +28,7 @@ import {
 } from '@dao-dao/state'
 import {
   ChainId,
-  DaoCardInfoLazyData,
+  DaoCardLazyData,
   DaoInfo,
   DaoPageMode,
   DaoParentInfo,
@@ -55,14 +55,14 @@ import { proposalModuleAdapterProposalCountSelector } from '../../proposal-modul
 import { fetchProposalModules } from '../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
 
-export const daoCardInfoLazyDataSelector = selectorFamily<
-  DaoCardInfoLazyData,
+export const daoCardLazyDataSelector = selectorFamily<
+  DaoCardLazyData,
   WithChainId<{
     coreAddress: string
     walletAddress?: string
   }>
 >({
-  key: 'daoCardInfoLazyData',
+  key: 'daoCardLazyData',
   get:
     ({ coreAddress, chainId, walletAddress }) =>
     ({ get }) => {
@@ -75,31 +75,36 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
 
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        // Get proposal count by loading one proposal and getting the total.
-        const { total: proposalCount } = get(
-          govProposalsSelector({
-            chainId,
-            limit: 1,
-          })
-        )
+        // Neutron uses an actual DAO so load it instead.
+        if (chainId === ChainId.NeutronMainnet) {
+          coreAddress = NEUTRON_GOVERNANCE_DAO
+        } else {
+          // Get proposal count by loading one proposal and getting the total.
+          const { total: proposalCount } = get(
+            govProposalsSelector({
+              chainId,
+              limit: 1,
+            })
+          )
 
-        const isMember = walletAddress
-          ? get(
-              nativeDelegatedBalanceSelector({
-                chainId,
-                address: walletAddress,
-              })
-            ).amount !== '0'
-          : false
+          const isMember = walletAddress
+            ? get(
+                nativeDelegatedBalanceSelector({
+                  chainId,
+                  address: walletAddress,
+                })
+              ).amount !== '0'
+            : false
 
-        return {
-          isMember,
-          proposalCount,
-          tokenWithBalance: {
-            balance: tvl,
-            symbol: 'USD',
-            decimals: 2,
-          },
+          return {
+            isMember,
+            proposalCount,
+            tokenWithBalance: {
+              balance: tvl,
+              symbol: 'USD',
+              decimals: 2,
+            },
+          }
         }
       }
 

@@ -6,8 +6,9 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { querySnapper } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
-import { AccountTabId, DaoDaoIndexerChainStats } from '@dao-dao/types'
+import { AccountTabId, ChainId, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
+  MAINNET,
   getDaoInfoForChainId,
   getSupportedChains,
   processError,
@@ -18,9 +19,28 @@ export default Home
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
 }) => {
-  const chainDaos = getSupportedChains().flatMap(({ chainId, noGov }) =>
-    noGov ? [] : getDaoInfoForChainId(chainId, [])
-  )
+  // Get chain DAOs.
+  const chainDaos = [
+    // Start with Cosmos Hub.
+    MAINNET ? ChainId.CosmosHubMainnet : ChainId.CosmosHubTestnet,
+    // Add DAO DAO-supported chains.
+    ...getSupportedChains().flatMap(({ chainId, noGov }) =>
+      noGov ? [] : chainId
+    ),
+    // Add some other common chains.
+    ...(MAINNET
+      ? [
+          'akashnet-2',
+          'secret-4',
+          'regen-1',
+          'injective-1',
+          'celestia',
+          'dydx-mainnet-1',
+          'archway-1',
+          'coreum-mainnet-1',
+        ]
+      : []),
+  ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
   // Get stats and TVL.
   const [tvl, stats] = await Promise.all([

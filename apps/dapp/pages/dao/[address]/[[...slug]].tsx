@@ -19,7 +19,7 @@ const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    {props.serializedInfo?.coreVersion === ContractVersion.Gov ? (
+    {props.info?.coreVersion === ContractVersion.Gov ? (
       <ChainGovernanceDappHome />
     ) : (
       <DaoDappHome />

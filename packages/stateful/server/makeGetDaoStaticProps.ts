@@ -190,7 +190,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             .join(' | '),
         description,
         accentColor,
-        serializedInfo: {
+        info: {
           chainId: chain.chain_id,
           coreAddress: chainName,
           coreVersion: ContractVersion.Gov,
@@ -401,7 +401,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
-          serializedInfo: {
+          info: {
             chainId,
             coreAddress,
             coreVersion,
@@ -511,8 +511,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     if (
       MAINNET &&
       'props' in result &&
-      // If no serialized info, no DAO found.
-      !result.props.serializedInfo &&
+      // If no info, no DAO found.
+      !result.props.info &&
       // Don't try Terra Classic if unexpected error occurred.
       !result.props.error &&
       // Only try Terra Classic if Terra failed.

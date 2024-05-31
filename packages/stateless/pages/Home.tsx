@@ -5,6 +5,7 @@ import {
   LockOutlined,
   PeopleOutlined,
   Public,
+  Search,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
@@ -17,13 +18,14 @@ import {
 } from '@dao-dao/types'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
-import { DaoInfoCards, HorizontalScroller } from '../components'
+import { Button, DaoInfoCards, HorizontalScroller } from '../components'
 
 export type HomeProps = {
   stats: DaoDaoIndexerAllStats
   DaoCard: ComponentType<StatefulDaoCardProps>
   chainDaos: LoadingData<StatefulDaoCardProps[]>
   featuredDaos: LoadingData<StatefulDaoCardProps[]>
+  openSearch: () => void
 }
 
 export const Home = ({
@@ -31,6 +33,7 @@ export const Home = ({
   DaoCard,
   chainDaos,
   featuredDaos,
+  openSearch,
 }: HomeProps) => {
   const { t } = useTranslation()
 
@@ -86,12 +89,17 @@ export const Home = ({
         />
       </div>
 
+      {/* Chain governance DAOs */}
       <div className="flex flex-col items-center gap-4 my-8">
-        <p className="title-text self-start text-lg">
-          {t('title.chainGovernance')}
-        </p>
+        <div className="xs:flex-row xs:items-end flex flex-col gap-y-2 gap-x-8 justify-between self-stretch">
+          <p className="title-text text-lg">{t('title.chainGovernance')}</p>
 
-        {/* Chain governance container */}
+          <Button onClick={openSearch} variant="none">
+            <Search className="secondary-text !h-5 !w-5" onClick={openSearch} />
+            <p className="secondary-text">{t('button.findDifferentChain')}</p>
+          </Button>
+        </div>
+
         <HorizontalScroller
           Component={DaoCard}
           containerClassName={clsx(
@@ -107,12 +115,17 @@ export const Home = ({
         />
       </div>
 
+      {/* Featured DAOs */}
       <div className="flex flex-col items-center gap-4">
-        <p className="title-text self-start text-lg">
-          {t('title.featuredDaos')}
-        </p>
+        <div className="xs:flex-row xs:items-end flex flex-col gap-y-2 gap-x-8 justify-between self-stretch">
+          <p className="title-text text-lg">{t('title.featuredDaos')}</p>
 
-        {/* Featured DAOs container */}
+          <Button onClick={openSearch} variant="none">
+            <Search className="secondary-text !h-5 !w-5" onClick={openSearch} />
+            <p className="secondary-text">{t('button.findAnotherDao')}</p>
+          </Button>
+        </div>
+
         <HorizontalScroller
           // Margin offsets container padding.
           Component={DaoCard}

@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/types/components/DaoCard'
 
 import { useFollowingDaos, useProfile } from '../../hooks'
-import { daoCardInfoLazyDataSelector } from '../../recoil'
+import { daoCardLazyDataSelector } from '../../recoil'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: StatefulDaoCardProps) => {
@@ -22,7 +22,7 @@ export const DaoCard = (props: StatefulDaoCardProps) => {
     useFollowingDaos()
 
   const lazyData = useCachedLoading(
-    daoCardInfoLazyDataSelector({
+    daoCardLazyDataSelector({
       coreAddress: props.info.coreAddress,
       chainId: props.info.chainId,
       walletAddress: chains.loading

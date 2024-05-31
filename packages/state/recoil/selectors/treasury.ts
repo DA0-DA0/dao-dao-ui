@@ -7,6 +7,7 @@ import {
   Account,
   AccountType,
   AmountWithTimestamp,
+  ChainId,
   GenericToken,
   GenericTokenSource,
   LoadingTokens,
@@ -17,6 +18,7 @@ import {
 } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
+  NEUTRON_GOVERNANCE_DAO,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
@@ -27,7 +29,6 @@ import {
 import { accountsSelector } from './account'
 import {
   blockHeightTimestampSafeSelector,
-  communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
@@ -36,7 +37,6 @@ import {
   genericTokenBalancesSelector,
   genericTokenSelector,
   tokenCardLazyInfoSelector,
-  usdPriceSelector,
 } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{
@@ -180,7 +180,10 @@ export const daoTvlSelector = selectorFamily<
     ({ get }) => {
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        return get(communityPoolTvlSelector({ chainId }))
+        coreAddress =
+          chainId === ChainId.NeutronMainnet
+            ? NEUTRON_GOVERNANCE_DAO
+            : COMMUNITY_POOL_ADDRESS_PLACEHOLDER
       }
 
       const timestamp = new Date()
@@ -194,47 +197,6 @@ export const daoTvlSelector = selectorFamily<
           },
         })
       )
-
-      return {
-        amount,
-        timestamp,
-      }
-    },
-})
-
-export const communityPoolTvlSelector = selectorFamily<
-  AmountWithTimestamp,
-  WithChainId<{}>
->({
-  key: 'communityPoolTvl',
-  get:
-    ({ chainId }) =>
-    async ({ get }) => {
-      const timestamp = new Date()
-
-      const tokenBalances = get(communityPoolBalancesSelector({ chainId }))
-
-      const prices = tokenBalances.map(
-        ({ token: { chainId, type, denomOrAddress, decimals }, balance }) => {
-          // Don't calculate price if could not load token decimals correctly.
-          if (decimals === 0) {
-            return 0
-          }
-
-          const price = get(
-            usdPriceSelector({
-              type,
-              denomOrAddress,
-              chainId,
-            })
-          )?.usdPrice
-
-          return price
-            ? convertMicroDenomToDenomWithDecimals(balance, decimals) * price
-            : 0
-        }
-      )
-      const amount = prices.reduce((price, total) => price + total, 0)
 
       return {
         amount,
