@@ -12,11 +12,7 @@ import {
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
-import {
-  CommonProposalInfo,
-  DaoInfo,
-  DaoInfoSerializable,
-} from '@dao-dao/types'
+import { CommonProposalInfo, DaoInfo } from '@dao-dao/types'
 import {
   getFallbackImage,
   transformIpfsUrlToHttpsIfNecessary,
@@ -33,7 +29,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   title: string
   description: string
   accentColor?: string | null
-  serializedInfo?: DaoInfoSerializable
+  info?: DaoInfo
   error?: string
   setIcon?: (icon: string | undefined) => void
 }>
@@ -47,7 +43,7 @@ export const DaoPageWrapper = ({
   title,
   description,
   accentColor,
-  serializedInfo,
+  info: _info,
   error,
   setIcon,
   children,
@@ -59,7 +55,7 @@ export const DaoPageWrapper = ({
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Update walletChainId to whatever the current DAO is to ensure we connect
   // correctly.
-  const currentChainId = serializedInfo?.chainId
+  const currentChainId = _info?.chainId
   useEffect(() => {
     if (currentChainId && currentChainId !== walletChainId) {
       setWalletChainId(currentChainId)
@@ -94,35 +90,31 @@ export const DaoPageWrapper = ({
   // Load all accounts since the static props only loads some. This should load
   // faster than the DAO info selector below that will eventually replace this.
   const accounts = useCachedLoadingWithError(
-    serializedInfo
+    _info
       ? accountsSelector({
-          chainId: serializedInfo.chainId,
-          address: serializedInfo.coreAddress,
+          chainId: _info.chainId,
+          address: _info.coreAddress,
         })
       : undefined
   )
 
   const info = useMemo(
     (): DaoInfo | undefined =>
-      serializedInfo && {
-        ...serializedInfo,
+      _info && {
+        ..._info,
         accounts:
-          accounts.loading || accounts.errored
-            ? serializedInfo.accounts
-            : accounts.data,
-        created: serializedInfo.created
-          ? new Date(serializedInfo.created)
-          : undefined,
+          accounts.loading || accounts.errored ? _info.accounts : accounts.data,
+        created: _info.created ? new Date(_info.created) : null,
       },
-    [serializedInfo, accounts]
+    [_info, accounts]
   )
 
   // Load DAO info once static props are loaded so it's more up to date.
   const loadingDaoInfo = useCachedLoadingWithError(
-    serializedInfo
+    info
       ? daoInfoSelector({
-          chainId: serializedInfo.chainId,
-          coreAddress: serializedInfo.coreAddress,
+          chainId: info.chainId,
+          coreAddress: info.coreAddress,
         })
       : undefined
   )

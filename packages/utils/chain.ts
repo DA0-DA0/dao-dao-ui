@@ -758,7 +758,7 @@ export const getDaoInfoForChainId = (
   name: getDisplayNameForChainId(chainId),
   description: getChainGovernanceDaoDescription(chainId),
   imageUrl: getImageUrlForChainId(chainId),
-  created: undefined,
+  created: null,
   isActive: true,
   activeThreshold: null,
   items: {},

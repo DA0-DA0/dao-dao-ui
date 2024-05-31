@@ -65,7 +65,7 @@ export type DaoInfo = {
   name: string
   description: string
   imageUrl: string
-  created: Date | undefined
+  created: Date | null
   isActive: boolean
   activeThreshold: ActiveThreshold | null
   items: Record<string, string>
@@ -88,14 +88,6 @@ export type DaoParentInfo = {
 
   // Whether or not this parent has registered its child as a SubDAO.
   registeredSubDao: boolean
-}
-
-// Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo
-// loaded via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to
-// be fed into DaoPageWrapper and available in the UI via DaoInfoContext.
-export type DaoInfoSerializable = Omit<DaoInfo, 'created'> & {
-  // Created needs to be serialized and de-serialized.
-  created: string | null
 }
 
 export type DaoSource = {

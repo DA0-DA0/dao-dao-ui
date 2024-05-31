@@ -11,7 +11,7 @@ import {
   Logo,
   Home as StatelessHome,
 } from '@dao-dao/stateless'
-import { DaoDaoIndexerAllStats } from '@dao-dao/types'
+import { DaoDaoIndexerAllStats, DaoInfo } from '@dao-dao/types'
 import {
   SITE_TITLE,
   SITE_URL,
@@ -27,9 +27,10 @@ import { ProfileHome } from './ProfileHome'
 
 export type StatefulHomeProps = {
   stats: DaoDaoIndexerAllStats
+  chainDaos: DaoInfo[]
 }
 
-export const Home: NextPage<StatefulHomeProps> = ({ stats }) => {
+export const Home: NextPage<StatefulHomeProps> = ({ stats, chainDaos }) => {
   const { t } = useTranslation()
   const { isWalletConnected } = useWallet()
   const router = useRouter()
@@ -111,10 +112,12 @@ export const Home: NextPage<StatefulHomeProps> = ({ stats }) => {
           />
 
           <StatelessHome
-            featuredDaosProps={{
-              Component: DaoCard,
-              items: featuredDaosLoading,
+            DaoCard={DaoCard}
+            chainDaos={{
+              loading: false,
+              data: chainDaos.map((info) => ({ info })),
             }}
+            featuredDaos={featuredDaosLoading}
             stats={stats}
           />
         </>

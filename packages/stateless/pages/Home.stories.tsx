@@ -23,10 +23,9 @@ Default.args = {
     chains: 10,
     tvl: 1234567890,
   },
-  featuredDaosProps: {
-    items: FeaturedDaosScrollerStory.args!.items!,
-    Component: DaoCard,
-  },
+  DaoCard,
+  chainDaos: FeaturedDaosScrollerStory.args!.items!,
+  featuredDaos: FeaturedDaosScrollerStory.args!.items!,
 }
 Default.parameters = {
   design: {

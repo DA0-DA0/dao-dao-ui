@@ -3,11 +3,10 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/stateful'
 import {
+  AccountType,
   ChainId,
   ContractVersion,
-  AccountType,
   DaoInfo,
-  DaoInfoSerializable,
   PreProposeModuleType,
   ProposalModuleType,
 } from '@dao-dao/types'
@@ -62,19 +61,13 @@ export const makeDaoInfo = (): DaoInfo => ({
 })
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
-  const serializedInfo: DaoInfoSerializable = useMemo(() => {
-    const info = makeDaoInfo()
-    return {
-      ...info,
-      created: info.created?.toJSON() ?? null,
-    }
-  }, [])
+  const info: DaoInfo = useMemo(makeDaoInfo, [])
 
   return (
     <DaoPageWrapper
-      description={serializedInfo.description}
-      serializedInfo={serializedInfo}
-      title={serializedInfo.name}
+      description={info.description}
+      info={info}
+      title={info.name}
     >
       <Story />
     </DaoPageWrapper>

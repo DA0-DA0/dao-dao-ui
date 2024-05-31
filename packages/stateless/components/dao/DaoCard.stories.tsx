@@ -65,8 +65,8 @@ export const makeDaoCardProps = (id = 1): DaoCardProps => ({
       proposalCount: 25,
       tokenWithBalance: {
         balance: 120,
-        tokenSymbol: 'USD',
-        tokenDecimals: 2,
+        symbol: 'USD',
+        decimals: 2,
       },
     },
   },

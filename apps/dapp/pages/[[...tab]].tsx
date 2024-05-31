@@ -4,39 +4,24 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { getRecentDaoProposals, querySnapper } from '@dao-dao/state'
+import { querySnapper } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
 import { AccountTabId, DaoDaoIndexerChainStats } from '@dao-dao/types'
-import { getSupportedChains, processError } from '@dao-dao/utils'
+import {
+  getConfiguredChains,
+  getDaoInfoForChainId,
+  getSupportedChains,
+  processError,
+} from '@dao-dao/utils'
 
 export default Home
-
-const RECENT_PROPOSAL_LIMIT = 30
 
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
 }) => {
-  const chains = getSupportedChains({ hasIndexer: true })
-
-  // Get N most recent across all chains by getting N most recent per-chain,
-  // sorting, and then slicing only the first N.
-  const recentProposals = (
-    await Promise.allSettled(
-      chains.map(({ chainId }) =>
-        getRecentDaoProposals({
-          chainId,
-          limit: RECENT_PROPOSAL_LIMIT,
-        })
-      )
-    )
+  const chainDaos = getConfiguredChains().map(({ chainId }) =>
+    getDaoInfoForChainId(chainId, [])
   )
-    .flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
-    // Most recent first.
-    .sort(
-      (a, b) => b.value.proposal.start_height - a.value.proposal.start_height
-    )
-    // Get N most recent across all chains.
-    .slice(0, RECENT_PROPOSAL_LIMIT)
 
   // Get stats and TVL.
   const [tvl, stats] = await Promise.all([
@@ -58,12 +43,12 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   return {
     props: {
       ...(await serverSideTranslations(locale, ['translation'])),
-      recentProposals,
       stats: {
         ...stats,
         chains: getSupportedChains().length,
         tvl,
       },
+      chainDaos,
     },
     // Revalidate every hour.
     revalidate: 60 * 60,

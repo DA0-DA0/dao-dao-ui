@@ -7,32 +7,39 @@ import {
   Public,
 } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoDaoIndexerAllStats, StatefulDaoCardProps } from '@dao-dao/types'
+import {
+  DaoDaoIndexerAllStats,
+  LoadingData,
+  StatefulDaoCardProps,
+} from '@dao-dao/types'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
-import {
-  DaoInfoCards,
-  HorizontalScroller,
-  HorizontalScrollerProps,
-} from '../components'
+import { DaoInfoCards, HorizontalScroller } from '../components'
 
 export type HomeProps = {
   stats: DaoDaoIndexerAllStats
-  featuredDaosProps: Pick<
-    HorizontalScrollerProps<StatefulDaoCardProps>,
-    'Component' | 'items'
-  >
+  DaoCard: ComponentType<StatefulDaoCardProps>
+  chainDaos: LoadingData<StatefulDaoCardProps[]>
+  featuredDaos: LoadingData<StatefulDaoCardProps[]>
 }
 
-export const Home = ({ stats, featuredDaosProps }: HomeProps) => {
+export const Home = ({
+  stats,
+  DaoCard,
+  chainDaos,
+  featuredDaos,
+}: HomeProps) => {
   const { t } = useTranslation()
 
   return (
     <>
-      <div className="flex flex-col items-stretch gap-4 mb-8">
-        <p className="title-text self-start text-lg">{t('title.overview')}</p>
+      <div className="flex flex-col items-stretch gap-4">
+        <p className="title-text self-start text-lg">
+          {t('title.daoDaoCommunityStatistics')}
+        </p>
 
         <DaoInfoCards
           cards={[
@@ -79,6 +86,27 @@ export const Home = ({ stats, featuredDaosProps }: HomeProps) => {
         />
       </div>
 
+      <div className="flex flex-col items-center gap-4 my-8">
+        <p className="title-text self-start text-lg">
+          {t('title.chainGovernance')}
+        </p>
+
+        {/* Chain governance container */}
+        <HorizontalScroller
+          Component={DaoCard}
+          containerClassName={clsx(
+            'self-stretch px-[1px]',
+            (chainDaos.loading || chainDaos.data.length > 0) &&
+              UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
+          )}
+          // Margin offsets container padding.
+          itemClassName="w-64"
+          items={chainDaos}
+          // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
+          shadowClassName="w-[max((100%-64rem)/2,1.5rem)]"
+        />
+      </div>
+
       <div className="flex flex-col items-center gap-4">
         <p className="title-text self-start text-lg">
           {t('title.featuredDaos')}
@@ -86,15 +114,15 @@ export const Home = ({ stats, featuredDaosProps }: HomeProps) => {
 
         {/* Featured DAOs container */}
         <HorizontalScroller
-          {...featuredDaosProps}
           // Margin offsets container padding.
+          Component={DaoCard}
           containerClassName={clsx(
             'self-stretch px-[1px]',
-            (featuredDaosProps.items.loading ||
-              featuredDaosProps.items.data.length > 0) &&
+            (featuredDaos.loading || featuredDaos.data.length > 0) &&
               UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
           )}
           itemClassName="w-64"
+          items={featuredDaos}
           // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
           shadowClassName="w-[max((100%-64rem)/2,1.5rem)]"
         />

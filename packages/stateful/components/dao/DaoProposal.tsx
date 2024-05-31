@@ -325,21 +325,18 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   )
 }
 
-export const DaoProposal = ({
-  proposalInfo,
-  serializedInfo,
-}: DaoProposalProps) =>
-  proposalInfo && serializedInfo ? (
+export const DaoProposal = ({ proposalInfo, info }: DaoProposalProps) =>
+  proposalInfo && info ? (
     <ProposalModuleAdapterProvider
       key={
         // Make sure to refresh when the DAO or proposal ID changes. In case we
         // redirect to a proposal in the same DAO, this is necessary to refresh
         // for some reason.
-        serializedInfo.coreAddress + proposalInfo.id
+        info.coreAddress + proposalInfo.id
       }
-      coreAddress={serializedInfo.coreAddress}
+      coreAddress={info.coreAddress}
       proposalId={proposalInfo.id}
-      proposalModules={serializedInfo.proposalModules}
+      proposalModules={info.proposalModules}
     >
       <InnerDaoProposal proposalInfo={proposalInfo} />
     </ProposalModuleAdapterProvider>
