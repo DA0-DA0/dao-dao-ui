@@ -165,6 +165,20 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   noIndexer?: boolean
   /**
+   * If this chain uses a DAO as its chain governance instead of x/gov, set this
+   * to the DAO's address.
+   */
+  govContractAddress?: string
+  /**
+   * SubDAOs to display with this chain's native governance.
+   *
+   * These should be legitimate SubDAOs with the chain governance module set as
+   * their admin. This is necessray because chains cannot recognize SubDAOs as
+   * they are not DAO contracts, and we need to establish which SubDAOs of a DAO
+   * are legitimate for safety.
+   */
+  subDaos?: string[]
+  /**
    * Past versions of contracts, in case DAOs need a particular version of a
    * contract.
    */

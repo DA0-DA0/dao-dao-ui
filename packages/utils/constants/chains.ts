@@ -9,6 +9,8 @@ import {
   SupportedChainConfig,
 } from '@dao-dao/types'
 
+import { NEUTRON_GOVERNANCE_DAO } from './other'
+
 export const ibc: IBCInfo[] = [
   ...chainRegistryIbc,
   // Oraichain <-> Cosmos Hub
@@ -58,6 +60,12 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     kado: {
       network: 'JUNO',
     },
+    subDaos: [
+      'juno1nmezpepv3lx45mndyctz2lzqxa6d9xzd2xumkxf7a6r4nxt0y95qypm6c0',
+      'juno1gyjl26rnqqyk6cuh6nqtvx8t885jgqagusvpqpvtgaygcjg2wjdqz0rzle',
+      'juno1n34v729jqgysm5w0unukpt4kvqu4wqyacsv4krmd40f7pz5ruzwqau7e6m',
+      'juno1mjsgk02jyn72jm2x7fgw72uu9wj7xy0v6pnuj2jd3aq7rgeqg5qq4dnhes',
+    ],
     explorerUrlTemplates: {
       tx: 'https://ping.pub/juno/tx/REPLACE',
       gov: 'https://ping.pub/juno/gov',
@@ -483,6 +491,11 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#000000',
     factoryContractAddress:
       'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
+    govContractAddress: NEUTRON_GOVERNANCE_DAO,
+    subDaos: [
+      'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc',
+      'neutron1zjdv3u6svlazlydmje2qcp44yqkt0059chz8gmyl5yrklmgv6fzq9chelu',
+    ],
     explorerUrlTemplates: {
       tx: 'https://neutron.celat.one/neutron-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/neutron-1/accounts/REPLACE',

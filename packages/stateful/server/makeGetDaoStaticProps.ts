@@ -39,7 +39,6 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import { cosmos } from '@dao-dao/types/protobuf'
 import {
-  CHAIN_SUBDAOS,
   CI,
   ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
@@ -49,7 +48,6 @@ import {
   LEGACY_URL_PREFIX,
   MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
-  NEUTRON_GOVERNANCE_DAO,
   addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs46OrHigher,
@@ -145,9 +143,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
 
-    // Render Neutron DAO instead of chain governance.
-    if (chainConfig?.chainId === ChainId.NeutronMainnet) {
-      coreAddress = NEUTRON_GOVERNANCE_DAO
+    // If chain uses a contract-based DAO, load it instead.
+    const govContractAddress =
+      chainConfig &&
+      getSupportedChainConfig(chainConfig.chainId)?.govContractAddress
+    if (govContractAddress) {
+      coreAddress = govContractAddress
       chainConfig = undefined
     }
 
@@ -991,7 +992,9 @@ const daoCoreDumpState = async (
               registeredSubDao:
                 indexerDumpedState.adminInfo?.registeredSubDao ??
                 (parentDaoInfo.coreVersion === ContractVersion.Gov &&
-                  CHAIN_SUBDAOS[chainId]?.includes(coreAddress)) ??
+                  getSupportedChainConfig(chainId)?.subDaos?.includes(
+                    coreAddress
+                  )) ??
                 false,
             }
           : null,
@@ -1103,7 +1106,8 @@ const daoCoreDumpState = async (
 
       registeredSubDao = subdaoAddrs.includes(coreAddress)
     } else if (parentDao.coreVersion === ContractVersion.Gov) {
-      registeredSubDao = !!CHAIN_SUBDAOS[chainId]?.includes(coreAddress)
+      registeredSubDao =
+        !!getSupportedChainConfig(chainId)?.subDaos?.includes(coreAddress)
     }
   }
 

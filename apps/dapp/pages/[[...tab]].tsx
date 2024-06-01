@@ -18,43 +18,62 @@ export default Home
 
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
+  params,
 }) => {
-  // Get chain DAOs.
-  const chainDaos = [
-    // Start with Cosmos Hub.
-    MAINNET ? ChainId.CosmosHubMainnet : ChainId.CosmosHubTestnet,
-    // Add DAO DAO-supported chains.
-    ...getSupportedChains().flatMap(({ chainId, noGov }) =>
-      noGov ? [] : chainId
-    ),
-    // Add some other common chains.
-    ...(MAINNET
-      ? [
-          'akashnet-2',
-          'secret-4',
-          'regen-1',
-          'injective-1',
-          'celestia',
-          'dydx-mainnet-1',
-          'archway-1',
-          'coreum-mainnet-1',
-        ]
-      : []),
-  ].map((chainId) => getDaoInfoForChainId(chainId, []))
+  const tabPath =
+    params?.tab && Array.isArray(params?.tab) ? params.tab[0] : undefined
 
-  // Get stats and TVL.
+  // If defined, try to find matching chain. If found, show chain-only page.
+  const selectedChain = tabPath
+    ? getSupportedChains().find(({ name }) => name === tabPath)
+    : undefined
+  const chainId = selectedChain?.chainId
+
+  const chainGovDaos = chainId
+    ? selectedChain.noGov
+      ? undefined
+      : [getDaoInfoForChainId(chainId, [])]
+    : // Get chain x/gov DAOs if not on a chain-specific home.
+      [
+        // Start with Cosmos Hub.
+        MAINNET ? ChainId.CosmosHubMainnet : ChainId.CosmosHubTestnet,
+        // Add DAO DAO-supported chains.
+        ...getSupportedChains().flatMap(({ chainId, noGov }) =>
+          noGov ? [] : chainId
+        ),
+        // Add some other common chains.
+        ...(MAINNET
+          ? [
+              'akashnet-2',
+              'secret-4',
+              'regen-1',
+              'injective-1',
+              'celestia',
+              'dydx-mainnet-1',
+              'archway-1',
+              'coreum-mainnet-1',
+            ]
+          : []),
+      ].map((chainId) => getDaoInfoForChainId(chainId, []))
+
+  // Get all or chain-specific stats and TVL.
   const [tvl, stats] = await Promise.all([
     querySnapper<number>({
-      query: 'daodao-all-tvl',
+      query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
+      parameters: chainId ? { chainId } : undefined,
     }),
     querySnapper<DaoDaoIndexerChainStats>({
-      query: 'daodao-all-stats',
+      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+      parameters: chainId ? { chainId } : undefined,
     }),
   ])
 
   if (!tvl || !stats) {
     processError('Failed to fetch TVL/stats for home page', {
       forceCapture: true,
+      tags: {
+        chainId,
+      },
     })
     throw new Error('Failed to fetch stats.')
   }
@@ -62,12 +81,17 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   return {
     props: {
       ...(await serverSideTranslations(locale, ['translation'])),
+      // Chain-specific home page.
+      ...(chainId && { chainId }),
+      // All or chain-specific stats.
       stats: {
         ...stats,
-        chains: getSupportedChains().length,
+        // If chain is 1, it will not be shown.
+        chains: chainId ? 1 : getSupportedChains().length,
         tvl,
       },
-      chainDaos,
+      // Chain x/gov DAOs.
+      ...(chainGovDaos && { chainGovDaos }),
     },
     // Revalidate every hour.
     revalidate: 60 * 60,

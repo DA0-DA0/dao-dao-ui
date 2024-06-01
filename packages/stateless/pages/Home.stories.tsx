@@ -24,7 +24,7 @@ Default.args = {
     tvl: 1234567890,
   },
   DaoCard,
-  chainDaos: FeaturedDaosScrollerStory.args!.items!,
+  chainGovDaos: FeaturedDaosScrollerStory.args!.items!,
   featuredDaos: FeaturedDaosScrollerStory.args!.items!,
   openSearch: () => alert('search'),
 }

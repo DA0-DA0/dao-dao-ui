@@ -12,7 +12,6 @@ import {
 import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
 import { ConfigResponse as DaoCoreV2ConfigResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
-  CHAIN_SUBDAOS,
   DAO_CORE_CONTRACT_NAMES,
   INACTIVE_DAO_NAMES,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
@@ -21,6 +20,7 @@ import {
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
+  getSupportedChainConfig,
   isConfiguredChainName,
   isFeatureSupportedByVersion,
   parseContractVersion,
@@ -118,28 +118,30 @@ export const daoDropdownInfoSelector: (
             coreAddress,
           })
         )
-        const subDaos = CHAIN_SUBDAOS[chainId] || []
+        const subDaos = getSupportedChainConfig(chainId)?.subDaos || []
 
         return {
           chainId,
           coreAddress,
           imageUrl: lazyInfo.info.imageUrl,
           name: lazyInfo.info.name,
-          subDaos: get(
-            waitForAll(
-              subDaos.map((subDaoAddress) =>
-                daoDropdownInfoSelector({
-                  chainId,
-                  coreAddress: subDaoAddress,
-                  parents: [...(parents ?? []), coreAddress],
-                  // Prevents cycles. If one of our children is also our
-                  // ancestor, don't let it load any children, but still load it
-                  // so we can see the cycle exists.
-                  noSubDaos: !!parents?.includes(subDaoAddress),
-                })
+          subDaos: subDaos.length
+            ? get(
+                waitForAll(
+                  subDaos.map((subDaoAddress) =>
+                    daoDropdownInfoSelector({
+                      chainId,
+                      coreAddress: subDaoAddress,
+                      parents: [...(parents ?? []), coreAddress],
+                      // Prevents cycles. If one of our children is also our
+                      // ancestor, don't let it load any children, but still load it
+                      // so we can see the cycle exists.
+                      noSubDaos: !!parents?.includes(subDaoAddress),
+                    })
+                  )
+                )
               )
-            )
-          ),
+            : [],
         }
       }
 
@@ -324,7 +326,9 @@ export const daoParentInfoSelector = selectorFamily<
             admin: '',
             registeredSubDao:
               !!childAddress &&
-              !!CHAIN_SUBDAOS[chainId]?.includes(childAddress),
+              !!getSupportedChainConfig(chainId)?.subDaos?.includes(
+                childAddress
+              ),
           }
         )
       }

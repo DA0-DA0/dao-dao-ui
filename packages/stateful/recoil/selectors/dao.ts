@@ -41,12 +41,12 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_SUBDAOS,
   DaoVotingCw20StakedAdapterId,
   NEUTRON_GOVERNANCE_DAO,
   getDaoInfoForChainId,
   getDaoProposalPath,
   getFallbackImage,
+  getSupportedChainConfig,
   getSupportedFeatures,
   isConfiguredChainName,
 } from '@dao-dao/utils'
@@ -190,18 +190,19 @@ export const chainSubDaoInfosSelector = selectorFamily<
   get:
     ({ chainId }) =>
     ({ get }) => {
-      const subDaos = CHAIN_SUBDAOS[chainId] || []
-
-      return get(
-        waitForAll(
-          subDaos.map((coreAddress) =>
-            daoInfoSelector({
-              chainId,
-              coreAddress,
-            })
+      const subDaos = getSupportedChainConfig(chainId)?.subDaos || []
+      return subDaos.length
+        ? get(
+            waitForAll(
+              subDaos.map((coreAddress) =>
+                daoInfoSelector({
+                  chainId,
+                  coreAddress,
+                })
+              )
+            )
           )
-        )
-      )
+        : []
     },
 })
 
@@ -324,9 +325,11 @@ export const daoInfoSelector = selectorFamily<
     ({ get }) => {
       // Native chain governance.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        // Neutron uses an actual DAO so load it instead.
-        if (chainId === ChainId.NeutronMainnet) {
-          coreAddress = NEUTRON_GOVERNANCE_DAO
+        // If chain uses a contract-based DAO, load it instead.
+        const govContractAddress =
+          getSupportedChainConfig(chainId)?.govContractAddress
+        if (govContractAddress) {
+          coreAddress = govContractAddress
         } else {
           const govModuleAddress = get(
             moduleAddressSelector({

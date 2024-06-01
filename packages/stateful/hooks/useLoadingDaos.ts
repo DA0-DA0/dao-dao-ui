@@ -79,6 +79,7 @@ export const useLoadingFeaturedDaoCards = (
             .sort((a, b) => a.order - b.order),
         }
   )
+
   return daos.loading
     ? daos
     : {

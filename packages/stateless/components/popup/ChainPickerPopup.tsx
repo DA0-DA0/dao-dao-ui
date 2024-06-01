@@ -35,6 +35,7 @@ export const ChainPickerPopup = ({
   selectedIconClassName,
   selectedLabelClassName,
   trigger,
+  hideSelectedIcon = false,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
@@ -123,24 +124,25 @@ export const ChainPickerPopup = ({
             children: (
               <>
                 <div className="flex flex-row items-center gap-2">
-                  {selectedChain
-                    ? !!selectedChain.iconUrl && (
-                        <div
-                          className={clsx(
-                            'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
-                            selectedIconClassName
-                          )}
-                          style={{
-                            backgroundImage: `url(${selectedChain.iconUrl})`,
-                          }}
-                        />
-                      )
-                    : showNone &&
-                      NoneIcon && (
-                        <NoneIcon
-                          className={clsx('!h-6 !w-6', selectedIconClassName)}
-                        />
-                      )}
+                  {!hideSelectedIcon &&
+                    (selectedChain
+                      ? !!selectedChain.iconUrl && (
+                          <div
+                            className={clsx(
+                              'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
+                              selectedIconClassName
+                            )}
+                            style={{
+                              backgroundImage: `url(${selectedChain.iconUrl})`,
+                            }}
+                          />
+                        )
+                      : showNone &&
+                        NoneIcon && (
+                          <NoneIcon
+                            className={clsx('!h-6 !w-6', selectedIconClassName)}
+                          />
+                        ))}
 
                   <p
                     className={clsx(

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useChain } from '@dao-dao/stateless'
 import { DaoTabId, DaoTabWithComponent, LoadingData } from '@dao-dao/types'
-import { CHAIN_SUBDAOS } from '@dao-dao/utils'
+import { getSupportedChainConfig } from '@dao-dao/utils'
 
 import {
   GovCommunityPoolTab,
@@ -44,7 +44,7 @@ export const useGovDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
           lazy: true,
         },
         // If SubDAOs exist, show them.
-        ...(CHAIN_SUBDAOS[chainId]?.length
+        ...(getSupportedChainConfig(chainId)?.subDaos?.length
           ? [
               {
                 id: DaoTabId.SubDaos,
