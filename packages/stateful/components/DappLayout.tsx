@@ -202,7 +202,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             modalProps={{
               onClose: () => setDaoCreatedCardProps(undefined),
             }}
-            subDao={!!daoCreatedCardProps.parentDao}
           />
         )}
 

@@ -16,7 +16,7 @@ import {
 } from '@dao-dao/stateless'
 import { StatefulGovProposalLineProps } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { chainIsIndexed } from '@dao-dao/utils'
+import { chainIsIndexed, getDisplayNameForChainId } from '@dao-dao/utils'
 
 import { useOnCurrentDaoWebSocketMessage } from '../../hooks/useWebSocket'
 import { LinkWrapper } from '../LinkWrapper'
@@ -194,6 +194,7 @@ export const GovProposalList = () => {
       ProposalLine={GovProposalLine}
       canLoadMore={!showingSearchResults && page < maxPage}
       createNewProposalHref={asPath + '/create'}
+      daoName={getDisplayNameForChainId(chain.chain_id)}
       daosWithVetoableProposals={[]}
       isMember={true}
       loadMore={goToNextPage}

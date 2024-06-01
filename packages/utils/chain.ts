@@ -8,12 +8,17 @@ import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
 import {
+  Account,
   BaseChainConfig,
   ChainId,
   ConfiguredChain,
+  ContractVersion,
+  DaoInfo,
+  Feature,
   GenericToken,
   SupportedChain,
   SupportedChainConfig,
+  SupportedFeatureMap,
   TokenType,
   Validator,
 } from '@dao-dao/types'
@@ -506,12 +511,12 @@ export const getConfiguredChains = ({
 }: {
   mainnet?: boolean
 } = {}): ConfiguredChain[] =>
-  CONFIGURED_CHAINS.filter(
-    (config) => mainnet === undefined || config.mainnet === mainnet
-  ).map((config) => ({
-    chain: getChainForChainId(config.chainId),
-    ...config,
-  }))
+  CONFIGURED_CHAINS.filter((config) => config.mainnet === mainnet).map(
+    (config) => ({
+      chain: getChainForChainId(config.chainId),
+      ...config,
+    })
+  )
 
 /**
  * Find configured chain with governance module by name.
@@ -587,6 +592,9 @@ export const mustGetSupportedChainConfig = (
 export const isSupportedChain = (chainId: string): boolean =>
   getSupportedChainConfig(chainId) !== undefined
 
+/**
+ * Get chains with DAO DAO deployed.
+ */
 export const getSupportedChains = ({
   mainnet = MAINNET,
   hasIndexer,
@@ -726,3 +734,36 @@ export const addressIsModule = async (
 
   return false
 }
+
+/**
+ * Get the DAO info object for a given chain ID.
+ */
+export const getDaoInfoForChainId = (
+  chainId: string,
+  accounts: Account[]
+): DaoInfo => ({
+  chainId,
+  coreAddress: mustGetConfiguredChainConfig(chainId).name,
+  coreVersion: ContractVersion.Gov,
+  supportedFeatures: Object.values(Feature).reduce(
+    (acc, feature) => ({
+      ...acc,
+      [feature]: false,
+    }),
+    {} as SupportedFeatureMap
+  ),
+  votingModuleAddress: '',
+  votingModuleContractName: '',
+  proposalModules: [],
+  name: getDisplayNameForChainId(chainId),
+  description: getChainGovernanceDaoDescription(chainId),
+  imageUrl: getImageUrlForChainId(chainId),
+  created: null,
+  isActive: true,
+  activeThreshold: null,
+  items: {},
+  polytoneProxies: {},
+  accounts,
+  parentDao: null,
+  admin: '',
+})

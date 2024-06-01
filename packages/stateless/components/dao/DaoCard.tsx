@@ -19,22 +19,15 @@ import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
 export const DaoCard = ({
-  coreAddress,
-  name,
-  description,
-  imageUrl,
-  established,
-  parentDao,
-  tokenSymbol,
-  showingEstimatedUsdValue,
-  tokenDecimals,
+  info: { coreAddress, name, description, imageUrl, created, parentDao },
   lazyData,
+  follow,
+  LinkWrapper,
   showIsMember = true,
-  className,
+  showingEstimatedUsdValue = true,
   onMouseOver,
   onMouseLeave,
-  LinkWrapper,
-  follow,
+  className,
 }: DaoCardProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
@@ -98,9 +91,9 @@ export const DaoCard = ({
           size="sm"
         />
         <p className="primary-text mt-2 text-center">{name}</p>
-        {established && (
+        {!!created && (
           <p className="caption-text mt-1 text-center">
-            {formatDate(established)}
+            {formatDate(new Date(created))}
           </p>
         )}
       </div>
@@ -110,7 +103,7 @@ export const DaoCard = ({
           {removeMarkdown(description)}
         </p>
 
-        {(lazyData.loading || !isNaN(lazyData.data.tokenBalance)) && (
+        {(lazyData.loading || lazyData.data.tokenWithBalance) && (
           <div
             className={clsx(
               'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
@@ -121,9 +114,12 @@ export const DaoCard = ({
 
             <TokenAmountDisplay
               amount={
-                lazyData.loading
+                lazyData.loading || !lazyData.data.tokenWithBalance
                   ? { loading: true }
-                  : { loading: false, data: lazyData.data.tokenBalance }
+                  : {
+                      loading: false,
+                      data: Number(lazyData.data.tokenWithBalance.balance),
+                    }
               }
               hideApprox
               {...(showingEstimatedUsdValue
@@ -131,8 +127,14 @@ export const DaoCard = ({
                     estimatedUsdValue: true,
                   }
                 : {
-                    decimals: tokenDecimals,
-                    symbol: tokenSymbol,
+                    decimals:
+                      lazyData.loading || !lazyData.data.tokenWithBalance
+                        ? 0
+                        : lazyData.data.tokenWithBalance.decimals,
+                    symbol:
+                      lazyData.loading || !lazyData.data.tokenWithBalance
+                        ? ''
+                        : lazyData.data.tokenWithBalance.symbol,
                   })}
             />
 

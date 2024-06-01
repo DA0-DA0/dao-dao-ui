@@ -64,7 +64,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         <DaoCreatedModal
           itemProps={{
             ...daoCreatedCardProps,
-
             follow: {
               hide: true,
             },
@@ -73,7 +72,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),
           }}
-          subDao={!!daoCreatedCardProps}
         />
       )}
 

@@ -12,12 +12,10 @@ import { DaoCard } from '../DaoCard'
 
 export type DaoCreatedModalProps = Omit<
   ItemCreatedModalProps<DaoCardProps>,
-  'Item' | 'header' | 'url' | ''
-> & {
-  subDao: boolean
-}
+  'Item' | 'header' | 'url'
+>
 
-export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
+export const DaoCreatedModal = (props: DaoCreatedModalProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
 
@@ -26,10 +24,12 @@ export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
       {...props}
       Item={DaoCard}
       header={{
-        title: subDao ? t('title.congratsOnSubDao') : t('title.congratsOnDao'),
+        title: props.itemProps.info.parentDao
+          ? t('title.congratsOnSubDao')
+          : t('title.congratsOnDao'),
         subtitle: t('info.easilyShareLink'),
       }}
-      url={SITE_URL + getDaoPath(props.itemProps.coreAddress)}
+      url={SITE_URL + getDaoPath(props.itemProps.info.coreAddress)}
     />
   )
 }

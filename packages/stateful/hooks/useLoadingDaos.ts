@@ -5,22 +5,26 @@ import {
   indexerFeaturedDaosSelector,
 } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { DaoCardInfo, DaoSource, LoadingData } from '@dao-dao/types'
+import {
+  DaoInfo,
+  DaoSource,
+  LoadingData,
+  StatefulDaoCardProps,
+} from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
-import { daoCardInfoSelector } from '../recoil'
+import { daoInfoSelector } from '../recoil'
 import { useProfile } from './useProfile'
 
-export const useLoadingDaoCardInfos = (
+export const useLoadingDaos = (
   daos: LoadingData<DaoSource[]>,
   alphabetize = false
-): LoadingData<DaoCardInfo[]> => {
-  // If `coreAddresses` is undefined, we're still loading DAOs.
-  const daoCardInfosLoadable = useCachedLoadable(
+): LoadingData<DaoInfo[]> => {
+  const daoInfosLoadable = useCachedLoadable(
     !daos.loading
       ? waitForAll(
           daos.data.map(({ chainId, coreAddress }) =>
-            daoCardInfoSelector({
+            daoInfoSelector({
               chainId,
               coreAddress,
             })
@@ -29,22 +33,22 @@ export const useLoadingDaoCardInfos = (
       : undefined
   )
 
-  return daoCardInfosLoadable.state !== 'hasValue'
+  return daoInfosLoadable.state !== 'hasValue'
     ? { loading: true }
     : {
         loading: false,
-        updating: daoCardInfosLoadable.updating,
-        data: (
-          daoCardInfosLoadable.contents.filter(Boolean) as DaoCardInfo[]
-        ).sort((a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)),
+        updating: daoInfosLoadable.updating,
+        data: (daoInfosLoadable.contents.filter(Boolean) as DaoInfo[]).sort(
+          (a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)
+        ),
       }
 }
 
-export const useLoadingFeaturedDaoCardInfos = (
+export const useLoadingFeaturedDaoCards = (
   // If passed, will only load DAOs from this chain. Otherwise, will load
   // from all chains.
   chainId?: string
-): LoadingData<DaoCardInfo[]> => {
+): LoadingData<StatefulDaoCardProps[]> => {
   const chains = getSupportedChains().filter(
     ({ chain: { chain_id } }) => !chainId || chain_id === chainId
   )
@@ -54,7 +58,7 @@ export const useLoadingFeaturedDaoCardInfos = (
     )
   )
 
-  return useLoadingDaoCardInfos(
+  const daos = useLoadingDaos(
     featuredDaos.state === 'loading'
       ? { loading: true }
       : featuredDaos.state === 'hasError'
@@ -75,13 +79,25 @@ export const useLoadingFeaturedDaoCardInfos = (
             .sort((a, b) => a.order - b.order),
         }
   )
+
+  return daos.loading
+    ? daos
+    : {
+        loading: false,
+        updating: daos.updating,
+        data: daos.data.map(
+          (info): StatefulDaoCardProps => ({
+            info,
+          })
+        ),
+      }
 }
 
-export const useLoadingFollowingDaoCardInfos = (
+export const useLoadingFollowingDaos = (
   // If passed, will only load DAOs from this chain. Otherwise, will load from
   // all chains.
   chainId?: string
-): LoadingData<DaoCardInfo[]> => {
+): LoadingData<DaoInfo[]> => {
   const { uniquePublicKeys } = useProfile()
 
   const followingDaosLoading = useRecoilValueLoadable(
@@ -96,7 +112,7 @@ export const useLoadingFollowingDaoCardInfos = (
       : constSelector([])
   )
 
-  return useLoadingDaoCardInfos(
+  return useLoadingDaos(
     followingDaosLoading.state === 'loading'
       ? { loading: true }
       : followingDaosLoading.state === 'hasError'

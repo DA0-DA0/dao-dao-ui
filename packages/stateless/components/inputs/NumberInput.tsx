@@ -8,6 +8,7 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -97,6 +98,7 @@ export const NumberInput = <
   plusMinusButtonSize = 'sm',
   ...props
 }: NumberInputProps<FV, FieldName>) => {
+  const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -215,7 +217,7 @@ export const NumberInput = <
         {...(register &&
           fieldName &&
           register(fieldName, {
-            required: required && 'Required',
+            required: required && t('info.required'),
             validate,
             setValueAs: (value) => {
               // If not a number AND not a string or an empty string, set NaN.

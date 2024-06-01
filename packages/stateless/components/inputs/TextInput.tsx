@@ -8,6 +8,7 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 export interface TextInputProps<
   FV extends FieldValues,
@@ -41,6 +42,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   type = 'text',
   ...rest
 }: TextInputProps<FV, FieldName>) => {
+  const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -62,7 +64,10 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
       {...rest}
       {...(register &&
         fieldName &&
-        register(fieldName, { required: required && 'Required', validate }))}
+        register(fieldName, {
+          required: required && t('info.required'),
+          validate,
+        }))}
     />
   )
 }

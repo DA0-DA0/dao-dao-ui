@@ -55,7 +55,7 @@ export const ProposalList = ({
 }: StatefulProposalListProps) => {
   const { t } = useTranslation()
   const chain = useChain()
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { coreAddress, proposalModules, name: daoName } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { mode } = useAppContext()
   const { isMember = false } = useMembership({
@@ -363,6 +363,7 @@ export const ProposalList = ({
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
+      daoName={daoName}
       daosWithVetoableProposals={
         daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
           ? []

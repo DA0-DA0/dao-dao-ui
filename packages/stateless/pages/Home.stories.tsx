@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { DaoCard } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { DaoCard, LinkWrapper } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { Home } from './Home'
 
@@ -15,20 +15,32 @@ const Template: ComponentStory<typeof Home> = (args) => <Home {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  featuredDaosProps: {
-    items: FeaturedDaosScrollerStory.args!.items!,
-    Component: (props) => (
-      <DaoCard
-        {...props}
-        LinkWrapper={LinkWrapper}
-        follow={{
-          following: true,
-          updatingFollowing: false,
-          onFollow: () => alert('follow ' + props.coreAddress),
-        }}
-      />
-    ),
+  stats: {
+    all: {
+      daos: 1234,
+      proposals: 5678,
+      votes: 90123,
+      uniqueVoters: 4567,
+    },
+    month: {
+      daos: 234,
+      proposals: 678,
+      votes: 9123,
+      uniqueVoters: 567,
+    },
+    week: {
+      daos: 34,
+      proposals: 78,
+      votes: 123,
+      uniqueVoters: 67,
+    },
+    chains: 10,
+    tvl: 1234567890,
   },
+  DaoCard,
+  chainGovDaos: FeaturedDaosScrollerStory.args!.items!,
+  featuredDaos: FeaturedDaosScrollerStory.args!.items!,
+  openSearch: () => alert('search'),
 }
 Default.parameters = {
   design: {

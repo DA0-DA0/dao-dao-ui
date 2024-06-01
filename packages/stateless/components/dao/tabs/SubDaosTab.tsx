@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next'
 import {
   ButtonLinkProps,
   ContractVersion,
-  DaoCardInfo,
+  DaoInfo,
   Feature,
   LoadingData,
+  StatefulDaoCardProps,
 } from '@dao-dao/types'
 
 import { useDaoInfoContext, useDaoNavHelpers } from '../../../hooks'
@@ -17,8 +18,8 @@ import { Tooltip } from '../../tooltip'
 import { DaoCardLoader } from '../DaoCard'
 
 export interface SubDaosTabProps {
-  DaoCard: ComponentType<DaoCardInfo>
-  subDaos: LoadingData<DaoCardInfo[]>
+  DaoCard: ComponentType<StatefulDaoCardProps>
+  subDaos: LoadingData<DaoInfo[]>
   isMember: boolean
   createSubDaoHref?: string
   upgradeToV2Href?: string
@@ -100,8 +101,8 @@ export const SubDaosTab = ({
           <GridCardContainer>
             {subDaos.loading
               ? [...Array(3)].map((_, index) => <DaoCardLoader key={index} />)
-              : subDaos.data.map((props, index) => (
-                  <DaoCard {...props} key={index} />
+              : subDaos.data.map((info, index) => (
+                  <DaoCard key={index} info={info} />
                 ))}
           </GridCardContainer>
         </>

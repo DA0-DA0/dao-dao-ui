@@ -232,6 +232,9 @@ export interface ProposalResponse {
   id: number
   proposal: MultipleChoiceProposal
   // Indexer may return these.
+  hideFromSearch?: boolean
+  dao?: string
+  daoProposalId?: string
   createdAt?: string
   completedAt?: string
   executedAt?: string

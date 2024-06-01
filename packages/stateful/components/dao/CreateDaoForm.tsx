@@ -593,28 +593,42 @@ export const InnerCreateDaoForm = ({
 
           // Set card props to show modal.
           setDaoCreatedCardProps({
-            chainId,
-            coreAddress,
-            coreVersion,
-            name,
-            description,
-            imageUrl: imageUrl || getFallbackImage(coreAddress),
-            polytoneProxies: {},
-            established: new Date(),
-            showIsMember: false,
-            parentDao,
-            tokenDecimals,
-            tokenSymbol,
-            showingEstimatedUsdValue: false,
+            info: {
+              admin: parentDao?.coreAddress || coreAddress,
+              chainId,
+              coreAddress,
+              coreVersion,
+              name,
+              description,
+              imageUrl: imageUrl || getFallbackImage(coreAddress),
+              parentDao: parentDao || null,
+              // Unused.
+              supportedFeatures: {} as any,
+              created: Date.now(),
+              votingModuleAddress: '',
+              votingModuleContractName: '',
+              proposalModules: [],
+              isActive: true,
+              activeThreshold: null,
+              items: {},
+              polytoneProxies: {},
+              accounts: [],
+            },
             lazyData: {
               loading: false,
               data: {
-                tokenBalance,
                 // Does not matter, will not show.
                 isMember: false,
                 proposalCount: 0,
+                tokenWithBalance: {
+                  balance: tokenBalance,
+                  symbol: tokenSymbol,
+                  decimals: tokenDecimals,
+                },
               },
             },
+            showIsMember: false,
+            showingEstimatedUsdValue: false,
           })
 
           // Clear saved form data.

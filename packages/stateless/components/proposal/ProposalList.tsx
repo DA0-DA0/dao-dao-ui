@@ -8,7 +8,7 @@ import {
   LinkWrapperProps,
 } from '@dao-dao/types'
 
-import { useDaoInfoContext, useInfiniteScroll } from '../../hooks'
+import { useInfiniteScroll } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { SearchBar, SearchBarProps } from '../inputs'
@@ -52,7 +52,7 @@ export type ProposalListProps<T extends { proposalId: string }> = {
   /**
    * Link to create a new proposal.
    */
-  createNewProposalHref: string
+  createNewProposalHref?: string
   /**
    * Whether or not there are more proposals to load.
    */
@@ -69,9 +69,13 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Whether or not the current wallet is a member of the DAO.
    */
   isMember: boolean
+  /**
+   * DAO name.
+   */
+  daoName: string
 
   ProposalLine: ComponentType<T>
-  DiscordNotifierConfigureModal: ComponentType | undefined
+  DiscordNotifierConfigureModal?: ComponentType | undefined
   LinkWrapper: ComponentType<LinkWrapperProps>
 
   /**
@@ -82,6 +86,10 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Whether or not search results are showing.
    */
   showingSearchResults?: boolean
+  /**
+   * Optional class name.
+   */
+  className?: string
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
@@ -93,14 +101,15 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadMore,
   loadingMore,
   isMember,
+  daoName,
   ProposalLine,
   DiscordNotifierConfigureModal,
   LinkWrapper,
   searchBarProps,
   showingSearchResults,
+  className,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
 
   const proposalsExist =
     openProposals.length > 0 ||
@@ -121,7 +130,7 @@ export const ProposalList = <T extends { proposalId: string }>({
 
   return (
     <div
-      className="border-t border-border-secondary py-6"
+      className={clsx('border-t border-border-secondary py-6', className)}
       ref={infiniteScrollRef}
     >
       <div className="mb-6 flex flex-row items-center justify-between gap-6">

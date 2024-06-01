@@ -1,5 +1,5 @@
 import Pusher from 'pusher-js'
-import { selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
   Expiration,
@@ -14,15 +14,19 @@ import {
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
   getSupportedChainConfig,
+  getSupportedChains,
 } from '@dao-dao/utils'
 
 import {
+  DaoProposalSearchResult,
   DaoSearchResult,
   GovProposalSearchResult,
   QueryIndexerOptions,
   QuerySnapperOptions,
+  SearchDaoProposalsOptions,
   SearchDaosOptions,
   SearchGovProposalsOptions,
+  getRecentDaoProposals,
   loadMeilisearchClient,
   queryIndexer,
   queryIndexerUpStatus,
@@ -241,6 +245,56 @@ export const searchGovProposalsSelector = selectorFamily<
       }
 
       return await searchGovProposals(options)
+    },
+})
+
+/**
+ * Get recent DAO proposals for a chain.
+ */
+export const chainRecentDaoProposalsSelector = selectorFamily<
+  DaoProposalSearchResult[],
+  SearchDaoProposalsOptions
+>({
+  key: 'chainRecentDaoProposals',
+  get: (options) => async () => await getRecentDaoProposals(options),
+})
+
+/**
+ * Get recent DAO proposals across all supported chains.
+ */
+export const recentDaoProposalsSelector = selectorFamily<
+  DaoProposalSearchResult[],
+  Omit<SearchDaoProposalsOptions, 'chainId'>
+>({
+  key: 'recentDaoProposals',
+  get:
+    (options) =>
+    async ({ get }) => {
+      const chains = getSupportedChains({ hasIndexer: true })
+
+      // Get options.limit most recent across all chains by getting
+      // options.limit most recent per-chain, sorting, and then slicing only the
+      // first options.limit.
+      const all = get(
+        waitForAllSettled(
+          chains.map(({ chainId }) =>
+            chainRecentDaoProposalsSelector({
+              ...options,
+              chainId,
+            })
+          )
+        )
+      )
+        .flatMap((loadable) => loadable.valueMaybe() || [])
+        // Most recent first.
+        .sort(
+          (a, b) =>
+            b.value.proposal.start_height - a.value.proposal.start_height
+        )
+        // Get N most recent across all chains.
+        .slice(0, options.limit)
+
+      return all
     },
 })
 

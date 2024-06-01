@@ -7,10 +7,10 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { CHAIN_SUBDAOS } from '@dao-dao/utils'
+import { getSupportedChainConfig } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
-import { daoCardInfoSelector } from '../../recoil'
+import { daoInfoSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { DaoCard } from '../dao/DaoCard'
 
@@ -19,8 +19,8 @@ export const GovSubDaosTab = () => {
 
   const subDaos = useCachedLoading(
     waitForAll(
-      CHAIN_SUBDAOS[chainId]?.map((coreAddress) =>
-        daoCardInfoSelector({ chainId, coreAddress })
+      getSupportedChainConfig(chainId)?.subDaos?.map((coreAddress) =>
+        daoInfoSelector({ chainId, coreAddress })
       ) ?? []
     ),
     []

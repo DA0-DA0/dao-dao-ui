@@ -18,7 +18,7 @@ const ProposalPage: NextPage<DaoProposalProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    {props.serializedInfo?.coreVersion === ContractVersion.Gov ? (
+    {props.info?.coreVersion === ContractVersion.Gov ? (
       <GovProposal {...props} />
     ) : (
       <DaoProposal {...props} />

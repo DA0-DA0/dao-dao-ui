@@ -94,6 +94,10 @@ export type ChainPickerPopupProps = {
    * Optionally override the picker trigger entirely.
    */
   trigger?: PopupTrigger
+  /**
+   * Optionally hide the icon from the selected chain. Defaults to false.
+   */
+  hideSelectedIcon?: boolean
 }
 
 export type WalletChainSwitcherProps = {

@@ -76,21 +76,23 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
       const memberOf = memberOfLoadable.flatMap((l) => l.valueMaybe() || [])
       const following = allFollowing.flat()
 
-      const memberDaos = new Set(memberOf.map((dao) => serializeDaoSource(dao)))
+      const memberDaos = new Set(
+        memberOf.map((dao) => serializeDaoSource(dao.info))
+      )
       const followingDaos = new Set(
-        following.map((dao) => serializeDaoSource(dao))
+        following.map((dao) => serializeDaoSource(dao.info))
       )
 
       // Combine DAOs and remove duplicates.
       return uniqBy([...memberOf, ...following], (dao) =>
-        serializeDaoSource(dao)
+        serializeDaoSource(dao.info)
       )
         .map((props) => ({
           ...props,
-          isMember: memberDaos.has(serializeDaoSource(props)),
-          isFollowed: followingDaos.has(serializeDaoSource(props)),
+          isMember: memberDaos.has(serializeDaoSource(props.info)),
+          isFollowed: followingDaos.has(serializeDaoSource(props.info)),
         }))
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.info.name.localeCompare(b.info.name))
     }
   )
 

@@ -5,53 +5,70 @@ import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { LazyDaoCardProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
-import { daoCardInfoSelector } from '../../recoil'
+import { daoInfoSelector } from '../../recoil'
 import { DaoCard } from './DaoCard'
 
 export const LazyDaoCard = (props: LazyDaoCardProps) => {
   const { t } = useTranslation()
 
-  const daoCardInfo = useCachedLoadingWithError(
-    daoCardInfoSelector({
-      chainId: props.chainId,
-      coreAddress: props.coreAddress,
+  const daoInfo = useCachedLoadingWithError(
+    daoInfoSelector({
+      chainId: props.info.chainId,
+      coreAddress: props.info.coreAddress,
     })
   )
 
-  return daoCardInfo.loading ? (
+  return daoInfo.loading ? (
     <DaoCard
       {...props}
       className={clsx('animate-pulse', props.className)}
-      lazyData={{
-        loading: true,
+      info={{
+        ...props.info,
+        // Unused.
+        supportedFeatures: {} as any,
+        votingModuleAddress: '',
+        votingModuleContractName: '',
+        proposalModules: [],
+        created: null,
+        isActive: true,
+        activeThreshold: null,
+        items: {},
+        polytoneProxies: {},
+        accounts: [],
+        parentDao: null,
+        admin: '',
       }}
-      polytoneProxies={{}}
-      showingEstimatedUsdValue={false}
-      tokenDecimals={0}
-      tokenSymbol=""
     />
-  ) : daoCardInfo.errored || !daoCardInfo.data ? (
+  ) : daoInfo.errored || !daoInfo.data ? (
     <DaoCard
       {...props}
-      description={
-        t('error.unexpectedError') +
-        '\n' +
-        processError(
-          daoCardInfo.errored ? daoCardInfo.error : t('error.loadingData'),
-          {
-            forceCapture: false,
-          }
-        )
-      }
-      lazyData={{
-        loading: true,
+      info={{
+        ...props.info,
+        description:
+          t('error.unexpectedError') +
+          '\n' +
+          processError(
+            daoInfo.errored ? daoInfo.error : t('error.loadingData'),
+            {
+              forceCapture: false,
+            }
+          ),
+        // Unused.
+        supportedFeatures: {} as any,
+        votingModuleAddress: '',
+        votingModuleContractName: '',
+        proposalModules: [],
+        created: null,
+        isActive: true,
+        activeThreshold: null,
+        items: {},
+        polytoneProxies: {},
+        accounts: [],
+        parentDao: null,
+        admin: '',
       }}
-      polytoneProxies={{}}
-      showingEstimatedUsdValue={false}
-      tokenDecimals={0}
-      tokenSymbol=""
     />
   ) : (
-    <DaoCard {...daoCardInfo.data} />
+    <DaoCard info={daoInfo.data} />
   )
 }

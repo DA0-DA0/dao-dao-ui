@@ -36,4 +36,8 @@ export type DaoInfoCardsProps = {
    * Optionally allow the card values to wrap. Defaults to `false`.
    */
   wrap?: boolean
+  /**
+   * Optionally add a class name to the value containers.
+   */
+  valueClassName?: string
 }

@@ -3,11 +3,10 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/stateful'
 import {
+  AccountType,
   ChainId,
   ContractVersion,
-  AccountType,
   DaoInfo,
-  DaoInfoSerializable,
   PreProposeModuleType,
   ProposalModuleType,
 } from '@dao-dao/types'
@@ -43,9 +42,8 @@ export const makeDaoInfo = (): DaoInfo => ({
     'This DAO does really important stuff. And sometimes **things**. But *mostly* stuff.',
   imageUrl: 'https://moonphase.is/image.svg',
   // Random date in the past 12 months.
-  created: new Date(
-    Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
-  ),
+  created:
+    Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000),
   isActive: true,
   activeThreshold: null,
   items: {},
@@ -62,19 +60,13 @@ export const makeDaoInfo = (): DaoInfo => ({
 })
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
-  const serializedInfo: DaoInfoSerializable = useMemo(() => {
-    const info = makeDaoInfo()
-    return {
-      ...info,
-      created: info.created?.toJSON() ?? null,
-    }
-  }, [])
+  const info: DaoInfo = useMemo(makeDaoInfo, [])
 
   return (
     <DaoPageWrapper
-      description={serializedInfo.description}
-      serializedInfo={serializedInfo}
-      title={serializedInfo.name}
+      description={info.description}
+      info={info}
+      title={info.name}
     >
       <Story />
     </DaoPageWrapper>
