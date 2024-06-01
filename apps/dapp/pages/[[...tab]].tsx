@@ -128,8 +128,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       // Chain x/gov DAOs.
       ...(chainGovDaos && { chainGovDaos }),
     },
-    // Revalidate every hour.
-    revalidate: 60 * 60,
+    // Revalidate every day.
+    revalidate: 24 * 60 * 60,
   }
 }
 
