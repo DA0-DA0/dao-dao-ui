@@ -16,10 +16,24 @@ const Template: ComponentStory<typeof Home> = (args) => <Home {...args} />
 export const Default = Template.bind({})
 Default.args = {
   stats: {
-    daos: 1234,
-    proposals: 5678,
-    votes: 90123,
-    uniqueVoters: 4567,
+    all: {
+      daos: 1234,
+      proposals: 5678,
+      votes: 90123,
+      uniqueVoters: 4567,
+    },
+    month: {
+      daos: 234,
+      proposals: 678,
+      votes: 9123,
+      uniqueVoters: 567,
+    },
+    week: {
+      daos: 34,
+      proposals: 78,
+      votes: 123,
+      uniqueVoters: 67,
+    },
     chains: 10,
     tvl: 1234567890,
   },

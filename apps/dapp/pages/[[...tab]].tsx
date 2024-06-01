@@ -57,7 +57,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
   // Get all or chain-specific stats and TVL.
-  const [tvl, stats] = await Promise.all([
+  const [tvl, allStats, monthStats, weekStats] = await Promise.all([
     querySnapper<number>({
       query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
       parameters: chainId ? { chainId } : undefined,
@@ -66,16 +66,49 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
       parameters: chainId ? { chainId } : undefined,
     }),
+    querySnapper<DaoDaoIndexerChainStats>({
+      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+      parameters: {
+        ...(chainId ? { chainId } : undefined),
+        daysAgo: 30,
+      },
+    }),
+    querySnapper<DaoDaoIndexerChainStats>({
+      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+      parameters: {
+        ...(chainId ? { chainId } : undefined),
+        daysAgo: 7,
+      },
+    }),
   ])
 
-  if (!tvl || !stats) {
+  const validTvl = typeof tvl === 'number'
+  const validAllStats = !!allStats
+  const validMonthStats = !!monthStats
+  const validWeekStats = !!weekStats
+  if (!validTvl || !validAllStats || !validMonthStats || !validWeekStats) {
     processError('Failed to fetch TVL/stats for home page', {
       forceCapture: true,
       tags: {
         chainId,
       },
+      extra: {
+        tvl,
+        allStats,
+        monthStats,
+        weekStats,
+      },
     })
-    throw new Error('Failed to fetch stats.')
+    throw new Error(
+      `Failed to fetch stats due to invalid: ${[
+        !validTvl && 'TVL',
+        !validAllStats && 'all stats',
+        !validMonthStats && 'month stats',
+        !validWeekStats && 'week stats',
+      ]
+        .filter(Boolean)
+        .join(', ')}.`
+    )
   }
 
   return {
@@ -85,7 +118,9 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       ...(chainId && { chainId }),
       // All or chain-specific stats.
       stats: {
-        ...stats,
+        all: allStats,
+        month: monthStats,
+        week: weekStats,
         // If chain is 1, it will not be shown.
         chains: chainId ? 1 : getSupportedChains().length,
         tvl,

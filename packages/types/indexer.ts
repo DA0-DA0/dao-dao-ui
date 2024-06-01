@@ -50,7 +50,25 @@ export type DaoDaoIndexerChainStats = {
   uniqueVoters: number
 }
 
-export type DaoDaoIndexerAllStats = DaoDaoIndexerChainStats & {
+export type DaoDaoIndexerAllStats = {
+  /**
+   * Stats from all time.
+   */
+  all: DaoDaoIndexerChainStats
+  /**
+   * Stats from last 30 days.
+   */
+  month: DaoDaoIndexerChainStats
+  /**
+   * Stats from last 7 days.
+   */
+  week: DaoDaoIndexerChainStats
+  /**
+   * Number of chains DAO DAO is deployed on.
+   */
   chains: number
+  /**
+   * Total TVL.
+   */
   tvl: number
 }

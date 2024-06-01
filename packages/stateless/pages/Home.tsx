@@ -8,7 +8,7 @@ import {
   Search,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -18,7 +18,12 @@ import {
 } from '@dao-dao/types'
 import { UNDO_PAGE_PADDING_HORIZONTAL_CLASSES } from '@dao-dao/utils'
 
-import { Button, DaoInfoCards, HorizontalScroller } from '../components'
+import {
+  Button,
+  DaoInfoCards,
+  HorizontalScroller,
+  SegmentedControls,
+} from '../components'
 
 export type HomeProps = {
   /**
@@ -43,6 +48,8 @@ export type HomeProps = {
   openSearch: () => void
 }
 
+type StatsMode = 'all' | 'month' | 'week'
+
 export const Home = ({
   stats,
   DaoCard,
@@ -52,51 +59,78 @@ export const Home = ({
 }: HomeProps) => {
   const { t } = useTranslation()
 
+  const [statsMode, setStatsMode] = useState<StatsMode>('all')
+
   return (
     <>
+      <SegmentedControls<StatsMode>
+        className="w-max mb-4"
+        onSelect={setStatsMode}
+        selected={statsMode}
+        tabs={[
+          {
+            label: t('title.all'),
+            value: 'all',
+          },
+          {
+            label: '30d',
+            value: 'month',
+          },
+          {
+            label: '7d',
+            value: 'week',
+          },
+        ]}
+      />
+
       <DaoInfoCards
         cards={[
           {
             Icon: Public,
             label: t('title.daos'),
-            value: stats.daos.toLocaleString(),
+            value: stats[statsMode].daos.toLocaleString(),
           },
           {
             Icon: DescriptionOutlined,
             label: t('title.proposals'),
-            value: stats.proposals.toLocaleString(),
+            value: stats[statsMode].proposals.toLocaleString(),
           },
           {
             Icon: HowToVote,
             label: t('title.votesCast'),
-            value: stats.votes.toLocaleString(),
+            value: stats[statsMode].votes.toLocaleString(),
           },
           {
             Icon: PeopleOutlined,
             label: t('title.uniqueVoters'),
-            value: stats.uniqueVoters.toLocaleString(),
+            value: stats[statsMode].uniqueVoters.toLocaleString(),
           },
-          {
-            Icon: LockOutlined,
-            label: t('title.tvl'),
-            tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
-            value:
-              '$' +
-              stats.tvl.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }),
-          },
-          // Only show the chain count if more than 1 (i.e. not on a
-          // chain-specific home page).
-          ...(stats.chains > 1
+          // Only show TVL and chain count when all is selected.
+          ...(statsMode === 'all'
             ? [
                 {
-                  Icon: Link,
-                  label: t('title.chains'),
-                  tooltip: t('info.chainsDeployedTooltip'),
-                  value: stats.chains.toLocaleString(),
+                  Icon: LockOutlined,
+                  label: t('title.tvl'),
+                  tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
+                  value:
+                    '$' +
+                    stats.tvl.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }),
                 },
+                // Only show the chain count if more than 1 (i.e. not on a
+                // chain-specific home page).
+                ...(stats.chains > 1
+                  ? [
+                      {
+                        Icon: Link,
+                        label: t('title.chains'),
+                        tooltip: t('info.chainsDeployedTooltip'),
+                        value: stats.chains.toLocaleString(),
+                      },
+                    ]
+                  : []),
               ]
             : []),
         ]}
