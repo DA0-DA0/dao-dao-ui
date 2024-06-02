@@ -1,3 +1,4 @@
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -23,7 +24,7 @@ import {
   useProposalModuleAdapter,
   useProposalModuleAdapterContext,
 } from '../../proposal-module-adapter'
-import { daoInfoSelector } from '../../recoil'
+import { daoQueries } from '../../queries/dao'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -69,8 +70,8 @@ export const DaoApproverProposalContentDisplay = ({
   const { approvalDao, preProposeApprovalContract } = prePropose.config
 
   const { chain_id: chainId } = useChain()
-  const daoInfo = useRecoilValue(
-    daoInfoSelector({
+  const { data: daoInfo } = useSuspenseQuery(
+    daoQueries.info(useQueryClient(), {
       chainId,
       coreAddress: approvalDao,
     })

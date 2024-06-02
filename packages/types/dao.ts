@@ -62,6 +62,7 @@ export type DaoInfo = {
   votingModuleAddress: string
   votingModuleContractName: string
   proposalModules: ProposalModule[]
+  admin: string
   name: string
   description: string
   imageUrl: string
@@ -72,9 +73,7 @@ export type DaoInfo = {
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
   accounts: Account[]
-
   parentDao: DaoParentInfo | null
-  admin: string
 }
 
 export type DaoParentInfo = {
@@ -82,9 +81,9 @@ export type DaoParentInfo = {
   coreAddress: string
   coreVersion: ContractVersion
   name: string
-  imageUrl?: string | null
-  parentDao?: DaoParentInfo | null
+  imageUrl: string
   admin: string
+  parentDao: DaoParentInfo | null
 
   // Whether or not this parent has registered its child as a SubDAO.
   registeredSubDao: boolean

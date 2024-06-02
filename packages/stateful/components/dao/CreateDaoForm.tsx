@@ -524,9 +524,9 @@ export const InnerCreateDaoForm = ({
           })
 
           const info = await fetchContractInfo(chainId, coreAddress)
-          const coreVersion =
-            (info && parseContractVersion(info.version)) ||
-            ContractVersion.Unknown
+          const coreVersion = info
+            ? parseContractVersion(info.version)
+            : ContractVersion.Unknown
 
           // Don't set following on SDA. Only dApp.
           if (mode !== DaoPageMode.Sda) {

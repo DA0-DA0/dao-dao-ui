@@ -1,4 +1,5 @@
 import { fromBech32, toBech32, toHex } from '@cosmjs/encoding'
+import { UseQueryResult } from '@tanstack/react-query'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
@@ -242,6 +243,48 @@ export const combineLoadingDataWithErrors = <T>(
         errored: false,
         data: loadables.flatMap((l) => (l.loading || l.errored ? [] : l.data)),
       }
+
+/**
+ * Combine react-query results into LoadingData list.
+ */
+export const makeCombineQueryResultsIntoLoadingData =
+  <T extends unknown = unknown, R extends unknown = T[]>({
+    loadAllOnce = true,
+    transform = (results: T[]) => results as R,
+  }: {
+    /**
+     * Whether or not to show loading until all of the results are loaded for
+     * the first time. If false, will show not loading (just updating) once the
+     * first result is loaded. Defaults to true.
+     */
+    loadAllOnce?: boolean
+    /**
+     * Optional transformation function that acts on combined list of data.
+     */
+    transform?: (results: T[]) => R
+  }) =>
+  (results: UseQueryResult<T>[]): LoadingData<R> => {
+    const isLoading = loadAllOnce
+      ? results.some((r) => r.isPending)
+      : results.every((r) => r.isPending)
+
+    if (isLoading) {
+      return {
+        loading: true,
+      }
+    } else {
+      return {
+        loading: false,
+        updating: results.some((r) => r.isPending || r.isFetching),
+        // Cast data to T if not pending since it's possible that data has
+        // successfully loaded and returned undefined. isPending will be true if
+        // data is not yet loaded.
+        data: transform(
+          results.flatMap((r) => (r.isPending ? [] : [r.data as T]))
+        ),
+      }
+    }
+  }
 
 // Convert Recoil loadable into our generic data loader with error type. See the
 // comment above the LoadingData type for more details.

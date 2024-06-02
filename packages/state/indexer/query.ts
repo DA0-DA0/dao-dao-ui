@@ -69,22 +69,19 @@ export const queryIndexer = async <T = any>({
     }),
   })
 
-  const response = await fetch(
-    INDEXER_URL +
-      `/${chainId}/${type}/${address}/${formula}?${params.toString()}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  )
+  const path = `/${chainId}/${type}/${address}/${formula}?${params.toString()}`
+  const response = await fetch(INDEXER_URL + path, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
 
   const body = await response.text()
 
   if (response.status >= 300) {
     throw new Error(
-      `Error querying indexer for ${type}/${address}/${formula}: ${response.status} ${body}`.trim()
+      `Error querying indexer for ${path}: ${response.status} ${body}`.trim()
     )
   }
 

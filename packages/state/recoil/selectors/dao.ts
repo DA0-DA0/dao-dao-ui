@@ -26,7 +26,7 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
-import { addressIsModuleSelector } from './chain'
+import { isAddressModuleSelector } from './chain'
 import {
   contractInfoSelector,
   contractVersionSelector,
@@ -302,13 +302,14 @@ export const daoParentInfoSelector = selectorFamily<
             imageUrl: image_url || getFallbackImage(parentAddress),
             admin: parentAdmin ?? '',
             registeredSubDao,
+            parentDao: null,
           }
         }
 
         // If address is the chain's x/gov module account...
       } else if (
         get(
-          addressIsModuleSelector({
+          isAddressModuleSelector({
             chainId,
             address: parentAddress,
             moduleName: 'gov',
@@ -329,6 +330,7 @@ export const daoParentInfoSelector = selectorFamily<
               !!getSupportedChainConfig(chainId)?.subDaos?.includes(
                 childAddress
               ),
+            parentDao: null,
           }
         )
       }

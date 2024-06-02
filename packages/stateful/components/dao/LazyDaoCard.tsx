@@ -1,24 +1,24 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { LazyDaoCardProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
-import { daoInfoSelector } from '../../recoil'
+import { daoQueries } from '../../queries/dao'
 import { DaoCard } from './DaoCard'
 
 export const LazyDaoCard = (props: LazyDaoCardProps) => {
   const { t } = useTranslation()
 
-  const daoInfo = useCachedLoadingWithError(
-    daoInfoSelector({
+  const daoInfoQuery = useQuery(
+    daoQueries.info(useQueryClient(), {
       chainId: props.info.chainId,
       coreAddress: props.info.coreAddress,
     })
   )
 
-  return daoInfo.loading ? (
+  return daoInfoQuery.isPending ? (
     <DaoCard
       {...props}
       className={clsx('animate-pulse', props.className)}
@@ -39,7 +39,7 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         admin: '',
       }}
     />
-  ) : daoInfo.errored || !daoInfo.data ? (
+  ) : daoInfoQuery.isError ? (
     <DaoCard
       {...props}
       info={{
@@ -47,12 +47,9 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         description:
           t('error.unexpectedError') +
           '\n' +
-          processError(
-            daoInfo.errored ? daoInfo.error : t('error.loadingData'),
-            {
-              forceCapture: false,
-            }
-          ),
+          processError(daoInfoQuery.error, {
+            forceCapture: false,
+          }),
         // Unused.
         supportedFeatures: {} as any,
         votingModuleAddress: '',
@@ -69,6 +66,6 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
       }}
     />
   ) : (
-    <DaoCard info={daoInfo.data} />
+    <DaoCard info={daoInfoQuery.data} />
   )
 }

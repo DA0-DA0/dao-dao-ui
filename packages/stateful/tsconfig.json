@@ -1,6 +1,6 @@
 {
   "extends": "@dao-dao/config/ts/react-library.json",
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "hooks/useCachedLoadingQuery.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "forceConsistentCasingInFileNames": false

@@ -179,11 +179,10 @@ export const daoTvlSelector = selectorFamily<
     ({ get }) => {
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        // If chain uses a contract-based DAO, load it instead.
-        const govContractAddress =
-          getSupportedChainConfig(chainId)?.govContractAddress
-
-        coreAddress = govContractAddress || COMMUNITY_POOL_ADDRESS_PLACEHOLDER
+        coreAddress =
+          // If chain uses a contract-based DAO, load it instead.
+          getSupportedChainConfig(chainId)?.govContractAddress ||
+          COMMUNITY_POOL_ADDRESS_PLACEHOLDER
       }
 
       const timestamp = new Date()

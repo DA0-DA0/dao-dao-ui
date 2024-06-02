@@ -9,12 +9,10 @@ import { encodeJsonToBase64 } from './messages'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
 
-// If version is defined, returns it. Otherwise, returns `undefined`.
-// Essentially just filters version by its presence in the `ContractVersion`
-// enum.
-export const parseContractVersion = (
-  version: string
-): ContractVersion | undefined => CONTRACT_VERSIONS.find((v) => v === version)
+// If version is defined, returns it. Otherwise, returns
+// ContractVersion.Unknown.
+export const parseContractVersion = (version: string): ContractVersion =>
+  CONTRACT_VERSIONS.find((v) => v === version) || ContractVersion.Unknown
 
 export const indexToProposalModulePrefix = (index: number) => {
   index += 1

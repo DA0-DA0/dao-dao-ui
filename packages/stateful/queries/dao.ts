@@ -1,24 +1,374 @@
-import { QueryFunctionContext, useQuery } from '@tanstack/react-query'
+import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
-export const daoQueryKeys = {
-  info: (chainId: string, coreAddress: string) =>
-    [
-      {
-        type: 'dao',
-        query: 'info',
-        chainId,
-        coreAddress,
-      },
-    ] as const,
+import {
+  accountQueries,
+  chainQueries,
+  contractQueries,
+  polytoneQueries,
+  votingModuleQueries,
+} from '@dao-dao/state/query'
+import { daoDaoCoreQueries } from '@dao-dao/state/query/queries/contracts/DaoDaoCore'
+import {
+  DaoInfo,
+  DaoParentInfo,
+  DaoSource,
+  Feature,
+  InfoResponse,
+  PolytoneProxies,
+  ProposalModule,
+} from '@dao-dao/types'
+import {
+  getDaoInfoForChainId,
+  getFallbackImage,
+  getSupportedChainConfig,
+  getSupportedFeatures,
+  isConfiguredChainName,
+  isFeatureSupportedByVersion,
+  parseContractVersion,
+} from '@dao-dao/utils'
+
+import { fetchProposalModules } from '../utils'
+
+/**
+ * Fetch DAO proposal modules.
+ */
+export const fetchDaoProposalModules = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    coreAddress,
+  }: {
+    chainId: string
+    coreAddress: string
+  }
+): Promise<ProposalModule[]> => {
+  const coreVersion = parseContractVersion(
+    (
+      await queryClient.fetchQuery(
+        contractQueries.info(queryClient, {
+          chainId,
+          address: coreAddress,
+        })
+      )
+    ).info.version
+  )
+
+  return await fetchProposalModules(chainId, coreAddress, coreVersion)
 }
 
-const fetchDaoInfo = async ({
-  queryKey: [{ type, query, chainId, coreAddress }],
-}: QueryFunctionContext<ReturnType<typeof daoQueryKeys.info>>) => {}
+/**
+ * Fetch DAO info.
+ */
+export const fetchDaoInfo = async (
+  queryClient: QueryClient,
+  { chainId, coreAddress }: DaoSource
+): Promise<DaoInfo> => {
+  // Native chain governance.
+  if (isConfiguredChainName(chainId, coreAddress)) {
+    // Use real gov DAO's address if exists.
+    const chainConfigGovAddress =
+      getSupportedChainConfig(chainId)?.govContractAddress
+    if (chainConfigGovAddress) {
+      coreAddress = chainConfigGovAddress
+    } else {
+      // Use chain x/gov module info.
+      const govModuleAddress = await queryClient.fetchQuery(
+        chainQueries.moduleAddress({
+          chainId,
+          name: 'gov',
+        })
+      )
+      const accounts = await queryClient.fetchQuery(
+        accountQueries.list(queryClient, {
+          chainId,
+          address: govModuleAddress,
+        })
+      )
 
-export const useDaoInfo = (...args: Parameters<typeof daoQueryKeys.info>) => {
-  return useQuery({
-    queryKey: daoQueryKeys.info(...args),
-    queryFn: fetchDaoInfo,
-  })
+      return getDaoInfoForChainId(chainId, accounts)
+    }
+  }
+
+  // Get DAO info from contract.
+
+  const state = await queryClient.fetchQuery(
+    daoDaoCoreQueries.dumpState(queryClient, {
+      chainId,
+      contractAddress: coreAddress,
+    })
+  )
+
+  const coreVersion = parseContractVersion(state.version.version)
+  const supportedFeatures = getSupportedFeatures(coreVersion)
+
+  const [
+    // Not allowed to fail.
+    [
+      votingModuleInfo,
+      created,
+      proposalModules,
+      _items,
+      polytoneProxies,
+      accounts,
+    ],
+    // Allowed to fail.
+    [parentDaoResponse, isActiveResponse, activeThresholdResponse],
+  ] = await Promise.all([
+    // Not allowed to fail.
+    Promise.all([
+      // Check if indexer returned this already.
+      'votingModuleInfo' in state
+        ? ({ info: state.votingModuleInfo } as InfoResponse)
+        : queryClient.fetchQuery(
+            contractQueries.info(queryClient, {
+              chainId,
+              address: state.voting_module,
+            })
+          ),
+      // Check if indexer returned this already.
+      'createdAt' in state && state.createdAt
+        ? Date.parse(state.createdAt)
+        : queryClient
+            .fetchQuery(
+              contractQueries.instantiationTime(queryClient, {
+                chainId,
+                address: coreAddress,
+              })
+            )
+            .catch(() => null),
+      queryClient.fetchQuery(
+        daoQueries.proposalModules(queryClient, {
+          chainId,
+          coreAddress,
+        })
+      ),
+      queryClient.fetchQuery(
+        daoDaoCoreQueries.listAllItems(queryClient, {
+          chainId,
+          contractAddress: coreAddress,
+        })
+      ),
+      // Check if indexer returned this already.
+      'polytoneProxies' in state && state.polytoneProxies
+        ? (state.polytoneProxies as PolytoneProxies)
+        : queryClient.fetchQuery(
+            polytoneQueries.proxies(queryClient, {
+              chainId,
+              address: coreAddress,
+            })
+          ),
+      queryClient.fetchQuery(
+        accountQueries.list(queryClient, {
+          chainId,
+          address: coreAddress,
+        })
+      ),
+    ]),
+    // May fail.
+    Promise.allSettled([
+      state.admin && state.admin !== coreAddress
+        ? queryClient.fetchQuery(
+            daoQueries.parentInfo(queryClient, {
+              chainId,
+              parentAddress: state.admin,
+              subDaoAddress: coreAddress,
+            })
+          )
+        : null,
+      queryClient.fetchQuery(
+        votingModuleQueries.isActive({
+          chainId,
+          address: state.voting_module,
+        })
+      ),
+      queryClient.fetchQuery(
+        votingModuleQueries.activeThresold(queryClient, {
+          chainId,
+          address: state.voting_module,
+        })
+      ),
+    ]),
+  ])
+
+  const votingModuleContractName = votingModuleInfo.info.contract
+
+  // Some voting modules don't support the isActive query, so if the query
+  // fails, assume active.
+  const isActive =
+    isActiveResponse.status !== 'fulfilled' || isActiveResponse.value
+  const activeThreshold =
+    (activeThresholdResponse.status === 'fulfilled' &&
+      activeThresholdResponse.value.active_threshold) ||
+    null
+
+  // Convert items list into map.
+  const items = Object.fromEntries(_items)
+
+  const parentDao =
+    parentDaoResponse.status === 'fulfilled' ? parentDaoResponse.value : null
+
+  return {
+    chainId,
+    coreAddress,
+    coreVersion,
+    supportedFeatures,
+    votingModuleAddress: state.voting_module,
+    votingModuleContractName,
+    proposalModules,
+    admin: state.admin,
+    name: state.config.name,
+    description: state.config.description,
+    imageUrl: state.config.image_url || getFallbackImage(coreAddress),
+    created,
+    isActive,
+    activeThreshold,
+    items,
+    polytoneProxies,
+    accounts,
+    parentDao,
+  }
+}
+
+/**
+ * Fetch DAO parent info.
+ */
+export const fetchDaoParentInfo = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    parentAddress,
+    subDaoAddress,
+  }: {
+    chainId: string
+    parentAddress: string
+    /**
+     * To determine if the parent has registered the subDAO, pass the subDAO.
+     * This will set `registeredSubDao` appropriately. Otherwise, if undefined,
+     * `registeredSubDao` will be set to false.
+     */
+    subDaoAddress: string
+  }
+): Promise<DaoParentInfo> => {
+  // If address is a DAO contract...
+  const isDao = await queryClient.fetchQuery(
+    contractQueries.isDao(queryClient, {
+      chainId,
+      address: parentAddress,
+    })
+  )
+
+  if (isDao) {
+    const [parentVersion, parentAdmin, { name, image_url }] = await Promise.all(
+      [
+        queryClient
+          .fetchQuery(
+            contractQueries.info(queryClient, {
+              chainId,
+              address: parentAddress,
+            })
+          )
+          .then(({ info }) => parseContractVersion(info.version)),
+        queryClient.fetchQuery(
+          daoDaoCoreQueries.admin(queryClient, {
+            chainId,
+            contractAddress: parentAddress,
+          })
+        ),
+        queryClient.fetchQuery(
+          daoDaoCoreQueries.config(queryClient, {
+            chainId,
+            contractAddress: parentAddress,
+          })
+        ),
+      ]
+    )
+
+    // Check if parent has registered the SubDAO.
+    const registeredSubDao =
+      !!subDaoAddress &&
+      isFeatureSupportedByVersion(Feature.SubDaos, parentVersion) &&
+      (
+        await queryClient.fetchQuery(
+          daoDaoCoreQueries.listAllSubDaos(queryClient, {
+            chainId,
+            contractAddress: parentAddress,
+          })
+        )
+      ).some(({ addr }) => addr === subDaoAddress)
+
+    return {
+      chainId,
+      coreAddress: parentAddress,
+      coreVersion: parentVersion,
+      name,
+      imageUrl: image_url || getFallbackImage(parentAddress),
+      admin: parentAdmin ?? '',
+      registeredSubDao,
+      // TODO(rq): recursively fetch parent infos but prevent infinite loops
+      parentDao: null,
+    }
+  } else {
+    // If address is the chain's x/gov module...
+    const isGov = await queryClient.fetchQuery(
+      chainQueries.isAddressModule({
+        chainId,
+        address: parentAddress,
+        moduleName: 'gov',
+      })
+    )
+    if (isGov) {
+      const chainDaoInfo = getDaoInfoForChainId(chainId, [])
+      return {
+        chainId,
+        coreAddress: chainDaoInfo.coreAddress,
+        coreVersion: chainDaoInfo.coreVersion,
+        name: chainDaoInfo.name,
+        imageUrl: chainDaoInfo.imageUrl,
+        admin: '',
+        registeredSubDao:
+          !!subDaoAddress &&
+          !!getSupportedChainConfig(chainId)?.subDaos?.includes(subDaoAddress),
+        parentDao: null,
+      }
+    }
+  }
+
+  throw new Error('Parent is not a DAO nor the chain governance module')
+}
+
+export const daoQueries = {
+  /**
+   * Fetch DAO proposal modules.
+   */
+  proposalModules: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaoProposalModules>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'proposalModules', options],
+      queryFn: () => fetchDaoProposalModules(queryClient, options),
+    }),
+  /**
+   * Fetch DAO info.
+   */
+  info: (
+    queryClient: QueryClient,
+    // If undefined, query will be disabled.
+    options?: Parameters<typeof fetchDaoInfo>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'info', options],
+      queryFn: options ? () => fetchDaoInfo(queryClient, options) : skipToken,
+    }),
+  /**
+   * Fetch DAO parent info.
+   */
+  parentInfo: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaoParentInfo>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'parentInfo', options],
+      queryFn: () => fetchDaoParentInfo(queryClient, options),
+    }),
 }

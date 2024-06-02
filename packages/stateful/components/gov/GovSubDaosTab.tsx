@@ -1,30 +1,27 @@
-import { waitForAll } from 'recoil'
-
 import {
   DaoCardLoader,
   GridCardContainer,
   SubDaosTab as StatelessSubDaosTab,
-  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import { getSupportedChainConfig } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
-import { daoInfoSelector } from '../../recoil'
+import { useLoadingDaos } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { DaoCard } from '../dao/DaoCard'
 
 export const GovSubDaosTab = () => {
   const { chain_id: chainId } = useChain()
 
-  const subDaos = useCachedLoading(
-    waitForAll(
-      getSupportedChainConfig(chainId)?.subDaos?.map((coreAddress) =>
-        daoInfoSelector({ chainId, coreAddress })
-      ) ?? []
-    ),
-    []
-  )
+  const subDaos = useLoadingDaos({
+    loading: false,
+    data:
+      getSupportedChainConfig(chainId)?.subDaos?.map((coreAddress) => ({
+        chainId,
+        coreAddress,
+      })) ?? [],
+  })
 
   return (
     <GovActionsProvider

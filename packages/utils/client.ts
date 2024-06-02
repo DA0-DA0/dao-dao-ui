@@ -8,90 +8,220 @@ import {
   connectComet,
 } from '@cosmjs/tendermint-rpc'
 
-type ChainClientRoutes<T> = {
-  [rpcEndpoint: string]: T
+import {
+  cosmos,
+  cosmwasm,
+  ibc,
+  juno,
+  neutron,
+  noble,
+  osmosis,
+} from '@dao-dao/types/protobuf'
+
+import { getRpcForChainId } from './chain'
+import { retry } from './network'
+
+type HandleConnect<T> = (chainId: string) => Promise<T>
+type ChainClientRouterOptions<T> = {
+  /**
+   * The connection handler that returns the client for a given chain ID.
+   */
+  handleConnect: HandleConnect<T>
 }
 
-type HandleConnect<T> = (rpcEndpoint: string) => Promise<T>
-
 /*
- * This is a workaround for `@cosmjs` clients to avoid connecting to the chain more than once.
+ * This is a client wrapper that preserves singletons of connected clients for
+ * many chains.
  *
  * @example
+ * ```
  * export const stargateClientRouter = new ChainClientRouter({
- *   handleConnect: (rpcEndpoint: string) => StargateClient.connect(rpcEndpoint),
+ *   handleConnect: (chainId: string) => StargateClient.connect(
+ *     getRpcForChainId(chainId)
+ *   ),
  * })
  *
- * const client = await stargateClientRouter.connect(RPC_ENDPOINT);
+ * const client = await stargateClientRouter.connect(CHAIN_ID);
  *
  * const queryResponse = await client.queryContractSmart(...);
- *  */
+ * ```
+ */
 class ChainClientRouter<T> {
   private readonly handleConnect: HandleConnect<T>
-  private instances: ChainClientRoutes<T> = {}
+  private instances: Record<string, T> = {}
 
-  constructor({ handleConnect }: { handleConnect: HandleConnect<T> }) {
+  constructor({ handleConnect }: ChainClientRouterOptions<T>) {
     this.handleConnect = handleConnect
   }
 
   /*
-   * Connect to the chain and return the client
-   * or return an existing instance of the client.
-   *  */
-  async connect(rpcEndpoint: string) {
-    if (!this.getClientInstance(rpcEndpoint)) {
-      const instance = await this.handleConnect(rpcEndpoint)
-      this.setClientInstance(rpcEndpoint, instance)
+   * Connect to the chain and return the client or return an existing instance
+   * of the client.
+   */
+  async connect(chainId: string): Promise<T> {
+    if (!this.instances[chainId]) {
+      const instance = await this.handleConnect(chainId)
+      this.instances[chainId] = instance
     }
 
-    return this.getClientInstance(rpcEndpoint)
-  }
-
-  private getClientInstance(rpcEndpoint: string) {
-    return this.instances[rpcEndpoint]
-  }
-
-  private setClientInstance(rpcEndpoint: string, client: T) {
-    this.instances[rpcEndpoint] = client
+    return this.instances[chainId]
   }
 }
 
 /*
  * Router for connecting to `CosmWasmClient`.
- *  */
+ */
 export const cosmWasmClientRouter = new ChainClientRouter({
-  handleConnect: async (rpcEndpoint: string) => {
-    const httpClient = new HttpBatchClient(rpcEndpoint)
-    const tmClient = await (
-      (
-        await connectComet(rpcEndpoint)
-      ).constructor as
-        | typeof Tendermint34Client
-        | typeof Tendermint37Client
-        | typeof Comet38Client
-    ).create(httpClient)
+  handleConnect: async (chainId: string) =>
+    retry(10, async (attempt) => {
+      const rpc = getRpcForChainId(chainId, attempt - 1)
 
-    return await CosmWasmClient.create(tmClient)
-  },
+      const httpClient = new HttpBatchClient(rpc)
+      const tmClient = await (
+        (
+          await connectComet(rpc)
+        ).constructor as
+          | typeof Tendermint34Client
+          | typeof Tendermint37Client
+          | typeof Comet38Client
+      ).create(httpClient)
+
+      return await CosmWasmClient.create(tmClient)
+    }),
 })
 
 /*
  * Router for connecting to `StargateClient`.
- *  */
+ */
 export const stargateClientRouter = new ChainClientRouter({
-  handleConnect: async (rpcEndpoint: string) => {
-    const httpClient = new HttpBatchClient(rpcEndpoint)
-    const tmClient = await (
-      (
-        await connectComet(rpcEndpoint)
-      ).constructor as
-        | typeof Tendermint34Client
-        | typeof Tendermint37Client
-        | typeof Comet38Client
-    ).create(httpClient)
+  handleConnect: async (chainId: string) =>
+    retry(10, async (attempt) => {
+      const rpc = getRpcForChainId(chainId, attempt - 1)
 
-    return await StargateClient.create(tmClient, {})
-  },
+      const httpClient = new HttpBatchClient(rpc)
+      const tmClient = await (
+        (
+          await connectComet(rpc)
+        ).constructor as
+          | typeof Tendermint34Client
+          | typeof Tendermint37Client
+          | typeof Comet38Client
+      ).create(httpClient)
+
+      return await StargateClient.create(tmClient)
+    }),
+})
+
+/*
+ * Router for connecting to an RPC client with Cosmos protobufs.
+ */
+export const cosmosProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await cosmos.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).cosmos
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with IBC protobufs.
+ */
+export const ibcProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await ibc.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).ibc
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with CosmWasm protobufs.
+ */
+export const cosmwasmProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await cosmwasm.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).cosmwasm
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with Osmosis protobufs.
+ */
+export const osmosisProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await osmosis.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).osmosis
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with Noble protobufs.
+ */
+export const nobleProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await noble.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).noble
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with Neutron protobufs.
+ */
+export const neutronProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await neutron.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).neutron
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with Juno protobufs.
+ */
+export const junoProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await juno.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).juno
+    ),
 })
 
 /**

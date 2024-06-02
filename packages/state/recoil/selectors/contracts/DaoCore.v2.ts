@@ -1418,11 +1418,12 @@ export const polytoneProxiesSelector = selectorFamily<
         )
       }
 
+      // Fallback to contract query if indexer fails.
+
       // Get polytone notes on this chain.
       const polytoneConnections =
         getSupportedChainConfig(queryClientParams.chainId)?.polytone || {}
 
-      // Fallback to contract query if indexer fails.
       return Object.entries(polytoneConnections)
         .map(([chainId, { note }]) => ({
           chainId,

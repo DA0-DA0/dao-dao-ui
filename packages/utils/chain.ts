@@ -22,8 +22,7 @@ import {
   TokenType,
   Validator,
 } from '@dao-dao/types'
-import { aminoTypes, cosmos, typesRegistry } from '@dao-dao/types/protobuf'
-import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { aminoTypes, typesRegistry } from '@dao-dao/types/protobuf'
 import {
   Validator as RpcValidator,
   bondStatusToJSON,
@@ -689,50 +688,6 @@ export const getSignerOptions = ({ chain_id, fees }: Chain) => {
     registry: typesRegistry,
     aminoTypes,
   }
-}
-
-// Check whether or not the address is a module account.
-export const addressIsModule = async (
-  client: Awaited<
-    ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
-  >['cosmos'],
-  address: string,
-  // If defined, check that the module is this module.
-  moduleName?: string
-): Promise<boolean> => {
-  try {
-    const { account } = await client.auth.v1beta1.account({
-      address,
-    })
-
-    if (!account) {
-      return false
-    }
-
-    if (account.typeUrl === ModuleAccount.typeUrl) {
-      const moduleAccount = ModuleAccount.decode(account.value)
-      return !moduleName || moduleAccount.name === moduleName
-
-      // If already decoded automatically.
-    } else if (account.$typeUrl === ModuleAccount.typeUrl) {
-      return (
-        !moduleName || (account as unknown as ModuleAccount).name === moduleName
-      )
-    }
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      (err.message.includes('not found: key not found') ||
-        err.message.includes('decoding bech32 failed'))
-    ) {
-      return false
-    }
-
-    // Rethrow other errors.
-    throw err
-  }
-
-  return false
 }
 
 /**

@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 
 import {
@@ -5,12 +6,11 @@ import {
   DaoInfoContext,
   ErrorPage,
   Loader,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { ContractVersion, DaoInfo } from '@dao-dao/types'
 
 import { DaoActionsProvider } from '../../actions'
-import { daoInfoSelector } from '../../recoil'
+import { daoQueries } from '../../queries/dao'
 import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
 
@@ -63,20 +63,23 @@ export const DaoProvidersWithoutInfo = ({
   coreAddress,
   children,
 }: DaoProvidersWithoutInfoProps) => {
-  const infoLoading = useCachedLoadingWithError(
-    daoInfoSelector({
+  const daoInfoQuery = useQuery(
+    daoQueries.info(useQueryClient(), {
       chainId,
       coreAddress,
     })
   )
 
   return (
-    <SuspenseLoader fallback={<Loader />} forceFallback={infoLoading.loading}>
-      {!infoLoading.loading &&
-        (infoLoading.errored ? (
-          <ErrorPage error={infoLoading.error} />
+    <SuspenseLoader
+      fallback={<Loader />}
+      forceFallback={daoInfoQuery.isPending}
+    >
+      {!daoInfoQuery.isPending &&
+        (daoInfoQuery.isError ? (
+          <ErrorPage error={daoInfoQuery.error} />
         ) : (
-          <DaoProviders info={infoLoading.data}>{children}</DaoProviders>
+          <DaoProviders info={daoInfoQuery.data}>{children}</DaoProviders>
         ))}
     </SuspenseLoader>
   )

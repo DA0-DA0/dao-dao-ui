@@ -79,6 +79,8 @@ export const daoCardLazyDataSelector = selectorFamily<
         if (govContractAddress) {
           coreAddress = govContractAddress
         } else {
+          // Use chain x/gov module info.
+
           // Get proposal count by loading one proposal and getting the total.
           const { total: proposalCount } = get(
             govProposalsSelector({
@@ -312,6 +314,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
     },
 })
 
+// TODO(rq): remove all uses of this and replace with react-query
 export const daoInfoSelector = selectorFamily<
   DaoInfo,
   {

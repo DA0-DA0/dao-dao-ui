@@ -1,11 +1,16 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { dehydrate } from '@tanstack/react-query'
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { querySnapper } from '@dao-dao/state'
-import { Home, StatefulHomeProps } from '@dao-dao/stateful'
+import { daoQueries, makeReactQueryClient, querySnapper } from '@dao-dao/state'
+import {
+  Home,
+  StatefulHomeProps,
+  daoQueries as statefulDaoQueries,
+} from '@dao-dao/stateful'
 import { AccountTabId, ChainId, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
   MAINNET,
@@ -54,8 +59,13 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
           : []),
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
-  // Get all or chain-specific stats and TVL.
-  const [tvl, allStats, monthStats, weekStats] = await Promise.all([
+  const queryClient = makeReactQueryClient()
+
+  const [i18nProps, tvl, allStats, monthStats, weekStats] = await Promise.all([
+    // Get i18n translations props.
+    serverSideTranslations(locale, ['translation']),
+
+    // Get all or chain-specific stats and TVL.
     querySnapper<number>({
       query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
       parameters: chainId ? { chainId } : undefined,
@@ -78,6 +88,17 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
         daysAgo: 7,
       },
     }),
+
+    // Pre-fetch featured DAOs.
+    queryClient
+      .fetchQuery(daoQueries.listFeatured())
+      .then((featured) =>
+        Promise.all(
+          featured?.map((dao) =>
+            queryClient.fetchQuery(statefulDaoQueries.info(queryClient, dao))
+          ) || []
+        )
+      ),
   ])
 
   const validTvl = typeof tvl === 'number'
@@ -111,7 +132,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
 
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['translation'])),
+      ...i18nProps,
       // Chain-specific home page.
       ...(chainId && { chainId }),
       // All or chain-specific stats.
@@ -125,6 +146,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       },
       // Chain x/gov DAOs.
       ...(chainGovDaos && { chainGovDaos }),
+      // Dehydrate react-query state with featured DAOs preloaded.
+      reactQueryDehydratedState: dehydrate(queryClient),
     },
     // Revalidate every day.
     revalidate: 24 * 60 * 60,

@@ -35,6 +35,7 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
     imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
     admin: 'parent',
     registeredSubDao: true,
+    parentDao: null,
   },
   supportedFeatures: {} as any,
   votingModuleAddress: '',
