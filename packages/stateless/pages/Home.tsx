@@ -135,7 +135,7 @@ export const Home = ({
             : []),
         ]}
         className="mb-8"
-        valueClassName="text-text-brand-secondary font-semibold font-mono"
+        valueClassName="text-text-interactive-valid font-semibold font-mono"
         wrap
       />
 
