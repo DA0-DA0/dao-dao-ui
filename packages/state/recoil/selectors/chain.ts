@@ -936,22 +936,28 @@ export const govProposalSelector = selectorFamily<
       const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
       // Try to load from indexer first.
-      const indexerProposal:
+      let indexerProposal:
         | {
             id: string
             version: string
             data: string
           }
-        | undefined = get(
-        queryGenericIndexerSelector({
-          chainId,
-          formula: 'gov/proposal',
-          args: {
-            id: proposalId,
-          },
-          id,
-        })
-      )
+        | undefined
+        | null
+      try {
+        indexerProposal = get(
+          queryGenericIndexerSelector({
+            chainId,
+            formula: 'gov/proposal',
+            args: {
+              id: proposalId,
+            },
+            id,
+          })
+        )
+      } catch {
+        // Ignore error.
+      }
 
       let govProposal: GovProposalWithDecodedContent | undefined
 
