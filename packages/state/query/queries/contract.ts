@@ -39,6 +39,14 @@ const fetchContractInfo = async (
       ),
     }
   } catch (error) {
+    // Rethrow contract not found errors.
+    if (
+      error instanceof Error &&
+      error.message.includes('contract not found')
+    ) {
+      throw error
+    }
+
     console.error(error)
   }
 

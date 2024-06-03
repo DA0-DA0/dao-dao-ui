@@ -1,5 +1,9 @@
-import { IBCInfo } from '@chain-registry/types'
-import { ibc as chainRegistryIbc, chains } from 'chain-registry'
+import { Chain, IBCInfo } from '@chain-registry/types'
+import {
+  assets as chainRegistryAssets,
+  chains as chainRegistryChains,
+  ibc as chainRegistryIbc,
+} from 'chain-registry'
 
 import {
   BaseChainConfig,
@@ -10,6 +14,75 @@ import {
 } from '@dao-dao/types'
 
 import { NEUTRON_GOVERNANCE_DAO } from './other'
+
+//! ----- Modified chain-registry -----
+let chains = [...chainRegistryChains]
+const assets = [...chainRegistryAssets]
+
+// BitSong Testnet
+const bitSongTestnetChain: Chain = {
+  chain_name: 'bitsongtestnet',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'BitSong Testnet',
+  chain_id: 'bobnet',
+  bech32_prefix: 'bitsong',
+  bech32_config: {
+    bech32PrefixAccAddr: 'bitsong',
+    bech32PrefixAccPub: 'bitsongpub',
+    bech32PrefixValAddr: 'bitsongvaloper',
+    bech32PrefixValPub: 'bitsongvaloperpub',
+    bech32PrefixConsAddr: 'bitsongvalcons',
+    bech32PrefixConsPub: 'bitsongvalconspub',
+  },
+  slip44: 639,
+  logo_URIs: {
+    png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/btsg.png',
+  },
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'ubtsg',
+        fixed_min_gas_price: 0,
+        low_gas_price: 0,
+        average_gas_price: 0,
+        high_gas_price: 0,
+      },
+    ],
+  },
+  staking: {
+    staking_tokens: [
+      {
+        denom: 'ubtsg',
+      },
+    ],
+  },
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc-testnet.explorebitsong.com',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://lcd-testnet.explorebitsong.com',
+      },
+    ],
+  },
+}
+chains.push(bitSongTestnetChain)
+assets.push({
+  chain_name: bitSongTestnetChain.chain_name,
+  // Copy assets from BitSong mainnet.
+  assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
+})
+
+// Remove thorchain and althea since they spam the console.
+const chainsToRemove = ['thorchain', 'althea']
+chains = chains.filter((chain) => !chainsToRemove.includes(chain.chain_name))
+
+export { chains, assets }
+//! ----- Modified chain-registry -----
 
 export const ibc: IBCInfo[] = [
   ...chainRegistryIbc,
