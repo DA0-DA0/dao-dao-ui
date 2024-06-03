@@ -955,8 +955,11 @@ export const govProposalSelector = selectorFamily<
             id,
           })
         )
-      } catch {
-        // Ignore error.
+      } catch (err) {
+        // Ignore error if not Promise thrown by recoil. Otherwise rethrow.
+        if (err instanceof Promise) {
+          throw err
+        }
       }
 
       let govProposal: GovProposalWithDecodedContent | undefined
