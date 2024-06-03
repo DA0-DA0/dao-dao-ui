@@ -1801,8 +1801,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://terra-api.polkachu.com',
   },
   [ChainId.TerraClassicMainnet]: {
-    rpc: 'https://terra-classic-rpc.publicnode.com',
-    rest: 'https://terra-classic-rest.publicnode.com',
+    rpc: 'https://terraclassic-rpc-server-01.stakely.io',
+    rest: 'https://terraclassic-lcd-server-01.stakely.io',
   },
   [ChainId.MigalooMainnet]: {
     rpc: 'https://migaloo-rpc.polkachu.com',
