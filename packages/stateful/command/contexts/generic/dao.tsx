@@ -5,17 +5,14 @@ import {
   HomeOutlined,
   InboxOutlined,
 } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
-import {
-  useCachedLoading,
-  useDaoInfoContext,
-  useDaoNavHelpers,
-} from '@dao-dao/stateless'
+import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
 import { ContractVersion, Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
@@ -26,8 +23,13 @@ import {
 import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
 import { DaoProvidersWithoutInfo } from '../../../components'
-import { useDaoTabs, useFollowingDaos, useGovDaoTabs } from '../../../hooks'
-import { chainSubDaoInfosSelector, subDaoInfosSelector } from '../../../recoil'
+import {
+  useCachedLoadingQuery,
+  useDaoTabs,
+  useFollowingDaos,
+  useGovDaoTabs,
+} from '../../../hooks'
+import { daoQueries } from '../../../queries'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
@@ -68,19 +70,19 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const daoPageHref = getDaoPath(coreAddress)
     const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
-    const subDaosLoading = useCachedLoading(
+    const queryClient = useQueryClient()
+    const subDaosLoading = useCachedLoadingQuery(
       coreVersion === ContractVersion.Gov
-        ? chainSubDaoInfosSelector({
+        ? daoQueries.chainSubDaoInfos(queryClient, {
             chainId,
           })
-        : supportedFeatures[Feature.SubDaos]
-        ? subDaoInfosSelector({
-            chainId,
-            coreAddress,
-          })
-        : // Passing undefined here returns an infinite loading state, which is
-          // fine because it's never used.
-          undefined,
+        : {
+            ...daoQueries.subDaoInfos(queryClient, {
+              chainId,
+              coreAddress,
+            }),
+            enabled: !!supportedFeatures[Feature.SubDaos],
+          },
       []
     )
 

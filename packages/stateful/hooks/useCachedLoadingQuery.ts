@@ -1,4 +1,4 @@
-import { QueryKey, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
@@ -9,25 +9,17 @@ import { LoadingData } from '@dao-dao/types'
  * Transform react-query query results into a cached loading object that
  * components expect.
  */
-export const useCachedLoadingQuery = <
-  TQueryFnData extends unknown,
-  TQueryKey extends QueryKey = QueryKey
->(
-  options: Omit<
-    Parameters<
-      typeof useQuery<TQueryFnData, Error, TQueryFnData, TQueryKey>
-    >[0],
-    'select'
-  >,
+export const useCachedLoadingQuery = <T extends unknown>(
+  options: Omit<Parameters<typeof useQuery<T, Error, T, any>>[0], 'select'>,
   /**
    * Default value in case of an error.
    */
-  defaultValue: TQueryFnData,
+  defaultValue: T,
   /**
    * Optionally call a function on error.
    */
   onError?: (error: Error) => void
-): LoadingData<TQueryFnData> => {
+): LoadingData<T> => {
   const { isPending, isError, isRefetching, data, error } = useQuery(options)
 
   const onErrorRef = useUpdatingRef(onError)
@@ -36,7 +28,7 @@ export const useCachedLoadingQuery = <
   // passed as the default value.
   const memoizedDefaultValue = useDeepCompareMemoize(defaultValue)
 
-  return useMemo((): LoadingData<TQueryFnData> => {
+  return useMemo((): LoadingData<T> => {
     if (isPending) {
       return {
         loading: true,

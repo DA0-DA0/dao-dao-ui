@@ -156,58 +156,6 @@ export const daoCardLazyDataSelector = selectorFamily<
     },
 })
 
-export const subDaoInfosSelector = selectorFamily<
-  DaoInfo[],
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'subDaoInfos',
-  get:
-    ({ coreAddress: contractAddress, chainId }) =>
-    ({ get }) => {
-      const subDaos = get(
-        DaoCoreV2Selectors.listAllSubDaosSelector({
-          contractAddress,
-          chainId,
-        })
-      )
-
-      return get(
-        waitForAll(
-          subDaos.map(({ chainId, addr }) =>
-            daoInfoSelector({
-              chainId,
-              coreAddress: addr,
-            })
-          )
-        )
-      )
-    },
-})
-
-export const chainSubDaoInfosSelector = selectorFamily<
-  DaoInfo[],
-  { chainId: string }
->({
-  key: 'chainSubDaoInfos',
-  get:
-    ({ chainId }) =>
-    ({ get }) => {
-      const subDaos = getSupportedChainConfig(chainId)?.subDaos || []
-      return subDaos.length
-        ? get(
-            waitForAll(
-              subDaos.map((coreAddress) =>
-                daoInfoSelector({
-                  chainId,
-                  coreAddress,
-                })
-              )
-            )
-          )
-        : []
-    },
-})
-
 export const followingDaosWithProposalModulesSelector = selectorFamily<
   (DaoSource & {
     proposalModules: ProposalModule[]

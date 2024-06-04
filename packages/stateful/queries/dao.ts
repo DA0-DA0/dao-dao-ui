@@ -34,13 +34,7 @@ import { fetchProposalModules } from '../utils'
  */
 export const fetchDaoProposalModules = async (
   queryClient: QueryClient,
-  {
-    chainId,
-    coreAddress,
-  }: {
-    chainId: string
-    coreAddress: string
-  }
+  { chainId, coreAddress }: DaoSource
 ): Promise<ProposalModule[]> => {
   const coreVersion = parseContractVersion(
     (
@@ -336,6 +330,44 @@ export const fetchDaoParentInfo = async (
   throw new Error('Parent is not a DAO nor the chain governance module')
 }
 
+/**
+ * Fetch DAO info for all of a DAO's SubDAOs.
+ */
+export const fetchSubDaoInfos = async (
+  queryClient: QueryClient,
+  { chainId, coreAddress }: DaoSource
+): Promise<DaoInfo[]> => {
+  const subDaos = await queryClient.fetchQuery(
+    daoDaoCoreQueries.listAllSubDaos(queryClient, {
+      chainId,
+      contractAddress: coreAddress,
+    })
+  )
+
+  return await Promise.all(
+    subDaos.map(({ addr }) =>
+      queryClient.fetchQuery(
+        daoQueries.info(queryClient, { chainId, coreAddress: addr })
+      )
+    )
+  )
+}
+
+/**
+ * Fetch DAO info for all of a chain's SubDAOs.
+ */
+export const fetchChainSubDaoInfos = (
+  queryClient: QueryClient,
+  { chainId }: { chainId: string }
+): Promise<DaoInfo[]> =>
+  Promise.all(
+    (getSupportedChainConfig(chainId)?.subDaos || []).map((coreAddress) =>
+      queryClient.fetchQuery(
+        daoQueries.info(queryClient, { chainId, coreAddress })
+      )
+    )
+  )
+
 export const daoQueries = {
   /**
    * Fetch DAO proposal modules.
@@ -370,5 +402,27 @@ export const daoQueries = {
     queryOptions({
       queryKey: ['dao', 'parentInfo', options],
       queryFn: () => fetchDaoParentInfo(queryClient, options),
+    }),
+  /**
+   * Fetch DAO info for all of a DAO's SubDAOs.
+   */
+  subDaoInfos: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchSubDaoInfos>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'subDaoInfos', options],
+      queryFn: () => fetchSubDaoInfos(queryClient, options),
+    }),
+  /**
+   * Fetch DAO info for all of a chain's SubDAOs.
+   */
+  chainSubDaoInfos: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchChainSubDaoInfos>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'chainSubDaoInfos', options],
+      queryFn: () => fetchChainSubDaoInfos(queryClient, options),
     }),
 }
