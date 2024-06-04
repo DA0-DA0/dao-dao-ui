@@ -19,6 +19,7 @@ import { useAutoRefreshData, useDaoTabs } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { LinkWrapper } from './LinkWrapper'
 import { SidebarWallet } from './NavWallet'
+import { StatefulPageHeader } from './PageHeader'
 import { SuspenseLoader } from './SuspenseLoader'
 import { WalletModals } from './wallet'
 
@@ -42,6 +43,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <StatelessSdaLayout
+      PageHeader={StatefulPageHeader}
       navigationProps={{
         tabs: loadingTabs.loading ? [] : loadingTabs.data,
         LinkWrapper,

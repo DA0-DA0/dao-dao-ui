@@ -27,7 +27,6 @@ import {
   reverseLookupPolytoneProxySelector,
 } from '@dao-dao/state'
 import {
-  ChainId,
   DaoCardLazyData,
   DaoInfo,
   DaoPageMode,
@@ -42,7 +41,6 @@ import {
 } from '@dao-dao/types'
 import {
   DaoVotingCw20StakedAdapterId,
-  NEUTRON_GOVERNANCE_DAO,
   getDaoInfoForChainId,
   getDaoProposalPath,
   getFallbackImage,
@@ -75,9 +73,11 @@ export const daoCardLazyDataSelector = selectorFamily<
 
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        // Neutron uses an actual DAO so load it instead.
-        if (chainId === ChainId.NeutronMainnet) {
-          coreAddress = NEUTRON_GOVERNANCE_DAO
+        // If chain uses a contract-based DAO, load it instead.
+        const govContractAddress =
+          getSupportedChainConfig(chainId)?.govContractAddress
+        if (govContractAddress) {
+          coreAddress = govContractAddress
         } else {
           // Get proposal count by loading one proposal and getting the total.
           const { total: proposalCount } = get(

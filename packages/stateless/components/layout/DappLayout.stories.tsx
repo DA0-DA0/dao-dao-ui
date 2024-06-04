@@ -27,15 +27,14 @@ export const DefaultArgs: DappLayoutProps = {
     data: 5,
   },
   connect: () => alert('connect'),
+  PageHeader: () => (
+    <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
+  ),
   DockWallet,
   ButtonLink,
   children: (
-    <div className="flex h-full flex-col px-6">
-      <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
-
-      <div className="flex grow items-center justify-center">
-        <p>App content</p>
-      </div>
+    <div className="flex grow h-full px-6 items-center justify-center">
+      <p>App content</p>
     </div>
   ),
 }

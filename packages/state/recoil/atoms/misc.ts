@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import { Web3AuthPrompt } from '@dao-dao/types'
+import { PageHeaderProps, Web3AuthPrompt } from '@dao-dao/types'
 
 import { localStorageEffectJSON } from '../effects'
 
@@ -55,5 +55,10 @@ export const indexerWebSocketChannelSubscriptionsAtom = atom<
   Partial<Record<string, number>>
 >({
   key: 'indexerWebSocketChannelSubscriptions',
+  default: {},
+})
+
+export const pageHeaderPropsAtom = atom<PageHeaderProps>({
+  key: 'pageHeaderProps',
   default: {},
 })

@@ -1,5 +1,5 @@
 import { DecoratorFn } from '@storybook/react'
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { makeGenericContext } from '@dao-dao/stateful/command'
 import { AppContext } from '@dao-dao/stateless'
@@ -15,14 +15,7 @@ export const makeAppContextDecorator: (
       useState(defaultResponsiveEnabled)
 
     // Page header.
-    const [, setPageHeaderSet] = useState(false)
     const pageHeaderRef = useRef<HTMLDivElement | null>(null)
-    const setPageHeaderRef = useCallback((ref: HTMLDivElement | null) => {
-      if (ref) {
-        pageHeaderRef.current = ref
-        setPageHeaderSet(true)
-      }
-    }, [])
 
     return (
       <AppContext.Provider
@@ -33,7 +26,6 @@ export const makeAppContextDecorator: (
             toggle: () => setResponsiveNavigationEnabled((v) => !v),
           },
           pageHeaderRef,
-          setPageHeaderRef,
           rootCommandContextMaker: makeGenericContext,
           setRootCommandContextMaker: () => {},
           inbox: EMPTY_INBOX,

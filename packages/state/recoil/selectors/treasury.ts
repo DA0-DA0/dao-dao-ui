@@ -7,7 +7,6 @@ import {
   Account,
   AccountType,
   AmountWithTimestamp,
-  ChainId,
   GenericToken,
   GenericTokenSource,
   LoadingTokens,
@@ -18,9 +17,9 @@ import {
 } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  NEUTRON_GOVERNANCE_DAO,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
+  getSupportedChainConfig,
   getTokenForChainIdAndDenom,
   isConfiguredChainName,
   loadableToLoadingData,
@@ -180,10 +179,11 @@ export const daoTvlSelector = selectorFamily<
     ({ get }) => {
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
-        coreAddress =
-          chainId === ChainId.NeutronMainnet
-            ? NEUTRON_GOVERNANCE_DAO
-            : COMMUNITY_POOL_ADDRESS_PLACEHOLDER
+        // If chain uses a contract-based DAO, load it instead.
+        const govContractAddress =
+          getSupportedChainConfig(chainId)?.govContractAddress
+
+        coreAddress = govContractAddress || COMMUNITY_POOL_ADDRESS_PLACEHOLDER
       }
 
       const timestamp = new Date()

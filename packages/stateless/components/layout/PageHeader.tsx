@@ -70,7 +70,7 @@ export const PageHeader = ({
           {!!title && (
             <p
               className={clsx(
-                'header-text truncate text-lg leading-[5rem] sm:text-xl',
+                'header-text truncate text-lg leading-[5rem] sm:text-xl animate-fade-in',
                 titleClassName
               )}
             >

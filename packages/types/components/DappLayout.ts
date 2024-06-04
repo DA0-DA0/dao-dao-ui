@@ -18,6 +18,10 @@ export type DappLayoutProps = {
    */
   connect: () => void
   /**
+   * PageHeader stateful component.
+   */
+  PageHeader: ComponentType
+  /**
    * DockWallet stateful component.
    */
   DockWallet: ComponentType

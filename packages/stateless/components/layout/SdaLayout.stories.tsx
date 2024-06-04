@@ -20,13 +20,12 @@ export default {
 
 export const DefaultArgs: SdaLayoutProps = {
   navigationProps: SdaNavigationStory.args as SdaNavigationProps,
+  PageHeader: () => (
+    <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
+  ),
   children: (
-    <div className="flex h-full flex-col px-6">
-      <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
-
-      <div className="flex grow items-center justify-center">
-        <p>App content</p>
-      </div>
+    <div className="flex grow px-6 h-full items-center justify-center">
+      <p>App content</p>
     </div>
   ),
 }

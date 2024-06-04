@@ -31,6 +31,7 @@ import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
 import { DockWallet } from './NavWallet'
+import { StatefulPageHeader } from './PageHeader'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -146,6 +147,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       <StatelessDappLayout
         ButtonLink={ButtonLink}
         DockWallet={DockWallet}
+        PageHeader={StatefulPageHeader}
         connect={openView}
         inboxCount={
           inbox.loading ||

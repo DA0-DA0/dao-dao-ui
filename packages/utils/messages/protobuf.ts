@@ -17,7 +17,6 @@ import { TextProposal } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 
 import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
-import { processError } from '../error'
 import { isValidUrl } from '../isValidUrl'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { isCosmWasmStargateMsg } from './cw'
@@ -30,8 +29,8 @@ export const decodeGovProposalV1Messages = (
     try {
       return protobufToCwMsg(msg).msg
     } catch (err) {
-      // If protobuf not found, capture error and return placeholder.
-      console.error(processError(err, { forceCapture: true }))
+      // If protobuf not found, return raw stargate message.
+      console.error(err)
       return {
         stargate: {
           type_url: msg.typeUrl,

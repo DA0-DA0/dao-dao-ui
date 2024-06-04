@@ -13,9 +13,13 @@ import { ErrorBoundary } from '../error/ErrorBoundary'
 import { useAppContext } from './AppContext'
 import { SdaNavigation } from './SdaNavigation'
 
-export const SdaLayout = ({ navigationProps, children }: SdaLayoutProps) => {
+export const SdaLayout = ({
+  navigationProps,
+  PageHeader,
+  children,
+}: SdaLayoutProps) => {
   const { pathname } = useRouter()
-  const { responsiveNavigation, setPageHeaderRef } = useAppContext()
+  const { responsiveNavigation, pageHeaderRef } = useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -51,7 +55,9 @@ export const SdaLayout = ({ navigationProps, children }: SdaLayoutProps) => {
             : 'opacity-100'
         )}
       >
-        <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
+        <div className="shrink-0 px-6" ref={pageHeaderRef}>
+          <PageHeader />
+        </div>
 
         <div
           className={clsx(

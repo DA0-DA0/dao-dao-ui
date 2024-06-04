@@ -25,6 +25,7 @@ export const DappLayout = ({
   navigationProps,
   inboxCount,
   connect,
+  PageHeader,
   DockWallet,
   ButtonLink,
   children,
@@ -34,7 +35,7 @@ export const DappLayout = ({
     getDaoPath,
     getDaoFromPath,
   } = useDaoNavHelpers()
-  const { responsiveNavigation, setPageHeaderRef } = useAppContext()
+  const { responsiveNavigation, pageHeaderRef } = useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -123,7 +124,9 @@ export const DappLayout = ({
             : 'opacity-100'
         )}
       >
-        <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
+        <div className="shrink-0 px-6" ref={pageHeaderRef}>
+          <PageHeader />
+        </div>
 
         <div
           className={clsx(

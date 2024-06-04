@@ -57,7 +57,7 @@ export const Breadcrumbs = ({
     <>
       <div
         className={clsx(
-          'header-text flex flex-row items-center gap-2 overflow-hidden text-text-secondary',
+          'header-text flex flex-row items-center gap-2 overflow-hidden text-text-secondary animate-fade-in',
           className
         )}
       >

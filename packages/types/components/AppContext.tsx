@@ -14,7 +14,6 @@ export type CommonAppContext = {
 
   // Page header.
   pageHeaderRef: MutableRefObject<HTMLDivElement | null>
-  setPageHeaderRef: (ref: HTMLDivElement | null) => void
 }
 
 export type IAppContext = CommonAppContext &

@@ -21,16 +21,7 @@ export const AppContextProvider = ({
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
 
-  // Page header. Set state when ref is set so it re-renders immediately.
-  // Without this, the page header is invisible until the next render.
-  const [, setPageHeaderSet] = useState(false)
   const pageHeaderRef = useRef<HTMLDivElement | null>(null)
-  const setPageHeaderRef = useCallback((ref: HTMLDivElement | null) => {
-    pageHeaderRef.current = ref
-    if (ref) {
-      setPageHeaderSet(true)
-    }
-  }, [])
 
   // Unsubscribe from WebSocket channels when all subscriptions removed.
   const { pusher } = useWebSocket()
@@ -68,10 +59,7 @@ export const AppContextProvider = ({
       enabled: responsiveNavigationEnabled,
       toggle: () => setResponsiveNavigationEnabled((v) => !v),
     },
-    // Include the page header ref in the context to be accessed by the
-    // component portal.
     pageHeaderRef,
-    setPageHeaderRef,
   }
 
   // Install service worker.
