@@ -24,8 +24,8 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../../../components'
+import { useEntity } from '../../../../../hooks'
 import { useWallet } from '../../../../../hooks/useWallet'
-import { entitySelector } from '../../../../../recoil'
 import { useTokenBalances } from '../../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../../react'
 import { InstantiateTokenSwap as StatelessInstantiateTokenSwap } from '../stateless/InstantiateTokenSwap'
@@ -237,27 +237,23 @@ const InnerInstantiateTokenSwap: ActionComponent<
 
   // Get counterparty entity, which reverse engineers a DAO from its polytone
   // proxy.
-  const entityLoading = useCachedLoading(
+  const { entity } = useEntity(
     counterpartyAddress &&
       isValidBech32Address(counterpartyAddress, bech32Prefix)
-      ? entitySelector({
-          chainId,
-          address: counterpartyAddress,
-        })
-      : undefined,
-    undefined
+      ? counterpartyAddress
+      : ''
   )
 
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddressLoadable = useRecoilValueLoadable(
-    !entityLoading.loading &&
-      entityLoading.data?.type === EntityType.Dao &&
+    !entity.loading &&
+      entity.data.type === EntityType.Dao &&
       // Only care about loading the governance token if on the chain we're
       // creating the token swap on.
-      entityLoading.data.chainId === chainId
+      entity.data.chainId === chainId
       ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
           chainId,
-          contractAddress: entityLoading.data.address,
+          contractAddress: entity.data.address,
         })
       : constSelector(undefined)
   )
@@ -265,12 +261,12 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyTokenBalances = useCachedLoading(
     counterpartyAddress &&
-      !entityLoading.loading &&
-      entityLoading.data &&
+      !entity.loading &&
+      entity.data &&
       counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
       ? genericTokenBalancesSelector({
-          chainId: entityLoading.data.chainId,
-          address: entityLoading.data.address,
+          chainId: entity.data.chainId,
+          address: entity.data.address,
           cw20GovernanceTokenAddress:
             counterpartyDaoGovernanceTokenAddressLoadable.state === 'hasValue'
               ? counterpartyDaoGovernanceTokenAddressLoadable.contents

@@ -11,26 +11,20 @@ import {
   DaoVotingCw20StakedSelectors,
   accountsSelector,
   contractInfoSelector,
-  contractInstantiateTimeSelector,
   contractVersionSelector,
   daoDropdownInfoSelector,
-  daoParentInfoSelector,
   daoTvlSelector,
   daoVetoableDaosSelector,
   followingDaosSelector,
   govProposalsSelector,
   isDaoSelector,
-  moduleAddressSelector,
   nativeDelegatedBalanceSelector,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
-  reverseLookupPolytoneProxySelector,
 } from '@dao-dao/state'
 import {
   DaoCardLazyData,
-  DaoInfo,
   DaoPageMode,
-  DaoParentInfo,
   DaoSource,
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
@@ -41,11 +35,8 @@ import {
 } from '@dao-dao/types'
 import {
   DaoVotingCw20StakedAdapterId,
-  getDaoInfoForChainId,
   getDaoProposalPath,
-  getFallbackImage,
   getSupportedChainConfig,
-  getSupportedFeatures,
   isConfiguredChainName,
 } from '@dao-dao/utils'
 
@@ -259,216 +250,6 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
           : undefined
 
       return cw20GovernanceTokenAddress
-    },
-})
-
-// TODO(rq): remove all uses of this and replace with react-query
-export const daoInfoSelector = selectorFamily<
-  DaoInfo,
-  {
-    chainId: string
-    coreAddress: string
-  }
->({
-  key: 'daoInfo',
-  get:
-    ({ chainId, coreAddress }) =>
-    ({ get }) => {
-      // Native chain governance.
-      if (isConfiguredChainName(chainId, coreAddress)) {
-        // If chain uses a contract-based DAO, load it instead.
-        const govContractAddress =
-          getSupportedChainConfig(chainId)?.govContractAddress
-        if (govContractAddress) {
-          coreAddress = govContractAddress
-        } else {
-          const govModuleAddress = get(
-            moduleAddressSelector({
-              chainId,
-              name: 'gov',
-            })
-          )
-          const accounts = get(
-            accountsSelector({
-              chainId,
-              address: govModuleAddress,
-            })
-          )
-
-          return getDaoInfoForChainId(chainId, accounts)
-        }
-      }
-
-      // Otherwise get DAO info from contract.
-
-      const dumpState = get(
-        DaoCoreV2Selectors.dumpStateSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [],
-        })
-      )
-      if (!dumpState) {
-        throw new Error('DAO failed to dump state.')
-      }
-
-      const [
-        // Non-loadables
-        [
-          coreVersion,
-          votingModuleInfo,
-          proposalModules,
-          created,
-          _items,
-          polytoneProxies,
-          accounts,
-        ],
-        // Loadables
-        [isActiveResponse, activeThresholdResponse],
-      ] = get(
-        waitForAll([
-          // Non-loadables
-          waitForAll([
-            contractVersionSelector({
-              contractAddress: coreAddress,
-              chainId,
-            }),
-            contractInfoSelector({
-              contractAddress: dumpState.voting_module,
-              chainId,
-            }),
-            daoCoreProposalModulesSelector({
-              coreAddress,
-              chainId,
-            }),
-            contractInstantiateTimeSelector({
-              address: coreAddress,
-              chainId,
-            }),
-            DaoCoreV2Selectors.listAllItemsSelector({
-              contractAddress: coreAddress,
-              chainId,
-            }),
-            DaoCoreV2Selectors.polytoneProxiesSelector({
-              contractAddress: coreAddress,
-              chainId,
-            }),
-            accountsSelector({
-              address: coreAddress,
-              chainId,
-            }),
-          ]),
-          // Loadables
-          waitForAllSettled([
-            // All voting modules use the same active threshold queries, so it's
-            // safe to use the cw20-staked selector.
-            DaoVotingCw20StakedSelectors.isActiveSelector({
-              contractAddress: dumpState.voting_module,
-              chainId,
-              params: [],
-            }),
-            DaoVotingCw20StakedSelectors.activeThresholdSelector({
-              contractAddress: dumpState.voting_module,
-              chainId,
-              params: [],
-            }),
-          ]),
-        ])
-      )
-
-      const votingModuleContractName =
-        votingModuleInfo?.info.contract || 'fallback'
-
-      // Some voting modules don't support the isActive query, so if the query
-      // fails, assume active.
-      const isActive =
-        isActiveResponse.state === 'hasError' ||
-        (isActiveResponse.state === 'hasValue' &&
-          isActiveResponse.contents.active)
-      const activeThreshold =
-        (activeThresholdResponse.state === 'hasValue' &&
-          activeThresholdResponse.contents.active_threshold) ||
-        null
-
-      // Convert items list into map.
-      const items = _items.reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value,
-        }),
-        {} as Record<string, string>
-      )
-
-      const { admin } = dumpState
-
-      const parentDao: DaoParentInfo | null =
-        admin && admin !== coreAddress
-          ? get(
-              daoParentInfoSelector({
-                chainId,
-                parentAddress: admin,
-                childAddress: coreAddress,
-              })
-            ) || null
-          : null
-
-      const daoInfo: DaoInfo = {
-        chainId,
-        coreAddress,
-        coreVersion,
-        supportedFeatures: getSupportedFeatures(coreVersion),
-        votingModuleAddress: dumpState.voting_module,
-        votingModuleContractName,
-        proposalModules,
-        name: dumpState.config.name,
-        description: dumpState.config.description,
-        imageUrl: dumpState.config.image_url || getFallbackImage(coreAddress),
-        created: created?.getTime() || null,
-        isActive,
-        activeThreshold,
-        items,
-        polytoneProxies,
-        accounts,
-        parentDao,
-        admin,
-      }
-
-      return daoInfo
-    },
-})
-
-export const daoInfoFromPolytoneProxySelector = selectorFamily<
-  | {
-      chainId: string
-      coreAddress: string
-      info: DaoInfo
-    }
-  | undefined,
-  WithChainId<{ proxy: string }>
->({
-  key: 'daoInfoFromPolytoneProxy',
-  get:
-    (params) =>
-    ({ get }) => {
-      const { chainId, address } =
-        get(reverseLookupPolytoneProxySelector(params)) ?? {}
-      if (!chainId || !address) {
-        return
-      }
-
-      // Get DAO info on source chain.
-      const info = get(
-        daoInfoSelector({
-          chainId,
-          coreAddress: address,
-        })
-      )
-
-      return {
-        chainId,
-        coreAddress: address,
-        info,
-      }
     },
 })
 

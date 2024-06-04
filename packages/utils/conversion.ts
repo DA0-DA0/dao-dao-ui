@@ -249,24 +249,30 @@ export const combineLoadingDataWithErrors = <T>(
  */
 export const makeCombineQueryResultsIntoLoadingData =
   <T extends unknown = unknown, R extends unknown = T[]>({
-    loadAllOnce = true,
+    firstLoad = 'all',
     transform = (results: T[]) => results as R,
   }: {
     /**
-     * Whether or not to show loading until all of the results are loaded for
-     * the first time. If false, will show not loading (just updating) once the
-     * first result is loaded. Defaults to true.
+     * Whether or not to show loading until all of the results are loaded, at
+     * least one result is loaded, or none of the results are loaded. If 'one',
+     * will show not loading (just updating) once the first result is loaded. If
+     * 'none', will never show loading.
+     *
+     * Defaults to 'all'.
      */
-    loadAllOnce?: boolean
+    firstLoad?: 'all' | 'one' | 'none'
     /**
      * Optional transformation function that acts on combined list of data.
      */
     transform?: (results: T[]) => R
   }) =>
   (results: UseQueryResult<T>[]): LoadingData<R> => {
-    const isLoading = loadAllOnce
-      ? results.some((r) => r.isPending)
-      : results.every((r) => r.isPending)
+    const isLoading =
+      firstLoad === 'all'
+        ? results.some((r) => r.isPending)
+        : firstLoad === 'one'
+        ? results.every((r) => r.isPending)
+        : false
 
     if (isLoading) {
       return {
@@ -280,7 +286,9 @@ export const makeCombineQueryResultsIntoLoadingData =
         // successfully loaded and returned undefined. isPending will be true if
         // data is not yet loaded.
         data: transform(
-          results.flatMap((r) => (r.isPending ? [] : [r.data as T]))
+          results.flatMap((r) =>
+            r.isPending || r.isError ? [] : [r.data as T]
+          )
         ),
       }
     }

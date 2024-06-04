@@ -1,9 +1,10 @@
-import { queryOptions } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import {
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
+  isValidBech32Address,
 } from '@dao-dao/utils'
 
 /**
@@ -47,21 +48,16 @@ const fetchChainModuleAddress = async ({
 }
 
 /**
- * Check whether or not the address is a chain module, optionally with a
- * specific name.
+ * Fetch the module name associated with the specified address. Returns null if
+ * not a module account.
  */
-export const isAddressModule = async ({
+const fetchChainModuleName = async ({
   chainId,
   address,
-  moduleName,
 }: {
   chainId: string
   address: string
-  /**
-   * If defined, check that the module address matches the specified name.
-   */
-  moduleName?: string
-}): Promise<boolean> => {
+}): Promise<string | null> => {
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
 
   try {
@@ -70,24 +66,77 @@ export const isAddressModule = async ({
     })
 
     if (!account) {
+      return null
+    }
+
+    // If not decoded automatically...
+    if (account.typeUrl === ModuleAccount.typeUrl) {
+      return ModuleAccount.decode(account.value).name
+
+      // If decoded automatically...
+    } else if (account.$typeUrl === ModuleAccount.typeUrl) {
+      return (account as unknown as ModuleAccount).name
+    }
+  } catch (err) {
+    // If no account found, return null.
+    if (
+      err instanceof Error &&
+      err.message.includes('not found: key not found')
+    ) {
+      return null
+    }
+
+    // Rethrow other errors.
+    throw err
+  }
+
+  return null
+}
+
+/**
+ * Check whether or not the address is a chain module, optionally with a
+ * specific name.
+ */
+export const isAddressModule = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+    moduleName,
+  }: {
+    chainId: string
+    address: string
+    /**
+     * If defined, check that the module address matches the specified name.
+     */
+    moduleName?: string
+  }
+): Promise<boolean> => {
+  if (!isValidBech32Address(address)) {
+    return false
+  }
+
+  try {
+    const name = await queryClient.fetchQuery(
+      chainQueries.moduleName({
+        chainId,
+        address,
+      })
+    )
+
+    // Null if not a module.
+    if (!name) {
       return false
     }
 
-    if (account.typeUrl === ModuleAccount.typeUrl) {
-      const moduleAccount = ModuleAccount.decode(account.value)
-      return !moduleName || moduleAccount.name === moduleName
-
-      // If already decoded automatically.
-    } else if (account.$typeUrl === ModuleAccount.typeUrl) {
-      return (
-        !moduleName || (account as unknown as ModuleAccount).name === moduleName
-      )
-    }
+    // If name to check provided, check it. Otherwise, return true.
+    return !moduleName || name === moduleName
   } catch (err) {
+    // If invalid address, return false. Should never happen because of the
+    // check at the beginning, but just in case.
     if (
       err instanceof Error &&
-      (err.message.includes('not found: key not found') ||
-        err.message.includes('decoding bech32 failed'))
+      err.message.includes('decoding bech32 failed')
     ) {
       return false
     }
@@ -95,8 +144,6 @@ export const isAddressModule = async ({
     // Rethrow other errors.
     throw err
   }
-
-  return false
 }
 
 /**
@@ -123,13 +170,25 @@ export const chainQueries = {
       queryFn: () => fetchChainModuleAddress(options),
     }),
   /**
+   * Fetch the module name associated with the specified address. Returns null
+   * if not a module account.
+   */
+  moduleName: (options: Parameters<typeof fetchChainModuleName>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'moduleName', options],
+      queryFn: () => fetchChainModuleName(options),
+    }),
+  /**
    * Check whether or not the address is a chain module, optionally with a
    * specific name.
    */
-  isAddressModule: (options: Parameters<typeof isAddressModule>[0]) =>
+  isAddressModule: (
+    queryClient: QueryClient,
+    options: Parameters<typeof isAddressModule>[1]
+  ) =>
     queryOptions({
       queryKey: ['chain', 'isAddressModule', options],
-      queryFn: () => isAddressModule(options),
+      queryFn: () => isAddressModule(queryClient, options),
     }),
   /**
    * Fetch the timestamp for a given block height.

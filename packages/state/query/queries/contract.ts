@@ -211,6 +211,17 @@ export const contractQueries = {
       nameOrNames: ContractName.PolytoneProxy,
     }),
   /**
+   * Check if a contract is a cw1-whitelist.
+   */
+  isCw1Whitelist: (
+    queryClient: QueryClient,
+    options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
+  ) =>
+    contractQueries.isContract(queryClient, {
+      ...options,
+      nameOrNames: ContractName.Cw1Whitelist,
+    }),
+  /**
    * Fetch contract instantiation time.
    */
   instantiationTime: (

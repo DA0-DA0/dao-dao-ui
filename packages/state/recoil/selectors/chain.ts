@@ -67,7 +67,6 @@ import {
 } from '@dao-dao/utils'
 
 import { SearchGovProposalsOptions } from '../../indexer'
-import { isAddressModule } from '../../query/queries/chain'
 import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
@@ -1236,15 +1235,6 @@ export const moduleNameForAddressSelector = selectorFamily<
         throw err
       }
     },
-})
-
-// Check whether or not the address is a module account.
-export const isAddressModuleSelector = selectorFamily<
-  boolean,
-  Parameters<typeof isAddressModule>[0]
->({
-  key: 'isAddressModule',
-  get: (options) => () => isAddressModule(options),
 })
 
 // Get bonded and unbonded tokens. Bonded tokens represent all possible

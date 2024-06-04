@@ -96,110 +96,101 @@ export const fetchDaoInfo = async (
   const supportedFeatures = getSupportedFeatures(coreVersion)
 
   const [
-    // Not allowed to fail.
-    [
-      votingModuleInfo,
-      created,
-      proposalModules,
-      _items,
-      polytoneProxies,
-      accounts,
-    ],
-    // Allowed to fail.
-    [parentDaoResponse, isActiveResponse, activeThresholdResponse],
+    parentDao,
+    votingModuleInfo,
+    created,
+    proposalModules,
+    _items,
+    polytoneProxies,
+    accounts,
+    isActive,
+    activeThreshold,
   ] = await Promise.all([
-    // Not allowed to fail.
-    Promise.all([
-      // Check if indexer returned this already.
-      'votingModuleInfo' in state
-        ? ({ info: state.votingModuleInfo } as InfoResponse)
-        : queryClient.fetchQuery(
-            contractQueries.info(queryClient, {
-              chainId,
-              address: state.voting_module,
-            })
-          ),
-      // Check if indexer returned this already.
-      'createdAt' in state && state.createdAt
-        ? Date.parse(state.createdAt)
-        : queryClient
-            .fetchQuery(
-              contractQueries.instantiationTime(queryClient, {
-                chainId,
-                address: coreAddress,
-              })
-            )
-            .catch(() => null),
-      queryClient.fetchQuery(
-        daoQueries.proposalModules(queryClient, {
-          chainId,
-          coreAddress,
-        })
-      ),
-      queryClient.fetchQuery(
-        daoDaoCoreQueries.listAllItems(queryClient, {
-          chainId,
-          contractAddress: coreAddress,
-        })
-      ),
-      // Check if indexer returned this already.
-      'polytoneProxies' in state && state.polytoneProxies
-        ? (state.polytoneProxies as PolytoneProxies)
-        : queryClient.fetchQuery(
-            polytoneQueries.proxies(queryClient, {
-              chainId,
-              address: coreAddress,
-            })
-          ),
-      queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
-          chainId,
-          address: coreAddress,
-        })
-      ),
-    ]),
-    // May fail.
-    Promise.allSettled([
-      state.admin && state.admin !== coreAddress
-        ? queryClient.fetchQuery(
+    state.admin && state.admin !== coreAddress
+      ? queryClient
+          .fetchQuery(
             daoQueries.parentInfo(queryClient, {
               chainId,
               parentAddress: state.admin,
               subDaoAddress: coreAddress,
             })
           )
-        : null,
-      queryClient.fetchQuery(
+          .catch(() => null)
+      : null,
+    // Check if indexer returned this already.
+    'votingModuleInfo' in state
+      ? ({ info: state.votingModuleInfo } as InfoResponse)
+      : queryClient.fetchQuery(
+          contractQueries.info(queryClient, {
+            chainId,
+            address: state.voting_module,
+          })
+        ),
+    // Check if indexer returned this already.
+    'createdAt' in state && state.createdAt
+      ? Date.parse(state.createdAt)
+      : queryClient
+          .fetchQuery(
+            contractQueries.instantiationTime(queryClient, {
+              chainId,
+              address: coreAddress,
+            })
+          )
+          .catch(() => null),
+    queryClient.fetchQuery(
+      daoQueries.proposalModules(queryClient, {
+        chainId,
+        coreAddress,
+      })
+    ),
+    queryClient.fetchQuery(
+      daoDaoCoreQueries.listAllItems(queryClient, {
+        chainId,
+        contractAddress: coreAddress,
+      })
+    ),
+    // Check if indexer returned this already.
+    'polytoneProxies' in state && state.polytoneProxies
+      ? (state.polytoneProxies as PolytoneProxies)
+      : queryClient.fetchQuery(
+          polytoneQueries.proxies(queryClient, {
+            chainId,
+            address: coreAddress,
+          })
+        ),
+    queryClient.fetchQuery(
+      accountQueries.list(queryClient, {
+        chainId,
+        address: coreAddress,
+      })
+    ),
+
+    // Some voting modules don't support the active threshold queries, so if the
+    // queries fail, assume active and no threshold.
+    queryClient
+      .fetchQuery(
         votingModuleQueries.isActive({
           chainId,
           address: state.voting_module,
         })
-      ),
-      queryClient.fetchQuery(
+      )
+      // If isActive query fails, just assume it is.
+      .catch(() => true),
+    queryClient
+      .fetchQuery(
         votingModuleQueries.activeThresold(queryClient, {
           chainId,
           address: state.voting_module,
         })
-      ),
-    ]),
+      )
+      .then(({ active_threshold }) => active_threshold || null)
+      .catch(() => null),
   ])
 
   const votingModuleContractName = votingModuleInfo.info.contract
 
-  // Some voting modules don't support the isActive query, so if the query
-  // fails, assume active.
-  const isActive =
-    isActiveResponse.status !== 'fulfilled' || isActiveResponse.value
-  const activeThreshold =
-    (activeThresholdResponse.status === 'fulfilled' &&
-      activeThresholdResponse.value.active_threshold) ||
-    null
-
   // Convert items list into map.
   const items = Object.fromEntries(_items)
-
-  const parentDao =
-    parentDaoResponse.status === 'fulfilled' ? parentDaoResponse.value : null
 
   return {
     chainId,
@@ -232,6 +223,7 @@ export const fetchDaoParentInfo = async (
     chainId,
     parentAddress,
     subDaoAddress,
+    ignoreParents,
   }: {
     chainId: string
     parentAddress: string
@@ -240,7 +232,11 @@ export const fetchDaoParentInfo = async (
      * This will set `registeredSubDao` appropriately. Otherwise, if undefined,
      * `registeredSubDao` will be set to false.
      */
-    subDaoAddress: string
+    subDaoAddress?: string
+    /**
+     * Prevent infinite loop if DAO SubDAO loop exists.
+     */
+    ignoreParents?: string[]
   }
 ): Promise<DaoParentInfo> => {
   // If address is a DAO contract...
@@ -290,6 +286,22 @@ export const fetchDaoParentInfo = async (
         )
       ).some(({ addr }) => addr === subDaoAddress)
 
+    // Recursively fetch parent.
+    const parentDao =
+      parentAdmin && parentAdmin !== parentAddress
+        ? await queryClient
+            .fetchQuery(
+              daoQueries.parentInfo(queryClient, {
+                chainId,
+                parentAddress: parentAdmin,
+                subDaoAddress: parentAddress,
+                // Add address to ignore list to prevent infinite loops.
+                ignoreParents: [...(ignoreParents || []), parentAddress],
+              })
+            )
+            .catch(() => null)
+        : null
+
     return {
       chainId,
       coreAddress: parentAddress,
@@ -298,13 +310,12 @@ export const fetchDaoParentInfo = async (
       imageUrl: image_url || getFallbackImage(parentAddress),
       admin: parentAdmin ?? '',
       registeredSubDao,
-      // TODO(rq): recursively fetch parent infos but prevent infinite loops
-      parentDao: null,
+      parentDao,
     }
   } else {
     // If address is the chain's x/gov module...
     const isGov = await queryClient.fetchQuery(
-      chainQueries.isAddressModule({
+      chainQueries.isAddressModule(queryClient, {
         chainId,
         address: parentAddress,
         moduleName: 'gov',
@@ -385,7 +396,9 @@ export const daoQueries = {
    */
   info: (
     queryClient: QueryClient,
-    // If undefined, query will be disabled.
+    /**
+     * If undefined, query will be disabled.
+     */
     options?: Parameters<typeof fetchDaoInfo>[1]
   ) =>
     queryOptions({
@@ -397,11 +410,16 @@ export const daoQueries = {
    */
   parentInfo: (
     queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoParentInfo>[1]
+    /**
+     * If undefined, query will be disabled.
+     */
+    options?: Parameters<typeof fetchDaoParentInfo>[1]
   ) =>
     queryOptions({
       queryKey: ['dao', 'parentInfo', options],
-      queryFn: () => fetchDaoParentInfo(queryClient, options),
+      queryFn: options
+        ? () => fetchDaoParentInfo(queryClient, options)
+        : skipToken,
     }),
   /**
    * Fetch DAO info for all of a DAO's SubDAOs.

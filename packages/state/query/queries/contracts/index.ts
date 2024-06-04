@@ -1,3 +1,4 @@
+export * from './Cw1Whitelist'
 export * from './DaoDaoCore'
 export * from './PolytoneNote'
 export * from './PolytoneProxy'

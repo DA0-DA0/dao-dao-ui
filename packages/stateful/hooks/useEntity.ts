@@ -1,7 +1,8 @@
 import { fromBech32 } from '@cosmjs/encoding'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
-import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { useChain } from '@dao-dao/stateless'
 import { Entity, EntityType, LoadingData } from '@dao-dao/types'
 import {
   getConfiguredChains,
@@ -9,7 +10,8 @@ import {
   makeEmptyUnifiedProfile,
 } from '@dao-dao/utils'
 
-import { entitySelector } from '../recoil'
+import { entityQueries } from '../queries/entity'
+import { useCachedLoadingQuery } from './useCachedLoadingQuery'
 
 export type UseEntityReturn = {
   /**
@@ -52,14 +54,17 @@ export const useEntity = (address: string): UseEntityReturn => {
     return currentChainId
   }, [address, currentBech32Prefix, currentChainId])
 
-  const entity = useCachedLoading(
-    address
-      ? entitySelector({
-          chainId,
-          address,
-        })
-      : undefined,
-    // Should never error as it uses loadables internally.
+  const entity = useCachedLoadingQuery(
+    entityQueries.info(
+      useQueryClient(),
+      address
+        ? {
+            chainId,
+            address,
+          }
+        : undefined
+    ),
+    // Should never error but just in case...
     {
       type: EntityType.Wallet,
       chainId,

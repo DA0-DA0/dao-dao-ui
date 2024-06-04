@@ -17,6 +17,13 @@ export type Entity = {
   address: string
   name: string | null
   imageUrl: string
+  /**
+   * If loaded from a Polytone proxy, this will be set to the proxy.
+   */
+  polytoneProxy?: {
+    chainId: string
+    address: string
+  }
 } & (
   | {
       type: EntityType.Wallet
@@ -28,11 +35,6 @@ export type Entity = {
   | {
       type: EntityType.Dao
       daoInfo: DaoInfo
-      // If loaded from a DAO's Polytone proxy, this will be set.
-      polytoneProxy?: {
-        chainId: string
-        address: string
-      }
     }
   | {
       type: EntityType.Cw1Whitelist
