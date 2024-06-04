@@ -467,20 +467,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
       [ChainId.InjectiveMainnet]: {
         // osmosis
-        note: 'osmo16passct926eern05hzuf46g9809cvavhxv9qw9rm5wnu9fk0gfxs2v37x7',
+        note: 'osmo1zc4fdqwswxxwp9rqh9uq3crs5ykerzn2rptsznawsq7wp6jyhj0qddwey7',
         // osmosis
         listener:
-          'osmo1c6htfqceqr4vuln2ryrs7sk6mkdvqrgt5j5vlw8x5ql0cjvy29ls5dkyll',
+          'osmo1x0hsnee8we57dn2rspvq7sj30l333v7mmr5kz5r2wg7nhxufrr6skvc4gz',
         // injective
-        voice: 'inj1kt7anwm5wy9e8grq04z46z08yqd49ewq97g8f0',
+        voice: 'inj10fxuwynmp9jtuumq27cuw0lw5quajpgxw692g5',
         // osmosis
         localConnection: 'connection-1298',
         // injective
         remoteConnection: 'connection-14',
         // osmosis
-        localChannel: 'channel-73927',
+        localChannel: 'channel-77133',
         // injective
-        remoteChannel: 'channel-266',
+        remoteChannel: 'channel-301',
       },
     },
   },
@@ -638,20 +638,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
       [ChainId.InjectiveMainnet]: {
         // neutron
-        note: 'neutron1565ewvznhrw3t96ztv8gan3ykr7262gjrl4xy449mhgvl5h6gdkq027r4c',
+        note: 'neutron1wpt84q6qsjtlv27vgk0pwg3l7dlueknlxz0xrh7teeut9strqyysrxc5a0',
         // neutron
         listener:
-          'neutron1ga58f9hz8v8fjtpspmtrmakpdapc2jdddhszpwg0dfjuwg8xt5fqgud73l',
+          'neutron12x9tc008u8teyg3txy2t70rjxz8cxxuftkk3plmccn0key4mxpuskq02jx',
         // injective
-        voice: 'inj1ac4y7r7ec47jh9re379ejcl942a9c5k6f23yqa',
+        voice: 'inj1v37vgn6y4knzr9e7uc3u9czxj3dcxug7s5lhzh',
         // neutron
         localConnection: 'connection-58',
         // injective
         remoteConnection: 'connection-220',
         // neutron
-        localChannel: 'channel-4188',
+        localChannel: 'channel-4498',
         // injective
-        remoteChannel: 'channel-271',
+        remoteChannel: 'channel-304',
       },
     },
   },
@@ -997,20 +997,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
       [ChainId.InjectiveMainnet]: {
         // migaloo
-        note: 'migaloo1e63cld4ex3062nvrx8f6dald97c5f9am3y8eledc0za7tvyzc7usvn3nwr',
+        note: 'migaloo190zmewmp5pv2mhv3mqpmvseh55902fae3wn0mraxyrp3cys55jksftxwan',
         // migaloo
         listener:
-          'migaloo1mdz2smpj6hs4caerx0sch2hdvs2zj4eryr7unv9vqrrfw7xjuz6qd5j38z',
+          'migaloo1v4sw52jhgzuhsr8fmt9an390xevvafec0gd320h2auvfnlr4tftsu99m73',
         // injective
-        voice: 'inj1ql2qpt5uudppa33yf0p03fssxtkhqawxdw4czf',
+        voice: 'inj1edfqvfyvpce8qm5avph43spnm5plt2en2lgdg6',
         // migaloo
         localConnection: 'connection-8',
         // injective
         remoteConnection: 'connection-123',
         // migaloo
-        localChannel: 'channel-117',
+        localChannel: 'channel-120',
         // injective
-        remoteChannel: 'channel-264',
+        remoteChannel: 'channel-309',
       },
     },
   },
@@ -1163,20 +1163,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
       [ChainId.InjectiveMainnet]: {
         // terra
-        note: 'terra1pmhsahmn5eymdn07yahp9692jnqyh54f7pak82v4nwzylgfrvkaq8grraa',
+        note: 'terra1vf2janv5s6ywsa8lj4m5q7jdw3wfqpmgtkgdllh24l2shz0qyv4qvtjkuk',
         // terra
         listener:
-          'terra1m2xgx2n6wu5lw2zk3sxpyyr7f75fe9v32u3av9lfl6h64mutw96qztacj9',
+          'terra1yu9encxx42k6rswr7skl43dhfxqzljddlk3wj250q7uykxzflw7qykt6wt',
         // injective
-        voice: 'inj1eksx0xjfzdcvesfq0kk7fcdv534ajrmccg27ah',
+        voice: 'inj1tr0uhnh6dwtvaunnpa3zcdrq3gvq9y47jrysu8',
         // terra
         localConnection: 'connection-311',
         // injective
         remoteConnection: 'connection-202',
         // terra
-        localChannel: 'channel-397',
+        localChannel: 'channel-488',
         // injective
-        remoteChannel: 'channel-272',
+        remoteChannel: 'channel-289',
       },
     },
   },
