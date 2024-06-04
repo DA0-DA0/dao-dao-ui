@@ -28,7 +28,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
         admin: msg.wasm.execute.nominate_admin.admin,
       },
     }
-  } catch (e) {
+  } catch {
     return { match: false }
   }
 }

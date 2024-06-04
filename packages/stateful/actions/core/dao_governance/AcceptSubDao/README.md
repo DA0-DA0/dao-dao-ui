@@ -9,7 +9,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`becomeSubDao`
+`acceptSubDao`
 
 ### Data format
 
