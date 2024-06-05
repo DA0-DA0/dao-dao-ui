@@ -15,6 +15,7 @@
     "start": "next start",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
+    "test:e2e": "cp .env.testnet .env && playwright test",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
   },
@@ -53,12 +54,15 @@
   "devDependencies": {
     "@dao-dao/config": "2.4.0-rc.8",
     "@next/bundle-analyzer": "^14.1.0",
+    "@playwright/test": "^1.44.1",
     "@sentry/cli": "^2.21.3",
     "@solana/web3.js": "^1.75.0",
     "@types/cors": "^2.8.13",
     "@types/lodash.clonedeep": "^4.5.0",
+    "@types/node": "^20.14.2",
     "@types/react": "^17.0.37",
     "autoprefixer": "^9.8.6",
+    "dotenv": "^16.4.5",
     "eslint": "^8.23.1",
     "eslint-plugin-header": "^3.1.1",
     "next-i18next": "^11.0.0",

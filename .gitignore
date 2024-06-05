@@ -15,10 +15,7 @@ node_modules/
 out/
 
 .env
-.env.development.local
-.env.local
-.env.production.local
-.env.test.local
+.env*.local
 
 *.swo
 *.swp
@@ -28,3 +25,9 @@ out/
 \#*\#
 
 .turbo
+
+# playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
