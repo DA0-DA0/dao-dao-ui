@@ -17,11 +17,12 @@ export const Breadcrumbs = ({
   override = false,
   homeTab,
   current,
+  daoInfo: _daoInfo,
   className,
 }: BreadcrumbsProps) => {
   const { t } = useTranslation()
   // Allow using Breadcrumbs outside of DaoPageWrapper.
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const daoInfo = useDaoInfoContextIfAvailable() || _daoInfo
   const { mode } = useAppContext()
   const { getDaoPath } = useDaoNavHelpers()
 

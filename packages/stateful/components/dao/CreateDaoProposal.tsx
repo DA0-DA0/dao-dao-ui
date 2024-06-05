@@ -379,6 +379,7 @@ const InnerCreateDaoProposal = ({
             sdaLabel: t('title.proposals'),
           },
           current: t('title.createProposal'),
+          daoInfo,
         }}
       />
 

@@ -42,9 +42,8 @@ export const InnerDaoDappHome = ({
   ...props
 }: InnerDaoDappHomeProps) => {
   const { t } = useTranslation()
-  const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-
   const daoInfo = useDaoInfoContext()
+  const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
@@ -111,6 +110,7 @@ export const InnerDaoDappHome = ({
         breadcrumbs={{
           home: true,
           current: daoInfo.name,
+          daoInfo,
         }}
         rightNode={
           <>

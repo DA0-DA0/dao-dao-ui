@@ -45,7 +45,7 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const daoInfo = useDaoInfoContext()
   const { address } = useWallet()
 
   const proposalModuleAdapterContext = useProposalModuleAdapterContext()
@@ -135,7 +135,9 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           toast.loading(t('success.proposalExecuted'))
 
           // Manually revalidate DAO static props.
-          await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
+          await fetch(
+            `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
+          )
 
           // Refresh entire app since any DAO config may have changed.
           window.location.reload()
@@ -244,6 +246,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             sdaLabel: t('title.proposals'),
           },
           current: `${t('title.proposal')} ${proposalInfo.id}`,
+          daoInfo,
         }}
         rightNode={
           canVote ? (

@@ -14,7 +14,7 @@ import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoSdaHome = () => {
   const router = useRouter()
-  const { coreAddress } = useDaoInfoContext()
+  const daoInfo = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
 
   const loadingTabs = useDaoTabs()
@@ -27,9 +27,9 @@ export const DaoSdaHome = () => {
   // Pre-fetch tabs.
   useEffect(() => {
     tabs?.forEach((tab) => {
-      router.prefetch(getDaoPath(coreAddress, tab.id))
+      router.prefetch(getDaoPath(daoInfo.coreAddress, tab.id))
     })
-  }, [coreAddress, getDaoPath, router, tabs])
+  }, [daoInfo.coreAddress, getDaoPath, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
   const checkedSlug = useRef(false)
@@ -44,11 +44,11 @@ export const DaoSdaHome = () => {
 
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.replace(getDaoPath(coreAddress, firstTabId), undefined, {
+      router.replace(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
         shallow: true,
       })
     }
-  }, [coreAddress, getDaoPath, router, slug.length, firstTabId])
+  }, [daoInfo.coreAddress, getDaoPath, router, slug.length, firstTabId])
 
   const selectedTabId =
     slug.length > 0 && tabs?.some(({ id }) => id === slug[0])
@@ -65,6 +65,7 @@ export const DaoSdaHome = () => {
         breadcrumbs={{
           home: true,
           current: activeTab?.label,
+          daoInfo,
         }}
       />
 

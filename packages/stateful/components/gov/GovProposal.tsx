@@ -14,6 +14,7 @@ import {
   ProposalNotFound,
   useCachedLoadingWithError,
   useChain,
+  useDaoInfoContextIfAvailable,
 } from '@dao-dao/stateless'
 import {
   BaseProposalVotesProps,
@@ -47,6 +48,7 @@ type InnerGovProposalProps = {
 const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
+  const daoInfo = useDaoInfoContextIfAvailable()
 
   const proposalId = proposal.id.toString()
   const loadingProposal = useLoadingGovProposal(proposalId)
@@ -114,6 +116,7 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
             sdaLabel: t('title.proposals'),
           },
           current: `${t('title.proposal')} ${proposalId}`,
+          daoInfo,
         }}
         rightNode={
           proposal.proposal.status ===
