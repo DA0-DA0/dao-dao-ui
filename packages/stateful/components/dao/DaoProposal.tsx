@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ProposalModuleAdapterBothProviders,
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
 } from '@dao-dao/stateful/proposal-module-adapter'
@@ -30,6 +31,7 @@ import {
 } from '@dao-dao/types'
 
 import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
+import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
@@ -45,6 +47,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { address } = useWallet()
+
+  const proposalModuleAdapterContext = useProposalModuleAdapterContext()
+  const proposalModuleAdapterCommonContext =
+    useProposalModuleAdapterCommonContext()
+
   const {
     options: { proposalModule, isPreProposeApprovalProposal },
     adapter: {
@@ -57,7 +64,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       },
       hooks: { useProposalRefreshers, useLoadingWalletVoteInfo },
     },
-  } = useProposalModuleAdapterContext()
+  } = proposalModuleAdapterContext
 
   const { refreshProposalAndAll } = useProposalRefreshers()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
@@ -256,10 +263,16 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
                 },
               }}
             >
-              <ProposalVoter
-                onVoteSuccess={onVoteSuccess}
-                seenAllActionPages={seenAllActionPages}
-              />
+              {/* Voter is rendered in page header outside of the current context, so this needs to be wrapped in another provider. */}
+              <ProposalModuleAdapterBothProviders
+                commonContext={proposalModuleAdapterCommonContext}
+                context={proposalModuleAdapterContext}
+              >
+                <ProposalVoter
+                  onVoteSuccess={onVoteSuccess}
+                  seenAllActionPages={seenAllActionPages}
+                />
+              </ProposalModuleAdapterBothProviders>
             </Popup>
           ) : undefined
         }

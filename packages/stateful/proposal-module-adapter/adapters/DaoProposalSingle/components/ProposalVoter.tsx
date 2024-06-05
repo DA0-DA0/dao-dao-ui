@@ -61,9 +61,9 @@ const InnerProposalVoter = ({
 }) => {
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
-  // Should never be shown if canVote is false.
+  // Should not be shown if canVote is false.
   if (!walletVoteInfo.canVote) {
-    throw new Error('internal error: cannot vote')
+    return null
   }
 
   return (

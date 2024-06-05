@@ -4,6 +4,8 @@ import { useChain } from '@dao-dao/stateless'
 import {
   IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
+  IProposalModuleCommonContext,
+  IProposalModuleContext,
   ProposalModule,
 } from '@dao-dao/types'
 
@@ -43,11 +45,12 @@ export const ProposalModuleAdapterProvider = ({
   }, [chain, coreAddress, proposalId, proposalModules])
 
   return (
-    <ProposalModuleAdapterCommonContext.Provider value={commonContext}>
-      <ProposalModuleAdapterContext.Provider value={context}>
-        {children}
-      </ProposalModuleAdapterContext.Provider>
-    </ProposalModuleAdapterCommonContext.Provider>
+    <ProposalModuleAdapterBothProviders
+      commonContext={commonContext}
+      context={context}
+    >
+      {children}
+    </ProposalModuleAdapterBothProviders>
   )
 }
 
@@ -77,3 +80,24 @@ export const ProposalModuleAdapterCommonProvider = ({
     </ProposalModuleAdapterCommonContext.Provider>
   )
 }
+
+export type ProposalModuleAdapterBothProvidersProps = {
+  commonContext: IProposalModuleCommonContext
+  context: IProposalModuleContext
+  children: ReactNode | ReactNode[]
+}
+
+/**
+ * Wrapper around both proposal module adapter contexts.
+ */
+export const ProposalModuleAdapterBothProviders = ({
+  commonContext,
+  context,
+  children,
+}: ProposalModuleAdapterBothProvidersProps) => (
+  <ProposalModuleAdapterCommonContext.Provider value={commonContext}>
+    <ProposalModuleAdapterContext.Provider value={context}>
+      {children}
+    </ProposalModuleAdapterContext.Provider>
+  </ProposalModuleAdapterCommonContext.Provider>
+)
