@@ -1,3 +1,4 @@
+import uniqBy from 'lodash.uniqby'
 import { useEffect, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
@@ -75,7 +76,9 @@ const InnerGovProposalVotes = ({
             })
           )
 
-          setVotes((prev) => [...prev, ...newVotes])
+          setVotes((prev) =>
+            uniqBy([...prev, ...newVotes], ({ voterAddress }) => voterAddress)
+          )
           setNoMoreVotes(newVotes.length < VOTES_PER_PAGE)
         } finally {
           setLoading(false)
