@@ -39,8 +39,8 @@ import {
   SuspenseLoader,
 } from '../../../../components'
 import {
-  useCachedLoadingQuery,
-  useCachedLoadingWithErrorQuery,
+  useQueryLoadingData,
+  useQueryLoadingDataWithError,
 } from '../../../../hooks'
 import { daoQueries } from '../../../../queries/dao'
 import {
@@ -103,14 +103,14 @@ const InnerComponentWrapper: ActionComponent<
   const { chain_id: chainId } = useChain()
 
   const queryClient = useQueryClient()
-  const isDao = useCachedLoadingQuery(
+  const isDao = useQueryLoadingData(
     contractQueries.isDao(queryClient, {
       chainId,
       address,
     }),
     false
   )
-  const daoInfo = useCachedLoadingWithErrorQuery(
+  const daoInfo = useQueryLoadingDataWithError(
     daoQueries.info(
       useQueryClient(),
       !isDao.loading && isDao.data

@@ -26,7 +26,7 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
-import { useCachedLoadingWithErrorQuery } from '../../../../hooks'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { daoQueries } from '../../../../queries/dao'
 import {
   useActionOptions,
@@ -119,7 +119,7 @@ const Component: ActionComponent = (props) => {
       ? daoSubDaosLoadable
       : walletAdminOfDaosLoadable
 
-  const daoInfo = useCachedLoadingWithErrorQuery(
+  const daoInfo = useQueryLoadingDataWithError(
     daoQueries.info(
       useQueryClient(),
       coreAddress && isValidBech32Address(coreAddress, bech32Prefix)

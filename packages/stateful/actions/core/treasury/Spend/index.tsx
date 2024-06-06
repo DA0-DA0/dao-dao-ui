@@ -70,7 +70,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
-import { useCachedLoadingWithErrorQuery } from '../../../../hooks'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterCommonContextIfAvailable } from '../../../../proposal-module-adapter/react/context'
 import { entityQueries } from '../../../../queries/entity'
@@ -506,7 +506,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 
   const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
   const queryClient = useQueryClient()
-  const loadingEntity = useCachedLoadingWithErrorQuery(
+  const loadingEntity = useQueryLoadingDataWithError(
     entityQueries.info(
       queryClient,
       validRecipient

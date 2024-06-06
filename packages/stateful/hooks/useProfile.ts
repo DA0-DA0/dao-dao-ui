@@ -11,7 +11,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useCachedLoadingQuery } from './useCachedLoadingQuery'
+import { useQueryLoadingData } from './useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -105,7 +105,7 @@ export const useProfile = ({
 
   const profileAddress = address || currentAddress
 
-  const profile = useCachedLoadingQuery(
+  const profile = useQueryLoadingData(
     profileQueries.unified(useQueryClient(), {
       chainId: walletChainId,
       address: profileAddress,

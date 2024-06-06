@@ -13,8 +13,8 @@ import {
 import { makeCombineQueryResultsIntoLoadingData } from '@dao-dao/utils'
 
 import { daoQueries as statefulDaoQueries } from '../queries/dao'
-import { useCachedLoadingQuery } from './useCachedLoadingQuery'
 import { useProfile } from './useProfile'
+import { useQueryLoadingData } from './useQueryLoadingData'
 
 export const useLoadingDaos = (
   daos: LoadingData<DaoSource[]>,
@@ -49,7 +49,7 @@ export const useLoadingFeaturedDaoCards = (
    */
   chainId?: string
 ): LoadingData<StatefulDaoCardProps[]> => {
-  const featuredDaos = useCachedLoadingQuery(daoQueries.listFeatured(), [])
+  const featuredDaos = useQueryLoadingData(daoQueries.listFeatured(), [])
 
   const daos = useLoadingDaos(
     featuredDaos.loading

@@ -21,7 +21,7 @@ import {
   makeCombineQueryResultsIntoLoadingData,
 } from '@dao-dao/utils'
 
-import { useCachedLoadingWithErrorQuery } from '../hooks'
+import { useQueryLoadingDataWithError } from '../hooks'
 import { entityQueries } from '../queries/entity'
 import { EntityDisplay } from './EntityDisplay'
 
@@ -45,7 +45,7 @@ export const AddressInput = <
     // Don't search name if it's an address.
     !isValidBech32Address(formValue, currentChain.bech32_prefix)
 
-  const searchProfilesLoading = useCachedLoadingWithErrorQuery(
+  const searchProfilesLoading = useQueryLoadingDataWithError(
     profileQueries.searchByNamePrefix(
       hasFormValue && props.type !== 'contract'
         ? {

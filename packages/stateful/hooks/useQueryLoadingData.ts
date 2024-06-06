@@ -6,10 +6,13 @@ import { useUpdatingRef } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 
 /**
- * Transform react-query query results into a cached loading object that
- * components expect.
+ * Transform react-query results into our LoadingData object that components
+ * use.
  */
-export const useCachedLoadingQuery = <T extends unknown>(
+export const useQueryLoadingData = <T extends unknown>(
+  /**
+   * Query options to passthrough to useQuery.
+   */
   options: Omit<Parameters<typeof useQuery<T, Error, T, any>>[0], 'select'>,
   /**
    * Default value in case of an error.

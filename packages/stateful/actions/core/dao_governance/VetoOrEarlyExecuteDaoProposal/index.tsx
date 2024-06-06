@@ -30,7 +30,7 @@ import {
   EntityDisplay,
   ProposalLine,
 } from '../../../../components'
-import { useCachedLoadingWithErrorQuery } from '../../../../hooks'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { daoQueries } from '../../../../queries/dao'
 import { daosWithVetoableProposalsSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
@@ -101,7 +101,7 @@ const Component: ActionComponent<
   ])
 
   const queryClient = useQueryClient()
-  const selectedDaoInfo = useCachedLoadingWithErrorQuery(
+  const selectedDaoInfo = useQueryLoadingDataWithError(
     daoQueries.info(
       queryClient,
       chainId && coreAddress

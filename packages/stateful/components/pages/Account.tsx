@@ -29,7 +29,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { useCachedLoadingQuery } from '../../hooks'
+import { useQueryLoadingData } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -69,7 +69,7 @@ export const Account: NextPage = () => {
     })
   )
 
-  const profile = useCachedLoadingQuery(
+  const profile = useQueryLoadingData(
     profileQueries.unified(useQueryClient(), {
       chainId: configuredChain.chainId,
       address: accountAddress,

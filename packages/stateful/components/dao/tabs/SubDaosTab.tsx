@@ -9,7 +9,7 @@ import { ActionKey, Feature } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
-import { useCachedLoadingQuery, useMembership } from '../../../hooks'
+import { useMembership, useQueryLoadingData } from '../../../hooks'
 import { daoQueries } from '../../../queries'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
@@ -21,7 +21,7 @@ export const SubDaosTab = () => {
   const { isMember = false } = useMembership(daoInfo)
 
   const queryClient = useQueryClient()
-  const subDaos = useCachedLoadingQuery(
+  const subDaos = useQueryLoadingData(
     {
       ...daoQueries.subDaoInfos(queryClient, {
         chainId: daoInfo.chainId,

@@ -5,14 +5,17 @@ import { useUpdatingRef } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
 
 /**
- * Transform react-query query results into a cached loading with error object
- * that components expect.
+ * Transform react-query results into our LoadingDataWithError abstraction that
+ * components use.
  */
-export const useCachedLoadingWithErrorQuery = <
+export const useQueryLoadingDataWithError = <
   TQueryFnData extends unknown,
   TQueryKey extends QueryKey = QueryKey,
   TTransformedData extends unknown = TQueryFnData
 >(
+  /**
+   * Query options to passthrough to useQuery.
+   */
   options: Omit<
     Parameters<
       typeof useQuery<TQueryFnData, Error, TQueryFnData, TQueryKey>

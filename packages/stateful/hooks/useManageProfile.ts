@@ -23,8 +23,8 @@ import {
   signOffChainAuth,
 } from '@dao-dao/utils'
 
-import { useCachedLoadingQuery } from './useCachedLoadingQuery'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useQueryLoadingData } from './useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -146,7 +146,7 @@ export const useManageProfile = ({
     loadAccount: true,
   })
 
-  const profile = useCachedLoadingQuery(
+  const profile = useQueryLoadingData(
     profileQueries.unified(useQueryClient(), {
       chainId: walletChainId,
       address,

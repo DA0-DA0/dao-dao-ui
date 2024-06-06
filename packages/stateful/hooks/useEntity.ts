@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/utils'
 
 import { entityQueries } from '../queries/entity'
-import { useCachedLoadingQuery } from './useCachedLoadingQuery'
+import { useQueryLoadingData } from './useQueryLoadingData'
 
 export type UseEntityReturn = {
   /**
@@ -54,7 +54,7 @@ export const useEntity = (address: string): UseEntityReturn => {
     return currentChainId
   }, [address, currentBech32Prefix, currentChainId])
 
-  const entity = useCachedLoadingQuery(
+  const entity = useQueryLoadingData(
     entityQueries.info(
       useQueryClient(),
       address

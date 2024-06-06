@@ -24,10 +24,10 @@ import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
 import { DaoProvidersWithoutInfo } from '../../../components'
 import {
-  useCachedLoadingQuery,
   useDaoTabs,
   useFollowingDaos,
   useGovDaoTabs,
+  useQueryLoadingData,
 } from '../../../hooks'
 import { daoQueries } from '../../../queries'
 
@@ -71,7 +71,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
     const queryClient = useQueryClient()
-    const subDaosLoading = useCachedLoadingQuery(
+    const subDaosLoading = useQueryLoadingData(
       coreVersion === ContractVersion.Gov
         ? daoQueries.chainSubDaoInfos(queryClient, {
             chainId,
