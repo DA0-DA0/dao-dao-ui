@@ -19,6 +19,7 @@ import {
   govProposalsSelector,
   isDaoSelector,
   nativeDelegatedBalanceSelector,
+  queryClientAtom,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
@@ -189,6 +190,7 @@ export const daoCoreProposalModulesSelector = selectorFamily<
   get:
     ({ coreAddress, chainId }) =>
     async ({ get }) => {
+      const queryClient = get(queryClientAtom)
       const coreVersion = get(
         contractVersionSelector({
           contractAddress: coreAddress,
@@ -196,7 +198,12 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         })
       )
 
-      return await fetchProposalModules(chainId, coreAddress, coreVersion)
+      return await fetchProposalModules(
+        queryClient,
+        chainId,
+        coreAddress,
+        coreVersion
+      )
     },
 })
 

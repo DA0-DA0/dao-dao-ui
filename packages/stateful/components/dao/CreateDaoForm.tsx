@@ -1,4 +1,5 @@
 import { ArrowBack } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { useEffect, useMemo, useState } from 'react'
@@ -12,8 +13,8 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
+import { contractQueries } from '@dao-dao/state/query'
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
-import { fetchContractInfo } from '@dao-dao/state/utils'
 import {
   Button,
   ChainProvider,
@@ -32,7 +33,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
-  ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoPageMode,
@@ -148,6 +148,7 @@ export const InnerCreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContextIfAvailable()
+  const queryClient = useQueryClient()
 
   const chainContext = useSupportedChainContext()
   const {
@@ -523,10 +524,13 @@ export const InnerCreateDaoForm = ({
             error: (err) => processError(err),
           })
 
-          const info = await fetchContractInfo(chainId, coreAddress)
-          const coreVersion = info
-            ? parseContractVersion(info.version)
-            : ContractVersion.Unknown
+          const { info } = await queryClient.fetchQuery(
+            contractQueries.info(queryClient, {
+              chainId,
+              address: coreAddress,
+            })
+          )
+          const coreVersion = parseContractVersion(info.version)
 
           // Don't set following on SDA. Only dApp.
           if (mode !== DaoPageMode.Sda) {

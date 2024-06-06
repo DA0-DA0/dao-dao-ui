@@ -1,7 +1,21 @@
-import { QueryClient, QueryKey, dehydrate } from '@tanstack/react-query'
+import {
+  DehydratedState,
+  QueryClient,
+  QueryKey,
+  dehydrate,
+  hydrate,
+} from '@tanstack/react-query'
 
-export const makeReactQueryClient = () =>
-  new QueryClient({
+/**
+ * Make a new instance of the react query client.
+ */
+export const makeReactQueryClient = (
+  /**
+   * Optionally hydrate the query client with dehydrated state.
+   */
+  dehydratedState?: DehydratedState
+) => {
+  const client = new QueryClient({
     defaultOptions: {
       queries: {
         // Global default to 60 seconds.
@@ -9,6 +23,14 @@ export const makeReactQueryClient = () =>
       },
     },
   })
+
+  // Hydate if dehydrated state is provided.
+  if (dehydratedState) {
+    hydrate(client, dehydratedState)
+  }
+
+  return client
+}
 
 /**
  * Dehydrate query client and remove undefined values so it can be serialized.

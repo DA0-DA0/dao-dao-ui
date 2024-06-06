@@ -47,7 +47,12 @@ export const fetchDaoProposalModules = async (
     ).info.version
   )
 
-  return await fetchProposalModules(chainId, coreAddress, coreVersion)
+  return await fetchProposalModules(
+    queryClient,
+    chainId,
+    coreAddress,
+    coreVersion
+  )
 }
 
 /**

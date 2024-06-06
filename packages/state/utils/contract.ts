@@ -1,7 +1,6 @@
-import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
+import { QueryClient } from '@tanstack/react-query'
 
 import {
-  ContractVersionInfo,
   PreProposeModule,
   PreProposeModuleType,
   PreProposeModuleTypedConfig,
@@ -9,7 +8,6 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
-  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   cosmWasmClientRouter,
   getRpcForChainId,
   parseContractVersion,
@@ -22,69 +20,20 @@ import {
   NeutronCwdSubdaoTimelockSingleQueryClient,
 } from '../contracts'
 import { queryIndexer } from '../indexer'
-
-export const fetchContractInfo = async (
-  chainId: string,
-  contractAddress: string
-): Promise<ContractVersionInfo | undefined> => {
-  let info: ContractVersionInfo | undefined
-
-  // Try indexer first.
-  try {
-    info = await queryIndexer({
-      type: 'contract',
-      address: contractAddress,
-      formula: 'info',
-      chainId,
-    })
-  } catch (err) {
-    // Ignore error.
-    console.error(err)
-  }
-
-  // If indexer fails, fallback to querying chain.
-  if (!info) {
-    try {
-      const client = await cosmWasmClientRouter.connect(
-        getRpcForChainId(chainId)
-      )
-      const { data: contractInfo } = await client[
-        'forceGetQueryClient'
-      ]().wasm.queryContractRaw(contractAddress, toUtf8('contract_info'))
-      if (contractInfo) {
-        info = JSON.parse(fromUtf8(contractInfo))
-      }
-    } catch (err) {
-      if (
-        err instanceof Error &&
-        INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
-          (err as Error).message.includes(substring)
-        )
-      ) {
-        // Ignore error.
-        console.error(err)
-        return undefined
-      }
-
-      // Rethrow other errors because it should not have failed.
-      throw err
-    }
-  }
-
-  return info
-}
+import { contractQueries } from '../query'
 
 export const fetchPreProposeModule = async (
+  queryClient: QueryClient,
   chainId: string,
   preProposeAddress: string
 ): Promise<PreProposeModule> => {
-  const contractInfo = await fetchContractInfo(chainId, preProposeAddress)
-  const contractVersion =
-    contractInfo && parseContractVersion(contractInfo.version)
-
-  if (!contractInfo || !contractVersion) {
-    throw new Error('Failed to fetch pre propose module info')
-  }
+  const { info: contractInfo } = await queryClient.fetchQuery(
+    contractQueries.info(queryClient, {
+      chainId,
+      address: preProposeAddress,
+    })
+  )
+  const contractVersion = parseContractVersion(contractInfo.version)
 
   let typedConfig: PreProposeModuleTypedConfig = {
     type: PreProposeModuleType.Other,
@@ -122,8 +71,17 @@ export const fetchPreProposeModule = async (
       }
 
       // Check if approver is an approver contract.
-      const approverContractInfo = await fetchContractInfo(chainId, approver)
-      if (approverContractInfo?.contract === ContractName.PreProposeApprover) {
+      const approverContractName = (
+        await queryClient
+          .fetchQuery(
+            contractQueries.info(queryClient, {
+              chainId,
+              address: approver,
+            })
+          )
+          .catch(() => undefined)
+      )?.info.contract
+      if (approverContractName === ContractName.PreProposeApprover) {
         preProposeApproverContract = approver
         approver = undefined
 

@@ -10,8 +10,8 @@ import PlausibleProvider from 'next-plausible'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { Fragment, useEffect, useState } from 'react'
-import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
+import { useEffect, useState } from 'react'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
@@ -22,8 +22,8 @@ import {
   AppContextProvider,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  ReactQueryClientProvider,
   SdaLayout,
+  StateProvider,
   WalletProvider,
 } from '@dao-dao/stateful'
 import {
@@ -182,13 +182,9 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
         }}
       />
 
-      <ReactQueryClientProvider
-        dehyratedState={props.pageProps.reactQueryDehydratedState}
-      >
-        <RecoilRoot>
-          <InnerApp setIcon={setIcon} {...props} />
-        </RecoilRoot>
-      </ReactQueryClientProvider>
+      <StateProvider dehyratedState={props.pageProps.reactQueryDehydratedState}>
+        <InnerApp setIcon={setIcon} {...props} />
+      </StateProvider>
     </>
   )
 }

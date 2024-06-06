@@ -11,7 +11,7 @@ import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
@@ -21,7 +21,7 @@ import {
 import {
   AppContextProvider,
   DappLayout,
-  ReactQueryClientProvider,
+  StateProvider,
   WalletProvider,
 } from '@dao-dao/stateful'
 import {
@@ -168,13 +168,9 @@ const DApp = (props: AppProps) => (
       }}
     />
 
-    <ReactQueryClientProvider
-      dehyratedState={props.pageProps.reactQueryDehydratedState}
-    >
-      <RecoilRoot>
-        <InnerApp {...props} />
-      </RecoilRoot>
-    </ReactQueryClientProvider>
+    <StateProvider dehyratedState={props.pageProps.reactQueryDehydratedState}>
+      <InnerApp {...props} />
+    </StateProvider>
   </>
 )
 

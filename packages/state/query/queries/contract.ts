@@ -14,11 +14,10 @@ import {
 import { chainQueries } from './chain'
 import { indexerQueries } from './indexer'
 
-// TODO(rq): export this and replace the other util with it
 /**
  * Fetch contract info stored in state, which contains its name and version.
  */
-const fetchContractInfo = async (
+export const fetchContractInfo = async (
   queryClient: QueryClient,
   {
     chainId,

@@ -1,4 +1,5 @@
 import { Chain } from '@chain-registry/types'
+import { QueryClient } from '@tanstack/react-query'
 import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -221,6 +222,7 @@ export type IProposalModuleCommonContext = {
 // Internal Adapter Types
 
 export type FetchPreProposeFunction = (
+  queryClient: QueryClient,
   chainId: string,
   proposalModuleAddress: string,
   version: ContractVersion | null
