@@ -182,6 +182,10 @@ export const fetchStargazeNameImage = async (
     return null
   }
 
+  if (!response) {
+    return null
+  }
+
   // If NFT exists, get image associated with NFT.
   try {
     const { data } = await stargazeIndexerClient.query({

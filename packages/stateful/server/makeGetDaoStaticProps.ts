@@ -149,13 +149,20 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       let daoInfo: DaoInfo | undefined
       try {
         // Check for legacy contract.
-        const { info: contractInfo } = await queryClient.fetchQuery(
-          contractQueries.info(queryClient, {
-            chainId,
-            address: coreAddress,
-          })
-        )
-        if (LEGACY_DAO_CONTRACT_NAMES.includes(contractInfo.contract)) {
+        const contractInfo = !configuredGovChain
+          ? (
+              await queryClient.fetchQuery(
+                contractQueries.info(queryClient, {
+                  chainId,
+                  address: coreAddress,
+                })
+              )
+            )?.info
+          : undefined
+        if (
+          contractInfo &&
+          LEGACY_DAO_CONTRACT_NAMES.includes(contractInfo.contract)
+        ) {
           throw new LegacyDaoError()
         }
 
