@@ -49,9 +49,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
               'regen-1',
               'injective-1',
               'celestia',
-              'dydx-mainnet-1',
               'archway-1',
-              'coreum-mainnet-1',
             ]
           : []),
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
