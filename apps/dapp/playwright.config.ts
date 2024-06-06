@@ -1,13 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 import { defineConfig, devices } from '@playwright/test'
-import dotenv from 'dotenv'
-
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-dotenv.config()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -73,7 +66,7 @@ export default defineConfig({
 
   /* Build and run server before starting the tests */
   webServer: {
-    command: 'yarn build && yarn start',
+    command: 'yarn start',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     // allow 10 minutes for the server to build

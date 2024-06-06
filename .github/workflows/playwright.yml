@@ -22,9 +22,12 @@ jobs:
         with:
           node-version: lts/*
           cache: yarn
-      - run: yarn install
+      - name: Install packages
+        run: yarn install
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
+      - name: Build dApp
+        run: yarn dapp build
       - name: Run Playwright tests
         run: yarn test:e2e
       - uses: actions/upload-artifact@v4
