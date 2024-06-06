@@ -25,6 +25,7 @@ export const DaoCard = ({
   LinkWrapper,
   showIsMember = true,
   showingEstimatedUsdValue = true,
+  showParentDao = true,
   onMouseOver,
   onMouseLeave,
   className,
@@ -87,7 +88,7 @@ export const DaoCard = ({
           coreAddress={coreAddress}
           daoName={name}
           imageUrl={imageUrl}
-          parentDao={parentDao}
+          parentDao={showParentDao ? parentDao : null}
           size="sm"
         />
         <p className="primary-text mt-2 text-center">{name}</p>

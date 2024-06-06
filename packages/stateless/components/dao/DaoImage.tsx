@@ -100,7 +100,7 @@ export const DaoImage = ({
           <LinkWrapper
             className="block h-full w-full"
             containerClassName={clsx(
-              'absolute -top-2 -left-2 rounded-full bg-cover bg-center shadow-dp4',
+              'absolute -top-2 -left-2 rounded-full bg-cover bg-center shadow-dp4 animate-fade-in',
               {
                 'h-8 w-8': size === 'sm',
                 'h-10 w-10': size === 'lg',

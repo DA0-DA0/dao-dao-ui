@@ -1,3 +1,6 @@
+import { useRecoilValue } from 'recoil'
+
+import { mountedInBrowserAtom } from '@dao-dao/state/recoil'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoading,
@@ -17,6 +20,8 @@ export const DaoCard = (props: StatefulDaoCardProps) => {
   // to that chain and thus the correct profile won't load. Instead, fetch the
   // chains from the currently connected profile and find the correct one.
   const { chains } = useProfile()
+
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
@@ -55,6 +60,16 @@ export const DaoCard = (props: StatefulDaoCardProps) => {
       LinkWrapper={LinkWrapper}
       follow={follow}
       lazyData={lazyData}
+      showParentDao={
+        /*
+         * Hide the parent DAO until the app is mounted in the browser since
+         * rendering it on the server causes a hydration error for some horrible
+         * reason. I think it has something to do with the fact that you're not
+         * supposed to nest an A tag inside of another A tag, and maybe the
+         * Next.js server is sanitizing it or something. Anyways, rip.
+         */
+        mountedInBrowser
+      }
     />
   )
 }

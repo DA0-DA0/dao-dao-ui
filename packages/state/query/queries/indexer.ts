@@ -35,14 +35,15 @@ export const fetchIndexerQuery = async <T = any>(
   queryClient: QueryClient,
   { noFallback, ...options }: FetchIndexerQueryOptions
 ): Promise<T | null> => {
-  // If there is a fallback and the indexer is behind, return null to make the
-  // parent use the fallback instead.
+  // If the indexer is behind and either there's a fallback or we're on the
+  // server, return null to make the caller use the fallback. Throw error if no
+  // fallback and on client.
   if (!noFallback) {
     const isCaughtUp = await queryClient.fetchQuery(
       indexerQueries.isCaughtUp({ chainId: options.chainId })
     )
 
-    if (!isCaughtUp) {
+    if (!isCaughtUp && typeof window !== 'undefined') {
       throw new Error('Indexer is behind and no fallback is available')
     }
   }

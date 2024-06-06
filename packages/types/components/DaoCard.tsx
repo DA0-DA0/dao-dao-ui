@@ -38,6 +38,15 @@ export type DaoCardProps = {
    * Whether or not the token loaded in lazy data is USD. Defaults to true.
    */
   showingEstimatedUsdValue?: boolean
+  /**
+   * Whether or not to show the parent DAO if it exists. This is used primarily
+   * to hide the parent DAO until the app is mounted in the browser since
+   * rendering it on the server causes a hydration error for some horrible
+   * reason. I think it has something to do with the fact that you're not
+   * supposed to nest an a tag inside of another a tag, and maybe the Next.js
+   * server is sanitizing it or something. Anyways, rip. Defaults to true.
+   */
+  showParentDao?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
   /**
