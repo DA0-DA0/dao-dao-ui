@@ -32,8 +32,8 @@ const config = {
   // Because @cosmos-kit/web3auth uses a Worker ESM import.
   experimental: {
     esmExternals: 'loose',
-    // Increase (to 512 kB) to allow for react-query pre-fetched hydration.
-    largePageDataBytes: 512 * 1024,
+    // Increase (to 1 MB) to allow for react-query pre-fetched hydration.
+    largePageDataBytes: 1 * 1024 * 1024,
   },
   webpack: (config) => {
     // @cosmos-kit/web3auth uses eccrypto, which uses `stream`. This needs to be
