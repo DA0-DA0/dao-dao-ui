@@ -12,7 +12,7 @@ test('DAO home tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
@@ -26,7 +26,7 @@ test('DAO proposals tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
@@ -43,7 +43,7 @@ test('DAO treasury tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
@@ -63,7 +63,7 @@ test('DAO subDAOs tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
@@ -80,7 +80,7 @@ test('DAO members tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
@@ -99,7 +99,7 @@ test('DAO apps tab renders', async ({ page }) => {
 
   // Expect no 404 error.
   await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 5000,
+    timeout: 1000,
   })
 
   // Expect description to exist.
