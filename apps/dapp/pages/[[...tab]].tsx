@@ -1,11 +1,15 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { dehydrate } from '@tanstack/react-query'
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { daoQueries, makeReactQueryClient, querySnapper } from '@dao-dao/state'
+import {
+  daoQueries,
+  dehydrateSerializable,
+  makeReactQueryClient,
+  querySnapper,
+} from '@dao-dao/state'
 import {
   Home,
   StatefulHomeProps,
@@ -147,7 +151,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       // Chain x/gov DAOs.
       ...(chainGovDaos && { chainGovDaos }),
       // Dehydrate react-query state with featured DAOs preloaded.
-      reactQueryDehydratedState: dehydrate(queryClient),
+      reactQueryDehydratedState: dehydrateSerializable(queryClient),
     },
     // Revalidate every day.
     revalidate: 24 * 60 * 60,

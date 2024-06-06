@@ -1,6 +1,6 @@
 import { Chain } from '@chain-registry/types'
 import { fromBase64 } from '@cosmjs/encoding'
-import { QueryClient, dehydrate } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -8,6 +8,7 @@ import removeMarkdown from 'remove-markdown'
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
   contractQueries,
+  dehydrateSerializable,
   makeReactQueryClient,
   polytoneQueries,
   queryIndexer,
@@ -203,7 +204,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description,
           accentColor,
           info: daoInfo,
-          reactQueryDehydratedState: dehydrate(queryClient),
+          reactQueryDehydratedState: dehydrateSerializable(queryClient),
           ...additionalProps,
         }
 
@@ -262,7 +263,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               ...i18nProps,
               title: 'DAO not found',
               description: '',
-              reactQueryDehydratedState: dehydrate(queryClient),
+              reactQueryDehydratedState: dehydrateSerializable(queryClient),
             },
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
@@ -276,7 +277,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.500'),
             description: '',
-            reactQueryDehydratedState: dehydrate(queryClient),
+            reactQueryDehydratedState: dehydrateSerializable(queryClient),
             // Report to Sentry.
             error: processError(error, {
               tags: {
@@ -319,7 +320,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.daoNotFound'),
             description: err instanceof Error ? err.message : `${err}`,
-            reactQueryDehydratedState: dehydrate(queryClient),
+            reactQueryDehydratedState: dehydrateSerializable(queryClient),
           },
         }
       }
