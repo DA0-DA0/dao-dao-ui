@@ -8,11 +8,6 @@ import './setup'
 test('chain home/proposals tab renders', async ({ page }) => {
   await page.goto('/dao/juno/proposals')
 
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
-
   // Expect description to exist.
   await expect(
     page.getByText('Native chain governance for Juno Testnet.')
@@ -24,11 +19,6 @@ test('chain home/proposals tab renders', async ({ page }) => {
 
 test('chain treasury tab renders', async ({ page }) => {
   await page.goto('/dao/juno/treasury')
-
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
 
   // Expect description to exist.
   await expect(

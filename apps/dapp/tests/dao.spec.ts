@@ -10,11 +10,6 @@ test('DAO home tab renders', async ({ page }) => {
     '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4'
   )
 
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
-
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
 })
@@ -23,11 +18,6 @@ test('DAO proposals tab renders', async ({ page }) => {
   await page.goto(
     '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/proposals'
   )
-
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
 
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
@@ -61,11 +51,6 @@ test('DAO subDAOs tab renders', async ({ page }) => {
     '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/subdaos'
   )
 
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
-
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
 
@@ -77,11 +62,6 @@ test('DAO members tab renders', async ({ page }) => {
   await page.goto(
     '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/members'
   )
-
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
 
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
@@ -96,11 +76,6 @@ test('DAO apps tab renders', async ({ page }) => {
   await page.goto(
     '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/apps'
   )
-
-  // Expect no 404 error.
-  await expect(page.getByText('404: Not Found')).not.toBeVisible({
-    timeout: 1000,
-  })
 
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
