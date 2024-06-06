@@ -92,4 +92,5 @@ export {
 } from './PolytoneListener'
 export { PolytoneNoteClient, PolytoneNoteQueryClient } from './PolytoneNote'
 export { PolytoneProxyClient, PolytoneProxyQueryClient } from './PolytoneProxy'
+export { PolytoneVoiceClient, PolytoneVoiceQueryClient } from './PolytoneVoice'
 export { Sg721BaseClient, Sg721BaseQueryClient } from './Sg721Base'

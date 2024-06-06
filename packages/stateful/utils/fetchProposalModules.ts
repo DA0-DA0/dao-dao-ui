@@ -1,8 +1,10 @@
+import { QueryClient } from '@tanstack/react-query'
+
 import {
   CwCoreV1QueryClient,
   DaoCoreV2QueryClient,
 } from '@dao-dao/state/contracts'
-import { queryIndexer } from '@dao-dao/state/indexer'
+import { indexerQueries } from '@dao-dao/state/query'
 import {
   ContractVersion,
   Feature,
@@ -24,6 +26,7 @@ import {
 import { matchAdapter } from '../proposal-module-adapter'
 
 export const fetchProposalModules = async (
+  queryClient: QueryClient,
   chainId: string,
   coreAddress: string,
   coreVersion: ContractVersion,
@@ -33,12 +36,13 @@ export const fetchProposalModules = async (
   // Try indexer first.
   if (!activeProposalModules) {
     try {
-      activeProposalModules = await queryIndexer({
-        type: 'contract',
-        address: coreAddress,
-        formula: 'daoCore/activeProposalModules',
-        chainId,
-      })
+      activeProposalModules = await queryClient.fetchQuery(
+        indexerQueries.queryContract(queryClient, {
+          chainId,
+          contractAddress: coreAddress,
+          formula: 'daoCore/activeProposalModules',
+        })
+      )
     } catch (err) {
       // Ignore error.
       console.error(err)
@@ -70,7 +74,12 @@ export const fetchProposalModules = async (
 
       const [prePropose, veto] = await Promise.allSettled([
         // Get pre-propose address if exists.
-        adapter?.functions.fetchPrePropose?.(chainId, address, version),
+        adapter?.functions.fetchPrePropose?.(
+          queryClient,
+          chainId,
+          address,
+          version
+        ),
         // Get veto config if exists.
         adapter?.functions.fetchVetoConfig?.(chainId, address, version),
       ])

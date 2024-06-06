@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -29,10 +30,9 @@ import {
   EntityDisplay,
   ProposalLine,
 } from '../../../../components'
-import {
-  daoInfoSelector,
-  daosWithVetoableProposalsSelector,
-} from '../../../../recoil'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { daoQueries } from '../../../../queries/dao'
+import { daosWithVetoableProposalsSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import {
   VetoOrEarlyExecuteDaoProposalComponent as StatelessVetoOrEarlyExecuteDaoProposalComponent,
@@ -100,13 +100,17 @@ const Component: ActionComponent<
     setValue,
   ])
 
-  const selectedDaoInfo = useCachedLoadingWithError(
-    chainId && coreAddress
-      ? daoInfoSelector({
-          chainId,
-          coreAddress,
-        })
-      : undefined
+  const queryClient = useQueryClient()
+  const selectedDaoInfo = useQueryLoadingDataWithError(
+    daoQueries.info(
+      queryClient,
+      chainId && coreAddress
+        ? {
+            chainId,
+            coreAddress,
+          }
+        : undefined
+    )
   )
 
   // Select first proposal once loaded if nothing selected.

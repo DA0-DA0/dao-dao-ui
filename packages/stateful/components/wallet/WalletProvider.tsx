@@ -23,7 +23,6 @@ import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
 import { wallets as xdefiWallets } from '@cosmos-kit/xdefi'
-import { assets, chains } from 'chain-registry'
 import { PropsWithChildren, ReactNode, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePrevious } from 'react-use'
@@ -41,6 +40,8 @@ import {
   SITE_TITLE,
   SITE_URL,
   WEB3AUTH_CLIENT_ID,
+  assets,
+  chains,
   getChainForChainId,
   getKeplrFromWindow,
   getSignerOptions,
@@ -176,10 +177,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   return (
     <ChainProvider
       allowedIframeParentOrigins={ALLOWED_IFRAME_PARENT_ORIGINS}
-      assetLists={
-        // Temp fix for mismatched package types.
-        assets as any[]
-      }
+      assetLists={assets}
       chains={chains}
       endpointOptions={{
         // Load all custom chain endpoints into wallet provider.

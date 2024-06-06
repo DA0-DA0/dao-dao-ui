@@ -18,7 +18,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
   appMode: DaoPageMode.Sda,
-  getProps: async ({ t, coreAddress }) => ({
+  getProps: async ({ t, daoInfo: { coreAddress } }) => ({
     url: SITE_URL + getDaoPath(DaoPageMode.Sda, coreAddress, 'create'),
     followingTitle: t('title.createASubDao'),
   }),

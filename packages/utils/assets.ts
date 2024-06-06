@@ -1,9 +1,9 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { assets } from 'chain-registry'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { getChainForChainId } from './chain'
+import { assets } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 

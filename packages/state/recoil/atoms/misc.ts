@@ -1,3 +1,4 @@
+import { QueryClient } from '@tanstack/react-query'
 import { atom } from 'recoil'
 
 import { PageHeaderProps, Web3AuthPrompt } from '@dao-dao/types'
@@ -61,4 +62,10 @@ export const indexerWebSocketChannelSubscriptionsAtom = atom<
 export const pageHeaderPropsAtom = atom<PageHeaderProps>({
   key: 'pageHeaderProps',
   default: {},
+})
+
+// Store query client in Recoil atom so it's accessible from Recoil selectors
+// while we migrate from Recoil to React Query.
+export const queryClientAtom = atom<QueryClient>({
+  key: 'queryClient',
 })

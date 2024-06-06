@@ -310,3 +310,8 @@ export interface VotingPowerAtHeightResponse {
 export type ProposalModuleWithInfo = ProposalModule & {
   info?: ContractVersionInfo
 }
+
+export type SubDaoWithChainId = SubDao & {
+  chainId: string
+}
+export type ListAllSubDaosResponse = SubDaoWithChainId[]

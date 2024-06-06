@@ -1,10 +1,9 @@
 import { toHex } from '@cosmjs/encoding'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { waitForNone } from 'recoil'
 
-import { profileSelector } from '@dao-dao/state'
-import { useCachedLoading, useCachedLoadingWithError } from '@dao-dao/stateless'
+import { profileQueries } from '@dao-dao/state'
 import {
   AddChainsFunction,
   AddChainsStatus,
@@ -18,12 +17,14 @@ import {
   PFPK_API_BASE,
   SignedBody,
   getDisplayNameForChainId,
+  makeCombineQueryResultsIntoLoadingData,
   makeEmptyUnifiedProfile,
   makeManuallyResolvedPromise,
   signOffChainAuth,
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useQueryLoadingData } from './useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -145,8 +146,8 @@ export const useManageProfile = ({
     loadAccount: true,
   })
 
-  const profile = useCachedLoading(
-    profileSelector({
+  const profile = useQueryLoadingData(
+    profileQueries.unified(useQueryClient(), {
       chainId: walletChainId,
       address,
     }),
@@ -387,16 +388,22 @@ export const useManageProfile = ({
   ).filter(
     (chainWallet) => !!chainWallet.isWalletConnected && !!chainWallet.address
   )
-  const otherChainWalletProfiles = useCachedLoadingWithError(
-    waitForNone(
-      otherConnectedChainWallets.map((chainWallet) =>
-        profileSelector({
-          chainId: chainWallet.chainId,
-          address: chainWallet.address!,
-        })
-      )
-    )
-  )
+  const queryClient = useQueryClient()
+  const otherChainWalletProfiles = useQueries({
+    queries: otherConnectedChainWallets.map((chainWallet) =>
+      profileQueries.unified(queryClient, {
+        chainId: chainWallet.chainId,
+        address: chainWallet.address!,
+      })
+    ),
+    combine: useMemo(
+      () =>
+        makeCombineQueryResultsIntoLoadingData<UnifiedProfile>({
+          firstLoad: 'none',
+        }),
+      []
+    ),
+  })
 
   const merge: UseManageProfileReturn['merge'] = useMemo(() => {
     // Get all profiles attached to this wallet that are different from the
@@ -404,21 +411,17 @@ export const useManageProfile = ({
     const profilesToMerge =
       currentChainWallet &&
       !profile.loading &&
-      !otherChainWalletProfiles.loading &&
-      !otherChainWalletProfiles.errored
-        ? otherChainWalletProfiles.data.flatMap((loadable) => {
-            const chainProfile = loadable.valueMaybe()
+      !otherChainWalletProfiles.loading
+        ? otherChainWalletProfiles.data.flatMap((chainProfile) => {
             if (
-              // If not yet loaded, ignore.
-              !chainProfile ||
               // If profile exists, UUID matches current chain wallet profile
               // and this chain wallet has been added to the profile, ignore. If
               // profile does not exist or chain has not been explicitly added,
               // we want to merge it into the current profile.
-              (chainProfile.uuid &&
-                chainProfile.uuid === profile.data.uuid &&
-                profile.data.chains[chainProfile.source.chainId]?.address ===
-                  chainProfile.source.address)
+              chainProfile.uuid &&
+              chainProfile.uuid === profile.data.uuid &&
+              profile.data.chains[chainProfile.source.chainId]?.address ===
+                chainProfile.source.address
             ) {
               return []
             }

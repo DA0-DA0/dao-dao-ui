@@ -1,12 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { constSelector } from 'recoil'
 
-import { daoParentInfoSelector } from '@dao-dao/state/recoil'
-import {
-  DaoEmoji,
-  useCachedLoadingWithError,
-  useChain,
-} from '@dao-dao/stateless'
+import { DaoEmoji, useChain } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -18,19 +13,24 @@ import {
 import { decodeJsonFromBase64, objectMatchesStructure } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { daoQueries } from '../../../../queries'
 import { CreateDaoComponent, CreateDaoData } from './Component'
 
 const Component: ActionComponent<undefined, CreateDaoData> = (props) => {
   const { chain_id: chainId } = useChain()
 
   // If admin is set, attempt to load parent DAO info.
-  const parentDao = useCachedLoadingWithError(
-    props.data.admin
-      ? daoParentInfoSelector({
-          chainId,
-          parentAddress: props.data.admin,
-        })
-      : constSelector(undefined)
+  const parentDao = useQueryLoadingDataWithError(
+    daoQueries.parentInfo(
+      useQueryClient(),
+      props.data.admin
+        ? {
+            chainId,
+            parentAddress: props.data.admin,
+          }
+        : undefined
+    )
   )
 
   return (

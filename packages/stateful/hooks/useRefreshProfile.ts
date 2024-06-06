@@ -1,7 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
-import { useRecoilCallback } from 'recoil'
+import { useCallback } from 'react'
 
-import { refreshWalletProfileAtom } from '@dao-dao/state/recoil'
+import { useUpdatingRef } from '@dao-dao/stateless'
 import { LoadingData, UnifiedProfile } from '@dao-dao/types'
 import { toBech32Hash } from '@dao-dao/utils'
 
@@ -15,28 +16,41 @@ import { toBech32Hash } from '@dao-dao/utils'
 export const useRefreshProfile = (
   address: string | string[],
   profile: LoadingData<UnifiedProfile | UnifiedProfile[]>
-) =>
-  useRecoilCallback(
-    ({ set }) =>
-      () => {
-        // Refresh all hashes in the profile(s). This ensures updates made by
-        // one public key propagate to the other public keys in the profile(s).
-        const hashes = uniq(
-          [
-            ...[address].flat(),
-            ...(profile.loading
-              ? []
-              : [profile.data]
-                  .flat()
-                  .flatMap((profile) =>
-                    Object.values(profile.chains).map(({ address }) => address)
-                  )),
-          ].flatMap((address) => toBech32Hash(address) || [])
-        )
+) => {
+  const queryClient = useQueryClient()
 
-        hashes.forEach((hash) =>
-          set(refreshWalletProfileAtom(hash), (id) => id + 1)
-        )
-      },
-    [profile]
-  )
+  // Stabilize reference so callback doesn't change. The latest values will be
+  // used when refresh is called.
+  const addressRef = useUpdatingRef(address)
+  const profileRef = useUpdatingRef(profile)
+
+  return useCallback(() => {
+    // Refresh all hashes in the profile(s). This ensures updates made by
+    // one public key propagate to the other public keys in the profile(s).
+    const hashes = uniq(
+      [
+        ...[addressRef.current].flat(),
+        ...(profileRef.current.loading
+          ? []
+          : [profileRef.current.data]
+              .flat()
+              .flatMap((profile) =>
+                Object.values(profile.chains).map(({ address }) => address)
+              )),
+      ].flatMap((address) => toBech32Hash(address) || [])
+    )
+
+    hashes.forEach((bech32Hash) =>
+      queryClient.invalidateQueries({
+        queryKey: [
+          {
+            category: 'profile',
+            options: {
+              bech32Hash,
+            },
+          },
+        ],
+      })
+    )
+  }, [addressRef, profileRef, queryClient])
+}

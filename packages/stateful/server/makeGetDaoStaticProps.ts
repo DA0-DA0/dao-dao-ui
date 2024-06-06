@@ -1,72 +1,45 @@
 import { Chain } from '@chain-registry/types'
 import { fromBase64 } from '@cosmjs/encoding'
+import { QueryClient } from '@tanstack/react-query'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
-  DaoCoreV2QueryClient,
-  DaoVotingCw20StakedQueryClient,
-  PolytoneNoteQueryClient,
+  contractQueries,
+  dehydrateSerializable,
+  makeReactQueryClient,
+  polytoneQueries,
   queryIndexer,
 } from '@dao-dao/state'
 import {
-  Account,
-  AccountType,
-  ActiveThreshold,
   ChainId,
   CommonProposalInfo,
   ContractVersion,
-  ContractVersionInfo,
+  DaoInfo,
   DaoPageMode,
-  DaoParentInfo,
-  Feature,
   GovProposalVersion,
   GovProposalWithDecodedContent,
-  IndexerDumpState,
-  InfoResponse,
-  PolytoneProxies,
-  ProposalModule,
   ProposalV1,
   ProposalV1Beta1,
-  SupportedFeatureMap,
 } from '@dao-dao/types'
-import {
-  Config,
-  ListItemsResponse,
-  ProposalModuleWithInfo,
-} from '@dao-dao/types/contracts/DaoCore.v2'
 import { cosmos } from '@dao-dao/types/protobuf'
 import {
   CI,
-  ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
-  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
   MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
-  addressIsModule,
-  cosmWasmClientRouter,
   cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getChainForChainId,
-  getChainGovernanceDaoDescription,
   getChainIdForAddress,
   getConfiguredGovChainByName,
   getDaoPath,
-  getDisplayNameForChainId,
-  getFallbackImage,
-  getImageUrlForChainId,
   getRpcForChainId,
-  getSupportedChainConfig,
-  getSupportedFeatures,
-  isFeatureSupportedByVersion,
-  isValidBech32Address,
-  parseContractVersion,
-  polytoneNoteProxyMapToChainIdMap,
   processError,
   retry,
 } from '@dao-dao/utils'
@@ -76,17 +49,13 @@ import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '../proposal-module-adapter'
-import {
-  fetchProposalModules,
-  fetchProposalModulesWithInfoFromChain,
-} from '../utils/fetchProposalModules'
+import { daoQueries } from '../queries/dao'
 
 interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
   followingTitle?: string
   overrideTitle?: string
   overrideDescription?: string
-  overrideImageUrl?: string
   additionalProps?: Record<string, any> | null | undefined
   url?: string
 }
@@ -97,10 +66,9 @@ interface GetDaoStaticPropsMakerOptions {
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
+    queryClient: QueryClient
     chain: Chain
-    coreAddress: string
-    coreVersion: ContractVersion
-    proposalModules: ProposalModule[]
+    daoInfo: DaoInfo
   }) =>
     | GetDaoStaticPropsMakerProps
     | undefined
@@ -138,238 +106,72 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
     // Check if address is actually the name of a chain so we can resolve the
     // gov module.
-    let chainConfig =
+    const configuredGovChain =
       coreAddress && typeof coreAddress === 'string'
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
 
-    // If chain uses a contract-based DAO, load it instead.
-    const govContractAddress =
-      chainConfig &&
-      getSupportedChainConfig(chainConfig.chainId)?.govContractAddress
-    if (govContractAddress) {
-      coreAddress = govContractAddress
-      chainConfig = undefined
-    }
-
-    // Load chain gov module.
-    if (chainConfig) {
-      const { name: chainName, chain, accentColor } = chainConfig
-
-      // Must be called after server side translations has been awaited, because
-      // props may use the `t` function, and it won't be available until after.
-      const {
-        leadingTitle,
-        followingTitle,
-        overrideTitle,
-        overrideDescription,
-        additionalProps,
-        url,
-      } =
-        (await getProps?.({
-          context,
-          t: serverT,
-          chain,
-          coreAddress: chainName,
-          coreVersion: ContractVersion.Gov,
-          proposalModules: [],
-        })) ?? {}
-
-      const description =
-        overrideDescription ?? getChainGovernanceDaoDescription(chain.chain_id)
-      const props: DaoPageWrapperProps = {
-        ...i18nProps,
-        url: url ?? null,
-        title:
-          overrideTitle ??
-          [
-            leadingTitle?.trim(),
-            getDisplayNameForChainId(chain.chain_id),
-            followingTitle?.trim(),
-          ]
-            .filter(Boolean)
-            .join(' | '),
-        description,
-        accentColor,
-        info: {
-          chainId: chain.chain_id,
-          coreAddress: chainName,
-          coreVersion: ContractVersion.Gov,
-          supportedFeatures: Object.values(Feature).reduce(
-            (acc, feature) => ({
-              ...acc,
-              [feature]: false,
-            }),
-            {} as SupportedFeatureMap
-          ),
-          votingModuleAddress: '',
-          votingModuleContractName: '',
-          proposalModules: [],
-          name: getDisplayNameForChainId(chain.chain_id),
-          description,
-          imageUrl: getImageUrlForChainId(chain.chain_id),
-          created: null,
-          isActive: true,
-          activeThreshold: null,
-          items: {},
-          polytoneProxies: {},
-          accounts: [
-            {
-              type: AccountType.Native,
-              chainId: chain.chain_id,
-              address: chainConfig.name,
-            },
-          ],
-          parentDao: null,
-          admin: '',
-        },
-        ...additionalProps,
-      }
-
-      return {
-        props,
-        // No need to regenerate this page as the props for a chain's DAO are
-        // constant. The values above can only change when a new version of the
-        // frontend is deployed, in which case the static pages will regenerate.
-        revalidate: false,
-      }
-    }
-
-    // Get chain ID for address based on prefix.
-    let decodedChainId: string
-    try {
-      // If invalid address, display not found.
-      if (!coreAddress || typeof coreAddress !== 'string') {
-        throw new Error('Invalid address')
-      }
-
-      decodedChainId = getChainIdForAddress(coreAddress)
-
-      // Validation throws error if address prefix not recognized. Display not
-      // found in this case.
-    } catch (err) {
-      console.error(err)
-
-      // Excluding `info` will render DAONotFound.
-      return {
-        props: {
-          ...i18nProps,
-          title: serverT('title.daoNotFound'),
-          description: err instanceof Error ? err.message : `${err}`,
-        },
-      }
-    }
+    const queryClient = makeReactQueryClient()
 
     const getForChainId = async (
       chainId: string
     ): Promise<GetStaticPropsResult<DaoPageWrapperProps>> => {
       // If address is polytone proxy, redirect to DAO on native chain.
-      try {
-        const addressInfo = await queryIndexer<ContractVersionInfo>({
-          type: 'contract',
-          chainId,
-          address: coreAddress,
-          formula: 'info',
-        })
-        if (
-          addressInfo &&
-          addressInfo.contract === ContractName.PolytoneProxy
-        ) {
-          // Get voice for this proxy on destination chain.
-          const voice = await queryIndexer({
-            type: 'contract',
-            chainId,
-            // proxy
-            address: coreAddress,
-            formula: 'polytone/proxy/instantiator',
-          })
-
-          const dao = await queryIndexer({
-            type: 'contract',
-            chainId,
-            address: voice,
-            formula: 'polytone/voice/remoteController',
-            args: {
-              // proxy
+      if (!configuredGovChain) {
+        try {
+          const isPolytoneProxy = await queryClient.fetchQuery(
+            contractQueries.isPolytoneProxy(queryClient, {
+              chainId,
               address: coreAddress,
-            },
-          })
+            })
+          )
+          if (isPolytoneProxy) {
+            const { remoteAddress } = await queryClient.fetchQuery(
+              polytoneQueries.reverseLookupProxy(queryClient, {
+                chainId,
+                address: coreAddress,
+              })
+            )
 
-          return {
-            redirect: {
-              destination: getDaoPath(appMode, dao),
-              permanent: true,
-            },
+            return {
+              redirect: {
+                destination: getDaoPath(appMode, remoteAddress),
+                permanent: true,
+              },
+            }
           }
+        } catch {
+          // If failed, ignore.
         }
-      } catch {
-        // If failed, ignore.
       }
 
       // Add to Sentry error tags if error occurs.
-      let coreVersion: ContractVersion | undefined
+      let daoInfo: DaoInfo | undefined
       try {
-        const {
-          admin,
-          config,
-          version,
-          votingModule: {
-            address: votingModuleAddress,
-            info: votingModuleInfo,
-          },
-          activeProposalModules,
-          created,
-          isActive,
-          activeThreshold,
-          parentDao,
-          items: _items,
-          polytoneProxies,
-        } = await daoCoreDumpState(chainId, coreAddress, serverT)
-        coreVersion = version
+        // Check for legacy contract.
+        const contractInfo = !configuredGovChain
+          ? (
+              await queryClient.fetchQuery(
+                contractQueries.info(queryClient, {
+                  chainId,
+                  address: coreAddress,
+                })
+              )
+            )?.info
+          : undefined
+        if (
+          contractInfo &&
+          LEGACY_DAO_CONTRACT_NAMES.includes(contractInfo.contract)
+        ) {
+          throw new LegacyDaoError()
+        }
 
-        // If no contract name, will display fallback voting module adapter.
-        const votingModuleContractName =
-          (votingModuleInfo &&
-            'contract' in votingModuleInfo &&
-            votingModuleInfo.contract) ||
-          'fallback'
-
-        // Get DAO proposal modules.
-        const proposalModules = await fetchProposalModules(
-          chainId,
-          coreAddress,
-          coreVersion,
-          activeProposalModules
-        )
-
-        // Convert items list into map.
-        const items = _items.reduce(
-          (acc, [key, value]) => ({
-            ...acc,
-            [key]: value,
-          }),
-          {} as Record<string, string>
-        )
-
-        const accounts: Account[] = [
-          // Current chain.
-          {
+        daoInfo = await queryClient.fetchQuery(
+          daoQueries.info(queryClient, {
             chainId,
-            address: coreAddress,
-            type: AccountType.Native,
-          },
-          // Polytone.
-          ...Object.entries(polytoneProxies).map(
-            ([chainId, address]): Account => ({
-              chainId,
-              address,
-              type: AccountType.Polytone,
-            })
-          ),
-          // The above accounts are the ones we already have. The rest of the
-          // accounts are loaded once the page loads (in `DaoPageWrapper`) since
-          // they are more complex and will probably expand over time.
-        ]
+            coreAddress,
+          })
+        )
 
         // Must be called after server side translations has been awaited,
         // because props may use the `t` function, and it won't be available
@@ -379,60 +181,52 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           followingTitle,
           overrideTitle,
           overrideDescription,
-          overrideImageUrl,
           additionalProps,
           url,
         } =
           (await getProps?.({
             context,
             t: serverT,
+            queryClient,
             chain: getChainForChainId(chainId),
-            coreAddress,
-            coreVersion,
-            proposalModules,
+            daoInfo,
           })) ?? {}
+
+        const title =
+          overrideTitle ??
+          [leadingTitle?.trim(), daoInfo.name, followingTitle?.trim()]
+            .filter(Boolean)
+            .join(' | ')
+        const description = overrideDescription ?? daoInfo.description
+        const accentColor =
+          // If viewing configured gov chain, use its accent color.
+          configuredGovChain?.accentColor ||
+          daoInfo.items[DAO_CORE_ACCENT_ITEM_KEY] ||
+          null
 
         const props: DaoPageWrapperProps = {
           ...i18nProps,
           url: url ?? null,
-          title:
-            overrideTitle ??
-            [leadingTitle?.trim(), config.name.trim(), followingTitle?.trim()]
-              .filter(Boolean)
-              .join(' | '),
-          description: overrideDescription ?? config.description,
-          accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
-          info: {
-            chainId,
-            coreAddress,
-            coreVersion,
-            supportedFeatures: getSupportedFeatures(coreVersion),
-            votingModuleAddress,
-            votingModuleContractName,
-            proposalModules,
-            name: config.name,
-            description: config.description,
-            imageUrl:
-              overrideImageUrl ||
-              config.image_url ||
-              getFallbackImage(coreAddress),
-            created: created?.getTime() ?? null,
-            isActive,
-            activeThreshold,
-            items,
-            polytoneProxies,
-            accounts,
-            parentDao,
-            admin: admin ?? null,
-          },
+          title,
+          description,
+          accentColor,
+          info: daoInfo,
+          reactQueryDehydratedState: dehydrateSerializable(queryClient),
           ...additionalProps,
         }
 
         return {
           props,
-          // Regenerate the page at most once per `revalidate` seconds. Serves
-          // cached copy and refreshes in background.
-          revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
+          // For chain governance DAOs: no need to regenerate this page for
+          // since the props are constant. The values above can only change when
+          // a new version of the frontend is deployed, in which case the static
+          // pages will regenerate.
+          //
+          // For real DAOs, revalidate the page at most once per `revalidate`
+          // seconds. Serves cached copy and refreshes in background.
+          revalidate: configuredGovChain
+            ? false
+            : DAO_STATIC_PROPS_CACHE_SECONDS,
         }
       } catch (error) {
         // Redirect.
@@ -476,6 +270,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               ...i18nProps,
               title: 'DAO not found',
               description: '',
+              reactQueryDehydratedState: dehydrateSerializable(queryClient),
             },
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
@@ -489,11 +284,13 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.500'),
             description: '',
+            reactQueryDehydratedState: dehydrateSerializable(queryClient),
             // Report to Sentry.
             error: processError(error, {
               tags: {
+                chainId,
                 coreAddress,
-                coreVersion: coreVersion ?? '<undefined>',
+                coreVersion: daoInfo?.coreVersion ?? '<undefined>',
               },
               extra: { context },
             }),
@@ -505,21 +302,52 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
-    const result = await getForChainId(decodedChainId)
+    let result
+    if (configuredGovChain) {
+      result = await getForChainId(configuredGovChain.chainId)
+    } else {
+      // Get chain ID for address based on prefix.
+      let decodedChainId: string
+      try {
+        // If invalid address, display not found.
+        if (!coreAddress || typeof coreAddress !== 'string') {
+          throw new Error('Invalid address')
+        }
 
-    // If not found on Terra, try Terra Classic. Let redirects and errors
-    // through.
-    if (
-      MAINNET &&
-      'props' in result &&
-      // If no info, no DAO found.
-      !result.props.info &&
-      // Don't try Terra Classic if unexpected error occurred.
-      !result.props.error &&
-      // Only try Terra Classic if Terra failed.
-      decodedChainId === ChainId.TerraMainnet
-    ) {
-      return await getForChainId(ChainId.TerraClassicMainnet)
+        decodedChainId = getChainIdForAddress(coreAddress)
+
+        // Validation throws error if address prefix not recognized. Display not
+        // found in this case.
+      } catch (err) {
+        console.error(err)
+
+        // Excluding `info` will render DAONotFound.
+        return {
+          props: {
+            ...i18nProps,
+            title: serverT('title.daoNotFound'),
+            description: err instanceof Error ? err.message : `${err}`,
+            reactQueryDehydratedState: dehydrateSerializable(queryClient),
+          },
+        }
+      }
+
+      result = await getForChainId(decodedChainId)
+
+      // If not found on Terra, try Terra Classic. Let redirects and errors
+      // through.
+      if (
+        MAINNET &&
+        'props' in result &&
+        // If no info, no DAO found.
+        !result.props.info &&
+        // Don't try Terra Classic if unexpected error occurred.
+        !result.props.error &&
+        // Only try Terra Classic if Terra failed.
+        decodedChainId === ChainId.TerraMainnet
+      ) {
+        result = await getForChainId(ChainId.TerraClassicMainnet)
+      }
     }
 
     return result
@@ -540,14 +368,7 @@ export const makeGetDaoProposalStaticProps = ({
 }: GetDaoProposalStaticPropsMakerOptions) =>
   makeGetDaoStaticProps({
     ...options,
-    getProps: async ({
-      context: { params = {} },
-      t,
-      chain,
-      coreVersion,
-      coreAddress,
-      proposalModules,
-    }) => {
+    getProps: async ({ context: { params = {} }, t, chain, daoInfo }) => {
       const proposalId = params[proposalIdParamKey]
 
       // If invalid proposal ID, not found.
@@ -561,7 +382,7 @@ export const makeGetDaoProposalStaticProps = ({
       }
 
       // Gov module.
-      if (coreVersion === ContractVersion.Gov) {
+      if (daoInfo.coreVersion === ContractVersion.Gov) {
         const url = getProposalUrlPrefix(params) + proposalId
 
         const client = await retry(
@@ -726,9 +547,9 @@ export const makeGetDaoProposalStaticProps = ({
           adapter: {
             functions: { getProposalInfo },
           },
-        } = await matchAndLoadAdapter(proposalModules, proposalId, {
+        } = await matchAndLoadAdapter(daoInfo.proposalModules, proposalId, {
           chain,
-          coreAddress,
+          coreAddress: daoInfo.coreAddress,
         })
 
         // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
@@ -778,410 +599,3 @@ export const makeGetDaoProposalStaticProps = ({
 export class RedirectError {
   constructor(public redirect: Redirect) {}
 }
-
-const loadParentDaoInfo = async (
-  chainId: string,
-  subDaoAddress: string,
-  potentialParentAddress: string | null | undefined,
-  serverT: TFunction,
-  // Prevent cycles by ensuring admin has not already been seen.
-  previousParentAddresses: string[]
-): Promise<Omit<DaoParentInfo, 'registeredSubDao'> | null> => {
-  // If no admin, or admin is set to itself, or admin is a wallet, no parent
-  // DAO.
-  if (
-    !potentialParentAddress ||
-    potentialParentAddress === subDaoAddress ||
-    previousParentAddresses?.includes(potentialParentAddress)
-  ) {
-    return null
-  }
-
-  try {
-    // Check if address is chain module account.
-    const cosmosClient = await retry(
-      10,
-      async (attempt) =>
-        (
-          await cosmos.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).cosmos
-    )
-    // If chain module gov account...
-    if (await addressIsModule(cosmosClient, potentialParentAddress, 'gov')) {
-      const chainConfig = getSupportedChainConfig(chainId)
-      return chainConfig
-        ? {
-            chainId,
-            coreAddress: chainConfig.name,
-            coreVersion: ContractVersion.Gov,
-            name: getDisplayNameForChainId(chainId),
-            imageUrl: getImageUrlForChainId(chainId),
-            parentDao: null,
-            admin: '',
-          }
-        : null
-    }
-
-    if (
-      !isValidBech32Address(
-        potentialParentAddress,
-        getChainForChainId(chainId).bech32_prefix
-      )
-    ) {
-      return null
-    }
-
-    const {
-      admin,
-      version,
-      config: { name, image_url },
-      parentDao,
-    } = await daoCoreDumpState(chainId, potentialParentAddress, serverT, [
-      ...(previousParentAddresses ?? []),
-      potentialParentAddress,
-    ])
-
-    return {
-      chainId,
-      coreAddress: potentialParentAddress,
-      coreVersion: version,
-      name: name,
-      imageUrl: image_url ?? null,
-      parentDao,
-      admin: admin ?? null,
-    }
-  } catch (err) {
-    // If contract not found, ignore error. Otherwise, log it.
-    if (
-      !(err instanceof Error) ||
-      !INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
-        (err as Error).message.includes(substring)
-      )
-    ) {
-      console.error(err)
-      console.error(
-        `Error loading parent DAO (${potentialParentAddress}) of ${subDaoAddress}`,
-        processError(err)
-      )
-    }
-
-    // Don't prevent page render if failed to load parent DAO info.
-    return null
-  }
-}
-
-const ITEM_LIST_LIMIT = 30
-
-interface DaoCoreDumpState {
-  admin: string
-  config: Config
-  version: ContractVersion
-  votingModule: {
-    address: string
-    info: ContractVersionInfo
-  }
-  activeProposalModules: ProposalModuleWithInfo[]
-  created: Date | undefined
-  parentDao: DaoParentInfo | null
-  items: ListItemsResponse
-  polytoneProxies: PolytoneProxies
-  isActive: boolean
-  activeThreshold: ActiveThreshold | null
-}
-
-const daoCoreDumpState = async (
-  chainId: string,
-  coreAddress: string,
-  serverT: TFunction,
-  // Prevent cycles by ensuring admin has not already been seen.
-  previousParentAddresses?: string[]
-): Promise<DaoCoreDumpState> => {
-  const cwClient = await retry(
-    10,
-    async (attempt) =>
-      await cosmWasmClientRouter.connect(getRpcForChainId(chainId, attempt - 1))
-  )
-
-  try {
-    const [indexerDumpedState, items] = await Promise.all([
-      queryIndexer<IndexerDumpState>({
-        type: 'contract',
-        address: coreAddress,
-        formula: 'daoCore/dumpState',
-        chainId,
-      }),
-      queryIndexer<ListItemsResponse>({
-        type: 'contract',
-        address: coreAddress,
-        formula: 'daoCore/listItems',
-        chainId,
-      }),
-    ])
-
-    // Use data from indexer if present.
-    if (indexerDumpedState) {
-      if (
-        LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
-      ) {
-        throw new LegacyDaoError()
-      }
-
-      const coreVersion = parseContractVersion(
-        indexerDumpedState.version.version
-      )
-      if (!coreVersion) {
-        throw new Error(serverT('error.failedParsingCoreVersion'))
-      }
-
-      const { admin } = indexerDumpedState
-
-      const parentDaoInfo = await loadParentDaoInfo(
-        chainId,
-        coreAddress,
-        admin,
-        serverT,
-        [...(previousParentAddresses ?? []), coreAddress]
-      )
-
-      // Convert to chainId -> proxy map.
-      const polytoneProxies = polytoneNoteProxyMapToChainIdMap(
-        chainId,
-        indexerDumpedState.polytoneProxies || {}
-      )
-
-      let isActive = true
-      let activeThreshold: ActiveThreshold | null = null
-      try {
-        // All voting modules use the same active queries, so it's safe to just
-        // use one here.
-        const client = new DaoVotingCw20StakedQueryClient(
-          cwClient,
-          indexerDumpedState.voting_module
-        )
-        isActive = (await client.isActive()).active
-        activeThreshold =
-          (await client.activeThreshold()).active_threshold || null
-      } catch {
-        // Some voting modules don't support the active queries, so if they
-        // fail, assume it's active.
-      }
-
-      return {
-        ...indexerDumpedState,
-        version: coreVersion,
-        votingModule: {
-          address: indexerDumpedState.voting_module,
-          info: indexerDumpedState.votingModuleInfo,
-        },
-        activeProposalModules: indexerDumpedState.proposal_modules.filter(
-          ({ status }) => status === 'enabled' || status === 'Enabled'
-        ),
-        created: indexerDumpedState.createdAt
-          ? new Date(indexerDumpedState.createdAt)
-          : undefined,
-        isActive,
-        activeThreshold,
-        items: items || [],
-        parentDao: parentDaoInfo
-          ? {
-              ...parentDaoInfo,
-              // Whether or not this parent has registered its child as a
-              // SubDAO.
-              registeredSubDao:
-                indexerDumpedState.adminInfo?.registeredSubDao ??
-                (parentDaoInfo.coreVersion === ContractVersion.Gov &&
-                  getSupportedChainConfig(chainId)?.subDaos?.includes(
-                    coreAddress
-                  )) ??
-                false,
-            }
-          : null,
-        polytoneProxies,
-      }
-    }
-  } catch (error) {
-    // Rethrow if legacy DAO.
-    if (error instanceof LegacyDaoError) {
-      throw error
-    }
-
-    // Ignore error. Fallback to querying chain below.
-    console.error(error, processError(error))
-  }
-
-  const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
-
-  const dumpedState = await daoCoreClient.dumpState()
-  if (LEGACY_DAO_CONTRACT_NAMES.includes(dumpedState.version.contract)) {
-    throw new LegacyDaoError()
-  }
-
-  const [coreVersion, { info: votingModuleInfo }] = await Promise.all([
-    parseContractVersion(dumpedState.version.version),
-    (await cwClient.queryContractSmart(dumpedState.voting_module, {
-      info: {},
-    })) as InfoResponse,
-  ])
-
-  if (!coreVersion) {
-    throw new Error(serverT('error.failedParsingCoreVersion'))
-  }
-
-  const proposalModules = await fetchProposalModulesWithInfoFromChain(
-    chainId,
-    coreAddress,
-    coreVersion
-  )
-
-  // Get all items.
-  const items: ListItemsResponse = []
-  while (true) {
-    const _items = await daoCoreClient.listItems({
-      startAfter: items[items.length - 1]?.[0],
-      limit: ITEM_LIST_LIMIT,
-    })
-    if (!_items.length) {
-      break
-    }
-
-    items.push(..._items)
-
-    // If we got less than the limit, we've reached the end.
-    if (_items.length < ITEM_LIST_LIMIT) {
-      break
-    }
-  }
-
-  let isActive = true
-  let activeThreshold: ActiveThreshold | null = null
-  try {
-    // All voting modules use the same active queries, so it's safe to just use
-    // one here.
-    const client = new DaoVotingCw20StakedQueryClient(
-      cwClient,
-      dumpedState.voting_module
-    )
-    isActive = (await client.isActive()).active
-    activeThreshold = (await client.activeThreshold()).active_threshold || null
-  } catch {
-    // Some voting modules don't support the active queries, so if they fail,
-    // assume it's active.
-  }
-
-  const { admin } = dumpedState
-  const parentDao = await loadParentDaoInfo(
-    chainId,
-    coreAddress,
-    admin,
-    serverT,
-    [...(previousParentAddresses ?? []), coreAddress]
-  )
-  let registeredSubDao = false
-  // If parent DAO exists, check if this DAO is a SubDAO of the parent.
-  if (parentDao) {
-    if (
-      parentDao.coreVersion !== ContractVersion.Gov &&
-      isFeatureSupportedByVersion(Feature.SubDaos, parentDao.coreVersion)
-    ) {
-      const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
-
-      // Get all SubDAOs.
-      const subdaoAddrs: string[] = []
-      while (true) {
-        const response = await parentDaoCoreClient.listSubDaos({
-          startAfter: subdaoAddrs[subdaoAddrs.length - 1],
-          limit: SUBDAO_LIST_LIMIT,
-        })
-        if (!response?.length) break
-
-        subdaoAddrs.push(...response.map(({ addr }) => addr))
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < SUBDAO_LIST_LIMIT) {
-          break
-        }
-      }
-
-      registeredSubDao = subdaoAddrs.includes(coreAddress)
-    } else if (parentDao.coreVersion === ContractVersion.Gov) {
-      registeredSubDao =
-        !!getSupportedChainConfig(chainId)?.subDaos?.includes(coreAddress)
-    }
-  }
-
-  // Get DAO polytone proxies.
-  const polytoneProxies = (
-    await Promise.all(
-      Object.entries(getSupportedChainConfig(chainId)?.polytone || {}).map(
-        async ([chainId, { note }]) => {
-          let proxy
-          try {
-            proxy = await queryIndexer<string>({
-              type: 'contract',
-              address: note,
-              formula: 'polytone/note/remoteAddress',
-              args: {
-                address: coreAddress,
-              },
-              chainId,
-            })
-          } catch {
-            // Ignore error.
-          }
-          if (!proxy) {
-            const polytoneNoteClient = new PolytoneNoteQueryClient(
-              cwClient,
-              note
-            )
-            proxy =
-              (await polytoneNoteClient.remoteAddress({
-                localAddress: coreAddress,
-              })) || undefined
-          }
-
-          return {
-            chainId,
-            proxy,
-          }
-        }
-      )
-    )
-  ).reduce(
-    (acc, { chainId, proxy }) => ({
-      ...acc,
-      ...(proxy
-        ? {
-            [chainId]: proxy,
-          }
-        : {}),
-    }),
-    {} as PolytoneProxies
-  )
-
-  return {
-    ...dumpedState,
-    version: coreVersion,
-    votingModule: {
-      address: dumpedState.voting_module,
-      info: votingModuleInfo,
-    },
-    activeProposalModules: proposalModules.filter(
-      ({ status }) => status === 'enabled' || status === 'Enabled'
-    ),
-    created: undefined,
-    isActive,
-    activeThreshold,
-    items,
-    parentDao: parentDao
-      ? {
-          ...parentDao,
-          registeredSubDao,
-        }
-      : null,
-    polytoneProxies,
-  }
-}
-
-const SUBDAO_LIST_LIMIT = 30

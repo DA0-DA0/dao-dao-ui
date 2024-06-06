@@ -341,3 +341,7 @@ export type ActiveThreshold =
         percent: Decimal
       }
     }
+
+export type ActiveThresholdResponse = {
+  active_threshold?: ActiveThreshold | null
+}

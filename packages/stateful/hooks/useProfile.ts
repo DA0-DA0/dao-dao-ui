@@ -1,5 +1,6 @@
-import { profileSelector } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { profileQueries } from '@dao-dao/state'
 import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
   MAINNET,
@@ -10,6 +11,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingData } from './useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -103,8 +105,8 @@ export const useProfile = ({
 
   const profileAddress = address || currentAddress
 
-  const profile = useCachedLoading(
-    profileSelector({
+  const profile = useQueryLoadingData(
+    profileQueries.unified(useQueryClient(), {
       chainId: walletChainId,
       address: profileAddress,
     }),

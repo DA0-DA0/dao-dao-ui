@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "@cosmology/telescope": "^1.4.12",
-    "@dao-dao/config": "2.4.0-rc.8"
+    "@dao-dao/config": "2.4.0-rc.8",
+    "@tanstack/react-query": "^5.40.0"
   },
   "peerDependencies": {
     "next": "^12 || ^13",

@@ -1,82 +1,66 @@
+import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import {
-  followingDaosSelector,
-  indexerFeaturedDaosSelector,
-} from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { daoQueries } from '@dao-dao/state/query'
+import { followingDaosSelector } from '@dao-dao/state/recoil'
 import {
   DaoInfo,
   DaoSource,
   LoadingData,
   StatefulDaoCardProps,
 } from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
+import { makeCombineQueryResultsIntoLoadingData } from '@dao-dao/utils'
 
-import { daoInfoSelector } from '../recoil'
+import { daoQueries as statefulDaoQueries } from '../queries/dao'
 import { useProfile } from './useProfile'
+import { useQueryLoadingData } from './useQueryLoadingData'
 
 export const useLoadingDaos = (
   daos: LoadingData<DaoSource[]>,
   alphabetize = false
 ): LoadingData<DaoInfo[]> => {
-  const daoInfosLoadable = useCachedLoadable(
-    !daos.loading
-      ? waitForAll(
-          daos.data.map(({ chainId, coreAddress }) =>
-            daoInfoSelector({
-              chainId,
-              coreAddress,
-            })
-          )
-        )
-      : undefined
-  )
-
-  return daoInfosLoadable.state !== 'hasValue'
-    ? { loading: true }
-    : {
-        loading: false,
-        updating: daoInfosLoadable.updating,
-        data: (daoInfosLoadable.contents.filter(Boolean) as DaoInfo[]).sort(
-          (a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)
+  const queryClient = useQueryClient()
+  return useQueries({
+    queries: daos.loading
+      ? []
+      : daos.data.map(({ chainId, coreAddress }) =>
+          statefulDaoQueries.info(queryClient, {
+            chainId,
+            coreAddress,
+          })
         ),
-      }
+    combine: useMemo(
+      () =>
+        makeCombineQueryResultsIntoLoadingData<DaoInfo>({
+          transform: (infos) =>
+            infos.sort((a, b) =>
+              alphabetize ? a.name.localeCompare(b.name) : 0
+            ),
+        }),
+      [alphabetize]
+    ),
+  })
 }
 
 export const useLoadingFeaturedDaoCards = (
-  // If passed, will only load DAOs from this chain. Otherwise, will load
-  // from all chains.
+  /**
+   * If passed, only load DAOs from this chain. Otherwise, load from all chains.
+   */
   chainId?: string
 ): LoadingData<StatefulDaoCardProps[]> => {
-  const chains = getSupportedChains().filter(
-    ({ chain: { chain_id } }) => !chainId || chain_id === chainId
-  )
-  const featuredDaos = useRecoilValueLoadable(
-    waitForAll(
-      chains.map(({ chain }) => indexerFeaturedDaosSelector(chain.chain_id))
-    )
-  )
+  const featuredDaos = useQueryLoadingData(daoQueries.listFeatured(), [])
 
   const daos = useLoadingDaos(
-    featuredDaos.state === 'loading'
+    featuredDaos.loading
       ? { loading: true }
-      : featuredDaos.state === 'hasError'
+      : !featuredDaos.data
       ? { loading: false, data: [] }
       : {
           loading: false,
-          data: chains
-            .flatMap(
-              ({ chain }, index) =>
-                featuredDaos.contents[index]?.map(
-                  ({ address: coreAddress, order }) => ({
-                    chainId: chain.chain_id,
-                    coreAddress,
-                    order,
-                  })
-                ) || []
-            )
-            .sort((a, b) => a.order - b.order),
+          data: featuredDaos.data.filter(
+            (featured) => !chainId || featured.chainId === chainId
+          ),
         }
   )
 

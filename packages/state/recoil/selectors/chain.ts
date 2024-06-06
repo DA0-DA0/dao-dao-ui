@@ -31,15 +31,6 @@ import {
   ValidatorSlash,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  cosmos,
-  cosmwasm,
-  ibc,
-  juno,
-  neutron,
-  noble,
-  osmosis,
-} from '@dao-dao/types/protobuf'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
@@ -58,16 +49,20 @@ import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feere
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
   MAINNET,
-  addressIsModule,
   cosmWasmClientRouter,
+  cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
+  cosmwasmProtoRpcClientRouter,
   decodeGovProposal,
   getAllRpcResponse,
   getNativeTokenForChainId,
-  getRpcForChainId,
-  retry,
+  ibcProtoRpcClientRouter,
+  junoProtoRpcClientRouter,
+  neutronProtoRpcClientRouter,
+  nobleProtoRpcClientRouter,
+  osmosisProtoRpcClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -93,14 +88,7 @@ export const stargateClientForChainSelector = selectorFamily<
   string
 >({
   key: 'stargateClientForChain',
-  get: (chainId) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        await stargateClientRouter.connect(
-          getRpcForChainId(chainId, attempt - 1)
-        )
-    ),
+  get: (chainId) => async () => await stargateClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
@@ -109,106 +97,50 @@ export const cosmWasmClientForChainSelector = selectorFamily<
   string
 >({
   key: 'cosmWasmClientForChain',
-  get: (chainId) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        await cosmWasmClientRouter.connect(
-          getRpcForChainId(chainId, attempt - 1)
-        )
-    ),
+  get: (chainId) => async () => await cosmWasmClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
   key: 'cosmosRpcClientForChain',
   get: (chainId: string) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await cosmos.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).cosmos
-    ),
+    await cosmosProtoRpcClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
 export const ibcRpcClientForChainSelector = selectorFamily({
   key: 'ibcRpcClientForChain',
   get: (chainId: string) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await ibc.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).ibc
-    ),
+    await ibcProtoRpcClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmwasmRpcClientForChainSelector = selectorFamily({
   key: 'cosmwasmRpcClientForChain',
   get: (chainId: string) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await cosmwasm.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).cosmwasm
-    ),
+    await cosmwasmProtoRpcClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
 export const osmosisRpcClientForChainSelector = selectorFamily({
   key: 'osmosisRpcClientForChain',
   get: (chainId: string) => async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await osmosis.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).osmosis
-    ),
+    await osmosisProtoRpcClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
 export const nobleRpcClientSelector = selector({
   key: 'nobleRpcClient',
   get: async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await noble.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(ChainId.NobleMainnet, attempt - 1),
-          })
-        ).noble
-    ),
+    await nobleProtoRpcClientRouter.connect(ChainId.NobleMainnet),
   dangerouslyAllowMutability: true,
 })
 
 export const neutronRpcClientSelector = selector({
   key: 'neutronRpcClient',
   get: async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await neutron.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(
-              MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet,
-              attempt - 1
-            ),
-          })
-        ).neutron
+    await neutronProtoRpcClientRouter.connect(
+      MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
     ),
   dangerouslyAllowMutability: true,
 })
@@ -216,14 +148,8 @@ export const neutronRpcClientSelector = selector({
 export const junoRpcClientSelector = selector({
   key: 'junoRpcClient',
   get: async () =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await juno.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet, attempt - 1),
-          })
-        ).juno
+    await junoProtoRpcClientRouter.connect(
+      MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet
     ),
   dangerouslyAllowMutability: true,
 })
@@ -1308,24 +1234,6 @@ export const moduleNameForAddressSelector = selectorFamily<
         // Rethrow other errors.
         throw err
       }
-    },
-})
-
-// Check whether or not the address is a module account.
-export const addressIsModuleSelector = selectorFamily<
-  boolean,
-  WithChainId<{
-    address: string
-    // If passed, check if it is this specific module.
-    moduleName?: string
-  }>
->({
-  key: 'addressIsModule',
-  get:
-    ({ chainId, address, moduleName }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      return await addressIsModule(client, address, moduleName)
     },
 })
 

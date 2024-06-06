@@ -1,9 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
-import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { ErrorPage, JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
   ActionComponent,
@@ -26,7 +26,8 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
-import { daoInfoSelector } from '../../../../recoil'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { daoQueries } from '../../../../queries/dao'
 import {
   useActionOptions,
   useActionsForMatching,
@@ -118,13 +119,16 @@ const Component: ActionComponent = (props) => {
       ? daoSubDaosLoadable
       : walletAdminOfDaosLoadable
 
-  const daoInfoLoadable = useRecoilValueLoadable(
-    coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
-      ? daoInfoSelector({
-          coreAddress,
-          chainId,
-        })
-      : constSelector(undefined)
+  const daoInfo = useQueryLoadingDataWithError(
+    daoQueries.info(
+      useQueryClient(),
+      coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
+        ? {
+            chainId,
+            coreAddress: address,
+          }
+        : undefined
+    )
   )
 
   const options: InnerOptions = {
@@ -139,16 +143,18 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return daoInfoLoadable.state === 'hasValue' && !!daoInfoLoadable.contents ? (
+  return daoInfo.loading ? (
+    <InnerComponentLoading {...props} options={options} />
+  ) : daoInfo.errored ? (
+    <ErrorPage error={daoInfo.error} />
+  ) : (
     <SuspenseLoader
       fallback={<InnerComponentLoading {...props} options={options} />}
     >
-      <DaoProviders info={daoInfoLoadable.contents}>
+      <DaoProviders info={daoInfo.data}>
         <InnerComponent {...props} options={options} />
       </DaoProviders>
     </SuspenseLoader>
-  ) : (
-    <InnerComponentLoading {...props} options={options} />
   )
 }
 

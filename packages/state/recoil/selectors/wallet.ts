@@ -10,7 +10,6 @@ import {
 import {
   AccountTxSave,
   AccountType,
-  ContractVersion,
   ContractVersionInfo,
   GenericTokenBalance,
   LazyDaoCardProps,
@@ -529,8 +528,7 @@ export const lazyWalletDaosSelector = selectorFamily<
           info: {
             chainId,
             coreAddress: dao,
-            coreVersion:
-              parseContractVersion(info.version) || ContractVersion.Unknown,
+            coreVersion: parseContractVersion(info.version),
             name: config.name,
             description: config.description,
             imageUrl: config.image_url || getFallbackImage(dao),

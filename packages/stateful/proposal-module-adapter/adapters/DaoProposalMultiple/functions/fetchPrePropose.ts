@@ -11,6 +11,7 @@ import {
 } from '@dao-dao/utils'
 
 export const fetchPrePropose: FetchPreProposeFunction = async (
+  queryClient,
   chainId,
   proposalModuleAddress,
   version
@@ -55,5 +56,5 @@ export const fetchPrePropose: FetchPreProposeFunction = async (
     return null
   }
 
-  return await fetchPreProposeModule(chainId, preProposeAddress)
+  return await fetchPreProposeModule(queryClient, chainId, preProposeAddress)
 }

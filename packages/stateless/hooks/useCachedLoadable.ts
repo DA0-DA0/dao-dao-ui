@@ -13,6 +13,8 @@ import {
   transformLoadingDataWithError,
 } from '@dao-dao/utils'
 
+import { useUpdatingRef } from './useUpdatingRef'
+
 const constSelectorRegex = /^__constant__selectorFamily\/(.+)\/\d+$/
 
 // Keep cache of previously loaded data until next data is ready. Essentially,
@@ -166,9 +168,7 @@ export const useCachedLoadingWithError = <
   transform?: (data: T) => U
 ): LoadingDataWithError<U> => {
   const loadable = useCachedLoadable(recoilValue)
-
-  const transformRef = useRef(transform)
-  transformRef.current = transform
+  const transformRef = useUpdatingRef(transform)
 
   return useMemo(() => {
     const data = loadableToLoadingDataWithError(loadable)
@@ -176,7 +176,7 @@ export const useCachedLoadingWithError = <
       return transformLoadingDataWithError(data, transformRef.current)
     }
     return data as LoadingDataWithError<U>
-  }, [loadable])
+  }, [loadable, transformRef])
 }
 
 // Convert to LoadingData for convenience, memoized.
@@ -187,8 +187,7 @@ export const useCachedLoading = <T extends unknown>(
 ): LoadingData<T> => {
   const loadable = useCachedLoadable(recoilValue)
 
-  const onErrorRef = useRef(onError)
-  onErrorRef.current = onError
+  const onErrorRef = useUpdatingRef(onError)
 
   // Use deep compare to prevent memoize on every re-render if an object is
   // passed as the default value.
@@ -197,6 +196,6 @@ export const useCachedLoading = <T extends unknown>(
   return useMemo(
     () =>
       loadableToLoadingData(loadable, memoizedDefaultValue, onErrorRef.current),
-    [loadable, memoizedDefaultValue]
+    [loadable, memoizedDefaultValue, onErrorRef]
   )
 }

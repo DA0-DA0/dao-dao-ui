@@ -1,20 +1,20 @@
 import { fromBech32 } from '@cosmjs/encoding'
+import { useQueryClient } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { profileQueries } from '@dao-dao/state/query'
 import {
   averageColorSelector,
-  profileSelector,
   walletHexPublicKeySelector,
 } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
   Account as StatelessAccount,
   useCachedLoadable,
-  useCachedLoading,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
@@ -29,6 +29,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingData } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -68,8 +69,8 @@ export const Account: NextPage = () => {
     })
   )
 
-  const profile = useCachedLoading(
-    profileSelector({
+  const profile = useQueryLoadingData(
+    profileQueries.unified(useQueryClient(), {
       chainId: configuredChain.chainId,
       address: accountAddress,
     }),

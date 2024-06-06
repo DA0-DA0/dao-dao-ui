@@ -13,7 +13,6 @@ import {
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
-  getSupportedChainConfig,
   getSupportedChains,
 } from '@dao-dao/utils'
 
@@ -402,39 +401,4 @@ export const indexerMeilisearchClientSelector = selector({
   key: 'indexerMeilisearchClient',
   get: () => loadMeilisearchClient(),
   dangerouslyAllowMutability: true,
-})
-
-/**
- * Featured DAOs on a given chain.
- */
-export const indexerFeaturedDaosSelector = selectorFamily<
-  {
-    address: string
-    order: number
-  }[],
-  string
->({
-  key: 'indexerFeaturedDaos',
-  get:
-    (chainId) =>
-    async ({ get }) => {
-      const config = getSupportedChainConfig(chainId)
-      if (!config) {
-        return []
-      }
-
-      const featuredDaos: {
-        address: string
-        order: number
-      }[] =
-        get(
-          queryGenericIndexerSelector({
-            chainId,
-            formula: 'featuredDaos',
-            noFallback: true,
-          })
-        ) || []
-
-      return featuredDaos
-    },
 })

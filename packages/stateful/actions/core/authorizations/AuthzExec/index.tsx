@@ -1,11 +1,12 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { isDaoSelector } from '@dao-dao/state/recoil'
+import { contractQueries } from '@dao-dao/state/query'
 import {
   ChainProvider,
   DaoSupportedChainPickerInput,
+  ErrorPage,
   LockWithKeyEmoji,
   useChain,
 } from '@dao-dao/stateless'
@@ -37,7 +38,11 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
-import { daoInfoSelector } from '../../../../recoil'
+import {
+  useQueryLoadingData,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
+import { daoQueries } from '../../../../queries/dao'
 import {
   WalletActionsProvider,
   useActionOptions,
@@ -97,30 +102,38 @@ const InnerComponentWrapper: ActionComponent<
   } = props
   const { chain_id: chainId } = useChain()
 
-  const isDaoLoadable = useRecoilValueLoadable(
-    isDaoSelector({
-      address,
+  const queryClient = useQueryClient()
+  const isDao = useQueryLoadingData(
+    contractQueries.isDao(queryClient, {
       chainId,
-    })
+      address,
+    }),
+    false
   )
-  const daoInfoLoadable = useRecoilValueLoadable(
-    isDaoLoadable.state === 'hasValue' && isDaoLoadable.contents
-      ? daoInfoSelector({
-          chainId,
-          coreAddress: address,
-        })
-      : constSelector(undefined)
+  const daoInfo = useQueryLoadingDataWithError(
+    daoQueries.info(
+      useQueryClient(),
+      !isDao.loading && isDao.data
+        ? {
+            chainId,
+            coreAddress: address,
+          }
+        : undefined
+    )
   )
 
-  return isDaoLoadable.state === 'loading' ||
-    daoInfoLoadable.state === 'loading' ? (
+  return isDao.loading || (isDao.data && daoInfo.loading) ? (
     <InnerComponentLoading {...props} />
-  ) : daoInfoLoadable.state === 'hasValue' && daoInfoLoadable.contents ? (
-    <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
-      <DaoProviders info={daoInfoLoadable.contents}>
-        <InnerComponent {...props} />
-      </DaoProviders>
-    </SuspenseLoader>
+  ) : isDao.data && !daoInfo.loading ? (
+    daoInfo.errored ? (
+      <ErrorPage error={daoInfo.error} />
+    ) : (
+      <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
+        <DaoProviders info={daoInfo.data}>
+          <InnerComponent {...props} />
+        </DaoProviders>
+      </SuspenseLoader>
+    )
   ) : (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />

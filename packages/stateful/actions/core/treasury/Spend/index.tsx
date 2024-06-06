@@ -1,4 +1,5 @@
 import { coin, coins } from '@cosmjs/amino'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -69,9 +70,10 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterCommonContextIfAvailable } from '../../../../proposal-module-adapter/react/context'
-import { entitySelector } from '../../../../recoil'
+import { entityQueries } from '../../../../queries/entity'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -503,13 +505,17 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
   ])
 
   const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
-  const loadingEntity = useCachedLoadingWithError(
-    validRecipient
-      ? entitySelector({
-          address: recipient,
-          chainId: toChainId,
-        })
-      : undefined
+  const queryClient = useQueryClient()
+  const loadingEntity = useQueryLoadingDataWithError(
+    entityQueries.info(
+      queryClient,
+      validRecipient
+        ? {
+            address: recipient,
+            chainId: toChainId,
+          }
+        : undefined
+    )
   )
   // Cache last successfully loaded entity.
   useEffect(() => {
