@@ -26,6 +26,8 @@ jobs:
         run: yarn install
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
+      - name: Set up testnet environment
+        run: cp apps/dapp/.env.testnet apps/dapp/.env.local
       - name: Build dApp
         run: yarn dapp build
       - name: Run Playwright tests

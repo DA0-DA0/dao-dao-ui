@@ -15,7 +15,7 @@
     "start": "next start",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:e2e": "cp .env.testnet .env && playwright test",
+    "test:e2e": "cp .env.testnet .env.local && playwright test",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
   },
