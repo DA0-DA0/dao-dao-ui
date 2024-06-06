@@ -79,6 +79,6 @@ export const ChainGovernanceList = ({
 }
 
 const FILTERABLE_KEYS: Fuse.FuseOptionKey<LazyDaoCardProps>[] = [
-  'name',
-  'chainId',
+  'info.name',
+  'info.chainId',
 ]
