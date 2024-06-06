@@ -7,8 +7,8 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   daoQueries,
   dehydrateSerializable,
+  indexerQueries,
   makeReactQueryClient,
-  querySnapper,
 } from '@dao-dao/state'
 import {
   Home,
@@ -24,6 +24,9 @@ import {
 } from '@dao-dao/utils'
 
 export default Home
+
+// Share query client across static props generators since the data is the same.
+const queryClient = makeReactQueryClient()
 
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
@@ -63,35 +66,41 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
           : []),
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
-  const queryClient = makeReactQueryClient()
-
   const [i18nProps, tvl, allStats, monthStats, weekStats] = await Promise.all([
     // Get i18n translations props.
     serverSideTranslations(locale, ['translation']),
 
     // Get all or chain-specific stats and TVL.
-    querySnapper<number>({
-      query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
-      parameters: chainId ? { chainId } : undefined,
-    }),
-    querySnapper<DaoDaoIndexerChainStats>({
-      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-      parameters: chainId ? { chainId } : undefined,
-    }),
-    querySnapper<DaoDaoIndexerChainStats>({
-      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-      parameters: {
-        ...(chainId ? { chainId } : undefined),
-        daysAgo: 30,
-      },
-    }),
-    querySnapper<DaoDaoIndexerChainStats>({
-      query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-      parameters: {
-        ...(chainId ? { chainId } : undefined),
-        daysAgo: 7,
-      },
-    }),
+    queryClient.fetchQuery(
+      indexerQueries.snapper<number>({
+        query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
+        parameters: chainId ? { chainId } : undefined,
+      })
+    ),
+    queryClient.fetchQuery(
+      indexerQueries.snapper<DaoDaoIndexerChainStats>({
+        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+        parameters: chainId ? { chainId } : undefined,
+      })
+    ),
+    queryClient.fetchQuery(
+      indexerQueries.snapper<DaoDaoIndexerChainStats>({
+        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+        parameters: {
+          ...(chainId ? { chainId } : undefined),
+          daysAgo: 30,
+        },
+      })
+    ),
+    queryClient.fetchQuery(
+      indexerQueries.snapper<DaoDaoIndexerChainStats>({
+        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+        parameters: {
+          ...(chainId ? { chainId } : undefined),
+          daysAgo: 7,
+        },
+      })
+    ),
 
     // Pre-fetch featured DAOs.
     queryClient
