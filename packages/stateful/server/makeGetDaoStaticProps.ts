@@ -254,12 +254,11 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           }
         }
 
-        console.error(error)
-
         if (
           error instanceof Error &&
           (error.message.includes('contract: not found') ||
             error.message.includes('no such contract') ||
+            error.message.includes('404 contract not found') ||
             error.message.includes('Error parsing into type') ||
             error.message.includes('decoding bech32 failed') ||
             error.message.includes('dumpState reason: Unexpected token'))
@@ -277,6 +276,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             revalidate: 1,
           }
         }
+
+        console.error(error)
 
         // Return error in props to trigger client-side 500 error.
         return {
