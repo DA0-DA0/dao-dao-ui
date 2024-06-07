@@ -21,9 +21,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AcceptSubDaoData> = (
   msg: Record<string, any>
 ) => {
   try {
-    const match = Boolean(
-      msg.wasm.execute.contract_addr.msg.accept_admin_nomination
-    )
+    const match = Boolean(msg.wasm.execute.msg.accept_admin_nomination)
 
     if (match) {
       return {
