@@ -5,14 +5,13 @@ on:
     branches:
       - main
       - development
-      - noah/playwright
   pull_request:
     branches:
       - main
       - development
-      - noah/playwright
 
 env:
+  # override value from .env.testnet used in CI
   NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
 
 jobs:
