@@ -162,8 +162,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       // Dehydrate react-query state with featured DAOs preloaded.
       reactQueryDehydratedState: dehydrateSerializable(queryClient),
     },
-    // Revalidate every day.
-    revalidate: 24 * 60 * 60,
+    // Revalidate every 6 hours.
+    revalidate: 6 * 60 * 60,
   }
 }
 
