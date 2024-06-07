@@ -13,6 +13,7 @@
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "jest",
+    "test:e2e": "yarn dapp test:e2e",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",

@@ -26,7 +26,6 @@ import {
 } from '@dao-dao/types'
 import { cosmos } from '@dao-dao/types/protobuf'
 import {
-  CI,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_DAO_CONTRACT_NAMES,
@@ -91,11 +90,6 @@ export class LegacyDaoError extends Error {
 export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
   ({ appMode, coreAddress: _coreAddress, getProps }) =>
   async (context) => {
-    // Don't query chain if running in CI.
-    if (CI) {
-      return { notFound: true }
-    }
-
     // Load server translations and get T function for use in getProps.
     const { i18nProps, serverT } = await serverSideTranslationsWithServerT(
       context.locale,
