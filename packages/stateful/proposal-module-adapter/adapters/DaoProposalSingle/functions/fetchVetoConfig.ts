@@ -3,7 +3,6 @@ import { Feature, FetchVetoConfig } from '@dao-dao/types'
 import { ConfigResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   cosmWasmClientRouter,
-  getRpcForChainId,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
@@ -33,7 +32,7 @@ export const fetchVetoConfig: FetchVetoConfig = async (
   // If indexer fails, fallback to querying chain.
   if (!config) {
     const client = new DaoProposalSingleV2QueryClient(
-      await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+      await cosmWasmClientRouter.connect(chainId),
       proposalModuleAddress
     )
 

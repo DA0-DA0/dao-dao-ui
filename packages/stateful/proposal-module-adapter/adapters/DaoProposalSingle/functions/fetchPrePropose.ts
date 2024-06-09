@@ -6,7 +6,6 @@ import {
 import { Feature, FetchPreProposeFunction } from '@dao-dao/types'
 import {
   cosmWasmClientRouter,
-  getRpcForChainId,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
@@ -37,7 +36,7 @@ export const fetchPrePropose: FetchPreProposeFunction = async (
   // If indexer fails, fallback to querying chain.
   if (!creationPolicy) {
     const client = new DaoProposalSingleV2QueryClient(
-      await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+      await cosmWasmClientRouter.connect(chainId),
       proposalModuleAddress
     )
 
