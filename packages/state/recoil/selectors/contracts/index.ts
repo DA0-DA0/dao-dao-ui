@@ -1,6 +1,5 @@
 export * as CommonNftSelectors from './CommonNft'
 export * as Cw1WhitelistSelectors from './Cw1Whitelist'
-export * as Cw3FixedMultisigSelectors from './Cw3FixedMultisig'
 export * as Cw3FlexMultisigSelectors from './Cw3FlexMultisig'
 export * as Cw4GroupSelectors from './Cw4Group'
 export * as Cw20BaseSelectors from './Cw20Base'

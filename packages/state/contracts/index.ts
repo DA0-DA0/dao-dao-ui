@@ -1,9 +1,5 @@
 export { Cw1WhitelistClient, Cw1WhitelistQueryClient } from './Cw1Whitelist'
 export {
-  Cw3FixedMultisigClient,
-  Cw3FixedMultisigQueryClient,
-} from './Cw3FixedMultisig'
-export {
   Cw3FlexMultisigClient,
   Cw3FlexMultisigQueryClient,
 } from './Cw3FlexMultisig'
