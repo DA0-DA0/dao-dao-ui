@@ -912,6 +912,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // archway
         remoteChannel: 'channel-86',
       },
+      [ChainId.InjectiveMainnet]: {
+        // stargaze
+        note: 'stars1fgdeujlyhymvh2malsdeckcjc9zfar8qc4rw77m4eldxmg4xly7s2n828w',
+        // stargaze
+        listener:
+          'stars1hfhv66uu0t5kcku4rj506vvxp7l7h3aafjfruth5ss3yah76svuq59usx7',
+        // injective
+        voice: 'inj147yyg4ccmpwjut9e8marlmupx6myw8lj2wg4gn',
+        // stargaze
+        localConnection: 'connection-301',
+        // injective
+        remoteConnection: 'connection-270',
+        // stargaze
+        localChannel: 'channel-331',
+        // injective
+        remoteChannel: 'channel-310',
+      },
     },
   },
   {
