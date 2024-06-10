@@ -7,7 +7,9 @@ import {
   CryptographicMultisigAccount,
   Cw3MultisigAccount,
   MultisigAccount,
+  PolytoneProxies,
 } from '@dao-dao/types'
+import { ListItemsResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
@@ -69,14 +71,22 @@ export const fetchAccountList = async (
     ),
   ])
 
-  // If this is a DAO, get its polytone proxies and registered ICAs (which is a
-  // chain the DAO has indicated it has an ICA on by storing an item in its KV).
-  const [polytoneProxies, registeredIcas] = isDao
-    ? await Promise.all([
-        queryClient.fetchQuery(
+  const mainAccount: Account = {
+    chainId,
+    address,
+    type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+  }
+
+  const [polytoneProxies, registeredIcas] = await Promise.all([
+    mainAccount.type !== AccountType.Polytone
+      ? queryClient.fetchQuery(
           polytoneQueries.proxies(queryClient, { chainId, address })
-        ),
-        queryClient.fetchQuery(
+        )
+      : ({} as PolytoneProxies),
+    // If this is a DAO, get its registered ICAs (which is a chain the DAO has
+    // indicated it has an ICA on by storing an item in its KV).
+    isDao
+      ? queryClient.fetchQuery(
           daoDaoCoreQueries.listAllItems(queryClient, {
             chainId,
             contractAddress: address,
@@ -84,15 +94,9 @@ export const fetchAccountList = async (
               prefix: ICA_CHAINS_TX_PREFIX,
             },
           })
-        ),
-      ])
-    : []
-
-  const mainAccount: Account = {
-    chainId,
-    address,
-    type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
-  }
+        )
+      : ([] as ListItemsResponse),
+  ])
 
   const allAccounts: Account[] = [
     // Main account.
