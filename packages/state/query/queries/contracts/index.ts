@@ -1,4 +1,5 @@
 export * from './Cw1Whitelist'
+export * from './Cw20Base'
 export * from './Cw3FlexMultisig'
 export * from './DaoDaoCore'
 export * from './PolytoneNote'

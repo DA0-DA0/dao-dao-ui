@@ -257,11 +257,18 @@ export const maybeGetNativeTokenForChainId = (
 }
 
 const cachedTokens: Record<string, GenericToken | undefined> = {}
+/**
+ * Find a token in the local asset list, if it exists. Depending on the value of
+ * the `placeholder` argument, it will either return an empty token placeholder
+ * or error.
+ */
 export const getTokenForChainIdAndDenom = (
   chainId: string,
   denom: string,
-  // If true, will return placeholder token if not found. If false, will throw
-  // error.
+  /**
+   * If true, will return placeholder token if not found. If false, will throw
+   * error.
+   */
   placeholder = true
 ): GenericToken => {
   try {

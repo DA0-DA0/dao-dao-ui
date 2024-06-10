@@ -1,6 +1,7 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
@@ -160,6 +161,64 @@ export const fetchBlockTimestamp = async ({
   return new Date((await client.getBlock(height)).header.time).getTime()
 }
 
+/**
+ * Fetch the on-chain metadata for a denom if it exists. Returns null if denom
+ * not found. This likely exists for token factory denoms.
+ */
+export const fetchDenomMetadata = async ({
+  chainId,
+  denom,
+}: {
+  chainId: string
+  denom: string
+}): Promise<{
+  metadata: Metadata
+  preferredSymbol: string
+  preferredDecimals: number
+} | null> => {
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+  try {
+    const { metadata } = await client.bank.v1beta1.denomMetadata({ denom })
+
+    if (metadata) {
+      const { base, denomUnits, symbol, display } = metadata
+
+      // If display is equal to the base, use the symbol denom unit if
+      // available. This fixes the case where display was not updated even
+      // though a nonzero exponent was created.
+      const searchDenom = display === base ? symbol : display
+
+      const displayDenom =
+        denomUnits.find(({ denom }) => denom === searchDenom) ??
+        denomUnits.find(({ denom }) => denom === display) ??
+        denomUnits.find(({ exponent }) => exponent > 0) ??
+        denomUnits[0]
+
+      return {
+        metadata,
+        // If factory denom, extract symbol at the end.
+        preferredSymbol:
+          (displayDenom
+            ? displayDenom.denom.startsWith('factory/')
+              ? displayDenom.denom.split('/').pop()!
+              : displayDenom.denom
+            : metadata.symbol) || denom,
+        preferredDecimals: displayDenom?.exponent ?? 0,
+      }
+    }
+  } catch (err) {
+    // If denom not found, return null.
+    if (err instanceof Error && err.message.includes('key not found')) {
+      return null
+    }
+
+    // Rethrow other errors.
+    throw err
+  }
+
+  return null
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -197,5 +256,13 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'blockTimestamp', options],
       queryFn: () => fetchBlockTimestamp(options),
+    }),
+  /**
+   * Fetch the on-chain metadata for a denom if it exists.
+   */
+  denomMetadata: (options: Parameters<typeof fetchDenomMetadata>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'denomMetadata', options],
+      queryFn: () => fetchDenomMetadata(options),
     }),
 }
