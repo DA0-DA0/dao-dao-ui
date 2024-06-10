@@ -24,7 +24,6 @@ import {
   ProposalV1,
   ProposalV1Beta1,
 } from '@dao-dao/types'
-import { cosmos } from '@dao-dao/types/protobuf'
 import {
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -32,15 +31,14 @@ import {
   LEGACY_URL_PREFIX,
   MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
+  cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getChainForChainId,
   getChainIdForAddress,
   getConfiguredGovChainByName,
   getDaoPath,
-  getRpcForChainId,
   processError,
-  retry,
 } from '@dao-dao/utils'
 
 import { DaoPageWrapperProps } from '../components'
@@ -380,15 +378,7 @@ export const makeGetDaoProposalStaticProps = ({
       if (daoInfo.coreVersion === ContractVersion.Gov) {
         const url = getProposalUrlPrefix(params) + proposalId
 
-        const client = await retry(
-          10,
-          async (attempt) =>
-            (
-              await cosmos.ClientFactory.createRPCQueryClient({
-                rpcEndpoint: getRpcForChainId(chain.chain_id, attempt - 1),
-              })
-            ).cosmos
-        )
+        const client = await cosmosProtoRpcClientRouter.connect(chain.chain_id)
         const cosmosSdkVersion =
           (
             await client.base.tendermint.v1beta1.getNodeInfo()
