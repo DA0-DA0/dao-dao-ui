@@ -90,6 +90,9 @@ export const WHITE_WHALE_PRICES_API =
 export const ASTROPORT_PRICES_API =
   'https://api.astroport.fi/api/tokens/DENOM?chainId=neutron-1'
 
+// Indexer
+export const INDEXER_URL = 'https://indexer.daodao.zone'
+
 // Snapper API
 export const SNAPPER_API_BASE = 'https://snapper.daodao.zone'
 
