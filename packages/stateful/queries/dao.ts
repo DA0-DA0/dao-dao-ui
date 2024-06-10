@@ -13,11 +13,15 @@ import {
   DaoParentInfo,
   DaoSource,
   Feature,
+  IndexerDumpState,
   InfoResponse,
   ProposalModule,
 } from '@dao-dao/types'
+import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   getDaoInfoForChainId,
+  getDaoInfoForMultisigAccount,
   getFallbackImage,
   getSupportedChainConfig,
   getSupportedFeatures,
@@ -90,12 +94,46 @@ export const fetchDaoInfo = async (
 
   // Get DAO info from contract.
 
-  const state = await queryClient.fetchQuery(
-    daoDaoCoreQueries.dumpState(queryClient, {
-      chainId,
-      contractAddress: coreAddress,
-    })
-  )
+  let state: DumpStateResponse | IndexerDumpState
+  try {
+    state = await queryClient.fetchQuery(
+      daoDaoCoreQueries.dumpState(queryClient, {
+        chainId,
+        contractAddress: coreAddress,
+      })
+    )
+  } catch (err) {
+    // If contract query failed for some reason, check if this is a multisig.
+    if (
+      err instanceof Error &&
+      INVALID_CONTRACT_ERROR_SUBSTRINGS.some((error) =>
+        err.message.includes(error)
+      )
+    ) {
+      const multisigAccount = await queryClient
+        .fetchQuery(
+          accountQueries.cryptographicMultisig({
+            chainId,
+            address: coreAddress,
+          })
+        )
+        .catch(() => undefined)
+
+      if (multisigAccount) {
+        const accounts = await queryClient.fetchQuery(
+          accountQueries.list(queryClient, {
+            chainId,
+            address: coreAddress,
+          })
+        )
+
+        return getDaoInfoForMultisigAccount(multisigAccount, accounts)
+      }
+    }
+
+    // Rethrow error.
+    throw err
+  }
 
   const coreVersion = parseContractVersion(state.version.version)
   const supportedFeatures = getSupportedFeatures(coreVersion)

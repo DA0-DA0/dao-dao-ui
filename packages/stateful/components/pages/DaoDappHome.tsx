@@ -24,6 +24,7 @@ import {
   useFollowingDaos,
   useGovDaoTabs,
   useMembership,
+  useMultisigDaoTabs,
 } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
@@ -209,5 +210,10 @@ export const DaoDappHome = () => {
 
 export const ChainGovernanceDappHome = () => {
   const loadingTabs = useGovDaoTabs()
+  return <InnerDaoDappHome loadingTabs={loadingTabs} />
+}
+
+export const MultisigDappHome = () => {
+  const loadingTabs = useMultisigDaoTabs()
   return <InnerDaoDappHome loadingTabs={loadingTabs} />
 }

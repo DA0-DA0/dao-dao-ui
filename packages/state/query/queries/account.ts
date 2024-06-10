@@ -7,6 +7,7 @@ import {
   CryptographicMultisigAccount,
   Cw3MultisigAccount,
   MultisigAccount,
+  PolytoneProxies,
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
@@ -33,6 +34,8 @@ import { polytoneQueries } from './polytone'
  * Fetch the list of accounts associated with the specified address, with
  * support for:
  * - detecting if the address is a polytone proxy
+ * - detecting if the address is a cryptographic multisig
+ * - automatically loading all the account's polytone proxies
  * - automatically loading a DAO's registered ICAs
  */
 export const fetchAccountList = async (
@@ -60,23 +63,40 @@ export const fetchAccountList = async (
     )
   }
 
-  const [isDao, isPolytoneProxy] = await Promise.all([
-    queryClient.fetchQuery(
-      contractQueries.isDao(queryClient, { chainId, address })
-    ),
-    queryClient.fetchQuery(
-      contractQueries.isPolytoneProxy(queryClient, { chainId, address })
-    ),
-  ])
+  const [isDao, isPolytoneProxy, cryptographicMultisigAccount] =
+    await Promise.all([
+      queryClient.fetchQuery(
+        contractQueries.isDao(queryClient, { chainId, address })
+      ),
+      queryClient.fetchQuery(
+        contractQueries.isPolytoneProxy(queryClient, { chainId, address })
+      ),
+      queryClient
+        .fetchQuery(
+          accountQueries.cryptographicMultisig({
+            chainId,
+            address,
+          })
+        )
+        .catch(() => null),
+    ])
 
-  // If this is a DAO, get its polytone proxies and registered ICAs (which is a
-  // chain the DAO has indicated it has an ICA on by storing an item in its KV).
-  const [polytoneProxies, registeredIcas] = isDao
-    ? await Promise.all([
-        queryClient.fetchQuery(
+  const mainAccount: Account = cryptographicMultisigAccount || {
+    chainId,
+    address,
+    type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+  }
+
+  const [polytoneProxies, registeredIcas] = await Promise.all([
+    mainAccount.type !== AccountType.Polytone
+      ? queryClient.fetchQuery(
           polytoneQueries.proxies(queryClient, { chainId, address })
-        ),
-        queryClient.fetchQuery(
+        )
+      : ({} as PolytoneProxies),
+    // If this is a DAO, get its registered ICAs (which is a chain the DAO has
+    // indicated it has an ICA on by storing an item in its KV).
+    isDao
+      ? queryClient.fetchQuery(
           daoDaoCoreQueries.listAllItems(queryClient, {
             chainId,
             contractAddress: address,
@@ -84,15 +104,9 @@ export const fetchAccountList = async (
               prefix: ICA_CHAINS_TX_PREFIX,
             },
           })
-        ),
-      ])
-    : []
-
-  const mainAccount: Account = {
-    chainId,
-    address,
-    type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
-  }
+        )
+      : [],
+  ])
 
   const allAccounts: Account[] = [
     // Main account.
@@ -107,14 +121,10 @@ export const fetchAccountList = async (
     ),
   ]
 
-  // If main account is native, load ICA accounts.
-  const icaChains =
-    mainAccount.type === AccountType.Native
-      ? [
-          ...(registeredIcas || []).map(([key]) => key),
-          ...(includeIcaChains || []),
-        ]
-      : []
+  const icaChains = [
+    ...(registeredIcas || []).map(([key]) => key),
+    ...(includeIcaChains || []),
+  ]
 
   const icas = await Promise.allSettled(
     icaChains.map((destChainId) =>

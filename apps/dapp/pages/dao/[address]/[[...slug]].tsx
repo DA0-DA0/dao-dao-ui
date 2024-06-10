@@ -9,6 +9,7 @@ import {
   DaoDappHome,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  MultisigDappHome,
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { ContractVersion, DaoPageMode } from '@dao-dao/types'
@@ -21,6 +22,8 @@ const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   <DaoPageWrapper {...props}>
     {props.info?.coreVersion === ContractVersion.Gov ? (
       <ChainGovernanceDappHome />
+    ) : props.info?.coreVersion === ContractVersion.Multisig ? (
+      <MultisigDappHome />
     ) : (
       <DaoDappHome />
     )}

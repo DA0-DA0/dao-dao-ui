@@ -46,7 +46,7 @@ export type TreasuryTabProps<T extends TokenCardInfo, N extends object> = {
    * the action cannot be used, most likely because all accounts are already
    * created.
    */
-  createCrossChainAccountHref: string | undefined
+  createCrossChainAccountHref?: string
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
   TokenLine: ComponentType<T>

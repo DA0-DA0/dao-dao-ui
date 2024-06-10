@@ -4,6 +4,8 @@
 export enum ContractVersion {
   // Used when referring to gov module. Placeholder to force into DaoInfo shape.
   Gov = 'gov',
+  // Used when referring to multisig. Placeholder to force into DaoInfo shape.
+  Multisig = 'multisig',
   // Placeholder when failed to detect.
   Unknown = 'unknown',
 

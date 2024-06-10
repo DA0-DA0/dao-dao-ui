@@ -2,15 +2,27 @@ import {
   Account,
   AccountType,
   BreadcrumbCrumb,
+  ContractVersion,
   DaoDropdownInfo,
+  DaoInfo,
   DaoParentInfo,
   DaoSource,
   DaoWebSocketChannelInfo,
+  Feature,
+  MultisigAccount,
   PolytoneProxies,
+  SupportedFeatureMap,
 } from '@dao-dao/types'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
-import { getSupportedChainConfig } from './chain'
+import {
+  getChainGovernanceDaoDescription,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+  getSupportedChainConfig,
+  mustGetConfiguredChainConfig,
+} from './chain'
+import { getFallbackImage } from './getFallbackImage'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -174,3 +186,69 @@ export const deserializeDaoSource = (serialized: string): DaoSource => {
  */
 export const daoSourcesEqual = (a: DaoSource, b: DaoSource): boolean =>
   a.chainId === b.chainId && a.coreAddress === b.coreAddress
+
+/**
+ * Get the DAO info object for a given chain ID.
+ */
+export const getDaoInfoForChainId = (
+  chainId: string,
+  accounts: Account[]
+): DaoInfo => ({
+  chainId,
+  coreAddress: mustGetConfiguredChainConfig(chainId).name,
+  coreVersion: ContractVersion.Gov,
+  supportedFeatures: Object.values(Feature).reduce(
+    (acc, feature) => ({
+      ...acc,
+      [feature]: false,
+    }),
+    {} as SupportedFeatureMap
+  ),
+  votingModuleAddress: '',
+  votingModuleContractName: '',
+  proposalModules: [],
+  name: getDisplayNameForChainId(chainId),
+  description: getChainGovernanceDaoDescription(chainId),
+  imageUrl: getImageUrlForChainId(chainId),
+  created: null,
+  isActive: true,
+  activeThreshold: null,
+  items: {},
+  polytoneProxies: {},
+  accounts,
+  parentDao: null,
+  admin: '',
+})
+
+/**
+ * Get the DAO info object for a given multisig account.
+ */
+export const getDaoInfoForMultisigAccount = (
+  account: MultisigAccount,
+  accounts: Account[]
+): DaoInfo => ({
+  chainId: account.chainId,
+  coreAddress: account.address,
+  coreVersion: ContractVersion.Multisig,
+  supportedFeatures: Object.values(Feature).reduce(
+    (acc, feature) => ({
+      ...acc,
+      [feature]: false,
+    }),
+    {} as SupportedFeatureMap
+  ),
+  votingModuleAddress: '',
+  votingModuleContractName: '',
+  proposalModules: [],
+  name: 'Cryptographic multisig',
+  description: `Multisig for ${account.address}`,
+  imageUrl: getFallbackImage(account.address),
+  created: null,
+  isActive: true,
+  activeThreshold: null,
+  items: {},
+  polytoneProxies: {},
+  accounts,
+  parentDao: null,
+  admin: '',
+})

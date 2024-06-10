@@ -1,5 +1,6 @@
 {
   "accountTypeLabel": {
+    "cryptographicMultisig": "Multisig",
     "ica": "ICA",
     "native": "Native",
     "polytone": "Cross-chain",
