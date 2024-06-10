@@ -14,6 +14,7 @@
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "jest",
     "test:e2e": "yarn dapp test:e2e",
+    "cwgen": "yarn workspace @dao-dao/config cwgen",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
