@@ -14,7 +14,6 @@ import {
   DaoSource,
   Feature,
   InfoResponse,
-  PolytoneProxies,
   ProposalModule,
 } from '@dao-dao/types'
 import {
@@ -25,6 +24,7 @@ import {
   isConfiguredChainName,
   isFeatureSupportedByVersion,
   parseContractVersion,
+  polytoneNoteProxyMapToChainIdMap,
 } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../utils'
@@ -156,7 +156,7 @@ export const fetchDaoInfo = async (
     ),
     // Check if indexer returned this already.
     'polytoneProxies' in state && state.polytoneProxies
-      ? (state.polytoneProxies as PolytoneProxies)
+      ? polytoneNoteProxyMapToChainIdMap(chainId, state.polytoneProxies)
       : queryClient.fetchQuery(
           polytoneQueries.proxies(queryClient, {
             chainId,
