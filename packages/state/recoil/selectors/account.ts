@@ -1,4 +1,3 @@
-import { toHex } from '@cosmjs/encoding'
 import {
   constSelector,
   selectorFamily,
@@ -12,35 +11,19 @@ import {
   GenericToken,
   GenericTokenBalanceWithOwner,
   IcaAccount,
-  MultisigDetails as MultisigDetails,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
-import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
-import { PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 import {
-  ContractName,
   ICA_CHAINS_TX_PREFIX,
   POLYTONE_CONFIG_PER_CHAIN,
-  getChainForChainId,
   getConfiguredChainConfig,
-  secp256k1PublicKeyToBech32Address,
   tokensEqual,
 } from '@dao-dao/utils'
 
-import { cosmosRpcClientForChainSelector, moduleAddressSelector } from './chain'
-import {
-  isContractSelector,
-  isDaoSelector,
-  isPolytoneProxySelector,
-} from './contract'
-import {
-  Cw3FlexMultisigSelectors,
-  DaoCoreV2Selectors,
-  PolytoneProxySelectors,
-} from './contracts'
+import { moduleAddressSelector } from './chain'
+import { isDaoSelector, isPolytoneProxySelector } from './contract'
+import { DaoCoreV2Selectors, PolytoneProxySelectors } from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalanceSelector,
@@ -352,176 +335,5 @@ export const reverseLookupPolytoneProxySelector = selectorFamily<
         address,
         note: srcPolytoneInfo[1][chainId].note,
       }
-    },
-})
-
-/**
- * Get the details of a cryptographic multisig account.
- */
-export const cryptographicMultisigDetailsSelector = selectorFamily<
-  MultisigDetails,
-  WithChainId<{ address: string }>
->({
-  key: 'cryptographicMultisigDetails',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      const { account } = await client.auth.v1beta1.account({
-        address,
-      })
-
-      if (
-        !account ||
-        account.$typeUrl !== BaseAccount.typeUrl ||
-        account.pubKey?.typeUrl !== LegacyAminoPubKey.typeUrl
-      ) {
-        throw new Error('Not a multisig address.')
-      }
-
-      const { publicKeys, threshold } = LegacyAminoPubKey.decode(
-        account.pubKey.value
-      )
-
-      if (publicKeys.some(({ typeUrl }) => typeUrl !== PubKey.typeUrl)) {
-        throw new Error('Unsupported multisig.')
-      }
-
-      const addresses = await Promise.all(
-        publicKeys.map((key) =>
-          secp256k1PublicKeyToBech32Address(
-            toHex(PubKey.decode(key.value).key),
-            bech32Prefix
-          )
-        )
-      )
-
-      return {
-        chainId,
-        address,
-        members: addresses.map((address) => ({
-          address,
-          weight: 1,
-        })),
-        threshold: {
-          absolute_count: {
-            threshold: BigInt(threshold).toString(),
-          },
-        },
-        totalWeight: addresses.length,
-      }
-    },
-})
-
-/**
- * Get the details of a cw3-fixed or cw3-flex multisig account.
- */
-export const cw3MultisigDetailsSelector = selectorFamily<
-  MultisigDetails,
-  WithChainId<{ address: string }>
->({
-  key: 'cw3MultisigDetails',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const isCw3Multisig = get(
-        isContractSelector({
-          chainId,
-          contractAddress: address,
-          names: [ContractName.Cw3FixedMultisig, ContractName.Cw3FlexMultisig],
-        })
-      )
-
-      if (!isCw3Multisig) {
-        throw new Error('Not a multisig address.')
-      }
-
-      const [_threshold, { voters }] = get(
-        waitForAll([
-          Cw3FlexMultisigSelectors.thresholdSelector({
-            chainId,
-            contractAddress: address,
-            params: [],
-          }),
-          Cw3FlexMultisigSelectors.listAllVotersSelector({
-            chainId,
-            contractAddress: address,
-          }),
-        ])
-      )
-
-      const threshold: Threshold | undefined =
-        'absolute_count' in _threshold
-          ? {
-              absolute_count: {
-                threshold: BigInt(_threshold.absolute_count.weight).toString(),
-              },
-            }
-          : 'absolute_percentage' in _threshold
-          ? {
-              absolute_percentage: {
-                percentage: {
-                  percent: _threshold.absolute_percentage.percentage,
-                },
-              },
-            }
-          : 'threshold_quorum' in _threshold
-          ? {
-              threshold_quorum: {
-                quorum: {
-                  percent: _threshold.threshold_quorum.quorum,
-                },
-                threshold: {
-                  percent: _threshold.threshold_quorum.threshold,
-                },
-              },
-            }
-          : undefined
-
-      if (!threshold) {
-        throw new Error('Unsupported multisig.')
-      }
-
-      return {
-        chainId,
-        address,
-        members: voters.map(({ addr, weight }) => ({
-          address: addr,
-          weight,
-        })),
-        threshold,
-        totalWeight: voters.reduce((acc, { weight }) => acc + weight, 0),
-      }
-    },
-})
-
-/**
- * Get the details of a cryptographic, cw3-fixed, or cw3-flex multisig account.
- */
-export const multisigDetailsSelector = selectorFamily<
-  MultisigDetails,
-  WithChainId<{ address: string }>
->({
-  key: 'multisigDetails',
-  get:
-    (params) =>
-    async ({ get }) => {
-      const [cryptographicMultisig, cw3Multisig] = get(
-        waitForAllSettled([
-          cryptographicMultisigDetailsSelector(params),
-          cw3MultisigDetailsSelector(params),
-        ])
-      )
-
-      if (cryptographicMultisig.state === 'hasValue') {
-        return cryptographicMultisig.contents
-      }
-      if (cw3Multisig.state === 'hasValue') {
-        return cw3Multisig.contents
-      }
-
-      throw new Error('Not a multisig address.')
     },
 })

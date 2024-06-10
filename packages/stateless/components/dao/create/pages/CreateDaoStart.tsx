@@ -152,7 +152,11 @@ export const CreateDaoStart = ({
 
       <ImportMultisigModal
         onClose={() => setImportMultisigVisible(false)}
-        onImport={({ chainId, address, members, threshold, totalWeight }) => {
+        onImport={({
+          chainId,
+          address,
+          config: { members, threshold, totalWeight },
+        }) => {
           // Group members by weight and sort descending.
           const groupedMembers = Object.entries(
             members.reduce(

@@ -39,15 +39,15 @@ export const ImportMultisigModal = ({
   const processedMultisigTQ =
     loadingMultisig.loading || loadingMultisig.errored
       ? undefined
-      : processTQ(loadingMultisig.data.threshold)
+      : processTQ(loadingMultisig.data.config.threshold)
 
   const multisigType =
     loadingMultisig.loading || loadingMultisig.errored || !processedMultisigTQ
       ? 'unknown'
-      : 'absolute_count' in loadingMultisig.data.threshold
+      : 'absolute_count' in loadingMultisig.data.config.threshold
       ? t('info.xOfYMultisig', {
           x: processedMultisigTQ.threshold.display,
-          y: loadingMultisig.data.totalWeight,
+          y: loadingMultisig.data.config.totalWeight,
         })
       : [
           t('title.threshold') + ': ' + processedMultisigTQ.threshold.display,
@@ -143,20 +143,23 @@ export const ImportMultisigModal = ({
                 <div className="space-y-2">
                   <InputLabel>{t('title.members')}</InputLabel>
 
-                  {loadingMultisig.data.members.map(({ address, weight }) => (
-                    <div
-                      key={address}
-                      className="flex flex-row items-center justify-between"
-                    >
-                      <EntityDisplay address={address} />
+                  {loadingMultisig.data.config.members.map(
+                    ({ address, weight }) => (
+                      <div
+                        key={address}
+                        className="flex flex-row items-center justify-between"
+                      >
+                        <EntityDisplay address={address} />
 
-                      <p className="secondary-text shrink-0 font-mono">
-                        {formatPercentOf100(
-                          (weight / loadingMultisig.data.totalWeight) * 100
-                        )}
-                      </p>
-                    </div>
-                  ))}
+                        <p className="secondary-text shrink-0 font-mono">
+                          {formatPercentOf100(
+                            (weight / loadingMultisig.data.config.totalWeight) *
+                              100
+                          )}
+                        </p>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
 

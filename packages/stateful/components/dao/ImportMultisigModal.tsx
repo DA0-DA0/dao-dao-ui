@@ -1,10 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { multisigDetailsSelector } from '@dao-dao/state/recoil'
+import { accountQueries } from '@dao-dao/state/query'
 import {
   ChainProvider,
   ImportMultisigModal as StatelessImportMultisigModal,
-  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/types'
 import { getChainForChainId, isValidBech32Address } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../hooks'
 import { AddressInput } from '../AddressInput'
 import { EntityDisplay } from '../EntityDisplay'
 
@@ -28,15 +29,18 @@ export const ImportMultisigModal = (
   const chainId = form.watch('chainId')
   const address = form.watch('address')
 
-  const loadingMultisig = useCachedLoadingWithError(
-    chainId &&
-      address &&
-      isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
-      ? multisigDetailsSelector({
-          chainId,
-          address,
-        })
-      : undefined
+  const loadingMultisig = useQueryLoadingDataWithError(
+    accountQueries.multisig(
+      useQueryClient(),
+      chainId &&
+        address &&
+        isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
+        ? {
+            chainId,
+            address,
+          }
+        : undefined
+    )
   )
 
   return (

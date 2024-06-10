@@ -20,21 +20,14 @@ export enum AccountType {
    * An ICA controlled by an account on another chain.
    */
   Ica = 'ica',
-}
-
-export type NativeAccountTypeConfig = {
-  type: AccountType.Native
-  config?: undefined
-}
-
-export type PolytoneAccountTypeConfig = {
-  type: AccountType.Polytone
-  config?: undefined
-}
-
-export type IcaAccountTypeConfig = {
-  type: AccountType.Ica
-  config?: undefined
+  /**
+   * A cryptographic multisig.
+   */
+  CryptographicMultisig = 'cryptographicMultisig',
+  /**
+   * A cw3 smart-contract-based multisig.
+   */
+  Cw3Multisig = 'cw3Multisig',
 }
 
 export type BaseAccount = {
@@ -42,11 +35,55 @@ export type BaseAccount = {
   address: string
 }
 
-export type NativeAccount = BaseAccount & NativeAccountTypeConfig
-export type PolytoneAccount = BaseAccount & PolytoneAccountTypeConfig
-export type IcaAccount = BaseAccount & IcaAccountTypeConfig
+export type NativeAccount = BaseAccount & {
+  type: AccountType.Native
+  config?: undefined
+}
 
-export type Account = NativeAccount | PolytoneAccount | IcaAccount
+export type PolytoneAccount = BaseAccount & {
+  type: AccountType.Polytone
+  config?: undefined
+}
+
+export type IcaAccount = BaseAccount & {
+  type: AccountType.Ica
+  config?: undefined
+}
+
+export type CryptographicMultisigAccount = BaseAccount & {
+  type: AccountType.CryptographicMultisig
+  config: {
+    /**
+     * The members of the multisig.
+     */
+    members: {
+      address: string
+      weight: number
+    }[]
+    /**
+     * The threshold of members that must sign a transaction for it to be valid.
+     */
+    threshold: Threshold
+    /**
+     * The sum of all members' weights.
+     */
+    totalWeight: number
+  }
+}
+
+export type Cw3MultisigAccount = BaseAccount & {
+  type: AccountType.Cw3Multisig
+  config: CryptographicMultisigAccount['config']
+}
+
+export type MultisigAccount = CryptographicMultisigAccount | Cw3MultisigAccount
+
+export type Account =
+  | NativeAccount
+  | PolytoneAccount
+  | IcaAccount
+  | CryptographicMultisigAccount
+  | Cw3MultisigAccount
 
 /**
  * Unique identifier for account tabs, which is used in the URL path.
@@ -71,33 +108,4 @@ export type AccountTxForm = {
 export type AccountTxSave = AccountTxForm & {
   name: string
   description?: string
-}
-
-/**
- * The details that describe a multisig membership and threshold.
- */
-export type MultisigDetails = {
-  /**
-   * The multisig's chain ID.
-   */
-  chainId: string
-  /**
-   * The multisig's address.
-   */
-  address: string
-  /**
-   * The members of the multisig.
-   */
-  members: {
-    address: string
-    weight: number
-  }[]
-  /**
-   * The threshold of members that must sign a transaction for it to be valid.
-   */
-  threshold: Threshold
-  /**
-   * The sum of all members' weights.
-   */
-  totalWeight: number
 }
