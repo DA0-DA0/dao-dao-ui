@@ -1,8 +1,11 @@
 import { Check, Clear, CopyAll } from '@mui/icons-material'
 import { ReactNode, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { IconButton, Tooltip } from '../components'
+import { processError } from '@dao-dao/utils'
+
+import { IconButton, SmallLoader, Tooltip } from '../components'
 
 export type CreateProposalProps = {
   /**
@@ -12,7 +15,7 @@ export type CreateProposalProps = {
   /**
    * Optionally show a button that copies a link to the current draft.
    */
-  copyDraftLink?: () => void
+  copyDraftLink?: () => Promise<void>
   /**
    * Optionally show a button that clears the form.
    */
@@ -21,7 +24,7 @@ export type CreateProposalProps = {
 
 export const CreateProposal = ({
   newProposal,
-  copyDraftLink,
+  copyDraftLink: _copyDraftLink,
   clear,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
@@ -33,6 +36,22 @@ export const CreateProposal = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
+  const [copying, setCopying] = useState(false)
+  const copyDraftLink =
+    _copyDraftLink &&
+    (async () => {
+      setCopying(true)
+      try {
+        await _copyDraftLink()
+        setCopied(true)
+      } catch (error) {
+        console.error(error)
+        toast.error(processError(error))
+      } finally {
+        setCopying(false)
+      }
+    })
+
   return (
     <div className="flex min-h-full flex-col items-stretch gap-6">
       <div className="flex flex-row items-center justify-between gap-4">
@@ -40,14 +59,18 @@ export const CreateProposal = ({
 
         <div className="flex flex-row items-center gap-2 justify-end">
           {copyDraftLink && (
-            <Tooltip title={t('button.copyLinkToProposalDraft')}>
+            <Tooltip
+              title={
+                copying
+                  ? t('info.copying')
+                  : t('button.copyLinkToProposalDraft')
+              }
+            >
               <IconButton
-                Icon={copied ? Check : CopyAll}
+                Icon={copying ? SmallLoader : copied ? Check : CopyAll}
                 circular
-                onClick={() => {
-                  copyDraftLink()
-                  setCopied(true)
-                }}
+                disabled={copying}
+                onClick={copyDraftLink}
                 variant="ghost"
               />
             </Tooltip>

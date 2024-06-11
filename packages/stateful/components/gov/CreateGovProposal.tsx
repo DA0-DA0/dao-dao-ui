@@ -16,7 +16,7 @@ export const CreateGovProposal = () => {
   const daoInfo = useDaoInfoContextIfAvailable()
 
   const clearRef = useRef(() => {})
-  const copyDraftLinkRef = useRef(() => {})
+  const copyDraftLinkRef = useRef(async () => {})
 
   return (
     <>

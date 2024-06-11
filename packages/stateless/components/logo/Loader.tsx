@@ -21,6 +21,14 @@ export const Loader = ({
   </div>
 )
 
-export const PageLoader = ({ size = 64, ...props }: LoaderProps) => (
-  <Loader fill size={size} {...props} />
-)
+export const SmallLoader = ({
+  fill = false,
+  size = 24,
+  ...props
+}: LoaderProps) => <Loader fill={fill} size={size} {...props} />
+
+export const PageLoader = ({
+  fill = true,
+  size = 64,
+  ...props
+}: LoaderProps) => <Loader fill={fill} size={size} {...props} />

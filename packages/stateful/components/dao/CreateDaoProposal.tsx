@@ -43,8 +43,9 @@ import {
   DaoProposalSingleAdapterId,
   SITE_URL,
   decodeJsonFromBase64,
-  encodeJsonToBase64,
   objectMatchesStructure,
+  transformIpfsUrlToHttpsIfNecessary,
+  uploadJsonToIpfs,
 } from '@dao-dao/utils'
 
 import {
@@ -182,45 +183,68 @@ const InnerCreateDaoProposal = ({
       return
     }
 
-    const potentialPrefill = router.query.prefill
-    if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
-      setPrefillChecked(true)
-      return
-    }
+    const loadFromPrefill = async () => {
+      let potentialPrefill = router.query.prefill
 
-    // Try to parse as JSON.
-    let prefillData
-    try {
-      prefillData = JSON.parse(potentialPrefill)
-    } catch (error) {
-      console.error(error)
-    }
+      // If no potential prefill found, try to load from IPFS.
+      if (!potentialPrefill) {
+        if (router.query.pi && typeof router.query.pi === 'string') {
+          try {
+            // Parse as text (not JSON) since JSON will be parsed below.
+            potentialPrefill = await (
+              await fetch(
+                transformIpfsUrlToHttpsIfNecessary(`ipfs://${router.query.pi}`)
+              )
+            ).text()
+          } catch (error) {
+            console.error(error)
+            toast.error(t('error.failedToLoadIpfsProposalSave'))
+          }
+        }
+      }
 
-    // Try to parse as base64.
-    if (!prefillData) {
+      if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
+        setPrefillChecked(true)
+        return
+      }
+
+      // Try to parse as JSON.
+      let prefillData
       try {
-        prefillData = decodeJsonFromBase64(potentialPrefill)
+        prefillData = JSON.parse(potentialPrefill)
       } catch (error) {
         console.error(error)
       }
+
+      // Try to parse as base64.
+      if (!prefillData) {
+        try {
+          prefillData = decodeJsonFromBase64(potentialPrefill)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // If prefillData looks valid, use it.
+      if (
+        objectMatchesStructure(prefillData, {
+          id: {},
+          data: {},
+        })
+      ) {
+        loadPrefill(prefillData)
+      }
+
+      setPrefillChecked(true)
     }
 
-    // If prefillData looks valid, use it.
-    if (
-      objectMatchesStructure(prefillData, {
-        id: {},
-        data: {},
-      })
-    ) {
-      loadPrefill(prefillData)
-    }
-
-    setPrefillChecked(true)
+    loadFromPrefill()
   }, [
     router.query.prefill,
+    router.query.pi,
     router.isReady,
-    daoInfo.proposalModules,
     prefillChecked,
+    t,
     loadPrefill,
   ])
 
@@ -357,14 +381,17 @@ const InnerCreateDaoProposal = ({
     ]
   )
 
-  const copyDraftLink = () => {
+  const copyDraftLink = async () => {
+    // Upload data to IPFS.
+    const cid = await uploadJsonToIpfs({
+      id: proposalModuleAdapterCommonId,
+      data: getValues(),
+    })
+    // Copy link to clipboard.
     navigator.clipboard.writeText(
       SITE_URL +
         getDaoProposalPath(daoInfo.coreAddress, 'create', {
-          prefill: encodeJsonToBase64({
-            id: proposalModuleAdapterCommonId,
-            data: getValues(),
-          }),
+          pi: cid,
         })
     )
     toast.success(t('info.copiedLinkToClipboard'))
