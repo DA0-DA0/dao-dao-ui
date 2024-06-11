@@ -49,7 +49,6 @@ import {
   FilterableItem,
   FilterableItemPopup,
   IconButton,
-  Loader,
   PageLoader,
   ProposalContentDisplay,
   Tooltip,
@@ -94,7 +93,6 @@ import { makeGovernanceProposalAction } from '../../actions/core/chain_governanc
 import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { EntityDisplay } from '../EntityDisplay'
-import { SuspenseLoader } from '../SuspenseLoader'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
 
 enum ProposeSubmitValue {
@@ -648,27 +646,18 @@ const InnerNewGovProposal = ({
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
         <div className="flex flex-col gap-4">
-          <SuspenseLoader fallback={<Loader size={36} />}>
-            <WalletActionsProvider
-              address={
-                // If no wallet address, use a space so that the page still
-                // loads even if there is no wallet connected. An empty string
-                // is falsy which triggers the loader, so use a space instead.
-                walletAddress || ' '
-              }
-            >
-              <action.Component
-                addAction={() => {}}
-                allActionsWithData={[]}
-                data={proposalData}
-                errors={errors}
-                fieldNamePrefix=""
-                index={-1}
-                isCreating
-                remove={() => {}}
-              />
-            </WalletActionsProvider>
-          </SuspenseLoader>
+          <WalletActionsProvider address={walletAddress}>
+            <action.Component
+              addAction={() => {}}
+              allActionsWithData={[]}
+              data={proposalData}
+              errors={errors}
+              fieldNamePrefix=""
+              index={-1}
+              isCreating
+              remove={() => {}}
+            />
+          </WalletActionsProvider>
         </div>
 
         <div className="border-border-secondary flex flex-col gap-2 border-y py-6">

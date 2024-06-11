@@ -140,12 +140,12 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
         />
       )}
 
-      <SuspenseLoader
-        fallback={<Loader />}
-        forceFallback={openProposalsLoadable.state !== 'hasValue'}
-      >
-        <ChainProvider chainId={chainId}>
-          <GovActionsProvider>
+      <ChainProvider chainId={chainId}>
+        <GovActionsProvider>
+          <SuspenseLoader
+            fallback={<Loader />}
+            forceFallback={openProposalsLoadable.state !== 'hasValue'}
+          >
             <StatelessGovernanceVoteComponent
               {...props}
               options={{
@@ -160,9 +160,9 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
                 GovProposalActionDisplay,
               }}
             />
-          </GovActionsProvider>
-        </ChainProvider>
-      </SuspenseLoader>
+          </SuspenseLoader>
+        </GovActionsProvider>
+      </ChainProvider>
     </>
   )
 }

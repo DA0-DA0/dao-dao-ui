@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next'
 
 import {
   CreateProposal,
-  PageLoader,
   useDaoInfoContextIfAvailable,
 } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
 
 import { GovActionsProvider } from '../../actions'
 import { PageHeaderContent } from '../PageHeaderContent'
-import { SuspenseLoader } from '../SuspenseLoader'
 import { NewGovProposal } from './NewGovProposal'
 
 export const CreateGovProposal = () => {
@@ -38,12 +36,10 @@ export const CreateGovProposal = () => {
         copyDraftLink={() => copyDraftLinkRef.current()}
         newProposal={
           <GovActionsProvider>
-            <SuspenseLoader fallback={<PageLoader />}>
-              <NewGovProposal
-                clearRef={clearRef}
-                copyDraftLinkRef={copyDraftLinkRef}
-              />
-            </SuspenseLoader>
+            <NewGovProposal
+              clearRef={clearRef}
+              copyDraftLinkRef={copyDraftLinkRef}
+            />
           </GovActionsProvider>
         }
       />

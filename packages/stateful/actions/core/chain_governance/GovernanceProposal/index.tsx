@@ -13,12 +13,12 @@ import {
 import {
   ChainProvider,
   DaoSupportedChainPickerInput,
-  Loader,
   RaisedHandEmoji,
   useCachedLoading,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   ActionComponent,
   ActionComponentProps,
   ActionContextType,
@@ -84,22 +84,19 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
       )}
 
       <ChainProvider chainId={chainId}>
-        <SuspenseLoader
+        <GovActionsProvider
           key={
             // Re-render when chain changes.
             chainId
           }
-          fallback={<Loader />}
         >
-          <GovActionsProvider>
-            <InnerComponent
-              {...props}
-              options={{
-                address: getChainAddressForActionOptions(options, chainId),
-              }}
-            />
-          </GovActionsProvider>
-        </SuspenseLoader>
+          <InnerComponent
+            {...props}
+            options={{
+              address: getChainAddressForActionOptions(options, chainId),
+            }}
+          />
+        </GovActionsProvider>
       </ChainProvider>
     </>
   )
@@ -286,44 +283,52 @@ export const makeGovernanceProposalAction: ActionMaker<
     context,
   } = options
 
+  const defaultChainId =
+    // Neutron does not use the x/gov module. If this is a DAO on Neutron, see
+    // if it has polytone accounts on any other chain. If it does, default to
+    // one of them. Otherwise, hide the action since it cannot be used.
+    currentChainId === ChainId.NeutronMainnet ||
+    currentChainId === ChainId.NeutronTestnet
+      ? context.type === ActionContextType.Dao
+        ? context.info.accounts.find((a) => a.type === AccountType.Polytone)
+            ?.chainId
+        : undefined
+      : // If not on Neutron, default to current chain.
+        currentChainId
+
   if (
     // Governance module cannot participate in governance.
     context.type === ActionContextType.Gov ||
-    // Neutron does not use the x/gov module.
-    currentChainId === ChainId.NeutronMainnet ||
-    currentChainId === ChainId.NeutronTestnet
+    !defaultChainId
   ) {
     return null
   }
 
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
-    const govParams = useCachedLoadingWithError(
-      govParamsSelector({
-        chainId: currentChainId,
-      })
+    const loadingData = useCachedLoadingWithError(
+      waitForAll([
+        govParamsSelector({
+          chainId: defaultChainId,
+        }),
+        chainSupportsV1GovModuleSelector({
+          chainId: defaultChainId,
+        }),
+      ])
     )
 
-    const supportsV1GovProposals = useCachedLoadingWithError(
-      chainSupportsV1GovModuleSelector({
-        chainId: currentChainId,
-      })
-    )
-
-    if (govParams.loading || supportsV1GovProposals.loading) {
+    if (loadingData.loading) {
       return
     }
-    if (govParams.errored) {
-      return govParams.error
-    }
-    if (supportsV1GovProposals.errored) {
-      return supportsV1GovProposals.error
+    if (loadingData.errored) {
+      return loadingData.error
     }
 
-    const deposit = govParams.data.minDeposit[0]
+    const [{ minDeposit }, supportsV1GovProposals] = loadingData.data
+    const deposit = minDeposit[0]
 
     return {
-      chainId: currentChainId,
-      version: supportsV1GovProposals.data
+      chainId: defaultChainId,
+      version: supportsV1GovProposals
         ? GovProposalVersion.V1
         : GovProposalVersion.V1_BETA_1,
       title: '',
@@ -338,7 +343,7 @@ export const makeGovernanceProposalAction: ActionMaker<
           ]
         : [
             {
-              denom: getNativeTokenForChainId(currentChainId).denomOrAddress,
+              denom: getNativeTokenForChainId(defaultChainId).denomOrAddress,
               amount: 0,
             },
           ],

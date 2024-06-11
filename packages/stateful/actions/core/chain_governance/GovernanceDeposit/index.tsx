@@ -12,7 +12,6 @@ import {
 import {
   BankEmoji,
   DaoSupportedChainPickerInput,
-  Loader,
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
@@ -37,7 +36,6 @@ import {
 } from '@dao-dao/utils'
 
 import { GovProposalActionDisplay } from '../../../../components'
-import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovActionsProvider, useActionOptions } from '../../../react'
 import {
@@ -66,11 +64,9 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
         />
       )}
 
-      <SuspenseLoader fallback={<Loader />}>
-        <GovActionsProvider>
-          <InnerComponent {...props} />
-        </GovActionsProvider>
-      </SuspenseLoader>
+      <GovActionsProvider>
+        <InnerComponent {...props} />
+      </GovActionsProvider>
     </>
   )
 }
