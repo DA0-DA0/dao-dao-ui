@@ -5,7 +5,6 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import gzipInit, { compress, decompress, freeBuffer } from 'wasm-gzip'
 
 import {
   Button,
@@ -21,6 +20,8 @@ import { AddressInputProps, TransProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
+  gzipCompress,
+  gzipDecompress,
   makeValidateAddress,
   processError,
   validateRequired,
@@ -83,17 +84,11 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
 
       // Decompress gzip data if needed.
       if (_gzipped) {
-        await gzipInit()
-        rawData = decompress(rawData)
+        rawData = await gzipDecompress(rawData)
       }
 
       const sha256Hash = await crypto.subtle.digest('SHA-256', rawData)
       setSha256Checksum(toHex(new Uint8Array(sha256Hash)))
-
-      // Free buffer once the hash has been computed.
-      if (_gzipped) {
-        freeBuffer()
-      }
     },
     [data, gzipped]
   )
@@ -122,25 +117,21 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
         throw new Error(t('error.emptyFile'))
       }
 
-      await gzipInit()
-
       const fileData = new Uint8Array(data)
       const alreadyGzipped = file.name.endsWith('.wasm.gz')
 
-      const rawData = alreadyGzipped ? decompress(fileData) : fileData
+      const rawData = alreadyGzipped ? await gzipDecompress(fileData) : fileData
 
       // Update sha256 hash with raw data.
       await updateSha256Checksum(toBase64(rawData), false)
 
       // Gzip compress data if not already gzipped.
-      const gzippedData = alreadyGzipped ? fileData : compress(rawData)
-      const gzippedDataBase64 = toBase64(gzippedData)
-
-      // Free buffer once it's been converted to base64.
-      freeBuffer()
+      const gzippedData = alreadyGzipped
+        ? fileData
+        : await gzipCompress(rawData)
 
       setValue((fieldNamePrefix + 'gzipped') as 'gzipped', true)
-      setValue((fieldNamePrefix + 'data') as 'data', gzippedDataBase64)
+      setValue((fieldNamePrefix + 'data') as 'data', toBase64(gzippedData))
     } catch (err) {
       console.error(err)
       toast.error(processError(err, { forceCapture: false }))

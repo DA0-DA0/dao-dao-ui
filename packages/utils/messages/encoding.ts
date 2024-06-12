@@ -38,3 +38,31 @@ export const decodeJsonFromBase64 = (
  */
 export const isGzipped = (data: Uint8Array) =>
   data.length >= 2 && data[0] === 0x1f && data[1] === 0x8b
+
+/**
+ * Compress data with gzip.
+ */
+export const gzipCompress = async (data: Uint8Array): Promise<Uint8Array> => {
+  const compressionStream = new CompressionStream('gzip')
+  const writer = compressionStream.writable.getWriter()
+  writer.write(data)
+  writer.close()
+  const compressedData = await new Response(
+    compressionStream.readable
+  ).arrayBuffer()
+  return new Uint8Array(compressedData)
+}
+
+/**
+ * Decompress data with gzip.
+ */
+export const gzipDecompress = async (data: Uint8Array): Promise<Uint8Array> => {
+  const decompressionStream = new DecompressionStream('gzip')
+  const writer = decompressionStream.writable.getWriter()
+  writer.write(data)
+  writer.close()
+  const decompressedData = await new Response(
+    decompressionStream.readable
+  ).arrayBuffer()
+  return new Uint8Array(decompressedData)
+}
