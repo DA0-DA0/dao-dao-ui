@@ -154,8 +154,8 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
 
             {sha256Checksum ? (
               <CopyToClipboard
-                className="font-mono"
-                takeAll
+                className="font-mono max-w-full"
+                takeN={18}
                 value={sha256Checksum}
               />
             ) : (
