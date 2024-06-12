@@ -9,7 +9,7 @@
     "ses": "ts-node ./scripts/ses"
   },
   "devDependencies": {
-    "@aws-sdk/client-ses": "^3.354.0",
+    "@aws-sdk/client-ses": "^3.592.0",
     "@dao-dao/config": "2.4.0-rc.8",
     "@dao-dao/types": "2.4.0-rc.8",
     "@react-email/components": "^0.0.7",

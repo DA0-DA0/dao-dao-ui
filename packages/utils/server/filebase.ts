@@ -1,4 +1,5 @@
-import { S3 } from 'aws-sdk'
+import { PutObjectCommand, S3 } from '@aws-sdk/client-s3'
+import { StreamingBlobPayloadInputTypes } from '@smithy/types'
 
 import {
   FILEBASE_ACCESS_KEY_ID,
@@ -15,7 +16,7 @@ export const uploadToFilebase = async (
   /**
    * Data to upload.
    */
-  data: S3.Body,
+  data: StreamingBlobPayloadInputTypes,
   /**
    * File path.
    */
@@ -29,17 +30,19 @@ export const uploadToFilebase = async (
    */
 ): Promise<string> => {
   const client = new S3({
-    apiVersion: '2006-03-01',
-    accessKeyId: FILEBASE_ACCESS_KEY_ID,
-    secretAccessKey: FILEBASE_SECRET_ACCESS_KEY,
+    credentials: {
+      accessKeyId: FILEBASE_ACCESS_KEY_ID,
+      secretAccessKey: FILEBASE_SECRET_ACCESS_KEY,
+    },
     endpoint: 'https://s3.filebase.com',
     region: 'us-east-1',
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4',
+    forcePathStyle: true,
   })
 
-  return await new Promise<string>((resolve, reject) => {
-    const request = client.putObject({
+  return await new Promise<string>(async (resolve, reject) => {
+    // https://docs.filebase.com/code-development-+-sdks/sdk-examples-pinning-files-and-folders-to-ipfs/aws-sdk-for-javascript#aws-sdk-v3
+
+    const command = new PutObjectCommand({
       Bucket: FILEBASE_BUCKET,
       Key: path,
       ContentType: contentType,
@@ -47,20 +50,32 @@ export const uploadToFilebase = async (
       ACL: 'public-read',
     })
 
-    // Listen for CID.
-    request.on('httpHeaders', (_, headers) => {
-      const cid = headers['x-amz-meta-cid']
-      if (!cid) {
-        reject(new Error('No CID found.'))
+    command.middlewareStack.add(
+      (next) => async (args) => {
+        // Check if request is incoming as middleware works both ways
+        const response = await next(args)
+        if (!(response.response as any).statusCode) return response
+
+        // Get cid from headers
+        const cid = (response.response as any).headers['x-amz-meta-cid']
+        if (cid) {
+          resolve(cid)
+        } else {
+          reject(new Error('No CID found.'))
+        }
+
+        return response
+      },
+      {
+        step: 'build',
+        name: 'addCidToOutput',
       }
+    )
 
-      resolve(cid)
-    })
-
-    request.on('error', (err) => {
+    try {
+      await client.send(command)
+    } catch (err) {
       reject(err)
-    })
-
-    request.send()
+    }
   })
 }
