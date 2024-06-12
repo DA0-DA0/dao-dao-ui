@@ -173,7 +173,13 @@ export const decodeRawDataForDisplay = (msg: any): any =>
       })()
     : // Stargate message
     isCosmWasmStargateMsg(msg)
-    ? decodeRawDataForDisplay(decodeStargateMessage(msg))
+    ? (() => {
+        try {
+          return decodeRawDataForDisplay(decodeStargateMessage(msg))
+        } catch {
+          return msg
+        }
+      })()
     : Object.entries(msg).reduce(
         (acc, [key, value]) => ({
           ...acc,
