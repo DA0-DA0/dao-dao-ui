@@ -13,7 +13,7 @@ import {
   SupportedChainConfig,
 } from '@dao-dao/types'
 
-import { NEUTRON_GOVERNANCE_DAO } from './other'
+import { NEUTRON_GOVERNANCE_DAO } from './env'
 
 //! ----- Modified chain-registry -----
 let chains = [...chainRegistryChains]
@@ -1770,6 +1770,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     accentColor: '#000000',
     factoryContractAddress:
       'neutron1gu2c0ddyrzk78cuzdlwwtz4c07mfyumx43wefe2fgtv5rf7fvlrq5upnkr',
+    govContractAddress: NEUTRON_GOVERNANCE_DAO,
     explorerUrlTemplates: {
       tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',

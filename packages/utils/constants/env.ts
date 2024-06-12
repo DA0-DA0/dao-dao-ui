@@ -15,6 +15,14 @@ export const LEGACY_URL_PREFIX = process.env
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
 
+// Neutron DAOs.
+export const NEUTRON_GOVERNANCE_DAO = MAINNET
+  ? 'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'
+  : 'neutron1kvxlf27r0h7mzjqgdydqdf76dtlyvwz6u9q8tysfae53ajv8urtq4fdkvy'
+export const NEUTRON_SECURITY_SUBDAO = MAINNET
+  ? 'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
+  : 'neutron1zv35zgj7d6khqxfl3tx95scjljz0rvmkxcsxmggqxrltkm8ystsqvt0qc7'
+
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 

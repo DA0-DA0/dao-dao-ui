@@ -104,12 +104,6 @@ export const ICA_CHAINS_TX_PREFIX = 'ica:'
 
 export const CHAIN_GAS_MULTIPLIER = 2
 
-// Neutron DAOs.
-export const NEUTRON_GOVERNANCE_DAO =
-  'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'
-export const NEUTRON_SECURITY_SUBDAO =
-  'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
-
 export const IPFS_GATEWAY_TEMPLATE = 'https://ipfs.daodao.zone/ipfs/PATH'
 
 export const SKIP_API_BASE = 'https://api.skip.money'
