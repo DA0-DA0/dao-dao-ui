@@ -149,6 +149,63 @@ index 11d5dba92..e5ef23ea1 100644
      return obj;
    },
    fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
+diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
+index d2a323eb5..2ede42783 100644
+--- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
++++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
+@@ -19,16 +19,16 @@ export const AccessTypeAmino = AccessType;
+ export function accessTypeFromJSON(object: any): AccessType {
+   switch (object) {
+     case 0:
+-    case "ACCESS_TYPE_UNSPECIFIED":
++    case "Unspecified":
+       return AccessType.ACCESS_TYPE_UNSPECIFIED;
+     case 1:
+-    case "ACCESS_TYPE_NOBODY":
++    case "Nobody":
+       return AccessType.ACCESS_TYPE_NOBODY;
+     case 3:
+-    case "ACCESS_TYPE_EVERYBODY":
++    case "Everybody":
+       return AccessType.ACCESS_TYPE_EVERYBODY;
+     case 4:
+-    case "ACCESS_TYPE_ANY_OF_ADDRESSES":
++    case "AnyOfAddresses":
+       return AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES;
+     case -1:
+     case "UNRECOGNIZED":
+@@ -39,13 +39,13 @@ export function accessTypeFromJSON(object: any): AccessType {
+ export function accessTypeToJSON(object: AccessType): string {
+   switch (object) {
+     case AccessType.ACCESS_TYPE_UNSPECIFIED:
+-      return "ACCESS_TYPE_UNSPECIFIED";
++      return "Unspecified";
+     case AccessType.ACCESS_TYPE_NOBODY:
+-      return "ACCESS_TYPE_NOBODY";
++      return "Nobody";
+     case AccessType.ACCESS_TYPE_EVERYBODY:
+-      return "ACCESS_TYPE_EVERYBODY";
++      return "Everybody";
+     case AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES:
+-      return "ACCESS_TYPE_ANY_OF_ADDRESSES";
++      return "AnyOfAddresses";
+     case AccessType.UNRECOGNIZED:
+     default:
+       return "UNRECOGNIZED";
+@@ -485,11 +485,9 @@ export const AccessConfig = {
+   },
+   toAmino(message: AccessConfig, useInterfaces: boolean = false): AccessConfigAmino {
+     const obj: any = {};
+-    obj.permission = message.permission;
+-    if (message.addresses) {
++    obj.permission = accessTypeToJSON(message.permission);
++    if (message.addresses?.length) {
+       obj.addresses = message.addresses.map(e => e);
+-    } else {
+-      obj.addresses = [];
+     }
+     return obj;
+   },
 diff --git b/packages/types/protobuf/codegen/neutron/client.ts a/packages/types/protobuf/codegen/neutron/client.ts
 index 1caf8781d..9d864d753 100644
 --- b/packages/types/protobuf/codegen/neutron/client.ts
