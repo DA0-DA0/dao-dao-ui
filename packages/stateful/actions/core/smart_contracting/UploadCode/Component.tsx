@@ -5,6 +5,7 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import gzipInit, { compress, decompress, freeBuffer } from 'wasm-gzip'
 
 import {
   Button,
@@ -29,6 +30,8 @@ export type UploadCodeData = {
   chainId: string
   // Set when file is chosen.
   data?: string
+  // Whether or not data is gzipped.
+  gzipped?: boolean
   accessType: AccessType
   // Only used when accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES
   allowedAddresses: {
@@ -64,21 +67,35 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
   })
 
   const data = watch((fieldNamePrefix + 'data') as 'data')
+  const gzipped = watch((fieldNamePrefix + 'gzipped') as 'gzipped')
   const [fileName, setFileName] = useState<string | undefined>()
   const [sha256Checksum, setSha256Checksum] = useState<string | undefined>()
   const updateSha256Checksum = useCallback(
-    async (_data: string | undefined = data) => {
+    async (
+      _data: string | undefined = data,
+      _gzipped: boolean | undefined = gzipped
+    ) => {
       if (!_data) {
         return
       }
 
-      const sha256Hash = await crypto.subtle.digest(
-        'SHA-256',
-        fromBase64(_data)
-      )
+      let rawData = fromBase64(_data)
+
+      // Decompress gzip data if needed.
+      if (_gzipped) {
+        await gzipInit()
+        rawData = decompress(rawData)
+      }
+
+      const sha256Hash = await crypto.subtle.digest('SHA-256', rawData)
       setSha256Checksum(toHex(new Uint8Array(sha256Hash)))
+
+      // Free buffer once the hash has been computed.
+      if (_gzipped) {
+        freeBuffer()
+      }
     },
-    [data]
+    [data, gzipped]
   )
   // When data is set, if no hash, compute sha256 hash.
   useEffect(() => {
@@ -88,7 +105,7 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
   }, [data, sha256Checksum, updateSha256Checksum])
 
   const onSelect = async (file: File) => {
-    if (!file.name.endsWith('.wasm') && !file.name.endsWith('.gz')) {
+    if (!file.name.endsWith('.wasm') && !file.name.endsWith('.wasm.gz')) {
       toast.error(t('error.invalidWasmFile'))
       return
     }
@@ -105,10 +122,25 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
         throw new Error(t('error.emptyFile'))
       }
 
-      const newData = toBase64(new Uint8Array(data))
-      await updateSha256Checksum(newData)
+      await gzipInit()
 
-      setValue((fieldNamePrefix + 'data') as 'data', newData)
+      const fileData = new Uint8Array(data)
+      const alreadyGzipped = file.name.endsWith('.wasm.gz')
+
+      const rawData = alreadyGzipped ? decompress(fileData) : fileData
+
+      // Update sha256 hash with raw data.
+      await updateSha256Checksum(toBase64(rawData), false)
+
+      // Gzip compress data if not already gzipped.
+      const gzippedData = alreadyGzipped ? fileData : compress(rawData)
+      const gzippedDataBase64 = toBase64(gzippedData)
+
+      // Free buffer once it's been converted to base64.
+      freeBuffer()
+
+      setValue((fieldNamePrefix + 'gzipped') as 'gzipped', true)
+      setValue((fieldNamePrefix + 'data') as 'data', gzippedDataBase64)
     } catch (err) {
       console.error(err)
       toast.error(processError(err, { forceCapture: false }))

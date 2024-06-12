@@ -434,7 +434,7 @@
     "invalidImportFormatJson": "Invalid format. Expected `actions` array, with each action containing `key` and `data`.",
     "invalidMessage": "Invalid message",
     "invalidVerificationCode": "Invalid verification code.",
-    "invalidWasmFile": "Invalid file type. Expected WASM (.wasm extension).",
+    "invalidWasmFile": "Invalid file type. Expected WASM (.wasm extension) or gzipped WASM (.wasm.gz extension).",
     "loadingChainTokens": "Failed to load tokens on {{chain}}. Try refreshing the page, or try again later.",
     "loadingData": "Failed to load data.",
     "logInToContinue": "Log in to continue.",

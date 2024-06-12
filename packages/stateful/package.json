@@ -73,7 +73,8 @@
     "recoil": "^0.7.2",
     "remove-markdown": "^0.5.0",
     "use-deep-compare-effect": "^1.8.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "wasm-gzip": "^2.0.3"
   },
   "devDependencies": {
     "@chain-registry/types": "^0.41.3",

@@ -16,6 +16,9 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 ```json
 {
   "chainId": "<CHAIN ID>",
-  "data": "<BASE64 WASM DATA>"
+  "data": "<BASE64 WASM DATA>",
+  "gzipped": <true | false>
 }
 ```
+
+Set gzipped to true if the base64 data is gzipped wasm.

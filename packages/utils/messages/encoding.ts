@@ -29,3 +29,12 @@ export const decodeJsonFromBase64 = (
     }
   }
 }
+
+/**
+ * Determine whether or not the data appears to be gzipped.
+ *
+ * Gzip's magic number is 0x1f 0x8b, meaning it will start with those two bytes.
+ * Other data could also start with those two bytes, but it's unlikely.
+ */
+export const isGzipped = (data: Uint8Array) =>
+  data.length >= 2 && data[0] === 0x1f && data[1] === 0x8b

@@ -22,6 +22,7 @@ import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
+  isGzipped,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
@@ -116,11 +117,17 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
       }
     }
 
+    const wasmByteCode = msg.stargate.value.wasmByteCode as Uint8Array
+    // gzipped data starts with 0x1f 0x8b
+    const gzipped =
+      wasmByteCode instanceof Uint8Array && isGzipped(wasmByteCode)
+
     return {
       match: true,
       data: {
         chainId,
-        data: toBase64(msg.stargate.value.wasmByteCode),
+        data: toBase64(wasmByteCode),
+        gzipped,
         accessType:
           msg.stargate.value.instantiatePermission?.permission ??
           AccessType.UNRECOGNIZED,
