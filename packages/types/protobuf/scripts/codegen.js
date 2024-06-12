@@ -89,6 +89,7 @@ telescope({
           'osmosis.poolincentives.v1beta1',
           'osmosis.poolmanager.v1beta1',
           'osmosis.protorev.v1beta1',
+          'osmosis.smartaccount.v1beta1',
           'osmosis.superfluid',
           'osmosis.superfluid.v1beta1',
           'osmosis.tokenfactory.v1beta1',

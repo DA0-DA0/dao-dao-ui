@@ -68,6 +68,9 @@ export const createRPCMsgClient = async ({
     protorev: {
       v1beta1: new (await import("./protorev/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     },
+    smartaccount: {
+      v1beta1: new (await import("./smartaccount/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
+    },
     superfluid: new (await import("./superfluid/tx.rpc.msg")).MsgClientImpl(rpc),
     tokenfactory: {
       v1beta1: new (await import("./tokenfactory/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)

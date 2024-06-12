@@ -76,6 +76,9 @@ export const createRPCQueryClient = async ({
       protorev: {
         v1beta1: (await import("./protorev/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
       },
+      smartaccount: {
+        v1beta1: (await import("./smartaccount/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
+      },
       superfluid: (await import("./superfluid/query.rpc.Query")).createRpcQueryExtension(client),
       tokenfactory: {
         v1beta1: (await import("./tokenfactory/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
