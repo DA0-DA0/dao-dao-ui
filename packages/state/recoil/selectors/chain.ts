@@ -862,16 +862,15 @@ export const govProposalSelector = selectorFamily<
       const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
       // Try to load from indexer first.
-      let indexerProposal:
+      const indexerProposal:
         | {
             id: string
             version: string
             data: string
           }
         | undefined
-        | null
-      try {
-        indexerProposal = get(
+        | null = get(
+        waitForAllSettled([
           queryGenericIndexerSelector({
             chainId,
             formula: 'gov/proposal',
@@ -879,14 +878,9 @@ export const govProposalSelector = selectorFamily<
               id: proposalId,
             },
             id,
-          })
-        )
-      } catch (err) {
-        // Ignore error if not Promise thrown by recoil. Otherwise rethrow.
-        if (err instanceof Promise) {
-          throw err
-        }
-      }
+          }),
+        ])
+      )[0].valueMaybe()
 
       let govProposal: GovProposalWithDecodedContent | undefined
 
