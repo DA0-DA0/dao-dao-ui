@@ -65,10 +65,12 @@ export const getRpcForChainId = (
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
 
-  const rpcs = chain?.apis?.rpc ?? []
-  if (rpcs.length === 0) {
-    throw new Error(`No RPCs found for chain ID "${chainId}"`)
-  }
+  const rpcs = [
+    // Try cosmos.directory RPC first.
+    { address: 'https://rpc.cosmos.directory/' + chain.chain_name },
+    // Fallback to chain registry.
+    ...(chain?.apis?.rpc ?? []),
+  ]
 
   return rpcs[offset % rpcs.length].address.replace(/http:\/\//, 'https://')
 }
