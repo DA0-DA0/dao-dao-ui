@@ -9,9 +9,6 @@ export const createRPCQueryClient = async ({
   const client = new QueryClient(tmClient);
   return {
     cosmos: {
-      adminmodule: {
-        adminmodule: (await import("./adminmodule/adminmodule/query.rpc.Query")).createRpcQueryExtension(client)
-      },
       auth: {
         v1beta1: (await import("./auth/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
       },
