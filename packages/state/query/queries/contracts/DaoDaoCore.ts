@@ -18,6 +18,7 @@ import {
   SubDao,
   SubDaoWithChainId,
   TotalPowerAtHeightResponse,
+  VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import { cosmWasmClientRouter } from '@dao-dao/utils'
@@ -575,12 +576,12 @@ export const daoDaoCoreQueries = {
       ).pauseInfo(),
     ...options,
   }),
-  votingModule: <TData = Addr>({
+  votingModule: <TData = VotingModuleResponse>({
     chainId,
     contractAddress,
     options,
   }: DaoDaoCoreVotingModuleQuery<TData>): UseQueryOptions<
-    Addr,
+    VotingModuleResponse,
     Error,
     TData
   > => ({
@@ -845,7 +846,7 @@ export interface DaoDaoCoreListAllSubDaosQuery<TData>
   }
 }
 export interface DaoDaoCoreVotingModuleQuery<TData>
-  extends DaoDaoCoreReactQuery<Addr, TData> {}
+  extends DaoDaoCoreReactQuery<VotingModuleResponse, TData> {}
 export interface DaoDaoCorePauseInfoQuery<TData>
   extends DaoDaoCoreReactQuery<PauseInfoResponse, TData> {}
 export interface DaoDaoCoreActiveProposalModulesQuery<TData>

@@ -223,11 +223,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 
   // Can't match until we have the token info.
   if (
-    !isExecute ||
+    (!isWasmExecute && !isSecretExecuteMsg) ||
     (isCw20 && (cw20Token.loading || cw20Token.errored)) ||
-    (!isCw20 &&
-      msg.wasm.execute.funds.length > 0 &&
-      (fundsTokens.loading || fundsTokens.errored))
+    (!isCw20 && !!funds?.length && (fundsTokens.loading || fundsTokens.errored))
   ) {
     return { match: false }
   }
