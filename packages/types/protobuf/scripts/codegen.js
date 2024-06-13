@@ -116,8 +116,12 @@ telescope({
           'pstake.liquidstakeibc.v1beta1',
           'pstake.lscosmos.v1beta1',
           'pstake.ratesync.v1beta1',
-          // 'cosmos.adminmodule.adminmodule',
           'bitsong.fantoken',
+
+          // interferes with v1beta1 MsgSubmitProposal amino encoders since the
+          // type names overlap
+          //
+          // 'cosmos.adminmodule.adminmodule',
         ],
       },
       // excluded: {
