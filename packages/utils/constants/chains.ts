@@ -972,7 +972,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     // There are no IBC connections with:
     // - Neutron
     // TODO(polytone): Polytone does not yet exist with:
-    // - Kujira
     // - Archway
     polytone: {
       [ChainId.JunoMainnet]: {
@@ -1101,6 +1100,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-120',
         // injective
         remoteChannel: 'channel-309',
+      },
+      [ChainId.KujiraMainnet]: {
+        // migaloo
+        note: 'migaloo1ra5czh604fv2k3rhrmesasa45afse97ulnwdz77zx9qkngyzx6jsfmvn6g',
+        // migaloo
+        listener:
+          'migaloo1s06ndhqa93tmx244e6jefpv0mr0dgzwjkjj0nvvn9jpj0hd756tqrzygkw',
+        // kujira
+        voice:
+          'kujira1dxcg652grz88gnur0cqelqks8aeazus6l44fejdnzjw2hel8x49skf5c96',
+        // migaloo
+        localConnection: 'connection-19',
+        // kujira
+        remoteConnection: 'connection-59',
+        // migaloo
+        localChannel: 'channel-123',
+        // kujira
+        remoteChannel: 'channel-167',
       },
     },
   },
@@ -1313,6 +1330,80 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       Cw20Base: 8785,
       Cw20Stake: 8786,
       DaoVotingCw20Staked: 8787,
+    },
+    polytone: {
+      [ChainId.OsmosisMainnet]: {
+        // terra
+        note: 'terra1mudpw50amrmmj66j8gcxcvuervrmdpfpskjfjz8ccq2n6vs8messcqc26w',
+        // terra
+        listener:
+          'terra1d4ge6jklal6enlfjuz8wgzzdlwmtqtuj87rnxf3wzw9ykw3wrl7srzx0lz',
+        // osmosis
+        voice:
+          'osmo1sgyvze8v2jr600pjxll6leg3lpuz2grte0aceelzz0q3r7kv4dtsrgd9y8',
+        // terra
+        localConnection: 'connection-11',
+        // osmosis
+        remoteConnection: 'connection-1215',
+        // terra
+        localChannel: 'channel-93',
+        // osmosis
+        remoteChannel: 'channel-78083',
+      },
+      [ChainId.StargazeMainnet]: {
+        // terra
+        note: 'terra1wnvlwpdgug7sp3gan9cgdplfe9368apunh09dakurgjmvxwhn9gqk3t70u',
+        // terra
+        listener:
+          'terra1306eg6lp30zdet9dkp0td4a2lw6wfp88ufuwppccp2eu7uva8thqv7h5qt',
+        // stargaze
+        voice:
+          'stars19nlxjdrdqaphvnckuhl50jjdtwe6pflcr7rgjfhcs66nwlfr0ees0dwpqp',
+        // terra
+        localConnection: 'connection-152',
+        // stargaze
+        remoteConnection: 'connection-298',
+        // terra
+        localChannel: 'channel-100',
+        // stargaze
+        remoteChannel: 'channel-336',
+      },
+      [ChainId.MigalooMainnet]: {
+        // terra
+        note: 'terra16c0fhcrm0ez0e4an644lynknwxhru9wjeacg9xsplayrzrhs7uxs5y7vtx',
+        // terra
+        listener:
+          'terra196xqr5ngsr483lvh4alux0rcnspep45gad484h6pdappqnf70jys7wpmkq',
+        // migaloo
+        voice:
+          'migaloo10snk2jzmgxhzg3348gy8tljlah42wcw0jm3wpjsv6zhfz2cdls8sl573w4',
+        // terra
+        localConnection: 'connection-141',
+        // migaloo
+        remoteConnection: 'connection-88',
+        // terra
+        localChannel: 'channel-101',
+        // migaloo
+        remoteChannel: 'channel-121',
+      },
+      [ChainId.KujiraMainnet]: {
+        // terra
+        note: 'terra14peyt0qrvayqj3vcy2rtq6tpp2frgw0qyt4stks6enf42gnuwrnsx2skls',
+        // terra
+        listener:
+          'terra1s7vmxcrtuuhetl5qjqhc0ldjlwqxd87r4m5uym428mky4s36vwfsl3jcm7',
+        // kujira
+        voice:
+          'kujira1fnv7ar6xt2y8lsnv9zvdfykdnels04vfjwnq4n0edqgvkm9cj2aqss5ftx',
+        // terra
+        localConnection: 'connection-102',
+        // kujira
+        remoteConnection: 'connection-79',
+        // terra
+        localChannel: 'channel-106',
+        // kujira
+        remoteChannel: 'channel-166',
+      },
     },
   },
   {
