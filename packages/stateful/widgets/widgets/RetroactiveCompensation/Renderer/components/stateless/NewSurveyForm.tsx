@@ -1,11 +1,13 @@
 import { Add } from '@mui/icons-material'
 import clsx from 'clsx'
+import dayjs from 'dayjs'
 import { useCallback } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  DateTimePicker,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
@@ -125,14 +127,13 @@ export const NewSurveyForm = ({
               </div>
 
               <div>
-                <TextInput
+                <DateTimePicker
+                  control={control}
                   error={errors.contributionsOpenAt}
                   fieldName="contributionsOpenAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
                   validation={[validateRequired, makeValidateDate(t)]}
                 />
+
                 <InputErrorMessage error={errors.contributionsOpenAt} />
               </div>
             </div>
@@ -154,29 +155,30 @@ export const NewSurveyForm = ({
               </div>
 
               <div>
-                <TextInput
+                <DateTimePicker
+                  control={control}
                   error={errors.contributionsCloseRatingsOpenAt}
                   fieldName="contributionsCloseRatingsOpenAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
                   validation={[
                     validateRequired,
                     makeValidateDate(t),
                     // Ensure close date is after open date.
-                    () =>
+                    () => {
                       // Valid if dates not yet available.
-                      !(
-                        contributionsOpenAt &&
-                        !isNaN(Date.parse(contributionsOpenAt)) &&
-                        contributionsCloseRatingsOpenAt &&
-                        !isNaN(Date.parse(contributionsCloseRatingsOpenAt))
-                      ) ||
-                      new Date(contributionsCloseRatingsOpenAt) >
-                        new Date(contributionsOpenAt) ||
-                      t('error.closeDateMustBeAfterOpenDate'),
+                      return (
+                        !(
+                          dayjs(contributionsCloseRatingsOpenAt).isValid() &&
+                          dayjs(ratingsCloseAt).isValid()
+                        ) ||
+                        dayjs(ratingsCloseAt).isAfter(
+                          dayjs(contributionsCloseRatingsOpenAt)
+                        ) ||
+                        t('error.closeDateMustBeAfterOpenDate')
+                      )
+                    },
                   ]}
                 />
+
                 <InputErrorMessage
                   error={errors.contributionsCloseRatingsOpenAt}
                 />
@@ -258,12 +260,10 @@ export const NewSurveyForm = ({
               </div>
 
               <div>
-                <TextInput
+                <DateTimePicker
+                  control={control}
                   error={errors.ratingsCloseAt}
                   fieldName="ratingsCloseAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
                   validation={[
                     validateRequired,
                     makeValidateDate(t),
@@ -271,13 +271,12 @@ export const NewSurveyForm = ({
                     () =>
                       // Valid if dates not yet available.
                       !(
-                        contributionsCloseRatingsOpenAt &&
-                        !isNaN(Date.parse(contributionsCloseRatingsOpenAt)) &&
-                        ratingsCloseAt &&
-                        !isNaN(Date.parse(ratingsCloseAt))
+                        dayjs(contributionsCloseRatingsOpenAt).isValid() &&
+                        dayjs(ratingsCloseAt).isValid()
                       ) ||
-                      new Date(ratingsCloseAt) >
-                        new Date(contributionsCloseRatingsOpenAt) ||
+                      dayjs(ratingsCloseAt).isAfter(
+                        dayjs(contributionsCloseRatingsOpenAt)
+                      ) ||
                       t('error.closeDateMustBeAfterOpenDate'),
                   ]}
                 />

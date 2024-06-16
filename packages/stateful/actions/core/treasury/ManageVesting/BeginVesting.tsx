@@ -15,6 +15,7 @@ import {
   Button,
   ChainProvider,
   CopyToClipboard,
+  DateTimePicker,
   IconButton,
   InputErrorMessage,
   InputLabel,
@@ -573,12 +574,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
             {isCreating ? (
               <div className="flex flex-col gap-1">
-                <TextInput
+                <DateTimePicker
+                  control={control}
                   error={errors?.startDate}
                   fieldName={(fieldNamePrefix + 'startDate') as 'startDate'}
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
                   validation={[validateRequired, makeValidateDate(t, true)]}
                 />
                 <InputErrorMessage error={errors?.startDate} />

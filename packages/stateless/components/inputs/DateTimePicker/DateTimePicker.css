@@ -1,0 +1,83 @@
+/* Override calendar's background color */
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded {
+  background-color: var(--background-base);
+  box-shadow: none;
+  @apply text-text-body;
+}
+
+/* Override button interaction styles within the calendar */
+.MuiDateCalendar-root,
+.MuiMultiSectionDigitalClock-root,
+.MuiDialogActions-root {
+  & .MuiTypography-root,
+  & .MuiButtonBase-root {
+    @apply text-text-body;
+  }
+
+  & .MuiButtonBase-root,
+  & .MuiPickersYear-yearButton {
+    @apply transition;
+
+    &:hover,
+    &.Mui-selected {
+      background-color: var(--background-button-pressed);
+      color: var(--text-button-primary);
+    }
+
+    &.Mui-selected:hover,
+    &.Mui-selected:focus {
+      background-color: var(--background-button-pressed);
+      color: var(--text-button-primary);
+    }
+
+    /* Disable Ripple effect (incongruent) */
+    & .MuiTouchRipple-root {
+      display: none;
+    }
+  }
+}
+
+/* Calendar trigger button styles */
+.MuiIconButton-root.MuiButtonBase-root {
+  @apply text-text-body;
+}
+
+/* Styling date picker input */
+.MuiOutlinedInput-root.MuiInputBase-root {
+  @apply secondary-text;
+  @apply appearance-none;
+  @apply bg-transparent;
+  @apply text-text-body;
+  @apply placeholder:text-text-tertiary;
+  @apply rounded-md;
+  @apply focus:outline-none;
+  @apply transition;
+
+  /* Default outline styles */
+  & > .MuiOutlinedInput-notchedOutline {
+    /* Remove default border-color on focus/error/valid states */
+    border-color: transparent !important;
+    @apply ring-1;
+    @apply transition;
+  }
+
+  /* Outline focused styles */
+  &.Mui-focused > .MuiOutlinedInput-notchedOutline {
+    @apply ring-2;
+  }
+
+  /* Regular outline styles */
+  &:not(.Mui-error) {
+    & > .MuiOutlinedInput-notchedOutline {
+      @apply ring-border-primary;
+    }
+    &.Mui-focused > .MuiOutlinedInput-notchedOutline {
+      @apply ring-border-interactive-focus;
+    }
+  }
+
+  /* Error outline styles */
+  &.Mui-error > .MuiOutlinedInput-notchedOutline {
+    @apply ring-border-interactive-error;
+  }
+}
