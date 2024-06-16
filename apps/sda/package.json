@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/sda",
-  "version": "2.4.0-rc.8",
+  "version": "2.4.0-rc.9",
   "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
@@ -17,12 +17,12 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
-    "@dao-dao/i18n": "2.4.0-rc.8",
-    "@dao-dao/state": "2.4.0-rc.8",
-    "@dao-dao/stateful": "2.4.0-rc.8",
-    "@dao-dao/stateless": "2.4.0-rc.8",
-    "@dao-dao/types": "2.4.0-rc.8",
-    "@dao-dao/utils": "2.4.0-rc.8",
+    "@dao-dao/i18n": "2.4.0-rc.9",
+    "@dao-dao/state": "2.4.0-rc.9",
+    "@dao-dao/stateful": "2.4.0-rc.9",
+    "@dao-dao/stateless": "2.4.0-rc.9",
+    "@dao-dao/types": "2.4.0-rc.9",
+    "@dao-dao/utils": "2.4.0-rc.9",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@keplr-wallet/common": "^0.11.49",
@@ -48,7 +48,7 @@
     "sharp": "^0.31.1"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.8",
+    "@dao-dao/config": "2.4.0-rc.9",
     "@next/bundle-analyzer": "^12.1.0",
     "@sentry/cli": "^2.21.3",
     "@solana/web3.js": "^1.75.0",

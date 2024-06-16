@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/storybook",
-  "version": "2.4.0-rc.8",
+  "version": "2.4.0-rc.9",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "build-storybook",
@@ -8,10 +8,10 @@
     "generate": "ts-node --esm ./scripts/generate.ts"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.0-rc.8",
-    "@dao-dao/i18n": "2.4.0-rc.8",
-    "@dao-dao/types": "2.4.0-rc.8",
-    "@dao-dao/utils": "2.4.0-rc.8",
+    "@dao-dao/config": "2.4.0-rc.9",
+    "@dao-dao/i18n": "2.4.0-rc.9",
+    "@dao-dao/types": "2.4.0-rc.9",
+    "@dao-dao/utils": "2.4.0-rc.9",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-links": "^6.5.12",
@@ -45,9 +45,9 @@
     "typescript": "5.3.3"
   },
   "peerDependencies": {
-    "@dao-dao/state": "2.4.0-rc.8",
-    "@dao-dao/stateful": "2.4.0-rc.8",
-    "@dao-dao/stateless": "2.4.0-rc.8"
+    "@dao-dao/state": "2.4.0-rc.9",
+    "@dao-dao/stateful": "2.4.0-rc.9",
+    "@dao-dao/stateless": "2.4.0-rc.9"
   },
   "prettier": "@dao-dao/config/prettier",
   "gitHead": "67c8ffb27c34ee37b9367d3fde6856085081f40c"
