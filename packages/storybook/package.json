@@ -50,5 +50,5 @@
     "@dao-dao/stateless": "2.4.0-rc.9"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "67c8ffb27c34ee37b9367d3fde6856085081f40c"
+  "gitHead": "0d76facc26ddc496b58d1f5c7458e5db243cdd14"
 }
