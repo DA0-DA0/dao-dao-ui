@@ -45,7 +45,6 @@ export const DateTimePicker = <
     {}
   )
 
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Controller
@@ -56,7 +55,7 @@ export const DateTimePicker = <
             {...props}
             className={clsx(error && 'Mui-error', className)}
             onChange={(date) => {
-              // Only propagate valid date inputs 
+              // Only propagate valid date inputs
               if (date?.isValid()) {
                 onChange(date?.toISOString())
               }
