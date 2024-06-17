@@ -4,49 +4,58 @@ import { SUPPORTED_CHAINS } from '../constants/chains'
 
 // Parse arguments.
 const program = new Command()
+program.description(
+  'dump Polytone relayer entries for one or multiple chains. passing no arguments will dump entries for all chains'
+)
 program.option('-a, --chain-a <string>', 'chain A')
 program.option('-b, --chain-b <string>', 'chain B')
+program.option('-m, --many <string>', 'comma-separated list of chains to dump')
 program.parse(process.argv)
-const { chainA, chainB } = program.opts()
+const { chainA, chainB, many } = program.opts()
 
-const dumpOne = (chainId: string) => {
-  // get the polytone connections out of this chain
-  const chainPolytonesOut = Object.entries(
-    SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId)?.polytone || {}
-  )
+const dumpAll = (...chainIds: string[]) => {
+  const chainLines: Record<string, Set<string>> = {}
 
-  // get the polytone connections into this chain
-  const chainPolytonesInto = SUPPORTED_CHAINS.flatMap((chain) =>
-    chain.polytone?.[chainId]
-      ? {
-          chainId: chain.chainId,
-          polytone: chain.polytone[chainId],
-        }
-      : []
-  )
-
-  const chainLines = {
-    [chainId]: [
-      // notes out
-      ...chainPolytonesOut.map(
-        ([inChainId, polytone]) =>
-          `  # polytone to ${inChainId} (note)\n  ["wasm.${polytone.note}", "${polytone.localChannel}"]`
-      ),
-
-      // voices in
-      ...chainPolytonesInto.map(
-        ({ chainId: outChainId, polytone }) =>
-          `  # polytone from ${outChainId} (voice)\n  ["wasm.${polytone.voice}", "${polytone.remoteChannel}"]`
-      ),
-    ],
-  }
-
-  chainPolytonesOut.forEach(([intoChainId, polytone]) => {
-    chainLines[intoChainId] ||= []
-    // voices in
-    chainLines[intoChainId].push(
-      `  # polytone from ${chainId} (voice)\n  ["wasm.${polytone.voice}", "${polytone.remoteChannel}"]`
+  chainIds.forEach((chainId) => {
+    // get the polytone connections out of this chain
+    const chainPolytonesOut = Object.entries(
+      SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId)?.polytone ||
+        {}
     )
+
+    // get the polytone connections into this chain
+    const chainPolytonesInto = SUPPORTED_CHAINS.flatMap((chain) =>
+      chain.polytone?.[chainId]
+        ? {
+            chainId: chain.chainId,
+            polytone: chain.polytone[chainId],
+          }
+        : []
+    )
+
+    chainLines[chainId] ||= new Set()
+
+    // notes out
+    chainPolytonesOut.forEach(([inChainId, polytone]) =>
+      chainLines[chainId].add(
+        `  # polytone to ${inChainId} (note)\n  ["wasm.${polytone.note}", "${polytone.localChannel}"],`
+      )
+    )
+
+    // voices in
+    chainPolytonesInto.forEach(({ chainId: outChainId, polytone }) =>
+      chainLines[chainId].add(
+        `  # polytone from ${outChainId} (voice)\n  ["wasm.${polytone.voice}", "${polytone.remoteChannel}"],`
+      )
+    )
+
+    chainPolytonesOut.forEach(([intoChainId, polytone]) => {
+      chainLines[intoChainId] ||= new Set()
+      // voices in
+      chainLines[intoChainId].add(
+        `  # polytone from ${chainId} (voice)\n  ["wasm.${polytone.voice}", "${polytone.remoteChannel}"],`
+      )
+    })
   })
 
   Object.entries(chainLines).forEach(([chainId, lines]) => {
@@ -57,7 +66,7 @@ const dumpOne = (chainId: string) => {
   console.log()
 }
 
-const dumpTwo = (chainIdA: string, chainIdB: string) => {
+const dumpBidirectional = (chainIdA: string, chainIdB: string) => {
   const chainA = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdA)
     ?.polytone?.[chainIdB]
   const chainB = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdB)
@@ -93,11 +102,13 @@ const dumpTwo = (chainIdA: string, chainIdB: string) => {
 }
 
 if (chainA && chainB) {
-  dumpTwo(chainA, chainB)
+  dumpBidirectional(chainA, chainB)
 } else if (chainA) {
-  dumpOne(chainA)
+  dumpAll(...chainA.split(','))
 } else if (chainB) {
-  dumpOne(chainB)
+  dumpAll(...chainB.split(','))
+} else if (many) {
+  dumpAll(...many.split(','))
 } else {
-  console.error('No chain specified')
+  dumpAll(...SUPPORTED_CHAINS.flatMap((c) => (c.polytone ? c.chainId : [])))
 }
