@@ -58,6 +58,7 @@ import {
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
+  instantiateSmartContract,
   makeValidateMsg,
   parseContractVersion,
   processError,
@@ -406,7 +407,11 @@ export const InnerCreateDaoForm = ({
   //! Submit handlers
 
   const [creating, setCreating] = useState(false)
-  const { isWalletConnected, address: walletAddress } = useWallet()
+  const {
+    isWalletConnected,
+    address: walletAddress,
+    getSigningCosmWasmClient,
+  } = useWallet()
   const { refreshBalances } = useWalletBalances()
 
   const instantiateWithFactory =
@@ -420,23 +425,39 @@ export const InnerCreateDaoForm = ({
       throw new Error(instantiateMsgError)
     } else if (!instantiateMsg) {
       throw new Error(t('error.loadingData'))
+    } else if (!walletAddress) {
+      throw new Error(t('error.logInToContinue'))
     }
 
-    const { events } = await instantiateWithFactory(
-      {
-        codeId: codeIds.DaoCore,
-        instantiateMsg: encodeJsonToBase64(instantiateMsg),
-        label: instantiateMsg.name,
-      },
-      CHAIN_GAS_MULTIPLIER,
-      undefined,
-      getFundsFromDaoInstantiateMsg(instantiateMsg)
-    )
-    return findWasmAttributeValue(
-      events,
-      factoryContractAddress,
-      'set contract admin as itself'
-    )!
+    // if admin is set, use it as the contract-level admin as well (for creating
+    // SubDAOs). otherwise, instantiate with self as admin via factory.
+    if (instantiateMsg.admin) {
+      return await instantiateSmartContract(
+        await getSigningCosmWasmClient(),
+        walletAddress,
+        codeIds.DaoCore,
+        instantiateMsg.name,
+        instantiateMsg,
+        getFundsFromDaoInstantiateMsg(instantiateMsg),
+        instantiateMsg.admin
+      )
+    } else {
+      const { events } = await instantiateWithFactory(
+        {
+          codeId: codeIds.DaoCore,
+          instantiateMsg: encodeJsonToBase64(instantiateMsg),
+          label: instantiateMsg.name,
+        },
+        CHAIN_GAS_MULTIPLIER,
+        undefined,
+        getFundsFromDaoInstantiateMsg(instantiateMsg)
+      )
+      return findWasmAttributeValue(
+        events,
+        factoryContractAddress,
+        'set contract admin as itself'
+      )!
+    }
   }
 
   const parseSubmitterValueDelta = (value: string): number => {
