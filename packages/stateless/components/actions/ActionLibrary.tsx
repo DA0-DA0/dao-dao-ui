@@ -130,30 +130,30 @@ export const ActionLibrary = ({
     ? categories.find((c) => c.key === categoryKeySelected)
     : undefined
 
+  const filterVisibleActions = (action: Action) =>
+    // Never show programmatic actions.
+    !action.programmaticOnly &&
+    // Show if reusable or not already used.
+    (!action.notReusable || !actionData.some((a) => a.actionKey === action.key))
+
   const showingActions = (
     categoryKeySelected
-      ? (selectedCategory || categories[0]).actions
-      : filteredActions.slice(0, 10).map(({ item }) => item)
+      ? (selectedCategory || categories[0]).actions.filter(filterVisibleActions)
+      : filteredActions
+          .map(({ item }) => item)
+          .filter(filterVisibleActions)
+          .slice(0, 10)
+  ).sort((a, b) =>
+    a.order !== undefined && b.order !== undefined
+      ? a.order - b.order
+      : // Prioritize the action with an order set.
+      a.order
+      ? -1
+      : b.order
+      ? 1
+      : // Leave them sorted by the original order in the category definition.
+        0
   )
-    .filter(
-      (action) =>
-        // Never show programmatic actions.
-        !action.programmaticOnly &&
-        // Show if reusable or not already used.
-        (!action.notReusable ||
-          !actionData.some((a) => a.actionKey === action.key))
-    )
-    .sort((a, b) =>
-      a.order !== undefined && b.order !== undefined
-        ? a.order - b.order
-        : // Prioritize the action with an order set.
-        a.order
-        ? -1
-        : b.order
-        ? 1
-        : // Leave them sorted by the original order in the category definition.
-          0
-    )
 
   // Ensure selected item is scrolled into view.
   useEffect(() => {
