@@ -545,12 +545,14 @@ export const InnerCreateDaoForm = ({
             error: (err) => processError(err),
           })
 
-          const { info } = await queryClient.fetchQuery(
-            contractQueries.info(queryClient, {
-              chainId,
-              address: coreAddress,
-            })
-          )
+          const { info } = await queryClient
+            .fetchQuery(
+              contractQueries.info(queryClient, {
+                chainId,
+                address: coreAddress,
+              })
+            )
+            .catch(() => ({ info: { version: 'unknown' } }))
           const coreVersion = parseContractVersion(info.version)
 
           // Don't set following on SDA. Only dApp.
