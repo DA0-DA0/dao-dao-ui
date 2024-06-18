@@ -1,10 +1,14 @@
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { Coin } from '@cosmjs/stargate'
+import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
+import { ChainId } from '@dao-dao/types'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import {
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
+  getNativeTokenForChainId,
   isValidBech32Address,
+  stargateClientRouter,
 } from '@dao-dao/utils'
 
 /**
@@ -160,6 +164,38 @@ export const fetchBlockTimestamp = async ({
   return new Date((await client.getBlock(height)).header.time).getTime()
 }
 
+/**
+ * Fetch the sum of native tokens staked across all validators.
+ */
+export const fetchNativeStakedBalance = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<Coin> => {
+  // Neutron does not have staking.
+  if (
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
+  ) {
+    return {
+      amount: '0',
+      denom: getNativeTokenForChainId(chainId).denomOrAddress,
+    }
+  }
+
+  const client = await stargateClientRouter.connect(chainId)
+  const balance = await client.getBalanceStaked(address)
+
+  return (
+    balance ?? {
+      amount: '0',
+      denom: getNativeTokenForChainId(chainId).denomOrAddress,
+    }
+  )
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -197,5 +233,15 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'blockTimestamp', options],
       queryFn: () => fetchBlockTimestamp(options),
+    }),
+  /**
+   * Fetch the sum of native tokens staked across all validators.
+   */
+  nativeStakedBalance: (
+    options?: Parameters<typeof fetchNativeStakedBalance>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'nativeStakedBalance', options],
+      queryFn: options ? () => fetchNativeStakedBalance(options) : skipToken,
     }),
 }

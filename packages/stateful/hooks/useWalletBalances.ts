@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -66,10 +67,27 @@ export const useWalletBalances = ({
   const setRefreshStakingId = useSetRecoilState(
     refreshNativeTokenStakingInfoAtom(address ?? '')
   )
+  const queryClient = useQueryClient()
   const refreshBalances = useCallback(() => {
     setRefreshWalletBalancesId((id) => id + 1)
     setRefreshStakingId((id) => id + 1)
-  }, [setRefreshStakingId, setRefreshWalletBalancesId])
+    queryClient.invalidateQueries({
+      queryKey: [
+        'chain',
+        'nativeStakedBalance',
+        {
+          chainId,
+          address: address ?? '',
+        },
+      ],
+    })
+  }, [
+    address,
+    chainId,
+    queryClient,
+    setRefreshStakingId,
+    setRefreshWalletBalancesId,
+  ])
 
   return {
     isWalletConnected,

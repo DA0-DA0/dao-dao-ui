@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useChain } from '@dao-dao/stateless'
 import { DaoTabId, DaoTabWithComponent, LoadingData } from '@dao-dao/types'
-import { getSupportedChainConfig } from '@dao-dao/utils'
+import { isSupportedChain } from '@dao-dao/utils'
 
 import {
   GovCommunityPoolTab,
@@ -43,8 +43,8 @@ export const useGovDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
           IconFilled: AccountBalanceWalletRounded,
           lazy: true,
         },
-        // If SubDAOs exist, show them.
-        ...(getSupportedChainConfig(chainId)?.subDaos?.length
+        // If chain has DAO DAO deployed and thus can create SubDAOs, show tab.
+        ...(isSupportedChain(chainId)
           ? [
               {
                 id: DaoTabId.SubDaos,

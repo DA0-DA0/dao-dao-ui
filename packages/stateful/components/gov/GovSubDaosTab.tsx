@@ -36,8 +36,7 @@ export const GovSubDaosTab = () => {
       <StatelessSubDaosTab
         ButtonLink={ButtonLink}
         DaoCard={DaoCard}
-        hideCreateButton
-        isMember={false}
+        isMember={true}
         subDaos={
           subDaos.loading
             ? subDaos

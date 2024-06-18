@@ -1,4 +1,5 @@
 import { useDaoInfoContext } from '@dao-dao/stateless'
+import { ContractVersion } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { CreateDaoForm } from './CreateDaoForm'
@@ -7,13 +8,20 @@ import { CreateDaoForm } from './CreateDaoForm'
 export const CreateSubDao = () => {
   const {
     chainId,
-    coreAddress,
+    coreAddress: _coreAddress,
     coreVersion,
     name,
     imageUrl,
     parentDao,
     admin,
+    accounts,
   } = useDaoInfoContext()
+
+  // Chain x/gov DAO infos have coreAddress set to their name for URL
+  // resolution, so retrieve their gov module address from their accounts list
+  // instead to be used as the SubDAO admin during creation.
+  const coreAddress =
+    coreVersion === ContractVersion.Gov ? accounts[0].address : _coreAddress
 
   return (
     <CreateDaoForm
@@ -26,7 +34,7 @@ export const CreateSubDao = () => {
         parentDao,
         admin,
 
-        // If creating a SubDao, it is not yet registered.
+        // If creating a SubDAO, it is not yet registered.
         registeredSubDao: false,
       }}
     />
