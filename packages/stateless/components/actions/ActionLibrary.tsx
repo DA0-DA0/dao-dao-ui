@@ -133,6 +133,8 @@ export const ActionLibrary = ({
   const filterVisibleActions = (action: Action) =>
     // Never show programmatic actions.
     !action.programmaticOnly &&
+    // Never show actions that should be hidden from the picker.
+    !action.hideFromPicker &&
     // Show if reusable or not already used.
     (!action.notReusable || !actionData.some((a) => a.actionKey === action.key))
 
