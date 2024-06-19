@@ -2126,23 +2126,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       wallet: 'https://testnet.ping.pub/secret/account/REPLACE',
     },
     codeIds: {
-      Cw1Whitelist: 0,
-      Cw4Group: 0,
-      Cw20Base: 0,
-      Cw721Base: 0,
-      CwPayrollFactory: 0,
-      CwTokenSwap: 0,
-      CwVesting: 0,
-      DaoCore: 0,
-      DaoPreProposeApprovalSingle: 0,
-      DaoPreProposeApprover: 0,
-      DaoPreProposeMultiple: 0,
-      DaoPreProposeSingle: 0,
-      DaoProposalMultiple: 0,
-      DaoProposalSingle: 0,
-      DaoVotingCw4: 0,
-      DaoVotingCw721Staked: 0,
-      DaoVotingCw20Staked: 0,
+      // TODO(secret-testnet)
+      Cw1Whitelist: -1,
+      Cw4Group: 8168,
+      Cw20Base: 8164, // snip20
+      Cw721Base: 8172, // snip721
+      CwPayrollFactory: 8186,
+      CwTokenSwap: 8187,
+      CwVesting: 8189,
+      DaoCore: 8607,
+      DaoPreProposeApprovalSingle: 8180,
+      DaoPreProposeApprover: 8181,
+      DaoPreProposeMultiple: 8177,
+      DaoPreProposeSingle: 8175,
+      DaoProposalMultiple: 8178,
+      DaoProposalSingle: 8176,
+      DaoVotingCw4: 8169,
+      DaoVotingCw20Staked: 8170, // snip20
+      DaoVotingCw721Staked: 8182, // snip721
 
       // unused
       CwTokenfactoryIssuerMain: -1,
@@ -2150,28 +2151,40 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoMigrator: -1,
     },
     codeHashes: {
+      // TODO(secret-testnet)
       Cw1Whitelist: '',
-      Cw4Group: '',
-      Cw20Base: '',
-      Cw721Base: '',
-      CwPayrollFactory: '',
-      CwTokenSwap: '',
-      CwVesting: '',
-      DaoCore: '',
-      DaoPreProposeApprovalSingle: '',
-      DaoPreProposeApprover: '',
-      DaoPreProposeMultiple: '',
-      DaoPreProposeSingle: '',
-      DaoProposalMultiple: '',
-      DaoProposalSingle: '',
-      DaoVotingCw4: '',
-      DaoVotingCw721Staked: '',
-      DaoVotingCw20Staked: '',
-
-      // unused
-      CwTokenfactoryIssuerMain: '',
-      DaoVotingTokenStaked: '',
-      DaoMigrator: '',
+      Cw4Group:
+        '0945d46e86259fffb84c5d7d501f773071ef8101a4112ae5ce1847c2abe297ab',
+      Cw20Base:
+        'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
+      Cw721Base:
+        'ab0f16b065e766eee7181c4357d29bc6f947d73dbd48943fc0e501b2147a492e', // snip721
+      CwPayrollFactory:
+        'f6f0bd62757f19c513fd2e0bccea1aa4d6bc57ff65c2cdd1f5c849a397eea9fd',
+      CwTokenSwap:
+        '26f2ce755019de01c65a5742ac3c8e704130a2feaa92bd69d161e76030998f2c',
+      CwVesting:
+        '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
+      DaoCore:
+        'ad3f67d0983fd13726f34148835e07f65f9225ad698a30d0b55e78e783363fd4',
+      DaoPreProposeApprovalSingle:
+        '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
+      DaoPreProposeApprover:
+        '5fc6a014fd017a62bbfea437322857e952eac7572c901a0a6ca23ef7598f971f',
+      DaoPreProposeMultiple:
+        '24e2a494b9450e6747bdf2b00b01e0f9afb54d455121c58b3857396af74d298f',
+      DaoPreProposeSingle:
+        'd5fde27c749424968f14a70f4383d3aa1df97ba9ab4933a7e648186ecf8afa1c',
+      DaoProposalMultiple:
+        '78584b7acdbeae211e71b8711147985217999ab7cf146812df456c48a24835b9',
+      DaoProposalSingle:
+        '0d412146fccc5936cacc463db54e7721eae03d13977e4c3c3ee570fdbba530c6',
+      DaoVotingCw4:
+        '732a247721d7629a0c33bbf39c40a5b410fcd7d9b58415f3bcd91fb68a792176',
+      DaoVotingCw20Staked:
+        '715b7aa5925b46a7fcff277f4ad3763016429daec8ddedd568f892dad2eb88d0', // snip20
+      DaoVotingCw721Staked:
+        '90f91337256cb3db1b44567ced0457b51271263f67e5df3590de77d22c04a3b3', // snip721
     },
   },
 ]
