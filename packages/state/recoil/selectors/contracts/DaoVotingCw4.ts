@@ -6,7 +6,6 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
-import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import { DaoVotingCw4QueryClient } from '../../../contracts/DaoVotingCw4'
 import { cosmWasmClientForChainSelector } from '../chain'
@@ -53,9 +52,7 @@ export const groupContractSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return extractAddressFromMaybeSecretContractInfo(
-        await client.groupContract(...params)
-      )
+      return await client.groupContract(...params)
     },
 })
 export const daoSelector = selectorFamily<

@@ -7,7 +7,6 @@ import {
   Expiration,
   ModuleInstantiateInfo,
   ProposalStatus,
-  SecretAnyContractInfo,
   Uint128,
 } from './common'
 import { Threshold, Vote, Votes } from './DaoProposalSingle.common'
@@ -22,7 +21,7 @@ export interface ConfigResponse {
   threshold: Threshold
   veto?: VetoConfig | null
 }
-export type DaoResponse = string | SecretAnyContractInfo
+export type DaoResponse = string
 export type ExecuteMsg =
   | {
       propose: {

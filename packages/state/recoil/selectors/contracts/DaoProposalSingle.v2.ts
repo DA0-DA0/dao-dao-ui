@@ -15,7 +15,6 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import {
   DaoProposalSingleV2Client,
@@ -361,9 +360,7 @@ export const daoSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return extractAddressFromMaybeSecretContractInfo(
-        await client.dao(...params)
-      )
+      return await client.dao(...params)
     },
 })
 export const infoSelector = contractInfoSelector

@@ -87,8 +87,13 @@ codegen({
       'from "@dao-dao/types/contracts/$1"'
     )
 
+    // modify types
+    if (file.endsWith('.types.ts')) {
+      // remove `[k: string]: unknown`
+      content = content.replace(/\[k: string\]: unknown;/g, '')
+    }
     // modify client
-    if (file.endsWith('.client.ts')) {
+    else if (file.endsWith('.client.ts')) {
       // replace default fee with CHAIN_GAS_MULTIPLIER constant
       content = content.replace(
         /"auto" = "auto"/g,

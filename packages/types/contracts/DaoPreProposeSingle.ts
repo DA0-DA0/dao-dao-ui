@@ -4,7 +4,6 @@ import {
   CosmosMsgFor_Empty,
   DepositRefundPolicy,
   Empty,
-  SecretAnyContractInfo,
   Uint128,
 } from './common'
 
@@ -12,7 +11,7 @@ export interface ConfigResponse {
   deposit_info?: CheckedDepositInfo | null
   open_proposal_submission: boolean
 }
-export type DaoResponse = string | SecretAnyContractInfo
+export type DaoResponse = string
 export interface DepositInfoResponse {
   deposit_info?: CheckedDepositInfo | null
   proposer: Addr
@@ -95,7 +94,7 @@ export interface InstantiateMsg {
   extension: Empty
   open_proposal_submission: boolean
 }
-export type ProposalModuleResponse = string | SecretAnyContractInfo
+export type ProposalModuleResponse = string
 export type QueryMsg =
   | {
       proposal_module: {}

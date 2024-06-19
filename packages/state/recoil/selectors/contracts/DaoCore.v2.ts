@@ -42,7 +42,6 @@ import {
   MAINNET,
   POLYTONE_CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
-  extractAddressFromMaybeSecretContractInfo,
   getAccount,
   getSupportedChainConfig,
   polytoneNoteProxyMapToChainIdMap,
@@ -416,9 +415,7 @@ export const votingModuleSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return extractAddressFromMaybeSecretContractInfo(
-        await client.votingModule(...params)
-      )
+      return await client.votingModule(...params)
     },
 })
 // Use listAllSubDaosSelector as it uses the indexer and implements pagination

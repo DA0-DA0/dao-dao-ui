@@ -10,7 +10,6 @@ import {
   Coin,
   Duration,
   InfoResponse,
-  SecretAnyContractInfo,
   Uint64,
 } from '@dao-dao/types/contracts/common'
 import {
@@ -70,7 +69,7 @@ export interface DaoProposalMultipleReadOnlyInterface {
   proposalCreationPolicy: () => Promise<ProposalCreationPolicyResponse>
   proposalHooks: () => Promise<HooksResponse>
   voteHooks: () => Promise<HooksResponse>
-  dao: () => Promise<Addr | SecretAnyContractInfo>
+  dao: () => Promise<Addr>
   info: () => Promise<InfoResponse>
 }
 export class DaoProposalMultipleQueryClient
@@ -193,7 +192,7 @@ export class DaoProposalMultipleQueryClient
       vote_hooks: {},
     })
   }
-  dao = async (): Promise<Addr | SecretAnyContractInfo> => {
+  dao = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dao: {},
     })

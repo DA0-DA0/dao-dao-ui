@@ -5,7 +5,6 @@ import {
   Config,
   DepositInfoResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
-import { extractAddressFromMaybeSecretContractInfo } from '@dao-dao/utils'
 
 import {
   DaoPreProposeMultipleClient,
@@ -76,9 +75,7 @@ export const proposalModuleSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return extractAddressFromMaybeSecretContractInfo(
-        await client.proposalModule(...params)
-      )
+      return await client.proposalModule(...params)
     },
 })
 export const daoSelector = selectorFamily<
@@ -103,9 +100,7 @@ export const daoSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      return extractAddressFromMaybeSecretContractInfo(
-        await client.dao(...params)
-      )
+      return await client.dao(...params)
     },
 })
 export const configSelector = selectorFamily<
