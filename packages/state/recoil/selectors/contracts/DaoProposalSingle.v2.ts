@@ -7,6 +7,7 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ConfigResponse,
+  DaoResponse,
   ListProposalsResponse,
   ProposalCountResponse,
   ProposalCreationPolicyResponse,
@@ -339,7 +340,7 @@ export const voteHooksSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  string,
+  DaoResponse,
   QueryClientParams & {
     params: Parameters<DaoProposalSingleV2QueryClient['dao']>
   }
@@ -354,7 +355,7 @@ export const daoSelector = selectorFamily<
           formula: 'daoProposalSingle/dao',
         })
       )
-      if (dao && typeof dao === 'string') {
+      if (dao) {
         return dao
       }
 

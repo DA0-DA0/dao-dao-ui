@@ -344,7 +344,7 @@ export const daoSelector = selectorFamily<
           formula: 'daoProposalMultiple/dao',
         })
       )
-      if (dao && typeof dao === 'string') {
+      if (dao) {
         return dao
       }
 

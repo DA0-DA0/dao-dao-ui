@@ -35,6 +35,7 @@ import {
   ProposalModulesResponse,
   SubDao,
   TotalPowerAtHeightResponse,
+  VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
@@ -394,7 +395,7 @@ export const pauseInfoSelector = selectorFamily<
     },
 })
 export const votingModuleSelector = selectorFamily<
-  string,
+  VotingModuleResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['votingModule']>
   }
@@ -409,7 +410,7 @@ export const votingModuleSelector = selectorFamily<
           formula: 'daoCore/votingModule',
         })
       )
-      if (votingModule && typeof votingModule === 'string') {
+      if (votingModule) {
         return votingModule
       }
 

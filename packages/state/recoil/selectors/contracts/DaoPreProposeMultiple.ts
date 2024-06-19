@@ -3,7 +3,9 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   Config,
+  DaoResponse,
   DepositInfoResponse,
+  ProposalModuleResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 
 import {
@@ -54,7 +56,7 @@ export const executeClient = selectorFamily<
 })
 
 export const proposalModuleSelector = selectorFamily<
-  string,
+  ProposalModuleResponse,
   QueryClientParams & {
     params: Parameters<DaoPreProposeMultipleQueryClient['proposalModule']>
   }
@@ -69,17 +71,16 @@ export const proposalModuleSelector = selectorFamily<
           formula: 'daoPreProposeMultiple/proposalModule',
         })
       )
-      if (proposalModule && typeof proposalModule === 'string') {
+      if (proposalModule) {
         return proposalModule
       }
-
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.proposalModule(...params)
     },
 })
 export const daoSelector = selectorFamily<
-  string,
+  DaoResponse,
   QueryClientParams & {
     params: Parameters<DaoPreProposeMultipleQueryClient['dao']>
   }
@@ -94,10 +95,9 @@ export const daoSelector = selectorFamily<
           formula: 'daoPreProposeMultiple/dao',
         })
       )
-      if (dao && typeof dao === 'string') {
+      if (dao) {
         return dao
       }
-
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)

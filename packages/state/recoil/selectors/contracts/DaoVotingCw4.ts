@@ -3,6 +3,7 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   DaoResponse,
+  GroupContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
@@ -31,7 +32,7 @@ export const queryClient = selectorFamily<
 })
 
 export const groupContractSelector = selectorFamily<
-  string,
+  GroupContractResponse,
   QueryClientParams & {
     params: Parameters<DaoVotingCw4QueryClient['groupContract']>
   }
@@ -46,7 +47,7 @@ export const groupContractSelector = selectorFamily<
           formula: 'daoVotingCw4/groupContract',
         })
       )
-      if (groupContract && typeof groupContract === 'string') {
+      if (groupContract) {
         return groupContract
       }
 

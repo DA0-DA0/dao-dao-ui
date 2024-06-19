@@ -3,7 +3,9 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse,
+  DaoResponse,
   DepositInfoResponse,
+  ProposalModuleResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 
 import {
@@ -54,7 +56,7 @@ export const executeClient = selectorFamily<
 })
 
 export const proposalModuleSelector = selectorFamily<
-  string,
+  ProposalModuleResponse,
   QueryClientParams & {
     params: Parameters<DaoPreProposeSingleQueryClient['proposalModule']>
   }
@@ -69,7 +71,7 @@ export const proposalModuleSelector = selectorFamily<
           formula: 'daoPreProposeSingle/proposalModule',
         })
       )
-      if (proposalModule && typeof proposalModule === 'string') {
+      if (proposalModule) {
         return proposalModule
       }
 
@@ -79,7 +81,7 @@ export const proposalModuleSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  string,
+  DaoResponse,
   QueryClientParams & {
     params: Parameters<DaoPreProposeSingleQueryClient['dao']>
   }
@@ -94,7 +96,7 @@ export const daoSelector = selectorFamily<
           formula: 'daoPreProposeSingle/dao',
         })
       )
-      if (dao && typeof dao === 'string') {
+      if (dao) {
         return dao
       }
 
