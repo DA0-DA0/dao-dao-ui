@@ -1,6 +1,6 @@
 import { atom, atomFamily } from 'recoil'
 
-import { ChainId, PermitForPermitData } from '@dao-dao/types'
+import { ChainId } from '@dao-dao/types'
 import {
   MAINNET,
   SupportedCosmWasmClient,
@@ -8,7 +8,7 @@ import {
   getSupportedChains,
 } from '@dao-dao/utils'
 
-import { localStorageEffect, localStorageEffectJSON } from '../effects'
+import { localStorageEffect } from '../effects'
 
 export const signingCosmWasmClientAtom = atomFamily<
   SupportedCosmWasmClient | undefined,
@@ -30,19 +30,4 @@ export const walletChainIdAtom = atom<string>({
         : getSupportedChains()[0].chainId
     }),
   ],
-})
-
-/**
- * Store the Secret Network permit for a given wallet address and DAO in local
- * storage.
- */
-export const secretNetworkPermitAtom = atomFamily<
-  PermitForPermitData | undefined,
-  {
-    walletAddress: string
-    dao: string
-  }
->({
-  key: 'secretNetworkPermit',
-  effects: [localStorageEffectJSON],
 })

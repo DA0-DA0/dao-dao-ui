@@ -1,18 +1,17 @@
 import { ThumbDownOutlined } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   ProposalStatusAndInfoProps,
   Tooltip,
-  useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useLoadingPromise,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -31,6 +30,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { getDao } from '../clients'
 import { ButtonLink, EntityDisplay } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useEntity } from './useEntity'
@@ -72,13 +72,13 @@ export const useProposalVetoState = ({
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const {
-    isSecretNetwork,
     address: walletAddress = '',
-    permit,
     getSigningClient,
+    permit,
   } = useWalletWithSecretNetworkPermit({
     dao: coreAddress,
   })
+  const queryClient = useQueryClient()
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
   const [vetoLoading, setVetoLoading] = useState<
@@ -97,24 +97,27 @@ export const useProposalVetoState = ({
     (entity) => entity.type === EntityType.Dao
   )
   // This is the voting power the current wallet has in each of the DAO vetoers.
-  const walletDaoVetoerMemberships = useCachedLoading(
-    !vetoerEntity.loading && (isSecretNetwork ? permit : walletAddress)
-      ? waitForAll(
-          vetoerDaoEntities.map((entity) =>
-            DaoCoreV2Selectors.votingPowerAtHeightSelector({
-              contractAddress: entity.address,
-              chainId,
-              params: [
-                isSecretNetwork
-                  ? { auth: { permit } }
-                  : { address: walletAddress },
-              ],
-            })
-          )
-        )
-      : undefined,
-    undefined
-  )
+  const walletDaoVetoerMemberships = useLoadingPromise({
+    // Loading if vetoer entity not loaded or no wallet address.
+    promise:
+      !vetoerEntity.loading && walletAddress
+        ? () =>
+            Promise.all(
+              vetoerDaoEntities.map((entity) =>
+                getDao({
+                  queryClient,
+                  chainId,
+                  coreAddress: entity.address,
+                })
+                  .getVotingPower(walletAddress)
+                  // Fail silently.
+                  .catch(() => '0')
+              )
+            )
+        : undefined,
+    // Refresh when vetoer entity, wallet, or permit changes.
+    deps: [vetoerEntity, walletAddress, permit],
+  })
   const canBeVetoed =
     vetoEnabled &&
     (statusKey === 'veto_timelock' ||
@@ -131,10 +134,10 @@ export const useProposalVetoState = ({
             entity.type === EntityType.Wallet &&
             entity.address === walletAddress
         ) ||
-        (!walletDaoVetoerMemberships.loading && walletDaoVetoerMemberships.data
+        (!walletDaoVetoerMemberships.loading &&
+        !walletDaoVetoerMemberships.errored
           ? vetoerDaoEntities.find(
-              (_, index) =>
-                walletDaoVetoerMemberships.data![index].power !== '0'
+              (_, index) => walletDaoVetoerMemberships.data[index] !== '0'
             )
           : undefined)
       : undefined

@@ -141,7 +141,11 @@ export const DaoPageWrapper = ({
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
         {info ? (
-          <DaoProviders info={info}>
+          <DaoProviders
+            LoaderFallback={PageLoader}
+            chainId={info.chainId}
+            coreAddress={info.coreAddress}
+          >
             {/* Suspend children to prevent unmounting and remounting the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}

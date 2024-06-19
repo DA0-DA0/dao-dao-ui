@@ -1,5 +1,4 @@
-import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useLoadingPromise } from '@dao-dao/stateless'
 
 import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
 
@@ -19,55 +18,40 @@ export const useMembership = ({
   coreAddress,
   blockHeight,
 }: UseMembershipOptions): UseMembershipResponse => {
-  const { chain_id: chainId } = useChain()
   const {
-    isSecretNetwork,
     address: walletAddress,
     isWalletConnecting,
     permit,
+    dao,
   } = useWalletWithSecretNetworkPermit({
     dao: coreAddress,
   })
 
-  // Use loadable to prevent flickering loading states when wallet address
-  // changes and on initial load if wallet is connecting.
-  const _walletVotingWeight = useCachedLoadable(
-    (isSecretNetwork ? permit : walletAddress)
-      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [
-            {
-              height: blockHeight,
-              ...(isSecretNetwork
-                ? { auth: { permit } }
-                : { address: walletAddress }),
-            },
-          ],
-        })
-      : undefined
-  )
-  const _totalVotingWeight = useCachedLoadable(
-    DaoCoreV2Selectors.totalPowerAtHeightSelector({
-      contractAddress: coreAddress,
-      chainId,
-      params: [
-        {
-          height: blockHeight,
-        },
-      ],
-    })
-  )
+  const _walletVotingWeight = useLoadingPromise({
+    // Loading state if no wallet address.
+    promise: walletAddress
+      ? () => dao.getVotingPower(walletAddress, blockHeight)
+      : undefined,
+    // Refresh when permit, DAO, wallet, or block height changes.
+    deps: [permit, dao, walletAddress, blockHeight],
+  })
+  const _totalVotingWeight = useLoadingPromise({
+    promise: () => dao.getTotalVotingPower(blockHeight),
+    // Refresh when DAO or block height changes.
+    deps: [dao, blockHeight],
+  })
 
   const walletVotingWeight =
-    _walletVotingWeight.state === 'hasValue' &&
-    !isNaN(Number(_walletVotingWeight.contents.power))
-      ? Number(_walletVotingWeight.contents.power)
+    !_walletVotingWeight.loading &&
+    !_walletVotingWeight.errored &&
+    !isNaN(Number(_walletVotingWeight.data))
+      ? Number(_walletVotingWeight.data)
       : undefined
   const totalVotingWeight =
-    _totalVotingWeight.state === 'hasValue' &&
-    !isNaN(Number(_totalVotingWeight.contents.power))
-      ? Number(_totalVotingWeight.contents.power)
+    !_totalVotingWeight.loading &&
+    !_totalVotingWeight.errored &&
+    !isNaN(Number(_totalVotingWeight.data))
+      ? Number(_totalVotingWeight.data)
       : undefined
   const isMember =
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
@@ -77,8 +61,8 @@ export const useMembership = ({
     walletVotingWeight,
     totalVotingWeight,
     loading:
-      _walletVotingWeight.state === 'loading' ||
-      _totalVotingWeight.state === 'loading' ||
+      _walletVotingWeight.loading ||
+      _totalVotingWeight.loading ||
       isWalletConnecting,
   }
 }

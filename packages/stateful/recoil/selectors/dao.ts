@@ -30,7 +30,6 @@ import {
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   IndexerDaoWithVetoableProposals,
-  PermitForPermitData,
   ProposalModule,
   StatefulProposalLineProps,
   WithChainId,
@@ -40,9 +39,9 @@ import {
   getDaoProposalPath,
   getSupportedChainConfig,
   isConfiguredChainName,
-  isSecretNetwork,
 } from '@dao-dao/utils'
 
+import { getDao } from '../../clients'
 import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
 import { fetchProposalModules } from '../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
@@ -52,14 +51,12 @@ export const daoCardLazyDataSelector = selectorFamily<
   WithChainId<{
     coreAddress: string
     walletAddress?: string
-    // Secret Network
-    permit?: PermitForPermitData
   }>
 >({
   key: 'daoCardLazyData',
   get:
-    ({ chainId, coreAddress, walletAddress, permit }) =>
-    ({ get }) => {
+    ({ chainId, coreAddress, walletAddress }) =>
+    async ({ get }) => {
       const { amount: tvl } = get(
         daoTvlSelector({
           chainId,
@@ -67,6 +64,7 @@ export const daoCardLazyDataSelector = selectorFamily<
         })
       )
 
+      // TODO(dao-client): add all this stuff to DAO client
       // Native chain x/gov module.
       if (isConfiguredChainName(chainId, coreAddress)) {
         // If chain uses a contract-based DAO, load it instead.
@@ -108,22 +106,15 @@ export const daoCardLazyDataSelector = selectorFamily<
 
       // DAO.
 
-      const walletVotingWeight =
-        walletAddress && (!isSecretNetwork(chainId) || permit)
-          ? Number(
-              get(
-                DaoCoreV2Selectors.votingPowerAtHeightSelector({
-                  chainId,
-                  contractAddress: coreAddress,
-                  params: [
-                    isSecretNetwork(chainId)
-                      ? { auth: { permit } }
-                      : { address: walletAddress },
-                  ],
-                })
-              ).power
-            )
-          : 0
+      const queryClient = get(queryClientAtom)
+      const daoClient = getDao({
+        queryClient,
+        chainId,
+        coreAddress,
+      })
+      const walletVotingWeight = walletAddress
+        ? Number(await daoClient.getVotingPower(walletAddress))
+        : 0
 
       const proposalModules = get(
         daoCoreProposalModulesSelector({

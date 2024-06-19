@@ -126,7 +126,7 @@ export const DaoApproverProposalContentDisplay = ({
   }
 
   return (
-    <DaoProviders info={daoInfo}>
+    <DaoProviders chainId={chainId} coreAddress={approvalDao}>
       <ProposalModuleAdapterProvider
         coreAddress={daoInfo.coreAddress}
         proposalId={

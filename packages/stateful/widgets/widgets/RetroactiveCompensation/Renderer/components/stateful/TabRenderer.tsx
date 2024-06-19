@@ -2,13 +2,12 @@ import { saveAs } from 'file-saver'
 import { unparse as jsonToCsv } from 'papaparse'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { waitForAll } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
+  useLoadingPromise,
 } from '@dao-dao/stateless'
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
@@ -26,12 +25,12 @@ import { OpenSurveySection } from './OpenSurveySection'
 
 export const TabRenderer = () => {
   const { coreAddress } = useDaoInfoContext()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const {
-    isSecretNetwork,
     address: walletAddress,
     permit,
     hexPublicKey,
+    dao,
   } = useWalletWithSecretNetworkPermit({
     dao: coreAddress,
     loadAccount: true,
@@ -55,28 +54,22 @@ export const TabRenderer = () => {
   )
   // Get voting power at time of each completed survey creation to determine if
   // we can download the CSV or not.
-  const loadingMembershipDuringCompletedSurveys = useCachedLoading(
-    loadingCompletedSurveys.loading ||
-      !(isSecretNetwork ? permit : walletAddress)
-      ? undefined
-      : waitForAll(
-          loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-            DaoCoreV2Selectors.votingPowerAtHeightSelector({
-              contractAddress: coreAddress,
-              chainId,
-              params: [
-                {
-                  height: createdAtBlockHeight,
-                  ...(isSecretNetwork
-                    ? { auth: { permit } }
-                    : { address: walletAddress }),
-                },
-              ],
-            })
-          )
-        ),
-    []
-  )
+  const loadingMembershipDuringCompletedSurveys = useLoadingPromise({
+    // Loading if surveys still loading or wallet not connected.
+    promise:
+      loadingCompletedSurveys.loading || !walletAddress
+        ? undefined
+        : Promise.all(
+            loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+              dao
+                .getVotingPower(walletAddress, createdAtBlockHeight)
+                // Fail silently.
+                .catch(() => '0')
+            )
+          ),
+    // Refresh when surveys, wallet, or permit changes.
+    deps: [loadingCompletedSurveys, walletAddress, permit],
+  })
 
   const postRequest = usePostRequest()
 
