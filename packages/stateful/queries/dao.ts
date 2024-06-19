@@ -99,7 +99,7 @@ export const fetchDaoInfo = async (
   )
 
   const votingModuleAddress = extractAddressFromMaybeSecretContractInfo(
-    state.voting_module
+    state.voting_module_address
   )
   const coreVersion = parseContractVersion(state.version.version)
   const supportedFeatures = getSupportedFeatures(coreVersion)

@@ -77,7 +77,12 @@ export interface DumpStateResponse {
   proposal_modules: ProposalModule[]
   total_proposal_module_count: number
   version: ContractVersionInfo
-  voting_module: Addr | SecretAnyContractInfo
+  // TODO(secret): replace with voting_module once fixed
+  voting_module_address: Addr
+  // TODO(secret): replace with voting_module once fixed
+  voting_module_code_hash: string
+  // TODO(secret): uncomment once fixed
+  // voting_module: Addr | SecretAnyContractInfo
 }
 export interface Config {
   automatically_add_cw20s: boolean
