@@ -60,6 +60,7 @@ import {
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
   junoProtoRpcClientRouter,
+  kujiraProtoRpcClientRouter,
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
@@ -372,6 +373,15 @@ export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
   get:
     (chainId) =>
     async ({ get }) => {
+      if (
+        chainId === ChainId.KujiraTestnet ||
+        chainId === ChainId.KujiraMainnet
+      ) {
+        const kujiraClient = await kujiraProtoRpcClientRouter.connect(chainId)
+        const { params } = await kujiraClient.denom.params()
+        return params?.creationFee
+      }
+
       const osmosisClient = get(osmosisRpcClientForChainSelector(chainId))
       try {
         return (await osmosisClient.tokenfactory.v1beta1.params()).params

@@ -13,6 +13,7 @@ import {
   cosmwasm,
   ibc,
   juno,
+  kujira,
   neutron,
   noble,
   osmosis,
@@ -221,6 +222,22 @@ export const junoProtoRpcClientRouter = new ChainClientRouter({
             rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).juno
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with Kujira protobufs.
+ */
+export const kujiraProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await kujira.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).kujira
     ),
 })
 
