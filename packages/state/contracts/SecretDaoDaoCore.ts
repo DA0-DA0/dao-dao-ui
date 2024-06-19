@@ -23,6 +23,7 @@ import {
   Binary,
   Coin,
   Config,
+  CosmosMsgForEmpty,
   DaoURIResponse,
   DumpStateResponse,
   Duration,
@@ -31,7 +32,6 @@ import {
   ModuleInstantiateInfo,
   PauseInfoResponse,
   ProposalModuleCountResponse,
-  SecretCosmosMsgForEmpty,
   SubDao,
   TotalPowerAtHeightResponse,
   Uint128,
@@ -326,7 +326,7 @@ export interface SecretDaoDaoCoreInterface
     {
       msgs,
     }: {
-      msgs: SecretCosmosMsgForEmpty[]
+      msgs: CosmosMsgForEmpty[]
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -336,7 +336,7 @@ export interface SecretDaoDaoCoreInterface
     {
       msgs,
     }: {
-      msgs: SecretCosmosMsgForEmpty[]
+      msgs: CosmosMsgForEmpty[]
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -532,7 +532,7 @@ export class SecretDaoDaoCoreClient
     {
       msgs,
     }: {
-      msgs: SecretCosmosMsgForEmpty[]
+      msgs: CosmosMsgForEmpty[]
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -555,7 +555,7 @@ export class SecretDaoDaoCoreClient
     {
       msgs,
     }: {
-      msgs: SecretCosmosMsgForEmpty[]
+      msgs: CosmosMsgForEmpty[]
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,

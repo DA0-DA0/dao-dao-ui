@@ -48,12 +48,12 @@ export interface Coin {
 export type ExecuteMsg =
   | {
       execute_admin_msgs: {
-        msgs: SecretCosmosMsgForEmpty[]
+        msgs: CosmosMsgForEmpty[]
       }
     }
   | {
       execute_proposal_hook: {
-        msgs: SecretCosmosMsgForEmpty[]
+        msgs: CosmosMsgForEmpty[]
       }
     }
   | {
@@ -127,7 +127,7 @@ export type ExecuteMsg =
         to_remove: string[]
       }
     }
-export type SecretCosmosMsgForEmpty =
+export type CosmosMsgForEmpty =
   | {
       bank: BankMsg
     }
@@ -150,7 +150,7 @@ export type SecretCosmosMsgForEmpty =
       ibc: IbcMsg
     }
   | {
-      wasm: SecretWasmMsg
+      wasm: WasmMsg
     }
   | {
       gov: GovMsg
@@ -225,7 +225,7 @@ export type IbcMsg =
     }
 export type Timestamp = Uint64
 export type Uint64 = string
-export type SecretWasmMsg =
+export type WasmMsg =
   | {
       execute: {
         code_hash: string
@@ -527,7 +527,7 @@ export interface DumpStateResponse {
   proposal_modules: ProposalModule[]
   total_proposal_module_count: number
   version: ContractVersion
-  voting_module_address: Addr
+  voting_module: Addr
   voting_module_code_hash: string
 }
 export interface ContractVersion {
