@@ -4,7 +4,7 @@ import {
   ActiveThreshold,
   ActiveThresholdResponse,
 } from '@dao-dao/types/contracts/common'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { indexerQueries } from '../indexer'
 
@@ -18,7 +18,7 @@ export const fetchVotingModuleIsActive = async ({
   chainId: string
   address: string
 }): Promise<boolean> =>
-  (await cosmWasmClientRouter.connect(chainId)).queryContractSmart(address, {
+  (await getCosmWasmClientForChainId(chainId)).queryContractSmart(address, {
     is_active: {},
   })
 
@@ -50,7 +50,7 @@ export const fetchVotingModuleActiveThreshold = async (
   }
 
   // If indexer fails, fallback to querying chain.
-  return (await cosmWasmClientRouter.connect(chainId)).queryContractSmart(
+  return (await getCosmWasmClientForChainId(chainId)).queryContractSmart(
     address,
     {
       active_threshold: {},

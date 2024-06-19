@@ -6,10 +6,10 @@ import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1bet
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
-  cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
   cosmwasmProtoRpcClientRouter,
   feemarketProtoRpcClientRouter,
+  getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   isValidBech32Address,
   osmosisProtoRpcClientRouter,
@@ -165,7 +165,7 @@ export const fetchBlockTimestamp = async ({
   chainId: string
   height: number
 }): Promise<number> => {
-  const client = await cosmWasmClientRouter.connect(chainId)
+  const client = await getCosmWasmClientForChainId(chainId)
   return new Date((await client.getBlock(height)).header.time).getTime()
 }
 

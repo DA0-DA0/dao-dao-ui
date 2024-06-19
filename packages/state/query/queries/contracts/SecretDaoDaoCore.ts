@@ -26,7 +26,7 @@ import {
   VotingModuleInfo,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoDaoCore'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { SecretDaoDaoCoreQueryClient } from '../../../contracts/SecretDaoDaoCore'
 
@@ -221,7 +221,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.admin(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).admin(),
     ...options,
@@ -238,7 +238,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.adminNomination(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).adminNomination(),
     ...options,
@@ -255,7 +255,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.config(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).config(),
     ...options,
@@ -273,7 +273,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.cw20Balances(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw20Balances({
         limit: args.limit,
@@ -294,7 +294,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.cw20TokenList(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw20TokenList({
         limit: args.limit,
@@ -315,7 +315,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.cw721TokenList(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw721TokenList({
         limit: args.limit,
@@ -335,7 +335,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.dumpState(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).dumpState(),
     ...options,
@@ -353,7 +353,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.getItem(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getItem({
         key: args.key,
@@ -373,7 +373,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.listItems(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listItems({
         limit: args.limit,
@@ -393,7 +393,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.info(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).info(),
     ...options,
@@ -411,7 +411,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.proposalModules(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).proposalModules({
         limit: args.limit,
@@ -435,7 +435,7 @@ export const secretDaoDaoCoreQueries = {
     ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).activeProposalModules({
         limit: args.limit,
@@ -455,7 +455,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.proposalModuleCount(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).proposalModuleCount(),
     ...options,
@@ -472,7 +472,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.pauseInfo(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).pauseInfo(),
     ...options,
@@ -489,7 +489,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.votingModule(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).votingModule(),
     ...options,
@@ -507,7 +507,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.listSubDaos(contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listSubDaos({
         limit: args.limit,
@@ -527,7 +527,7 @@ export const secretDaoDaoCoreQueries = {
     queryKey: secretDaoDaoCoreQueryKeys.daoURI(contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).daoURI(),
     ...options,
@@ -548,7 +548,7 @@ export const secretDaoDaoCoreQueries = {
     ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).votingPowerAtHeight({
         auth: args.auth,
@@ -572,7 +572,7 @@ export const secretDaoDaoCoreQueries = {
     ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).totalPowerAtHeight({
         height: args.height,

@@ -15,8 +15,8 @@ import {
   MAINNET,
   PFPK_API_BASE,
   STARGAZE_NAMES_CONTRACT,
-  cosmWasmClientRouter,
   getChainForChainId,
+  getCosmWasmClientForChainId,
   imageUrlFromStargazeIndexerNft,
   makeEmptyPfpkProfile,
   makeEmptyUnifiedProfile,
@@ -138,7 +138,7 @@ export const fetchStargazeName = async ({
     return null
   }
 
-  const client = await cosmWasmClientRouter.connect(
+  const client = await getCosmWasmClientForChainId(
     MAINNET ? ChainId.StargazeMainnet : ChainId.StargazeTestnet
   )
 
@@ -170,7 +170,7 @@ export const fetchStargazeNameImage = async (
   }
 
   const chainId = MAINNET ? ChainId.StargazeMainnet : ChainId.StargazeTestnet
-  const client = await cosmWasmClientRouter.connect(chainId)
+  const client = await getCosmWasmClientForChainId(chainId)
 
   // Get NFT associated with name.
   let response

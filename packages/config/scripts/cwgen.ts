@@ -118,7 +118,7 @@ codegen({
       // add import
       content = content.replace(
         'export const',
-        "import { cosmWasmClientRouter } from '@dao-dao/utils'\n\nexport const"
+        "import { getCosmWasmClientForChainId } from '@dao-dao/utils'\n\nexport const"
       )
       // remove hooks
       content = content.replace(/\nexport function use.+\n[^;]+;\n\}/gm, '')
@@ -136,7 +136,7 @@ codegen({
       content = content.replace(/client\?\.contractAddress/g, 'contractAddress')
       content = content.replace(
         /queryFn: \(\) => client/g,
-        `queryFn: async () => new ${contractName}QueryClient(await cosmWasmClientRouter.connect(chainId), contractAddress)`
+        `queryFn: async () => new ${contractName}QueryClient(await getCosmWasmClientForChainId(chainId), contractAddress)`
       )
       // remove enabled lines
       content = content.replace(/    +enabled:[^)]+\)\n/g, '')

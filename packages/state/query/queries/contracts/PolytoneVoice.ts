@@ -1,7 +1,7 @@
 import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { SenderInfo } from '@dao-dao/types/contracts/PolytoneVoice'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { PolytoneVoiceQueryClient } from '../../../contracts/PolytoneVoice'
 import { indexerQueries } from '../indexer'
@@ -70,7 +70,7 @@ export const polytoneVoiceQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new PolytoneVoiceQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).senderInfoForProxy(args)
     },

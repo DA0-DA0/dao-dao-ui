@@ -1,7 +1,7 @@
 import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { Addr } from '@dao-dao/types'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { PolytoneProxyQueryClient } from '../../../contracts/PolytoneProxy'
 import { indexerQueries } from '../indexer'
@@ -59,7 +59,7 @@ export const polytoneProxyQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new PolytoneProxyQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).instantiator()
     },

@@ -6,7 +6,6 @@ import {
   ContractName,
   DAO_CORE_CONTRACT_NAMES,
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
-  cosmWasmClientRouter,
   getChainForChainId,
   getCosmWasmClientForChainId,
   isSecretNetwork,
@@ -169,7 +168,7 @@ export const fetchContractInstantiationTime = async (
   }
 
   // If indexer fails, fallback to querying chain.
-  const client = await cosmWasmClientRouter.connect(chainId)
+  const client = await getCosmWasmClientForChainId(chainId)
   const events = await client.searchTx([
     { key: 'instantiate._contract_address', value: address },
   ])

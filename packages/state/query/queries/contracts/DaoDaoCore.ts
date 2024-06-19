@@ -21,7 +21,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoCoreV2QueryClient } from '../../../contracts/DaoCore.v2'
 import { contractQueries } from '../contract'
@@ -243,7 +243,7 @@ export const daoDaoCoreQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).admin()
     },
@@ -261,7 +261,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.adminNomination(contractAddress),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).adminNomination(),
     ...options,
@@ -289,7 +289,7 @@ export const daoDaoCoreQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).config()
     },
@@ -308,7 +308,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.cw20Balances(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw20Balances({
         limit: args.limit,
@@ -329,7 +329,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.cw20TokenList(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw20TokenList({
         limit: args.limit,
@@ -350,7 +350,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.cw721TokenList(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).cw721TokenList({
         limit: args.limit,
@@ -381,7 +381,7 @@ export const daoDaoCoreQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).dumpState()
     },
@@ -400,7 +400,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.getItem(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getItem({
         key: args.key,
@@ -420,7 +420,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.listItems(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listItems({
         limit: args.limit,
@@ -512,7 +512,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.info(contractAddress),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).info(),
     ...options,
@@ -530,7 +530,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.proposalModules(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).proposalModules({
         limit: args.limit,
@@ -551,7 +551,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.activeProposalModules(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).activeProposalModules({
         limit: args.limit,
@@ -571,7 +571,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.pauseInfo(contractAddress),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).pauseInfo(),
     ...options,
@@ -588,7 +588,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.votingModule(contractAddress),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).votingModule(),
     ...options,
@@ -606,7 +606,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.listSubDaos(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listSubDaos({
         limit: args.limit,
@@ -755,7 +755,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.daoURI(contractAddress),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).daoURI(),
     ...options,
@@ -773,7 +773,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).votingPowerAtHeight({
         address: args.address,
@@ -794,7 +794,7 @@ export const daoDaoCoreQueries = {
     queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(contractAddress, args),
     queryFn: async () =>
       new DaoCoreV2QueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).totalPowerAtHeight({
         height: args.height,
