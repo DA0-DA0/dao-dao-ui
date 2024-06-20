@@ -365,7 +365,14 @@ export const makeUsePublishProposal =
               proposeFunds
             )
           : await doPropose(
-              proposalData,
+              {
+                ...proposalData,
+                ...(isSecretNetwork && {
+                  auth: {
+                    permit: await getPermit(),
+                  },
+                }),
+              },
               CHAIN_GAS_MULTIPLIER,
               undefined,
               proposeFunds
