@@ -321,7 +321,10 @@ export type ProposalStatusVetoTimelock = {
  *
  * Used by both DaoProposalSingle and DaoProposalMultiple.
  */
-export type ProposalStatus = ProposalStatusEnum | ProposalStatusVetoTimelock
+export type ProposalStatus =
+  // make compatible with string union types with matching values, which is what
+  // gets auto-generated
+  `${ProposalStatusEnum}` | ProposalStatusVetoTimelock
 /**
  * The flattened set of proposal status keys that can be represented as strings.
  * This uses the strings as-is and the key of the object enum variants.

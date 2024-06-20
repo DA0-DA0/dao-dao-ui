@@ -43,15 +43,15 @@ export const ProposalVoteColorMap: Record<
     textClassName: string
   }
 > = {
-  [Vote.Yes]: {
+  yes: {
     iconClassName: 'text-icon-interactive-valid',
     textClassName: 'text-text-interactive-valid',
   },
-  [Vote.No]: {
+  no: {
     iconClassName: 'text-icon-interactive-error',
     textClassName: 'text-text-interactive-error',
   },
-  [Vote.Abstain]: {
+  abstain: {
     iconClassName: 'text-icon-secondary',
     textClassName: 'text-text-secondary',
   },

@@ -1,6 +1,6 @@
 import { DaoProposalSingleV2QueryClient, queryIndexer } from '@dao-dao/state'
 import { Feature, FetchVetoConfig } from '@dao-dao/types'
-import { ConfigResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+import { Config } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   getCosmWasmClientForChainId,
   isFeatureSupportedByVersion,
@@ -16,7 +16,7 @@ export const fetchVetoConfig: FetchVetoConfig = async (
   }
 
   // Try indexer first.
-  let config: ConfigResponse | undefined
+  let config: Config | undefined
   try {
     config = await queryIndexer({
       type: 'contract',

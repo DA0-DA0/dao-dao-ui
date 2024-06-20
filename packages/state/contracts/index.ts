@@ -99,3 +99,7 @@ export {
   SecretDaoPreProposeSingleClient,
   SecretDaoPreProposeSingleQueryClient,
 } from './SecretDaoPreProposeSingle'
+export {
+  SecretDaoProposalSingleClient,
+  SecretDaoProposalSingleQueryClient,
+} from './SecretDaoProposalSingle'

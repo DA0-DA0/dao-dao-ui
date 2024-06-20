@@ -18,9 +18,9 @@ import {
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
-  ConfigResponse as ConfigV2Response,
+  Config as ConfigV2Response,
   ProposalResponse as ProposalV2Response,
-  ReverseProposalsResponse as ReverseProposalsV2Response,
+  ProposalListResponse as ReverseProposalsV2Response,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 import {

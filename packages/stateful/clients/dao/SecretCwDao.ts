@@ -1,13 +1,17 @@
 import { OfflineAminoSigner } from '@cosmjs/amino'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
-import { PermitForPermitData } from '@dao-dao/types'
+import { DaoInfo, PermitForPermitData } from '@dao-dao/types'
 import {
   createSecretNetworkPermit,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { SecretSingleChoiceProposalModule } from '../proposal-module/SecretSingleChoiceProposalModule'
 import { CwDao } from './CwDao'
+
+// TODO(dao-client): move this somewhere better?
+const getProposalModuleBases = () => [SecretSingleChoiceProposalModule]
 
 export class SecretCwDao extends CwDao {
   /**
@@ -15,6 +19,25 @@ export class SecretCwDao extends CwDao {
    * be set before `getPermit` and `getVotingPower` can be used.
    */
   private getOfflineSignerAmino?: () => OfflineAminoSigner
+
+  protected setInfo(info: DaoInfo | undefined) {
+    this._info = info
+
+    if (info) {
+      const proposalModuleBases = getProposalModuleBases()
+      this._proposalModules = info.proposalModules.flatMap((proposalModule) => {
+        const ProposalModule = proposalModuleBases.find((Base) =>
+          Base.contractNames.includes(proposalModule.contractName)
+        )
+
+        if (!ProposalModule) {
+          return []
+        }
+
+        return new ProposalModule(this.queryClient, this, proposalModule)
+      })
+    }
+  }
 
   private getPermitLocalStorageKey(address: string) {
     return [

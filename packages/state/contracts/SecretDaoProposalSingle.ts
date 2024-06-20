@@ -13,6 +13,7 @@ import {
 
 import {
   Addr,
+  Auth,
   Coin,
   Config,
   CosmosMsgForEmpty,
@@ -23,17 +24,16 @@ import {
   ProposalCreationPolicy,
   ProposalListResponse,
   ProposalResponse,
-  SingleChoiceAutoVote,
   Threshold,
   Uint64,
   VetoConfig,
   Vote,
   VoteListResponse,
   VoteResponse,
-} from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+} from '@dao-dao/types/contracts/SecretDaoProposalSingle'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
-export interface DaoProposalSingleV2ReadOnlyInterface {
+export interface SecretDaoProposalSingleReadOnlyInterface {
   contractAddress: string
   config: () => Promise<Config>
   proposal: ({
@@ -56,11 +56,11 @@ export interface DaoProposalSingleV2ReadOnlyInterface {
     startBefore?: number
   }) => Promise<ProposalListResponse>
   getVote: ({
+    auth,
     proposalId,
-    voter,
   }: {
+    auth: Auth
     proposalId: number
-    voter: string
   }) => Promise<VoteResponse>
   listVotes: ({
     limit,
@@ -71,7 +71,7 @@ export interface DaoProposalSingleV2ReadOnlyInterface {
     proposalId: number
     startAfter?: string
   }) => Promise<VoteListResponse>
-  proposalCount: () => Promise<number>
+  proposalCount: () => Promise<Uint64>
   proposalCreationPolicy: () => Promise<ProposalCreationPolicy>
   proposalHooks: () => Promise<HooksResponse>
   voteHooks: () => Promise<HooksResponse>
@@ -79,8 +79,8 @@ export interface DaoProposalSingleV2ReadOnlyInterface {
   info: () => Promise<InfoResponse>
   nextProposalId: () => Promise<Uint64>
 }
-export class DaoProposalSingleV2QueryClient
-  implements DaoProposalSingleV2ReadOnlyInterface
+export class SecretDaoProposalSingleQueryClient
+  implements SecretDaoProposalSingleReadOnlyInterface
 {
   client: CosmWasmClient
   contractAddress: string
@@ -146,16 +146,16 @@ export class DaoProposalSingleV2QueryClient
     })
   }
   getVote = async ({
+    auth,
     proposalId,
-    voter,
   }: {
+    auth: Auth
     proposalId: number
-    voter: string
   }): Promise<VoteResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_vote: {
+        auth,
         proposal_id: proposalId,
-        voter,
       },
     })
   }
@@ -176,7 +176,7 @@ export class DaoProposalSingleV2QueryClient
       },
     })
   }
-  proposalCount = async (): Promise<number> => {
+  proposalCount = async (): Promise<Uint64> => {
     return this.client.queryContractSmart(this.contractAddress, {
       proposal_count: {},
     })
@@ -212,8 +212,8 @@ export class DaoProposalSingleV2QueryClient
     })
   }
 }
-export interface DaoProposalSingleV2Interface
-  extends DaoProposalSingleV2ReadOnlyInterface {
+export interface SecretDaoProposalSingleInterface
+  extends SecretDaoProposalSingleReadOnlyInterface {
   contractAddress: string
   sender: string
   propose: (
@@ -222,13 +222,11 @@ export interface DaoProposalSingleV2Interface
       msgs,
       proposer,
       title,
-      vote,
     }: {
       description: string
       msgs: CosmosMsgForEmpty[]
       proposer?: string
       title: string
-      vote?: SingleChoiceAutoVote
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -236,10 +234,12 @@ export interface DaoProposalSingleV2Interface
   ) => Promise<ExecuteResult>
   vote: (
     {
+      auth,
       proposalId,
       rationale,
       vote,
     }: {
+      auth: Auth
       proposalId: number
       rationale?: string
       vote: Vote
@@ -262,8 +262,10 @@ export interface DaoProposalSingleV2Interface
   ) => Promise<ExecuteResult>
   execute: (
     {
+      auth,
       proposalId,
     }: {
+      auth: Auth
       proposalId: number
     },
     fee?: number | StdFee | 'auto',
@@ -294,7 +296,6 @@ export interface DaoProposalSingleV2Interface
     {
       allowRevoting,
       closeProposalOnExecutionFailure,
-      dao,
       maxVotingPeriod,
       minVotingPeriod,
       onlyMembersExecute,
@@ -303,7 +304,6 @@ export interface DaoProposalSingleV2Interface
     }: {
       allowRevoting: boolean
       closeProposalOnExecutionFailure: boolean
-      dao: string
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       onlyMembersExecute: boolean
@@ -327,8 +327,10 @@ export interface DaoProposalSingleV2Interface
   addProposalHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -337,8 +339,10 @@ export interface DaoProposalSingleV2Interface
   removeProposalHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -347,8 +351,10 @@ export interface DaoProposalSingleV2Interface
   addVoteHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -357,17 +363,31 @@ export interface DaoProposalSingleV2Interface
   removeVoteHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ) => Promise<ExecuteResult>
+  updateDaoInfo: (
+    {
+      address,
+      codeHash,
+    }: {
+      address: Addr
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
 }
-export class DaoProposalSingleV2Client
-  extends DaoProposalSingleV2QueryClient
-  implements DaoProposalSingleV2Interface
+export class SecretDaoProposalSingleClient
+  extends SecretDaoProposalSingleQueryClient
+  implements SecretDaoProposalSingleInterface
 {
   client: SigningCosmWasmClient
   sender: string
@@ -393,6 +413,7 @@ export class DaoProposalSingleV2Client
     this.removeProposalHook = this.removeProposalHook.bind(this)
     this.addVoteHook = this.addVoteHook.bind(this)
     this.removeVoteHook = this.removeVoteHook.bind(this)
+    this.updateDaoInfo = this.updateDaoInfo.bind(this)
   }
   propose = async (
     {
@@ -400,13 +421,11 @@ export class DaoProposalSingleV2Client
       msgs,
       proposer,
       title,
-      vote,
     }: {
       description: string
       msgs: CosmosMsgForEmpty[]
       proposer?: string
       title: string
-      vote?: SingleChoiceAutoVote
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -421,7 +440,6 @@ export class DaoProposalSingleV2Client
           msgs,
           proposer,
           title,
-          vote,
         },
       },
       fee,
@@ -431,10 +449,12 @@ export class DaoProposalSingleV2Client
   }
   vote = async (
     {
+      auth,
       proposalId,
       rationale,
       vote,
     }: {
+      auth: Auth
       proposalId: number
       rationale?: string
       vote: Vote
@@ -448,6 +468,7 @@ export class DaoProposalSingleV2Client
       this.contractAddress,
       {
         vote: {
+          auth,
           proposal_id: proposalId,
           rationale,
           vote,
@@ -486,8 +507,10 @@ export class DaoProposalSingleV2Client
   }
   execute = async (
     {
+      auth,
       proposalId,
     }: {
+      auth: Auth
       proposalId: number
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
@@ -499,6 +522,7 @@ export class DaoProposalSingleV2Client
       this.contractAddress,
       {
         execute: {
+          auth,
           proposal_id: proposalId,
         },
       },
@@ -557,7 +581,6 @@ export class DaoProposalSingleV2Client
     {
       allowRevoting,
       closeProposalOnExecutionFailure,
-      dao,
       maxVotingPeriod,
       minVotingPeriod,
       onlyMembersExecute,
@@ -566,7 +589,6 @@ export class DaoProposalSingleV2Client
     }: {
       allowRevoting: boolean
       closeProposalOnExecutionFailure: boolean
-      dao: string
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       onlyMembersExecute: boolean
@@ -584,7 +606,6 @@ export class DaoProposalSingleV2Client
         update_config: {
           allow_revoting: allowRevoting,
           close_proposal_on_execution_failure: closeProposalOnExecutionFailure,
-          dao,
           max_voting_period: maxVotingPeriod,
           min_voting_period: minVotingPeriod,
           only_members_execute: onlyMembersExecute,
@@ -623,8 +644,10 @@ export class DaoProposalSingleV2Client
   addProposalHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -636,6 +659,7 @@ export class DaoProposalSingleV2Client
       {
         add_proposal_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -646,8 +670,10 @@ export class DaoProposalSingleV2Client
   removeProposalHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -659,6 +685,7 @@ export class DaoProposalSingleV2Client
       {
         remove_proposal_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -669,8 +696,10 @@ export class DaoProposalSingleV2Client
   addVoteHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -682,6 +711,7 @@ export class DaoProposalSingleV2Client
       {
         add_vote_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -692,8 +722,10 @@ export class DaoProposalSingleV2Client
   removeVoteHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -705,6 +737,33 @@ export class DaoProposalSingleV2Client
       {
         remove_vote_hook: {
           address,
+          code_hash: codeHash,
+        },
+      },
+      fee,
+      memo,
+      _funds
+    )
+  }
+  updateDaoInfo = async (
+    {
+      address,
+      codeHash,
+    }: {
+      address: Addr
+      codeHash: string
+    },
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    _funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        update_dao_info: {
+          address,
+          code_hash: codeHash,
         },
       },
       fee,
