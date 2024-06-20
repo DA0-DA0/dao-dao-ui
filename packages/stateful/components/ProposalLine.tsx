@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { LineLoader, StatusCard } from '@dao-dao/stateless'
+import {
+  LineLoader,
+  StatusCard,
+  useDaoContextIfAvailable,
+} from '@dao-dao/stateless'
 import { StatefulProposalLineProps } from '@dao-dao/types'
 
 import {
@@ -16,17 +20,34 @@ export const ProposalLine = ({
   coreAddress,
   proposalId,
   ...props
-}: StatefulProposalLineProps) => (
-  <DaoProviders
-    chainId={chainId}
-    coreAddress={coreAddress}
-    loaderFallback={<LineLoader type="proposal" />}
-  >
+}: StatefulProposalLineProps) => {
+  const existingDao = useDaoContextIfAvailable()?.dao
+
+  const content = (
     <ProposalModuleAdapterProvider proposalId={proposalId}>
       <InnerProposalLine {...props} />
     </ProposalModuleAdapterProvider>
-  </DaoProviders>
-)
+  )
+
+  // If already in this DAO's context, no need to wrap in another provider.
+  if (
+    existingDao &&
+    existingDao.chainId === chainId &&
+    existingDao.coreAddress === coreAddress
+  ) {
+    return content
+  }
+
+  return (
+    <DaoProviders
+      chainId={chainId}
+      coreAddress={coreAddress}
+      loaderFallback={<LineLoader type="proposal" />}
+    >
+      {content}
+    </DaoProviders>
+  )
+}
 
 type InnerProposalLineProps = Pick<
   StatefulProposalLineProps,

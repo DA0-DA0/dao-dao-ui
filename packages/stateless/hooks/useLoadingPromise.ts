@@ -6,15 +6,16 @@ import { useUpdatingRef } from './useUpdatingRef'
 
 export type UseLoadingPromiseOptions<T> = {
   /**
-   * The promise or a function that returns the promise to use. If undefined,
-   * will be in loading state. If a function is passed, it will be memoized and
-   * thus not reset on every render. Use `deps` if you want a function to be
-   * reloaded when certain dependencies change.
+   * A function that returns the promise to use. If undefined, will be in
+   * loading state. The function will be memoized and thus not reset on every
+   * render. Use `deps` if you want the promise to be reloaded when certain
+   * dependencies change.
    */
-  promise: Promise<T> | (() => Promise<T>) | undefined
+  promise: (() => Promise<T> | undefined) | undefined
   /**
    * Additional dependencies that, if changed, will cause the promise function
-   * to be reloaded. If a promise is passed directly, this will be ignored.
+   * to be reloaded. The length of this array must never change, since it is
+   * spread into a `useMemo` dependency array.
    */
   deps?: any[]
 }
@@ -41,16 +42,11 @@ export const useLoadingPromise = <T>({
 
   const promiseRef = useUpdatingRef(_promise)
   const promise = useMemo(
-    () =>
-      typeof promiseRef.current === 'function'
-        ? promiseRef.current()
-        : promiseRef.current,
+    () => promiseRef.current?.(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      // If a function is passed, use memoized ref so it doesn't reset on every
-      // render. Otherwise, reset when the direct promise reference changes.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      typeof _promise === 'function' ? promiseRef : _promise,
+      // Use memoized ref so it doesn't reset on every render.
+      promiseRef,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ...(deps || []),
     ]

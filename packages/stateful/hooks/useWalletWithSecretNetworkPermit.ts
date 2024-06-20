@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useUpdatingRef } from '@dao-dao/stateless'
 import { DaoBase, PermitForPermitData } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
@@ -45,6 +46,10 @@ export const useWalletWithSecretNetworkPermit = ({
   const wallet = useWallet(options)
   const queryClient = useQueryClient()
 
+  // Stabilize reference so callback doesn't change. This only needs to update
+  // on wallet connection state change anyway.
+  const getOfflineSignerAminoRef = useUpdatingRef(wallet.getOfflineSignerAmino)
+
   // Get DAO client for permit fetching.
   const daoClient = useMemo(() => {
     const client = getDao({
@@ -54,15 +59,15 @@ export const useWalletWithSecretNetworkPermit = ({
     })
     // Register for offline signer if Secret DAO.
     if (client instanceof SecretCwDao && wallet.isWalletConnected) {
-      client.registerOfflineSignerAminoGetter(wallet.getOfflineSignerAmino)
+      client.registerOfflineSignerAminoGetter(getOfflineSignerAminoRef.current)
     }
     return client
   }, [
     dao,
     queryClient,
     wallet.chain.chain_id,
-    wallet.getOfflineSignerAmino,
     wallet.isWalletConnected,
+    getOfflineSignerAminoRef,
   ])
 
   // Attempt to initialize with existing permit.

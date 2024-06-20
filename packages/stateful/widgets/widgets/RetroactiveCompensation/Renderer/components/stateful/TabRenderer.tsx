@@ -59,14 +59,15 @@ export const TabRenderer = () => {
     promise:
       loadingCompletedSurveys.loading || !walletAddress
         ? undefined
-        : Promise.all(
-            loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-              dao
-                .getVotingPower(walletAddress, createdAtBlockHeight)
-                // Fail silently.
-                .catch(() => '0')
-            )
-          ),
+        : () =>
+            Promise.all(
+              loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+                dao
+                  .getVotingPower(walletAddress, createdAtBlockHeight)
+                  // Fail silently.
+                  .catch(() => '0')
+              )
+            ),
     // Refresh when surveys, wallet, or permit changes.
     deps: [loadingCompletedSurveys, walletAddress, permit],
   })
