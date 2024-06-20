@@ -57,7 +57,8 @@ export interface InstantiateMsg {
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
   code_id: number
-  funds: Coin[]
+  // added in v2.3.0
+  funds?: Coin[]
   label: string
   msg: Binary
 }
