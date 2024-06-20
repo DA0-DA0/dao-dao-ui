@@ -81,6 +81,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         // @ts-ignore
         'data-api': 'https://vis.daodao.zone/dao/event',
       }}
+      taggedEvents
       trackOutboundLinks
     >
       <ThemeProvider

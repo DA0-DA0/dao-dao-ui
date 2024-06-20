@@ -89,6 +89,7 @@ const InnerApp = ({
         // @ts-ignore
         'data-api': 'https://vis.daodao.zone/dao/event',
       }}
+      taggedEvents
       trackOutboundLinks
     >
       <ThemeProvider

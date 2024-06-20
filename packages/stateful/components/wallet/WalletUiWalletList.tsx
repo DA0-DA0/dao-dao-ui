@@ -1,5 +1,6 @@
 import { ChainWalletBase, WalletModalProps } from '@cosmos-kit/core'
 import clsx from 'clsx'
+import { usePlausible } from 'next-plausible'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -9,6 +10,7 @@ import {
   TooltipInfoIcon,
   WalletLogo,
 } from '@dao-dao/stateless'
+import { PlausibleEvents } from '@dao-dao/types'
 
 export type WalletUiWalletListProps = Pick<WalletModalProps, 'walletRepo'> & {
   connect: (wallet: ChainWalletBase) => void
@@ -19,6 +21,7 @@ export const WalletUiWalletList = ({
   connect,
 }: WalletUiWalletListProps) => {
   const { t } = useTranslation()
+  const plausible = usePlausible<PlausibleEvents>()
 
   if (!walletRepo) {
     return null
@@ -49,6 +52,12 @@ export const WalletUiWalletList = ({
     current?.isWalletConnecting && current.walletName === wallet.walletName
 
   const makeWalletOnClick = (wallet: ChainWalletBase) => async () => {
+    plausible('login', {
+      props: {
+        wallet: wallet.walletName,
+      },
+    })
+
     try {
       await current?.disconnect(true)
     } catch (error) {
