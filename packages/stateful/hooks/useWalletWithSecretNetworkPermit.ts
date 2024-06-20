@@ -1,8 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { DaoBase } from '@dao-dao/stateless'
-import { PermitForPermitData } from '@dao-dao/types'
+import { DaoBase, PermitForPermitData } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
 import { SecretCwDao, getDao } from '../clients/dao'

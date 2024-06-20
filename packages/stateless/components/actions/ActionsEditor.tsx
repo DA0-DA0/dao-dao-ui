@@ -22,7 +22,7 @@ import {
   LoadedActions,
 } from '@dao-dao/types/actions'
 
-import { useDaoInfoContextIfAvailable } from '../../hooks'
+import { useDaoInfoContextIfAvailable } from '../../contexts'
 import { IconButton } from '../icon_buttons'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { Tooltip } from '../tooltip'

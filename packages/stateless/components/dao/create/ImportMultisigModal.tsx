@@ -10,7 +10,8 @@ import {
   makeValidateAddress,
 } from '@dao-dao/utils'
 
-import { useChain, useProcessTQ } from '../../../hooks'
+import { useChain } from '../../../contexts'
+import { useProcessTQ } from '../../../hooks'
 import { Button } from '../../buttons'
 import { InputErrorMessage, InputLabel } from '../../inputs'
 import { Loader } from '../../logo'

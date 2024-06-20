@@ -2,8 +2,7 @@ import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
-import { ProposalModuleBase } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { ContractVersion, ProposalModuleBase } from '@dao-dao/types'
 import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { DAO_PROPOSAL_SINGLE_CONTRACT_NAMES } from '@dao-dao/utils'
 

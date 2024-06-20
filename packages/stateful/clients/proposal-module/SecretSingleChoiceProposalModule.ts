@@ -1,5 +1,5 @@
 import { secretDaoProposalSingleQueries } from '@dao-dao/state/query'
-import { ProposalModuleBase } from '@dao-dao/stateless'
+import { ProposalModuleBase } from '@dao-dao/types'
 import { VoteInfo } from '@dao-dao/types/contracts/SecretDaoProposalSingle'
 import { DAO_PROPOSAL_SINGLE_CONTRACT_NAMES } from '@dao-dao/utils'
 

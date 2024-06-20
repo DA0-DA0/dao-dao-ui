@@ -9,7 +9,8 @@ import {
 
 import { PageLoader, TabBar } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useDaoInfoContext, useTabBarScrollReset } from '../hooks'
+import { useDaoInfoContext } from '../contexts'
+import { useTabBarScrollReset } from '../hooks'
 
 export const DaoDappTabbedHome = ({
   SuspenseLoader,

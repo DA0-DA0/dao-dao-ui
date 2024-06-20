@@ -12,7 +12,8 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { useChainContext, useDaoNavHelpers, useDetectTruncate } from '../hooks'
+import { useChainContext } from '../contexts'
+import { useDaoNavHelpers, useDetectTruncate } from '../hooks'
 import { ButtonLink } from './buttons'
 import { IconButton } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'

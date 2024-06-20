@@ -20,7 +20,8 @@ import {
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { formatDateTimeTz, govProposalToDecodedContent } from '@dao-dao/utils'
 
-import { useChainContext, useTranslatedTimeDeltaFormatter } from '../../hooks'
+import { useChainContext } from '../../contexts'
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { IconButtonLink } from '../icon_buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { Tooltip } from '../tooltip'

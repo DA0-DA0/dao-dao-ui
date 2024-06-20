@@ -18,7 +18,8 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { useAddToken, useDaoInfoContextIfAvailable } from '../../hooks'
+import { useDaoInfoContextIfAvailable } from '../../contexts'
+import { useAddToken } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { CrownIcon } from '../icons/CrownIcon'

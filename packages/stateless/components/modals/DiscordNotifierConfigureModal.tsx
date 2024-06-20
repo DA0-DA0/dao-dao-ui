@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { DiscordNotifierRegistration } from '@dao-dao/state/recoil'
 import { ModalProps } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../hooks'
+import { useDaoInfoContext } from '../../contexts'
 import { Button } from '../buttons'
 import { IconButton, IconButtonLink } from '../icon_buttons'
 import { DiscordIcon } from '../icons'

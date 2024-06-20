@@ -33,7 +33,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useChainContext, useHoldingKey } from '../../hooks'
+import { useChainContext } from '../../contexts'
+import { useHoldingKey } from '../../hooks'
 import { ActionsEditor, RawActionsRenderer } from '../actions'
 import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'

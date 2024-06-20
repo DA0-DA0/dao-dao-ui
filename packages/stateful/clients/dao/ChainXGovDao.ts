@@ -1,8 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 
 import { chainQueries } from '@dao-dao/state/query'
-import { DaoBase } from '@dao-dao/stateless'
-import { DaoInfo } from '@dao-dao/types'
+import { DaoBase, DaoInfo } from '@dao-dao/types'
 import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
 
 import { daoQueries } from '../../queries'

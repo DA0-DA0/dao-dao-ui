@@ -23,12 +23,8 @@ import {
   serializeTokenSource,
 } from '@dao-dao/utils'
 
-import {
-  useButtonPopupSorter,
-  useDaoInfoContext,
-  useSupportedChainContext,
-  useTokenSortOptions,
-} from '../../../hooks'
+import { useDaoInfoContext, useSupportedChainContext } from '../../../contexts'
+import { useButtonPopupSorter, useTokenSortOptions } from '../../../hooks'
 import { ErrorPage } from '../../error'
 import { LineLoaders } from '../../LineLoader'
 import { NftSection } from '../../nft/NftSection'

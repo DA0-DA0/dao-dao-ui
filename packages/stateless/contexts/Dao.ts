@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-import { DaoBase } from '../clients'
+import { DaoBase } from '@dao-dao/types/clients'
 
 export type IDaoContext = {
   dao: DaoBase

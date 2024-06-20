@@ -1,8 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
-import { DaoBase, ProposalModuleBase } from '@dao-dao/stateless'
-import { DaoInfo } from '@dao-dao/types'
+import { DaoBase, DaoInfo, ProposalModuleBase } from '@dao-dao/types'
 
 import { daoQueries } from '../../queries'
 import {

@@ -1,7 +1,6 @@
 import { QueryClient } from '@tanstack/react-query'
 
-import { DaoInfo } from '@dao-dao/types'
-
+import { DaoInfo } from '../dao'
 import { ProposalModuleBase } from './proposal-module'
 
 export abstract class DaoBase {
