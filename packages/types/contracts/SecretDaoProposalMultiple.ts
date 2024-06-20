@@ -31,23 +31,11 @@ export type Admin =
     }
 export type Uint128 = string
 export type Binary = string
-export type Threshold =
-  | {
-      absolute_percentage: {
-        percentage: PercentageThreshold
-      }
-    }
-  | {
-      threshold_quorum: {
-        quorum: PercentageThreshold
-        threshold: PercentageThreshold
-      }
-    }
-  | {
-      absolute_count: {
-        threshold: Uint128
-      }
-    }
+export type VotingStrategy = {
+  single_choice: {
+    quorum: PercentageThreshold
+  }
+}
 export type PercentageThreshold =
   | {
       majority: {}
@@ -59,15 +47,18 @@ export type Decimal = string
 export interface InstantiateMsg {
   allow_revoting: boolean
   close_proposal_on_execution_failure: boolean
+  dao_code_hash: string
   max_voting_period: Duration
   min_voting_period?: Duration | null
   only_members_execute: boolean
   pre_propose_info: PreProposeInfo
-  threshold: Threshold
+  query_auth?: RawContract | null
   veto?: VetoConfig | null
+  voting_strategy: VotingStrategy
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
+  code_hash: string
   code_id: number
   funds: Coin[]
   label: string
@@ -77,6 +68,10 @@ export interface Coin {
   amount: Uint128
   denom: string
 }
+export interface RawContract {
+  address: string
+  code_hash: string
+}
 export interface VetoConfig {
   early_execute: boolean
   timelock_duration: Duration
@@ -85,23 +80,24 @@ export interface VetoConfig {
 }
 export type ExecuteMsg =
   | {
-      propose: SingleChoiceProposeMsg
-    }
-  | {
-      vote: {
-        proposal_id: number
-        rationale?: string | null
-        vote: Vote
+      propose: {
+        choices: MultipleChoiceOptions
+        description: string
+        proposer?: string | null
+        title: string
       }
     }
   | {
-      update_rationale: {
+      vote: {
+        auth: Auth
         proposal_id: number
         rationale?: string | null
+        vote: MultipleChoiceVote
       }
     }
   | {
       execute: {
+        auth: Auth
         proposal_id: number
       }
     }
@@ -119,12 +115,17 @@ export type ExecuteMsg =
       update_config: {
         allow_revoting: boolean
         close_proposal_on_execution_failure: boolean
-        dao: string
         max_voting_period: Duration
         min_voting_period?: Duration | null
         only_members_execute: boolean
-        threshold: Threshold
         veto?: VetoConfig | null
+        voting_strategy: VotingStrategy
+      }
+    }
+  | {
+      update_rationale: {
+        proposal_id: number
+        rationale?: string | null
       }
     }
   | {
@@ -135,21 +136,31 @@ export type ExecuteMsg =
   | {
       add_proposal_hook: {
         address: string
+        code_hash: string
       }
     }
   | {
       remove_proposal_hook: {
         address: string
+        code_hash: string
       }
     }
   | {
       add_vote_hook: {
         address: string
+        code_hash: string
       }
     }
   | {
       remove_vote_hook: {
         address: string
+        code_hash: string
+      }
+    }
+  | {
+      update_dao_info: {
+        address: Addr
+        code_hash: string
       }
     }
 export type CosmosMsgForEmpty =
@@ -179,6 +190,9 @@ export type CosmosMsgForEmpty =
     }
   | {
       gov: GovMsg
+    }
+  | {
+      finalize_tx: Empty
     }
 export type BankMsg =
   | {
@@ -228,6 +242,7 @@ export type IbcMsg =
       transfer: {
         amount: Coin
         channel_id: string
+        memo: string
         timeout: IbcTimeout
         to_address: string
       }
@@ -249,25 +264,28 @@ export type Uint64 = string
 export type WasmMsg =
   | {
       execute: {
+        code_hash: string
         contract_addr: string
-        funds: Coin[]
         msg: Binary
+        send: Coin[]
       }
     }
   | {
       instantiate: {
         admin?: string | null
+        code_hash: string
         code_id: number
-        funds: Coin[]
         label: string
         msg: Binary
+        send: Coin[]
       }
     }
   | {
       migrate: {
+        code_hash: string
+        code_id: number
         contract_addr: string
         msg: Binary
-        new_code_id: number
       }
     }
   | {
@@ -288,13 +306,24 @@ export type GovMsg = {
   }
 }
 export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
-export type Vote = 'yes' | 'no' | 'abstain'
-export interface SingleChoiceProposeMsg {
+export type Auth =
+  | {
+      viewing_key: {
+        address: string
+        key: string
+      }
+    }
+  | {
+      permit: PermitForPermitData
+    }
+export type Addr = string
+export interface MultipleChoiceOptions {
+  options: MultipleChoiceOption[]
+}
+export interface MultipleChoiceOption {
   description: string
   msgs: CosmosMsgForEmpty[]
-  proposer?: string | null
   title: string
-  vote?: SingleChoiceAutoVote | null
 }
 export interface Empty {}
 export interface IbcTimeout {
@@ -305,9 +334,28 @@ export interface IbcTimeoutBlock {
   height: number
   revision: number
 }
-export interface SingleChoiceAutoVote {
-  rationale?: string | null
-  vote: Vote
+export interface PermitForPermitData {
+  account_number?: Uint128 | null
+  chain_id?: string | null
+  memo?: string | null
+  params: PermitData
+  sequence?: Uint128 | null
+  signature: PermitSignature
+}
+export interface PermitData {
+  data: Binary
+  key: string
+}
+export interface PermitSignature {
+  pub_key: PubKey
+  signature: Binary
+}
+export interface PubKey {
+  type: string
+  value: Binary
+}
+export interface MultipleChoiceVote {
+  option_id: number
 }
 export type QueryMsg =
   | {
@@ -332,8 +380,8 @@ export type QueryMsg =
     }
   | {
       get_vote: {
+        auth: Auth
         proposal_id: number
-        voter: string
       }
     }
   | {
@@ -375,16 +423,19 @@ export type MigrateMsg =
   | {
       from_compatible: {}
     }
-export type Addr = string
 export interface Config {
   allow_revoting: boolean
   close_proposal_on_execution_failure: boolean
-  dao: Addr
   max_voting_period: Duration
   min_voting_period?: Duration | null
   only_members_execute: boolean
-  threshold: Threshold
+  query_auth: Contract
   veto?: VetoConfig | null
+  voting_strategy: VotingStrategy
+}
+export interface Contract {
+  address: Addr
+  code_hash: string
 }
 export interface VoteResponse {
   vote?: VoteInfo | null
@@ -392,10 +443,8 @@ export interface VoteResponse {
 export interface VoteInfo {
   power: Uint128
   rationale?: string | null
-  vote: Vote
+  vote: MultipleChoiceVote
   voter: Addr
-  // Indexer may return these.
-  votedAt?: string
 }
 export interface InfoResponse {
   info: ContractVersion
@@ -404,6 +453,7 @@ export interface ContractVersion {
   contract: string
   version: string
 }
+export type MultipleChoiceOptionType = 'standard' | 'none'
 export type Expiration =
   | {
       at_height: number
@@ -432,59 +482,51 @@ export interface ProposalListResponse {
 }
 export interface ProposalResponse {
   id: number
-  proposal: SingleChoiceProposal
-
-  // Indexer may return these.
-  hideFromSearch?: boolean
-  dao?: string
-  daoProposalId?: string
-  createdAt?: string
-  completedAt?: string
-  executedAt?: string
-  closedAt?: string
+  proposal: MultipleChoiceProposal
 }
-export interface SingleChoiceProposal {
+export interface MultipleChoiceProposal {
   allow_revoting: boolean
+  choices: CheckedMultipleChoiceOption[]
   description: string
   expiration: Expiration
   min_voting_period?: Expiration | null
-  msgs: CosmosMsgForEmpty[]
   proposer: Addr
   start_height: number
   status: Status
-  threshold: Threshold
   title: string
   total_power: Uint128
   veto?: VetoConfig | null
-  votes: Votes
+  votes: MultipleChoiceVotes
+  voting_strategy: VotingStrategy
 }
-export interface Votes {
-  abstain: Uint128
-  no: Uint128
-  yes: Uint128
+export interface CheckedMultipleChoiceOption {
+  description: string
+  index: number
+  msgs: CosmosMsgForEmpty[]
+  option_type: MultipleChoiceOptionType
+  title: string
+  vote_count: Uint128
+}
+export interface MultipleChoiceVotes {
+  vote_weights: Uint128[]
 }
 export interface VoteListResponse {
   votes: VoteInfo[]
 }
 export type ProposalCreationPolicy =
-  // v2-beta
-  | {
-      Anyone: {}
-    }
-  | {
-      Module: {
-        addr: Addr
-      }
-    }
-  // v2
   | {
       anyone: {}
     }
   | {
       module: {
         addr: Addr
+        code_hash: string
       }
     }
 export interface HooksResponse {
-  hooks: string[]
+  hooks: HookItem[]
+}
+export interface HookItem {
+  addr: Addr
+  code_hash: string
 }

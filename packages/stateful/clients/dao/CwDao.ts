@@ -5,10 +5,16 @@ import { DaoBase, ProposalModuleBase } from '@dao-dao/stateless'
 import { DaoInfo } from '@dao-dao/types'
 
 import { daoQueries } from '../../queries'
-import { SingleChoiceProposalModule } from '../proposal-module/SingleChoiceProposalModule'
+import {
+  MultipleChoiceProposalModule,
+  SingleChoiceProposalModule,
+} from '../proposal-module'
 
 // TODO(dao-client): move this somewhere better?
-const getProposalModuleBases = () => [SingleChoiceProposalModule]
+const getProposalModuleBases = () => [
+  SingleChoiceProposalModule,
+  MultipleChoiceProposalModule,
+]
 
 export class CwDao extends DaoBase {
   protected _info: DaoInfo | undefined

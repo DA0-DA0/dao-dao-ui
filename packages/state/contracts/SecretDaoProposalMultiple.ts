@@ -13,12 +13,12 @@ import {
 
 import {
   Addr,
+  Auth,
   Coin,
   Config,
   Duration,
   HooksResponse,
   InfoResponse,
-  MultipleChoiceAutoVote,
   MultipleChoiceOptions,
   MultipleChoiceVote,
   PreProposeInfo,
@@ -30,10 +30,10 @@ import {
   VoteListResponse,
   VoteResponse,
   VotingStrategy,
-} from '@dao-dao/types/contracts/DaoProposalMultiple'
+} from '@dao-dao/types/contracts/SecretDaoProposalMultiple'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
-export interface DaoProposalMultipleReadOnlyInterface {
+export interface SecretDaoProposalMultipleReadOnlyInterface {
   contractAddress: string
   config: () => Promise<Config>
   proposal: ({
@@ -56,11 +56,11 @@ export interface DaoProposalMultipleReadOnlyInterface {
     startBefore?: number
   }) => Promise<ProposalListResponse>
   getVote: ({
+    auth,
     proposalId,
-    voter,
   }: {
+    auth: Auth
     proposalId: number
-    voter: string
   }) => Promise<VoteResponse>
   listVotes: ({
     limit,
@@ -79,8 +79,8 @@ export interface DaoProposalMultipleReadOnlyInterface {
   info: () => Promise<InfoResponse>
   nextProposalId: () => Promise<Uint64>
 }
-export class DaoProposalMultipleQueryClient
-  implements DaoProposalMultipleReadOnlyInterface
+export class SecretDaoProposalMultipleQueryClient
+  implements SecretDaoProposalMultipleReadOnlyInterface
 {
   client: CosmWasmClient
   contractAddress: string
@@ -146,16 +146,16 @@ export class DaoProposalMultipleQueryClient
     })
   }
   getVote = async ({
+    auth,
     proposalId,
-    voter,
   }: {
+    auth: Auth
     proposalId: number
-    voter: string
   }): Promise<VoteResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_vote: {
+        auth,
         proposal_id: proposalId,
-        voter,
       },
     })
   }
@@ -212,8 +212,8 @@ export class DaoProposalMultipleQueryClient
     })
   }
 }
-export interface DaoProposalMultipleInterface
-  extends DaoProposalMultipleReadOnlyInterface {
+export interface SecretDaoProposalMultipleInterface
+  extends SecretDaoProposalMultipleReadOnlyInterface {
   contractAddress: string
   sender: string
   propose: (
@@ -222,13 +222,11 @@ export interface DaoProposalMultipleInterface
       description,
       proposer,
       title,
-      vote,
     }: {
       choices: MultipleChoiceOptions
       description: string
       proposer?: string
       title: string
-      vote?: MultipleChoiceAutoVote
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -236,10 +234,12 @@ export interface DaoProposalMultipleInterface
   ) => Promise<ExecuteResult>
   vote: (
     {
+      auth,
       proposalId,
       rationale,
       vote,
     }: {
+      auth: Auth
       proposalId: number
       rationale?: string
       vote: MultipleChoiceVote
@@ -250,8 +250,10 @@ export interface DaoProposalMultipleInterface
   ) => Promise<ExecuteResult>
   execute: (
     {
+      auth,
       proposalId,
     }: {
+      auth: Auth
       proposalId: number
     },
     fee?: number | StdFee | 'auto',
@@ -282,7 +284,6 @@ export interface DaoProposalMultipleInterface
     {
       allowRevoting,
       closeProposalOnExecutionFailure,
-      dao,
       maxVotingPeriod,
       minVotingPeriod,
       onlyMembersExecute,
@@ -291,7 +292,6 @@ export interface DaoProposalMultipleInterface
     }: {
       allowRevoting: boolean
       closeProposalOnExecutionFailure: boolean
-      dao: string
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       onlyMembersExecute: boolean
@@ -327,8 +327,10 @@ export interface DaoProposalMultipleInterface
   addProposalHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -337,8 +339,10 @@ export interface DaoProposalMultipleInterface
   removeProposalHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -347,8 +351,10 @@ export interface DaoProposalMultipleInterface
   addVoteHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -357,17 +363,31 @@ export interface DaoProposalMultipleInterface
   removeVoteHook: (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ) => Promise<ExecuteResult>
+  updateDaoInfo: (
+    {
+      address,
+      codeHash,
+    }: {
+      address: Addr
+      codeHash: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
 }
-export class DaoProposalMultipleClient
-  extends DaoProposalMultipleQueryClient
-  implements DaoProposalMultipleInterface
+export class SecretDaoProposalMultipleClient
+  extends SecretDaoProposalMultipleQueryClient
+  implements SecretDaoProposalMultipleInterface
 {
   client: SigningCosmWasmClient
   sender: string
@@ -393,6 +413,7 @@ export class DaoProposalMultipleClient
     this.removeProposalHook = this.removeProposalHook.bind(this)
     this.addVoteHook = this.addVoteHook.bind(this)
     this.removeVoteHook = this.removeVoteHook.bind(this)
+    this.updateDaoInfo = this.updateDaoInfo.bind(this)
   }
   propose = async (
     {
@@ -400,13 +421,11 @@ export class DaoProposalMultipleClient
       description,
       proposer,
       title,
-      vote,
     }: {
       choices: MultipleChoiceOptions
       description: string
       proposer?: string
       title: string
-      vote?: MultipleChoiceAutoVote
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -421,7 +440,6 @@ export class DaoProposalMultipleClient
           description,
           proposer,
           title,
-          vote,
         },
       },
       fee,
@@ -431,10 +449,12 @@ export class DaoProposalMultipleClient
   }
   vote = async (
     {
+      auth,
       proposalId,
       rationale,
       vote,
     }: {
+      auth: Auth
       proposalId: number
       rationale?: string
       vote: MultipleChoiceVote
@@ -448,6 +468,7 @@ export class DaoProposalMultipleClient
       this.contractAddress,
       {
         vote: {
+          auth,
           proposal_id: proposalId,
           rationale,
           vote,
@@ -460,8 +481,10 @@ export class DaoProposalMultipleClient
   }
   execute = async (
     {
+      auth,
       proposalId,
     }: {
+      auth: Auth
       proposalId: number
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
@@ -473,6 +496,7 @@ export class DaoProposalMultipleClient
       this.contractAddress,
       {
         execute: {
+          auth,
           proposal_id: proposalId,
         },
       },
@@ -531,7 +555,6 @@ export class DaoProposalMultipleClient
     {
       allowRevoting,
       closeProposalOnExecutionFailure,
-      dao,
       maxVotingPeriod,
       minVotingPeriod,
       onlyMembersExecute,
@@ -540,7 +563,6 @@ export class DaoProposalMultipleClient
     }: {
       allowRevoting: boolean
       closeProposalOnExecutionFailure: boolean
-      dao: string
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       onlyMembersExecute: boolean
@@ -558,7 +580,6 @@ export class DaoProposalMultipleClient
         update_config: {
           allow_revoting: allowRevoting,
           close_proposal_on_execution_failure: closeProposalOnExecutionFailure,
-          dao,
           max_voting_period: maxVotingPeriod,
           min_voting_period: minVotingPeriod,
           only_members_execute: onlyMembersExecute,
@@ -623,8 +644,10 @@ export class DaoProposalMultipleClient
   addProposalHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -636,6 +659,7 @@ export class DaoProposalMultipleClient
       {
         add_proposal_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -646,8 +670,10 @@ export class DaoProposalMultipleClient
   removeProposalHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -659,6 +685,7 @@ export class DaoProposalMultipleClient
       {
         remove_proposal_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -669,8 +696,10 @@ export class DaoProposalMultipleClient
   addVoteHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -682,6 +711,7 @@ export class DaoProposalMultipleClient
       {
         add_vote_hook: {
           address,
+          code_hash: codeHash,
         },
       },
       fee,
@@ -692,8 +722,10 @@ export class DaoProposalMultipleClient
   removeVoteHook = async (
     {
       address,
+      codeHash,
     }: {
       address: string
+      codeHash: string
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -705,6 +737,33 @@ export class DaoProposalMultipleClient
       {
         remove_vote_hook: {
           address,
+          code_hash: codeHash,
+        },
+      },
+      fee,
+      memo,
+      _funds
+    )
+  }
+  updateDaoInfo = async (
+    {
+      address,
+      codeHash,
+    }: {
+      address: Addr
+      codeHash: string
+    },
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    _funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        update_dao_info: {
+          address,
+          code_hash: codeHash,
         },
       },
       fee,

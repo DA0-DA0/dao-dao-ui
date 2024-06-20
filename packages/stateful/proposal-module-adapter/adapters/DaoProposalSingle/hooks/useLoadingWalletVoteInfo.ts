@@ -3,7 +3,6 @@ import { useCachedLoadable, useLoadingPromise } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
-import { CwDao, SingleChoiceProposalModule } from '../../../../clients'
 import { useWalletWithSecretNetworkPermit } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
@@ -30,18 +29,13 @@ export const useLoadingWalletVoteInfo = ():
 
   const walletVoteLoading = useLoadingPromise({
     // Loading state if wallet not connected.
-    promise:
-      walletAddress && dao instanceof CwDao
-        ? () =>
-            // TODO(dao-client): Load proposal module in adapter prob
-            dao.proposalModules
-              .find(
-                (m): m is SingleChoiceProposalModule =>
-                  m instanceof SingleChoiceProposalModule &&
-                  m.info.address === proposalModule.address
-              )
-              ?.getVote(proposalNumber, walletAddress) || Promise.resolve(null)
-        : undefined,
+    promise: walletAddress
+      ? () =>
+          // TODO(dao-client): Load proposal module in adapter prob
+          dao.proposalModules
+            .find((m) => m.info.address === proposalModule.address)
+            ?.getVote(proposalNumber, walletAddress) || Promise.resolve(null)
+      : undefined,
     // Refresh when permit, DAO, proposal module, or wallet changes.
     deps: [permit, dao, proposalModule.address, walletAddress],
   })

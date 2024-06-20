@@ -2,6 +2,8 @@ import { QueryClient } from '@tanstack/react-query'
 
 import { DaoInfo } from '@dao-dao/types'
 
+import { ProposalModuleBase } from './proposal-module'
+
 export abstract class DaoBase {
   protected readonly queryClient: QueryClient
 
@@ -35,6 +37,13 @@ export abstract class DaoBase {
    * Get the core address of the DAO.
    */
   abstract get coreAddress(): string
+
+  /**
+   * Get the proposal modules for the DAO.
+   */
+  get proposalModules(): readonly ProposalModuleBase[] {
+    return []
+  }
 
   /**
    * Fetch the voting power for a given address. Optionally specify a block

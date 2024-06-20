@@ -7,11 +7,17 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { SecretSingleChoiceProposalModule } from '../proposal-module/SecretSingleChoiceProposalModule'
+import {
+  SecretMultipleChoiceProposalModule,
+  SecretSingleChoiceProposalModule,
+} from '../proposal-module'
 import { CwDao } from './CwDao'
 
 // TODO(dao-client): move this somewhere better?
-const getProposalModuleBases = () => [SecretSingleChoiceProposalModule]
+const getProposalModuleBases = () => [
+  SecretSingleChoiceProposalModule,
+  SecretMultipleChoiceProposalModule,
+]
 
 export class SecretCwDao extends CwDao {
   /**
