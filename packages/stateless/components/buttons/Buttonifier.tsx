@@ -31,6 +31,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   disabled,
   loading,
   allowClickWhileLoading,
+  loadingVariant: _loadingVariant,
   ...props
 }: P) => ({
   ...props,

@@ -1,5 +1,4 @@
-import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { useCachedLoadable, useLoadingPromise } from '@dao-dao/stateless'
+import { useLoadingPromise } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
@@ -47,19 +46,17 @@ export const useLoadingWalletVoteInfo = ():
     deps: [permit, proposalModule, walletAddress],
   })
 
-  const totalVotingPowerWhenProposalCreatedLoadable = useCachedLoadable(
-    !loadingProposal.loading
-      ? DaoCoreV2Selectors.totalPowerAtHeightSelector({
-          chainId: proposalModule.dao.chainId,
-          contractAddress: proposalModule.dao.coreAddress,
-          params: [
-            {
-              height: loadingProposal.data.start_height,
-            },
-          ],
-        })
-      : undefined
-  )
+  const totalVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
+    // Loading state if proposal not loaded.
+    promise: !loadingProposal.loading
+      ? () =>
+          proposalModule.dao.getTotalVotingPower(
+            loadingProposal.data.start_height
+          )
+      : undefined,
+    // Refresh when proposal module changes.
+    deps: [proposalModule],
+  })
 
   // Return undefined when no permit on Secret Network.
   if (isSecretNetwork && !permit) {
@@ -70,7 +67,7 @@ export const useLoadingWalletVoteInfo = ():
     loadingProposal.loading ||
     walletVoteLoading.loading ||
     walletVotingPowerWhenProposalCreatedLoading.loading ||
-    totalVotingPowerWhenProposalCreatedLoadable.state !== 'hasValue'
+    totalVotingPowerWhenProposalCreatedLoading.loading
   ) {
     return {
       loading: true,
@@ -85,9 +82,10 @@ export const useLoadingWalletVoteInfo = ():
       ? 0
       : Number(walletVotingPowerWhenProposalCreatedLoading.data)
   const couldVote = walletVotingPowerWhenProposalCreated > 0
-  const totalVotingPowerWhenProposalCreated = Number(
-    totalVotingPowerWhenProposalCreatedLoadable.contents.power
-  )
+  const totalVotingPowerWhenProposalCreated =
+    totalVotingPowerWhenProposalCreatedLoading.errored
+      ? 0
+      : Number(totalVotingPowerWhenProposalCreatedLoading.data)
 
   const canVote =
     couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)
