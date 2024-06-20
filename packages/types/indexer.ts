@@ -52,23 +52,26 @@ export type DaoDaoIndexerChainStats = {
 
 export type DaoDaoIndexerAllStats = {
   /**
-   * Stats from all time.
+   * Stats from all time. If null, we have no stats for the chain (probably
+   * because we don't have an indexer running).
    */
-  all: DaoDaoIndexerChainStats
+  all: DaoDaoIndexerChainStats | null
   /**
-   * Stats from last 30 days.
+   * Stats from last 30 days. If null, we have no stats for the chain (probably
+   * because we don't have an indexer running).
    */
-  month: DaoDaoIndexerChainStats
+  month: DaoDaoIndexerChainStats | null
   /**
-   * Stats from last 7 days.
+   * Stats from last 7 days. If null, we have no stats for the chain (probably
+   * because we don't have an indexer running).
    */
-  week: DaoDaoIndexerChainStats
+  week: DaoDaoIndexerChainStats | null
+  /**
+   * Total TVL.
+   */
+  tvl: number | null
   /**
    * Number of chains DAO DAO is deployed on.
    */
   chains: number
-  /**
-   * Total TVL.
-   */
-  tvl: number
 }

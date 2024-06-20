@@ -18,9 +18,9 @@ import {
 import { AccountTabId, ChainId, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
   MAINNET,
+  chainIsIndexed,
   getDaoInfoForChainId,
   getSupportedChains,
-  processError,
 } from '@dao-dao/utils'
 
 export default Home
@@ -71,36 +71,44 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
     serverSideTranslations(locale, ['translation']),
 
     // Get all or chain-specific stats and TVL.
-    queryClient.fetchQuery(
-      indexerQueries.snapper<number>({
-        query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
-        parameters: chainId ? { chainId } : undefined,
-      })
-    ),
-    queryClient.fetchQuery(
-      indexerQueries.snapper<DaoDaoIndexerChainStats>({
-        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-        parameters: chainId ? { chainId } : undefined,
-      })
-    ),
-    queryClient.fetchQuery(
-      indexerQueries.snapper<DaoDaoIndexerChainStats>({
-        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-        parameters: {
-          ...(chainId ? { chainId } : undefined),
-          daysAgo: 30,
-        },
-      })
-    ),
-    queryClient.fetchQuery(
-      indexerQueries.snapper<DaoDaoIndexerChainStats>({
-        query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
-        parameters: {
-          ...(chainId ? { chainId } : undefined),
-          daysAgo: 7,
-        },
-      })
-    ),
+    !chainId || chainIsIndexed(chainId)
+      ? queryClient.fetchQuery(
+          indexerQueries.snapper<number>({
+            query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
+            parameters: chainId ? { chainId } : undefined,
+          })
+        )
+      : null,
+    !chainId || chainIsIndexed(chainId)
+      ? queryClient.fetchQuery(
+          indexerQueries.snapper<DaoDaoIndexerChainStats>({
+            query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+            parameters: chainId ? { chainId } : undefined,
+          })
+        )
+      : null,
+    !chainId || chainIsIndexed(chainId)
+      ? queryClient.fetchQuery(
+          indexerQueries.snapper<DaoDaoIndexerChainStats>({
+            query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+            parameters: {
+              ...(chainId ? { chainId } : undefined),
+              daysAgo: 30,
+            },
+          })
+        )
+      : null,
+    !chainId || chainIsIndexed(chainId)
+      ? queryClient.fetchQuery(
+          indexerQueries.snapper<DaoDaoIndexerChainStats>({
+            query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
+            parameters: {
+              ...(chainId ? { chainId } : undefined),
+              daysAgo: 7,
+            },
+          })
+        )
+      : null,
 
     // Pre-fetch featured DAOs.
     queryClient
@@ -114,35 +122,6 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       ),
   ])
 
-  const validTvl = typeof tvl === 'number'
-  const validAllStats = !!allStats
-  const validMonthStats = !!monthStats
-  const validWeekStats = !!weekStats
-  if (!validTvl || !validAllStats || !validMonthStats || !validWeekStats) {
-    processError('Failed to fetch TVL/stats for home page', {
-      forceCapture: true,
-      tags: {
-        chainId,
-      },
-      extra: {
-        tvl,
-        allStats,
-        monthStats,
-        weekStats,
-      },
-    })
-    throw new Error(
-      `Failed to fetch stats due to invalid: ${[
-        !validTvl && 'TVL',
-        !validAllStats && 'all stats',
-        !validMonthStats && 'month stats',
-        !validWeekStats && 'week stats',
-      ]
-        .filter(Boolean)
-        .join(', ')}.`
-    )
-  }
-
   return {
     props: {
       ...i18nProps,
@@ -153,9 +132,9 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
         all: allStats,
         month: monthStats,
         week: weekStats,
+        tvl,
         // If chain is 1, it will not be shown.
         chains: chainId ? 1 : getSupportedChains().length,
-        tvl,
       },
       // Chain x/gov DAOs.
       ...(chainGovDaos && { chainGovDaos }),

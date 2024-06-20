@@ -88,22 +88,22 @@ export const Home = ({
           {
             Icon: Public,
             label: t('title.daos'),
-            value: stats[statsMode].daos.toLocaleString(),
+            value: stats[statsMode]?.daos.toLocaleString() ?? 'N/A',
           },
           {
             Icon: DescriptionOutlined,
             label: t('title.proposals'),
-            value: stats[statsMode].proposals.toLocaleString(),
+            value: stats[statsMode]?.proposals.toLocaleString() ?? 'N/A',
           },
           {
             Icon: HowToVote,
             label: t('title.votesCast'),
-            value: stats[statsMode].votes.toLocaleString(),
+            value: stats[statsMode]?.votes.toLocaleString() ?? 'N/A',
           },
           {
             Icon: PeopleOutlined,
             label: t('title.uniqueVoters'),
-            value: stats[statsMode].uniqueVoters.toLocaleString(),
+            value: stats[statsMode]?.uniqueVoters.toLocaleString() ?? 'N/A',
           },
           // Only show TVL and chain count when all is selected.
           ...(statsMode === 'all'
@@ -113,11 +113,13 @@ export const Home = ({
                   label: t('title.tvl'),
                   tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
                   value:
-                    '$' +
-                    stats.tvl.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }),
+                    stats.tvl !== null
+                      ? '$' +
+                        stats.tvl.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : 'N/A',
                 },
                 // Only show the chain count if more than 1 (i.e. not on a
                 // chain-specific home page).
