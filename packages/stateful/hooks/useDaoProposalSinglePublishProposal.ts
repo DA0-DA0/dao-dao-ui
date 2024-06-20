@@ -22,7 +22,7 @@ export const useDaoProposalSinglePublishProposal = ():
   // `useDaoInfoContext` always returns the same instances of the data, so no
   // hook rules are violated here.
   const useProposalModule = useMemo(() => {
-    const daoProposalSingleModule = dao.info.proposalModules.find(
+    const daoProposalSingleModule = dao.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
         DaoProposalSingleAdapterId
@@ -34,11 +34,7 @@ export const useDaoProposalSinglePublishProposal = ():
     const common = matchAndLoadCommon(dao, daoProposalSingleModule.address)
 
     return makeUsePublishProposal({
-      options: {
-        chain: dao.chain,
-        coreAddress: dao.coreAddress,
-        proposalModule: daoProposalSingleModule,
-      },
+      proposalModule: daoProposalSingleModule,
       depositInfoSelector: common.selectors.depositInfo,
     })
   }, [dao])

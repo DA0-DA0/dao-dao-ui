@@ -3,7 +3,7 @@ import { atom, atomFamily } from 'recoil'
 import { ChainId } from '@dao-dao/types'
 import {
   MAINNET,
-  SupportedCosmWasmClient,
+  SupportedSigningCosmWasmClient,
   getConfiguredChains,
   getSupportedChains,
 } from '@dao-dao/utils'
@@ -11,7 +11,7 @@ import {
 import { localStorageEffect } from '../effects'
 
 export const signingCosmWasmClientAtom = atomFamily<
-  SupportedCosmWasmClient | undefined,
+  SupportedSigningCosmWasmClient | undefined,
   { chainId: string }
 >({
   key: 'signingCosmWasmClient',

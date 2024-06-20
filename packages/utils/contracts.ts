@@ -35,7 +35,7 @@ export const indexToProposalModulePrefix = (index: number) => {
   return prefix
 }
 
-export type SupportedCosmWasmClient =
+export type SupportedSigningCosmWasmClient =
   | SigningCosmWasmClient
   | SecretSigningCosmWasmClient
 
@@ -48,7 +48,9 @@ export type SupportedCosmWasmClient =
  * no longer reliable.
  */
 export const instantiateSmartContract = async (
-  client: SupportedCosmWasmClient | (() => Promise<SupportedCosmWasmClient>),
+  client:
+    | SupportedSigningCosmWasmClient
+    | (() => Promise<SupportedSigningCosmWasmClient>),
   sender: string,
   codeId: number,
   label: string,
@@ -119,7 +121,9 @@ export const instantiateSmartContract = async (
  * Execute a smart contract from any supported client.
  */
 export const executeSmartContract = async (
-  client: SupportedCosmWasmClient | (() => Promise<SupportedCosmWasmClient>),
+  client:
+    | SupportedSigningCosmWasmClient
+    | (() => Promise<SupportedSigningCosmWasmClient>),
   sender: string,
   contractAddress: string,
   msg: object,

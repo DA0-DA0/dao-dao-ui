@@ -50,11 +50,11 @@ export const matchAndLoadCommon = (
     )
   }
 
-  const adapter = matchAdapter(proposalModule.info.contractName)
+  const adapter = matchAdapter(proposalModule.contractName)
   if (!adapter) {
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
-        proposalModule.info.contractName
+        proposalModule.contractName
       }". Available adapters: ${getAdapters()
         .map(({ id: contractName }) => contractName)
         .join(', ')}`
@@ -64,9 +64,7 @@ export const matchAndLoadCommon = (
   return {
     id: adapter.id,
     ...adapter.loadCommon({
-      chain: dao.chain,
-      coreAddress: dao.coreAddress,
-      proposalModule: proposalModule.info,
+      proposalModule,
     }),
     proposalModule,
   }
@@ -111,12 +109,12 @@ export const matchAndLoadAdapter = (
     )
   }
 
-  const adapter = matchAdapter(proposalModule.info.contractName)
+  const adapter = matchAdapter(proposalModule.contractName)
 
   if (!adapter) {
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
-        proposalModule.info.contractName
+        proposalModule.contractName
       }". Available adapters: ${getAdapters()
         .map(({ id: contractName }) => contractName)
         .join(', ')}`
@@ -137,9 +135,7 @@ export const matchAndLoadAdapter = (
     options: adapterOptions,
     adapter: adapter.load(adapterOptions),
     common: adapter.loadCommon({
-      chain: dao.chain,
-      coreAddress: dao.coreAddress,
-      proposalModule: proposalModule.info,
+      proposalModule,
     }),
     proposalModule,
   }
@@ -151,11 +147,8 @@ export const commonContextFromAdapterContext = (
   id: adapterContext.id,
   common: adapterContext.common,
   options: {
-    chain: adapterContext.options.chain,
-    coreAddress: adapterContext.options.coreAddress,
-    proposalModule: adapterContext.options.proposalModule,
+    proposalModule: adapterContext.proposalModule,
   },
-  proposalModule: adapterContext.proposalModule,
 })
 
 export const matchAndLoadCommonContext = (
@@ -167,11 +160,8 @@ export const matchAndLoadCommonContext = (
     id,
     common,
     options: {
-      chain: proposalModule.dao.chain,
-      coreAddress: proposalModule.dao.coreAddress,
-      proposalModule: proposalModule.info,
+      proposalModule,
     },
-    proposalModule,
   }
 }
 

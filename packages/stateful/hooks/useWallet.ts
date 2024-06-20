@@ -1,5 +1,4 @@
 import { Chain } from '@chain-registry/types'
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
@@ -20,6 +19,7 @@ import {
 import { LoadingData } from '@dao-dao/types'
 import {
   SecretSigningCosmWasmClient,
+  SupportedSigningCosmWasmClient,
   getLcdForChainId,
   getRpcForChainId,
   getSignerOptions,
@@ -57,9 +57,7 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
   /**
    * Fetch the relevant signing client for the current wallet.
    */
-  getSigningClient: () => Promise<
-    SigningCosmWasmClient | SecretSigningCosmWasmClient
-  >
+  getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
   /**
    * Fetch SecretUtils from the wallet if available
    */

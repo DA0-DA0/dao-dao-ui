@@ -189,7 +189,7 @@ export type ProposalModuleTypedConfig =
 
 export type ProposalModule = {
   contractName: string
-  version: ContractVersion | null
+  version: ContractVersion
   address: string
   prefix: string
   // If set, this uses a pre-propose module.

@@ -11,7 +11,8 @@ import {
 import { LoaderProps } from '@dao-dao/types'
 
 import { DaoActionsProvider } from '../../actions'
-import { ChainXGovDao, getDao } from '../../clients/dao'
+import { ChainXGovDao, SecretCwDao, getDao } from '../../clients/dao'
+import { useWallet } from '../../hooks'
 import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
 
 export type DaoProvidersProps = {
@@ -56,6 +57,15 @@ export const DaoProviders = ({
     }),
     [chainId, coreAddress, queryClient]
   )
+
+  // Register wallet offline signer if Secret DAO so it can request permits.
+  // TODO(dao-client): make sure wallet exists everywhere DaoProviders is used
+  const { isWalletConnected, getOfflineSignerAmino } = useWallet()
+  useEffect(() => {
+    if (context.dao instanceof SecretCwDao && isWalletConnected) {
+      context.dao.registerOfflineSignerAminoGetter(getOfflineSignerAmino)
+    }
+  }, [context, getOfflineSignerAmino, isWalletConnected])
 
   // Start loading only if client not initialized. If the data is already
   // cached, the DAO instance may be initialized on creation.

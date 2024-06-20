@@ -18,10 +18,7 @@ import {
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import {
-  BaseNewProposalProps,
-  IProposalModuleAdapterCommonOptions,
-} from '@dao-dao/types'
+import { BaseNewProposalProps, ProposalModuleBase } from '@dao-dao/types'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
   convertActionsToMessages,
@@ -44,13 +41,13 @@ import { NewProposalMain } from './NewProposalMain'
 import { NewProposalPreview } from './NewProposalPreview'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
-  options: IProposalModuleAdapterCommonOptions
+  proposalModule: ProposalModuleBase
   usePublishProposal: UsePublishProposal
 }
 
 export const NewProposal = ({
   onCreateSuccess,
-  options,
+  proposalModule,
   usePublishProposal,
   ...props
 }: NewProposalProps) => {
@@ -145,7 +142,9 @@ export const NewProposal = ({
           )
 
           const proposalInfo = await makeGetProposalInfo({
-            ...options,
+            chain: proposalModule.dao.chain,
+            coreAddress: proposalModule.dao.coreAddress,
+            proposalModule: proposalModule.info,
             proposalNumber,
             proposalId,
             isPreProposeApprovalProposal: false,
@@ -162,7 +161,7 @@ export const NewProposal = ({
             await snapshot.getPromise(
               DaoProposalMultipleSelectors.proposalSelector({
                 chainId,
-                contractAddress: options.proposalModule.address,
+                contractAddress: proposalModule.address,
                 params: [
                   {
                     proposalId: proposalNumber,
@@ -223,7 +222,7 @@ export const NewProposal = ({
       isWalletConnected,
       t,
       publishProposal,
-      options,
+      proposalModule,
       blocksPerYearLoadable,
       getStargateClient,
       chainId,
@@ -247,7 +246,11 @@ export const NewProposal = ({
       options: choices.map((option) => ({
         title: option.title,
         description: option.description,
-        msgs: convertActionsToMessages(loadedActions, option.actionData),
+        // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs. The
+        // contract execution will fail if the messages are invalid, so this is
+        // safe. The UI should ensure that the co rrect messages are used for
+        // the given chain anyways.
+        msgs: convertActionsToMessages(loadedActions, option.actionData) as any,
       })),
     },
   })

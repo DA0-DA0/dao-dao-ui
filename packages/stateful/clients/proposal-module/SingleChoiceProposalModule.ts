@@ -1,15 +1,27 @@
 import {
+  CwProposalSingleV1Client,
+  DaoPreProposeSingleClient,
+  DaoProposalSingleV2Client,
+} from '@dao-dao/state/contracts'
+import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
-import { ContractVersion, ProposalModuleBase } from '@dao-dao/types'
+import { Coin, ContractVersion, ProposalModuleBase } from '@dao-dao/types'
 import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { DAO_PROPOSAL_SINGLE_CONTRACT_NAMES } from '@dao-dao/utils'
+import {
+  ContractName,
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+  SupportedSigningCosmWasmClient,
+  findWasmAttributeValue,
+} from '@dao-dao/utils'
 
+import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { CwDao } from '../dao/CwDao'
 
 export class SingleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
+  NewProposalData,
   VoteInfo
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
@@ -34,5 +46,108 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         )
       ).vote || null
     )
+  }
+
+  async propose({
+    data,
+    getSigningClient,
+    sender,
+    funds,
+  }: {
+    data: NewProposalData
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+    funds?: Coin[]
+  }): Promise<{
+    proposalNumber: number
+    proposalId: string
+  }> {
+    const client = await getSigningClient()
+
+    let proposalNumber: number
+    let isPreProposeApprovalProposal = false
+
+    // V1 does not support pre-propose.
+    if (this.version === ContractVersion.V1) {
+      const { events } = await new CwProposalSingleV1Client(
+        client,
+        sender,
+        this.address
+      ).propose(
+        // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+        // The contract execution will fail if the messages are invalid, so this
+        // is safe. The UI should ensure that the correct messages are used for
+        // the given chain anyways.
+        data as any,
+        undefined,
+        undefined,
+        funds
+      )
+
+      proposalNumber = Number(
+        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+      )
+
+      // Every other version supports pre-propose.
+    } else if (this.prePropose) {
+      const { events } = await new DaoPreProposeSingleClient(
+        client,
+        sender,
+        this.prePropose.address
+      ).propose({
+        msg: {
+          // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+          // The contract execution will fail if the messages are invalid, so
+          // this is safe. The UI should ensure that the co rrect messages are
+          // used for the given chain anyways.
+          propose: data as any,
+        },
+      })
+
+      isPreProposeApprovalProposal =
+        this.prePropose.contractName === ContractName.PreProposeApprovalSingle
+      proposalNumber =
+        // pre-propose-approval proposals have a different event
+        isPreProposeApprovalProposal
+          ? Number(
+              findWasmAttributeValue(events, this.prePropose.address, 'id') ??
+                -1
+            )
+          : Number(
+              findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+            )
+    } else {
+      const { events } = await new DaoProposalSingleV2Client(
+        client,
+        sender,
+        this.address
+      ).propose(
+        // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+        // The contract execution will fail if the messages are invalid, so this
+        // is safe. The UI should ensure that the correct messages are used for
+        // the given chain anyways.
+        data as any,
+        undefined,
+        undefined,
+        funds
+      )
+
+      proposalNumber = Number(
+        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+      )
+    }
+
+    if (proposalNumber === -1) {
+      throw new Error('Proposal ID not found')
+    }
+
+    return {
+      proposalNumber,
+      // Proposal IDs are the the prefix plus the proposal number. If a
+      // pre-propose-approval proposal, an asterisk is inserted in the middle.
+      proposalId: `${this.prefix}${
+        isPreProposeApprovalProposal ? '*' : ''
+      }${proposalNumber}`,
+    }
   }
 }

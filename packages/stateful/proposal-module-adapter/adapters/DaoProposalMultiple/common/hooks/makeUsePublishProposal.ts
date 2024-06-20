@@ -15,21 +15,17 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
-  CHAIN_GAS_MULTIPLIER,
   MAX_NUM_PROPOSAL_CHOICES,
   expirationExpired,
-  findWasmAttributeValue,
   processError,
 } from '@dao-dao/utils'
 
 import {
   Cw20BaseHooks,
-  DaoPreProposeMultipleHooks,
-  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
-  useWalletWithSecretNetworkPermit,
+  useWallet,
 } from '../../../../../hooks'
 import {
   MakeUsePublishProposalOptions,
@@ -42,24 +38,20 @@ import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
-    options: {
-      chain: { chain_id: chainId },
-      coreAddress,
-      proposalModule,
-    },
+    proposalModule,
     depositInfoSelector,
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
     const { t } = useTranslation()
     const {
-      isSecretNetwork,
+      dao: { chainId, coreAddress },
+      prePropose,
+    } = proposalModule
+    const {
       isWalletConnected,
       address: walletAddress,
-      getPermit,
-      getStargateClient,
-    } = useWalletWithSecretNetworkPermit({
-      dao: coreAddress,
-    })
+      getSigningClient,
+    } = useWallet()
     const { isMember = false } = useMembership({
       coreAddress,
     })
@@ -67,7 +59,7 @@ export const makeUsePublishProposal =
     const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({
         chainId,
-        preProposeAddress: proposalModule.prePropose?.address ?? null,
+        preProposeAddress: prePropose?.address ?? null,
       })
     )
 
@@ -99,8 +91,7 @@ export const makeUsePublishProposal =
                 owner: walletAddress,
                 // If pre-propose address set, give that one deposit allowance
                 // instead of proposal module.
-                spender:
-                  proposalModule.prePropose?.address || proposalModule.address,
+                spender: prePropose?.address || proposalModule.address,
               },
             ],
           })
@@ -166,15 +157,6 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
 
-    const doPropose = DaoProposalMultipleHooks.usePropose({
-      contractAddress: proposalModule.address,
-      sender: walletAddress ?? '',
-    })
-    const doProposePrePropose = DaoPreProposeMultipleHooks.usePropose({
-      contractAddress: proposalModule.prePropose?.address ?? '',
-      sender: walletAddress ?? '',
-    })
-
     const awaitNextBlock = useAwaitNextBlock()
     const simulateMsgs = useSimulateCosmosMsgs(coreAddress)
 
@@ -226,7 +208,7 @@ export const makeUsePublishProposal =
         { title, description, choices },
         { failedSimulationBypassSeconds = 0 } = {}
       ) => {
-        if (!isWalletConnected) {
+        if (!isWalletConnected || !walletAddress) {
           throw new Error(t('error.logInToContinue'))
         }
         if (
@@ -300,7 +282,7 @@ export const makeUsePublishProposal =
             // If allowance expired, none.
             (expirationExpired(
               cw20DepositTokenAllowanceResponse.expires,
-              (await (await getStargateClient()).getBlock()).header.height
+              (await (await getSigningClient()).getBlock()).header.height
             )
               ? 0
               : Number(cw20DepositTokenAllowanceResponse.allowance))
@@ -314,7 +296,7 @@ export const makeUsePublishProposal =
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  proposalModule.prePropose?.address || proposalModule.address,
+                  prePropose?.address || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -348,59 +330,22 @@ export const makeUsePublishProposal =
           choices,
         }
 
-        let { events } = proposalModule.prePropose
-          ? await doProposePrePropose(
-              {
-                msg: {
-                  propose: proposalData,
-                },
-                ...(isSecretNetwork && {
-                  auth: {
-                    permit: await getPermit(),
-                  },
-                }),
-              },
-              CHAIN_GAS_MULTIPLIER,
-              undefined,
-              proposeFunds
-            )
-          : await doPropose(
-              {
-                ...proposalData,
-                ...(isSecretNetwork && {
-                  auth: {
-                    permit: await getPermit(),
-                  },
-                }),
-              },
-              CHAIN_GAS_MULTIPLIER,
-              undefined,
-              proposeFunds
-            )
+        const response = await proposalModule.propose({
+          data: proposalData,
+          getSigningClient,
+          sender: walletAddress,
+          funds: proposeFunds,
+        })
 
         if (proposeFunds?.length) {
           refreshBalances()
         }
 
-        const proposalNumber = Number(
-          findWasmAttributeValue(
-            events,
-            proposalModule.address,
-            'proposal_id'
-          ) ?? -1
-        )
-        if (proposalNumber === -1) {
-          throw new Error(t('error.proposalIdNotFound'))
-        }
-        const proposalId = `${proposalModule.prefix}${proposalNumber}`
-
-        return {
-          proposalNumber,
-          proposalId,
-        }
+        return response
       },
       [
         isWalletConnected,
+        walletAddress,
         anyoneCanPropose,
         isMember,
         depositUnsatisfied,
@@ -408,15 +353,12 @@ export const makeUsePublishProposal =
         requiredProposalDeposit,
         depositInfoCw20TokenAddress,
         depositInfoNativeTokenDenom,
-        doProposePrePropose,
-        isSecretNetwork,
-        getPermit,
-        doPropose,
+        getSigningClient,
         t,
         simulateMsgs,
         cw20DepositTokenAllowanceResponse,
-        getStargateClient,
         increaseCw20DepositAllowance,
+        prePropose?.address,
         awaitNextBlock,
         refreshBalances,
       ]

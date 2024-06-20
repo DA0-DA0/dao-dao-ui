@@ -107,3 +107,7 @@ export {
   SecretDaoProposalMultipleClient,
   SecretDaoProposalMultipleQueryClient,
 } from './SecretDaoProposalMultiple'
+export {
+  SecretDaoPreProposeMultipleClient,
+  SecretDaoPreProposeMultipleQueryClient,
+} from './SecretDaoPreProposeMultiple'

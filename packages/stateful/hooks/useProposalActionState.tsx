@@ -115,6 +115,7 @@ export const useProposalActionState = ({
 
     setActionLoading(true)
     try {
+      // TODO(dao-client): move to DAO client
       await executeProposal(
         {
           proposalId: proposalNumber,
@@ -157,6 +158,7 @@ export const useProposalActionState = ({
     setActionLoading(true)
 
     try {
+      // TODO(dao-client): move to DAO client
       await closeProposal({
         proposalId: proposalNumber,
         ...(isSecretNetwork && {

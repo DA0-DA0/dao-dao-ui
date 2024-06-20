@@ -60,17 +60,17 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   id: DaoProposalSingleAdapterId,
   contractNames: DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
 
-  loadCommon: (options) => {
+  loadCommon: ({ proposalModule }) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
-      chainId: options.chain.chain_id,
-      proposalModuleAddress: options.proposalModule.address,
-      version: options.proposalModule.version,
-      preProposeAddress: options.proposalModule.prePropose?.address ?? null,
+      chainId: proposalModule.dao.chainId,
+      proposalModuleAddress: proposalModule.address,
+      version: proposalModule.version,
+      preProposeAddress: proposalModule.prePropose?.address ?? null,
     })
 
     const usePublishProposal = makeUsePublishProposal({
-      options,
+      proposalModule,
       depositInfoSelector,
     })
 
@@ -83,52 +83,48 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
           actionData: [],
         }),
         newProposalFormTitleKey: 'title',
-        updateConfigActionMaker: (!options.proposalModule.version ||
-          options.proposalModule.version === ContractVersion.V1
+        updateConfigActionMaker: (proposalModule.version === ContractVersion.V1
           ? makeUpdateProposalConfigV1ActionMaker
-          : makeUpdateProposalConfigV2ActionMaker)(options.proposalModule),
+          : makeUpdateProposalConfigV2ActionMaker)(proposalModule),
         updatePreProposeConfigActionMaker:
-          makeUpdatePreProposeSingleConfigActionMaker(options.proposalModule),
+          makeUpdatePreProposeSingleConfigActionMaker(proposalModule),
       },
 
       // Selectors
       selectors: {
         proposalCount: proposalCountSelector({
-          chainId: options.chain.chain_id,
-          proposalModuleAddress: options.proposalModule.address,
+          chainId: proposalModule.dao.chainId,
+          proposalModuleAddress: proposalModule.address,
         }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
-            chainId: options.chain.chain_id,
-            proposalModuleAddress: options.proposalModule.address,
-            proposalModulePrefix: options.proposalModule.prefix,
+            chainId: proposalModule.dao.chainId,
+            proposalModuleAddress: proposalModule.address,
+            proposalModulePrefix: proposalModule.prefix,
             ...props,
           }),
         depositInfo: depositInfoSelector,
-        ...(options.proposalModule.prePropose?.type ===
-        PreProposeModuleType.Approval
+        ...(proposalModule.prePropose?.type === PreProposeModuleType.Approval
           ? {
               reversePreProposePendingProposalInfos: (props) =>
                 reversePreProposePendingProposalInfosSelector({
-                  chainId: options.chain.chain_id,
-                  proposalModuleAddress:
-                    options.proposalModule.prePropose!.address,
-                  proposalModulePrefix: options.proposalModule.prefix,
+                  chainId: proposalModule.dao.chainId,
+                  proposalModuleAddress: proposalModule.prePropose!.address,
+                  proposalModulePrefix: proposalModule.prefix,
                   ...props,
                 }),
               reversePreProposeCompletedProposalInfos: (props) =>
                 reversePreProposeCompletedProposalInfosSelector({
-                  chainId: options.chain.chain_id,
-                  proposalModuleAddress:
-                    options.proposalModule.prePropose!.address,
-                  proposalModulePrefix: options.proposalModule.prefix,
+                  chainId: proposalModule.dao.chainId,
+                  proposalModuleAddress: proposalModule.prePropose!.address,
+                  proposalModulePrefix: proposalModule.prefix,
                   ...props,
                 }),
             }
           : {}),
         maxVotingPeriod: maxVotingPeriodSelector({
-          chainId: options.chain.chain_id,
-          proposalModuleAddress: options.proposalModule.address,
+          chainId: proposalModule.dao.chainId,
+          proposalModuleAddress: proposalModule.address,
         }),
       },
 
@@ -141,7 +137,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       components: {
         NewProposal: (props) => (
           <NewProposal
-            options={options}
+            proposalModule={proposalModule}
             usePublishProposal={usePublishProposal}
             {...props}
           />

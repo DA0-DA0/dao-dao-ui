@@ -148,15 +148,8 @@ export type ProposalModuleAdapter<
 }
 
 export type IProposalModuleAdapterCommonOptions = {
-  chain: Chain
-  coreAddress: string
-  proposalModule: ProposalModule
+  proposalModule: ProposalModuleBase
 }
-
-export type IProposalModuleAdapterCommonInitialOptions = Omit<
-  IProposalModuleAdapterCommonOptions,
-  'proposalModule'
->
 
 export type IProposalModuleAdapterOptions = {
   /**
@@ -219,7 +212,6 @@ export type IProposalModuleCommonContext = {
   id: string
   options: IProposalModuleAdapterCommonOptions
   common: IProposalModuleAdapterCommon
-  proposalModule: ProposalModuleBase
 }
 
 // Internal Adapter Types

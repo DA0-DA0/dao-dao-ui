@@ -1,10 +1,14 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@tanstack/react-query'
 
-import { ProposalModule } from '../dao'
+import { Coin } from '../contracts/common'
+import { PreProposeModule, ProposalModule } from '../dao'
+import { ContractVersion } from '../features'
 import { DaoBase } from './dao'
 
 export abstract class ProposalModuleBase<
   Dao extends DaoBase = DaoBase,
+  Proposal = any,
   Vote = any
 > {
   /**
@@ -21,17 +25,58 @@ export abstract class ProposalModuleBase<
     public readonly info: ProposalModule
   ) {}
 
-  // /**
-  //  * Initialize the client. This only matters for some functions, depending on
-  //  * the implementation.
-  //  */
-  // abstract init(): Promise<void>
+  /**
+   * Contract address.
+   */
+  get address(): string {
+    return this.info.address
+  }
 
-  // /**
-  //  * Whether or not the client has been initialized. This only matters for some
-  //  * functions, depending on the implementation.
-  //  */
-  // abstract get initialized(): boolean
+  /**
+   * Contract version.
+   */
+  get version(): ContractVersion {
+    return this.info.version
+  }
+
+  /**
+   * Contract name.
+   */
+  get contractName(): string {
+    return this.info.contractName
+  }
+
+  /**
+   * Proposal module prefix in the DAO.
+   */
+  get prefix(): string {
+    return this.info.prefix
+  }
+
+  /**
+   * Pre-propose module, or null if none.
+   */
+  get prePropose(): PreProposeModule | null {
+    return this.info.prePropose
+  }
+
+  /**
+   * Make a proposal.
+   */
+  abstract propose({
+    data,
+    getSigningClient,
+    sender,
+    funds,
+  }: {
+    data: Proposal
+    getSigningClient: () => Promise<SigningCosmWasmClient>
+    sender: string
+    funds?: Coin[]
+  }): Promise<{
+    proposalNumber: number
+    proposalId: string
+  }>
 
   /**
    * Fetch the vote on a proposal by a given address. If the address has not

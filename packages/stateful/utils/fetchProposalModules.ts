@@ -56,7 +56,8 @@ export const fetchProposalModules = async (
 
   const proposalModules: ProposalModule[] = await Promise.all(
     activeProposalModules.map(async ({ info, address, prefix }) => {
-      const version = (info && parseContractVersion(info.version)) ?? null
+      const version =
+        (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
 
       // Get adapter for this contract.
       const adapter = info && matchAdapter(info.contract)

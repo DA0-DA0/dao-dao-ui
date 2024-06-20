@@ -13,7 +13,7 @@ import {
   ActionKey,
   ActionMaker,
   DepositRefundPolicy,
-  ProposalModule,
+  ProposalModuleBase,
   TokenType,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -123,7 +123,7 @@ export const Component: ActionComponent = (props) => {
 export const makeUpdatePreProposeSingleConfigActionMaker =
   ({
     prePropose,
-  }: ProposalModule): ActionMaker<UpdatePreProposeSingleConfigData> =>
+  }: ProposalModuleBase): ActionMaker<UpdatePreProposeSingleConfigData> =>
   ({ t, chain: { chain_id: chainId } }) => {
     // Only when pre propose is used.
     if (

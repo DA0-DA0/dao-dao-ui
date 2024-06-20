@@ -20,12 +20,12 @@ const Template: ComponentStory<typeof ProposalVoter<VoteType>> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   loading: false,
-  currentVote: VoteType.Yes,
+  currentVote: 'yes',
   onCastVote: (vote) => alert('vote: ' + vote),
   options: [
-    { Icon: Check, label: 'Yes', value: VoteType.Yes },
-    { Icon: CloseIcon, label: 'No', value: VoteType.No },
-    { Icon: Texture, label: 'Abstain', value: VoteType.Abstain },
+    { Icon: Check, label: 'Yes', value: 'yes' },
+    { Icon: CloseIcon, label: 'No', value: 'no' },
+    { Icon: Texture, label: 'Abstain', value: 'abstain' },
   ],
   proposalOpen: true,
 }

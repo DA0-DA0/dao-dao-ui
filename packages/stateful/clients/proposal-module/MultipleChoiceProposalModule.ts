@@ -1,12 +1,22 @@
+import {
+  DaoPreProposeMultipleClient,
+  DaoProposalMultipleClient,
+} from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
-import { ProposalModuleBase } from '@dao-dao/types'
+import { Coin, ProposalModuleBase } from '@dao-dao/types'
 import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  SupportedSigningCosmWasmClient,
+  findWasmAttributeValue,
+} from '@dao-dao/utils'
 
+import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalMultiple/types'
 import { CwDao } from '../dao/CwDao'
 
 export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
+  NewProposalData,
   VoteInfo
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES
@@ -26,5 +36,73 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         )
       ).vote || null
     )
+  }
+
+  async propose({
+    data,
+    getSigningClient,
+    sender,
+    funds,
+  }: {
+    data: NewProposalData
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+    funds?: Coin[]
+  }): Promise<{
+    proposalNumber: number
+    proposalId: string
+  }> {
+    const client = await getSigningClient()
+
+    let proposalNumber: number
+
+    if (this.prePropose) {
+      const { events } = await new DaoPreProposeMultipleClient(
+        client,
+        sender,
+        this.prePropose.address
+      ).propose({
+        msg: {
+          // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+          // The contract execution will fail if the messages are invalid, so
+          // this is safe. The UI should ensure that the co rrect messages are
+          // used for the given chain anyways.
+          propose: data as any,
+        },
+      })
+
+      proposalNumber = Number(
+        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+      )
+    } else {
+      const { events } = await new DaoProposalMultipleClient(
+        client,
+        sender,
+        this.address
+      ).propose(
+        // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+        // The contract execution will fail if the messages are invalid, so this
+        // is safe. The UI should ensure that the correct messages are used for
+        // the given chain anyways.
+        data as any,
+        undefined,
+        undefined,
+        funds
+      )
+
+      proposalNumber = Number(
+        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+      )
+    }
+
+    if (proposalNumber === -1) {
+      throw new Error('Proposal ID not found')
+    }
+
+    return {
+      proposalNumber,
+      // Proposal IDs are the the prefix plus the proposal number.
+      proposalId: `${this.prefix}${proposalNumber}`,
+    }
   }
 }

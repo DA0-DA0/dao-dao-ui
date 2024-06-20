@@ -53,6 +53,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
       try {
         const permit = await getPermit()
 
+        // TODO(dao-client): move to DAO client
         await _castVote({
           proposalId: proposalNumber,
           vote,

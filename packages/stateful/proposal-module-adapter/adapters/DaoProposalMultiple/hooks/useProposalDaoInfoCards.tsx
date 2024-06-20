@@ -29,23 +29,20 @@ import { anyoneCanProposeSelector, useProcessQ } from '../common'
 export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
   const {
-    options: {
-      chain: { chain_id: chainId },
-      proposalModule,
-    },
+    options: { proposalModule },
     common: { selectors },
   } = useProposalModuleAdapterCommonContext()
 
   const config = useCachedLoadingWithError(
     DaoProposalMultipleSelectors.configSelector({
-      chainId,
+      chainId: proposalModule.dao.chainId,
       contractAddress: proposalModule.address,
     })
   )
   const depositInfo = useCachedLoadingWithError(selectors.depositInfo)
   const anyoneCanPropose = useCachedLoadingWithError(
     anyoneCanProposeSelector({
-      chainId,
+      chainId: proposalModule.dao.chainId,
       preProposeAddress: proposalModule.prePropose?.address ?? null,
     })
   )
@@ -54,7 +51,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       ? undefined
       : !depositInfo.errored && depositInfo.data
       ? genericTokenSelector({
-          chainId,
+          chainId: proposalModule.dao.chainId,
           type:
             'native' in depositInfo.data.denom
               ? TokenType.Native
@@ -82,7 +79,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       : config.errored || !('veto' in config.data) || !config.data.veto
       ? constSelector(undefined)
       : Cw1WhitelistSelectors.adminsIfCw1Whitelist({
-          chainId,
+          chainId: proposalModule.dao.chainId,
           contractAddress: config.data.veto.vetoer,
         })
   )
