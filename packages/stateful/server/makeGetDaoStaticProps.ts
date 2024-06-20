@@ -17,7 +17,6 @@ import {
   ChainId,
   CommonProposalInfo,
   DaoBase,
-  DaoInfo,
   DaoPageMode,
   GovProposalVersion,
   GovProposalWithDecodedContent,
@@ -138,7 +137,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
 
       // Add to Sentry error tags if error occurs.
-      let daoInfo: DaoInfo | undefined
       try {
         // Check for legacy contract.
         const contractInfo = !configuredGovChain
@@ -158,7 +156,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           throw new LegacyDaoError()
         }
 
-        const dao = await getDao({
+        const dao = getDao({
           queryClient,
           chainId,
           coreAddress,
@@ -202,7 +200,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           title,
           description,
           accentColor,
-          info: daoInfo,
+          info: dao.info,
           reactQueryDehydratedState: dehydrateSerializable(queryClient),
           ...additionalProps,
         }
@@ -283,7 +281,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               tags: {
                 chainId,
                 coreAddress,
-                coreVersion: daoInfo?.coreVersion ?? '<undefined>',
               },
               extra: { context },
             }),

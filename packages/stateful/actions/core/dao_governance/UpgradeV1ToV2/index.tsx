@@ -61,13 +61,15 @@ const useV1SubDaos = () => {
         : async () =>
             (
               await Promise.allSettled(
-                potentialSubDaos.contents.map((potentialSubDao) =>
-                  getDao({
+                potentialSubDaos.contents.map(async (potentialSubDao) => {
+                  const dao = getDao({
                     queryClient,
                     chainId,
                     coreAddress: potentialSubDao,
                   })
-                )
+                  await dao.init()
+                  return dao
+                })
               )
             ).flatMap((l) => (l.status === 'fulfilled' ? l.value : [])),
     // Reload when query client, chain ID, or potentialSubDaos changes.
