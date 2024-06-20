@@ -41,7 +41,9 @@ export interface UpdatePreProposeConfigData {
     denomOrAddress: string
     // Loaded from token input fields to access metadata.
     token?: GenericToken
-    refundPolicy: DepositRefundPolicy
+    // make compatible with string union types with matching values, which is
+    // what gets auto-generated
+    refundPolicy: `${DepositRefundPolicy}`
   }
   anyoneCanPropose: boolean
 }
@@ -248,7 +250,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             <p className="secondary-text mt-2 mb-1">
               {t('form.refundPolicyTitle')}
             </p>
-            <SegmentedControls<DepositRefundPolicy>
+            <SegmentedControls<`${DepositRefundPolicy}`>
               disabled={!isCreating}
               onSelect={(refundPolicy) =>
                 setValue(

@@ -288,7 +288,9 @@ export enum DepositRefundPolicy {
 export interface CheckedDepositInfo {
   amount: Uint128
   denom: CheckedDenom
-  refund_policy: DepositRefundPolicy
+  // make compatible with string union types with matching values, which is what
+  // gets auto-generated
+  refund_policy: `${DepositRefundPolicy}`
 }
 
 /**
