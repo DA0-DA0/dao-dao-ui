@@ -1,7 +1,9 @@
+import { Chain } from '@chain-registry/types'
 import { QueryClient } from '@tanstack/react-query'
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import { DaoBase, DaoInfo, ProposalModuleBase } from '@dao-dao/types'
+import { getChainForChainId } from '@dao-dao/utils'
 
 import { daoQueries } from '../../queries'
 import {
@@ -86,6 +88,10 @@ export class CwDao extends DaoBase {
 
   get chainId(): string {
     return this.options.chainId
+  }
+
+  get chain(): Chain {
+    return getChainForChainId(this.chainId)
   }
 
   get coreAddress(): string {

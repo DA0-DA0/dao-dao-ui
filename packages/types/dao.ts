@@ -500,7 +500,6 @@ export type IndexerDaoWithVetoableProposals = {
 export type DaoWithVetoableProposals = WithChainId<
   IndexerDaoWithVetoableProposals & {
     name: string
-    proposalModules: ProposalModule[]
   }
 >
 

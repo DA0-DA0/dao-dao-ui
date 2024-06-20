@@ -332,8 +332,7 @@ export const AppsTab = () => {
 
       {msgs && (
         <ProposalModuleAdapterCommonProvider
-          coreAddress={coreAddress}
-          proposalModule={singleChoiceProposalModule}
+          proposalModuleAddress={singleChoiceProposalModule.address}
         >
           <ActionMatcherAndProposer
             key={JSON.stringify(msgs)}

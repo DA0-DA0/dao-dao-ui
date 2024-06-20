@@ -16,6 +16,7 @@ import {
   ActionContextType,
   AddressInputProps,
   ContractVersion,
+  DaoBase,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -30,7 +31,7 @@ export interface UpgradeV1ToV2Data {
 
 export interface UpgradeV1ToV2ComponentOptions {
   // All SubDAOs of this DAO that are on v1 and can be upgraded.
-  v1SubDaos: string[]
+  v1SubDaos: DaoBase[]
   // If this DAO is a SubDAO (i.e. it has a parent), then the parent DAO must be
   // the one to upgrade this. Add a message to the UI to indicate this.
   hasParent: boolean
@@ -108,7 +109,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
                   ? [address]
                   : []),
                 // Add v1 SubDAOs.
-                ...v1SubDaos,
+                ...v1SubDaos.map(({ coreAddress }) => coreAddress),
               ].map((address) => ({
                 display: <EntityDisplay address={address} hideImage noCopy />,
                 value: address,

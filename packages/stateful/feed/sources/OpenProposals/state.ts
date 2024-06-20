@@ -303,7 +303,6 @@ export const feedOpenProposalsSelector = selectorFamily<
                             chainId,
                             coreAddress,
                             proposalId: `${proposalModule.prefix}${id}`,
-                            proposalModules,
                             proposalViewUrl: getDaoProposalPath(
                               DaoPageMode.Dapp,
                               coreAddress,

@@ -1,3 +1,4 @@
+import { Chain } from '@chain-registry/types'
 import { QueryClient } from '@tanstack/react-query'
 
 import { DaoInfo } from '../dao'
@@ -23,25 +24,39 @@ export abstract class DaoBase {
   abstract get initialized(): boolean
 
   /**
-   * Get the DAO info object.
+   * DAO info object.
    */
   abstract get info(): DaoInfo
 
   /**
-   * Get the chain ID of the DAO.
+   * Chain ID of the DAO.
    */
   abstract get chainId(): string
 
   /**
-   * Get the core address of the DAO.
+   * Chain of the DAO.
+   */
+  abstract get chain(): Chain
+
+  /**
+   * Core address of the DAO.
    */
   abstract get coreAddress(): string
 
   /**
-   * Get the proposal modules for the DAO.
+   * Proposal modules for the DAO.
    */
   get proposalModules(): readonly ProposalModuleBase[] {
     return []
+  }
+
+  /**
+   * Get the proposal module with the given address.
+   */
+  getProposalModule(address: string): ProposalModuleBase | undefined {
+    return this.proposalModules.find(
+      (module) => module.info.address === address
+    )
   }
 
   /**

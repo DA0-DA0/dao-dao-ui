@@ -343,34 +343,27 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
         )
       )
 
-      const daoConfigAndProposalModules = get(
+      const daoConfigs = get(
         waitForAllSettled(
           uniqueChainsAndDaos.map((chainAndDao) => {
             const [chainId, coreAddress] = chainAndDao.split(':')
-            return waitForAll([
-              DaoCoreV2Selectors.configSelector({
-                chainId,
-                contractAddress: coreAddress,
-                params: [],
-              }),
-              daoCoreProposalModulesSelector({
-                chainId,
-                coreAddress,
-              }),
-            ])
+            return DaoCoreV2Selectors.configSelector({
+              chainId,
+              contractAddress: coreAddress,
+              params: [],
+            })
           })
         )
       )
 
       return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
-        const daoData = daoConfigAndProposalModules[index]
+        const config = daoConfigs[index]
 
-        return daoData.state === 'hasValue'
+        return config.state === 'hasValue'
           ? {
               chainId: chainAndDao.split(':')[0],
               dao: chainAndDao.split(':')[1],
-              name: daoData.contents[0].name,
-              proposalModules: daoData.contents[1],
+              name: config.contents.name,
               proposalsWithModule: daoVetoableProposalsPerChain.find(
                 (vetoable) =>
                   `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
@@ -412,7 +405,6 @@ export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
         ({
           chainId,
           dao,
-          proposalModules,
           proposalsWithModule,
         }):
           | DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>
@@ -438,7 +430,6 @@ export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
                   ({ id }): StatefulProposalLineProps => ({
                     chainId,
                     coreAddress: dao,
-                    proposalModules,
                     proposalId: `${prefix}${id}`,
                     proposalViewUrl: getDaoProposalPath(
                       daoPageMode,

@@ -9,8 +9,7 @@ import {
   DaoSplashHeader,
   useAppContext,
   useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
+  useDaoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
@@ -26,12 +25,11 @@ import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
-  const chain = useChain()
-  const daoInfo = useDaoInfoContext()
+  const { dao } = useDaoContext()
   const { mode } = useAppContext()
   const { isSecretNetwork, isWalletConnected, permit, getPermit } =
     useWalletWithSecretNetworkPermit({
-      dao: daoInfo.coreAddress,
+      dao: dao.coreAddress,
     })
 
   const [creatingPermit, setCreatingPermit] = useState(false)
@@ -55,14 +53,11 @@ export const HomeTab = () => {
 
   const depositInfoSelectors = useMemo(
     () =>
-      daoInfo.proposalModules.map(
+      dao.info.proposalModules.map(
         (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain,
-            coreAddress: daoInfo.coreAddress,
-          }).selectors.depositInfo
+          matchAndLoadCommon(dao, proposalModule.address).selectors.depositInfo
       ),
-    [chain, daoInfo.coreAddress, daoInfo.proposalModules]
+    [dao]
   )
   const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
@@ -94,7 +89,7 @@ export const HomeTab = () => {
         <DaoSplashHeader
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
-          daoInfo={daoInfo}
+          daoInfo={dao.info}
         />
       )}
 

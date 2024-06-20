@@ -16,7 +16,7 @@ import {
 import {
   ChainId,
   CommonProposalInfo,
-  ContractVersion,
+  DaoBase,
   DaoInfo,
   DaoPageMode,
   GovProposalVersion,
@@ -41,12 +41,12 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { ChainXGovDao, getDao } from '../clients'
 import { DaoPageWrapperProps } from '../components'
 import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '../proposal-module-adapter'
-import { daoQueries } from '../queries/dao'
 
 interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
@@ -65,7 +65,7 @@ interface GetDaoStaticPropsMakerOptions {
     t: TFunction
     queryClient: QueryClient
     chain: Chain
-    daoInfo: DaoInfo
+    dao: DaoBase
   }) =>
     | GetDaoStaticPropsMakerProps
     | undefined
@@ -158,12 +158,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           throw new LegacyDaoError()
         }
 
-        daoInfo = await queryClient.fetchQuery(
-          daoQueries.info(queryClient, {
-            chainId,
-            coreAddress,
-          })
-        )
+        const dao = await getDao({
+          queryClient,
+          chainId,
+          coreAddress,
+        })
+        await dao.init()
 
         // Must be called after server side translations has been awaited,
         // because props may use the `t` function, and it won't be available
@@ -181,19 +181,19 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             t: serverT,
             queryClient,
             chain: getChainForChainId(chainId),
-            daoInfo,
+            dao,
           })) ?? {}
 
         const title =
           overrideTitle ??
-          [leadingTitle?.trim(), daoInfo.name, followingTitle?.trim()]
+          [leadingTitle?.trim(), dao.info.name, followingTitle?.trim()]
             .filter(Boolean)
             .join(' | ')
-        const description = overrideDescription ?? daoInfo.description
+        const description = overrideDescription ?? dao.info.description
         const accentColor =
           // If viewing configured gov chain, use its accent color.
           configuredGovChain?.accentColor ||
-          daoInfo.items[DAO_CORE_ACCENT_ITEM_KEY] ||
+          dao.info.items[DAO_CORE_ACCENT_ITEM_KEY] ||
           null
 
         const props: DaoPageWrapperProps = {
@@ -361,7 +361,7 @@ export const makeGetDaoProposalStaticProps = ({
 }: GetDaoProposalStaticPropsMakerOptions) =>
   makeGetDaoStaticProps({
     ...options,
-    getProps: async ({ context: { params = {} }, t, chain, daoInfo }) => {
+    getProps: async ({ context: { params = {} }, t, chain, dao }) => {
       const proposalId = params[proposalIdParamKey]
 
       // If invalid proposal ID, not found.
@@ -375,7 +375,7 @@ export const makeGetDaoProposalStaticProps = ({
       }
 
       // Gov module.
-      if (daoInfo.coreVersion === ContractVersion.Gov) {
+      if (dao instanceof ChainXGovDao) {
         const url = getProposalUrlPrefix(params) + proposalId
 
         const client = await cosmosProtoRpcClientRouter.connect(chain.chain_id)
@@ -532,10 +532,7 @@ export const makeGetDaoProposalStaticProps = ({
           adapter: {
             functions: { getProposalInfo },
           },
-        } = await matchAndLoadAdapter(daoInfo.proposalModules, proposalId, {
-          chain,
-          coreAddress: daoInfo.coreAddress,
-        })
+        } = await matchAndLoadAdapter(dao, proposalId)
 
         // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
         if (!isNaN(Number(proposalId))) {

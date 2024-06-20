@@ -1,8 +1,12 @@
+import { Chain } from '@chain-registry/types'
 import { QueryClient } from '@tanstack/react-query'
 
 import { chainQueries } from '@dao-dao/state/query'
 import { DaoBase, DaoInfo } from '@dao-dao/types'
-import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
+import {
+  getChainForChainId,
+  mustGetConfiguredChainConfig,
+} from '@dao-dao/utils'
 
 import { daoQueries } from '../../queries'
 
@@ -52,6 +56,10 @@ export class ChainXGovDao extends DaoBase {
 
   get chainId(): string {
     return this.options.chainId
+  }
+
+  get chain(): Chain {
+    return getChainForChainId(this.chainId)
   }
 
   get coreAddress(): string {

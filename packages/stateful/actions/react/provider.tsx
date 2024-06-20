@@ -10,7 +10,7 @@ import {
   useCachedLoadingWithError,
   useChain,
   useChainContext,
-  useDaoInfoContext,
+  useDaoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
@@ -42,7 +42,7 @@ import { ActionsContext } from './context'
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
   const chainContext = useSupportedChainContext()
-  const info = useDaoInfoContext()
+  const { dao } = useDaoContext()
 
   const options: ActionOptions = {
     t,
@@ -51,10 +51,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       type: ActionChainContextType.Supported,
       ...chainContext,
     },
-    address: info.coreAddress,
+    address: dao.coreAddress,
     context: {
       type: ActionContextType.Dao,
-      info,
+      dao,
+      info: dao.info,
     },
   }
 
@@ -77,14 +78,12 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // Get all actions for all proposal module adapters.
   const proposalModuleActionCategoryMakers = useMemo(
     () =>
-      info.proposalModules.flatMap(
+      dao.info.proposalModules.flatMap(
         (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain: chainContext.chain,
-            coreAddress: info.coreAddress,
-          }).fields.actionCategoryMakers || []
+          matchAndLoadCommon(dao, proposalModule.address).fields
+            .actionCategoryMakers || []
       ),
-    [chainContext.chain, info.coreAddress, info.proposalModules]
+    [dao]
   )
 
   const loadingWidgets = useWidgets()

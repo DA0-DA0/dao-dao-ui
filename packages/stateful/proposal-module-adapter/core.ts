@@ -1,12 +1,11 @@
 import {
+  DaoBase,
   IProposalModuleAdapterCommon,
-  IProposalModuleAdapterCommonInitialOptions,
-  IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleCommonContext,
   IProposalModuleContext,
-  ProposalModule,
   ProposalModuleAdapter,
+  ProposalModuleBase,
 } from '@dao-dao/types'
 
 import {
@@ -38,15 +37,24 @@ export const matchAdapter = (contractNameToMatch: string) =>
   )
 
 export const matchAndLoadCommon = (
-  proposalModule: ProposalModule,
-  initialOptions: IProposalModuleAdapterCommonInitialOptions
-): IProposalModuleAdapterCommon & { id: string } => {
-  const adapter = matchAdapter(proposalModule.contractName)
+  dao: DaoBase,
+  proposalModuleAddress: string
+): IProposalModuleAdapterCommon & {
+  id: string
+  proposalModule: ProposalModuleBase
+} => {
+  const proposalModule = dao.getProposalModule(proposalModuleAddress)
+  if (!proposalModule) {
+    throw new ProposalModuleAdapterError(
+      `Failed to find proposal module with address ${proposalModuleAddress}.`
+    )
+  }
 
+  const adapter = matchAdapter(proposalModule.info.contractName)
   if (!adapter) {
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
-        proposalModule.contractName
+        proposalModule.info.contractName
       }". Available adapters: ${getAdapters()
         .map(({ id: contractName }) => contractName)
         .join(', ')}`
@@ -56,16 +64,17 @@ export const matchAndLoadCommon = (
   return {
     id: adapter.id,
     ...adapter.loadCommon({
-      ...initialOptions,
-      proposalModule,
+      chain: dao.chain,
+      coreAddress: dao.coreAddress,
+      proposalModule: proposalModule.info,
     }),
+    proposalModule,
   }
 }
 
 export const matchAndLoadAdapter = (
-  proposalModules: ProposalModule[],
-  proposalId: string,
-  initialOptions: IProposalModuleAdapterInitialOptions
+  dao: DaoBase,
+  proposalId: string
 ): IProposalModuleContext => {
   // Prefix is alphabetical, followed by numeric prop number. If there is an
   // asterisk between the prefix and the prop number, this is a pre-propose
@@ -88,13 +97,13 @@ export const matchAndLoadAdapter = (
   }
 
   const proposalModule = proposalPrefix
-    ? proposalModules.find(({ prefix }) => prefix === proposalPrefix)
+    ? dao.proposalModules.find((p) => p.info.prefix === proposalPrefix)
     : // If no proposalPrefix (i.e. proposalId is just a number), and there is
     // only one proposal module, return it. This should handle backwards
     // compatibility when there were no prefixes and every DAO used a single
     // choice proposal module.
-    proposalModules.length === 1
-    ? proposalModules[0]
+    dao.proposalModules.length === 1
+    ? dao.proposalModules[0]
     : undefined
   if (!proposalModule) {
     throw new ProposalModuleAdapterError(
@@ -102,12 +111,12 @@ export const matchAndLoadAdapter = (
     )
   }
 
-  const adapter = matchAdapter(proposalModule.contractName)
+  const adapter = matchAdapter(proposalModule.info.contractName)
 
   if (!adapter) {
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
-        proposalModule.contractName
+        proposalModule.info.contractName
       }". Available adapters: ${getAdapters()
         .map(({ id: contractName }) => contractName)
         .join(', ')}`
@@ -115,8 +124,9 @@ export const matchAndLoadAdapter = (
   }
 
   const adapterOptions: IProposalModuleAdapterOptions = {
-    ...initialOptions,
-    proposalModule,
+    chain: dao.chain,
+    coreAddress: dao.coreAddress,
+    proposalModule: proposalModule.info,
     proposalId,
     proposalNumber,
     isPreProposeApprovalProposal,
@@ -127,9 +137,11 @@ export const matchAndLoadAdapter = (
     options: adapterOptions,
     adapter: adapter.load(adapterOptions),
     common: adapter.loadCommon({
-      ...initialOptions,
-      proposalModule,
+      chain: dao.chain,
+      coreAddress: dao.coreAddress,
+      proposalModule: proposalModule.info,
     }),
+    proposalModule,
   }
 }
 
@@ -143,20 +155,23 @@ export const commonContextFromAdapterContext = (
     coreAddress: adapterContext.options.coreAddress,
     proposalModule: adapterContext.options.proposalModule,
   },
+  proposalModule: adapterContext.proposalModule,
 })
 
 export const matchAndLoadCommonContext = (
   ...params: Parameters<typeof matchAndLoadCommon>
 ): IProposalModuleCommonContext => {
-  const { id, ...common } = matchAndLoadCommon(...params)
+  const { id, proposalModule, ...common } = matchAndLoadCommon(...params)
 
   return {
     id,
     common,
     options: {
-      ...params[1],
-      proposalModule: params[0],
+      chain: proposalModule.dao.chain,
+      coreAddress: proposalModule.dao.coreAddress,
+      proposalModule: proposalModule.info,
     },
+    proposalModule,
   }
 }
 

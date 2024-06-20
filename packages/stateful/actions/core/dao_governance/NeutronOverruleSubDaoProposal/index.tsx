@@ -1,12 +1,7 @@
 import { useCallback } from 'react'
-import { useFormContext } from 'react-hook-form'
 
 import { NeutronCwdSubdaoTimelockSingleSelectors } from '@dao-dao/state'
-import {
-  ThumbDownEmoji,
-  useCachedLoading,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { ThumbDownEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { ChainId, ContractVersion, PreProposeModuleType } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -22,7 +17,6 @@ import { ContractName } from '@dao-dao/utils'
 import { EntityDisplay, ProposalLine } from '../../../../components'
 import { daoCoreProposalModulesSelector } from '../../../../recoil'
 import { useMsgExecutesContract } from '../../../hooks'
-import { useActionOptions } from '../../../react'
 import {
   NeutronOverruleSubDaoProposalData,
   NeutronOverruleSubDaoProposalComponent as StatelessNeutronOverruleSubDaoProposalComponent,
@@ -40,36 +34,15 @@ const useTransformToCosmos: UseTransformToCosmos<
 const Component: ActionComponent<
   undefined,
   NeutronOverruleSubDaoProposalData
-> = (props) => {
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
-  const { watch } = useFormContext<NeutronOverruleSubDaoProposalData>()
-
-  const coreAddress = watch(
-    (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
-  )
-
-  // Get DAO proposal modules.
-  const daoProposalModules = useCachedLoading(
-    daoCoreProposalModulesSelector({
-      chainId,
-      coreAddress: coreAddress,
-    }),
-    []
-  )
-
-  return (
-    <StatelessNeutronOverruleSubDaoProposalComponent
-      {...props}
-      options={{
-        daoProposalModules,
-        EntityDisplay,
-        ProposalLine,
-      }}
-    />
-  )
-}
+> = (props) => (
+  <StatelessNeutronOverruleSubDaoProposalComponent
+    {...props}
+    options={{
+      EntityDisplay,
+      ProposalLine,
+    }}
+  />
+)
 
 export const makeNeutronOverruleSubDaoProposalAction: ActionMaker<
   NeutronOverruleSubDaoProposalData

@@ -9,6 +9,7 @@ import {
   IChainContext,
   SupportedChainContext,
 } from './chain'
+import { DaoBase } from './clients'
 import { UnifiedCosmosMsg } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
@@ -239,6 +240,8 @@ export enum ActionContextType {
 export type ActionContext =
   | {
       type: ActionContextType.Dao
+      dao: DaoBase
+      // TODO(dao-client): refactor to use dao client, remove info
       info: DaoInfo
     }
   | {

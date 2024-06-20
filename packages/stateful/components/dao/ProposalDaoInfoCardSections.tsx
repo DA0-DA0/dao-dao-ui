@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Loader, TooltipInfoIcon, useDaoInfoContext } from '@dao-dao/stateless'
+import { Loader, TooltipInfoIcon, useDaoContext } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
 
 import { ProposalModuleAdapterCommonProvider } from '../../proposal-module-adapter'
@@ -11,16 +11,14 @@ import { Trans } from '../Trans'
 import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const ProposalDaoInfoCardSections = () => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { dao } = useDaoContext()
 
   return (
     <>
-      {proposalModules.map((proposalModule) => (
+      {dao.info.proposalModules.map((proposalModule) => (
         <SuspenseLoader key={proposalModule.address} fallback={<Loader />}>
           <ProposalModuleAdapterCommonProvider
-            key={proposalModule.address}
-            coreAddress={coreAddress}
-            proposalModule={proposalModule}
+            proposalModuleAddress={proposalModule.address}
           >
             <ProposalDaoInfoCardsSection />
           </ProposalModuleAdapterCommonProvider>

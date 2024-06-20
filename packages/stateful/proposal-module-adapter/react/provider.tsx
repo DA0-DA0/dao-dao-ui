@@ -1,12 +1,9 @@
 import { ReactNode, useMemo } from 'react'
 
-import { useChain } from '@dao-dao/stateless'
+import { useDaoContext } from '@dao-dao/stateless'
 import {
-  IProposalModuleAdapterCommonInitialOptions,
-  IProposalModuleAdapterInitialOptions,
   IProposalModuleCommonContext,
   IProposalModuleContext,
-  ProposalModule,
 } from '@dao-dao/types'
 
 import {
@@ -20,29 +17,23 @@ import {
 } from './context'
 
 export type ProposalModuleAdapterProviderProps = {
-  proposalModules: ProposalModule[]
   proposalId: string
   children: ReactNode | ReactNode[]
-} & Omit<IProposalModuleAdapterInitialOptions, 'chain'>
+}
 
 export const ProposalModuleAdapterProvider = ({
-  coreAddress,
-  proposalModules,
   proposalId,
   children,
 }: ProposalModuleAdapterProviderProps) => {
-  const chain = useChain()
+  const { dao } = useDaoContext()
   const { context, commonContext } = useMemo(() => {
-    const context = matchAndLoadAdapter(proposalModules, proposalId, {
-      coreAddress,
-      chain,
-    })
+    const context = matchAndLoadAdapter(dao, proposalId)
     const commonContext = commonContextFromAdapterContext(context)
     return {
       context,
       commonContext,
     }
-  }, [chain, coreAddress, proposalId, proposalModules])
+  }, [dao, proposalId])
 
   return (
     <ProposalModuleAdapterBothProviders
@@ -55,23 +46,18 @@ export const ProposalModuleAdapterProvider = ({
 }
 
 export type ProposalModuleAdapterCommonProviderProps = {
-  proposalModule: ProposalModule
+  proposalModuleAddress: string
   children: ReactNode | ReactNode[]
-} & Omit<IProposalModuleAdapterCommonInitialOptions, 'chain'>
+}
 
 export const ProposalModuleAdapterCommonProvider = ({
-  coreAddress,
-  proposalModule,
+  proposalModuleAddress,
   children,
 }: ProposalModuleAdapterCommonProviderProps) => {
-  const chain = useChain()
+  const { dao } = useDaoContext()
   const context = useMemo(
-    () =>
-      matchAndLoadCommonContext(proposalModule, {
-        coreAddress,
-        chain,
-      }),
-    [chain, coreAddress, proposalModule]
+    () => matchAndLoadCommonContext(dao, proposalModuleAddress),
+    [dao, proposalModuleAddress]
   )
 
   return (
