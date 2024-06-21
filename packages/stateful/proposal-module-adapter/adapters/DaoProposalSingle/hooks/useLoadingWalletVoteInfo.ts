@@ -26,7 +26,11 @@ export const useLoadingWalletVoteInfo = ():
   const walletVoteLoading = useLoadingPromise({
     // Loading state if wallet not connected.
     promise: walletAddress
-      ? () => proposalModule.getVote(proposalNumber, walletAddress)
+      ? () =>
+          proposalModule.getVote({
+            proposalId: proposalNumber,
+            voter: walletAddress,
+          })
       : undefined,
     // Refresh when permit, proposal module, or wallet changes.
     deps: [permit, proposalModule, walletAddress],

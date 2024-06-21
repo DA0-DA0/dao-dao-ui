@@ -9,6 +9,7 @@ import { DaoBase } from './dao'
 export abstract class ProposalModuleBase<
   Dao extends DaoBase = DaoBase,
   Proposal = any,
+  VoteInfo = any,
   Vote = any
 > {
   /**
@@ -79,8 +80,47 @@ export abstract class ProposalModuleBase<
   }>
 
   /**
+   * Vote on a proposal.
+   */
+  abstract vote(options: {
+    proposalId: number
+    vote: Vote
+    getSigningClient: () => Promise<SigningCosmWasmClient>
+    sender: string
+  }): Promise<void>
+
+  /**
+   * Execute a passed proposal.
+   */
+  abstract execute({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SigningCosmWasmClient>
+    sender: string
+  }): Promise<void>
+
+  /**
+   * Close a rejected proposal.
+   */
+  abstract close({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SigningCosmWasmClient>
+    sender: string
+  }): Promise<void>
+
+  /**
    * Fetch the vote on a proposal by a given address. If the address has not
    * voted, it will return null.
    */
-  abstract getVote(proposalId: number, address: string): Promise<Vote | null>
+  abstract getVote(options: {
+    proposalId: number
+    voter: string
+  }): Promise<VoteInfo | null>
 }

@@ -4,7 +4,10 @@ import {
 } from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
 import { Coin, ProposalModuleBase } from '@dao-dao/types'
-import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import {
+  MultipleChoiceVote,
+  VoteInfo,
+} from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
   SupportedSigningCosmWasmClient,
@@ -17,26 +20,10 @@ import { CwDao } from '../dao/CwDao'
 export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   NewProposalData,
-  VoteInfo
+  VoteInfo,
+  MultipleChoiceVote
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES
-
-  async getVote(proposalId: number, address: string): Promise<VoteInfo | null> {
-    return (
-      (
-        await this.queryClient.fetchQuery(
-          daoProposalMultipleQueries.getVote({
-            chainId: this.dao.chainId,
-            contractAddress: this.info.address,
-            args: {
-              proposalId,
-              voter: address,
-            },
-          })
-        )
-      ).vote || null
-    )
-  }
 
   async propose({
     data,
@@ -104,5 +91,76 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       // Proposal IDs are the the prefix plus the proposal number.
       proposalId: `${this.prefix}${proposalNumber}`,
     }
+  }
+
+  async vote({
+    proposalId,
+    vote,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    vote: MultipleChoiceVote
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    await new DaoProposalMultipleClient(client, sender, this.address).vote({
+      proposalId,
+      vote,
+    })
+  }
+
+  async execute({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    await new DaoProposalMultipleClient(client, sender, this.address).execute({
+      proposalId,
+    })
+  }
+
+  async close({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    await new DaoProposalMultipleClient(client, sender, this.address).close({
+      proposalId,
+    })
+  }
+
+  async getVote({
+    proposalId,
+    voter,
+  }: {
+    proposalId: number
+    voter: string
+  }): Promise<VoteInfo | null> {
+    return (
+      (
+        await this.queryClient.fetchQuery(
+          daoProposalMultipleQueries.getVote({
+            chainId: this.dao.chainId,
+            contractAddress: this.info.address,
+            args: {
+              proposalId,
+              voter,
+            },
+          })
+        )
+      ).vote || null
+    )
   }
 }

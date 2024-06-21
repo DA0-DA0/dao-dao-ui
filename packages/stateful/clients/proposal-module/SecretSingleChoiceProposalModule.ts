@@ -4,7 +4,10 @@ import {
 } from '@dao-dao/state/contracts'
 import { secretDaoProposalSingleQueries } from '@dao-dao/state/query'
 import { Coin, ProposalModuleBase } from '@dao-dao/types'
-import { VoteInfo } from '@dao-dao/types/contracts/SecretDaoProposalSingle'
+import {
+  Vote,
+  VoteInfo,
+} from '@dao-dao/types/contracts/SecretDaoProposalSingle'
 import {
   ContractName,
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
@@ -18,46 +21,10 @@ import { SecretCwDao } from '../dao/SecretCwDao'
 export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   NewProposalData,
-  VoteInfo
+  VoteInfo,
+  Vote
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
-
-  async getVote(
-    proposalId: number,
-    address: string,
-    /**
-     * Whether or not to prompt the wallet for a permit. If true,
-     * `dao.registerOfflineSignerAminoGetter` must be called first.
-     *
-     * Defaults to false.
-     */
-    prompt = false
-  ): Promise<VoteInfo | null> {
-    const permit = prompt
-      ? await this.dao.getPermit(address)
-      : this.dao.getExistingPermit(address)
-
-    if (!permit) {
-      throw new Error('No permit found')
-    }
-
-    return (
-      (
-        await this.queryClient.fetchQuery(
-          secretDaoProposalSingleQueries.getVote({
-            chainId: this.dao.chainId,
-            contractAddress: this.info.address,
-            args: {
-              proposalId,
-              auth: {
-                permit,
-              },
-            },
-          })
-        )
-      ).vote || null
-    )
-  }
 
   async propose({
     data,
@@ -142,5 +109,111 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         isPreProposeApprovalProposal ? '*' : ''
       }${proposalNumber}`,
     }
+  }
+
+  async vote({
+    proposalId,
+    vote,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    vote: Vote
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    const permit = await this.dao.getPermit(sender)
+
+    await new SecretDaoProposalSingleClient(client, sender, this.address).vote({
+      proposalId,
+      vote,
+      auth: {
+        permit,
+      },
+    })
+  }
+
+  async execute({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    const permit = await this.dao.getPermit(sender)
+
+    await new SecretDaoProposalSingleClient(
+      client,
+      sender,
+      this.address
+    ).execute({
+      proposalId,
+      auth: {
+        permit,
+      },
+    })
+  }
+
+  async close({
+    proposalId,
+    getSigningClient,
+    sender,
+  }: {
+    proposalId: number
+    getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+    sender: string
+  }): Promise<void> {
+    const client = await getSigningClient()
+    await new SecretDaoProposalSingleClient(client, sender, this.address).close(
+      {
+        proposalId,
+      }
+    )
+  }
+
+  async getVote(
+    {
+      proposalId,
+      voter,
+    }: {
+      proposalId: number
+      voter: string
+    },
+    /**
+     * Whether or not to prompt the wallet for a permit. If true,
+     * `dao.registerOfflineSignerAminoGetter` must be called first.
+     *
+     * Defaults to false.
+     */
+    prompt = false
+  ): Promise<VoteInfo | null> {
+    const permit = prompt
+      ? await this.dao.getPermit(voter)
+      : this.dao.getExistingPermit(voter)
+
+    if (!permit) {
+      throw new Error('No permit found')
+    }
+
+    return (
+      (
+        await this.queryClient.fetchQuery(
+          secretDaoProposalSingleQueries.getVote({
+            chainId: this.dao.chainId,
+            contractAddress: this.info.address,
+            args: {
+              proposalId,
+              auth: {
+                permit,
+              },
+            },
+          })
+        )
+      ).vote || null
+    )
   }
 }
