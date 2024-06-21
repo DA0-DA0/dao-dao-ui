@@ -1,5 +1,6 @@
 import { RefCallback, useCallback, useEffect, useState } from 'react'
 
+import { useOnScreen } from './useOnScreen'
 import { useUpdatingRef } from './useUpdatingRef'
 
 export type UseInfiniteScrollOptions = {
@@ -54,6 +55,7 @@ export const useInfiniteScroll = ({
     (node: HTMLElement | null) => setElement(node),
     [setElement]
   )
+  const isVisible = useOnScreen(element)
 
   // Use _element from options if exists.
   useEffect(() => {
@@ -68,6 +70,7 @@ export const useInfiniteScroll = ({
     if (
       disabled ||
       !element ||
+      !isVisible ||
       infiniteScrollFactor < 0 ||
       typeof window === 'undefined'
     ) {
@@ -103,7 +106,7 @@ export const useInfiniteScroll = ({
     // waiting for them to bubble up.
     window.addEventListener('scroll', onScroll, true)
     return () => window.removeEventListener('scroll', onScroll, true)
-  }, [infiniteScrollFactor, disabled, element, loadMoreRef])
+  }, [infiniteScrollFactor, disabled, element, loadMoreRef, isVisible])
 
   return {
     infiniteScrollRef,
