@@ -2,9 +2,11 @@ import { Chain } from '@chain-registry/types'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { chainQueries } from '@dao-dao/state/query'
 import {
   walletChainIdAtom,
   walletHexPublicKeySelector,
@@ -165,6 +167,17 @@ export const useWallet = ({
     walletChainRef.current.chain.chain_id,
     walletChainRef.current.status,
   ])
+
+  // Pre-fetch dynamic gas price for this chain when the wallet is used.
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      ...chainQueries.dynamicGasPrice({ chainId: chain.chain_id }),
+      // Make stale in less than a minute so it refreshes in the
+      // `useAutoRefreshData` hook that runs every minute.
+      staleTime: 50 * 1000,
+    })
+  }, [queryClient, chain.chain_id])
 
   const response = useMemo(
     (): UseWalletReturn => ({

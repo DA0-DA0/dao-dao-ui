@@ -1,6 +1,6 @@
 import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
 import { wallets as compassWallets } from '@cosmos-kit/compass'
-import { Endpoints, SignerOptions } from '@cosmos-kit/core'
+import { Endpoints } from '@cosmos-kit/core'
 import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-extension-metamask'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as exodusWallets } from '@cosmos-kit/exodus'
@@ -23,12 +23,14 @@ import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
 import { wallets as xdefiWallets } from '@cosmos-kit/xdefi'
+import { useQueryClient } from '@tanstack/react-query'
 import { PropsWithChildren, ReactNode, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePrevious } from 'react-use'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { isInIframe } from '@dao-dao/cosmiframe'
+import { makeGetSignerOptions } from '@dao-dao/state'
 import {
   isKeplrMobileWebAtom,
   mountedInBrowserAtom,
@@ -44,7 +46,6 @@ import {
   chains,
   getChainForChainId,
   getKeplrFromWindow,
-  getSignerOptions,
 } from '@dao-dao/utils'
 
 import { useSyncWalletSigner, useWallet } from '../../hooks'
@@ -118,12 +119,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     [setWeb3AuthPrompt]
   )
 
-  const signerOptions: SignerOptions = {
-    // cosmos-kit has an older version of the package. This is a workaround.
-    signingStargate: getSignerOptions as any,
-    // cosmos-kit has an older version of the package. This is a workaround.
-    signingCosmwasm: getSignerOptions as any,
-  }
+  const getSigningOptions = makeGetSignerOptions(useQueryClient())
 
   // Auto-connect to Keplr mobile web if in that context.
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -193,7 +189,10 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           {} as Record<string, Endpoints>
         ),
       }}
-      signerOptions={signerOptions}
+      signerOptions={{
+        signingStargate: getSigningOptions,
+        signingCosmwasm: getSigningOptions,
+      }}
       walletConnectOptions={{
         signClient: {
           // https://cloud.walletconnect.com

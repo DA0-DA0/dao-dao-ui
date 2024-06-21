@@ -1,5 +1,6 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { toHex } from '@cosmjs/encoding'
+import { useQueryClient } from '@tanstack/react-query'
 import cloneDeep from 'lodash.clonedeep'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -9,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
+  makeGetSignerOptions,
   meTransactionAtom,
   refreshSavedTxsAtom,
   savedTxsSelector,
@@ -32,7 +34,6 @@ import {
   ME_SAVED_TX_PREFIX,
   decodeJsonFromBase64,
   getRpcForChainId,
-  getSignerOptions,
   objectMatchesStructure,
   processError,
 } from '@dao-dao/utils'
@@ -43,6 +44,7 @@ import { WalletChainSwitcher } from '../wallet'
 
 export const ProfileActions = () => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
   const {
     address: walletAddress = '',
@@ -144,7 +146,7 @@ export const ProfileActions = () => {
           await SigningCosmWasmClient.connectWithSigner(
             getRpcForChainId(chain.chain_id),
             signer,
-            getSignerOptions(chain)
+            makeGetSignerOptions(queryClient)(chain)
           )
 
         const encodeObjects = data.map((msg) =>
@@ -171,6 +173,7 @@ export const ProfileActions = () => {
       getOfflineSignerAmino,
       getOfflineSignerDirect,
       holdingAltForDirectSign,
+      queryClient,
       t,
       walletAddress,
     ]

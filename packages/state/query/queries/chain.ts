@@ -3,11 +3,14 @@ import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { ChainId } from '@dao-dao/types'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
+  feemarketProtoRpcClientRouter,
   getNativeTokenForChainId,
   isValidBech32Address,
+  osmosisProtoRpcClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -196,6 +199,66 @@ export const fetchNativeStakedBalance = async ({
   )
 }
 
+/**
+ * Fetch the total native tokens staked across the whole chain.
+ */
+export const fetchTotalNativeStakedBalance = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<string> => {
+  // Neutron does not have staking.
+  if (
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
+  ) {
+    return '0'
+  }
+
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+  const { pool } = await client.staking.v1beta1.pool()
+
+  if (!pool) {
+    throw new Error('No staking pool found')
+  }
+
+  return pool.bondedTokens
+}
+
+/**
+ * Fetch the dynamic gas price for the native fee token.
+ */
+export const fetchDynamicGasPrice = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<DecCoin> => {
+  // Osmosis uses osmosis.txfees module.
+  if (
+    chainId === ChainId.OsmosisMainnet ||
+    chainId === ChainId.OsmosisTestnet
+  ) {
+    const client = await osmosisProtoRpcClientRouter.connect(chainId)
+    const { baseFee } = await client.txfees.v1beta1.getEipBaseFee()
+    return {
+      amount: baseFee,
+      denom: getNativeTokenForChainId(chainId).denomOrAddress,
+    }
+  }
+
+  // Neutron (and maybe others) uses Skip's feemarket module.
+  const client = await feemarketProtoRpcClientRouter.connect(chainId)
+  const { price } = await client.feemarket.v1.gasPrice({
+    denom: getNativeTokenForChainId(chainId).denomOrAddress,
+  })
+
+  if (!price) {
+    throw new Error('No dynamic gas price found')
+  }
+
+  return price
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -243,5 +306,23 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'nativeStakedBalance', options],
       queryFn: options ? () => fetchNativeStakedBalance(options) : skipToken,
+    }),
+  /**
+   * Fetch the total native tokens staked across the whole chain.
+   */
+  totalNativeStakedBalance: (
+    options: Parameters<typeof fetchTotalNativeStakedBalance>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'totalNativeStakedBalance', options],
+      queryFn: () => fetchTotalNativeStakedBalance(options),
+    }),
+  /**
+   * Fetch the dynamic gas price for the native fee token.
+   */
+  dynamicGasPrice: (options: Parameters<typeof fetchDynamicGasPrice>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'dynamicGasPrice', options],
+      queryFn: () => fetchDynamicGasPrice(options),
     }),
 }

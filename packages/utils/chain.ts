@@ -2,7 +2,6 @@ import { Buffer } from 'buffer'
 
 import { AssetList, Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
-import { GasPrice } from '@cosmjs/stargate'
 import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
@@ -21,7 +20,6 @@ import {
   TokenType,
   Validator,
 } from '@dao-dao/types'
-import { aminoTypes, typesRegistry } from '@dao-dao/types/protobuf'
 import {
   Validator as RpcValidator,
   bondStatusToJSON,
@@ -608,32 +606,6 @@ export const cosmosSdkVersionIs46OrHigher = (version: string) =>
  */
 export const cosmosSdkVersionIs47OrHigher = (version: string) =>
   semverGte(version, '0.47.0')
-
-export const getSignerOptions = ({ chain_id, fees }: Chain) => {
-  let gasPrice
-  try {
-    const nativeToken = getNativeTokenForChainId(chain_id)
-    const feeToken = fees?.fee_tokens.find(
-      ({ denom }) => denom === nativeToken.denomOrAddress
-    )
-    const gasPriceAmount =
-      feeToken?.average_gas_price ??
-      feeToken?.high_gas_price ??
-      feeToken?.low_gas_price ??
-      feeToken?.fixed_min_gas_price
-
-    gasPrice =
-      feeToken && feeToken.denom.length >= 3 && gasPriceAmount !== undefined
-        ? GasPrice.fromString(gasPriceAmount + feeToken.denom)
-        : undefined
-  } catch {}
-
-  return {
-    gasPrice,
-    registry: typesRegistry,
-    aminoTypes,
-  }
-}
 
 /**
  * Get the DAO info object for a given chain ID.

@@ -10,6 +10,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
@@ -43,6 +44,7 @@ import {
   proposalDraftsAtom,
   refreshGovProposalsAtom,
 } from '@dao-dao/state/recoil'
+import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
   Button,
   ErrorPage,
@@ -80,7 +82,6 @@ import {
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getRpcForChainId,
-  getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   objectMatchesStructure,
@@ -269,6 +270,7 @@ const InnerNewGovProposal = ({
     chainWallet,
   } = useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
+  const queryClient = useQueryClient()
 
   const { context } = useActionOptions()
   if (context.type !== ActionContextType.Gov) {
@@ -408,7 +410,7 @@ const InnerNewGovProposal = ({
             const signingClient = await SigningStargateClient.connectWithSigner(
               getRpcForChainId(chain.chain_id),
               signer,
-              getSignerOptions(chain)
+              makeGetSignerOptions(queryClient)(chain)
             )
 
             const { events } = await signingClient.signAndBroadcast(
@@ -520,6 +522,7 @@ const InnerNewGovProposal = ({
         refreshGovProposals,
         setLatestProposalSave,
         router,
+        queryClient,
       ]
     )
   const proposalData = watch()

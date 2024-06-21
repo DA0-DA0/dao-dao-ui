@@ -26,6 +26,7 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.41.3",
     "@dao-dao/config": "2.4.0-rc.9",
     "@dao-dao/types": "2.4.0-rc.9",
     "@graphql-codegen/cli": "^5.0.0",

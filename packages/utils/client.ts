@@ -11,6 +11,7 @@ import {
 import {
   cosmos,
   cosmwasm,
+  feemarket,
   ibc,
   juno,
   kujira,
@@ -238,6 +239,22 @@ export const kujiraProtoRpcClientRouter = new ChainClientRouter({
             rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).kujira
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with feemarket protobufs.
+ */
+export const feemarketProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await feemarket.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).feemarket
     ),
 })
 
