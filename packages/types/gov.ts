@@ -35,6 +35,7 @@ export type GovProposalV1Beta1 = {
 
 export type GovProposalV1Beta1DecodedContent = ProposalV1Beta1['content']
 export type GovProposalV1Beta1WithDecodedContent = GovProposalV1Beta1 & {
+  chainId: string
   title: string
   description: string
   decodedContent: GovProposalV1Beta1DecodedContent
@@ -48,6 +49,7 @@ export type GovProposalV1 = {
 
 export type GovProposalV1DecodedMessages = CosmosMsgFor_Empty[]
 export type GovProposalV1WithDecodedMessages = GovProposalV1 & {
+  chainId: string
   title: string
   description: string
   decodedMessages: GovProposalV1DecodedMessages

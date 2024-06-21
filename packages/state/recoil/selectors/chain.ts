@@ -675,6 +675,7 @@ export const searchedDecodedGovProposalsSelector = selectorFamily<
         await Promise.allSettled(
           results.map(async ({ value: { id, data } }) =>
             decodeGovProposal(
+              options.chainId,
               supportsV1Gov
                 ? {
                     version: GovProposalVersion.V1,
@@ -836,14 +837,14 @@ export const govProposalsSelector = selectorFamily<
 
       const proposals = await Promise.all([
         ...(v1Beta1Proposals || []).map((proposal) =>
-          decodeGovProposal({
+          decodeGovProposal(chainId, {
             version: GovProposalVersion.V1_BETA_1,
             id: proposal.proposalId,
             proposal,
           })
         ),
         ...(v1Proposals || []).map((proposal) =>
-          decodeGovProposal({
+          decodeGovProposal(chainId, {
             version: GovProposalVersion.V1,
             id: proposal.id,
             proposal,
@@ -896,13 +897,13 @@ export const govProposalSelector = selectorFamily<
 
       if (indexerProposal) {
         if (supportsV1Gov) {
-          govProposal = await decodeGovProposal({
+          govProposal = await decodeGovProposal(chainId, {
             version: GovProposalVersion.V1,
             id: BigInt(proposalId),
             proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
           })
         } else {
-          govProposal = await decodeGovProposal({
+          govProposal = await decodeGovProposal(chainId, {
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal: ProposalV1Beta1.decode(
@@ -929,7 +930,7 @@ export const govProposalSelector = selectorFamily<
               throw new Error('Proposal not found')
             }
 
-            govProposal = await decodeGovProposal({
+            govProposal = await decodeGovProposal(chainId, {
               version: GovProposalVersion.V1,
               id: BigInt(proposalId),
               proposal,
@@ -959,7 +960,7 @@ export const govProposalSelector = selectorFamily<
             throw new Error('Proposal not found')
           }
 
-          govProposal = await decodeGovProposal({
+          govProposal = await decodeGovProposal(chainId, {
             version: GovProposalVersion.V1_BETA_1,
             id: BigInt(proposalId),
             proposal,

@@ -404,13 +404,13 @@ export const makeGetDaoProposalStaticProps = ({
 
           if (indexerProposal) {
             if (supportsV1Gov) {
-              proposal = await decodeGovProposal({
+              proposal = await decodeGovProposal(chain.chain_id, {
                 version: GovProposalVersion.V1,
                 id: BigInt(proposalId),
                 proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
               })
             } else {
-              proposal = await decodeGovProposal({
+              proposal = await decodeGovProposal(chain.chain_id, {
                 version: GovProposalVersion.V1_BETA_1,
                 id: BigInt(proposalId),
                 proposal: ProposalV1Beta1.decode(
@@ -441,7 +441,7 @@ export const makeGetDaoProposalStaticProps = ({
                   throw new Error('NOT_FOUND')
                 }
 
-                proposal = await decodeGovProposal({
+                proposal = await decodeGovProposal(chain.chain_id, {
                   version: GovProposalVersion.V1,
                   id: BigInt(proposalId),
                   proposal: proposalV1,
@@ -471,7 +471,7 @@ export const makeGetDaoProposalStaticProps = ({
                 throw new Error('NOT_FOUND')
               }
 
-              proposal = await decodeGovProposal({
+              proposal = await decodeGovProposal(chain.chain_id, {
                 version: GovProposalVersion.V1_BETA_1,
                 id: BigInt(proposalId),
                 proposal: proposalV1Beta1,

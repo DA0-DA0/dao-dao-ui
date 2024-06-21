@@ -42,6 +42,7 @@ export const decodeGovProposalV1Messages = (
 
 // Decode governance proposal content using a protobuf.
 export const decodeGovProposal = async (
+  chainId: string,
   govProposal: GovProposal
 ): Promise<GovProposalWithDecodedContent> => {
   if (govProposal.version === GovProposalVersion.V1_BETA_1) {
@@ -65,6 +66,7 @@ export const decodeGovProposal = async (
 
     return {
       ...govProposal,
+      chainId,
       title,
       description,
       decodedContent: govProposal.proposal.content,
@@ -124,6 +126,7 @@ export const decodeGovProposal = async (
 
   return {
     ...govProposal,
+    chainId,
     title,
     description,
     decodedMessages,

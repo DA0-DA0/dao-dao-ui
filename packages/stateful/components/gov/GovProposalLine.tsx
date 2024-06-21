@@ -1,4 +1,5 @@
 import {
+  ChainProvider,
   GovProposalStatus,
   GovProposalWalletVote,
   ProposalLine as StatelessProposalLine,
@@ -12,7 +13,13 @@ import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1bet
 import { useLoadingGovProposalWalletVoteInfo } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
 
-export const GovProposalLine = (props: StatefulGovProposalLineProps) => {
+export const GovProposalLine = (props: StatefulGovProposalLineProps) => (
+  <ChainProvider chainId={props.proposal.chainId}>
+    <InnerGovProposalLine {...props} />
+  </ChainProvider>
+)
+
+const InnerGovProposalLine = (props: StatefulGovProposalLineProps) => {
   const { proposalId, proposal } = props
   const {
     config: { name },
