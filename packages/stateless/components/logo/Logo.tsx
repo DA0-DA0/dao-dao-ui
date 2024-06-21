@@ -10,6 +10,8 @@ export const Logo = ({ size = 28, invert, className }: LogoProps) => {
     <svg
       aria-label={t('info.daodaoLogo')}
       className={clsx(
+        // fix pixel clipping on edges
+        'overflow-visible',
         {
           'text-icon-primary': !invert,
           'text-background-base': invert,
@@ -51,10 +53,14 @@ export const LogoNoBorder = ({ size = 28, className }: LogoProps) => {
   return (
     <svg
       aria-label={t('info.daodaoLogo')}
-      className={className}
+      className={clsx(
+        // fix pixel clipping on edges
+        'overflow-visible',
+        className
+      )}
       fill="none"
       height={size}
-      viewBox={`0 0 28 28`}
+      viewBox="0 0 28 28"
       width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
