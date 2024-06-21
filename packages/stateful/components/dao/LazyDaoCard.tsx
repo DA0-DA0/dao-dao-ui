@@ -37,6 +37,7 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         accounts: [],
         parentDao: null,
         admin: '',
+        contractAdmin: null,
       }}
     />
   ) : daoInfoQuery.isError ? (
@@ -63,6 +64,7 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         accounts: [],
         parentDao: null,
         admin: '',
+        contractAdmin: null,
       }}
     />
   ) : (

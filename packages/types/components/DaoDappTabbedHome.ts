@@ -13,10 +13,4 @@ export type DaoDappTabbedHomeProps = Omit<DaoSplashHeaderProps, 'daoInfo'> & {
   tabs: DaoTabWithComponent[]
   selectedTabId: string
   onSelectTabId: (tab: string) => void
-  /**
-   * If this DAO is not recognized by its parent DAO as a SubDAO, and the
-   * current wallet is a member of the parent DAO, link to a new proposal in the
-   * parent DAO with the SubDAO recognition action pre-filled.
-   */
-  parentProposalRecognizeSubDaoHref?: string
 }

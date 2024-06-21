@@ -49,6 +49,7 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
   items: {},
   accounts: [],
   admin: '',
+  contractAdmin: null,
 })
 
 export const makeDaoCardProps = (id = 1): DaoCardProps => ({

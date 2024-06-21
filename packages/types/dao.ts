@@ -62,6 +62,10 @@ export type DaoInfo = {
   votingModuleAddress: string
   votingModuleContractName: string
   proposalModules: ProposalModule[]
+  /**
+   * Wasm contract-level admin that can migrate.
+   */
+  contractAdmin: string | null
   admin: string
   name: string
   description: string

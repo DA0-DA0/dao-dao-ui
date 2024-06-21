@@ -1,7 +1,6 @@
 export * from './ActionCard'
 export * from './ActionsEditor'
 export * from './ActionsRenderer'
-export * from './IsAdminWarning'
 export * from './NativeCoinSelector'
 export * from './NestedActionsEditor'
 export * from './NestedActionsRenderer'

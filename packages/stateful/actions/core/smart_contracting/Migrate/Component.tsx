@@ -6,8 +6,8 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
-  IsAdminWarning,
   NumberInput,
+  StatusCard,
   useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -82,7 +82,9 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
       </div>
 
-      <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
+      {contractAdmin !== address && (
+        <StatusCard content={t('info.notAdmin')} style="warning" />
+      )}
 
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.migrateMessage')} />

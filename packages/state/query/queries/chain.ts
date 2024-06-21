@@ -259,6 +259,20 @@ export const fetchDynamicGasPrice = async ({
   return price
 }
 
+/**
+ * Fetch the wasm contract-level admin for a contract.
+ */
+export const fetchWasmContractAdmin = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<string | null> => {
+  const client = await cosmWasmClientRouter.connect(chainId)
+  return (await client.getContract(address))?.admin ?? null
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -324,5 +338,13 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'dynamicGasPrice', options],
       queryFn: () => fetchDynamicGasPrice(options),
+    }),
+  /**
+   * Fetch the wasm contract-level admin for a contract.
+   */
+  wasmContractAdmin: (options: Parameters<typeof fetchWasmContractAdmin>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'wasmContractAdmin', options],
+      queryFn: () => fetchWasmContractAdmin(options),
     }),
 }

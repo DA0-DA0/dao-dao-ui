@@ -5,7 +5,7 @@ import {
   AddressInput,
   InputErrorMessage,
   InputLabel,
-  IsAdminWarning,
+  StatusCard,
   useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -59,7 +59,9 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         </div>
       </div>
 
-      <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
+      {contractAdmin !== address && (
+        <StatusCard content={t('info.notAdmin')} style="warning" />
+      )}
     </>
   )
 }

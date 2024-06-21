@@ -90,12 +90,20 @@ export const fetchDaoInfo = async (
 
   // Get DAO info from contract.
 
-  const state = await queryClient.fetchQuery(
-    daoDaoCoreQueries.dumpState(queryClient, {
-      chainId,
-      contractAddress: coreAddress,
-    })
-  )
+  const [state, contractAdmin] = await Promise.all([
+    queryClient.fetchQuery(
+      daoDaoCoreQueries.dumpState(queryClient, {
+        chainId,
+        contractAddress: coreAddress,
+      })
+    ),
+    queryClient.fetchQuery(
+      chainQueries.wasmContractAdmin({
+        chainId,
+        address: coreAddress,
+      })
+    ),
+  ])
 
   const coreVersion = parseContractVersion(state.version.version)
   const supportedFeatures = getSupportedFeatures(coreVersion)
@@ -205,6 +213,7 @@ export const fetchDaoInfo = async (
     votingModuleAddress: state.voting_module,
     votingModuleContractName,
     proposalModules,
+    contractAdmin,
     admin: state.admin,
     name: state.config.name,
     description: state.config.description,

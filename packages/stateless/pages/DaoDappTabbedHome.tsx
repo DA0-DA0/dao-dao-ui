@@ -12,14 +12,13 @@ import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext, useTabBarScrollReset } from '../hooks'
 
 export const DaoDappTabbedHome = ({
-  follow,
   SuspenseLoader,
   ButtonLink,
   LinkWrapper,
   tabs,
   selectedTabId,
   onSelectTabId,
-  parentProposalRecognizeSubDaoHref,
+  ...headerProps
 }: DaoDappTabbedHomeProps) => {
   const daoInfo = useDaoInfoContext()
 
@@ -35,8 +34,7 @@ export const DaoDappTabbedHome = ({
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
           daoInfo={daoInfo}
-          follow={follow}
-          parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
+          {...headerProps}
         />
       </div>
 

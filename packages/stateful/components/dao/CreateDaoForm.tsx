@@ -642,6 +642,7 @@ export const InnerCreateDaoForm = ({
               items: {},
               polytoneProxies: {},
               accounts: [],
+              contractAdmin: null,
             },
             lazyData: {
               loading: false,

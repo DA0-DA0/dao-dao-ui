@@ -125,7 +125,7 @@ const Component: ActionComponent = (props) => {
       coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
         ? {
             chainId,
-            coreAddress: address,
+            coreAddress,
           }
         : undefined
     )

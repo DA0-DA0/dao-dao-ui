@@ -57,6 +57,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   ],
   parentDao: null,
   admin: '',
+  contractAdmin: null,
 })
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {

@@ -638,4 +638,5 @@ export const getDaoInfoForChainId = (
   accounts,
   parentDao: null,
   admin: '',
+  contractAdmin: null,
 })

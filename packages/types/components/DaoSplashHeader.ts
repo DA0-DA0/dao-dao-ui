@@ -17,4 +17,10 @@ export type DaoSplashHeaderProps = {
    * `DaoDappTabbedHome.tsx`.
    */
   parentProposalRecognizeSubDaoHref?: string
+  /**
+   * If this DAO has a parent DAO set but its contract-level admin is set to
+   * itself, link to a new proposal that changes its admin. Passed from
+   * `DaoDappTabbedHome.tsx`.
+   */
+  proposeUpdateAdminToParentHref?: string
 }

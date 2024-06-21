@@ -32,7 +32,7 @@ import { SuspenseLoader } from '../SuspenseLoader'
 
 export type InnerDaoDappHomeProps = Pick<
   DaoDappTabbedHomeProps,
-  'parentProposalRecognizeSubDaoHref'
+  'parentProposalRecognizeSubDaoHref' | 'proposeUpdateAdminToParentHref'
 > & {
   loadingTabs: LoadingData<DaoTabWithComponent[]>
 }
@@ -156,6 +156,7 @@ export const DaoDappHome = () => {
 
   const daoInfo = useDaoInfoContext()
 
+  const { isMember = false } = useMembership(daoInfo)
   // If no parent, fallback to current DAO since it's already loaded from the
   // above hook. We won't use this value unless there's a parent. It's redundant
   // but has no effect.
@@ -197,12 +198,87 @@ export const DaoDappHome = () => {
         })
       : undefined
 
+  const proposeUpdateAdminToParentHref =
+    // Only show if this DAO has a parent DAO but its contract-level admin is
+    // set to itself. Only the current contract-level admin can change it.
+    daoInfo.parentDao && daoInfo.contractAdmin === daoInfo.coreAddress
+      ? // Make proposal in SubDAO if current wallet is a member of the SubDAO or not a member of the parent DAO (just to make it clear that this is a prompt to fix it).
+        isMember || !isMemberOfParent
+        ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              title: t('title.setAdminToParent', {
+                parent: daoInfo.parentDao.name,
+              }),
+              description:
+                t('info.parentDaoNotAdmin', {
+                  child: daoInfo.name,
+                  parent: daoInfo.parentDao.name,
+                }) +
+                ' ' +
+                t('info.proposalFixesChildAdmin', {
+                  child: daoInfo.name,
+                  parent: daoInfo.parentDao.name,
+                }),
+              actions: [
+                {
+                  actionKey: ActionKey.UpdateAdmin,
+                  data: {
+                    chainId: daoInfo.chainId,
+                    contract: daoInfo.coreAddress,
+                    newAdmin: daoInfo.parentDao.coreAddress,
+                  },
+                },
+              ],
+            }),
+          })
+        : // Make proposal in parent DAO if current wallet is a member.
+        isMemberOfParent
+        ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              title: t('title.fixChildAdmin', {
+                child: daoInfo.name,
+              }),
+              description:
+                t('info.parentDaoNotAdmin', {
+                  child: daoInfo.name,
+                  parent: daoInfo.parentDao.name,
+                }) +
+                ' ' +
+                t('info.proposalFixesChildAdmin', {
+                  child: daoInfo.name,
+                  parent: daoInfo.parentDao.name,
+                }),
+              actions: [
+                {
+                  actionKey: ActionKey.DaoAdminExec,
+                  data: {
+                    coreAddress: daoInfo.coreAddress,
+                    msgs: [],
+                    _actionData: [
+                      {
+                        actionKey: ActionKey.UpdateAdmin,
+                        data: {
+                          chainId: daoInfo.chainId,
+                          contract: daoInfo.coreAddress,
+                          newAdmin: daoInfo.parentDao.coreAddress,
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }),
+          })
+        : undefined
+      : undefined
+
   const loadingTabs = useDaoTabs()
 
   return (
     <InnerDaoDappHome
       loadingTabs={loadingTabs}
       parentProposalRecognizeSubDaoHref={parentProposalRecognizeSubDaoHref}
+      proposeUpdateAdminToParentHref={proposeUpdateAdminToParentHref}
     />
   )
 }
