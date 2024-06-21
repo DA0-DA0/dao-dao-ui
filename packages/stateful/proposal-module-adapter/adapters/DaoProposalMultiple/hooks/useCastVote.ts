@@ -4,29 +4,20 @@ import toast from 'react-hot-toast'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { processError } from '@dao-dao/utils'
 
-import {
-  DaoProposalMultipleHooks,
-  useWalletWithSecretNetworkPermit,
-} from '../../../../hooks'
-import { useProposalModuleAdapterOptions } from '../../../react'
+import { useWallet } from '../../../../hooks'
+import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { coreAddress, proposalModule, proposalNumber } =
-    useProposalModuleAdapterOptions()
   const {
-    isSecretNetwork,
+    proposalModule,
+    options: { proposalNumber },
+  } = useProposalModuleAdapterContext()
+  const {
     isWalletConnected,
     address: walletAddress = '',
-    getPermit,
-  } = useWalletWithSecretNetworkPermit({
-    dao: coreAddress,
-  })
-
-  const _castVote = DaoProposalMultipleHooks.useVote({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
+    getSigningClient,
+  } = useWallet()
 
   const [castingVote, setCastingVote] = useState(false)
 
@@ -51,17 +42,11 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
       setCastingVote(true)
 
       try {
-        const permit = await getPermit()
-
-        // TODO(dao-client): move to DAO client
-        await _castVote({
+        await proposalModule.vote({
           proposalId: proposalNumber,
           vote,
-          ...(isSecretNetwork && {
-            auth: {
-              permit,
-            },
-          }),
+          getSigningClient,
+          sender: walletAddress,
         })
 
         await onSuccess?.()
@@ -77,10 +62,10 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
     },
     [
       isWalletConnected,
-      getPermit,
-      _castVote,
+      proposalModule,
       proposalNumber,
-      isSecretNetwork,
+      getSigningClient,
+      walletAddress,
       onSuccess,
     ]
   )

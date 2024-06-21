@@ -415,7 +415,7 @@ export const InnerCreateDaoForm = ({
   const {
     isWalletConnected,
     address: walletAddress,
-    getSigningCosmWasmClient,
+    getSigningClient,
   } = useWallet()
   const { refreshBalances } = useWalletBalances()
 
@@ -443,7 +443,7 @@ export const InnerCreateDaoForm = ({
     // SubDAOs). Otherwise, instantiate with self as admin via factory.
     if (instantiateMsg.admin) {
       return await instantiateSmartContract(
-        await getSigningCosmWasmClient(),
+        getSigningClient,
         walletAddress,
         codeIds.DaoCore,
         instantiateMsg.name,

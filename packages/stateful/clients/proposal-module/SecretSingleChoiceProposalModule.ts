@@ -138,10 +138,12 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
     getSigningClient,
     sender,
+    memo,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    memo?: string
   }): Promise<void> {
     const client = await getSigningClient()
     const permit = await this.dao.getPermit(sender)
@@ -150,12 +152,16 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       client,
       sender,
       this.address
-    ).execute({
-      proposalId,
-      auth: {
-        permit,
+    ).execute(
+      {
+        proposalId,
+        auth: {
+          permit,
+        },
       },
-    })
+      undefined,
+      memo
+    )
   }
 
   async close({

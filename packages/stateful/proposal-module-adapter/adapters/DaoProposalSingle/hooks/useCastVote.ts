@@ -8,22 +8,21 @@ import { processError } from '@dao-dao/utils'
 import {
   CwProposalSingleV1Hooks,
   DaoProposalSingleV2Hooks,
-  useWalletWithSecretNetworkPermit,
+  useWallet,
 } from '../../../../hooks'
-import { useProposalModuleAdapterOptions } from '../../../react'
+import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { coreAddress, proposalModule, proposalNumber } =
-    useProposalModuleAdapterOptions()
   const {
-    isSecretNetwork,
+    proposalModule,
+    options: { proposalNumber },
+  } = useProposalModuleAdapterContext()
+  const {
     isWalletConnected,
     address: walletAddress = '',
-    getPermit,
-  } = useWalletWithSecretNetworkPermit({
-    dao: coreAddress,
-  })
+    getSigningClient,
+  } = useWallet()
 
   const _castVote = (
     proposalModule.version === ContractVersion.V1
@@ -57,17 +56,11 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
       setCastingVote(true)
 
       try {
-        const permit = await getPermit()
-
-        // TODO(dao-client): move to DAO client
-        await _castVote({
+        await proposalModule.vote({
           proposalId: proposalNumber,
           vote,
-          ...(isSecretNetwork && {
-            auth: {
-              permit,
-            },
-          }),
+          getSigningClient,
+          sender: walletAddress,
         })
 
         await onSuccess?.()
@@ -83,10 +76,10 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
     },
     [
       isWalletConnected,
-      getPermit,
-      _castVote,
+      proposalModule,
       proposalNumber,
-      isSecretNetwork,
+      getSigningClient,
+      walletAddress,
       onSuccess,
     ]
   )

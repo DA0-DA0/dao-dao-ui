@@ -64,12 +64,7 @@ export abstract class ProposalModuleBase<
   /**
    * Make a proposal.
    */
-  abstract propose({
-    data,
-    getSigningClient,
-    sender,
-    funds,
-  }: {
+  abstract propose(options: {
     data: Proposal
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
@@ -92,24 +87,17 @@ export abstract class ProposalModuleBase<
   /**
    * Execute a passed proposal.
    */
-  abstract execute({
-    proposalId,
-    getSigningClient,
-    sender,
-  }: {
+  abstract execute(options: {
     proposalId: number
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
+    memo?: string
   }): Promise<void>
 
   /**
    * Close a rejected proposal.
    */
-  abstract close({
-    proposalId,
-    getSigningClient,
-    sender,
-  }: {
+  abstract close(options: {
     proposalId: number
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string

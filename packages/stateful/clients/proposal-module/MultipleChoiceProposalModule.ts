@@ -115,15 +115,21 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
     getSigningClient,
     sender,
+    memo,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    memo?: string
   }): Promise<void> {
     const client = await getSigningClient()
-    await new DaoProposalMultipleClient(client, sender, this.address).execute({
-      proposalId,
-    })
+    await new DaoProposalMultipleClient(client, sender, this.address).execute(
+      {
+        proposalId,
+      },
+      undefined,
+      memo
+    )
   }
 
   async close({

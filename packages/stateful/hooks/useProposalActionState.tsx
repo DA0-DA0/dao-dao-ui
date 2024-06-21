@@ -1,4 +1,3 @@
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { CancelOutlined, Key, Send } from '@mui/icons-material'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -14,7 +13,6 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
-  Auth,
   ChainId,
   LoadingData,
   PreProposeModuleType,
@@ -28,30 +26,15 @@ import {
 } from '@dao-dao/utils'
 
 import { ProfileProposalCard } from '../components'
-import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
+import { useProposalModuleAdapterContext } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
 import { UseProposalRelayStateReturn } from './useProposalRelayState'
-import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
+import { useWallet } from './useWallet'
 
 export type UseProposalActionStateOptions = {
   relayState: UseProposalRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
-  executeProposal: (
-    options: {
-      proposalId: number
-      // Secret Network
-      auth?: Auth
-    },
-    // No need.
-    fee?: undefined,
-    memo?: string | undefined
-  ) => Promise<ExecuteResult>
-  closeProposal: (options: {
-    proposalId: number
-    // Secret Network
-    auth?: Auth
-  }) => Promise<ExecuteResult>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -70,8 +53,6 @@ export const useProposalActionState = ({
   relayState,
   statusKey,
   loadingExecutionTxHash,
-  executeProposal,
-  closeProposal,
   onExecuteSuccess,
   onCloseSuccess,
 }: UseProposalActionStateOptions): UseProposalActionStateReturn => {
@@ -80,11 +61,15 @@ export const useProposalActionState = ({
     chain: { chain_id: chainId },
   } = useConfiguredChainContext()
   const { coreAddress, items } = useDaoInfoContext()
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isSecretNetwork, isWalletConnected, getPermit } =
-    useWalletWithSecretNetworkPermit({
-      dao: coreAddress,
-    })
+  const {
+    options: { proposalNumber },
+    proposalModule,
+  } = useProposalModuleAdapterContext()
+  const {
+    isWalletConnected,
+    address: walletAddress = '',
+    getSigningClient,
+  } = useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -115,19 +100,12 @@ export const useProposalActionState = ({
 
     setActionLoading(true)
     try {
-      // TODO(dao-client): move to DAO client
-      await executeProposal(
-        {
-          proposalId: proposalNumber,
-          ...(isSecretNetwork && {
-            auth: {
-              permit: await getPermit(),
-            },
-          }),
-        },
-        undefined,
-        allowMemoOnExecute && memo ? memo : undefined
-      )
+      await proposalModule.execute({
+        proposalId: proposalNumber,
+        getSigningClient,
+        sender: walletAddress,
+        memo: allowMemoOnExecute && memo ? memo : undefined,
+      })
 
       await onExecuteSuccess()
     } catch (err) {
@@ -141,10 +119,10 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [
     isWalletConnected,
-    executeProposal,
+    proposalModule,
     proposalNumber,
-    isSecretNetwork,
-    getPermit,
+    getSigningClient,
+    walletAddress,
     allowMemoOnExecute,
     memo,
     onExecuteSuccess,
@@ -158,14 +136,10 @@ export const useProposalActionState = ({
     setActionLoading(true)
 
     try {
-      // TODO(dao-client): move to DAO client
-      await closeProposal({
+      await proposalModule.close({
         proposalId: proposalNumber,
-        ...(isSecretNetwork && {
-          auth: {
-            permit: await getPermit(),
-          },
-        }),
+        getSigningClient,
+        sender: walletAddress,
       })
 
       await onCloseSuccess()
@@ -180,10 +154,10 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [
     isWalletConnected,
-    closeProposal,
+    proposalModule,
     proposalNumber,
-    isSecretNetwork,
-    getPermit,
+    getSigningClient,
+    walletAddress,
     onCloseSuccess,
   ])
 

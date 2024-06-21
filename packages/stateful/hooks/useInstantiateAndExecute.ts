@@ -56,7 +56,7 @@ export const useInstantiateAndExecute = (
   codeId: number
 ): UseInstantiateAndExecuteResult => {
   const { t } = useTranslation()
-  const { getSigningCosmWasmClient, address, chain } = useWallet({
+  const { getSigningClient, address, chain } = useWallet({
     chainId,
   })
 
@@ -121,8 +121,8 @@ export const useInstantiateAndExecute = (
         ),
       ]
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-      const response = (await signingCosmWasmClient.signAndBroadcast(
+      const signingClient = await getSigningClient()
+      const response = (await signingClient.signAndBroadcast(
         address,
         messages.map((msg) =>
           cwMsgToEncodeObject(chain.chain_id, msg, address)
@@ -136,7 +136,7 @@ export const useInstantiateAndExecute = (
         response,
       }
     },
-    [address, chain, codeDetailsLoadable, codeId, getSigningCosmWasmClient, t]
+    [address, chain, codeDetailsLoadable, codeId, getSigningClient, t]
   )
 
   return {

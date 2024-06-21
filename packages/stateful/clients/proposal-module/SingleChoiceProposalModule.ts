@@ -161,10 +161,12 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
     getSigningClient,
     sender,
+    memo,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    memo?: string
   }): Promise<void> {
     const client = await getSigningClient()
 
@@ -173,9 +175,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         ? CwProposalSingleV1Client
         : DaoProposalSingleV2Client
 
-    await new Client(client, sender, this.address).execute({
-      proposalId,
-    })
+    await new Client(client, sender, this.address).execute(
+      {
+        proposalId,
+      },
+      undefined,
+      memo
+    )
   }
 
   async close({
