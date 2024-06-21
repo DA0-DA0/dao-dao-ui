@@ -88,7 +88,10 @@ export const DaoSplashHeader = ({
 
             {!!proposeUpdateAdminToParentHref && (
               <span className="font-bold">
-                {' ' + t('button.clickHereToProposeFixing')}
+                {' ' +
+                  t('button.clickHereToProposeSettingAdminToParent', {
+                    parent: daoInfo.parentDao.name,
+                  })}
               </span>
             )}
           </p>
