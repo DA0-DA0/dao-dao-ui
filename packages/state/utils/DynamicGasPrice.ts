@@ -49,13 +49,11 @@ export class DynamicGasPrice implements GasPrice {
   }
 
   get dynamicGasPrice(): DecCoin | undefined {
-    const d = this.queryClient.getQueryData(
+    return this.queryClient.getQueryData(
       chainQueries.dynamicGasPrice({
         chainId: this.chain.chain_id,
       }).queryKey
     )
-    console.log('DYNAMIC', this.chain.chain_id, d)
-    return d
   }
 
   get denom(): string {
