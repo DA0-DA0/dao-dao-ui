@@ -25,6 +25,7 @@ const Template: ComponentStory<typeof GovernanceDepositComponent> = (args) => (
 )
 
 export const makeProposal = (): GovProposalWithDecodedContent => ({
+  chainId: CHAIN_ID,
   version: GovProposalVersion.V1_BETA_1,
   id: 1n,
   title: 'Upgrade to v10 Alpha 1',
