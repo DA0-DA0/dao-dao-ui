@@ -12,6 +12,7 @@ import {
   walletChainIdAtom,
   walletHexPublicKeySelector,
 } from '@dao-dao/state/recoil'
+import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
   useCachedLoading,
   useChainContextIfAvailable,
@@ -22,7 +23,6 @@ import {
   SupportedSigningCosmWasmClient,
   getLcdForChainId,
   getRpcForChainId,
-  getSignerOptions,
   getSupportedChains,
   isSecretNetwork,
   maybeGetChainForChainId,
@@ -224,7 +224,7 @@ export const useWallet = ({
         return await SecretSigningCosmWasmClient.secretConnectWithSigner(
           getRpcForChainId(chain.chain_id),
           signer,
-          getSignerOptions(chain),
+          makeGetSignerOptions(queryClient)(chain),
           {
             url: getLcdForChainId(chain.chain_id),
             chainId: chain.chain_id,
@@ -275,6 +275,7 @@ export const useWallet = ({
       walletChainRef.current?.chain.chain_id,
       walletChainRef.current?.status,
       hexPublicKeyFromChain,
+      queryClient,
     ]
   )
 
