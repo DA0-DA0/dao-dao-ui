@@ -23,6 +23,7 @@ export const useLoadingWalletVoteInfo = ():
 
   const loadingProposal = useLoadingProposal()
 
+  // TODO(dao-client): refresh somehow based on current recoil refreshers
   const walletVoteLoading = useLoadingPromise({
     // Loading state if wallet not connected.
     promise: walletAddress
@@ -32,8 +33,8 @@ export const useLoadingWalletVoteInfo = ():
             voter: walletAddress,
           })
       : undefined,
-    // Refresh when permit, proposal module, or wallet changes.
-    deps: [permit, proposalModule, walletAddress],
+    // Refresh when permit, proposal module, wallet, or proposal changes.
+    deps: [permit, proposalModule, walletAddress, proposalNumber],
   })
 
   const walletVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
@@ -46,8 +47,8 @@ export const useLoadingWalletVoteInfo = ():
               loadingProposal.data.start_height
             )
         : undefined,
-    // Refresh when permit, proposal module, or wallet changes.
-    deps: [permit, proposalModule, walletAddress],
+    // Refresh when permit, proposal module, wallet, or proposal changes.
+    deps: [permit, proposalModule, walletAddress, proposalNumber],
   })
 
   const totalVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
@@ -58,8 +59,8 @@ export const useLoadingWalletVoteInfo = ():
             loadingProposal.data.start_height
           )
       : undefined,
-    // Refresh when proposal module changes.
-    deps: [proposalModule],
+    // Refresh when proposal module or proposal changes.
+    deps: [proposalModule, proposalNumber],
   })
 
   // Return undefined when no permit on Secret Network.

@@ -41,12 +41,17 @@ export const useLoadingPromise = <T>({
   })
 
   const promiseRef = useUpdatingRef(_promise)
+  const promiseIsDefined = !!_promise
+
   const promise = useMemo(
     () => promiseRef.current?.(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       // Use memoized ref so it doesn't reset on every render.
       promiseRef,
+      // Update if the promise switches between a function and undefined so that
+      // the loading state updates immediately.
+      promiseIsDefined,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ...(deps || []),
     ]
