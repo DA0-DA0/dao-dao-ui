@@ -36,9 +36,9 @@ export class DynamicGasPrice implements GasPrice {
     )
 
     const gasPriceAmount =
+      feeToken?.low_gas_price ??
       feeToken?.average_gas_price ??
       feeToken?.high_gas_price ??
-      feeToken?.low_gas_price ??
       feeToken?.fixed_min_gas_price ??
       0
 
