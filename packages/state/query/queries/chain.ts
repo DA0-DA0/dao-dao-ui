@@ -7,6 +7,7 @@ import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coi
 import {
   cosmWasmClientRouter,
   cosmosProtoRpcClientRouter,
+  cosmwasmProtoRpcClientRouter,
   feemarketProtoRpcClientRouter,
   getNativeTokenForChainId,
   isValidBech32Address,
@@ -269,8 +270,16 @@ export const fetchWasmContractAdmin = async ({
   chainId: string
   address: string
 }): Promise<string | null> => {
-  const client = await cosmWasmClientRouter.connect(chainId)
-  return (await client.getContract(address))?.admin ?? null
+  // CosmWasmClient.getContract is not compatible with Terra Classic for some
+  // reason, so use protobuf query directly.
+  const client = await cosmwasmProtoRpcClientRouter.connect(chainId)
+  return (
+    (
+      await client.wasm.v1.contractInfo({
+        address,
+      })
+    )?.contractInfo?.admin ?? null
+  )
 }
 
 export const chainQueries = {
