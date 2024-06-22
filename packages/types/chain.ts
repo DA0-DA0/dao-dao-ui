@@ -77,6 +77,7 @@ export enum ChainId {
   ArchwayMainnet = 'archway-1',
   InjectiveMainnet = 'injective-1',
   BitsongTestnet = 'bobnet',
+  OmniflixHubMainnet = 'omniflixhub-1',
 }
 
 export type BaseChainConfig = {

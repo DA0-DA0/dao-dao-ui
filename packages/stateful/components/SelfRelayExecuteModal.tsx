@@ -96,6 +96,7 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.ArchwayMainnet]: 1 * 10 ** 18,
   [ChainId.InjectiveMainnet]: 0.03 * 10 ** 18,
   [ChainId.TerraClassicMainnet]: 1000 * 10 ** 6,
+  [ChainId.OmniflixHubMainnet]: 1 * 10 ** 6,
 }
 
 type Relayer = {

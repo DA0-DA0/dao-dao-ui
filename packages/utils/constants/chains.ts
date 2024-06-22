@@ -325,6 +325,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // archway
         remoteChannel: 'channel-45',
       },
+      [ChainId.OmniflixHubMainnet]: {
+        // juno
+        note: 'juno128ace0g69ghvgw0quxptxmeg8kjex6mrw5fguulssllge6qnca6sjykzsw',
+        // juno
+        listener:
+          'juno1ts88k8s6he69uew3y89pg7l9e3zjqplctj4nwg6jw40d9le3r4esvp42s9',
+        // omniflixhub
+        voice:
+          'omniflix18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3q3wy4uv',
+        // juno
+        localConnection: 'connection-104',
+        // omniflixhub
+        remoteConnection: 'connection-27',
+        // juno
+        localChannel: 'channel-566',
+        // omniflixhub
+        remoteChannel: 'channel-41',
+      },
     },
   },
   {
@@ -554,6 +572,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-77133',
         // injective
         remoteChannel: 'channel-301',
+      },
+      [ChainId.OmniflixHubMainnet]: {
+        // osmosis
+        note: 'osmo19p2k2wdzdvrr0np5jmef4qa2wpsxjgmumu3k35d3myxcwjf9yufq9xl65h',
+        // osmosis
+        listener:
+          'osmo148g8aue5zvry9wy5zdspcghswqs7gg0qlh9wwzgm4g82t7c6w34qqvs433',
+        // omniflixhub
+        voice:
+          'omniflix1wkwy0xh89ksdgj9hr347dyd2dw7zesmtrue6kfzyml4vdtz6e5wsnmv63u',
+        // osmosis
+        localConnection: 'connection-1431',
+        // omniflixhub
+        remoteConnection: 'connection-8',
+        // osmosis
+        localChannel: 'channel-78358',
+        // omniflixhub
+        remoteChannel: 'channel-42',
       },
     },
   },
