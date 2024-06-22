@@ -377,8 +377,8 @@ export const useProposalRelayState = ({
   const executedOverFiveMinutesAgo =
     status === ProposalStatusEnum.Executed &&
     executedAt !== undefined &&
-    // If executed over 5 minutes ago...
-    Date.now() - executedAt.getTime() > 5 * 60 * 1000
+    // If executed over 1 minute ago...
+    Date.now() - executedAt.getTime() > 1 * 60 * 1000
   const messagesNeedingSelfRelay =
     unreceivedPackets.loading ||
     unreceivedAcks.loading ||
