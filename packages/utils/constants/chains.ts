@@ -1678,6 +1678,44 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.BitsongMainnet,
+    name: 'bitsong',
+    mainnet: true,
+    accentColor: '#c53381',
+    factoryContractAddress:
+      'bitsong1gpf39sy2u859wp370t4jty77gxlv9qennkm253swn0rqcm2r3v0q47w4ny',
+    explorerUrlTemplates: {
+      tx: 'https://ping.pub/bitsong/tx/REPLACE',
+      gov: 'https://ping.pub/bitsong/gov',
+      govProp: 'https://ping.pub/bitsong/gov/REPLACE',
+      wallet: 'https://ping.pub/bitsong/account/REPLACE',
+    },
+    codeIds: {
+      Cw1Whitelist: 7,
+      Cw4Group: 8,
+      // TODO(bitsong): use their bs721
+      Cw721Base: 9,
+      CwPayrollFactory: 11,
+      CwTokenSwap: 12,
+      CwVesting: 13,
+      DaoCore: 14,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 16,
+      DaoPreProposeApprover: 17,
+      DaoPreProposeMultiple: 18,
+      DaoPreProposeSingle: 19,
+      DaoProposalMultiple: 20,
+      DaoProposalSingle: 21,
+      DaoVotingCw4: 22,
+      DaoVotingCw721Staked: 23,
+      // TODO(bitsong): deploy when ready
+      DaoVotingTokenStaked: -1,
+
+      // unused
+      CwTokenfactoryIssuerMain: -1,
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,

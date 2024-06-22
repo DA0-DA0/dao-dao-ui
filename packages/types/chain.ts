@@ -76,6 +76,7 @@ export enum ChainId {
   OraichainMainnet = 'Oraichain',
   ArchwayMainnet = 'archway-1',
   InjectiveMainnet = 'injective-1',
+  BitsongMainnet = 'bitsong-2b',
   BitsongTestnet = 'bobnet',
   OmniflixHubMainnet = 'omniflixhub-1',
 }
