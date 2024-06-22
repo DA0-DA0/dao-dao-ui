@@ -44,6 +44,7 @@ import {
   Tooltip,
   useCachedLoadingWithError,
   useSupportedChainContext,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   ChainId,
@@ -223,6 +224,15 @@ export const SelfRelayExecuteModal = ({
     return () => clearInterval(interval)
   }, [relayers, refreshBalances])
 
+  // Create memoized function that returns the relayer funds for a chain,
+  // adjusting for number of packets.
+  const getRelayerFundsRef = useUpdatingRef(
+    (chainId: string): number =>
+      // Use relayer funds as base and increase by 5% per packet
+      (RELAYER_FUNDS_NEEDED[chainId] ?? 0) *
+      (1 + crossChainPackets.length * 0.05)
+  )
+
   const walletFunds = useCachedLoadingWithError(
     relayers
       ? waitForAll(
@@ -242,7 +252,7 @@ export const SelfRelayExecuteModal = ({
       ? walletFunds.data.map(
           ({ balance }, index) =>
             Number(balance) >=
-            (RELAYER_FUNDS_NEEDED[relayers[index].chain.chain_id] ?? 0)
+            getRelayerFundsRef.current(relayers[index].chain.chain_id)
         )
       : undefined
 
@@ -270,7 +280,7 @@ export const SelfRelayExecuteModal = ({
       .every(
         ({ amount }, index) =>
           Number(amount) >=
-          (RELAYER_FUNDS_NEEDED[relayers[index + 1].chain.chain_id] ?? 0)
+          getRelayerFundsRef.current(relayers[index + 1].chain.chain_id)
       )
 
   const setupRelayer = async () => {
@@ -426,7 +436,7 @@ export const SelfRelayExecuteModal = ({
 
       const fundsNeeded =
         // Give a little extra to cover the authz tx fee.
-        (RELAYER_FUNDS_NEEDED[chainId] ?? 0) * 1.3 -
+        getRelayerFundsRef.current(chainId) * 1.2 -
         Number(currentBalance.amount)
 
       let msgs: EncodeObject[] =
@@ -765,6 +775,7 @@ export const SelfRelayExecuteModal = ({
               ) {
                 // Refresh all balances.
                 relayers.map(refreshBalances)
+                console.error(err)
                 throw new Error(t('error.relayerWalletNeedsFunds'))
               }
 
@@ -806,8 +817,11 @@ export const SelfRelayExecuteModal = ({
                 await Promise.all(
                   uniquePackets.map(
                     async ({ srcChannel, srcPort }) =>
+                      // Just search one page (instead of all pages via
+                      // txSearchAll) because it incorrectly paginates sometimes
+                      // and throws an error.
                       (
-                        await link.endB.client.tm.txSearchAll({
+                        await link.endB.client.tm.txSearch({
                           query: `write_acknowledgement.packet_connection='${dstConnection}' AND write_acknowledgement.packet_src_port='${srcPort}' AND write_acknowledgement.packet_src_channel='${srcChannel}' AND write_acknowledgement.packet_sequence>=${smallestSequenceNumber} AND write_acknowledgement.packet_sequence<=${largestSequenceNumber}`,
                         })
                       ).txs
@@ -865,6 +879,7 @@ export const SelfRelayExecuteModal = ({
               ) {
                 // Refresh all balances.
                 relayers.map(refreshBalances)
+                console.error(err)
                 throw new Error(t('error.relayerWalletNeedsFunds'))
               }
 
@@ -1132,8 +1147,7 @@ export const SelfRelayExecuteModal = ({
                           fundedAmount[chain_id] ?? 0
                     const empty = funds === 0
 
-                    const funded =
-                      funds >= (RELAYER_FUNDS_NEEDED[chain_id] ?? 0)
+                    const funded = funds >= getRelayerFundsRef.current(chain_id)
 
                     const isExecute = index === 0
                     // If this is the execute, we need to make sure all
