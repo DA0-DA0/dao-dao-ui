@@ -374,7 +374,7 @@ export const useProposalRelayState = ({
     return () => clearInterval(interval)
   }, [anyPending, refreshIbcData])
 
-  const executedOverFiveMinutesAgo =
+  const executedOverOneMinuteAgo =
     status === ProposalStatusEnum.Executed &&
     executedAt !== undefined &&
     // If executed over 1 minute ago...
@@ -391,7 +391,7 @@ export const useProposalRelayState = ({
             states.pending.some((p) => p.packet === packet) &&
             // Executed a few minutes ago and still has not been relayed, or the
             // Polytone connection needs self-relay.
-            (executedOverFiveMinutesAgo ||
+            (executedOverOneMinuteAgo ||
               (packet.type === 'polytone' &&
                 !!packet.data.polytoneConnection.needsSelfRelay))
         )
