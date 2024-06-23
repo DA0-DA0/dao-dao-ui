@@ -3,17 +3,12 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ChainId,
-  CreateDaoContext,
-  PercentOrMajorityValue,
-} from '@dao-dao/types'
+import { CreateDaoContext, PercentOrMajorityValue } from '@dao-dao/types'
 import {
   DaoProposalSingleAdapterId,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   MembershipBasedCreatorId,
-  TokenBasedCreatorId,
   getDisplayNameForChainId,
   transformBech32Address,
   validateRequired,
@@ -150,10 +145,6 @@ export const CreateDaoStart = ({
               }
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
-              underDevelopment={
-                id === TokenBasedCreatorId &&
-                daoChainId === ChainId.BitsongMainnet
-              }
             />
           )
         )}
