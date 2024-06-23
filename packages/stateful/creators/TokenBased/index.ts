@@ -18,7 +18,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     suppliesI18nKey: 'daoCreator.TokenBased.supplies',
     membershipI18nKey: 'daoCreator.TokenBased.membership',
   },
-  makeDefaultConfig: ({ noCreateNewTokens = false }) => ({
+  makeDefaultConfig: ({ tokenCreationUnderDevelopment = false }) => ({
     tiers: [
       {
         name: '',
@@ -30,7 +30,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
         ],
       },
     ],
-    tokenType: noCreateNewTokens
+    tokenType: tokenCreationUnderDevelopment
       ? GovernanceTokenType.Existing
       : GovernanceTokenType.New,
     newInfo: {

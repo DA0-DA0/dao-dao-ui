@@ -1683,7 +1683,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: true,
     accentColor: '#c53381',
     // Token creation factory not yet ready.
-    noCreateNewTokens: true,
+    tokenCreationUnderDevelopment: true,
     factoryContractAddress:
       'bitsong1gpf39sy2u859wp370t4jty77gxlv9qennkm253swn0rqcm2r3v0q47w4ny',
     explorerUrlTemplates: {
@@ -1973,7 +1973,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: false,
     accentColor: '#c53381',
     // Token creation factory not yet ready.
-    noCreateNewTokens: true,
+    tokenCreationUnderDevelopment: true,
     factoryContractAddress:
       'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
     codeIds: {

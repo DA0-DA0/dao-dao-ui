@@ -323,18 +323,17 @@ export const GovernanceConfigurationInput = ({
     <>
       <SegmentedControls
         className="mt-8 mb-4 w-max"
-        disabled={config.noCreateNewTokens}
         onSelect={(tokenType) => setValue('creator.data.tokenType', tokenType)}
         selected={data.tokenType}
         tabs={[
-          ...(config.noCreateNewTokens
-            ? []
-            : [
-                {
-                  label: t('button.createAToken'),
-                  value: GovernanceTokenType.New,
-                },
-              ]),
+          {
+            label: t('button.createAToken'),
+            value: GovernanceTokenType.New,
+            disabled: config.tokenCreationUnderDevelopment,
+            tooltip: config.tokenCreationUnderDevelopment
+              ? t('info.tokenCreationUnderDevelopment')
+              : undefined,
+          },
           {
             label: t('button.useExistingToken'),
             value: GovernanceTokenType.Existing,
@@ -563,9 +562,7 @@ export const GovernanceConfigurationInput = ({
                 fieldName="creator.data.existingTokenDenomOrAddress"
                 ghost
                 placeholder={
-                  isCw20
-                    ? bech32Prefix + '...'
-                    : `"denom" OR "ibc/HASH" OR "factory/${bech32Prefix}.../denom"`
+                  isCw20 ? bech32Prefix + '...' : `denom OR ibc/HASH`
                 }
                 register={register}
                 validation={[

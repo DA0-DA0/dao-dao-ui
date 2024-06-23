@@ -80,9 +80,10 @@ export const SegmentedControls = <T extends unknown>({
       )}
       onMouseLeave={() => setHoveringIndex(undefined)}
     >
-      {tabs.map(({ label, value, tooltip }, index) => (
+      {tabs.map(({ label, value, tooltip, disabled }, index) => (
         <Tab
           key={index}
+          disabled={disabled}
           hoveringIndex={hoveringIndex}
           index={index}
           loading={loading === value}
@@ -137,10 +138,11 @@ export const SegmentedControls = <T extends unknown>({
               ref={onDropdownRef}
             >
               <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
-                {moreTabs.map(({ label, value, tooltip }, index) => (
+                {moreTabs.map(({ label, value, tooltip, disabled }, index) => (
                   <Tooltip key={index} title={tooltip}>
                     <Button
                       className="rounded-none text-left"
+                      disabled={disabled}
                       onClick={(e) => {
                         onSelect(value, e)
                         setMoreOpen(false)
@@ -174,6 +176,7 @@ type TabProps = {
   buttonClassName?: string
   buttonContentContainerClassName?: string
   tooltip?: NonNullable<ReactNode>
+  disabled?: boolean
 }
 
 const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
@@ -189,6 +192,7 @@ const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
     buttonClassName,
     buttonContentContainerClassName,
     tooltip,
+    disabled,
   },
   ref
 ) {
@@ -245,7 +249,10 @@ const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
               // Render transparent background so the sliding indicator can
               // show through underneath.
               'relative flex h-full w-full items-center justify-center !bg-transparent !px-4',
-              selectedIndex === index || hoveringIndex === index
+              disabled
+                ? // Dim text a lot when disabled.
+                  '!text-text-interactive-disabled'
+                : selectedIndex === index || hoveringIndex === index
                 ? // Brighten text when selected or hovering over this tab.
                   '!text-text-body'
                 : // Dim text when not selected and not hovering over this tab.
@@ -254,9 +261,10 @@ const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
               buttonClassName
             )}
             contentContainerClassName={buttonContentContainerClassName}
+            disabled={disabled}
             loading={loading}
             onClick={onClick}
-            onMouseOver={onMouseOver}
+            onMouseOver={disabled ? undefined : onMouseOver}
             variant="ghost"
           >
             {children}

@@ -1301,6 +1301,7 @@
     "today": "today",
     "token": "token",
     "tokenBurned": "NFT with ID {{tokenId}} has been burned.",
+    "tokenCreationUnderDevelopment": "Token creation is under development and will be available soon.",
     "tokenDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, you must obtain and stake ${{tokenSymbol}}.",
     "tokenDaoNotMemberInfo_proposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",
     "tokenOnChain": "${{token}} on {{chain}}",
