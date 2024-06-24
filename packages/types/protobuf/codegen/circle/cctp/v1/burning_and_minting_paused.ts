@@ -72,7 +72,7 @@ export const BurningAndMintingPaused = {
   },
   toAmino(message: BurningAndMintingPaused, useInterfaces: boolean = false): BurningAndMintingPausedAmino {
     const obj: any = {};
-    obj.paused = message.paused;
+    obj.paused = message.paused === false ? undefined : message.paused;
     return obj;
   },
   fromAminoMsg(object: BurningAndMintingPausedAminoMsg): BurningAndMintingPaused {

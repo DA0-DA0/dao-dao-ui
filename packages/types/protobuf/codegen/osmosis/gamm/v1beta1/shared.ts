@@ -117,7 +117,7 @@ export const MigrationRecords = {
     if (message.balancerToConcentratedPoolLinks) {
       obj.balancer_to_concentrated_pool_links = message.balancerToConcentratedPoolLinks.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.balancer_to_concentrated_pool_links = [];
+      obj.balancer_to_concentrated_pool_links = message.balancerToConcentratedPoolLinks;
     }
     return obj;
   },
@@ -198,8 +198,8 @@ export const BalancerToConcentratedPoolLink = {
   },
   toAmino(message: BalancerToConcentratedPoolLink, useInterfaces: boolean = false): BalancerToConcentratedPoolLinkAmino {
     const obj: any = {};
-    obj.balancer_pool_id = message.balancerPoolId ? message.balancerPoolId.toString() : undefined;
-    obj.cl_pool_id = message.clPoolId ? message.clPoolId.toString() : undefined;
+    obj.balancer_pool_id = message.balancerPoolId !== BigInt(0) ? message.balancerPoolId.toString() : undefined;
+    obj.cl_pool_id = message.clPoolId !== BigInt(0) ? message.clPoolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: BalancerToConcentratedPoolLinkAminoMsg): BalancerToConcentratedPoolLink {

@@ -141,11 +141,11 @@ export const MsgCreateConcentratedPool = {
   },
   toAmino(message: MsgCreateConcentratedPool, useInterfaces: boolean = false): MsgCreateConcentratedPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.denom0 = message.denom0;
-    obj.denom1 = message.denom1;
-    obj.tick_spacing = message.tickSpacing ? message.tickSpacing.toString() : undefined;
-    obj.spread_factor = message.spreadFactor;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.denom0 = message.denom0 === "" ? undefined : message.denom0;
+    obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
+    obj.tick_spacing = message.tickSpacing !== BigInt(0) ? message.tickSpacing.toString() : undefined;
+    obj.spread_factor = message.spreadFactor === "" ? undefined : message.spreadFactor;
     return obj;
   },
   fromAminoMsg(object: MsgCreateConcentratedPoolAminoMsg): MsgCreateConcentratedPool {
@@ -214,7 +214,7 @@ export const MsgCreateConcentratedPoolResponse = {
   },
   toAmino(message: MsgCreateConcentratedPoolResponse, useInterfaces: boolean = false): MsgCreateConcentratedPoolResponseAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreateConcentratedPoolResponseAminoMsg): MsgCreateConcentratedPoolResponse {

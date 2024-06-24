@@ -135,8 +135,8 @@ export const QueryInterchainAccountRequest = {
   },
   toAmino(message: QueryInterchainAccountRequest, useInterfaces: boolean = false): QueryInterchainAccountRequestAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.connection_id = message.connectionId;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     return obj;
   },
   fromAminoMsg(object: QueryInterchainAccountRequestAminoMsg): QueryInterchainAccountRequest {
@@ -205,7 +205,7 @@ export const QueryInterchainAccountResponse = {
   },
   toAmino(message: QueryInterchainAccountResponse, useInterfaces: boolean = false): QueryInterchainAccountResponseAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     return obj;
   },
   fromAminoMsg(object: QueryInterchainAccountResponseAminoMsg): QueryInterchainAccountResponse {

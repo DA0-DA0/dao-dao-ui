@@ -82,7 +82,7 @@ export const GenesisState = {
     if (message.hostChains) {
       obj.host_chains = message.hostChains.map(e => e ? HostChain.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_chains = [];
+      obj.host_chains = message.hostChains;
     }
     return obj;
   },

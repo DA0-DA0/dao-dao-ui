@@ -569,20 +569,20 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.liquid_bond_denom = message.liquidBondDenom;
+    obj.liquid_bond_denom = message.liquidBondDenom === "" ? undefined : message.liquidBondDenom;
     if (message.whitelistedValidators) {
       obj.whitelisted_validators = message.whitelistedValidators.map(e => e ? WhitelistedValidator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.whitelisted_validators = [];
+      obj.whitelisted_validators = message.whitelistedValidators;
     }
-    obj.unstake_fee_rate = message.unstakeFeeRate;
-    obj.lsm_disabled = message.lsmDisabled;
-    obj.min_liquid_stake_amount = message.minLiquidStakeAmount;
-    obj.cw_locked_pool_address = message.cwLockedPoolAddress;
-    obj.fee_account_address = message.feeAccountAddress;
-    obj.autocompound_fee_rate = message.autocompoundFeeRate;
-    obj.whitelist_admin_address = message.whitelistAdminAddress;
-    obj.module_paused = message.modulePaused;
+    obj.unstake_fee_rate = message.unstakeFeeRate === "" ? undefined : message.unstakeFeeRate;
+    obj.lsm_disabled = message.lsmDisabled === false ? undefined : message.lsmDisabled;
+    obj.min_liquid_stake_amount = message.minLiquidStakeAmount === "" ? undefined : message.minLiquidStakeAmount;
+    obj.cw_locked_pool_address = message.cwLockedPoolAddress === "" ? undefined : message.cwLockedPoolAddress;
+    obj.fee_account_address = message.feeAccountAddress === "" ? undefined : message.feeAccountAddress;
+    obj.autocompound_fee_rate = message.autocompoundFeeRate === "" ? undefined : message.autocompoundFeeRate;
+    obj.whitelist_admin_address = message.whitelistAdminAddress === "" ? undefined : message.whitelistAdminAddress;
+    obj.module_paused = message.modulePaused === false ? undefined : message.modulePaused;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
@@ -656,8 +656,8 @@ export const WhitelistedValidator = {
   },
   toAmino(message: WhitelistedValidator, useInterfaces: boolean = false): WhitelistedValidatorAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.target_weight = message.targetWeight;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.target_weight = message.targetWeight === "" ? undefined : message.targetWeight;
     return obj;
   },
   fromAminoMsg(object: WhitelistedValidatorAminoMsg): WhitelistedValidator {
@@ -720,7 +720,7 @@ export const LiquidValidator = {
   },
   toAmino(message: LiquidValidator, useInterfaces: boolean = false): LiquidValidatorAmino {
     const obj: any = {};
-    obj.operator_address = message.operatorAddress;
+    obj.operator_address = message.operatorAddress === "" ? undefined : message.operatorAddress;
     return obj;
   },
   fromAminoMsg(object: LiquidValidatorAminoMsg): LiquidValidator {
@@ -815,7 +815,7 @@ export const LiquidValidatorState = {
       message.weight = object.weight;
     }
     if (object.status !== undefined && object.status !== null) {
-      message.status = validatorStatusFromJSON(object.status);
+      message.status = object.status;
     }
     if (object.del_shares !== undefined && object.del_shares !== null) {
       message.delShares = object.del_shares;
@@ -827,11 +827,11 @@ export const LiquidValidatorState = {
   },
   toAmino(message: LiquidValidatorState, useInterfaces: boolean = false): LiquidValidatorStateAmino {
     const obj: any = {};
-    obj.operator_address = message.operatorAddress;
-    obj.weight = message.weight;
-    obj.status = message.status;
-    obj.del_shares = message.delShares;
-    obj.liquid_tokens = message.liquidTokens;
+    obj.operator_address = message.operatorAddress === "" ? undefined : message.operatorAddress;
+    obj.weight = message.weight === "" ? undefined : message.weight;
+    obj.status = message.status === 0 ? undefined : message.status;
+    obj.del_shares = message.delShares === "" ? undefined : message.delShares;
+    obj.liquid_tokens = message.liquidTokens === "" ? undefined : message.liquidTokens;
     return obj;
   },
   fromAminoMsg(object: LiquidValidatorStateAminoMsg): LiquidValidatorState {
@@ -971,14 +971,14 @@ export const NetAmountState = {
   },
   toAmino(message: NetAmountState, useInterfaces: boolean = false): NetAmountStateAmino {
     const obj: any = {};
-    obj.mint_rate = message.mintRate;
-    obj.stkxprt_total_supply = message.stkxprtTotalSupply;
-    obj.net_amount = message.netAmount;
-    obj.total_del_shares = message.totalDelShares;
-    obj.total_liquid_tokens = message.totalLiquidTokens;
-    obj.total_remaining_rewards = message.totalRemainingRewards;
-    obj.total_unbonding_balance = message.totalUnbondingBalance;
-    obj.proxy_acc_balance = message.proxyAccBalance;
+    obj.mint_rate = message.mintRate === "" ? undefined : message.mintRate;
+    obj.stkxprt_total_supply = message.stkxprtTotalSupply === "" ? undefined : message.stkxprtTotalSupply;
+    obj.net_amount = message.netAmount === "" ? undefined : message.netAmount;
+    obj.total_del_shares = message.totalDelShares === "" ? undefined : message.totalDelShares;
+    obj.total_liquid_tokens = message.totalLiquidTokens === "" ? undefined : message.totalLiquidTokens;
+    obj.total_remaining_rewards = message.totalRemainingRewards === "" ? undefined : message.totalRemainingRewards;
+    obj.total_unbonding_balance = message.totalUnbondingBalance === "" ? undefined : message.totalUnbondingBalance;
+    obj.proxy_acc_balance = message.proxyAccBalance === "" ? undefined : message.proxyAccBalance;
     return obj;
   },
   fromAminoMsg(object: NetAmountStateAminoMsg): NetAmountState {

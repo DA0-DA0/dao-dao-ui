@@ -221,16 +221,16 @@ export const CreateHookProposal = {
   },
   toAmino(message: CreateHookProposal, useInterfaces: boolean = false): CreateHookProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.executor = message.executor;
-    obj.contract = message.contract;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.executor = message.executor === "" ? undefined : message.executor;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
-    obj.frequency = message.frequency ? message.frequency.toString() : undefined;
+    obj.frequency = message.frequency !== BigInt(0) ? message.frequency.toString() : undefined;
     if (message.funds) {
       obj.funds = message.funds.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.funds = [];
+      obj.funds = message.funds;
     }
     return obj;
   },
@@ -369,17 +369,17 @@ export const UpdateHookProposal = {
   },
   toAmino(message: UpdateHookProposal, useInterfaces: boolean = false): UpdateHookProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.executor = message.executor;
-    obj.contract = message.contract;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.executor = message.executor === "" ? undefined : message.executor;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
-    obj.frequency = message.frequency ? message.frequency.toString() : undefined;
+    obj.frequency = message.frequency !== BigInt(0) ? message.frequency.toString() : undefined;
     if (message.funds) {
       obj.funds = message.funds.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.funds = [];
+      obj.funds = message.funds;
     }
     return obj;
   },
@@ -465,9 +465,9 @@ export const DeleteHookProposal = {
   },
   toAmino(message: DeleteHookProposal, useInterfaces: boolean = false): DeleteHookProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: DeleteHookProposalAminoMsg): DeleteHookProposal {

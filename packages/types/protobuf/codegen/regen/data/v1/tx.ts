@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph, ContentHash_GraphAmino, ContentHash_GraphSDKType } from "./types";
+import { ContentHash, ContentHashAmino, ContentHashSDKType, ContentHash_Graph } from "./types";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { toTimestamp, fromTimestamp } from "../../../helpers";
@@ -335,7 +335,7 @@ export const MsgAnchor = {
   },
   toAmino(message: MsgAnchor, useInterfaces: boolean = false): MsgAnchorAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.content_hash = message.contentHash ? ContentHash.toAmino(message.contentHash, useInterfaces) : undefined;
     return obj;
   },
@@ -410,7 +410,7 @@ export const MsgAnchorResponse = {
   },
   toAmino(message: MsgAnchorResponse, useInterfaces: boolean = false): MsgAnchorResponseAmino {
     const obj: any = {};
-    obj.iri = message.iri;
+    obj.iri = message.iri === "" ? undefined : message.iri;
     obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     return obj;
   },
@@ -483,11 +483,11 @@ export const MsgAttest = {
   },
   toAmino(message: MsgAttest, useInterfaces: boolean = false): MsgAttestAmino {
     const obj: any = {};
-    obj.attestor = message.attestor;
+    obj.attestor = message.attestor === "" ? undefined : message.attestor;
     if (message.contentHashes) {
       obj.content_hashes = message.contentHashes.map(e => e ? ContentHash_Graph.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.content_hashes = [];
+      obj.content_hashes = message.contentHashes;
     }
     return obj;
   },
@@ -563,7 +563,7 @@ export const MsgAttestResponse = {
     if (message.iris) {
       obj.iris = message.iris.map(e => e);
     } else {
-      obj.iris = [];
+      obj.iris = message.iris;
     }
     obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     return obj;
@@ -639,8 +639,8 @@ export const MsgDefineResolver = {
   },
   toAmino(message: MsgDefineResolver, useInterfaces: boolean = false): MsgDefineResolverAmino {
     const obj: any = {};
-    obj.manager = message.manager;
-    obj.resolver_url = message.resolverUrl;
+    obj.manager = message.manager === "" ? undefined : message.manager;
+    obj.resolver_url = message.resolverUrl === "" ? undefined : message.resolverUrl;
     return obj;
   },
   fromAminoMsg(object: MsgDefineResolverAminoMsg): MsgDefineResolver {
@@ -703,7 +703,7 @@ export const MsgDefineResolverResponse = {
   },
   toAmino(message: MsgDefineResolverResponse, useInterfaces: boolean = false): MsgDefineResolverResponseAmino {
     const obj: any = {};
-    obj.resolver_id = message.resolverId ? message.resolverId.toString() : undefined;
+    obj.resolver_id = message.resolverId !== BigInt(0) ? message.resolverId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgDefineResolverResponseAminoMsg): MsgDefineResolverResponse {
@@ -786,12 +786,12 @@ export const MsgRegisterResolver = {
   },
   toAmino(message: MsgRegisterResolver, useInterfaces: boolean = false): MsgRegisterResolverAmino {
     const obj: any = {};
-    obj.manager = message.manager;
-    obj.resolver_id = message.resolverId ? message.resolverId.toString() : undefined;
+    obj.manager = message.manager === "" ? undefined : message.manager;
+    obj.resolver_id = message.resolverId !== BigInt(0) ? message.resolverId.toString() : undefined;
     if (message.contentHashes) {
       obj.content_hashes = message.contentHashes.map(e => e ? ContentHash.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.content_hashes = [];
+      obj.content_hashes = message.contentHashes;
     }
     return obj;
   },

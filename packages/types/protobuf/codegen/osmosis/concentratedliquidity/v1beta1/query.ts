@@ -748,8 +748,8 @@ export const UserPositionsRequest = {
   },
   toAmino(message: UserPositionsRequest, useInterfaces: boolean = false): UserPositionsRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -831,7 +831,7 @@ export const UserPositionsResponse = {
     if (message.positions) {
       obj.positions = message.positions.map(e => e ? FullPositionBreakdown.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.positions = [];
+      obj.positions = message.positions;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -902,7 +902,7 @@ export const PositionByIdRequest = {
   },
   toAmino(message: PositionByIdRequest, useInterfaces: boolean = false): PositionByIdRequestAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PositionByIdRequestAminoMsg): PositionByIdRequest {
@@ -1121,7 +1121,7 @@ export const PoolsResponse = {
     if (message.pools) {
       obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1328,8 +1328,8 @@ export const TickLiquidityNet = {
   },
   toAmino(message: TickLiquidityNet, useInterfaces: boolean = false): TickLiquidityNetAmino {
     const obj: any = {};
-    obj.liquidity_net = message.liquidityNet;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
+    obj.liquidity_net = message.liquidityNet === "" ? undefined : message.liquidityNet;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: TickLiquidityNetAminoMsg): TickLiquidityNet {
@@ -1420,9 +1420,9 @@ export const LiquidityDepthWithRange = {
   },
   toAmino(message: LiquidityDepthWithRange, useInterfaces: boolean = false): LiquidityDepthWithRangeAmino {
     const obj: any = {};
-    obj.liquidity_amount = message.liquidityAmount;
-    obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
-    obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
+    obj.liquidity_amount = message.liquidityAmount === "" ? undefined : message.liquidityAmount;
+    obj.lower_tick = message.lowerTick !== BigInt(0) ? message.lowerTick.toString() : undefined;
+    obj.upper_tick = message.upperTick !== BigInt(0) ? message.upperTick.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: LiquidityDepthWithRangeAminoMsg): LiquidityDepthWithRange {
@@ -1546,12 +1546,12 @@ export const LiquidityNetInDirectionRequest = {
   },
   toAmino(message: LiquidityNetInDirectionRequest, useInterfaces: boolean = false): LiquidityNetInDirectionRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_in = message.tokenIn;
-    obj.start_tick = message.startTick ? message.startTick.toString() : undefined;
-    obj.use_cur_tick = message.useCurTick;
-    obj.bound_tick = message.boundTick ? message.boundTick.toString() : undefined;
-    obj.use_no_bound = message.useNoBound;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.start_tick = message.startTick !== BigInt(0) ? message.startTick.toString() : undefined;
+    obj.use_cur_tick = message.useCurTick === false ? undefined : message.useCurTick;
+    obj.bound_tick = message.boundTick !== BigInt(0) ? message.boundTick.toString() : undefined;
+    obj.use_no_bound = message.useNoBound === false ? undefined : message.useNoBound;
     return obj;
   },
   fromAminoMsg(object: LiquidityNetInDirectionRequestAminoMsg): LiquidityNetInDirectionRequest {
@@ -1654,11 +1654,11 @@ export const LiquidityNetInDirectionResponse = {
     if (message.liquidityDepths) {
       obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.liquidity_depths = [];
+      obj.liquidity_depths = message.liquidityDepths;
     }
-    obj.current_tick = message.currentTick ? message.currentTick.toString() : undefined;
-    obj.current_liquidity = message.currentLiquidity;
-    obj.current_sqrt_price = message.currentSqrtPrice;
+    obj.current_tick = message.currentTick !== BigInt(0) ? message.currentTick.toString() : undefined;
+    obj.current_liquidity = message.currentLiquidity === "" ? undefined : message.currentLiquidity;
+    obj.current_sqrt_price = message.currentSqrtPrice === "" ? undefined : message.currentSqrtPrice;
     return obj;
   },
   fromAminoMsg(object: LiquidityNetInDirectionResponseAminoMsg): LiquidityNetInDirectionResponse {
@@ -1727,7 +1727,7 @@ export const LiquidityPerTickRangeRequest = {
   },
   toAmino(message: LiquidityPerTickRangeRequest, useInterfaces: boolean = false): LiquidityPerTickRangeRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: LiquidityPerTickRangeRequestAminoMsg): LiquidityPerTickRangeRequest {
@@ -1808,9 +1808,9 @@ export const LiquidityPerTickRangeResponse = {
     if (message.liquidity) {
       obj.liquidity = message.liquidity.map(e => e ? LiquidityDepthWithRange.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.liquidity = [];
+      obj.liquidity = message.liquidity;
     }
-    obj.bucket_index = message.bucketIndex ? message.bucketIndex.toString() : undefined;
+    obj.bucket_index = message.bucketIndex !== BigInt(0) ? message.bucketIndex.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: LiquidityPerTickRangeResponseAminoMsg): LiquidityPerTickRangeResponse {
@@ -1879,7 +1879,7 @@ export const ClaimableSpreadRewardsRequest = {
   },
   toAmino(message: ClaimableSpreadRewardsRequest, useInterfaces: boolean = false): ClaimableSpreadRewardsRequestAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ClaimableSpreadRewardsRequestAminoMsg): ClaimableSpreadRewardsRequest {
@@ -1949,7 +1949,7 @@ export const ClaimableSpreadRewardsResponse = {
     if (message.claimableSpreadRewards) {
       obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.claimable_spread_rewards = [];
+      obj.claimable_spread_rewards = message.claimableSpreadRewards;
     }
     return obj;
   },
@@ -2019,7 +2019,7 @@ export const ClaimableIncentivesRequest = {
   },
   toAmino(message: ClaimableIncentivesRequest, useInterfaces: boolean = false): ClaimableIncentivesRequestAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ClaimableIncentivesRequestAminoMsg): ClaimableIncentivesRequest {
@@ -2098,12 +2098,12 @@ export const ClaimableIncentivesResponse = {
     if (message.claimableIncentives) {
       obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.claimable_incentives = [];
+      obj.claimable_incentives = message.claimableIncentives;
     }
     if (message.forfeitedIncentives) {
       obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.forfeited_incentives = [];
+      obj.forfeited_incentives = message.forfeitedIncentives;
     }
     return obj;
   },
@@ -2173,7 +2173,7 @@ export const PoolAccumulatorRewardsRequest = {
   },
   toAmino(message: PoolAccumulatorRewardsRequest, useInterfaces: boolean = false): PoolAccumulatorRewardsRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolAccumulatorRewardsRequestAminoMsg): PoolAccumulatorRewardsRequest {
@@ -2252,12 +2252,12 @@ export const PoolAccumulatorRewardsResponse = {
     if (message.spreadRewardGrowthGlobal) {
       obj.spread_reward_growth_global = message.spreadRewardGrowthGlobal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.spread_reward_growth_global = [];
+      obj.spread_reward_growth_global = message.spreadRewardGrowthGlobal;
     }
     if (message.uptimeGrowthGlobal) {
       obj.uptime_growth_global = message.uptimeGrowthGlobal.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.uptime_growth_global = [];
+      obj.uptime_growth_global = message.uptimeGrowthGlobal;
     }
     return obj;
   },
@@ -2338,8 +2338,8 @@ export const TickAccumulatorTrackersRequest = {
   },
   toAmino(message: TickAccumulatorTrackersRequest, useInterfaces: boolean = false): TickAccumulatorTrackersRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: TickAccumulatorTrackersRequestAminoMsg): TickAccumulatorTrackersRequest {
@@ -2418,12 +2418,12 @@ export const TickAccumulatorTrackersResponse = {
     if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
       obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal;
     }
     if (message.uptimeTrackers) {
       obj.uptime_trackers = message.uptimeTrackers.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.uptime_trackers = [];
+      obj.uptime_trackers = message.uptimeTrackers;
     }
     return obj;
   },
@@ -2504,7 +2504,7 @@ export const IncentiveRecordsRequest = {
   },
   toAmino(message: IncentiveRecordsRequest, useInterfaces: boolean = false): IncentiveRecordsRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2586,7 +2586,7 @@ export const IncentiveRecordsResponse = {
     if (message.incentiveRecords) {
       obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.incentive_records = [];
+      obj.incentive_records = message.incentiveRecords;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2657,7 +2657,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdRequest = {
   },
   toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino {
     const obj: any = {};
-    obj.concentrated_pool_id = message.concentratedPoolId ? message.concentratedPoolId.toString() : undefined;
+    obj.concentrated_pool_id = message.concentratedPoolId !== BigInt(0) ? message.concentratedPoolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: CFMMPoolIdLinkFromConcentratedPoolIdRequestAminoMsg): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
@@ -2726,7 +2726,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
   },
   toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino {
     const obj: any = {};
-    obj.cfmm_pool_id = message.cfmmPoolId ? message.cfmmPoolId.toString() : undefined;
+    obj.cfmm_pool_id = message.cfmmPoolId !== BigInt(0) ? message.cfmmPoolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
@@ -2795,7 +2795,7 @@ export const UserUnbondingPositionsRequest = {
   },
   toAmino(message: UserUnbondingPositionsRequest, useInterfaces: boolean = false): UserUnbondingPositionsRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     return obj;
   },
   fromAminoMsg(object: UserUnbondingPositionsRequestAminoMsg): UserUnbondingPositionsRequest {
@@ -2865,7 +2865,7 @@ export const UserUnbondingPositionsResponse = {
     if (message.positionsWithPeriodLock) {
       obj.positions_with_period_lock = message.positionsWithPeriodLock.map(e => e ? PositionWithPeriodLock.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.positions_with_period_lock = [];
+      obj.positions_with_period_lock = message.positionsWithPeriodLock;
     }
     return obj;
   },
@@ -2992,7 +2992,7 @@ export const GetTotalLiquidityResponse = {
     if (message.totalLiquidity) {
       obj.total_liquidity = message.totalLiquidity.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.total_liquidity = [];
+      obj.total_liquidity = message.totalLiquidity;
     }
     return obj;
   },
@@ -3084,9 +3084,9 @@ export const NumNextInitializedTicksRequest = {
   },
   toAmino(message: NumNextInitializedTicksRequest, useInterfaces: boolean = false): NumNextInitializedTicksRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_in_denom = message.tokenInDenom;
-    obj.num_next_initialized_ticks = message.numNextInitializedTicks ? message.numNextInitializedTicks.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_in_denom = message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.num_next_initialized_ticks = message.numNextInitializedTicks !== BigInt(0) ? message.numNextInitializedTicks.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: NumNextInitializedTicksRequestAminoMsg): NumNextInitializedTicksRequest {
@@ -3178,10 +3178,10 @@ export const NumNextInitializedTicksResponse = {
     if (message.liquidityDepths) {
       obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.liquidity_depths = [];
+      obj.liquidity_depths = message.liquidityDepths;
     }
-    obj.current_tick = message.currentTick ? message.currentTick.toString() : undefined;
-    obj.current_liquidity = message.currentLiquidity;
+    obj.current_tick = message.currentTick !== BigInt(0) ? message.currentTick.toString() : undefined;
+    obj.current_liquidity = message.currentLiquidity === "" ? undefined : message.currentLiquidity;
     return obj;
   },
   fromAminoMsg(object: NumNextInitializedTicksResponseAminoMsg): NumNextInitializedTicksResponse {
@@ -3222,7 +3222,7 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return data;
   }
 };
-export const PoolI_FromAmino = (content: AnyAmino) => {
+export const PoolI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "osmosis/concentratedliquidity/pool":
       return Any.fromPartial({

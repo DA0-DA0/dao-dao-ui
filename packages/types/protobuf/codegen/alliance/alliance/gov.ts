@@ -278,12 +278,12 @@ export const MsgCreateAllianceProposal = {
   },
   toAmino(message: MsgCreateAllianceProposal, useInterfaces: boolean = false): MsgCreateAllianceProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.denom = message.denom;
-    obj.reward_weight = message.rewardWeight;
-    obj.take_rate = message.takeRate;
-    obj.reward_change_rate = message.rewardChangeRate;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.reward_weight = message.rewardWeight === "" ? undefined : message.rewardWeight;
+    obj.take_rate = message.takeRate === "" ? undefined : message.takeRate;
+    obj.reward_change_rate = message.rewardChangeRate === "" ? undefined : message.rewardChangeRate;
     obj.reward_change_interval = message.rewardChangeInterval ? Duration.toAmino(message.rewardChangeInterval, useInterfaces) : undefined;
     obj.reward_weight_range = message.rewardWeightRange ? RewardWeightRange.toAmino(message.rewardWeightRange, useInterfaces) : undefined;
     return obj;
@@ -426,12 +426,12 @@ export const MsgUpdateAllianceProposal = {
   },
   toAmino(message: MsgUpdateAllianceProposal, useInterfaces: boolean = false): MsgUpdateAllianceProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.denom = message.denom;
-    obj.reward_weight = message.rewardWeight;
-    obj.take_rate = message.takeRate;
-    obj.reward_change_rate = message.rewardChangeRate;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.reward_weight = message.rewardWeight === "" ? undefined : message.rewardWeight;
+    obj.take_rate = message.takeRate === "" ? undefined : message.takeRate;
+    obj.reward_change_rate = message.rewardChangeRate === "" ? undefined : message.rewardChangeRate;
     obj.reward_change_interval = message.rewardChangeInterval ? Duration.toAmino(message.rewardChangeInterval, useInterfaces) : undefined;
     obj.reward_weight_range = message.rewardWeightRange ? RewardWeightRange.toAmino(message.rewardWeightRange, useInterfaces) : undefined;
     return obj;
@@ -519,9 +519,9 @@ export const MsgDeleteAllianceProposal = {
   },
   toAmino(message: MsgDeleteAllianceProposal, useInterfaces: boolean = false): MsgDeleteAllianceProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.denom = message.denom;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: MsgDeleteAllianceProposalAminoMsg): MsgDeleteAllianceProposal {

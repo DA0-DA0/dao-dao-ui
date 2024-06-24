@@ -130,15 +130,15 @@ export const Hook = {
   },
   toAmino(message: Hook, useInterfaces: boolean = false): HookAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.executor = message.executor;
-    obj.contract = message.contract;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.executor = message.executor === "" ? undefined : message.executor;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
-    obj.frequency = message.frequency ? message.frequency.toString() : undefined;
+    obj.frequency = message.frequency !== BigInt(0) ? message.frequency.toString() : undefined;
     if (message.funds) {
       obj.funds = message.funds.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.funds = [];
+      obj.funds = message.funds;
     }
     return obj;
   },

@@ -257,9 +257,9 @@ export const FeeInfoRequest = {
   },
   toAmino(message: FeeInfoRequest, useInterfaces: boolean = false): FeeInfoRequestAmino {
     const obj: any = {};
-    obj.channel_id = message.channelId;
-    obj.port_id = message.portId;
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: FeeInfoRequestAminoMsg): FeeInfoRequest {

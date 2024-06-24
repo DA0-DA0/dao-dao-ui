@@ -373,7 +373,7 @@ export const MsgLiquidStake = {
   },
   toAmino(message: MsgLiquidStake, useInterfaces: boolean = false): MsgLiquidStakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -520,8 +520,8 @@ export const MsgStakeToLP = {
   },
   toAmino(message: MsgStakeToLP, useInterfaces: boolean = false): MsgStakeToLPAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.staked_amount = message.stakedAmount ? Coin.toAmino(message.stakedAmount, useInterfaces) : undefined;
     obj.liquid_amount = message.liquidAmount ? Coin.toAmino(message.liquidAmount, useInterfaces) : undefined;
     return obj;
@@ -647,7 +647,7 @@ export const MsgLiquidUnstake = {
   },
   toAmino(message: MsgLiquidUnstake, useInterfaces: boolean = false): MsgLiquidUnstakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -785,7 +785,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
@@ -908,11 +908,11 @@ export const MsgUpdateWhitelistedValidators = {
   },
   toAmino(message: MsgUpdateWhitelistedValidators, useInterfaces: boolean = false): MsgUpdateWhitelistedValidatorsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     if (message.whitelistedValidators) {
       obj.whitelisted_validators = message.whitelistedValidators.map(e => e ? WhitelistedValidator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.whitelisted_validators = [];
+      obj.whitelisted_validators = message.whitelistedValidators;
     }
     return obj;
   },
@@ -1037,8 +1037,8 @@ export const MsgSetModulePaused = {
   },
   toAmino(message: MsgSetModulePaused, useInterfaces: boolean = false): MsgSetModulePausedAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.is_paused = message.isPaused;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.is_paused = message.isPaused === false ? undefined : message.isPaused;
     return obj;
   },
   fromAminoMsg(object: MsgSetModulePausedAminoMsg): MsgSetModulePaused {

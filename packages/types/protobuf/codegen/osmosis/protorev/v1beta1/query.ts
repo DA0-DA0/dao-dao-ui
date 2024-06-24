@@ -1091,7 +1091,7 @@ export const QueryGetProtoRevNumberOfTradesResponse = {
   },
   toAmino(message: QueryGetProtoRevNumberOfTradesResponse, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesResponseAmino {
     const obj: any = {};
-    obj.number_of_trades = message.numberOfTrades;
+    obj.number_of_trades = message.numberOfTrades === "" ? undefined : message.numberOfTrades;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevNumberOfTradesResponseAminoMsg): QueryGetProtoRevNumberOfTradesResponse {
@@ -1160,7 +1160,7 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
   },
   toAmino(message: QueryGetProtoRevProfitsByDenomRequest, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevProfitsByDenomRequestAminoMsg): QueryGetProtoRevProfitsByDenomRequest {
@@ -1355,7 +1355,7 @@ export const QueryGetProtoRevAllProfitsResponse = {
     if (message.profits) {
       obj.profits = message.profits.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.profits = [];
+      obj.profits = message.profits;
     }
     return obj;
   },
@@ -1435,7 +1435,7 @@ export const QueryGetProtoRevStatisticsByRouteRequest = {
     if (message.route) {
       obj.route = message.route.map(e => e.toString());
     } else {
-      obj.route = [];
+      obj.route = message.route;
     }
     return obj;
   },
@@ -1631,7 +1631,7 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
     if (message.statistics) {
       obj.statistics = message.statistics.map(e => e ? RouteStatistics.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.statistics = [];
+      obj.statistics = message.statistics;
     }
     return obj;
   },
@@ -1758,7 +1758,7 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
     return obj;
   },
@@ -1884,7 +1884,7 @@ export const QueryGetProtoRevAdminAccountResponse = {
   },
   toAmino(message: QueryGetProtoRevAdminAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountResponseAmino {
     const obj: any = {};
-    obj.admin_account = message.adminAccount;
+    obj.admin_account = message.adminAccount === "" ? undefined : message.adminAccount;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevAdminAccountResponseAminoMsg): QueryGetProtoRevAdminAccountResponse {
@@ -2009,7 +2009,7 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
   },
   toAmino(message: QueryGetProtoRevDeveloperAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountResponseAmino {
     const obj: any = {};
-    obj.developer_account = message.developerAccount;
+    obj.developer_account = message.developerAccount === "" ? undefined : message.developerAccount;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevDeveloperAccountResponseAminoMsg): QueryGetProtoRevDeveloperAccountResponse {
@@ -2259,7 +2259,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockResponse = {
   },
   toAmino(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockResponseAmino {
     const obj: any = {};
-    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock ? message.maxPoolPointsPerBlock.toString() : undefined;
+    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock !== BigInt(0) ? message.maxPoolPointsPerBlock.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerBlockResponseAminoMsg): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
@@ -2384,7 +2384,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxResponse = {
   },
   toAmino(message: QueryGetProtoRevMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxResponseAmino {
     const obj: any = {};
-    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
+    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx !== BigInt(0) ? message.maxPoolPointsPerTx.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerTxResponseAminoMsg): QueryGetProtoRevMaxPoolPointsPerTxResponse {
@@ -2510,7 +2510,7 @@ export const QueryGetProtoRevBaseDenomsResponse = {
     if (message.baseDenoms) {
       obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.base_denoms = [];
+      obj.base_denoms = message.baseDenoms;
     }
     return obj;
   },
@@ -2636,7 +2636,7 @@ export const QueryGetProtoRevEnabledResponse = {
   },
   toAmino(message: QueryGetProtoRevEnabledResponse, useInterfaces: boolean = false): QueryGetProtoRevEnabledResponseAmino {
     const obj: any = {};
-    obj.enabled = message.enabled;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevEnabledResponseAminoMsg): QueryGetProtoRevEnabledResponse {
@@ -2716,8 +2716,8 @@ export const QueryGetProtoRevPoolRequest = {
   },
   toAmino(message: QueryGetProtoRevPoolRequest, useInterfaces: boolean = false): QueryGetProtoRevPoolRequestAmino {
     const obj: any = {};
-    obj.base_denom = message.baseDenom;
-    obj.other_denom = message.otherDenom;
+    obj.base_denom = message.baseDenom === "" ? undefined : message.baseDenom;
+    obj.other_denom = message.otherDenom === "" ? undefined : message.otherDenom;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevPoolRequestAminoMsg): QueryGetProtoRevPoolRequest {
@@ -2786,7 +2786,7 @@ export const QueryGetProtoRevPoolResponse = {
   },
   toAmino(message: QueryGetProtoRevPoolResponse, useInterfaces: boolean = false): QueryGetProtoRevPoolResponseAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevPoolResponseAminoMsg): QueryGetProtoRevPoolResponse {

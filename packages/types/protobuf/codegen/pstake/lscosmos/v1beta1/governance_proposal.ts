@@ -201,13 +201,13 @@ export const MinDepositAndFeeChangeProposal = {
   },
   toAmino(message: MinDepositAndFeeChangeProposal, useInterfaces: boolean = false): MinDepositAndFeeChangeProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.min_deposit = message.minDeposit;
-    obj.pstake_deposit_fee = message.pstakeDepositFee;
-    obj.pstake_restake_fee = message.pstakeRestakeFee;
-    obj.pstake_unstake_fee = message.pstakeUnstakeFee;
-    obj.pstake_redemption_fee = message.pstakeRedemptionFee;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.min_deposit = message.minDeposit === "" ? undefined : message.minDeposit;
+    obj.pstake_deposit_fee = message.pstakeDepositFee === "" ? undefined : message.pstakeDepositFee;
+    obj.pstake_restake_fee = message.pstakeRestakeFee === "" ? undefined : message.pstakeRestakeFee;
+    obj.pstake_unstake_fee = message.pstakeUnstakeFee === "" ? undefined : message.pstakeUnstakeFee;
+    obj.pstake_redemption_fee = message.pstakeRedemptionFee === "" ? undefined : message.pstakeRedemptionFee;
     return obj;
   },
   fromAminoMsg(object: MinDepositAndFeeChangeProposalAminoMsg): MinDepositAndFeeChangeProposal {
@@ -292,9 +292,9 @@ export const PstakeFeeAddressChangeProposal = {
   },
   toAmino(message: PstakeFeeAddressChangeProposal, useInterfaces: boolean = false): PstakeFeeAddressChangeProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.pstake_fee_address = message.pstakeFeeAddress;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.pstake_fee_address = message.pstakeFeeAddress === "" ? undefined : message.pstakeFeeAddress;
     return obj;
   },
   fromAminoMsg(object: PstakeFeeAddressChangeProposalAminoMsg): PstakeFeeAddressChangeProposal {
@@ -379,8 +379,8 @@ export const AllowListedValidatorSetChangeProposal = {
   },
   toAmino(message: AllowListedValidatorSetChangeProposal, useInterfaces: boolean = false): AllowListedValidatorSetChangeProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.allow_listed_validators = message.allowListedValidators ? AllowListedValidators.toAmino(message.allowListedValidators, useInterfaces) : undefined;
     return obj;
   },

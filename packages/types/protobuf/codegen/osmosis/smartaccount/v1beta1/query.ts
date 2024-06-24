@@ -292,7 +292,7 @@ export const GetAuthenticatorsRequest = {
   },
   toAmino(message: GetAuthenticatorsRequest, useInterfaces: boolean = false): GetAuthenticatorsRequestAmino {
     const obj: any = {};
-    obj.account = message.account;
+    obj.account = message.account === "" ? undefined : message.account;
     return obj;
   },
   fromAminoMsg(object: GetAuthenticatorsRequestAminoMsg): GetAuthenticatorsRequest {
@@ -362,7 +362,7 @@ export const GetAuthenticatorsResponse = {
     if (message.accountAuthenticators) {
       obj.account_authenticators = message.accountAuthenticators.map(e => e ? AccountAuthenticator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.account_authenticators = [];
+      obj.account_authenticators = message.accountAuthenticators;
     }
     return obj;
   },
@@ -443,8 +443,8 @@ export const GetAuthenticatorRequest = {
   },
   toAmino(message: GetAuthenticatorRequest, useInterfaces: boolean = false): GetAuthenticatorRequestAmino {
     const obj: any = {};
-    obj.account = message.account;
-    obj.authenticator_id = message.authenticatorId ? message.authenticatorId.toString() : undefined;
+    obj.account = message.account === "" ? undefined : message.account;
+    obj.authenticator_id = message.authenticatorId !== BigInt(0) ? message.authenticatorId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GetAuthenticatorRequestAminoMsg): GetAuthenticatorRequest {

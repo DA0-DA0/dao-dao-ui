@@ -87,7 +87,7 @@ export const RemoteTokenMessenger = {
   },
   toAmino(message: RemoteTokenMessenger, useInterfaces: boolean = false): RemoteTokenMessengerAmino {
     const obj: any = {};
-    obj.domain_id = message.domainId;
+    obj.domain_id = message.domainId === 0 ? undefined : message.domainId;
     obj.address = message.address ? base64FromBytes(message.address) : undefined;
     return obj;
   },

@@ -400,8 +400,8 @@ export const MsgDelegate = {
   },
   toAmino(message: MsgDelegate, useInterfaces: boolean = false): MsgDelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -543,8 +543,8 @@ export const MsgUndelegate = {
   },
   toAmino(message: MsgUndelegate, useInterfaces: boolean = false): MsgUndelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -697,9 +697,9 @@ export const MsgRedelegate = {
   },
   toAmino(message: MsgRedelegate, useInterfaces: boolean = false): MsgRedelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_src_address = message.validatorSrcAddress;
-    obj.validator_dst_address = message.validatorDstAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_src_address = message.validatorSrcAddress === "" ? undefined : message.validatorSrcAddress;
+    obj.validator_dst_address = message.validatorDstAddress === "" ? undefined : message.validatorDstAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -841,9 +841,9 @@ export const MsgClaimDelegationRewards = {
   },
   toAmino(message: MsgClaimDelegationRewards, useInterfaces: boolean = false): MsgClaimDelegationRewardsAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.denom = message.denom;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: MsgClaimDelegationRewardsAminoMsg): MsgClaimDelegationRewards {
@@ -973,7 +973,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
@@ -1153,11 +1153,11 @@ export const MsgCreateAlliance = {
   },
   toAmino(message: MsgCreateAlliance, useInterfaces: boolean = false): MsgCreateAllianceAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
-    obj.reward_weight = message.rewardWeight;
-    obj.take_rate = message.takeRate;
-    obj.reward_change_rate = message.rewardChangeRate;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.reward_weight = message.rewardWeight === "" ? undefined : message.rewardWeight;
+    obj.take_rate = message.takeRate === "" ? undefined : message.takeRate;
+    obj.reward_change_rate = message.rewardChangeRate === "" ? undefined : message.rewardChangeRate;
     obj.reward_change_interval = message.rewardChangeInterval ? Duration.toAmino(message.rewardChangeInterval, useInterfaces) : undefined;
     obj.reward_weight_range = message.rewardWeightRange ? RewardWeightRange.toAmino(message.rewardWeightRange, useInterfaces) : undefined;
     return obj;
@@ -1338,11 +1338,11 @@ export const MsgUpdateAlliance = {
   },
   toAmino(message: MsgUpdateAlliance, useInterfaces: boolean = false): MsgUpdateAllianceAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
-    obj.reward_weight = message.rewardWeight;
-    obj.take_rate = message.takeRate;
-    obj.reward_change_rate = message.rewardChangeRate;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.reward_weight = message.rewardWeight === "" ? undefined : message.rewardWeight;
+    obj.take_rate = message.takeRate === "" ? undefined : message.takeRate;
+    obj.reward_change_rate = message.rewardChangeRate === "" ? undefined : message.rewardChangeRate;
     obj.reward_change_interval = message.rewardChangeInterval ? Duration.toAmino(message.rewardChangeInterval, useInterfaces) : undefined;
     obj.reward_weight_range = message.rewardWeightRange ? RewardWeightRange.toAmino(message.rewardWeightRange, useInterfaces) : undefined;
     return obj;
@@ -1468,8 +1468,8 @@ export const MsgDeleteAlliance = {
   },
   toAmino(message: MsgDeleteAlliance, useInterfaces: boolean = false): MsgDeleteAllianceAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: MsgDeleteAllianceAminoMsg): MsgDeleteAlliance {

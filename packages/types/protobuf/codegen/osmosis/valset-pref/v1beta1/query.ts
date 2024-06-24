@@ -87,7 +87,7 @@ export const UserValidatorPreferencesRequest = {
   },
   toAmino(message: UserValidatorPreferencesRequest, useInterfaces: boolean = false): UserValidatorPreferencesRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     return obj;
   },
   fromAminoMsg(object: UserValidatorPreferencesRequestAminoMsg): UserValidatorPreferencesRequest {
@@ -157,7 +157,7 @@ export const UserValidatorPreferencesResponse = {
     if (message.preferences) {
       obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.preferences = [];
+      obj.preferences = message.preferences;
     }
     return obj;
   },

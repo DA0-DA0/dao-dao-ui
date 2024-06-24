@@ -245,19 +245,19 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.attester_manager = message.attesterManager;
-    obj.pauser = message.pauser;
-    obj.token_controller = message.tokenController;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.attester_manager = message.attesterManager === "" ? undefined : message.attesterManager;
+    obj.pauser = message.pauser === "" ? undefined : message.pauser;
+    obj.token_controller = message.tokenController === "" ? undefined : message.tokenController;
     if (message.attesterList) {
       obj.attester_list = message.attesterList.map(e => e ? Attester.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.attester_list = [];
+      obj.attester_list = message.attesterList;
     }
     if (message.perMessageBurnLimitList) {
       obj.per_message_burn_limit_list = message.perMessageBurnLimitList.map(e => e ? PerMessageBurnLimit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.per_message_burn_limit_list = [];
+      obj.per_message_burn_limit_list = message.perMessageBurnLimitList;
     }
     obj.burning_and_minting_paused = message.burningAndMintingPaused ? BurningAndMintingPaused.toAmino(message.burningAndMintingPaused, useInterfaces) : undefined;
     obj.sending_and_receiving_messages_paused = message.sendingAndReceivingMessagesPaused ? SendingAndReceivingMessagesPaused.toAmino(message.sendingAndReceivingMessagesPaused, useInterfaces) : undefined;
@@ -267,17 +267,17 @@ export const GenesisState = {
     if (message.tokenPairList) {
       obj.token_pair_list = message.tokenPairList.map(e => e ? TokenPair.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_pair_list = [];
+      obj.token_pair_list = message.tokenPairList;
     }
     if (message.usedNoncesList) {
       obj.used_nonces_list = message.usedNoncesList.map(e => e ? Nonce.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.used_nonces_list = [];
+      obj.used_nonces_list = message.usedNoncesList;
     }
     if (message.tokenMessengerList) {
       obj.token_messenger_list = message.tokenMessengerList.map(e => e ? RemoteTokenMessenger.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_messenger_list = [];
+      obj.token_messenger_list = message.tokenMessengerList;
     }
     return obj;
   },

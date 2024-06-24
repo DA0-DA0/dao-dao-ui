@@ -652,7 +652,7 @@ export const QueryClientStateRequest = {
   },
   toAmino(message: QueryClientStateRequest, useInterfaces: boolean = false): QueryClientStateRequestAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     return obj;
   },
   fromAminoMsg(object: QueryClientStateRequestAminoMsg): QueryClientStateRequest {
@@ -895,7 +895,7 @@ export const QueryClientStatesResponse = {
     if (message.clientStates) {
       obj.client_states = message.clientStates.map(e => e ? IdentifiedClientState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.client_states = [];
+      obj.client_states = message.clientStates;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -999,10 +999,10 @@ export const QueryConsensusStateRequest = {
   },
   toAmino(message: QueryConsensusStateRequest, useInterfaces: boolean = false): QueryConsensusStateRequestAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
-    obj.revision_number = message.revisionNumber ? message.revisionNumber.toString() : undefined;
-    obj.revision_height = message.revisionHeight ? message.revisionHeight.toString() : undefined;
-    obj.latest_height = message.latestHeight;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
+    obj.revision_number = message.revisionNumber !== BigInt(0) ? message.revisionNumber.toString() : undefined;
+    obj.revision_height = message.revisionHeight !== BigInt(0) ? message.revisionHeight.toString() : undefined;
+    obj.latest_height = message.latestHeight === false ? undefined : message.latestHeight;
     return obj;
   },
   fromAminoMsg(object: QueryConsensusStateRequestAminoMsg): QueryConsensusStateRequest {
@@ -1175,7 +1175,7 @@ export const QueryConsensusStatesRequest = {
   },
   toAmino(message: QueryConsensusStatesRequest, useInterfaces: boolean = false): QueryConsensusStatesRequestAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1257,7 +1257,7 @@ export const QueryConsensusStatesResponse = {
     if (message.consensusStates) {
       obj.consensus_states = message.consensusStates.map(e => e ? ConsensusStateWithHeight.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.consensus_states = [];
+      obj.consensus_states = message.consensusStates;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1339,7 +1339,7 @@ export const QueryConsensusStateHeightsRequest = {
   },
   toAmino(message: QueryConsensusStateHeightsRequest, useInterfaces: boolean = false): QueryConsensusStateHeightsRequestAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1421,7 +1421,7 @@ export const QueryConsensusStateHeightsResponse = {
     if (message.consensusStateHeights) {
       obj.consensus_state_heights = message.consensusStateHeights.map(e => e ? Height.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.consensus_state_heights = [];
+      obj.consensus_state_heights = message.consensusStateHeights;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1492,7 +1492,7 @@ export const QueryClientStatusRequest = {
   },
   toAmino(message: QueryClientStatusRequest, useInterfaces: boolean = false): QueryClientStatusRequestAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     return obj;
   },
   fromAminoMsg(object: QueryClientStatusRequestAminoMsg): QueryClientStatusRequest {
@@ -1561,7 +1561,7 @@ export const QueryClientStatusResponse = {
   },
   toAmino(message: QueryClientStatusResponse, useInterfaces: boolean = false): QueryClientStatusResponseAmino {
     const obj: any = {};
-    obj.status = message.status;
+    obj.status = message.status === "" ? undefined : message.status;
     return obj;
   },
   fromAminoMsg(object: QueryClientStatusResponseAminoMsg): QueryClientStatusResponse {

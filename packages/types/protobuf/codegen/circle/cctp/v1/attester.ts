@@ -72,7 +72,7 @@ export const Attester = {
   },
   toAmino(message: Attester, useInterfaces: boolean = false): AttesterAmino {
     const obj: any = {};
-    obj.attester = message.attester;
+    obj.attester = message.attester === "" ? undefined : message.attester;
     return obj;
   },
   fromAminoMsg(object: AttesterAminoMsg): Attester {

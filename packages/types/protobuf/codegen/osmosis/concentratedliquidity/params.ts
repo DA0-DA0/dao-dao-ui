@@ -234,31 +234,31 @@ export const Params = {
     if (message.authorizedTickSpacing) {
       obj.authorized_tick_spacing = message.authorizedTickSpacing.map(e => e.toString());
     } else {
-      obj.authorized_tick_spacing = [];
+      obj.authorized_tick_spacing = message.authorizedTickSpacing;
     }
     if (message.authorizedSpreadFactors) {
       obj.authorized_spread_factors = message.authorizedSpreadFactors.map(e => e);
     } else {
-      obj.authorized_spread_factors = [];
+      obj.authorized_spread_factors = message.authorizedSpreadFactors;
     }
-    obj.balancer_shares_reward_discount = message.balancerSharesRewardDiscount;
+    obj.balancer_shares_reward_discount = message.balancerSharesRewardDiscount === "" ? undefined : message.balancerSharesRewardDiscount;
     if (message.authorizedQuoteDenoms) {
       obj.authorized_quote_denoms = message.authorizedQuoteDenoms.map(e => e);
     } else {
-      obj.authorized_quote_denoms = [];
+      obj.authorized_quote_denoms = message.authorizedQuoteDenoms;
     }
     if (message.authorizedUptimes) {
       obj.authorized_uptimes = message.authorizedUptimes.map(e => e ? Duration.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.authorized_uptimes = [];
+      obj.authorized_uptimes = message.authorizedUptimes;
     }
-    obj.is_permissionless_pool_creation_enabled = message.isPermissionlessPoolCreationEnabled;
+    obj.is_permissionless_pool_creation_enabled = message.isPermissionlessPoolCreationEnabled === false ? undefined : message.isPermissionlessPoolCreationEnabled;
     if (message.unrestrictedPoolCreatorWhitelist) {
       obj.unrestricted_pool_creator_whitelist = message.unrestrictedPoolCreatorWhitelist.map(e => e);
     } else {
-      obj.unrestricted_pool_creator_whitelist = [];
+      obj.unrestricted_pool_creator_whitelist = message.unrestrictedPoolCreatorWhitelist;
     }
-    obj.hook_gas_limit = message.hookGasLimit ? message.hookGasLimit.toString() : undefined;
+    obj.hook_gas_limit = message.hookGasLimit !== BigInt(0) ? message.hookGasLimit.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

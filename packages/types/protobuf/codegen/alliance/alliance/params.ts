@@ -192,8 +192,8 @@ export const RewardHistory = {
   },
   toAmino(message: RewardHistory, useInterfaces: boolean = false): RewardHistoryAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.index = message.index;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.index = message.index === "" ? undefined : message.index;
     return obj;
   },
   fromAminoMsg(object: RewardHistoryAminoMsg): RewardHistory {

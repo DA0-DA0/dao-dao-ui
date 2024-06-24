@@ -510,16 +510,16 @@ export const MsgRegisterInterchainQuery = {
   },
   toAmino(message: MsgRegisterInterchainQuery, useInterfaces: boolean = false): MsgRegisterInterchainQueryAmino {
     const obj: any = {};
-    obj.query_type = message.queryType;
+    obj.query_type = message.queryType === "" ? undefined : message.queryType;
     if (message.keys) {
       obj.keys = message.keys.map(e => e ? KVKey.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.keys = [];
+      obj.keys = message.keys;
     }
-    obj.transactions_filter = message.transactionsFilter;
-    obj.connection_id = message.connectionId;
-    obj.update_period = message.updatePeriod ? message.updatePeriod.toString() : undefined;
-    obj.sender = message.sender;
+    obj.transactions_filter = message.transactionsFilter === "" ? undefined : message.transactionsFilter;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.update_period = message.updatePeriod !== BigInt(0) ? message.updatePeriod.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainQueryAminoMsg): MsgRegisterInterchainQuery {
@@ -582,7 +582,7 @@ export const MsgRegisterInterchainQueryResponse = {
   },
   toAmino(message: MsgRegisterInterchainQueryResponse, useInterfaces: boolean = false): MsgRegisterInterchainQueryResponseAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainQueryResponseAminoMsg): MsgRegisterInterchainQueryResponse {
@@ -678,9 +678,9 @@ export const MsgSubmitQueryResult = {
   },
   toAmino(message: MsgSubmitQueryResult, useInterfaces: boolean = false): MsgSubmitQueryResultAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.client_id = message.clientId;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.result = message.result ? QueryResult.toAmino(message.result, useInterfaces) : undefined;
     return obj;
   },
@@ -789,12 +789,12 @@ export const QueryResult = {
     if (message.kvResults) {
       obj.kv_results = message.kvResults.map(e => e ? StorageValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.kv_results = [];
+      obj.kv_results = message.kvResults;
     }
     obj.block = message.block ? Block.toAmino(message.block, useInterfaces) : undefined;
-    obj.height = message.height ? message.height.toString() : undefined;
-    obj.revision = message.revision ? message.revision.toString() : undefined;
-    obj.allow_kv_callbacks = message.allowKvCallbacks;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.revision = message.revision !== BigInt(0) ? message.revision.toString() : undefined;
+    obj.allow_kv_callbacks = message.allowKvCallbacks === false ? undefined : message.allowKvCallbacks;
     return obj;
   },
   fromAminoMsg(object: QueryResultAminoMsg): QueryResult {
@@ -890,7 +890,7 @@ export const StorageValue = {
   },
   toAmino(message: StorageValue, useInterfaces: boolean = false): StorageValueAmino {
     const obj: any = {};
-    obj.storage_prefix = message.storagePrefix;
+    obj.storage_prefix = message.storagePrefix === "" ? undefined : message.storagePrefix;
     obj.key = message.key ? base64FromBytes(message.key) : undefined;
     obj.value = message.value ? base64FromBytes(message.value) : undefined;
     obj.Proof = message.Proof ? ProofOps.toAmino(message.Proof, useInterfaces) : undefined;
@@ -1191,8 +1191,8 @@ export const MsgRemoveInterchainQueryRequest = {
   },
   toAmino(message: MsgRemoveInterchainQueryRequest, useInterfaces: boolean = false): MsgRemoveInterchainQueryRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
-    obj.sender = message.sender;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveInterchainQueryRequestAminoMsg): MsgRemoveInterchainQueryRequest {
@@ -1347,15 +1347,15 @@ export const MsgUpdateInterchainQueryRequest = {
   },
   toAmino(message: MsgUpdateInterchainQueryRequest, useInterfaces: boolean = false): MsgUpdateInterchainQueryRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
     if (message.newKeys) {
       obj.new_keys = message.newKeys.map(e => e ? KVKey.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.new_keys = [];
+      obj.new_keys = message.newKeys;
     }
-    obj.new_update_period = message.newUpdatePeriod ? message.newUpdatePeriod.toString() : undefined;
-    obj.new_transactions_filter = message.newTransactionsFilter;
-    obj.sender = message.sender;
+    obj.new_update_period = message.newUpdatePeriod !== BigInt(0) ? message.newUpdatePeriod.toString() : undefined;
+    obj.new_transactions_filter = message.newTransactionsFilter === "" ? undefined : message.newTransactionsFilter;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateInterchainQueryRequestAminoMsg): MsgUpdateInterchainQueryRequest {
@@ -1479,8 +1479,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

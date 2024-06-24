@@ -116,9 +116,9 @@ export const TokenPair = {
   },
   toAmino(message: TokenPair, useInterfaces: boolean = false): TokenPairAmino {
     const obj: any = {};
-    obj.remote_domain = message.remoteDomain;
+    obj.remote_domain = message.remoteDomain === 0 ? undefined : message.remoteDomain;
     obj.remote_token = message.remoteToken ? base64FromBytes(message.remoteToken) : undefined;
-    obj.local_token = message.localToken;
+    obj.local_token = message.localToken === "" ? undefined : message.localToken;
     return obj;
   },
   fromAminoMsg(object: TokenPairAminoMsg): TokenPair {

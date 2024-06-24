@@ -635,7 +635,7 @@ export const QueryHostChainRequest = {
   },
   toAmino(message: QueryHostChainRequest, useInterfaces: boolean = false): QueryHostChainRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryHostChainRequestAminoMsg): QueryHostChainRequest {
@@ -812,7 +812,7 @@ export const QueryHostChainsResponse = {
     if (message.hostChains) {
       obj.host_chains = message.hostChains.map(e => e ? HostChain.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_chains = [];
+      obj.host_chains = message.hostChains;
     }
     return obj;
   },
@@ -876,7 +876,7 @@ export const QueryDepositsRequest = {
   },
   toAmino(message: QueryDepositsRequest, useInterfaces: boolean = false): QueryDepositsRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryDepositsRequestAminoMsg): QueryDepositsRequest {
@@ -940,7 +940,7 @@ export const QueryDepositsResponse = {
     if (message.deposits) {
       obj.deposits = message.deposits.map(e => e ? Deposit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposits = [];
+      obj.deposits = message.deposits;
     }
     return obj;
   },
@@ -1004,7 +1004,7 @@ export const QueryLSMDepositsRequest = {
   },
   toAmino(message: QueryLSMDepositsRequest, useInterfaces: boolean = false): QueryLSMDepositsRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryLSMDepositsRequestAminoMsg): QueryLSMDepositsRequest {
@@ -1068,7 +1068,7 @@ export const QueryLSMDepositsResponse = {
     if (message.deposits) {
       obj.deposits = message.deposits.map(e => e ? LSMDeposit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposits = [];
+      obj.deposits = message.deposits;
     }
     return obj;
   },
@@ -1132,7 +1132,7 @@ export const QueryUnbondingsRequest = {
   },
   toAmino(message: QueryUnbondingsRequest, useInterfaces: boolean = false): QueryUnbondingsRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryUnbondingsRequestAminoMsg): QueryUnbondingsRequest {
@@ -1196,7 +1196,7 @@ export const QueryUnbondingsResponse = {
     if (message.unbondings) {
       obj.unbondings = message.unbondings.map(e => e ? Unbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unbondings = [];
+      obj.unbondings = message.unbondings;
     }
     return obj;
   },
@@ -1271,8 +1271,8 @@ export const QueryUnbondingRequest = {
   },
   toAmino(message: QueryUnbondingRequest, useInterfaces: boolean = false): QueryUnbondingRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.epoch = message.epoch ? message.epoch.toString() : undefined;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.epoch = message.epoch !== BigInt(0) ? message.epoch.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryUnbondingRequestAminoMsg): QueryUnbondingRequest {
@@ -1398,7 +1398,7 @@ export const QueryUserUnbondingsRequest = {
   },
   toAmino(message: QueryUserUnbondingsRequest, useInterfaces: boolean = false): QueryUserUnbondingsRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     return obj;
   },
   fromAminoMsg(object: QueryUserUnbondingsRequestAminoMsg): QueryUserUnbondingsRequest {
@@ -1462,7 +1462,7 @@ export const QueryUserUnbondingsResponse = {
     if (message.userUnbondings) {
       obj.user_unbondings = message.userUnbondings.map(e => e ? UserUnbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.user_unbondings = [];
+      obj.user_unbondings = message.userUnbondings;
     }
     return obj;
   },
@@ -1537,7 +1537,7 @@ export const QueryHostChainUserUnbondingsRequest = {
   },
   toAmino(message: QueryHostChainUserUnbondingsRequest, useInterfaces: boolean = false): QueryHostChainUserUnbondingsRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1613,7 +1613,7 @@ export const QueryHostChainUserUnbondingsResponse = {
     if (message.userUnbondings) {
       obj.user_unbondings = message.userUnbondings.map(e => e ? UserUnbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.user_unbondings = [];
+      obj.user_unbondings = message.userUnbondings;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1678,7 +1678,7 @@ export const QueryValidatorUnbondingRequest = {
   },
   toAmino(message: QueryValidatorUnbondingRequest, useInterfaces: boolean = false): QueryValidatorUnbondingRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryValidatorUnbondingRequestAminoMsg): QueryValidatorUnbondingRequest {
@@ -1742,7 +1742,7 @@ export const QueryValidatorUnbondingResponse = {
     if (message.validatorUnbondings) {
       obj.validator_unbondings = message.validatorUnbondings.map(e => e ? ValidatorUnbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_unbondings = [];
+      obj.validator_unbondings = message.validatorUnbondings;
     }
     return obj;
   },
@@ -1806,7 +1806,7 @@ export const QueryDepositAccountBalanceRequest = {
   },
   toAmino(message: QueryDepositAccountBalanceRequest, useInterfaces: boolean = false): QueryDepositAccountBalanceRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryDepositAccountBalanceRequestAminoMsg): QueryDepositAccountBalanceRequest {
@@ -1932,7 +1932,7 @@ export const QueryExchangeRateRequest = {
   },
   toAmino(message: QueryExchangeRateRequest, useInterfaces: boolean = false): QueryExchangeRateRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryExchangeRateRequestAminoMsg): QueryExchangeRateRequest {
@@ -1995,7 +1995,7 @@ export const QueryExchangeRateResponse = {
   },
   toAmino(message: QueryExchangeRateResponse, useInterfaces: boolean = false): QueryExchangeRateResponseAmino {
     const obj: any = {};
-    obj.rate = message.rate;
+    obj.rate = message.rate === "" ? undefined : message.rate;
     return obj;
   },
   fromAminoMsg(object: QueryExchangeRateResponseAminoMsg): QueryExchangeRateResponse {
@@ -2058,7 +2058,7 @@ export const QueryRedelegationsRequest = {
   },
   toAmino(message: QueryRedelegationsRequest, useInterfaces: boolean = false): QueryRedelegationsRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryRedelegationsRequestAminoMsg): QueryRedelegationsRequest {
@@ -2184,7 +2184,7 @@ export const QueryRedelegationTxRequest = {
   },
   toAmino(message: QueryRedelegationTxRequest, useInterfaces: boolean = false): QueryRedelegationTxRequestAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     return obj;
   },
   fromAminoMsg(object: QueryRedelegationTxRequestAminoMsg): QueryRedelegationTxRequest {
@@ -2248,7 +2248,7 @@ export const QueryRedelegationTxResponse = {
     if (message.redelegationTx) {
       obj.redelegation_tx = message.redelegationTx.map(e => e ? RedelegateTx.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.redelegation_tx = [];
+      obj.redelegation_tx = message.redelegationTx;
     }
     return obj;
   },

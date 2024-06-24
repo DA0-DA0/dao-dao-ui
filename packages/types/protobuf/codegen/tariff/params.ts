@@ -151,15 +151,15 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.share = message.share;
+    obj.share = message.share === "" ? undefined : message.share;
     if (message.distributionEntities) {
       obj.distribution_entities = message.distributionEntities.map(e => e ? DistributionEntity.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.distribution_entities = [];
+      obj.distribution_entities = message.distributionEntities;
     }
-    obj.transfer_fee_bps = message.transferFeeBps;
-    obj.transfer_fee_max = message.transferFeeMax;
-    obj.transfer_fee_denom = message.transferFeeDenom;
+    obj.transfer_fee_bps = message.transferFeeBps === "" ? undefined : message.transferFeeBps;
+    obj.transfer_fee_max = message.transferFeeMax === "" ? undefined : message.transferFeeMax;
+    obj.transfer_fee_denom = message.transferFeeDenom === "" ? undefined : message.transferFeeDenom;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
@@ -233,8 +233,8 @@ export const DistributionEntity = {
   },
   toAmino(message: DistributionEntity, useInterfaces: boolean = false): DistributionEntityAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.share = message.share;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.share = message.share === "" ? undefined : message.share;
     return obj;
   },
   fromAminoMsg(object: DistributionEntityAminoMsg): DistributionEntity {

@@ -1,5 +1,5 @@
 import { TradePairID, TradePairIDAmino, TradePairIDSDKType } from "./trade_pair_id";
-import { LimitOrderType, limitOrderTypeFromJSON } from "./tx";
+import { LimitOrderType } from "./tx";
 import { BinaryReader, BinaryWriter } from "../../binary";
 export interface LimitOrderTrancheUser {
   tradePairId?: TradePairID | undefined;
@@ -20,9 +20,9 @@ export interface LimitOrderTrancheUserAmino {
   tick_index_taker_to_maker?: string;
   tranche_key?: string;
   address?: string;
-  shares_owned?: string;
-  shares_withdrawn?: string;
-  shares_cancelled?: string;
+  shares_owned: string;
+  shares_withdrawn: string;
+  shares_cancelled: string;
   order_type?: LimitOrderType;
 }
 export interface LimitOrderTrancheUserAminoMsg {
@@ -154,20 +154,20 @@ export const LimitOrderTrancheUser = {
       message.sharesCancelled = object.shares_cancelled;
     }
     if (object.order_type !== undefined && object.order_type !== null) {
-      message.orderType = limitOrderTypeFromJSON(object.order_type);
+      message.orderType = object.order_type;
     }
     return message;
   },
   toAmino(message: LimitOrderTrancheUser, useInterfaces: boolean = false): LimitOrderTrancheUserAmino {
     const obj: any = {};
     obj.trade_pair_id = message.tradePairId ? TradePairID.toAmino(message.tradePairId, useInterfaces) : undefined;
-    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker ? message.tickIndexTakerToMaker.toString() : undefined;
-    obj.tranche_key = message.trancheKey;
-    obj.address = message.address;
-    obj.shares_owned = message.sharesOwned;
-    obj.shares_withdrawn = message.sharesWithdrawn;
-    obj.shares_cancelled = message.sharesCancelled;
-    obj.order_type = message.orderType;
+    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker !== BigInt(0) ? message.tickIndexTakerToMaker.toString() : undefined;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.shares_owned = message.sharesOwned ?? "";
+    obj.shares_withdrawn = message.sharesWithdrawn ?? "";
+    obj.shares_cancelled = message.sharesCancelled ?? "";
+    obj.order_type = message.orderType === 0 ? undefined : message.orderType;
     return obj;
   },
   fromAminoMsg(object: LimitOrderTrancheUserAminoMsg): LimitOrderTrancheUser {

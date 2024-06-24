@@ -261,8 +261,8 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
   },
   toAmino(message: UploadCosmWasmPoolCodeAndWhiteListProposal, useInterfaces: boolean = false): UploadCosmWasmPoolCodeAndWhiteListProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.wasm_byte_code = message.wasmByteCode ? toBase64(message.wasmByteCode) : undefined;
     return obj;
   },
@@ -395,14 +395,14 @@ export const MigratePoolContractsProposal = {
   },
   toAmino(message: MigratePoolContractsProposal, useInterfaces: boolean = false): MigratePoolContractsProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     if (message.poolIds) {
       obj.pool_ids = message.poolIds.map(e => e.toString());
     } else {
-      obj.pool_ids = [];
+      obj.pool_ids = message.poolIds;
     }
-    obj.new_code_id = message.newCodeId ? message.newCodeId.toString() : undefined;
+    obj.new_code_id = message.newCodeId !== BigInt(0) ? message.newCodeId.toString() : undefined;
     obj.wasm_byte_code = message.wasmByteCode ? toBase64(message.wasmByteCode) : undefined;
     obj.migrate_msg = message.migrateMsg ? base64FromBytes(message.migrateMsg) : undefined;
     return obj;

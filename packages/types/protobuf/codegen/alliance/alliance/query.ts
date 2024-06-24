@@ -853,7 +853,7 @@ export const QueryAlliancesResponse = {
     if (message.alliances) {
       obj.alliances = message.alliances.map(e => e ? AllianceAsset.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.alliances = [];
+      obj.alliances = message.alliances;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -918,7 +918,7 @@ export const QueryAllianceRequest = {
   },
   toAmino(message: QueryAllianceRequest, useInterfaces: boolean = false): QueryAllianceRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryAllianceRequestAminoMsg): QueryAllianceRequest {
@@ -1044,7 +1044,7 @@ export const QueryIBCAllianceRequest = {
   },
   toAmino(message: QueryIBCAllianceRequest, useInterfaces: boolean = false): QueryIBCAllianceRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     return obj;
   },
   fromAminoMsg(object: QueryIBCAllianceRequestAminoMsg): QueryIBCAllianceRequest {
@@ -1107,7 +1107,7 @@ export const QueryAllianceValidatorRequest = {
   },
   toAmino(message: QueryAllianceValidatorRequest, useInterfaces: boolean = false): QueryAllianceValidatorRequestAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     return obj;
   },
   fromAminoMsg(object: QueryAllianceValidatorRequestAminoMsg): QueryAllianceValidatorRequest {
@@ -1307,7 +1307,7 @@ export const QueryAlliancesDelegationsRequest = {
   },
   toAmino(message: QueryAlliancesDelegationsRequest, useInterfaces: boolean = false): QueryAlliancesDelegationsRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1393,8 +1393,8 @@ export const QueryAlliancesDelegationByValidatorRequest = {
   },
   toAmino(message: QueryAlliancesDelegationByValidatorRequest, useInterfaces: boolean = false): QueryAlliancesDelegationByValidatorRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1545,7 +1545,7 @@ export const QueryAlliancesDelegationsResponse = {
     if (message.delegations) {
       obj.delegations = message.delegations.map(e => e ? DelegationResponse.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegations = [];
+      obj.delegations = message.delegations;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1643,9 +1643,9 @@ export const QueryAllianceDelegationRequest = {
   },
   toAmino(message: QueryAllianceDelegationRequest, useInterfaces: boolean = false): QueryAllianceDelegationRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
-    obj.denom = message.denom;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1742,9 +1742,9 @@ export const QueryIBCAllianceDelegationRequest = {
   },
   toAmino(message: QueryIBCAllianceDelegationRequest, useInterfaces: boolean = false): QueryIBCAllianceDelegationRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
-    obj.hash = message.hash;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1904,9 +1904,9 @@ export const QueryAllianceDelegationRewardsRequest = {
   },
   toAmino(message: QueryAllianceDelegationRewardsRequest, useInterfaces: boolean = false): QueryAllianceDelegationRewardsRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
-    obj.denom = message.denom;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2003,9 +2003,9 @@ export const QueryIBCAllianceDelegationRewardsRequest = {
   },
   toAmino(message: QueryIBCAllianceDelegationRewardsRequest, useInterfaces: boolean = false): QueryIBCAllianceDelegationRewardsRequestAmino {
     const obj: any = {};
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
-    obj.hash = message.hash;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2070,7 +2070,7 @@ export const QueryAllianceDelegationRewardsResponse = {
     if (message.rewards) {
       obj.rewards = message.rewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.rewards = [];
+      obj.rewards = message.rewards;
     }
     return obj;
   },
@@ -2161,21 +2161,21 @@ export const QueryAllianceValidatorResponse = {
   },
   toAmino(message: QueryAllianceValidatorResponse, useInterfaces: boolean = false): QueryAllianceValidatorResponseAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     if (message.totalDelegationShares) {
       obj.total_delegation_shares = message.totalDelegationShares.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.total_delegation_shares = [];
+      obj.total_delegation_shares = message.totalDelegationShares;
     }
     if (message.validatorShares) {
       obj.validator_shares = message.validatorShares.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_shares = [];
+      obj.validator_shares = message.validatorShares;
     }
     if (message.totalStaked) {
       obj.total_staked = message.totalStaked.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.total_staked = [];
+      obj.total_staked = message.totalStaked;
     }
     return obj;
   },
@@ -2251,7 +2251,7 @@ export const QueryAllianceValidatorsResponse = {
     if (message.validators) {
       obj.validators = message.validators.map(e => e ? QueryAllianceValidatorResponse.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validators = [];
+      obj.validators = message.validators;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2338,8 +2338,8 @@ export const QueryAllianceUnbondingsByDenomAndDelegatorRequest = {
   },
   toAmino(message: QueryAllianceUnbondingsByDenomAndDelegatorRequest, useInterfaces: boolean = false): QueryAllianceUnbondingsByDenomAndDelegatorRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.delegator_addr = message.delegatorAddr;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2415,7 +2415,7 @@ export const QueryAllianceUnbondingsByDenomAndDelegatorResponse = {
     if (message.unbondings) {
       obj.unbondings = message.unbondings.map(e => e ? UnbondingDelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unbondings = [];
+      obj.unbondings = message.unbondings;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2513,9 +2513,9 @@ export const QueryAllianceUnbondingsRequest = {
   },
   toAmino(message: QueryAllianceUnbondingsRequest, useInterfaces: boolean = false): QueryAllianceUnbondingsRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.delegator_addr = message.delegatorAddr;
-    obj.validator_addr = message.validatorAddr;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2591,7 +2591,7 @@ export const QueryAllianceUnbondingsResponse = {
     if (message.unbondings) {
       obj.unbondings = message.unbondings.map(e => e ? UnbondingDelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unbondings = [];
+      obj.unbondings = message.unbondings;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2678,8 +2678,8 @@ export const QueryAllianceRedelegationsRequest = {
   },
   toAmino(message: QueryAllianceRedelegationsRequest, useInterfaces: boolean = false): QueryAllianceRedelegationsRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.delegator_addr = message.delegatorAddr;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.delegator_addr = message.delegatorAddr === "" ? undefined : message.delegatorAddr;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2755,7 +2755,7 @@ export const QueryAllianceRedelegationsResponse = {
     if (message.redelegations) {
       obj.redelegations = message.redelegations.map(e => e ? RedelegationEntry.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.redelegations = [];
+      obj.redelegations = message.redelegations;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

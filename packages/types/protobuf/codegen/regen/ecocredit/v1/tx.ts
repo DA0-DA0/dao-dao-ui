@@ -1992,7 +1992,7 @@ export const MsgAddCreditType = {
   },
   toAmino(message: MsgAddCreditType, useInterfaces: boolean = false): MsgAddCreditTypeAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.credit_type = message.creditType ? CreditType.toAmino(message.creditType, useInterfaces) : undefined;
     return obj;
   },
@@ -2148,14 +2148,14 @@ export const MsgCreateClass = {
   },
   toAmino(message: MsgCreateClass, useInterfaces: boolean = false): MsgCreateClassAmino {
     const obj: any = {};
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     if (message.issuers) {
       obj.issuers = message.issuers.map(e => e);
     } else {
-      obj.issuers = [];
+      obj.issuers = message.issuers;
     }
-    obj.metadata = message.metadata;
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
     obj.fee = message.fee ? Coin.toAmino(message.fee, useInterfaces) : undefined;
     return obj;
   },
@@ -2219,7 +2219,7 @@ export const MsgCreateClassResponse = {
   },
   toAmino(message: MsgCreateClassResponse, useInterfaces: boolean = false): MsgCreateClassResponseAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: MsgCreateClassResponseAminoMsg): MsgCreateClassResponse {
@@ -2326,11 +2326,11 @@ export const MsgCreateProject = {
   },
   toAmino(message: MsgCreateProject, useInterfaces: boolean = false): MsgCreateProjectAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.class_id = message.classId;
-    obj.metadata = message.metadata;
-    obj.jurisdiction = message.jurisdiction;
-    obj.reference_id = message.referenceId;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
+    obj.jurisdiction = message.jurisdiction === "" ? undefined : message.jurisdiction;
+    obj.reference_id = message.referenceId === "" ? undefined : message.referenceId;
     return obj;
   },
   fromAminoMsg(object: MsgCreateProjectAminoMsg): MsgCreateProject {
@@ -2393,7 +2393,7 @@ export const MsgCreateProjectResponse = {
   },
   toAmino(message: MsgCreateProjectResponse, useInterfaces: boolean = false): MsgCreateProjectResponseAmino {
     const obj: any = {};
-    obj.project_id = message.projectId;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     return obj;
   },
   fromAminoMsg(object: MsgCreateProjectResponseAminoMsg): MsgCreateProjectResponse {
@@ -2531,17 +2531,17 @@ export const MsgCreateBatch = {
   },
   toAmino(message: MsgCreateBatch, useInterfaces: boolean = false): MsgCreateBatchAmino {
     const obj: any = {};
-    obj.issuer = message.issuer;
-    obj.project_id = message.projectId;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     if (message.issuance) {
       obj.issuance = message.issuance.map(e => e ? BatchIssuance.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.issuance = [];
+      obj.issuance = message.issuance;
     }
-    obj.metadata = message.metadata;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
     obj.start_date = message.startDate ? Timestamp.toAmino(toTimestamp(message.startDate)) : undefined;
     obj.end_date = message.endDate ? Timestamp.toAmino(toTimestamp(message.endDate)) : undefined;
-    obj.open = message.open;
+    obj.open = message.open === false ? undefined : message.open;
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
     return obj;
   },
@@ -2605,7 +2605,7 @@ export const MsgCreateBatchResponse = {
   },
   toAmino(message: MsgCreateBatchResponse, useInterfaces: boolean = false): MsgCreateBatchResponseAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     return obj;
   },
   fromAminoMsg(object: MsgCreateBatchResponseAminoMsg): MsgCreateBatchResponse {
@@ -2699,12 +2699,12 @@ export const MsgMintBatchCredits = {
   },
   toAmino(message: MsgMintBatchCredits, useInterfaces: boolean = false): MsgMintBatchCreditsAmino {
     const obj: any = {};
-    obj.issuer = message.issuer;
-    obj.batch_denom = message.batchDenom;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     if (message.issuance) {
       obj.issuance = message.issuance.map(e => e ? BatchIssuance.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.issuance = [];
+      obj.issuance = message.issuance;
     }
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
     return obj;
@@ -2830,8 +2830,8 @@ export const MsgSealBatch = {
   },
   toAmino(message: MsgSealBatch, useInterfaces: boolean = false): MsgSealBatchAmino {
     const obj: any = {};
-    obj.issuer = message.issuer;
-    obj.batch_denom = message.batchDenom;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     return obj;
   },
   fromAminoMsg(object: MsgSealBatchAminoMsg): MsgSealBatch {
@@ -2964,12 +2964,12 @@ export const MsgSend = {
   },
   toAmino(message: MsgSend, useInterfaces: boolean = false): MsgSendAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? MsgSend_SendCredits.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
     return obj;
   },
@@ -3077,11 +3077,11 @@ export const MsgSend_SendCredits = {
   },
   toAmino(message: MsgSend_SendCredits, useInterfaces: boolean = false): MsgSend_SendCreditsAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
-    obj.retirement_jurisdiction = message.retirementJurisdiction;
-    obj.retirement_reason = message.retirementReason;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
+    obj.retirement_jurisdiction = message.retirementJurisdiction === "" ? undefined : message.retirementJurisdiction;
+    obj.retirement_reason = message.retirementReason === "" ? undefined : message.retirementReason;
     return obj;
   },
   fromAminoMsg(object: MsgSend_SendCreditsAminoMsg): MsgSend_SendCredits {
@@ -3225,14 +3225,14 @@ export const MsgRetire = {
   },
   toAmino(message: MsgRetire, useInterfaces: boolean = false): MsgRetireAmino {
     const obj: any = {};
-    obj.owner = message.owner;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? Credits.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
-    obj.jurisdiction = message.jurisdiction;
-    obj.reason = message.reason;
+    obj.jurisdiction = message.jurisdiction === "" ? undefined : message.jurisdiction;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: MsgRetireAminoMsg): MsgRetire {
@@ -3365,13 +3365,13 @@ export const MsgCancel = {
   },
   toAmino(message: MsgCancel, useInterfaces: boolean = false): MsgCancelAmino {
     const obj: any = {};
-    obj.owner = message.owner;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? Credits.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
-    obj.reason = message.reason;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: MsgCancelAminoMsg): MsgCancel {
@@ -3506,9 +3506,9 @@ export const MsgUpdateClassAdmin = {
   },
   toAmino(message: MsgUpdateClassAdmin, useInterfaces: boolean = false): MsgUpdateClassAdminAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.class_id = message.classId;
-    obj.new_admin = message.newAdmin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.new_admin = message.newAdmin === "" ? undefined : message.newAdmin;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateClassAdminAminoMsg): MsgUpdateClassAdmin {
@@ -3650,17 +3650,17 @@ export const MsgUpdateClassIssuers = {
   },
   toAmino(message: MsgUpdateClassIssuers, useInterfaces: boolean = false): MsgUpdateClassIssuersAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.class_id = message.classId;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     if (message.addIssuers) {
       obj.add_issuers = message.addIssuers.map(e => e);
     } else {
-      obj.add_issuers = [];
+      obj.add_issuers = message.addIssuers;
     }
     if (message.removeIssuers) {
       obj.remove_issuers = message.removeIssuers.map(e => e);
     } else {
-      obj.remove_issuers = [];
+      obj.remove_issuers = message.removeIssuers;
     }
     return obj;
   },
@@ -3796,9 +3796,9 @@ export const MsgUpdateClassMetadata = {
   },
   toAmino(message: MsgUpdateClassMetadata, useInterfaces: boolean = false): MsgUpdateClassMetadataAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.class_id = message.classId;
-    obj.new_metadata = message.newMetadata;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.new_metadata = message.newMetadata === "" ? undefined : message.newMetadata;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateClassMetadataAminoMsg): MsgUpdateClassMetadata {
@@ -3933,9 +3933,9 @@ export const MsgUpdateProjectAdmin = {
   },
   toAmino(message: MsgUpdateProjectAdmin, useInterfaces: boolean = false): MsgUpdateProjectAdminAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.project_id = message.projectId;
-    obj.new_admin = message.newAdmin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
+    obj.new_admin = message.newAdmin === "" ? undefined : message.newAdmin;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateProjectAdminAminoMsg): MsgUpdateProjectAdmin {
@@ -4070,9 +4070,9 @@ export const MsgUpdateProjectMetadata = {
   },
   toAmino(message: MsgUpdateProjectMetadata, useInterfaces: boolean = false): MsgUpdateProjectMetadataAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.project_id = message.projectId;
-    obj.new_metadata = message.newMetadata;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
+    obj.new_metadata = message.newMetadata === "" ? undefined : message.newMetadata;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateProjectMetadataAminoMsg): MsgUpdateProjectMetadata {
@@ -4216,13 +4216,13 @@ export const MsgBridge = {
   },
   toAmino(message: MsgBridge, useInterfaces: boolean = false): MsgBridgeAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.target = message.target;
-    obj.recipient = message.recipient;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.target = message.target === "" ? undefined : message.target;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? Credits.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
     return obj;
   },
@@ -4308,9 +4308,9 @@ export const MsgUpdateBatchMetadata = {
   },
   toAmino(message: MsgUpdateBatchMetadata, useInterfaces: boolean = false): MsgUpdateBatchMetadataAmino {
     const obj: any = {};
-    obj.issuer = message.issuer;
-    obj.batch_denom = message.batchDenom;
-    obj.new_metadata = message.newMetadata;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.new_metadata = message.newMetadata === "" ? undefined : message.newMetadata;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateBatchMetadataAminoMsg): MsgUpdateBatchMetadata {
@@ -4517,8 +4517,8 @@ export const MsgBridgeReceive = {
   },
   toAmino(message: MsgBridgeReceive, useInterfaces: boolean = false): MsgBridgeReceiveAmino {
     const obj: any = {};
-    obj.issuer = message.issuer;
-    obj.class_id = message.classId;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     obj.project = message.project ? MsgBridgeReceive_Project.toAmino(message.project, useInterfaces) : undefined;
     obj.batch = message.batch ? MsgBridgeReceive_Batch.toAmino(message.batch, useInterfaces) : undefined;
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
@@ -4628,11 +4628,11 @@ export const MsgBridgeReceive_Batch = {
   },
   toAmino(message: MsgBridgeReceive_Batch, useInterfaces: boolean = false): MsgBridgeReceive_BatchAmino {
     const obj: any = {};
-    obj.recipient = message.recipient;
-    obj.amount = message.amount;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     obj.start_date = message.startDate ? Timestamp.toAmino(toTimestamp(message.startDate)) : undefined;
     obj.end_date = message.endDate ? Timestamp.toAmino(toTimestamp(message.endDate)) : undefined;
-    obj.metadata = message.metadata;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
     return obj;
   },
   fromAminoMsg(object: MsgBridgeReceive_BatchAminoMsg): MsgBridgeReceive_Batch {
@@ -4717,9 +4717,9 @@ export const MsgBridgeReceive_Project = {
   },
   toAmino(message: MsgBridgeReceive_Project, useInterfaces: boolean = false): MsgBridgeReceive_ProjectAmino {
     const obj: any = {};
-    obj.reference_id = message.referenceId;
-    obj.jurisdiction = message.jurisdiction;
-    obj.metadata = message.metadata;
+    obj.reference_id = message.referenceId === "" ? undefined : message.referenceId;
+    obj.jurisdiction = message.jurisdiction === "" ? undefined : message.jurisdiction;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
     return obj;
   },
   fromAminoMsg(object: MsgBridgeReceive_ProjectAminoMsg): MsgBridgeReceive_Project {
@@ -4793,8 +4793,8 @@ export const MsgBridgeReceiveResponse = {
   },
   toAmino(message: MsgBridgeReceiveResponse, useInterfaces: boolean = false): MsgBridgeReceiveResponseAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.project_id = message.projectId;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     return obj;
   },
   fromAminoMsg(object: MsgBridgeReceiveResponseAminoMsg): MsgBridgeReceiveResponse {
@@ -4868,8 +4868,8 @@ export const MsgAddClassCreator = {
   },
   toAmino(message: MsgAddClassCreator, useInterfaces: boolean = false): MsgAddClassCreatorAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.creator = message.creator;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.creator = message.creator === "" ? undefined : message.creator;
     return obj;
   },
   fromAminoMsg(object: MsgAddClassCreatorAminoMsg): MsgAddClassCreator {
@@ -4993,8 +4993,8 @@ export const MsgSetClassCreatorAllowlist = {
   },
   toAmino(message: MsgSetClassCreatorAllowlist, useInterfaces: boolean = false): MsgSetClassCreatorAllowlistAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.enabled = message.enabled;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
     return obj;
   },
   fromAminoMsg(object: MsgSetClassCreatorAllowlistAminoMsg): MsgSetClassCreatorAllowlist {
@@ -5118,8 +5118,8 @@ export const MsgRemoveClassCreator = {
   },
   toAmino(message: MsgRemoveClassCreator, useInterfaces: boolean = false): MsgRemoveClassCreatorAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.creator = message.creator;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.creator = message.creator === "" ? undefined : message.creator;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveClassCreatorAminoMsg): MsgRemoveClassCreator {
@@ -5243,7 +5243,7 @@ export const MsgUpdateClassFee = {
   },
   toAmino(message: MsgUpdateClassFee, useInterfaces: boolean = false): MsgUpdateClassFeeAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.fee = message.fee ? Coin.toAmino(message.fee, useInterfaces) : undefined;
     return obj;
   },
@@ -5368,8 +5368,8 @@ export const MsgAddAllowedBridgeChain = {
   },
   toAmino(message: MsgAddAllowedBridgeChain, useInterfaces: boolean = false): MsgAddAllowedBridgeChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.chain_name = message.chainName;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.chain_name = message.chainName === "" ? undefined : message.chainName;
     return obj;
   },
   fromAminoMsg(object: MsgAddAllowedBridgeChainAminoMsg): MsgAddAllowedBridgeChain {
@@ -5493,8 +5493,8 @@ export const MsgRemoveAllowedBridgeChain = {
   },
   toAmino(message: MsgRemoveAllowedBridgeChain, useInterfaces: boolean = false): MsgRemoveAllowedBridgeChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.chain_name = message.chainName;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.chain_name = message.chainName === "" ? undefined : message.chainName;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAllowedBridgeChainAminoMsg): MsgRemoveAllowedBridgeChain {
@@ -5629,9 +5629,9 @@ export const MsgBurnRegen = {
   },
   toAmino(message: MsgBurnRegen, useInterfaces: boolean = false): MsgBurnRegenAmino {
     const obj: any = {};
-    obj.burner = message.burner;
-    obj.amount = message.amount;
-    obj.reason = message.reason;
+    obj.burner = message.burner === "" ? undefined : message.burner;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: MsgBurnRegenAminoMsg): MsgBurnRegen {

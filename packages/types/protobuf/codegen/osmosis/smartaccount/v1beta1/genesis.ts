@@ -138,11 +138,11 @@ export const AuthenticatorData = {
   },
   toAmino(message: AuthenticatorData, useInterfaces: boolean = false): AuthenticatorDataAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.authenticators) {
       obj.authenticators = message.authenticators.map(e => e ? AccountAuthenticator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.authenticators = [];
+      obj.authenticators = message.authenticators;
     }
     return obj;
   },
@@ -233,11 +233,11 @@ export const GenesisState = {
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
-    obj.next_authenticator_id = message.nextAuthenticatorId ? message.nextAuthenticatorId.toString() : undefined;
+    obj.next_authenticator_id = message.nextAuthenticatorId !== BigInt(0) ? message.nextAuthenticatorId.toString() : undefined;
     if (message.authenticatorData) {
       obj.authenticator_data = message.authenticatorData.map(e => e ? AuthenticatorData.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.authenticator_data = [];
+      obj.authenticator_data = message.authenticatorData;
     }
     return obj;
   },

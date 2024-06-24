@@ -324,13 +324,13 @@ export const HostChain = {
   },
   toAmino(message: HostChain, useInterfaces: boolean = false): HostChainAmino {
     const obj: any = {};
-    obj.i_d = message.iD ? message.iD.toString() : undefined;
-    obj.chain_i_d = message.chainID;
-    obj.connection_i_d = message.connectionID;
-    obj.i_c_a_account = message.iCAAccount ? ICAAccount.toAmino(message.iCAAccount, useInterfaces) : ICAAccount.fromPartial({});
-    obj.features = message.features ? Feature.toAmino(message.features, useInterfaces) : Feature.fromPartial({});
-    obj.transfer_channel_i_d = message.transferChannelID;
-    obj.transfer_port_i_d = message.transferPortID;
+    obj.i_d = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
+    obj.chain_i_d = message.chainID === "" ? undefined : message.chainID;
+    obj.connection_i_d = message.connectionID === "" ? undefined : message.connectionID;
+    obj.i_c_a_account = message.iCAAccount ? ICAAccount.toAmino(message.iCAAccount, useInterfaces) : ICAAccount.toAmino(ICAAccount.fromPartial({}));
+    obj.features = message.features ? Feature.toAmino(message.features, useInterfaces) : Feature.toAmino(Feature.fromPartial({}));
+    obj.transfer_channel_i_d = message.transferChannelID === "" ? undefined : message.transferChannelID;
+    obj.transfer_port_i_d = message.transferPortID === "" ? undefined : message.transferPortID;
     return obj;
   },
   fromAminoMsg(object: HostChainAminoMsg): HostChain {
@@ -404,8 +404,8 @@ export const Feature = {
   },
   toAmino(message: Feature, useInterfaces: boolean = false): FeatureAmino {
     const obj: any = {};
-    obj.liquid_stake_i_b_c = message.liquidStakeIBC ? LiquidStake.toAmino(message.liquidStakeIBC, useInterfaces) : LiquidStake.fromPartial({});
-    obj.liquid_stake = message.liquidStake ? LiquidStake.toAmino(message.liquidStake, useInterfaces) : LiquidStake.fromPartial({});
+    obj.liquid_stake_i_b_c = message.liquidStakeIBC ? LiquidStake.toAmino(message.liquidStakeIBC, useInterfaces) : LiquidStake.toAmino(LiquidStake.fromPartial({}));
+    obj.liquid_stake = message.liquidStake ? LiquidStake.toAmino(message.liquidStake, useInterfaces) : LiquidStake.toAmino(LiquidStake.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: FeatureAminoMsg): Feature {
@@ -502,13 +502,13 @@ export const LiquidStake = {
   fromAmino(object: LiquidStakeAmino): LiquidStake {
     const message = createBaseLiquidStake();
     if (object.feature_type !== undefined && object.feature_type !== null) {
-      message.featureType = featureTypeFromJSON(object.feature_type);
+      message.featureType = object.feature_type;
     }
     if (object.code_i_d !== undefined && object.code_i_d !== null) {
       message.codeID = BigInt(object.code_i_d);
     }
     if (object.instantiation !== undefined && object.instantiation !== null) {
-      message.instantiation = instantiationStateFromJSON(object.instantiation);
+      message.instantiation = object.instantiation;
     }
     if (object.contract_address !== undefined && object.contract_address !== null) {
       message.contractAddress = object.contract_address;
@@ -521,16 +521,16 @@ export const LiquidStake = {
   },
   toAmino(message: LiquidStake, useInterfaces: boolean = false): LiquidStakeAmino {
     const obj: any = {};
-    obj.feature_type = message.featureType;
-    obj.code_i_d = message.codeID ? message.codeID.toString() : undefined;
-    obj.instantiation = message.instantiation;
-    obj.contract_address = message.contractAddress;
+    obj.feature_type = message.featureType === 0 ? undefined : message.featureType;
+    obj.code_i_d = message.codeID !== BigInt(0) ? message.codeID.toString() : undefined;
+    obj.instantiation = message.instantiation === 0 ? undefined : message.instantiation;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     if (message.denoms) {
       obj.denoms = message.denoms.map(e => e);
     } else {
-      obj.denoms = [];
+      obj.denoms = message.denoms;
     }
-    obj.enabled = message.enabled;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
     return obj;
   },
   fromAminoMsg(object: LiquidStakeAminoMsg): LiquidStake {
@@ -595,7 +595,7 @@ export const ICAMemo = {
   fromAmino(object: ICAMemoAmino): ICAMemo {
     const message = createBaseICAMemo();
     if (object.feature_type !== undefined && object.feature_type !== null) {
-      message.featureType = featureTypeFromJSON(object.feature_type);
+      message.featureType = object.feature_type;
     }
     if (object.host_chain_i_d !== undefined && object.host_chain_i_d !== null) {
       message.hostChainID = BigInt(object.host_chain_i_d);
@@ -604,8 +604,8 @@ export const ICAMemo = {
   },
   toAmino(message: ICAMemo, useInterfaces: boolean = false): ICAMemoAmino {
     const obj: any = {};
-    obj.feature_type = message.featureType;
-    obj.host_chain_i_d = message.hostChainID ? message.hostChainID.toString() : undefined;
+    obj.feature_type = message.featureType === 0 ? undefined : message.featureType;
+    obj.host_chain_i_d = message.hostChainID !== BigInt(0) ? message.hostChainID.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ICAMemoAminoMsg): ICAMemo {

@@ -201,9 +201,9 @@ export const AccumulatorContent = {
     if (message.accumValue) {
       obj.accum_value = message.accumValue.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.accum_value = [];
+      obj.accum_value = message.accumValue;
     }
-    obj.total_shares = message.totalShares;
+    obj.total_shares = message.totalShares === "" ? undefined : message.totalShares;
     return obj;
   },
   fromAminoMsg(object: AccumulatorContentAminoMsg): AccumulatorContent {
@@ -357,16 +357,16 @@ export const Record = {
   },
   toAmino(message: Record, useInterfaces: boolean = false): RecordAmino {
     const obj: any = {};
-    obj.num_shares = message.numShares;
+    obj.num_shares = message.numShares === "" ? undefined : message.numShares;
     if (message.accumValuePerShare) {
       obj.accum_value_per_share = message.accumValuePerShare.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.accum_value_per_share = [];
+      obj.accum_value_per_share = message.accumValuePerShare;
     }
     if (message.unclaimedRewardsTotal) {
       obj.unclaimed_rewards_total = message.unclaimedRewardsTotal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unclaimed_rewards_total = [];
+      obj.unclaimed_rewards_total = message.unclaimedRewardsTotal;
     }
     obj.options = message.options ? Options.toAmino(message.options, useInterfaces) : undefined;
     return obj;

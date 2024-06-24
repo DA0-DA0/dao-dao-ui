@@ -207,10 +207,10 @@ export const Message = {
   },
   toAmino(message: Message, useInterfaces: boolean = false): MessageAmino {
     const obj: any = {};
-    obj.version = message.version;
-    obj.source_domain = message.sourceDomain;
-    obj.destination_domain = message.destinationDomain;
-    obj.nonce = message.nonce ? message.nonce.toString() : undefined;
+    obj.version = message.version === 0 ? undefined : message.version;
+    obj.source_domain = message.sourceDomain === 0 ? undefined : message.sourceDomain;
+    obj.destination_domain = message.destinationDomain === 0 ? undefined : message.destinationDomain;
+    obj.nonce = message.nonce !== BigInt(0) ? message.nonce.toString() : undefined;
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
     obj.recipient = message.recipient ? base64FromBytes(message.recipient) : undefined;
     obj.destination_caller = message.destinationCaller ? base64FromBytes(message.destinationCaller) : undefined;

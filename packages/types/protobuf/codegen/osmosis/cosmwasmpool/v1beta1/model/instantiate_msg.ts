@@ -72,7 +72,7 @@ export const InstantiateMsg = {
     if (message.poolAssetDenoms) {
       obj.pool_asset_denoms = message.poolAssetDenoms.map(e => e);
     } else {
-      obj.pool_asset_denoms = [];
+      obj.pool_asset_denoms = message.poolAssetDenoms;
     }
     return obj;
   },

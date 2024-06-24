@@ -81,8 +81,8 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.security_address = message.securityAddress;
-    obj.limit = message.limit ? message.limit.toString() : undefined;
+    obj.security_address = message.securityAddress === "" ? undefined : message.securityAddress;
+    obj.limit = message.limit !== BigInt(0) ? message.limit.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

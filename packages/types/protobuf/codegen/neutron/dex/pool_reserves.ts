@@ -35,9 +35,9 @@ export interface PoolReservesProtoMsg {
 }
 export interface PoolReservesAmino {
   key?: PoolReservesKeyAmino | undefined;
-  reserves_maker_denom?: string;
-  price_taker_to_maker?: string;
-  price_opposite_taker_to_maker?: string;
+  reserves_maker_denom: string;
+  price_taker_to_maker: string;
+  price_opposite_taker_to_maker: string;
 }
 export interface PoolReservesAminoMsg {
   type: "/neutron.dex.PoolReserves";
@@ -116,8 +116,8 @@ export const PoolReservesKey = {
   toAmino(message: PoolReservesKey, useInterfaces: boolean = false): PoolReservesKeyAmino {
     const obj: any = {};
     obj.trade_pair_id = message.tradePairId ? TradePairID.toAmino(message.tradePairId, useInterfaces) : undefined;
-    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker ? message.tickIndexTakerToMaker.toString() : undefined;
-    obj.fee = message.fee ? message.fee.toString() : undefined;
+    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker !== BigInt(0) ? message.tickIndexTakerToMaker.toString() : undefined;
+    obj.fee = message.fee !== BigInt(0) ? message.fee.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolReservesKeyAminoMsg): PoolReservesKey {
@@ -214,9 +214,9 @@ export const PoolReserves = {
   toAmino(message: PoolReserves, useInterfaces: boolean = false): PoolReservesAmino {
     const obj: any = {};
     obj.key = message.key ? PoolReservesKey.toAmino(message.key, useInterfaces) : undefined;
-    obj.reserves_maker_denom = message.reservesMakerDenom;
-    obj.price_taker_to_maker = message.priceTakerToMaker;
-    obj.price_opposite_taker_to_maker = message.priceOppositeTakerToMaker;
+    obj.reserves_maker_denom = message.reservesMakerDenom ?? "";
+    obj.price_taker_to_maker = message.priceTakerToMaker ?? "";
+    obj.price_opposite_taker_to_maker = message.priceOppositeTakerToMaker ?? "";
     return obj;
   },
   fromAminoMsg(object: PoolReservesAminoMsg): PoolReserves {

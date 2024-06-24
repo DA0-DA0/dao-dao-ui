@@ -462,8 +462,8 @@ export const ContentHash_Raw = {
   toAmino(message: ContentHash_Raw, useInterfaces: boolean = false): ContentHash_RawAmino {
     const obj: any = {};
     obj.hash = message.hash ? base64FromBytes(message.hash) : undefined;
-    obj.digest_algorithm = message.digestAlgorithm;
-    obj.file_extension = message.fileExtension;
+    obj.digest_algorithm = message.digestAlgorithm === 0 ? undefined : message.digestAlgorithm;
+    obj.file_extension = message.fileExtension === "" ? undefined : message.fileExtension;
     return obj;
   },
   fromAminoMsg(object: ContentHash_RawAminoMsg): ContentHash_Raw {
@@ -560,9 +560,9 @@ export const ContentHash_Graph = {
   toAmino(message: ContentHash_Graph, useInterfaces: boolean = false): ContentHash_GraphAmino {
     const obj: any = {};
     obj.hash = message.hash ? base64FromBytes(message.hash) : undefined;
-    obj.digest_algorithm = message.digestAlgorithm;
-    obj.canonicalization_algorithm = message.canonicalizationAlgorithm;
-    obj.merkle_tree = message.merkleTree;
+    obj.digest_algorithm = message.digestAlgorithm === 0 ? undefined : message.digestAlgorithm;
+    obj.canonicalization_algorithm = message.canonicalizationAlgorithm === 0 ? undefined : message.canonicalizationAlgorithm;
+    obj.merkle_tree = message.merkleTree === 0 ? undefined : message.merkleTree;
     return obj;
   },
   fromAminoMsg(object: ContentHash_GraphAminoMsg): ContentHash_Graph {
@@ -626,7 +626,7 @@ export const ContentHashes = {
     if (message.contentHashes) {
       obj.content_hashes = message.contentHashes.map(e => e ? ContentHash.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.content_hashes = [];
+      obj.content_hashes = message.contentHashes;
     }
     return obj;
   },

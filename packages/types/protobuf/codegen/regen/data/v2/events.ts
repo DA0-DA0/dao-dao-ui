@@ -156,7 +156,7 @@ export const EventAnchor = {
   },
   toAmino(message: EventAnchor, useInterfaces: boolean = false): EventAnchorAmino {
     const obj: any = {};
-    obj.iri = message.iri;
+    obj.iri = message.iri === "" ? undefined : message.iri;
     return obj;
   },
   fromAminoMsg(object: EventAnchorAminoMsg): EventAnchor {
@@ -230,8 +230,8 @@ export const EventAttest = {
   },
   toAmino(message: EventAttest, useInterfaces: boolean = false): EventAttestAmino {
     const obj: any = {};
-    obj.iri = message.iri;
-    obj.attestor = message.attestor;
+    obj.iri = message.iri === "" ? undefined : message.iri;
+    obj.attestor = message.attestor === "" ? undefined : message.attestor;
     return obj;
   },
   fromAminoMsg(object: EventAttestAminoMsg): EventAttest {
@@ -294,7 +294,7 @@ export const EventDefineResolver = {
   },
   toAmino(message: EventDefineResolver, useInterfaces: boolean = false): EventDefineResolverAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: EventDefineResolverAminoMsg): EventDefineResolver {
@@ -368,8 +368,8 @@ export const EventRegisterResolver = {
   },
   toAmino(message: EventRegisterResolver, useInterfaces: boolean = false): EventRegisterResolverAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.iri = message.iri;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.iri = message.iri === "" ? undefined : message.iri;
     return obj;
   },
   fromAminoMsg(object: EventRegisterResolverAminoMsg): EventRegisterResolver {

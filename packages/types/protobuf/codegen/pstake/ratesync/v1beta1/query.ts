@@ -267,7 +267,7 @@ export const QueryGetHostChainRequest = {
   },
   toAmino(message: QueryGetHostChainRequest, useInterfaces: boolean = false): QueryGetHostChainRequestAmino {
     const obj: any = {};
-    obj.i_d = message.iD ? message.iD.toString() : undefined;
+    obj.i_d = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetHostChainRequestAminoMsg): QueryGetHostChainRequest {
@@ -468,7 +468,7 @@ export const QueryAllHostChainsResponse = {
     if (message.hostChains) {
       obj.host_chains = message.hostChains.map(e => e ? HostChain.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_chains = [];
+      obj.host_chains = message.hostChains;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

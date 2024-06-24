@@ -134,8 +134,8 @@ export const SwapAmountInRoute = {
   },
   toAmino(message: SwapAmountInRoute, useInterfaces: boolean = false): SwapAmountInRouteAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_out_denom = message.tokenOutDenom;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_out_denom = message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
     return obj;
   },
   fromAminoMsg(object: SwapAmountInRouteAminoMsg): SwapAmountInRoute {
@@ -215,8 +215,8 @@ export const SwapAmountOutRoute = {
   },
   toAmino(message: SwapAmountOutRoute, useInterfaces: boolean = false): SwapAmountOutRouteAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_in_denom = message.tokenInDenom;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_in_denom = message.tokenInDenom === "" ? undefined : message.tokenInDenom;
     return obj;
   },
   fromAminoMsg(object: SwapAmountOutRouteAminoMsg): SwapAmountOutRoute {
@@ -297,9 +297,9 @@ export const SwapAmountInSplitRoute = {
     if (message.pools) {
       obj.pools = message.pools.map(e => e ? SwapAmountInRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
-    obj.token_in_amount = message.tokenInAmount;
+    obj.token_in_amount = message.tokenInAmount === "" ? undefined : message.tokenInAmount;
     return obj;
   },
   fromAminoMsg(object: SwapAmountInSplitRouteAminoMsg): SwapAmountInSplitRoute {
@@ -380,9 +380,9 @@ export const SwapAmountOutSplitRoute = {
     if (message.pools) {
       obj.pools = message.pools.map(e => e ? SwapAmountOutRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
-    obj.token_out_amount = message.tokenOutAmount;
+    obj.token_out_amount = message.tokenOutAmount === "" ? undefined : message.tokenOutAmount;
     return obj;
   },
   fromAminoMsg(object: SwapAmountOutSplitRouteAminoMsg): SwapAmountOutSplitRoute {

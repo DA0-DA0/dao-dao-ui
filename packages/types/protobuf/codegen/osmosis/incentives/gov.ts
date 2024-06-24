@@ -106,12 +106,12 @@ export const CreateGroupsProposal = {
   },
   toAmino(message: CreateGroupsProposal, useInterfaces: boolean = false): CreateGroupsProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     if (message.createGroups) {
       obj.create_groups = message.createGroups.map(e => e ? CreateGroup.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.create_groups = [];
+      obj.create_groups = message.createGroups;
     }
     return obj;
   },

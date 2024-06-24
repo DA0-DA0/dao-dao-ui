@@ -148,12 +148,12 @@ export const TickInfo = {
   },
   toAmino(message: TickInfo, useInterfaces: boolean = false): TickInfoAmino {
     const obj: any = {};
-    obj.liquidity_gross = message.liquidityGross;
-    obj.liquidity_net = message.liquidityNet;
+    obj.liquidity_gross = message.liquidityGross === "" ? undefined : message.liquidityGross;
+    obj.liquidity_net = message.liquidityNet === "" ? undefined : message.liquidityNet;
     if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
       obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal;
     }
     obj.uptime_trackers = message.uptimeTrackers ? UptimeTrackers.toAmino(message.uptimeTrackers, useInterfaces) : undefined;
     return obj;
@@ -225,7 +225,7 @@ export const UptimeTrackers = {
     if (message.list) {
       obj.list = message.list.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.list = [];
+      obj.list = message.list;
     }
     return obj;
   },
@@ -296,7 +296,7 @@ export const UptimeTracker = {
     if (message.uptimeGrowthOutside) {
       obj.uptime_growth_outside = message.uptimeGrowthOutside.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.uptime_growth_outside = [];
+      obj.uptime_growth_outside = message.uptimeGrowthOutside;
     }
     return obj;
   },

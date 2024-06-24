@@ -196,27 +196,27 @@ export const GenesisState = {
     if (message.feederDelegations) {
       obj.feeder_delegations = message.feederDelegations.map(e => e ? FeederDelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.feeder_delegations = [];
+      obj.feeder_delegations = message.feederDelegations;
     }
     if (message.exchangeRates) {
       obj.exchange_rates = message.exchangeRates.map(e => e ? ExchangeRateTuple.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.exchange_rates = [];
+      obj.exchange_rates = message.exchangeRates;
     }
     if (message.missCounters) {
       obj.miss_counters = message.missCounters.map(e => e ? MissCounter.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.miss_counters = [];
+      obj.miss_counters = message.missCounters;
     }
     if (message.aggregateExchangeRatePrevotes) {
       obj.aggregate_exchange_rate_prevotes = message.aggregateExchangeRatePrevotes.map(e => e ? AggregateExchangeRatePrevote.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.aggregate_exchange_rate_prevotes = [];
+      obj.aggregate_exchange_rate_prevotes = message.aggregateExchangeRatePrevotes;
     }
     if (message.aggregateExchangeRateVotes) {
       obj.aggregate_exchange_rate_votes = message.aggregateExchangeRateVotes.map(e => e ? AggregateExchangeRateVote.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.aggregate_exchange_rate_votes = [];
+      obj.aggregate_exchange_rate_votes = message.aggregateExchangeRateVotes;
     }
     return obj;
   },
@@ -291,8 +291,8 @@ export const FeederDelegation = {
   },
   toAmino(message: FeederDelegation, useInterfaces: boolean = false): FeederDelegationAmino {
     const obj: any = {};
-    obj.feeder_address = message.feederAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.feeder_address = message.feederAddress === "" ? undefined : message.feederAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     return obj;
   },
   fromAminoMsg(object: FeederDelegationAminoMsg): FeederDelegation {
@@ -366,8 +366,8 @@ export const MissCounter = {
   },
   toAmino(message: MissCounter, useInterfaces: boolean = false): MissCounterAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.miss_counter = message.missCounter ? message.missCounter.toString() : undefined;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.miss_counter = message.missCounter !== BigInt(0) ? message.missCounter.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MissCounterAminoMsg): MissCounter {

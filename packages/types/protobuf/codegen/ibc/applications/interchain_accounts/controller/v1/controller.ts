@@ -74,7 +74,7 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.controller_enabled = message.controllerEnabled;
+    obj.controller_enabled = message.controllerEnabled === false ? undefined : message.controllerEnabled;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

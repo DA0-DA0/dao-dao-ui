@@ -1507,7 +1507,7 @@ export const QueryCValueResponse = {
   },
   toAmino(message: QueryCValueResponse, useInterfaces: boolean = false): QueryCValueResponseAmino {
     const obj: any = {};
-    obj.c_value = message.cValue;
+    obj.c_value = message.cValue === "" ? undefined : message.cValue;
     return obj;
   },
   fromAminoMsg(object: QueryCValueResponseAminoMsg): QueryCValueResponse {
@@ -1620,7 +1620,7 @@ export const QueryModuleStateResponse = {
   },
   toAmino(message: QueryModuleStateResponse, useInterfaces: boolean = false): QueryModuleStateResponseAmino {
     const obj: any = {};
-    obj.module_state = message.moduleState;
+    obj.module_state = message.moduleState === false ? undefined : message.moduleState;
     return obj;
   },
   fromAminoMsg(object: QueryModuleStateResponseAminoMsg): QueryModuleStateResponse {
@@ -1796,7 +1796,7 @@ export const QueryUnclaimedRequest = {
   },
   toAmino(message: QueryUnclaimedRequest, useInterfaces: boolean = false): QueryUnclaimedRequestAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     return obj;
   },
   fromAminoMsg(object: QueryUnclaimedRequestAminoMsg): QueryUnclaimedRequest {
@@ -1860,7 +1860,7 @@ export const QueryUnclaimedResponse = {
     if (message.unclaimed) {
       obj.unclaimed = message.unclaimed.map(e => e ? UnbondingEpochCValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unclaimed = [];
+      obj.unclaimed = message.unclaimed;
     }
     return obj;
   },
@@ -1924,7 +1924,7 @@ export const QueryFailedUnbondingsRequest = {
   },
   toAmino(message: QueryFailedUnbondingsRequest, useInterfaces: boolean = false): QueryFailedUnbondingsRequestAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     return obj;
   },
   fromAminoMsg(object: QueryFailedUnbondingsRequestAminoMsg): QueryFailedUnbondingsRequest {
@@ -1988,7 +1988,7 @@ export const QueryFailedUnbondingsResponse = {
     if (message.failedUnbondings) {
       obj.failed_unbondings = message.failedUnbondings.map(e => e ? UnbondingEpochCValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.failed_unbondings = [];
+      obj.failed_unbondings = message.failedUnbondings;
     }
     return obj;
   },
@@ -2052,7 +2052,7 @@ export const QueryPendingUnbondingsRequest = {
   },
   toAmino(message: QueryPendingUnbondingsRequest, useInterfaces: boolean = false): QueryPendingUnbondingsRequestAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     return obj;
   },
   fromAminoMsg(object: QueryPendingUnbondingsRequestAminoMsg): QueryPendingUnbondingsRequest {
@@ -2116,7 +2116,7 @@ export const QueryPendingUnbondingsResponse = {
     if (message.pendingUnbondings) {
       obj.pending_unbondings = message.pendingUnbondings.map(e => e ? UnbondingEpochCValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pending_unbondings = [];
+      obj.pending_unbondings = message.pendingUnbondings;
     }
     return obj;
   },
@@ -2180,7 +2180,7 @@ export const QueryUnbondingEpochCValueRequest = {
   },
   toAmino(message: QueryUnbondingEpochCValueRequest, useInterfaces: boolean = false): QueryUnbondingEpochCValueRequestAmino {
     const obj: any = {};
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryUnbondingEpochCValueRequestAminoMsg): QueryUnbondingEpochCValueRequest {
@@ -2306,7 +2306,7 @@ export const QueryHostAccountUndelegationRequest = {
   },
   toAmino(message: QueryHostAccountUndelegationRequest, useInterfaces: boolean = false): QueryHostAccountUndelegationRequestAmino {
     const obj: any = {};
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryHostAccountUndelegationRequestAminoMsg): QueryHostAccountUndelegationRequest {
@@ -2443,8 +2443,8 @@ export const QueryDelegatorUnbondingEpochEntryRequest = {
   },
   toAmino(message: QueryDelegatorUnbondingEpochEntryRequest, useInterfaces: boolean = false): QueryDelegatorUnbondingEpochEntryRequestAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryDelegatorUnbondingEpochEntryRequestAminoMsg): QueryDelegatorUnbondingEpochEntryRequest {
@@ -2796,7 +2796,7 @@ export const QueryAllDelegatorUnbondingEpochEntriesRequest = {
   },
   toAmino(message: QueryAllDelegatorUnbondingEpochEntriesRequest, useInterfaces: boolean = false): QueryAllDelegatorUnbondingEpochEntriesRequestAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     return obj;
   },
   fromAminoMsg(object: QueryAllDelegatorUnbondingEpochEntriesRequestAminoMsg): QueryAllDelegatorUnbondingEpochEntriesRequest {
@@ -2860,7 +2860,7 @@ export const QueryAllDelegatorUnbondingEpochEntriesResponse = {
     if (message.delegatorUnbondingEpochEntries) {
       obj.delegator_unbonding_epoch_entries = message.delegatorUnbondingEpochEntries.map(e => e ? DelegatorUnbondingEpochEntry.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegator_unbonding_epoch_entries = [];
+      obj.delegator_unbonding_epoch_entries = message.delegatorUnbondingEpochEntries;
     }
     return obj;
   },

@@ -257,8 +257,8 @@ export const FullTick = {
   },
   toAmino(message: FullTick, useInterfaces: boolean = false): FullTickAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
     obj.info = message.info ? TickInfo.toAmino(message.info, useInterfaces) : undefined;
     return obj;
   },
@@ -370,18 +370,18 @@ export const PoolData = {
     if (message.ticks) {
       obj.ticks = message.ticks.map(e => e ? FullTick.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.ticks = [];
+      obj.ticks = message.ticks;
     }
     obj.spread_reward_accumulator = message.spreadRewardAccumulator ? AccumObject.toAmino(message.spreadRewardAccumulator, useInterfaces) : undefined;
     if (message.incentivesAccumulators) {
       obj.incentives_accumulators = message.incentivesAccumulators.map(e => e ? AccumObject.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.incentives_accumulators = [];
+      obj.incentives_accumulators = message.incentivesAccumulators;
     }
     if (message.incentiveRecords) {
       obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.incentive_records = [];
+      obj.incentive_records = message.incentiveRecords;
     }
     return obj;
   },
@@ -483,12 +483,12 @@ export const PositionData = {
   toAmino(message: PositionData, useInterfaces: boolean = false): PositionDataAmino {
     const obj: any = {};
     obj.position = message.position ? Position.toAmino(message.position, useInterfaces) : undefined;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.lock_id = message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     obj.spread_reward_accum_record = message.spreadRewardAccumRecord ? Record.toAmino(message.spreadRewardAccumRecord, useInterfaces) : undefined;
     if (message.uptimeAccumRecords) {
       obj.uptime_accum_records = message.uptimeAccumRecords.map(e => e ? Record.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.uptime_accum_records = [];
+      obj.uptime_accum_records = message.uptimeAccumRecords;
     }
     return obj;
   },
@@ -602,15 +602,15 @@ export const GenesisState = {
     if (message.poolData) {
       obj.pool_data = message.poolData.map(e => e ? PoolData.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_data = [];
+      obj.pool_data = message.poolData;
     }
     if (message.positionData) {
       obj.position_data = message.positionData.map(e => e ? PositionData.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.position_data = [];
+      obj.position_data = message.positionData;
     }
-    obj.next_position_id = message.nextPositionId ? message.nextPositionId.toString() : undefined;
-    obj.next_incentive_record_id = message.nextIncentiveRecordId ? message.nextIncentiveRecordId.toString() : undefined;
+    obj.next_position_id = message.nextPositionId !== BigInt(0) ? message.nextPositionId.toString() : undefined;
+    obj.next_incentive_record_id = message.nextIncentiveRecordId !== BigInt(0) ? message.nextIncentiveRecordId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
@@ -690,7 +690,7 @@ export const AccumObject = {
   },
   toAmino(message: AccumObject, useInterfaces: boolean = false): AccumObjectAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     obj.accum_content = message.accumContent ? AccumulatorContent.toAmino(message.accumContent, useInterfaces) : undefined;
     return obj;
   },
@@ -732,7 +732,7 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return data;
   }
 };
-export const PoolI_FromAmino = (content: AnyAmino) => {
+export const PoolI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "osmosis/concentratedliquidity/pool":
       return Any.fromPartial({

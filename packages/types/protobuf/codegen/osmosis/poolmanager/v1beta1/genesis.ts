@@ -280,13 +280,13 @@ export const Params = {
     if (message.poolCreationFee) {
       obj.pool_creation_fee = message.poolCreationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_creation_fee = [];
+      obj.pool_creation_fee = message.poolCreationFee;
     }
     obj.taker_fee_params = message.takerFeeParams ? TakerFeeParams.toAmino(message.takerFeeParams, useInterfaces) : undefined;
     if (message.authorizedQuoteDenoms) {
       obj.authorized_quote_denoms = message.authorizedQuoteDenoms.map(e => e);
     } else {
-      obj.authorized_quote_denoms = [];
+      obj.authorized_quote_denoms = message.authorizedQuoteDenoms;
     }
     return obj;
   },
@@ -376,12 +376,12 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.next_pool_id = message.nextPoolId ? message.nextPoolId.toString() : undefined;
+    obj.next_pool_id = message.nextPoolId !== BigInt(0) ? message.nextPoolId.toString() : undefined;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.poolRoutes) {
       obj.pool_routes = message.poolRoutes.map(e => e ? ModuleRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_routes = [];
+      obj.pool_routes = message.poolRoutes;
     }
     return obj;
   },
@@ -493,15 +493,15 @@ export const TakerFeeParams = {
   },
   toAmino(message: TakerFeeParams, useInterfaces: boolean = false): TakerFeeParamsAmino {
     const obj: any = {};
-    obj.default_taker_fee = message.defaultTakerFee;
+    obj.default_taker_fee = message.defaultTakerFee === "" ? undefined : message.defaultTakerFee;
     obj.osmo_taker_fee_distribution = message.osmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.osmoTakerFeeDistribution, useInterfaces) : undefined;
     obj.non_osmo_taker_fee_distribution = message.nonOsmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.nonOsmoTakerFeeDistribution, useInterfaces) : undefined;
     if (message.adminAddresses) {
       obj.admin_addresses = message.adminAddresses.map(e => e);
     } else {
-      obj.admin_addresses = [];
+      obj.admin_addresses = message.adminAddresses;
     }
-    obj.community_pool_denom_to_swap_non_whitelisted_assets_to = message.communityPoolDenomToSwapNonWhitelistedAssetsTo;
+    obj.community_pool_denom_to_swap_non_whitelisted_assets_to = message.communityPoolDenomToSwapNonWhitelistedAssetsTo === "" ? undefined : message.communityPoolDenomToSwapNonWhitelistedAssetsTo;
     return obj;
   },
   fromAminoMsg(object: TakerFeeParamsAminoMsg): TakerFeeParams {
@@ -581,8 +581,8 @@ export const TakerFeeDistributionPercentage = {
   },
   toAmino(message: TakerFeeDistributionPercentage, useInterfaces: boolean = false): TakerFeeDistributionPercentageAmino {
     const obj: any = {};
-    obj.staking_rewards = message.stakingRewards;
-    obj.community_pool = message.communityPool;
+    obj.staking_rewards = message.stakingRewards === "" ? undefined : message.stakingRewards;
+    obj.community_pool = message.communityPool === "" ? undefined : message.communityPool;
     return obj;
   },
   fromAminoMsg(object: TakerFeeDistributionPercentageAminoMsg): TakerFeeDistributionPercentage {

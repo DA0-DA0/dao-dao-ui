@@ -108,12 +108,12 @@ export const SendAuthorization = {
     if (message.spendLimit) {
       obj.spend_limit = message.spendLimit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.spend_limit = [];
+      obj.spend_limit = message.spendLimit;
     }
     if (message.allowList) {
       obj.allow_list = message.allowList.map(e => e);
     } else {
-      obj.allow_list = [];
+      obj.allow_list = message.allowList;
     }
     return obj;
   },

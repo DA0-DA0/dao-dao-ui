@@ -291,26 +291,26 @@ export const RegisteredQuery = {
   },
   toAmino(message: RegisteredQuery, useInterfaces: boolean = false): RegisteredQueryAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.owner = message.owner;
-    obj.query_type = message.queryType;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.query_type = message.queryType === "" ? undefined : message.queryType;
     if (message.keys) {
       obj.keys = message.keys.map(e => e ? KVKey.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.keys = [];
+      obj.keys = message.keys;
     }
-    obj.transactions_filter = message.transactionsFilter;
-    obj.connection_id = message.connectionId;
-    obj.update_period = message.updatePeriod ? message.updatePeriod.toString() : undefined;
-    obj.last_submitted_result_local_height = message.lastSubmittedResultLocalHeight ? message.lastSubmittedResultLocalHeight.toString() : undefined;
+    obj.transactions_filter = message.transactionsFilter === "" ? undefined : message.transactionsFilter;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.update_period = message.updatePeriod !== BigInt(0) ? message.updatePeriod.toString() : undefined;
+    obj.last_submitted_result_local_height = message.lastSubmittedResultLocalHeight !== BigInt(0) ? message.lastSubmittedResultLocalHeight.toString() : undefined;
     obj.last_submitted_result_remote_height = message.lastSubmittedResultRemoteHeight ? Height.toAmino(message.lastSubmittedResultRemoteHeight, useInterfaces) : {};
     if (message.deposit) {
       obj.deposit = message.deposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposit = [];
+      obj.deposit = message.deposit;
     }
-    obj.submit_timeout = message.submitTimeout ? message.submitTimeout.toString() : undefined;
-    obj.registered_at_height = message.registeredAtHeight ? message.registeredAtHeight.toString() : undefined;
+    obj.submit_timeout = message.submitTimeout !== BigInt(0) ? message.submitTimeout.toString() : undefined;
+    obj.registered_at_height = message.registeredAtHeight !== BigInt(0) ? message.registeredAtHeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: RegisteredQueryAminoMsg): RegisteredQuery {
@@ -384,7 +384,7 @@ export const KVKey = {
   },
   toAmino(message: KVKey, useInterfaces: boolean = false): KVKeyAmino {
     const obj: any = {};
-    obj.path = message.path;
+    obj.path = message.path === "" ? undefined : message.path;
     obj.key = message.key ? base64FromBytes(message.key) : undefined;
     return obj;
   },
@@ -461,7 +461,7 @@ export const GenesisState = {
     if (message.registeredQueries) {
       obj.registered_queries = message.registeredQueries.map(e => e ? RegisteredQuery.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.registered_queries = [];
+      obj.registered_queries = message.registeredQueries;
     }
     return obj;
   },

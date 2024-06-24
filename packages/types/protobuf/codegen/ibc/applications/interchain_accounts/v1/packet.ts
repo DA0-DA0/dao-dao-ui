@@ -139,7 +139,7 @@ export const InterchainAccountPacketData = {
   fromAmino(object: InterchainAccountPacketDataAmino): InterchainAccountPacketData {
     const message = createBaseInterchainAccountPacketData();
     if (object.type !== undefined && object.type !== null) {
-      message.type = typeFromJSON(object.type);
+      message.type = object.type;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
@@ -151,9 +151,9 @@ export const InterchainAccountPacketData = {
   },
   toAmino(message: InterchainAccountPacketData, useInterfaces: boolean = false): InterchainAccountPacketDataAmino {
     const obj: any = {};
-    obj.type = message.type;
+    obj.type = message.type === 0 ? undefined : message.type;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
-    obj.memo = message.memo;
+    obj.memo = message.memo === "" ? undefined : message.memo;
     return obj;
   },
   fromAminoMsg(object: InterchainAccountPacketDataAminoMsg): InterchainAccountPacketData {
@@ -223,7 +223,7 @@ export const CosmosTx = {
     if (message.messages) {
       obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.messages = [];
+      obj.messages = message.messages;
     }
     return obj;
   },

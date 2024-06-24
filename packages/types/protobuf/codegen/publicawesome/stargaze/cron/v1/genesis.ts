@@ -90,7 +90,7 @@ export const GenesisState = {
     if (message.privilegedContractAddresses) {
       obj.privileged_contract_addresses = message.privilegedContractAddresses.map(e => e);
     } else {
-      obj.privileged_contract_addresses = [];
+      obj.privileged_contract_addresses = message.privilegedContractAddresses;
     }
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;

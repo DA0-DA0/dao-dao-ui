@@ -255,8 +255,8 @@ export const MsgCreateDenom = {
   },
   toAmino(message: MsgCreateDenom, useInterfaces: boolean = false): MsgCreateDenomAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.nonce = message.nonce;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.nonce = message.nonce === "" ? undefined : message.nonce;
     return obj;
   },
   fromAminoMsg(object: MsgCreateDenomAminoMsg): MsgCreateDenom {
@@ -319,7 +319,7 @@ export const MsgCreateDenomResponse = {
   },
   toAmino(message: MsgCreateDenomResponse, useInterfaces: boolean = false): MsgCreateDenomResponseAmino {
     const obj: any = {};
-    obj.new_token_denom = message.newTokenDenom;
+    obj.new_token_denom = message.newTokenDenom === "" ? undefined : message.newTokenDenom;
     return obj;
   },
   fromAminoMsg(object: MsgCreateDenomResponseAminoMsg): MsgCreateDenomResponse {
@@ -404,9 +404,9 @@ export const MsgMint = {
   },
   toAmino(message: MsgMint, useInterfaces: boolean = false): MsgMintAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
-    obj.recipient = message.recipient;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     return obj;
   },
   fromAminoMsg(object: MsgMintAminoMsg): MsgMint {
@@ -530,7 +530,7 @@ export const MsgBurn = {
   },
   toAmino(message: MsgBurn, useInterfaces: boolean = false): MsgBurnAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -666,9 +666,9 @@ export const MsgChangeAdmin = {
   },
   toAmino(message: MsgChangeAdmin, useInterfaces: boolean = false): MsgChangeAdminAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.denom = message.denom;
-    obj.newAdmin = message.newAdmin;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.newAdmin = message.newAdmin === "" ? undefined : message.newAdmin;
     return obj;
   },
   fromAminoMsg(object: MsgChangeAdminAminoMsg): MsgChangeAdmin {

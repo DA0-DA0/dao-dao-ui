@@ -144,9 +144,9 @@ export const SetProtoRevEnabledProposal = {
   },
   toAmino(message: SetProtoRevEnabledProposal, useInterfaces: boolean = false): SetProtoRevEnabledProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.enabled = message.enabled;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
     return obj;
   },
   fromAminoMsg(object: SetProtoRevEnabledProposalAminoMsg): SetProtoRevEnabledProposal {
@@ -238,9 +238,9 @@ export const SetProtoRevAdminAccountProposal = {
   },
   toAmino(message: SetProtoRevAdminAccountProposal, useInterfaces: boolean = false): SetProtoRevAdminAccountProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.account = message.account;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.account = message.account === "" ? undefined : message.account;
     return obj;
   },
   fromAminoMsg(object: SetProtoRevAdminAccountProposalAminoMsg): SetProtoRevAdminAccountProposal {

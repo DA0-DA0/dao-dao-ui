@@ -180,8 +180,8 @@ export const IncentiveRecord = {
   },
   toAmino(message: IncentiveRecord, useInterfaces: boolean = false): IncentiveRecordAmino {
     const obj: any = {};
-    obj.incentive_id = message.incentiveId ? message.incentiveId.toString() : undefined;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.incentive_id = message.incentiveId !== BigInt(0) ? message.incentiveId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.incentive_record_body = message.incentiveRecordBody ? IncentiveRecordBody.toAmino(message.incentiveRecordBody, useInterfaces) : undefined;
     obj.min_uptime = message.minUptime ? Duration.toAmino(message.minUptime, useInterfaces) : undefined;
     return obj;
@@ -275,7 +275,7 @@ export const IncentiveRecordBody = {
   toAmino(message: IncentiveRecordBody, useInterfaces: boolean = false): IncentiveRecordBodyAmino {
     const obj: any = {};
     obj.remaining_coin = message.remainingCoin ? DecCoin.toAmino(message.remainingCoin, useInterfaces) : undefined;
-    obj.emission_rate = message.emissionRate;
+    obj.emission_rate = message.emissionRate === "" ? undefined : message.emissionRate;
     obj.start_time = message.startTime ? Timestamp.toAmino(toTimestamp(message.startTime)) : undefined;
     return obj;
   },

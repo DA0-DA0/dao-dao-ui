@@ -172,7 +172,7 @@ export const QueryCodeAuthorizationRequest = {
   },
   toAmino(message: QueryCodeAuthorizationRequest, useInterfaces: boolean = false): QueryCodeAuthorizationRequestAmino {
     const obj: any = {};
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryCodeAuthorizationRequestAminoMsg): QueryCodeAuthorizationRequest {
@@ -236,7 +236,7 @@ export const QueryCodeAuthorizationResponse = {
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
     } else {
-      obj.methods = [];
+      obj.methods = message.methods;
     }
     return obj;
   },
@@ -300,7 +300,7 @@ export const QueryContractAuthorizationRequest = {
   },
   toAmino(message: QueryContractAuthorizationRequest, useInterfaces: boolean = false): QueryContractAuthorizationRequestAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     return obj;
   },
   fromAminoMsg(object: QueryContractAuthorizationRequestAminoMsg): QueryContractAuthorizationRequest {
@@ -364,7 +364,7 @@ export const QueryContractAuthorizationResponse = {
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
     } else {
-      obj.methods = [];
+      obj.methods = message.methods;
     }
     return obj;
   },
@@ -601,12 +601,12 @@ export const QueryAuthorizationsResponse = {
     if (message.codeAuthorizations) {
       obj.code_authorizations = message.codeAuthorizations.map(e => e ? CodeAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.code_authorizations = [];
+      obj.code_authorizations = message.codeAuthorizations;
     }
     if (message.contractAuthorizations) {
       obj.contract_authorizations = message.contractAuthorizations.map(e => e ? ContractAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.contract_authorizations = [];
+      obj.contract_authorizations = message.contractAuthorizations;
     }
     return obj;
   },

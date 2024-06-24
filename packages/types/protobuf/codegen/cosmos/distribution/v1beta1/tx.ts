@@ -502,8 +502,8 @@ export const MsgSetWithdrawAddress = {
   },
   toAmino(message: MsgSetWithdrawAddress, useInterfaces: boolean = false): MsgSetWithdrawAddressAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.withdraw_address = message.withdrawAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.withdraw_address = message.withdrawAddress === "" ? undefined : message.withdrawAddress;
     return obj;
   },
   fromAminoMsg(object: MsgSetWithdrawAddressAminoMsg): MsgSetWithdrawAddress {
@@ -639,8 +639,8 @@ export const MsgWithdrawDelegatorReward = {
   },
   toAmino(message: MsgWithdrawDelegatorReward, useInterfaces: boolean = false): MsgWithdrawDelegatorRewardAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawDelegatorRewardAminoMsg): MsgWithdrawDelegatorReward {
@@ -710,7 +710,7 @@ export const MsgWithdrawDelegatorRewardResponse = {
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
@@ -780,7 +780,7 @@ export const MsgWithdrawValidatorCommission = {
   },
   toAmino(message: MsgWithdrawValidatorCommission, useInterfaces: boolean = false): MsgWithdrawValidatorCommissionAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawValidatorCommissionAminoMsg): MsgWithdrawValidatorCommission {
@@ -850,7 +850,7 @@ export const MsgWithdrawValidatorCommissionResponse = {
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
@@ -932,9 +932,9 @@ export const MsgFundCommunityPool = {
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
-    obj.depositor = message.depositor;
+    obj.depositor = message.depositor === "" ? undefined : message.depositor;
     return obj;
   },
   fromAminoMsg(object: MsgFundCommunityPoolAminoMsg): MsgFundCommunityPool {
@@ -1070,8 +1070,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
@@ -1216,12 +1216,12 @@ export const MsgCommunityPoolSpend = {
   },
   toAmino(message: MsgCommunityPoolSpend, useInterfaces: boolean = false): MsgCommunityPoolSpendAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.recipient = message.recipient;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
@@ -1367,12 +1367,12 @@ export const MsgDepositValidatorRewardsPool = {
   },
   toAmino(message: MsgDepositValidatorRewardsPool, useInterfaces: boolean = false): MsgDepositValidatorRewardsPoolAmino {
     const obj: any = {};
-    obj.depositor = message.depositor;
-    obj.validator_address = message.validatorAddress;
+    obj.depositor = message.depositor === "" ? undefined : message.depositor;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },

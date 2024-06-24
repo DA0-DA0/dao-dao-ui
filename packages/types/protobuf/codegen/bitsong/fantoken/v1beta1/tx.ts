@@ -405,12 +405,12 @@ export const MsgIssue = {
   },
   toAmino(message: MsgIssue, useInterfaces: boolean = false): MsgIssueAmino {
     const obj: any = {};
-    obj.symbol = message.symbol;
-    obj.name = message.name;
-    obj.max_supply = message.maxSupply;
-    obj.authority = message.authority;
-    obj.minter = message.minter;
-    obj.uri = message.uri;
+    obj.symbol = message.symbol === "" ? undefined : message.symbol;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.max_supply = message.maxSupply === "" ? undefined : message.maxSupply;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.minter = message.minter === "" ? undefined : message.minter;
+    obj.uri = message.uri === "" ? undefined : message.uri;
     return obj;
   },
   fromAminoMsg(object: MsgIssueAminoMsg): MsgIssue {
@@ -534,8 +534,8 @@ export const MsgDisableMint = {
   },
   toAmino(message: MsgDisableMint, useInterfaces: boolean = false): MsgDisableMintAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.minter = message.minter;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.minter = message.minter === "" ? undefined : message.minter;
     return obj;
   },
   fromAminoMsg(object: MsgDisableMintAminoMsg): MsgDisableMint {
@@ -670,9 +670,9 @@ export const MsgMint = {
   },
   toAmino(message: MsgMint, useInterfaces: boolean = false): MsgMintAmino {
     const obj: any = {};
-    obj.recipient = message.recipient;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
-    obj.minter = message.minter;
+    obj.minter = message.minter === "" ? undefined : message.minter;
     return obj;
   },
   fromAminoMsg(object: MsgMintAminoMsg): MsgMint {
@@ -797,7 +797,7 @@ export const MsgBurn = {
   toAmino(message: MsgBurn, useInterfaces: boolean = false): MsgBurnAmino {
     const obj: any = {};
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgBurnAminoMsg): MsgBurn {
@@ -932,9 +932,9 @@ export const MsgSetMinter = {
   },
   toAmino(message: MsgSetMinter, useInterfaces: boolean = false): MsgSetMinterAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.old_minter = message.oldMinter;
-    obj.new_minter = message.newMinter;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.old_minter = message.oldMinter === "" ? undefined : message.oldMinter;
+    obj.new_minter = message.newMinter === "" ? undefined : message.newMinter;
     return obj;
   },
   fromAminoMsg(object: MsgSetMinterAminoMsg): MsgSetMinter {
@@ -1069,9 +1069,9 @@ export const MsgSetAuthority = {
   },
   toAmino(message: MsgSetAuthority, useInterfaces: boolean = false): MsgSetAuthorityAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.old_authority = message.oldAuthority;
-    obj.new_authority = message.newAuthority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.old_authority = message.oldAuthority === "" ? undefined : message.oldAuthority;
+    obj.new_authority = message.newAuthority === "" ? undefined : message.newAuthority;
     return obj;
   },
   fromAminoMsg(object: MsgSetAuthorityAminoMsg): MsgSetAuthority {
@@ -1206,9 +1206,9 @@ export const MsgSetUri = {
   },
   toAmino(message: MsgSetUri, useInterfaces: boolean = false): MsgSetUriAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
-    obj.uri = message.uri;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.uri = message.uri === "" ? undefined : message.uri;
     return obj;
   },
   fromAminoMsg(object: MsgSetUriAminoMsg): MsgSetUri {

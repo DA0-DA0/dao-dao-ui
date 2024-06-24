@@ -14,7 +14,7 @@ export interface DepositRecordProtoMsg {
 }
 export interface DepositRecordAmino {
   pair_id?: PairIDAmino | undefined;
-  shares_owned?: string;
+  shares_owned: string;
   center_tick_index?: string;
   lower_tick_index?: string;
   upper_tick_index?: string;
@@ -132,11 +132,11 @@ export const DepositRecord = {
   toAmino(message: DepositRecord, useInterfaces: boolean = false): DepositRecordAmino {
     const obj: any = {};
     obj.pair_id = message.pairId ? PairID.toAmino(message.pairId, useInterfaces) : undefined;
-    obj.shares_owned = message.sharesOwned;
-    obj.center_tick_index = message.centerTickIndex ? message.centerTickIndex.toString() : undefined;
-    obj.lower_tick_index = message.lowerTickIndex ? message.lowerTickIndex.toString() : undefined;
-    obj.upper_tick_index = message.upperTickIndex ? message.upperTickIndex.toString() : undefined;
-    obj.fee = message.fee ? message.fee.toString() : undefined;
+    obj.shares_owned = message.sharesOwned ?? "";
+    obj.center_tick_index = message.centerTickIndex !== BigInt(0) ? message.centerTickIndex.toString() : undefined;
+    obj.lower_tick_index = message.lowerTickIndex !== BigInt(0) ? message.lowerTickIndex.toString() : undefined;
+    obj.upper_tick_index = message.upperTickIndex !== BigInt(0) ? message.upperTickIndex.toString() : undefined;
+    obj.fee = message.fee !== BigInt(0) ? message.fee.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: DepositRecordAminoMsg): DepositRecord {

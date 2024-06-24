@@ -126,16 +126,16 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.distr_epoch_identifier = message.distrEpochIdentifier;
+    obj.distr_epoch_identifier = message.distrEpochIdentifier === "" ? undefined : message.distrEpochIdentifier;
     if (message.groupCreationFee) {
       obj.group_creation_fee = message.groupCreationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.group_creation_fee = [];
+      obj.group_creation_fee = message.groupCreationFee;
     }
     if (message.unrestrictedCreatorWhitelist) {
       obj.unrestricted_creator_whitelist = message.unrestrictedCreatorWhitelist.map(e => e);
     } else {
-      obj.unrestricted_creator_whitelist = [];
+      obj.unrestricted_creator_whitelist = message.unrestrictedCreatorWhitelist;
     }
     return obj;
   },

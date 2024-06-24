@@ -267,7 +267,7 @@ export const QueryGetHookRequest = {
   },
   toAmino(message: QueryGetHookRequest, useInterfaces: boolean = false): QueryGetHookRequestAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetHookRequestAminoMsg): QueryGetHookRequest {
@@ -468,7 +468,7 @@ export const QueryAllHookResponse = {
     if (message.Hook) {
       obj.Hook = message.Hook.map(e => e ? Hook.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.Hook = [];
+      obj.Hook = message.Hook;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

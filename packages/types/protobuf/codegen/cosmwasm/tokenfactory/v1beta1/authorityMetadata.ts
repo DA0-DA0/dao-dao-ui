@@ -77,7 +77,7 @@ export const DenomAuthorityMetadata = {
   },
   toAmino(message: DenomAuthorityMetadata, useInterfaces: boolean = false): DenomAuthorityMetadataAmino {
     const obj: any = {};
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     return obj;
   },
   fromAminoMsg(object: DenomAuthorityMetadataAminoMsg): DenomAuthorityMetadata {

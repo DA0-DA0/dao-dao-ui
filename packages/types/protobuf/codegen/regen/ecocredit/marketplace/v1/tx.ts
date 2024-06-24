@@ -601,11 +601,11 @@ export const MsgSell = {
   },
   toAmino(message: MsgSell, useInterfaces: boolean = false): MsgSellAmino {
     const obj: any = {};
-    obj.seller = message.seller;
+    obj.seller = message.seller === "" ? undefined : message.seller;
     if (message.orders) {
       obj.orders = message.orders.map(e => e ? MsgSell_Order.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.orders = [];
+      obj.orders = message.orders;
     }
     return obj;
   },
@@ -713,10 +713,10 @@ export const MsgSell_Order = {
   },
   toAmino(message: MsgSell_Order, useInterfaces: boolean = false): MsgSell_OrderAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.quantity = message.quantity;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.quantity = message.quantity === "" ? undefined : message.quantity;
     obj.ask_price = message.askPrice ? Coin.toAmino(message.askPrice, useInterfaces) : undefined;
-    obj.disable_auto_retire = message.disableAutoRetire;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
     obj.expiration = message.expiration ? Timestamp.toAmino(toTimestamp(message.expiration)) : undefined;
     return obj;
   },
@@ -790,7 +790,7 @@ export const MsgSellResponse = {
     if (message.sellOrderIds) {
       obj.sell_order_ids = message.sellOrderIds.map(e => e.toString());
     } else {
-      obj.sell_order_ids = [];
+      obj.sell_order_ids = message.sellOrderIds;
     }
     return obj;
   },
@@ -863,11 +863,11 @@ export const MsgUpdateSellOrders = {
   },
   toAmino(message: MsgUpdateSellOrders, useInterfaces: boolean = false): MsgUpdateSellOrdersAmino {
     const obj: any = {};
-    obj.seller = message.seller;
+    obj.seller = message.seller === "" ? undefined : message.seller;
     if (message.updates) {
       obj.updates = message.updates.map(e => e ? MsgUpdateSellOrders_Update.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.updates = [];
+      obj.updates = message.updates;
     }
     return obj;
   },
@@ -975,10 +975,10 @@ export const MsgUpdateSellOrders_Update = {
   },
   toAmino(message: MsgUpdateSellOrders_Update, useInterfaces: boolean = false): MsgUpdateSellOrders_UpdateAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
-    obj.new_quantity = message.newQuantity;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
+    obj.new_quantity = message.newQuantity === "" ? undefined : message.newQuantity;
     obj.new_ask_price = message.newAskPrice ? Coin.toAmino(message.newAskPrice, useInterfaces) : undefined;
-    obj.disable_auto_retire = message.disableAutoRetire;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
     obj.new_expiration = message.newExpiration ? Timestamp.toAmino(toTimestamp(message.newExpiration)) : undefined;
     return obj;
   },
@@ -1103,8 +1103,8 @@ export const MsgCancelSellOrder = {
   },
   toAmino(message: MsgCancelSellOrder, useInterfaces: boolean = false): MsgCancelSellOrderAmino {
     const obj: any = {};
-    obj.seller = message.seller;
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
+    obj.seller = message.seller === "" ? undefined : message.seller;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCancelSellOrderAminoMsg): MsgCancelSellOrder {
@@ -1226,11 +1226,11 @@ export const MsgBuyDirect = {
   },
   toAmino(message: MsgBuyDirect, useInterfaces: boolean = false): MsgBuyDirectAmino {
     const obj: any = {};
-    obj.buyer = message.buyer;
+    obj.buyer = message.buyer === "" ? undefined : message.buyer;
     if (message.orders) {
       obj.orders = message.orders.map(e => e ? MsgBuyDirect_Order.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.orders = [];
+      obj.orders = message.orders;
     }
     return obj;
   },
@@ -1349,12 +1349,12 @@ export const MsgBuyDirect_Order = {
   },
   toAmino(message: MsgBuyDirect_Order, useInterfaces: boolean = false): MsgBuyDirect_OrderAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
-    obj.quantity = message.quantity;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
+    obj.quantity = message.quantity === "" ? undefined : message.quantity;
     obj.bid_price = message.bidPrice ? Coin.toAmino(message.bidPrice, useInterfaces) : undefined;
-    obj.disable_auto_retire = message.disableAutoRetire;
-    obj.retirement_jurisdiction = message.retirementJurisdiction;
-    obj.retirement_reason = message.retirementReason;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
+    obj.retirement_jurisdiction = message.retirementJurisdiction === "" ? undefined : message.retirementJurisdiction;
+    obj.retirement_reason = message.retirementReason === "" ? undefined : message.retirementReason;
     return obj;
   },
   fromAminoMsg(object: MsgBuyDirect_OrderAminoMsg): MsgBuyDirect_Order {
@@ -1500,10 +1500,10 @@ export const MsgAddAllowedDenom = {
   },
   toAmino(message: MsgAddAllowedDenom, useInterfaces: boolean = false): MsgAddAllowedDenomAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.bank_denom = message.bankDenom;
-    obj.display_denom = message.displayDenom;
-    obj.exponent = message.exponent;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.bank_denom = message.bankDenom === "" ? undefined : message.bankDenom;
+    obj.display_denom = message.displayDenom === "" ? undefined : message.displayDenom;
+    obj.exponent = message.exponent === 0 ? undefined : message.exponent;
     return obj;
   },
   fromAminoMsg(object: MsgAddAllowedDenomAminoMsg): MsgAddAllowedDenom {
@@ -1627,8 +1627,8 @@ export const MsgRemoveAllowedDenom = {
   },
   toAmino(message: MsgRemoveAllowedDenom, useInterfaces: boolean = false): MsgRemoveAllowedDenomAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAllowedDenomAminoMsg): MsgRemoveAllowedDenom {

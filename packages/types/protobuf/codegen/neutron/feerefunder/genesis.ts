@@ -105,7 +105,7 @@ export const GenesisState = {
     if (message.feeInfos) {
       obj.fee_infos = message.feeInfos.map(e => e ? FeeInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.fee_infos = [];
+      obj.fee_infos = message.feeInfos;
     }
     return obj;
   },
@@ -191,7 +191,7 @@ export const FeeInfo = {
   },
   toAmino(message: FeeInfo, useInterfaces: boolean = false): FeeInfoAmino {
     const obj: any = {};
-    obj.payer = message.payer;
+    obj.payer = message.payer === "" ? undefined : message.payer;
     obj.packet_id = message.packetId ? PacketID.toAmino(message.packetId, useInterfaces) : undefined;
     obj.fee = message.fee ? Fee.toAmino(message.fee, useInterfaces) : undefined;
     return obj;

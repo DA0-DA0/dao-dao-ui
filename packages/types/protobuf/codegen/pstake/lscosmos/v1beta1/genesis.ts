@@ -191,7 +191,7 @@ export const GenesisState = {
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
-    obj.module_enabled = message.moduleEnabled;
+    obj.module_enabled = message.moduleEnabled === false ? undefined : message.moduleEnabled;
     obj.host_chain_params = message.hostChainParams ? HostChainParams.toAmino(message.hostChainParams, useInterfaces) : undefined;
     obj.allow_listed_validators = message.allowListedValidators ? AllowListedValidators.toAmino(message.allowListedValidators, useInterfaces) : undefined;
     obj.delegation_state = message.delegationState ? DelegationState.toAmino(message.delegationState, useInterfaces) : undefined;
@@ -200,12 +200,12 @@ export const GenesisState = {
     if (message.unbondingEpochCValues) {
       obj.unbonding_epoch_c_values = message.unbondingEpochCValues.map(e => e ? UnbondingEpochCValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unbonding_epoch_c_values = [];
+      obj.unbonding_epoch_c_values = message.unbondingEpochCValues;
     }
     if (message.delegatorUnbondingEpochEntries) {
       obj.delegator_unbonding_epoch_entries = message.delegatorUnbondingEpochEntries.map(e => e ? DelegatorUnbondingEpochEntry.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegator_unbonding_epoch_entries = [];
+      obj.delegator_unbonding_epoch_entries = message.delegatorUnbondingEpochEntries;
     }
     obj.host_accounts = message.hostAccounts ? HostAccounts.toAmino(message.hostAccounts, useInterfaces) : undefined;
     return obj;

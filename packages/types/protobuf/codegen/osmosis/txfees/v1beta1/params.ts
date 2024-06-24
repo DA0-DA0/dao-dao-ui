@@ -64,7 +64,7 @@ export const Params = {
     if (message.whitelistedFeeTokenSetters) {
       obj.whitelisted_fee_token_setters = message.whitelistedFeeTokenSetters.map(e => e);
     } else {
-      obj.whitelisted_fee_token_setters = [];
+      obj.whitelisted_fee_token_setters = message.whitelistedFeeTokenSetters;
     }
     return obj;
   },

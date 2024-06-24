@@ -77,8 +77,8 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.admin_address = message.adminAddress;
-    obj.fee_address = message.feeAddress;
+    obj.admin_address = message.adminAddress === "" ? undefined : message.adminAddress;
+    obj.fee_address = message.feeAddress === "" ? undefined : message.feeAddress;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

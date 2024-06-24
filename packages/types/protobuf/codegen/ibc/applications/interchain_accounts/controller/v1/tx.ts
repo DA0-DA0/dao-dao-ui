@@ -223,9 +223,9 @@ export const MsgRegisterInterchainAccount = {
   },
   toAmino(message: MsgRegisterInterchainAccount, useInterfaces: boolean = false): MsgRegisterInterchainAccountAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.connection_id = message.connectionId;
-    obj.version = message.version;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.version = message.version === "" ? undefined : message.version;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainAccountAminoMsg): MsgRegisterInterchainAccount {
@@ -305,8 +305,8 @@ export const MsgRegisterInterchainAccountResponse = {
   },
   toAmino(message: MsgRegisterInterchainAccountResponse, useInterfaces: boolean = false): MsgRegisterInterchainAccountResponseAmino {
     const obj: any = {};
-    obj.channel_id = message.channelId;
-    obj.port_id = message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainAccountResponseAminoMsg): MsgRegisterInterchainAccountResponse {
@@ -408,10 +408,10 @@ export const MsgSendTx = {
   },
   toAmino(message: MsgSendTx, useInterfaces: boolean = false): MsgSendTxAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.connection_id = message.connectionId;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.packet_data = message.packetData ? InterchainAccountPacketData.toAmino(message.packetData, useInterfaces) : undefined;
-    obj.relative_timeout = message.relativeTimeout ? message.relativeTimeout.toString() : undefined;
+    obj.relative_timeout = message.relativeTimeout !== BigInt(0) ? message.relativeTimeout.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSendTxAminoMsg): MsgSendTx {
@@ -480,7 +480,7 @@ export const MsgSendTxResponse = {
   },
   toAmino(message: MsgSendTxResponse, useInterfaces: boolean = false): MsgSendTxResponseAmino {
     const obj: any = {};
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSendTxResponseAminoMsg): MsgSendTxResponse {
@@ -560,7 +560,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

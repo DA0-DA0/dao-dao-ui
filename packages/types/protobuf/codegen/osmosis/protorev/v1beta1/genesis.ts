@@ -293,29 +293,29 @@ export const GenesisState = {
     if (message.tokenPairArbRoutes) {
       obj.token_pair_arb_routes = message.tokenPairArbRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_pair_arb_routes = [];
+      obj.token_pair_arb_routes = message.tokenPairArbRoutes;
     }
     if (message.baseDenoms) {
       obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.base_denoms = [];
+      obj.base_denoms = message.baseDenoms;
     }
     obj.pool_weights = message.poolWeights ? PoolWeights.toAmino(message.poolWeights, useInterfaces) : undefined;
-    obj.days_since_module_genesis = message.daysSinceModuleGenesis ? message.daysSinceModuleGenesis.toString() : undefined;
+    obj.days_since_module_genesis = message.daysSinceModuleGenesis !== BigInt(0) ? message.daysSinceModuleGenesis.toString() : undefined;
     if (message.developerFees) {
       obj.developer_fees = message.developerFees.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.developer_fees = [];
+      obj.developer_fees = message.developerFees;
     }
-    obj.latest_block_height = message.latestBlockHeight ? message.latestBlockHeight.toString() : undefined;
-    obj.developer_address = message.developerAddress;
-    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock ? message.maxPoolPointsPerBlock.toString() : undefined;
-    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
-    obj.point_count_for_block = message.pointCountForBlock ? message.pointCountForBlock.toString() : undefined;
+    obj.latest_block_height = message.latestBlockHeight !== BigInt(0) ? message.latestBlockHeight.toString() : undefined;
+    obj.developer_address = message.developerAddress === "" ? undefined : message.developerAddress;
+    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock !== BigInt(0) ? message.maxPoolPointsPerBlock.toString() : undefined;
+    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx !== BigInt(0) ? message.maxPoolPointsPerTx.toString() : undefined;
+    obj.point_count_for_block = message.pointCountForBlock !== BigInt(0) ? message.pointCountForBlock.toString() : undefined;
     if (message.profits) {
       obj.profits = message.profits.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.profits = [];
+      obj.profits = message.profits;
     }
     obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
     return obj;

@@ -320,17 +320,17 @@ export const MsgCreateGauge = {
   },
   toAmino(message: MsgCreateGauge, useInterfaces: boolean = false): MsgCreateGaugeAmino {
     const obj: any = {};
-    obj.is_perpetual = message.isPerpetual;
-    obj.owner = message.owner;
+    obj.is_perpetual = message.isPerpetual === false ? undefined : message.isPerpetual;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     obj.distribute_to = message.distributeTo ? QueryCondition.toAmino(message.distributeTo, useInterfaces) : undefined;
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     obj.start_time = message.startTime ? Timestamp.toAmino(toTimestamp(message.startTime)) : undefined;
-    obj.num_epochs_paid_over = message.numEpochsPaidOver ? message.numEpochsPaidOver.toString() : undefined;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.num_epochs_paid_over = message.numEpochsPaidOver !== BigInt(0) ? message.numEpochsPaidOver.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreateGaugeAminoMsg): MsgCreateGauge {
@@ -475,12 +475,12 @@ export const MsgAddToGauge = {
   },
   toAmino(message: MsgAddToGauge, useInterfaces: boolean = false): MsgAddToGaugeAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.gauge_id = message.gaugeId ? message.gaugeId.toString() : undefined;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.gauge_id = message.gaugeId !== BigInt(0) ? message.gaugeId.toString() : undefined;
     if (message.rewards) {
       obj.rewards = message.rewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.rewards = [];
+      obj.rewards = message.rewards;
     }
     return obj;
   },
@@ -647,14 +647,14 @@ export const MsgCreateGroup = {
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
-    obj.num_epochs_paid_over = message.numEpochsPaidOver ? message.numEpochsPaidOver.toString() : undefined;
-    obj.owner = message.owner;
+    obj.num_epochs_paid_over = message.numEpochsPaidOver !== BigInt(0) ? message.numEpochsPaidOver.toString() : undefined;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     if (message.poolIds) {
       obj.pool_ids = message.poolIds.map(e => e.toString());
     } else {
-      obj.pool_ids = [];
+      obj.pool_ids = message.poolIds;
     }
     return obj;
   },
@@ -724,7 +724,7 @@ export const MsgCreateGroupResponse = {
   },
   toAmino(message: MsgCreateGroupResponse, useInterfaces: boolean = false): MsgCreateGroupResponseAmino {
     const obj: any = {};
-    obj.group_id = message.groupId ? message.groupId.toString() : undefined;
+    obj.group_id = message.groupId !== BigInt(0) ? message.groupId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreateGroupResponseAminoMsg): MsgCreateGroupResponse {

@@ -118,17 +118,17 @@ export const Fee = {
     if (message.recvFee) {
       obj.recv_fee = message.recvFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.recv_fee = [];
+      obj.recv_fee = message.recvFee;
     }
     if (message.ackFee) {
       obj.ack_fee = message.ackFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.ack_fee = [];
+      obj.ack_fee = message.ackFee;
     }
     if (message.timeoutFee) {
       obj.timeout_fee = message.timeoutFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.timeout_fee = [];
+      obj.timeout_fee = message.timeoutFee;
     }
     return obj;
   },
@@ -214,9 +214,9 @@ export const PacketID = {
   },
   toAmino(message: PacketID, useInterfaces: boolean = false): PacketIDAmino {
     const obj: any = {};
-    obj.channel_id = message.channelId;
-    obj.port_id = message.portId;
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PacketIDAminoMsg): PacketID {

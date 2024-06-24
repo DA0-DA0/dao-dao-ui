@@ -100,12 +100,12 @@ export const DenomPairTakerFeeProposal = {
   },
   toAmino(message: DenomPairTakerFeeProposal, useInterfaces: boolean = false): DenomPairTakerFeeProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     if (message.denomPairTakerFee) {
       obj.denom_pair_taker_fee = message.denomPairTakerFee.map(e => e ? DenomPairTakerFee.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.denom_pair_taker_fee = [];
+      obj.denom_pair_taker_fee = message.denomPairTakerFee;
     }
     return obj;
   },

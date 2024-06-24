@@ -197,16 +197,16 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     if (message.signingInfos) {
       obj.signing_infos = message.signingInfos.map(e => e ? SigningInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.signing_infos = [];
+      obj.signing_infos = message.signingInfos;
     }
     if (message.missedBlocks) {
       obj.missed_blocks = message.missedBlocks.map(e => e ? ValidatorMissedBlocks.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.missed_blocks = [];
+      obj.missed_blocks = message.missedBlocks;
     }
     return obj;
   },
@@ -287,8 +287,8 @@ export const SigningInfo = {
   },
   toAmino(message: SigningInfo, useInterfaces: boolean = false): SigningInfoAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.validator_signing_info = message.validatorSigningInfo ? ValidatorSigningInfo.toAmino(message.validatorSigningInfo, useInterfaces) : ValidatorSigningInfo.fromPartial({});
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.validator_signing_info = message.validatorSigningInfo ? ValidatorSigningInfo.toAmino(message.validatorSigningInfo, useInterfaces) : ValidatorSigningInfo.toAmino(ValidatorSigningInfo.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: SigningInfoAminoMsg): SigningInfo {
@@ -366,11 +366,11 @@ export const ValidatorMissedBlocks = {
   },
   toAmino(message: ValidatorMissedBlocks, useInterfaces: boolean = false): ValidatorMissedBlocksAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.missedBlocks) {
       obj.missed_blocks = message.missedBlocks.map(e => e ? MissedBlock.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.missed_blocks = [];
+      obj.missed_blocks = message.missedBlocks;
     }
     return obj;
   },
@@ -451,8 +451,8 @@ export const MissedBlock = {
   },
   toAmino(message: MissedBlock, useInterfaces: boolean = false): MissedBlockAmino {
     const obj: any = {};
-    obj.index = message.index ? message.index.toString() : undefined;
-    obj.missed = message.missed;
+    obj.index = message.index !== BigInt(0) ? message.index.toString() : undefined;
+    obj.missed = message.missed === false ? undefined : message.missed;
     return obj;
   },
   fromAminoMsg(object: MissedBlockAminoMsg): MissedBlock {

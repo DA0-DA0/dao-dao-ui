@@ -805,7 +805,7 @@ export const AttesterEnabled = {
   },
   toAmino(message: AttesterEnabled, useInterfaces: boolean = false): AttesterEnabledAmino {
     const obj: any = {};
-    obj.attester = message.attester;
+    obj.attester = message.attester === "" ? undefined : message.attester;
     return obj;
   },
   fromAminoMsg(object: AttesterEnabledAminoMsg): AttesterEnabled {
@@ -868,7 +868,7 @@ export const AttesterDisabled = {
   },
   toAmino(message: AttesterDisabled, useInterfaces: boolean = false): AttesterDisabledAmino {
     const obj: any = {};
-    obj.attester = message.attester;
+    obj.attester = message.attester === "" ? undefined : message.attester;
     return obj;
   },
   fromAminoMsg(object: AttesterDisabledAminoMsg): AttesterDisabled {
@@ -942,8 +942,8 @@ export const SignatureThresholdUpdated = {
   },
   toAmino(message: SignatureThresholdUpdated, useInterfaces: boolean = false): SignatureThresholdUpdatedAmino {
     const obj: any = {};
-    obj.old_signature_threshold = message.oldSignatureThreshold ? message.oldSignatureThreshold.toString() : undefined;
-    obj.new_signature_threshold = message.newSignatureThreshold ? message.newSignatureThreshold.toString() : undefined;
+    obj.old_signature_threshold = message.oldSignatureThreshold !== BigInt(0) ? message.oldSignatureThreshold.toString() : undefined;
+    obj.new_signature_threshold = message.newSignatureThreshold !== BigInt(0) ? message.newSignatureThreshold.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: SignatureThresholdUpdatedAminoMsg): SignatureThresholdUpdated {
@@ -1017,8 +1017,8 @@ export const OwnerUpdated = {
   },
   toAmino(message: OwnerUpdated, useInterfaces: boolean = false): OwnerUpdatedAmino {
     const obj: any = {};
-    obj.previous_owner = message.previousOwner;
-    obj.new_owner = message.newOwner;
+    obj.previous_owner = message.previousOwner === "" ? undefined : message.previousOwner;
+    obj.new_owner = message.newOwner === "" ? undefined : message.newOwner;
     return obj;
   },
   fromAminoMsg(object: OwnerUpdatedAminoMsg): OwnerUpdated {
@@ -1092,8 +1092,8 @@ export const OwnershipTransferStarted = {
   },
   toAmino(message: OwnershipTransferStarted, useInterfaces: boolean = false): OwnershipTransferStartedAmino {
     const obj: any = {};
-    obj.previous_owner = message.previousOwner;
-    obj.new_owner = message.newOwner;
+    obj.previous_owner = message.previousOwner === "" ? undefined : message.previousOwner;
+    obj.new_owner = message.newOwner === "" ? undefined : message.newOwner;
     return obj;
   },
   fromAminoMsg(object: OwnershipTransferStartedAminoMsg): OwnershipTransferStarted {
@@ -1167,8 +1167,8 @@ export const PauserUpdated = {
   },
   toAmino(message: PauserUpdated, useInterfaces: boolean = false): PauserUpdatedAmino {
     const obj: any = {};
-    obj.previous_pauser = message.previousPauser;
-    obj.new_pauser = message.newPauser;
+    obj.previous_pauser = message.previousPauser === "" ? undefined : message.previousPauser;
+    obj.new_pauser = message.newPauser === "" ? undefined : message.newPauser;
     return obj;
   },
   fromAminoMsg(object: PauserUpdatedAminoMsg): PauserUpdated {
@@ -1242,8 +1242,8 @@ export const AttesterManagerUpdated = {
   },
   toAmino(message: AttesterManagerUpdated, useInterfaces: boolean = false): AttesterManagerUpdatedAmino {
     const obj: any = {};
-    obj.previous_attester_manager = message.previousAttesterManager;
-    obj.new_attester_manager = message.newAttesterManager;
+    obj.previous_attester_manager = message.previousAttesterManager === "" ? undefined : message.previousAttesterManager;
+    obj.new_attester_manager = message.newAttesterManager === "" ? undefined : message.newAttesterManager;
     return obj;
   },
   fromAminoMsg(object: AttesterManagerUpdatedAminoMsg): AttesterManagerUpdated {
@@ -1317,8 +1317,8 @@ export const TokenControllerUpdated = {
   },
   toAmino(message: TokenControllerUpdated, useInterfaces: boolean = false): TokenControllerUpdatedAmino {
     const obj: any = {};
-    obj.previous_token_controller = message.previousTokenController;
-    obj.new_token_controller = message.newTokenController;
+    obj.previous_token_controller = message.previousTokenController === "" ? undefined : message.previousTokenController;
+    obj.new_token_controller = message.newTokenController === "" ? undefined : message.newTokenController;
     return obj;
   },
   fromAminoMsg(object: TokenControllerUpdatedAminoMsg): TokenControllerUpdated {
@@ -1658,12 +1658,12 @@ export const DepositForBurn = {
   },
   toAmino(message: DepositForBurn, useInterfaces: boolean = false): DepositForBurnAmino {
     const obj: any = {};
-    obj.nonce = message.nonce ? message.nonce.toString() : undefined;
-    obj.burn_token = message.burnToken;
-    obj.amount = message.amount;
-    obj.depositor = message.depositor;
+    obj.nonce = message.nonce !== BigInt(0) ? message.nonce.toString() : undefined;
+    obj.burn_token = message.burnToken === "" ? undefined : message.burnToken;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.depositor = message.depositor === "" ? undefined : message.depositor;
     obj.mint_recipient = message.mintRecipient ? base64FromBytes(message.mintRecipient) : undefined;
-    obj.destination_domain = message.destinationDomain;
+    obj.destination_domain = message.destinationDomain === 0 ? undefined : message.destinationDomain;
     obj.destination_token_messenger = message.destinationTokenMessenger ? base64FromBytes(message.destinationTokenMessenger) : undefined;
     obj.destination_caller = message.destinationCaller ? base64FromBytes(message.destinationCaller) : undefined;
     return obj;
@@ -1751,8 +1751,8 @@ export const MintAndWithdraw = {
   toAmino(message: MintAndWithdraw, useInterfaces: boolean = false): MintAndWithdrawAmino {
     const obj: any = {};
     obj.mint_recipient = message.mintRecipient ? base64FromBytes(message.mintRecipient) : undefined;
-    obj.amount = message.amount;
-    obj.mint_token = message.mintToken;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.mint_token = message.mintToken === "" ? undefined : message.mintToken;
     return obj;
   },
   fromAminoMsg(object: MintAndWithdrawAminoMsg): MintAndWithdraw {
@@ -1837,8 +1837,8 @@ export const TokenPairLinked = {
   },
   toAmino(message: TokenPairLinked, useInterfaces: boolean = false): TokenPairLinkedAmino {
     const obj: any = {};
-    obj.local_token = message.localToken;
-    obj.remote_domain = message.remoteDomain;
+    obj.local_token = message.localToken === "" ? undefined : message.localToken;
+    obj.remote_domain = message.remoteDomain === 0 ? undefined : message.remoteDomain;
     obj.remote_token = message.remoteToken ? base64FromBytes(message.remoteToken) : undefined;
     return obj;
   },
@@ -1924,8 +1924,8 @@ export const TokenPairUnlinked = {
   },
   toAmino(message: TokenPairUnlinked, useInterfaces: boolean = false): TokenPairUnlinkedAmino {
     const obj: any = {};
-    obj.local_token = message.localToken;
-    obj.remote_domain = message.remoteDomain;
+    obj.local_token = message.localToken === "" ? undefined : message.localToken;
+    obj.remote_domain = message.remoteDomain === 0 ? undefined : message.remoteDomain;
     obj.remote_token = message.remoteToken ? base64FromBytes(message.remoteToken) : undefined;
     return obj;
   },
@@ -2096,9 +2096,9 @@ export const MessageReceived = {
   },
   toAmino(message: MessageReceived, useInterfaces: boolean = false): MessageReceivedAmino {
     const obj: any = {};
-    obj.caller = message.caller;
-    obj.source_domain = message.sourceDomain;
-    obj.nonce = message.nonce ? message.nonce.toString() : undefined;
+    obj.caller = message.caller === "" ? undefined : message.caller;
+    obj.source_domain = message.sourceDomain === 0 ? undefined : message.sourceDomain;
+    obj.nonce = message.nonce !== BigInt(0) ? message.nonce.toString() : undefined;
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
     obj.message_body = message.messageBody ? base64FromBytes(message.messageBody) : undefined;
     return obj;
@@ -2163,7 +2163,7 @@ export const MaxMessageBodySizeUpdated = {
   },
   toAmino(message: MaxMessageBodySizeUpdated, useInterfaces: boolean = false): MaxMessageBodySizeUpdatedAmino {
     const obj: any = {};
-    obj.new_max_message_body_size = message.newMaxMessageBodySize ? message.newMaxMessageBodySize.toString() : undefined;
+    obj.new_max_message_body_size = message.newMaxMessageBodySize !== BigInt(0) ? message.newMaxMessageBodySize.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MaxMessageBodySizeUpdatedAminoMsg): MaxMessageBodySizeUpdated {
@@ -2237,7 +2237,7 @@ export const RemoteTokenMessengerAdded = {
   },
   toAmino(message: RemoteTokenMessengerAdded, useInterfaces: boolean = false): RemoteTokenMessengerAddedAmino {
     const obj: any = {};
-    obj.domain = message.domain;
+    obj.domain = message.domain === 0 ? undefined : message.domain;
     obj.remote_token_messenger = message.remoteTokenMessenger ? base64FromBytes(message.remoteTokenMessenger) : undefined;
     return obj;
   },
@@ -2312,7 +2312,7 @@ export const RemoteTokenMessengerRemoved = {
   },
   toAmino(message: RemoteTokenMessengerRemoved, useInterfaces: boolean = false): RemoteTokenMessengerRemovedAmino {
     const obj: any = {};
-    obj.domain = message.domain;
+    obj.domain = message.domain === 0 ? undefined : message.domain;
     obj.remote_token_messenger = message.remoteTokenMessenger ? base64FromBytes(message.remoteTokenMessenger) : undefined;
     return obj;
   },
@@ -2387,8 +2387,8 @@ export const SetBurnLimitPerMessage = {
   },
   toAmino(message: SetBurnLimitPerMessage, useInterfaces: boolean = false): SetBurnLimitPerMessageAmino {
     const obj: any = {};
-    obj.token = message.token;
-    obj.burn_limit_per_message = message.burnLimitPerMessage;
+    obj.token = message.token === "" ? undefined : message.token;
+    obj.burn_limit_per_message = message.burnLimitPerMessage === "" ? undefined : message.burnLimitPerMessage;
     return obj;
   },
   fromAminoMsg(object: SetBurnLimitPerMessageAminoMsg): SetBurnLimitPerMessage {

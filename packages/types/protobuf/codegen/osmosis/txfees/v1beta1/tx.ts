@@ -91,9 +91,9 @@ export const MsgSetFeeTokens = {
     if (message.feeTokens) {
       obj.fee_tokens = message.feeTokens.map(e => e ? FeeToken.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.fee_tokens = [];
+      obj.fee_tokens = message.feeTokens;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgSetFeeTokensAminoMsg): MsgSetFeeTokens {

@@ -91,8 +91,8 @@ export interface MsgDepositAmino {
   receiver?: string;
   token_a?: string;
   token_b?: string;
-  amounts_a?: string[];
-  amounts_b?: string[];
+  amounts_a: string[];
+  amounts_b: string[];
   tick_indexes_a_to_b?: string[];
   fees?: string[];
   options?: DepositOptionsAmino[];
@@ -121,8 +121,8 @@ export interface MsgDepositResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgDepositResponseAmino {
-  reserve0_deposited?: string[];
-  reserve1_deposited?: string[];
+  reserve0_deposited: string[];
+  reserve1_deposited: string[];
 }
 export interface MsgDepositResponseAminoMsg {
   type: "/neutron.dex.MsgDepositResponse";
@@ -150,7 +150,7 @@ export interface MsgWithdrawalAmino {
   receiver?: string;
   token_a?: string;
   token_b?: string;
-  shares_to_remove?: string[];
+  shares_to_remove: string[];
   tick_indexes_a_to_b?: string[];
   fees?: string[];
 }
@@ -200,11 +200,11 @@ export interface MsgPlaceLimitOrderAmino {
   token_in?: string;
   token_out?: string;
   tick_index_in_to_out?: string;
-  amount_in?: string;
+  amount_in: string;
   order_type?: LimitOrderType;
   /** expirationTime is only valid iff orderType == GOOD_TIL_TIME. */
   expiration_time?: string | undefined;
-  max_amount_out?: string;
+  max_amount_out: string;
 }
 export interface MsgPlaceLimitOrderAminoMsg {
   type: "/neutron.dex.MsgPlaceLimitOrder";
@@ -240,14 +240,14 @@ export interface MsgPlaceLimitOrderResponseProtoMsg {
 export interface MsgPlaceLimitOrderResponseAmino {
   trancheKey?: string;
   /** Total amount of coin used for the limit order */
-  coin_in?: CoinAmino | undefined;
+  coin_in: CoinAmino | undefined;
   /**
    * Total amount of coin received from the taker portion of the limit order
    * This is the amount of coin immediately available in the users account after
    * executing the limit order. It does not include any future proceeds from the
    * maker portion which will have withdrawn in the future
    */
-  taker_coin_out?: CoinAmino | undefined;
+  taker_coin_out: CoinAmino | undefined;
 }
 export interface MsgPlaceLimitOrderResponseAminoMsg {
   type: "/neutron.dex.MsgPlaceLimitOrderResponse";
@@ -357,8 +357,8 @@ export interface MsgMultiHopSwapAmino {
   creator?: string;
   receiver?: string;
   routes?: MultiHopRouteAmino[];
-  amount_in?: string;
-  exit_limit_price?: string;
+  amount_in: string;
+  exit_limit_price: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
    * best price is chosen otherwise, the first succesful route is used.
@@ -385,7 +385,7 @@ export interface MsgMultiHopSwapResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgMultiHopSwapResponseAmino {
-  coin_out?: CoinAmino | undefined;
+  coin_out: CoinAmino | undefined;
 }
 export interface MsgMultiHopSwapResponseAminoMsg {
   type: "/neutron.dex.MsgMultiHopSwapResponse";
@@ -491,7 +491,7 @@ export const DepositOptions = {
   },
   toAmino(message: DepositOptions, useInterfaces: boolean = false): DepositOptionsAmino {
     const obj: any = {};
-    obj.disable_autoswap = message.disableAutoswap;
+    obj.disable_autoswap = message.disableAutoswap === false ? undefined : message.disableAutoswap;
     return obj;
   },
   fromAminoMsg(object: DepositOptionsAminoMsg): DepositOptions {
@@ -650,34 +650,34 @@ export const MsgDeposit = {
   },
   toAmino(message: MsgDeposit, useInterfaces: boolean = false): MsgDepositAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
-    obj.token_a = message.tokenA;
-    obj.token_b = message.tokenB;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
+    obj.token_a = message.tokenA === "" ? undefined : message.tokenA;
+    obj.token_b = message.tokenB === "" ? undefined : message.tokenB;
     if (message.amountsA) {
       obj.amounts_a = message.amountsA.map(e => e);
     } else {
-      obj.amounts_a = [];
+      obj.amounts_a = message.amountsA;
     }
     if (message.amountsB) {
       obj.amounts_b = message.amountsB.map(e => e);
     } else {
-      obj.amounts_b = [];
+      obj.amounts_b = message.amountsB;
     }
     if (message.tickIndexesAToB) {
       obj.tick_indexes_a_to_b = message.tickIndexesAToB.map(e => e.toString());
     } else {
-      obj.tick_indexes_a_to_b = [];
+      obj.tick_indexes_a_to_b = message.tickIndexesAToB;
     }
     if (message.fees) {
       obj.fees = message.fees.map(e => e.toString());
     } else {
-      obj.fees = [];
+      obj.fees = message.fees;
     }
     if (message.options) {
       obj.options = message.options.map(e => e ? DepositOptions.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.options = [];
+      obj.options = message.options;
     }
     return obj;
   },
@@ -751,12 +751,12 @@ export const MsgDepositResponse = {
     if (message.reserve0Deposited) {
       obj.reserve0_deposited = message.reserve0Deposited.map(e => e);
     } else {
-      obj.reserve0_deposited = [];
+      obj.reserve0_deposited = message.reserve0Deposited;
     }
     if (message.reserve1Deposited) {
       obj.reserve1_deposited = message.reserve1Deposited.map(e => e);
     } else {
-      obj.reserve1_deposited = [];
+      obj.reserve1_deposited = message.reserve1Deposited;
     }
     return obj;
   },
@@ -898,24 +898,24 @@ export const MsgWithdrawal = {
   },
   toAmino(message: MsgWithdrawal, useInterfaces: boolean = false): MsgWithdrawalAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
-    obj.token_a = message.tokenA;
-    obj.token_b = message.tokenB;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
+    obj.token_a = message.tokenA === "" ? undefined : message.tokenA;
+    obj.token_b = message.tokenB === "" ? undefined : message.tokenB;
     if (message.sharesToRemove) {
       obj.shares_to_remove = message.sharesToRemove.map(e => e);
     } else {
-      obj.shares_to_remove = [];
+      obj.shares_to_remove = message.sharesToRemove;
     }
     if (message.tickIndexesAToB) {
       obj.tick_indexes_a_to_b = message.tickIndexesAToB.map(e => e.toString());
     } else {
-      obj.tick_indexes_a_to_b = [];
+      obj.tick_indexes_a_to_b = message.tickIndexesAToB;
     }
     if (message.fees) {
       obj.fees = message.fees.map(e => e.toString());
     } else {
-      obj.fees = [];
+      obj.fees = message.fees;
     }
     return obj;
   },
@@ -1105,7 +1105,7 @@ export const MsgPlaceLimitOrder = {
       message.amountIn = object.amount_in;
     }
     if (object.order_type !== undefined && object.order_type !== null) {
-      message.orderType = limitOrderTypeFromJSON(object.order_type);
+      message.orderType = object.order_type;
     }
     if (object.expiration_time !== undefined && object.expiration_time !== null) {
       message.expirationTime = fromTimestamp(Timestamp.fromAmino(object.expiration_time));
@@ -1117,15 +1117,15 @@ export const MsgPlaceLimitOrder = {
   },
   toAmino(message: MsgPlaceLimitOrder, useInterfaces: boolean = false): MsgPlaceLimitOrderAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
-    obj.token_in = message.tokenIn;
-    obj.token_out = message.tokenOut;
-    obj.tick_index_in_to_out = message.tickIndexInToOut ? message.tickIndexInToOut.toString() : undefined;
-    obj.amount_in = message.amountIn;
-    obj.order_type = message.orderType;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.token_out = message.tokenOut === "" ? undefined : message.tokenOut;
+    obj.tick_index_in_to_out = message.tickIndexInToOut !== BigInt(0) ? message.tickIndexInToOut.toString() : undefined;
+    obj.amount_in = message.amountIn ?? "";
+    obj.order_type = message.orderType === 0 ? undefined : message.orderType;
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
-    obj.max_amount_out = message.maxAmountOut;
+    obj.max_amount_out = message.maxAmountOut ?? null;
     return obj;
   },
   fromAminoMsg(object: MsgPlaceLimitOrderAminoMsg): MsgPlaceLimitOrder {
@@ -1210,9 +1210,9 @@ export const MsgPlaceLimitOrderResponse = {
   },
   toAmino(message: MsgPlaceLimitOrderResponse, useInterfaces: boolean = false): MsgPlaceLimitOrderResponseAmino {
     const obj: any = {};
-    obj.trancheKey = message.trancheKey;
-    obj.coin_in = message.coinIn ? Coin.toAmino(message.coinIn, useInterfaces) : undefined;
-    obj.taker_coin_out = message.takerCoinOut ? Coin.toAmino(message.takerCoinOut, useInterfaces) : undefined;
+    obj.trancheKey = message.trancheKey === "" ? undefined : message.trancheKey;
+    obj.coin_in = message.coinIn ? Coin.toAmino(message.coinIn, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.taker_coin_out = message.takerCoinOut ? Coin.toAmino(message.takerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgPlaceLimitOrderResponseAminoMsg): MsgPlaceLimitOrderResponse {
@@ -1286,8 +1286,8 @@ export const MsgWithdrawFilledLimitOrder = {
   },
   toAmino(message: MsgWithdrawFilledLimitOrder, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrderAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.tranche_key = message.trancheKey;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawFilledLimitOrderAminoMsg): MsgWithdrawFilledLimitOrder {
@@ -1411,8 +1411,8 @@ export const MsgCancelLimitOrder = {
   },
   toAmino(message: MsgCancelLimitOrder, useInterfaces: boolean = false): MsgCancelLimitOrderAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.tranche_key = message.trancheKey;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: MsgCancelLimitOrderAminoMsg): MsgCancelLimitOrder {
@@ -1526,7 +1526,7 @@ export const MultiHopRoute = {
     if (message.hops) {
       obj.hops = message.hops.map(e => e);
     } else {
-      obj.hops = [];
+      obj.hops = message.hops;
     }
     return obj;
   },
@@ -1643,16 +1643,16 @@ export const MsgMultiHopSwap = {
   },
   toAmino(message: MsgMultiHopSwap, useInterfaces: boolean = false): MsgMultiHopSwapAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? MultiHopRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.amount_in = message.amountIn;
-    obj.exit_limit_price = message.exitLimitPrice;
-    obj.pick_best_route = message.pickBestRoute;
+    obj.amount_in = message.amountIn ?? "";
+    obj.exit_limit_price = message.exitLimitPrice ?? "";
+    obj.pick_best_route = message.pickBestRoute === false ? undefined : message.pickBestRoute;
     return obj;
   },
   fromAminoMsg(object: MsgMultiHopSwapAminoMsg): MsgMultiHopSwap {
@@ -1715,7 +1715,7 @@ export const MsgMultiHopSwapResponse = {
   },
   toAmino(message: MsgMultiHopSwapResponse, useInterfaces: boolean = false): MsgMultiHopSwapResponseAmino {
     const obj: any = {};
-    obj.coin_out = message.coinOut ? Coin.toAmino(message.coinOut, useInterfaces) : undefined;
+    obj.coin_out = message.coinOut ? Coin.toAmino(message.coinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgMultiHopSwapResponseAminoMsg): MsgMultiHopSwapResponse {
@@ -1789,8 +1789,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

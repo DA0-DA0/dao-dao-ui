@@ -264,18 +264,18 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.vote_period = message.votePeriod ? message.votePeriod.toString() : undefined;
-    obj.vote_threshold = message.voteThreshold;
-    obj.reward_band = message.rewardBand;
-    obj.reward_distribution_window = message.rewardDistributionWindow ? message.rewardDistributionWindow.toString() : undefined;
+    obj.vote_period = message.votePeriod !== BigInt(0) ? message.votePeriod.toString() : undefined;
+    obj.vote_threshold = message.voteThreshold === "" ? undefined : message.voteThreshold;
+    obj.reward_band = message.rewardBand === "" ? undefined : message.rewardBand;
+    obj.reward_distribution_window = message.rewardDistributionWindow !== BigInt(0) ? message.rewardDistributionWindow.toString() : undefined;
     if (message.whitelist) {
       obj.whitelist = message.whitelist.map(e => e ? Denom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.whitelist = [];
+      obj.whitelist = message.whitelist;
     }
-    obj.slash_fraction = message.slashFraction;
-    obj.slash_window = message.slashWindow ? message.slashWindow.toString() : undefined;
-    obj.min_valid_per_window = message.minValidPerWindow;
+    obj.slash_fraction = message.slashFraction === "" ? undefined : message.slashFraction;
+    obj.slash_window = message.slashWindow !== BigInt(0) ? message.slashWindow.toString() : undefined;
+    obj.min_valid_per_window = message.minValidPerWindow === "" ? undefined : message.minValidPerWindow;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
@@ -338,7 +338,7 @@ export const Denom = {
   },
   toAmino(message: Denom, useInterfaces: boolean = false): DenomAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     return obj;
   },
   fromAminoMsg(object: DenomAminoMsg): Denom {
@@ -423,9 +423,9 @@ export const AggregateExchangeRatePrevote = {
   },
   toAmino(message: AggregateExchangeRatePrevote, useInterfaces: boolean = false): AggregateExchangeRatePrevoteAmino {
     const obj: any = {};
-    obj.hash = message.hash;
-    obj.voter = message.voter;
-    obj.submit_block = message.submitBlock ? message.submitBlock.toString() : undefined;
+    obj.hash = message.hash === "" ? undefined : message.hash;
+    obj.voter = message.voter === "" ? undefined : message.voter;
+    obj.submit_block = message.submitBlock !== BigInt(0) ? message.submitBlock.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: AggregateExchangeRatePrevoteAminoMsg): AggregateExchangeRatePrevote {
@@ -500,9 +500,9 @@ export const AggregateExchangeRateVote = {
     if (message.exchangeRateTuples) {
       obj.exchange_rate_tuples = message.exchangeRateTuples.map(e => e ? ExchangeRateTuple.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.exchange_rate_tuples = [];
+      obj.exchange_rate_tuples = message.exchangeRateTuples;
     }
-    obj.voter = message.voter;
+    obj.voter = message.voter === "" ? undefined : message.voter;
     return obj;
   },
   fromAminoMsg(object: AggregateExchangeRateVoteAminoMsg): AggregateExchangeRateVote {
@@ -576,8 +576,8 @@ export const ExchangeRateTuple = {
   },
   toAmino(message: ExchangeRateTuple, useInterfaces: boolean = false): ExchangeRateTupleAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.exchange_rate = message.exchangeRate;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.exchange_rate = message.exchangeRate === "" ? undefined : message.exchangeRate;
     return obj;
   },
   fromAminoMsg(object: ExchangeRateTupleAminoMsg): ExchangeRateTuple {

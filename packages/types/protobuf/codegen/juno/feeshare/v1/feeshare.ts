@@ -124,9 +124,9 @@ export const FeeShare = {
   },
   toAmino(message: FeeShare, useInterfaces: boolean = false): FeeShareAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
-    obj.deployer_address = message.deployerAddress;
-    obj.withdrawer_address = message.withdrawerAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
+    obj.deployer_address = message.deployerAddress === "" ? undefined : message.deployerAddress;
+    obj.withdrawer_address = message.withdrawerAddress === "" ? undefined : message.withdrawerAddress;
     return obj;
   },
   fromAminoMsg(object: FeeShareAminoMsg): FeeShare {

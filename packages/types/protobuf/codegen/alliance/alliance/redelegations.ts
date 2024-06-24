@@ -143,7 +143,7 @@ export const QueuedRedelegation = {
     if (message.entries) {
       obj.entries = message.entries.map(e => e ? Redelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.entries = [];
+      obj.entries = message.entries;
     }
     return obj;
   },
@@ -240,9 +240,9 @@ export const Redelegation = {
   },
   toAmino(message: Redelegation, useInterfaces: boolean = false): RedelegationAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.src_validator_address = message.srcValidatorAddress;
-    obj.dst_validator_address = message.dstValidatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.src_validator_address = message.srcValidatorAddress === "" ? undefined : message.srcValidatorAddress;
+    obj.dst_validator_address = message.dstValidatorAddress === "" ? undefined : message.dstValidatorAddress;
     obj.balance = message.balance ? Coin.toAmino(message.balance, useInterfaces) : undefined;
     return obj;
   },
@@ -350,9 +350,9 @@ export const RedelegationEntry = {
   },
   toAmino(message: RedelegationEntry, useInterfaces: boolean = false): RedelegationEntryAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.src_validator_address = message.srcValidatorAddress;
-    obj.dst_validator_address = message.dstValidatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.src_validator_address = message.srcValidatorAddress === "" ? undefined : message.srcValidatorAddress;
+    obj.dst_validator_address = message.dstValidatorAddress === "" ? undefined : message.dstValidatorAddress;
     obj.balance = message.balance ? Coin.toAmino(message.balance, useInterfaces) : undefined;
     obj.completion_time = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : undefined;
     return obj;

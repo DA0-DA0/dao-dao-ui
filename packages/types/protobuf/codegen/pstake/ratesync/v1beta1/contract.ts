@@ -158,9 +158,9 @@ export const InstantiateLiquidStakeRateContract = {
   },
   toAmino(message: InstantiateLiquidStakeRateContract, useInterfaces: boolean = false): InstantiateLiquidStakeRateContractAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.transfer_channel_i_d = message.transferChannelID;
-    obj.transfer_port_i_d = message.transferPortID;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.transfer_channel_i_d = message.transferChannelID === "" ? undefined : message.transferChannelID;
+    obj.transfer_port_i_d = message.transferPortID === "" ? undefined : message.transferPortID;
     return obj;
   },
   fromAminoMsg(object: InstantiateLiquidStakeRateContractAminoMsg): InstantiateLiquidStakeRateContract {
@@ -319,10 +319,10 @@ export const LiquidStakeRate = {
   },
   toAmino(message: LiquidStakeRate, useInterfaces: boolean = false): LiquidStakeRateAmino {
     const obj: any = {};
-    obj.default_bond_denom = message.defaultBondDenom;
-    obj.stk_denom = message.stkDenom;
-    obj.c_value = message.cValue;
-    obj.controller_chain_time = message.controllerChainTime ? message.controllerChainTime.toString() : undefined;
+    obj.default_bond_denom = message.defaultBondDenom === "" ? undefined : message.defaultBondDenom;
+    obj.stk_denom = message.stkDenom === "" ? undefined : message.stkDenom;
+    obj.c_value = message.cValue === "" ? undefined : message.cValue;
+    obj.controller_chain_time = message.controllerChainTime !== BigInt(0) ? message.controllerChainTime.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: LiquidStakeRateAminoMsg): LiquidStakeRate {

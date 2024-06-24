@@ -369,7 +369,7 @@ export const QueryDenomAuthorityMetadataRequest = {
   },
   toAmino(message: QueryDenomAuthorityMetadataRequest, useInterfaces: boolean = false): QueryDenomAuthorityMetadataRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryDenomAuthorityMetadataRequestAminoMsg): QueryDenomAuthorityMetadataRequest {
@@ -507,7 +507,7 @@ export const QueryDenomsFromCreatorRequest = {
   },
   toAmino(message: QueryDenomsFromCreatorRequest, useInterfaces: boolean = false): QueryDenomsFromCreatorRequestAmino {
     const obj: any = {};
-    obj.creator = message.creator;
+    obj.creator = message.creator === "" ? undefined : message.creator;
     return obj;
   },
   fromAminoMsg(object: QueryDenomsFromCreatorRequestAminoMsg): QueryDenomsFromCreatorRequest {
@@ -577,7 +577,7 @@ export const QueryDenomsFromCreatorResponse = {
     if (message.denoms) {
       obj.denoms = message.denoms.map(e => e);
     } else {
-      obj.denoms = [];
+      obj.denoms = message.denoms;
     }
     return obj;
   },
@@ -647,7 +647,7 @@ export const QueryBeforeSendHookAddressRequest = {
   },
   toAmino(message: QueryBeforeSendHookAddressRequest, useInterfaces: boolean = false): QueryBeforeSendHookAddressRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryBeforeSendHookAddressRequestAminoMsg): QueryBeforeSendHookAddressRequest {
@@ -716,7 +716,7 @@ export const QueryBeforeSendHookAddressResponse = {
   },
   toAmino(message: QueryBeforeSendHookAddressResponse, useInterfaces: boolean = false): QueryBeforeSendHookAddressResponseAmino {
     const obj: any = {};
-    obj.cosmwasm_address = message.cosmwasmAddress;
+    obj.cosmwasm_address = message.cosmwasmAddress === "" ? undefined : message.cosmwasmAddress;
     return obj;
   },
   fromAminoMsg(object: QueryBeforeSendHookAddressResponseAminoMsg): QueryBeforeSendHookAddressResponse {

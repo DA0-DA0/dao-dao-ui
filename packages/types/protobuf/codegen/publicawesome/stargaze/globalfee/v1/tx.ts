@@ -213,7 +213,7 @@ export const MsgSetCodeAuthorization = {
   },
   toAmino(message: MsgSetCodeAuthorization, useInterfaces: boolean = false): MsgSetCodeAuthorizationAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization, useInterfaces) : undefined;
     return obj;
   },
@@ -338,8 +338,8 @@ export const MsgRemoveCodeAuthorization = {
   },
   toAmino(message: MsgRemoveCodeAuthorization, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveCodeAuthorizationAminoMsg): MsgRemoveCodeAuthorization {
@@ -463,7 +463,7 @@ export const MsgSetContractAuthorization = {
   },
   toAmino(message: MsgSetContractAuthorization, useInterfaces: boolean = false): MsgSetContractAuthorizationAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization, useInterfaces) : undefined;
     return obj;
   },
@@ -588,8 +588,8 @@ export const MsgRemoveContractAuthorization = {
   },
   toAmino(message: MsgRemoveContractAuthorization, useInterfaces: boolean = false): MsgRemoveContractAuthorizationAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.contract_address = message.contractAddress;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveContractAuthorizationAminoMsg): MsgRemoveContractAuthorization {
@@ -713,7 +713,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

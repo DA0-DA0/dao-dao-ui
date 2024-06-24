@@ -363,8 +363,8 @@ export const DelegatorWithdrawInfo = {
   },
   toAmino(message: DelegatorWithdrawInfo, useInterfaces: boolean = false): DelegatorWithdrawInfoAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.withdraw_address = message.withdrawAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.withdraw_address = message.withdrawAddress === "" ? undefined : message.withdrawAddress;
     return obj;
   },
   fromAminoMsg(object: DelegatorWithdrawInfoAminoMsg): DelegatorWithdrawInfo {
@@ -442,11 +442,11 @@ export const ValidatorOutstandingRewardsRecord = {
   },
   toAmino(message: ValidatorOutstandingRewardsRecord, useInterfaces: boolean = false): ValidatorOutstandingRewardsRecordAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     if (message.outstandingRewards) {
       obj.outstanding_rewards = message.outstandingRewards.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.outstanding_rewards = [];
+      obj.outstanding_rewards = message.outstandingRewards;
     }
     return obj;
   },
@@ -527,8 +527,8 @@ export const ValidatorAccumulatedCommissionRecord = {
   },
   toAmino(message: ValidatorAccumulatedCommissionRecord, useInterfaces: boolean = false): ValidatorAccumulatedCommissionRecordAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.accumulated = message.accumulated ? ValidatorAccumulatedCommission.toAmino(message.accumulated, useInterfaces) : ValidatorAccumulatedCommission.fromPartial({});
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.accumulated = message.accumulated ? ValidatorAccumulatedCommission.toAmino(message.accumulated, useInterfaces) : ValidatorAccumulatedCommission.toAmino(ValidatorAccumulatedCommission.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: ValidatorAccumulatedCommissionRecordAminoMsg): ValidatorAccumulatedCommissionRecord {
@@ -619,9 +619,9 @@ export const ValidatorHistoricalRewardsRecord = {
   },
   toAmino(message: ValidatorHistoricalRewardsRecord, useInterfaces: boolean = false): ValidatorHistoricalRewardsRecordAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.period = message.period ? message.period.toString() : undefined;
-    obj.rewards = message.rewards ? ValidatorHistoricalRewards.toAmino(message.rewards, useInterfaces) : ValidatorHistoricalRewards.fromPartial({});
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.period = message.period !== BigInt(0) ? message.period.toString() : undefined;
+    obj.rewards = message.rewards ? ValidatorHistoricalRewards.toAmino(message.rewards, useInterfaces) : ValidatorHistoricalRewards.toAmino(ValidatorHistoricalRewards.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: ValidatorHistoricalRewardsRecordAminoMsg): ValidatorHistoricalRewardsRecord {
@@ -701,8 +701,8 @@ export const ValidatorCurrentRewardsRecord = {
   },
   toAmino(message: ValidatorCurrentRewardsRecord, useInterfaces: boolean = false): ValidatorCurrentRewardsRecordAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.rewards = message.rewards ? ValidatorCurrentRewards.toAmino(message.rewards, useInterfaces) : ValidatorCurrentRewards.fromPartial({});
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.rewards = message.rewards ? ValidatorCurrentRewards.toAmino(message.rewards, useInterfaces) : ValidatorCurrentRewards.toAmino(ValidatorCurrentRewards.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: ValidatorCurrentRewardsRecordAminoMsg): ValidatorCurrentRewardsRecord {
@@ -793,9 +793,9 @@ export const DelegatorStartingInfoRecord = {
   },
   toAmino(message: DelegatorStartingInfoRecord, useInterfaces: boolean = false): DelegatorStartingInfoRecordAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.starting_info = message.startingInfo ? DelegatorStartingInfo.toAmino(message.startingInfo, useInterfaces) : DelegatorStartingInfo.fromPartial({});
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.starting_info = message.startingInfo ? DelegatorStartingInfo.toAmino(message.startingInfo, useInterfaces) : DelegatorStartingInfo.toAmino(DelegatorStartingInfo.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: DelegatorStartingInfoRecordAminoMsg): DelegatorStartingInfoRecord {
@@ -897,10 +897,10 @@ export const ValidatorSlashEventRecord = {
   },
   toAmino(message: ValidatorSlashEventRecord, useInterfaces: boolean = false): ValidatorSlashEventRecordAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.height = message.height ? message.height.toString() : undefined;
-    obj.period = message.period ? message.period.toString() : undefined;
-    obj.validator_slash_event = message.validatorSlashEvent ? ValidatorSlashEvent.toAmino(message.validatorSlashEvent, useInterfaces) : ValidatorSlashEvent.fromPartial({});
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.period = message.period !== BigInt(0) ? message.period.toString() : undefined;
+    obj.validator_slash_event = message.validatorSlashEvent ? ValidatorSlashEvent.toAmino(message.validatorSlashEvent, useInterfaces) : ValidatorSlashEvent.toAmino(ValidatorSlashEvent.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: ValidatorSlashEventRecordAminoMsg): ValidatorSlashEventRecord {
@@ -1054,43 +1054,43 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
-    obj.fee_pool = message.feePool ? FeePool.toAmino(message.feePool, useInterfaces) : FeePool.fromPartial({});
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
+    obj.fee_pool = message.feePool ? FeePool.toAmino(message.feePool, useInterfaces) : FeePool.toAmino(FeePool.fromPartial({}));
     if (message.delegatorWithdrawInfos) {
       obj.delegator_withdraw_infos = message.delegatorWithdrawInfos.map(e => e ? DelegatorWithdrawInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegator_withdraw_infos = [];
+      obj.delegator_withdraw_infos = message.delegatorWithdrawInfos;
     }
-    obj.previous_proposer = message.previousProposer;
+    obj.previous_proposer = message.previousProposer === "" ? undefined : message.previousProposer;
     if (message.outstandingRewards) {
       obj.outstanding_rewards = message.outstandingRewards.map(e => e ? ValidatorOutstandingRewardsRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.outstanding_rewards = [];
+      obj.outstanding_rewards = message.outstandingRewards;
     }
     if (message.validatorAccumulatedCommissions) {
       obj.validator_accumulated_commissions = message.validatorAccumulatedCommissions.map(e => e ? ValidatorAccumulatedCommissionRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_accumulated_commissions = [];
+      obj.validator_accumulated_commissions = message.validatorAccumulatedCommissions;
     }
     if (message.validatorHistoricalRewards) {
       obj.validator_historical_rewards = message.validatorHistoricalRewards.map(e => e ? ValidatorHistoricalRewardsRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_historical_rewards = [];
+      obj.validator_historical_rewards = message.validatorHistoricalRewards;
     }
     if (message.validatorCurrentRewards) {
       obj.validator_current_rewards = message.validatorCurrentRewards.map(e => e ? ValidatorCurrentRewardsRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_current_rewards = [];
+      obj.validator_current_rewards = message.validatorCurrentRewards;
     }
     if (message.delegatorStartingInfos) {
       obj.delegator_starting_infos = message.delegatorStartingInfos.map(e => e ? DelegatorStartingInfoRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegator_starting_infos = [];
+      obj.delegator_starting_infos = message.delegatorStartingInfos;
     }
     if (message.validatorSlashEvents) {
       obj.validator_slash_events = message.validatorSlashEvents.map(e => e ? ValidatorSlashEventRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_slash_events = [];
+      obj.validator_slash_events = message.validatorSlashEvents;
     }
     return obj;
   },

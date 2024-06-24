@@ -100,8 +100,8 @@ export const UnbondingDelegation = {
   toAmino(message: UnbondingDelegation, useInterfaces: boolean = false): UnbondingDelegationAmino {
     const obj: any = {};
     obj.completion_time = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : undefined;
-    obj.validator_address = message.validatorAddress;
-    obj.amount = message.amount;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: UnbondingDelegationAminoMsg): UnbondingDelegation {

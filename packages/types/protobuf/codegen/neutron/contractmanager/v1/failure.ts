@@ -129,11 +129,11 @@ export const Failure = {
   },
   toAmino(message: Failure, useInterfaces: boolean = false): FailureAmino {
     const obj: any = {};
-    obj.channel_id = message.channelId;
-    obj.address = message.address;
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.ack_id = message.ackId ? message.ackId.toString() : undefined;
-    obj.ack_type = message.ackType;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.ack_id = message.ackId !== BigInt(0) ? message.ackId.toString() : undefined;
+    obj.ack_type = message.ackType === "" ? undefined : message.ackType;
     return obj;
   },
   fromAminoMsg(object: FailureAminoMsg): Failure {

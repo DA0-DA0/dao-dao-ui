@@ -337,7 +337,7 @@ export const GetSwapFeeQueryMsgResponse = {
   },
   toAmino(message: GetSwapFeeQueryMsgResponse, useInterfaces: boolean = false): GetSwapFeeQueryMsgResponseAmino {
     const obj: any = {};
-    obj.swap_fee = message.swapFee;
+    obj.swap_fee = message.swapFee === "" ? undefined : message.swapFee;
     return obj;
   },
   fromAminoMsg(object: GetSwapFeeQueryMsgResponseAminoMsg): GetSwapFeeQueryMsgResponse {
@@ -417,8 +417,8 @@ export const SpotPrice = {
   },
   toAmino(message: SpotPrice, useInterfaces: boolean = false): SpotPriceAmino {
     const obj: any = {};
-    obj.quote_asset_denom = message.quoteAssetDenom;
-    obj.base_asset_denom = message.baseAssetDenom;
+    obj.quote_asset_denom = message.quoteAssetDenom === "" ? undefined : message.quoteAssetDenom;
+    obj.base_asset_denom = message.baseAssetDenom === "" ? undefined : message.baseAssetDenom;
     return obj;
   },
   fromAminoMsg(object: SpotPriceAminoMsg): SpotPrice {
@@ -556,7 +556,7 @@ export const SpotPriceQueryMsgResponse = {
   },
   toAmino(message: SpotPriceQueryMsgResponse, useInterfaces: boolean = false): SpotPriceQueryMsgResponseAmino {
     const obj: any = {};
-    obj.spot_price = message.spotPrice;
+    obj.spot_price = message.spotPrice === "" ? undefined : message.spotPrice;
     return obj;
   },
   fromAminoMsg(object: SpotPriceQueryMsgResponseAminoMsg): SpotPriceQueryMsgResponse {
@@ -751,7 +751,7 @@ export const GetTotalPoolLiquidityQueryMsgResponse = {
     if (message.totalPoolLiquidity) {
       obj.total_pool_liquidity = message.totalPoolLiquidity.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.total_pool_liquidity = [];
+      obj.total_pool_liquidity = message.totalPoolLiquidity;
     }
     return obj;
   },
@@ -890,7 +890,7 @@ export const GetTotalSharesQueryMsgResponse = {
   },
   toAmino(message: GetTotalSharesQueryMsgResponse, useInterfaces: boolean = false): GetTotalSharesQueryMsgResponseAmino {
     const obj: any = {};
-    obj.total_shares = message.totalShares;
+    obj.total_shares = message.totalShares === "" ? undefined : message.totalShares;
     return obj;
   },
   fromAminoMsg(object: GetTotalSharesQueryMsgResponseAminoMsg): GetTotalSharesQueryMsgResponse {

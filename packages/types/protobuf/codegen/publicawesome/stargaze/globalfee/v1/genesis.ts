@@ -99,12 +99,12 @@ export const GenesisState = {
     if (message.codeAuthorizations) {
       obj.code_authorizations = message.codeAuthorizations.map(e => e ? CodeAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.code_authorizations = [];
+      obj.code_authorizations = message.codeAuthorizations;
     }
     if (message.contractAuthorizations) {
       obj.contract_authorizations = message.contractAuthorizations.map(e => e ? ContractAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.contract_authorizations = [];
+      obj.contract_authorizations = message.contractAuthorizations;
     }
     return obj;
   },

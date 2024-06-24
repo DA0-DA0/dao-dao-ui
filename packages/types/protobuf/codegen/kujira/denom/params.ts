@@ -65,7 +65,7 @@ export const Params = {
     if (message.creationFee) {
       obj.creation_fee = message.creationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.creation_fee = [];
+      obj.creation_fee = message.creationFee;
     }
     return obj;
   },

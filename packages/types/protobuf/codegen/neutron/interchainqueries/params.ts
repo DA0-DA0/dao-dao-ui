@@ -110,13 +110,13 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.query_submit_timeout = message.querySubmitTimeout ? message.querySubmitTimeout.toString() : undefined;
+    obj.query_submit_timeout = message.querySubmitTimeout !== BigInt(0) ? message.querySubmitTimeout.toString() : undefined;
     if (message.queryDeposit) {
       obj.query_deposit = message.queryDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.query_deposit = [];
+      obj.query_deposit = message.queryDeposit;
     }
-    obj.tx_query_removal_limit = message.txQueryRemovalLimit ? message.txQueryRemovalLimit.toString() : undefined;
+    obj.tx_query_removal_limit = message.txQueryRemovalLimit !== BigInt(0) ? message.txQueryRemovalLimit.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

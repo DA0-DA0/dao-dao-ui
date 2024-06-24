@@ -48,10 +48,10 @@ export interface LimitOrderTrancheProtoMsg {
 }
 export interface LimitOrderTrancheAmino {
   key?: LimitOrderTrancheKeyAmino | undefined;
-  reserves_maker_denom?: string;
-  reserves_taker_denom?: string;
-  total_maker_denom?: string;
-  total_taker_denom?: string;
+  reserves_maker_denom: string;
+  reserves_taker_denom: string;
+  total_maker_denom: string;
+  total_taker_denom: string;
   /**
    * expiration_time is represented as an RFC 3339 formatted date.
    * LimitOrders with expiration_time set are valid as long as blockTime <= expiration_time.
@@ -61,7 +61,7 @@ export interface LimitOrderTrancheAmino {
    * same, and the orders will be deleted at the end of the block.
    */
   expiration_time?: string | undefined;
-  price_taker_to_maker?: string;
+  price_taker_to_maker: string;
 }
 export interface LimitOrderTrancheAminoMsg {
   type: "/neutron.dex.LimitOrderTranche";
@@ -143,8 +143,8 @@ export const LimitOrderTrancheKey = {
   toAmino(message: LimitOrderTrancheKey, useInterfaces: boolean = false): LimitOrderTrancheKeyAmino {
     const obj: any = {};
     obj.trade_pair_id = message.tradePairId ? TradePairID.toAmino(message.tradePairId, useInterfaces) : undefined;
-    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker ? message.tickIndexTakerToMaker.toString() : undefined;
-    obj.tranche_key = message.trancheKey;
+    obj.tick_index_taker_to_maker = message.tickIndexTakerToMaker !== BigInt(0) ? message.tickIndexTakerToMaker.toString() : undefined;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: LimitOrderTrancheKeyAminoMsg): LimitOrderTrancheKey {
@@ -274,12 +274,12 @@ export const LimitOrderTranche = {
   toAmino(message: LimitOrderTranche, useInterfaces: boolean = false): LimitOrderTrancheAmino {
     const obj: any = {};
     obj.key = message.key ? LimitOrderTrancheKey.toAmino(message.key, useInterfaces) : undefined;
-    obj.reserves_maker_denom = message.reservesMakerDenom;
-    obj.reserves_taker_denom = message.reservesTakerDenom;
-    obj.total_maker_denom = message.totalMakerDenom;
-    obj.total_taker_denom = message.totalTakerDenom;
+    obj.reserves_maker_denom = message.reservesMakerDenom ?? "";
+    obj.reserves_taker_denom = message.reservesTakerDenom ?? "";
+    obj.total_maker_denom = message.totalMakerDenom ?? "";
+    obj.total_taker_denom = message.totalTakerDenom ?? "";
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
-    obj.price_taker_to_maker = message.priceTakerToMaker;
+    obj.price_taker_to_maker = message.priceTakerToMaker ?? "";
     return obj;
   },
   fromAminoMsg(object: LimitOrderTrancheAminoMsg): LimitOrderTranche {

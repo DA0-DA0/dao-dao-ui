@@ -220,16 +220,16 @@ export const MsgCreateVestingAccount = {
   },
   toAmino(message: MsgCreateVestingAccount, useInterfaces: boolean = false): MsgCreateVestingAccountAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
-    obj.to_address = message.toAddress;
+    obj.from_address = message.fromAddress === "" ? undefined : message.fromAddress;
+    obj.to_address = message.toAddress === "" ? undefined : message.toAddress;
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
-    obj.start_time = message.startTime ? message.startTime.toString() : undefined;
-    obj.end_time = message.endTime ? message.endTime.toString() : undefined;
-    obj.delayed = message.delayed;
+    obj.start_time = message.startTime !== BigInt(0) ? message.startTime.toString() : undefined;
+    obj.end_time = message.endTime !== BigInt(0) ? message.endTime.toString() : undefined;
+    obj.delayed = message.delayed === false ? undefined : message.delayed;
     return obj;
   },
   fromAminoMsg(object: MsgCreateVestingAccountAminoMsg): MsgCreateVestingAccount {
@@ -351,11 +351,11 @@ export const MsgFundFairburnPool = {
   },
   toAmino(message: MsgFundFairburnPool, useInterfaces: boolean = false): MsgFundFairburnPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },

@@ -95,8 +95,8 @@ export const Nonce = {
   },
   toAmino(message: Nonce, useInterfaces: boolean = false): NonceAmino {
     const obj: any = {};
-    obj.source_domain = message.sourceDomain;
-    obj.nonce = message.nonce ? message.nonce.toString() : undefined;
+    obj.source_domain = message.sourceDomain === 0 ? undefined : message.sourceDomain;
+    obj.nonce = message.nonce !== BigInt(0) ? message.nonce.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: NonceAminoMsg): Nonce {

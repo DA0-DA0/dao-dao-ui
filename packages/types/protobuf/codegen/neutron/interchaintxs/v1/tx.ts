@@ -286,13 +286,13 @@ export const MsgRegisterInterchainAccount = {
   },
   toAmino(message: MsgRegisterInterchainAccount, useInterfaces: boolean = false): MsgRegisterInterchainAccountAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
-    obj.connection_id = message.connectionId;
-    obj.interchain_account_id = message.interchainAccountId;
+    obj.from_address = message.fromAddress === "" ? undefined : message.fromAddress;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.interchain_account_id = message.interchainAccountId === "" ? undefined : message.interchainAccountId;
     if (message.registerFee) {
       obj.register_fee = message.registerFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.register_fee = [];
+      obj.register_fee = message.registerFee;
     }
     return obj;
   },
@@ -470,16 +470,16 @@ export const MsgSubmitTx = {
   },
   toAmino(message: MsgSubmitTx, useInterfaces: boolean = false): MsgSubmitTxAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
-    obj.interchain_account_id = message.interchainAccountId;
-    obj.connection_id = message.connectionId;
+    obj.from_address = message.fromAddress === "" ? undefined : message.fromAddress;
+    obj.interchain_account_id = message.interchainAccountId === "" ? undefined : message.interchainAccountId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     if (message.msgs) {
       obj.msgs = message.msgs.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.msgs = [];
+      obj.msgs = message.msgs;
     }
-    obj.memo = message.memo;
-    obj.timeout = message.timeout ? message.timeout.toString() : undefined;
+    obj.memo = message.memo === "" ? undefined : message.memo;
+    obj.timeout = message.timeout !== BigInt(0) ? message.timeout.toString() : undefined;
     obj.fee = message.fee ? Fee.toAmino(message.fee, useInterfaces) : undefined;
     return obj;
   },
@@ -554,8 +554,8 @@ export const MsgSubmitTxResponse = {
   },
   toAmino(message: MsgSubmitTxResponse, useInterfaces: boolean = false): MsgSubmitTxResponseAmino {
     const obj: any = {};
-    obj.sequence_id = message.sequenceId ? message.sequenceId.toString() : undefined;
-    obj.channel = message.channel;
+    obj.sequence_id = message.sequenceId !== BigInt(0) ? message.sequenceId.toString() : undefined;
+    obj.channel = message.channel === "" ? undefined : message.channel;
     return obj;
   },
   fromAminoMsg(object: MsgSubmitTxResponseAminoMsg): MsgSubmitTxResponse {
@@ -629,8 +629,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

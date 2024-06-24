@@ -94,11 +94,11 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.basedenom = message.basedenom;
+    obj.basedenom = message.basedenom === "" ? undefined : message.basedenom;
     if (message.feetokens) {
       obj.feetokens = message.feetokens.map(e => e ? FeeToken.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.feetokens = [];
+      obj.feetokens = message.feetokens;
     }
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;

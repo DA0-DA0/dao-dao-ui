@@ -259,14 +259,14 @@ export const State = {
   },
   toAmino(message: State, useInterfaces: boolean = false): StateAmino {
     const obj: any = {};
-    obj.base_gas_price = message.baseGasPrice;
-    obj.learning_rate = message.learningRate;
+    obj.base_gas_price = message.baseGasPrice === "" ? undefined : message.baseGasPrice;
+    obj.learning_rate = message.learningRate === "" ? undefined : message.learningRate;
     if (message.window) {
       obj.window = message.window.map(e => e.toString());
     } else {
-      obj.window = [];
+      obj.window = message.window;
     }
-    obj.index = message.index ? message.index.toString() : undefined;
+    obj.index = message.index !== BigInt(0) ? message.index.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: StateAminoMsg): State {

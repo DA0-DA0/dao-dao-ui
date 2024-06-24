@@ -113,7 +113,7 @@ export const MsgParams = {
   toAmino(message: MsgParams, useInterfaces: boolean = false): MsgParamsAmino {
     const obj: any = {};
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     return obj;
   },
   fromAminoMsg(object: MsgParamsAminoMsg): MsgParams {

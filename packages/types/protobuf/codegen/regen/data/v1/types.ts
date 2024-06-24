@@ -537,18 +537,18 @@ export const ContentHash_Raw = {
       message.hash = bytesFromBase64(object.hash);
     }
     if (object.digest_algorithm !== undefined && object.digest_algorithm !== null) {
-      message.digestAlgorithm = digestAlgorithmFromJSON(object.digest_algorithm);
+      message.digestAlgorithm = object.digest_algorithm;
     }
     if (object.media_type !== undefined && object.media_type !== null) {
-      message.mediaType = rawMediaTypeFromJSON(object.media_type);
+      message.mediaType = object.media_type;
     }
     return message;
   },
   toAmino(message: ContentHash_Raw, useInterfaces: boolean = false): ContentHash_RawAmino {
     const obj: any = {};
     obj.hash = message.hash ? base64FromBytes(message.hash) : undefined;
-    obj.digest_algorithm = message.digestAlgorithm;
-    obj.media_type = message.mediaType;
+    obj.digest_algorithm = message.digestAlgorithm === 0 ? undefined : message.digestAlgorithm;
+    obj.media_type = message.mediaType === 0 ? undefined : message.mediaType;
     return obj;
   },
   fromAminoMsg(object: ContentHash_RawAminoMsg): ContentHash_Raw {
@@ -632,22 +632,22 @@ export const ContentHash_Graph = {
       message.hash = bytesFromBase64(object.hash);
     }
     if (object.digest_algorithm !== undefined && object.digest_algorithm !== null) {
-      message.digestAlgorithm = digestAlgorithmFromJSON(object.digest_algorithm);
+      message.digestAlgorithm = object.digest_algorithm;
     }
     if (object.canonicalization_algorithm !== undefined && object.canonicalization_algorithm !== null) {
-      message.canonicalizationAlgorithm = graphCanonicalizationAlgorithmFromJSON(object.canonicalization_algorithm);
+      message.canonicalizationAlgorithm = object.canonicalization_algorithm;
     }
     if (object.merkle_tree !== undefined && object.merkle_tree !== null) {
-      message.merkleTree = graphMerkleTreeFromJSON(object.merkle_tree);
+      message.merkleTree = object.merkle_tree;
     }
     return message;
   },
   toAmino(message: ContentHash_Graph, useInterfaces: boolean = false): ContentHash_GraphAmino {
     const obj: any = {};
     obj.hash = message.hash ? base64FromBytes(message.hash) : undefined;
-    obj.digest_algorithm = message.digestAlgorithm;
-    obj.canonicalization_algorithm = message.canonicalizationAlgorithm;
-    obj.merkle_tree = message.merkleTree;
+    obj.digest_algorithm = message.digestAlgorithm === 0 ? undefined : message.digestAlgorithm;
+    obj.canonicalization_algorithm = message.canonicalizationAlgorithm === 0 ? undefined : message.canonicalizationAlgorithm;
+    obj.merkle_tree = message.merkleTree === 0 ? undefined : message.merkleTree;
     return obj;
   },
   fromAminoMsg(object: ContentHash_GraphAminoMsg): ContentHash_Graph {
@@ -711,7 +711,7 @@ export const ContentHashes = {
     if (message.contentHashes) {
       obj.content_hashes = message.contentHashes.map(e => e ? ContentHash.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.content_hashes = [];
+      obj.content_hashes = message.contentHashes;
     }
     return obj;
   },

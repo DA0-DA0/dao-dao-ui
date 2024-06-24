@@ -223,7 +223,7 @@ export const EventSell = {
   },
   toAmino(message: EventSell, useInterfaces: boolean = false): EventSellAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: EventSellAminoMsg): EventSell {
@@ -286,7 +286,7 @@ export const EventBuyDirect = {
   },
   toAmino(message: EventBuyDirect, useInterfaces: boolean = false): EventBuyDirectAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: EventBuyDirectAminoMsg): EventBuyDirect {
@@ -349,7 +349,7 @@ export const EventUpdateSellOrder = {
   },
   toAmino(message: EventUpdateSellOrder, useInterfaces: boolean = false): EventUpdateSellOrderAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: EventUpdateSellOrderAminoMsg): EventUpdateSellOrder {
@@ -412,7 +412,7 @@ export const EventCancelSellOrder = {
   },
   toAmino(message: EventCancelSellOrder, useInterfaces: boolean = false): EventCancelSellOrderAmino {
     const obj: any = {};
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: EventCancelSellOrderAminoMsg): EventCancelSellOrder {
@@ -475,7 +475,7 @@ export const EventAllowDenom = {
   },
   toAmino(message: EventAllowDenom, useInterfaces: boolean = false): EventAllowDenomAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: EventAllowDenomAminoMsg): EventAllowDenom {
@@ -538,7 +538,7 @@ export const EventRemoveAllowedDenom = {
   },
   toAmino(message: EventRemoveAllowedDenom, useInterfaces: boolean = false): EventRemoveAllowedDenomAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: EventRemoveAllowedDenomAminoMsg): EventRemoveAllowedDenom {

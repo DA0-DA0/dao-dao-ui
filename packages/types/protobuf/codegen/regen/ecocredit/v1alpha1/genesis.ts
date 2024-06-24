@@ -225,27 +225,27 @@ export const GenesisState = {
     if (message.classInfo) {
       obj.class_info = message.classInfo.map(e => e ? ClassInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.class_info = [];
+      obj.class_info = message.classInfo;
     }
     if (message.batchInfo) {
       obj.batch_info = message.batchInfo.map(e => e ? BatchInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.batch_info = [];
+      obj.batch_info = message.batchInfo;
     }
     if (message.sequences) {
       obj.sequences = message.sequences.map(e => e ? CreditTypeSeq.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.sequences = [];
+      obj.sequences = message.sequences;
     }
     if (message.balances) {
       obj.balances = message.balances.map(e => e ? Balance.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.balances = [];
+      obj.balances = message.balances;
     }
     if (message.supplies) {
       obj.supplies = message.supplies.map(e => e ? Supply.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.supplies = [];
+      obj.supplies = message.supplies;
     }
     return obj;
   },
@@ -342,10 +342,10 @@ export const Balance = {
   },
   toAmino(message: Balance, useInterfaces: boolean = false): BalanceAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_balance = message.tradableBalance;
-    obj.retired_balance = message.retiredBalance;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_balance = message.tradableBalance === "" ? undefined : message.tradableBalance;
+    obj.retired_balance = message.retiredBalance === "" ? undefined : message.retiredBalance;
     return obj;
   },
   fromAminoMsg(object: BalanceAminoMsg): Balance {
@@ -430,9 +430,9 @@ export const Supply = {
   },
   toAmino(message: Supply, useInterfaces: boolean = false): SupplyAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_supply = message.tradableSupply;
-    obj.retired_supply = message.retiredSupply;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_supply = message.tradableSupply === "" ? undefined : message.tradableSupply;
+    obj.retired_supply = message.retiredSupply === "" ? undefined : message.retiredSupply;
     return obj;
   },
   fromAminoMsg(object: SupplyAminoMsg): Supply {

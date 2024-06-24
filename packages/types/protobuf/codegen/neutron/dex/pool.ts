@@ -89,7 +89,7 @@ export const Pool = {
   },
   toAmino(message: Pool, useInterfaces: boolean = false): PoolAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     obj.lower_tick0 = message.lowerTick0 ? PoolReserves.toAmino(message.lowerTick0, useInterfaces) : undefined;
     obj.upper_tick1 = message.upperTick1 ? PoolReserves.toAmino(message.upperTick1, useInterfaces) : undefined;
     return obj;

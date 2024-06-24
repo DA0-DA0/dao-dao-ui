@@ -179,8 +179,8 @@ export const SetCodeAuthorizationProposal = {
   },
   toAmino(message: SetCodeAuthorizationProposal, useInterfaces: boolean = false): SetCodeAuthorizationProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization, useInterfaces) : undefined;
     return obj;
   },
@@ -267,9 +267,9 @@ export const RemoveCodeAuthorizationProposal = {
   },
   toAmino(message: RemoveCodeAuthorizationProposal, useInterfaces: boolean = false): RemoveCodeAuthorizationProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: RemoveCodeAuthorizationProposalAminoMsg): RemoveCodeAuthorizationProposal {
@@ -355,8 +355,8 @@ export const SetContractAuthorizationProposal = {
   },
   toAmino(message: SetContractAuthorizationProposal, useInterfaces: boolean = false): SetContractAuthorizationProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization, useInterfaces) : undefined;
     return obj;
   },
@@ -443,9 +443,9 @@ export const RemoveContractAuthorizationProposal = {
   },
   toAmino(message: RemoveContractAuthorizationProposal, useInterfaces: boolean = false): RemoveContractAuthorizationProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.contract_address = message.contractAddress;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     return obj;
   },
   fromAminoMsg(object: RemoveContractAuthorizationProposalAminoMsg): RemoveContractAuthorizationProposal {

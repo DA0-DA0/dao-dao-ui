@@ -135,12 +135,12 @@ export const Params = {
     if (message.privilegedAddresses) {
       obj.privileged_addresses = message.privilegedAddresses.map(e => e);
     } else {
-      obj.privileged_addresses = [];
+      obj.privileged_addresses = message.privilegedAddresses;
     }
     if (message.minimumGasPrices) {
       obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.minimum_gas_prices = [];
+      obj.minimum_gas_prices = message.minimumGasPrices;
     }
     return obj;
   },
@@ -213,11 +213,11 @@ export const CodeAuthorization = {
   },
   toAmino(message: CodeAuthorization, useInterfaces: boolean = false): CodeAuthorizationAmino {
     const obj: any = {};
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
     } else {
-      obj.methods = [];
+      obj.methods = message.methods;
     }
     return obj;
   },
@@ -290,11 +290,11 @@ export const ContractAuthorization = {
   },
   toAmino(message: ContractAuthorization, useInterfaces: boolean = false): ContractAuthorizationAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
     } else {
-      obj.methods = [];
+      obj.methods = message.methods;
     }
     return obj;
   },

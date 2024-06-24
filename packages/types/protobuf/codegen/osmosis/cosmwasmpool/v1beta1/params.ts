@@ -104,9 +104,9 @@ export const Params = {
     if (message.codeIdWhitelist) {
       obj.code_id_whitelist = message.codeIdWhitelist.map(e => e.toString());
     } else {
-      obj.code_id_whitelist = [];
+      obj.code_id_whitelist = message.codeIdWhitelist;
     }
-    obj.pool_migration_limit = message.poolMigrationLimit ? message.poolMigrationLimit.toString() : undefined;
+    obj.pool_migration_limit = message.poolMigrationLimit !== BigInt(0) ? message.poolMigrationLimit.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

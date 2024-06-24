@@ -402,15 +402,15 @@ export const SellOrder = {
   },
   toAmino(message: SellOrder, useInterfaces: boolean = false): SellOrderAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     obj.seller = message.seller ? base64FromBytes(message.seller) : undefined;
-    obj.batch_key = message.batchKey ? message.batchKey.toString() : undefined;
-    obj.quantity = message.quantity;
-    obj.market_id = message.marketId ? message.marketId.toString() : undefined;
-    obj.ask_amount = message.askAmount;
-    obj.disable_auto_retire = message.disableAutoRetire;
+    obj.batch_key = message.batchKey !== BigInt(0) ? message.batchKey.toString() : undefined;
+    obj.quantity = message.quantity === "" ? undefined : message.quantity;
+    obj.market_id = message.marketId !== BigInt(0) ? message.marketId.toString() : undefined;
+    obj.ask_amount = message.askAmount === "" ? undefined : message.askAmount;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
     obj.expiration = message.expiration ? Timestamp.toAmino(toTimestamp(message.expiration)) : undefined;
-    obj.maker = message.maker;
+    obj.maker = message.maker === false ? undefined : message.maker;
     return obj;
   },
   fromAminoMsg(object: SellOrderAminoMsg): SellOrder {
@@ -495,9 +495,9 @@ export const AllowedDenom = {
   },
   toAmino(message: AllowedDenom, useInterfaces: boolean = false): AllowedDenomAmino {
     const obj: any = {};
-    obj.bank_denom = message.bankDenom;
-    obj.display_denom = message.displayDenom;
-    obj.exponent = message.exponent;
+    obj.bank_denom = message.bankDenom === "" ? undefined : message.bankDenom;
+    obj.display_denom = message.displayDenom === "" ? undefined : message.displayDenom;
+    obj.exponent = message.exponent === 0 ? undefined : message.exponent;
     return obj;
   },
   fromAminoMsg(object: AllowedDenomAminoMsg): AllowedDenom {
@@ -593,10 +593,10 @@ export const Market = {
   },
   toAmino(message: Market, useInterfaces: boolean = false): MarketAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
-    obj.bank_denom = message.bankDenom;
-    obj.precision_modifier = message.precisionModifier;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
+    obj.bank_denom = message.bankDenom === "" ? undefined : message.bankDenom;
+    obj.precision_modifier = message.precisionModifier === 0 ? undefined : message.precisionModifier;
     return obj;
   },
   fromAminoMsg(object: MarketAminoMsg): Market {

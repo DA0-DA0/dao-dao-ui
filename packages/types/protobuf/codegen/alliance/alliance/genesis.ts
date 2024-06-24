@@ -185,7 +185,7 @@ export const ValidatorInfoState = {
   },
   toAmino(message: ValidatorInfoState, useInterfaces: boolean = false): ValidatorInfoStateAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.validator = message.validator ? AllianceValidatorInfo.toAmino(message.validator, useInterfaces) : undefined;
     return obj;
   },
@@ -432,9 +432,9 @@ export const RewardWeightChangeSnapshotState = {
   },
   toAmino(message: RewardWeightChangeSnapshotState, useInterfaces: boolean = false): RewardWeightChangeSnapshotStateAmino {
     const obj: any = {};
-    obj.height = message.height ? message.height.toString() : undefined;
-    obj.validator = message.validator;
-    obj.denom = message.denom;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.validator = message.validator === "" ? undefined : message.validator;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.snapshot = message.snapshot ? RewardWeightChangeSnapshot.toAmino(message.snapshot, useInterfaces) : undefined;
     return obj;
   },
@@ -556,32 +556,32 @@ export const GenesisState = {
     if (message.assets) {
       obj.assets = message.assets.map(e => e ? AllianceAsset.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.assets = [];
+      obj.assets = message.assets;
     }
     if (message.validatorInfos) {
       obj.validator_infos = message.validatorInfos.map(e => e ? ValidatorInfoState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_infos = [];
+      obj.validator_infos = message.validatorInfos;
     }
     if (message.rewardWeightChangeSnaphots) {
       obj.reward_weight_change_snaphots = message.rewardWeightChangeSnaphots.map(e => e ? RewardWeightChangeSnapshotState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.reward_weight_change_snaphots = [];
+      obj.reward_weight_change_snaphots = message.rewardWeightChangeSnaphots;
     }
     if (message.delegations) {
       obj.delegations = message.delegations.map(e => e ? Delegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegations = [];
+      obj.delegations = message.delegations;
     }
     if (message.redelegations) {
       obj.redelegations = message.redelegations.map(e => e ? RedelegationState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.redelegations = [];
+      obj.redelegations = message.redelegations;
     }
     if (message.undelegations) {
       obj.undelegations = message.undelegations.map(e => e ? UndelegationState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.undelegations = [];
+      obj.undelegations = message.undelegations;
     }
     return obj;
   },
