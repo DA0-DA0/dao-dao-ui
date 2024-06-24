@@ -155,6 +155,32 @@ index 1caf8781d..9d864d753 100644
  export const getSigningNeutronClientOptions = ({
    defaultTypes = defaultRegistryTypes
  }: {
+diff --git b/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts a/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
+index a644c0f74..9bce95dea 100644
+--- b/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
++++ a/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
+@@ -153,7 +153,7 @@ export const ModuleRoute = {
+   toAmino(message: ModuleRoute, useInterfaces: boolean = false): ModuleRouteAmino {
+     const obj: any = {};
+     obj.pool_type = message.poolType === 0 ? undefined : message.poolType;
+-    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
++    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId?.toString() : undefined;
+     return obj;
+   },
+   fromAminoMsg(object: ModuleRouteAminoMsg): ModuleRoute {
+diff --git b/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts a/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
+index 213d94f0e..55b9e2ee2 100644
+--- b/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
++++ a/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
+@@ -103,7 +103,7 @@ export const Params = {
+     } else {
+       obj.denom_creation_fee = message.denomCreationFee;
+     }
+-    obj.denom_creation_gas_consume = message.denomCreationGasConsume !== BigInt(0) ? message.denomCreationGasConsume.toString() : undefined;
++    obj.denom_creation_gas_consume = message.denomCreationGasConsume !== BigInt(0) ? message.denomCreationGasConsume?.toString() : undefined;
+     return obj;
+   },
+   fromAminoMsg(object: ParamsAminoMsg): Params {
 diff --git b/packages/types/protobuf/codegen/regen/data/v1/tx.ts a/packages/types/protobuf/codegen/regen/data/v1/tx.ts
 index eb4e14ba3..af83becfe 100644
 --- b/packages/types/protobuf/codegen/regen/data/v1/tx.ts
