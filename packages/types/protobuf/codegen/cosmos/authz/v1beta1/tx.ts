@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from '../../../../utils'
 import { Grant, GrantAmino, GrantSDKType } from "./authz";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { BinaryReader, BinaryWriter } from "../../../binary";
@@ -371,14 +372,14 @@ export const MsgExec = {
     if (object.grantee !== undefined && object.grantee !== null) {
       message.grantee = object.grantee;
     }
-    message.msgs = object.msgs?.map(e => Cosmos_basev1beta1Msg_FromAmino(e)) || [];
+    message.msgs = object.msgs?.map(e => aminoToRawProtobufMsg(e)) || [];
     return message;
   },
   toAmino(message: MsgExec, useInterfaces: boolean = false): MsgExecAmino {
     const obj: any = {};
     obj.grantee = message.grantee === "" ? undefined : message.grantee;
     if (message.msgs) {
-      obj.msgs = message.msgs.map(e => e ? Cosmos_basev1beta1Msg_ToAmino((e as Any), useInterfaces) : undefined);
+      obj.msgs = message.msgs.map(e => e ? rawProtobufMsgToAmino((e as Any), useInterfaces) : undefined);
     } else {
       obj.msgs = message.msgs;
     }

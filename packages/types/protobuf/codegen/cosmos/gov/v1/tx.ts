@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from "../../../../utils";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
@@ -578,7 +579,8 @@ export const MsgSubmitProposal = {
   },
   fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
     const message = createBaseMsgSubmitProposal();
-    message.messages = object.messages?.map(e => Any.fromAmino(e)) || [];
+    message.messages =
+      object.messages?.map(e => aminoToRawProtobufMsg(e)) || [];
     message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
     if (object.proposer !== undefined && object.proposer !== null) {
       message.proposer = object.proposer;
@@ -599,10 +601,8 @@ export const MsgSubmitProposal = {
   },
   toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
     const obj: any = {};
-    if (message.messages) {
-      obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
-    } else {
-      obj.messages = message.messages;
+    if (message.messages.length) {
+      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
     }
     if (message.initialDeposit) {
       obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
