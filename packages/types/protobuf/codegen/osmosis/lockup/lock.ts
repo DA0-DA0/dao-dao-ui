@@ -58,7 +58,7 @@ export interface PeriodLock {
    * The ID of the lock is decided upon lock creation, incrementing by 1 for
    * every lock.
    */
-  ID: bigint;
+  iD: bigint;
   /**
    * Owner is the account address of the lock owner.
    * Only the owner can modify the state of the lock.
@@ -289,7 +289,7 @@ export interface SyntheticLockSDKType {
 }
 function createBasePeriodLock(): PeriodLock {
   return {
-    ID: BigInt(0),
+    iD: BigInt(0),
     owner: "",
     duration: Duration.fromPartial({}),
     endTime: new Date(),
@@ -300,8 +300,8 @@ function createBasePeriodLock(): PeriodLock {
 export const PeriodLock = {
   typeUrl: "/osmosis.lockup.PeriodLock",
   encode(message: PeriodLock, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.ID !== BigInt(0)) {
-      writer.uint32(8).uint64(message.ID);
+    if (message.iD !== BigInt(0)) {
+      writer.uint32(8).uint64(message.iD);
     }
     if (message.owner !== "") {
       writer.uint32(18).string(message.owner);
@@ -328,7 +328,7 @@ export const PeriodLock = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.ID = reader.uint64();
+          message.iD = reader.uint64();
           break;
         case 2:
           message.owner = reader.string();
@@ -354,7 +354,7 @@ export const PeriodLock = {
   },
   fromPartial(object: Partial<PeriodLock>): PeriodLock {
     const message = createBasePeriodLock();
-    message.ID = object.ID !== undefined && object.ID !== null ? BigInt(object.ID.toString()) : BigInt(0);
+    message.iD = object.iD !== undefined && object.iD !== null ? BigInt(object.iD.toString()) : BigInt(0);
     message.owner = object.owner ?? "";
     message.duration = object.duration !== undefined && object.duration !== null ? Duration.fromPartial(object.duration) : undefined;
     message.endTime = object.endTime ?? undefined;
@@ -365,7 +365,7 @@ export const PeriodLock = {
   fromAmino(object: PeriodLockAmino): PeriodLock {
     const message = createBasePeriodLock();
     if (object.ID !== undefined && object.ID !== null) {
-      message.ID = BigInt(object.ID);
+      message.iD = BigInt(object.ID);
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
@@ -384,7 +384,7 @@ export const PeriodLock = {
   },
   toAmino(message: PeriodLock, useInterfaces: boolean = false): PeriodLockAmino {
     const obj: any = {};
-    obj.ID = message.ID !== BigInt(0) ? message.ID.toString() : undefined;
+    obj.ID = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
     obj.owner = message.owner === "" ? undefined : message.owner;
     obj.duration = message.duration ? Duration.toAmino(message.duration, useInterfaces) : undefined;
     obj.end_time = message.endTime ? Timestamp.toAmino(toTimestamp(message.endTime)) : undefined;

@@ -146,7 +146,7 @@ export interface StorageValue {
    * is the Merkle Proof which proves existence of key-value pair in IAVL
    * storage
    */
-  Proof?: ProofOps | undefined;
+  proof?: ProofOps | undefined;
 }
 export interface StorageValueProtoMsg {
   typeUrl: "/neutron.interchainqueries.StorageValue";
@@ -818,7 +818,7 @@ function createBaseStorageValue(): StorageValue {
     storagePrefix: "",
     key: new Uint8Array(),
     value: new Uint8Array(),
-    Proof: undefined
+    proof: undefined
   };
 }
 export const StorageValue = {
@@ -833,8 +833,8 @@ export const StorageValue = {
     if (message.value.length !== 0) {
       writer.uint32(26).bytes(message.value);
     }
-    if (message.Proof !== undefined) {
-      ProofOps.encode(message.Proof, writer.uint32(34).fork()).ldelim();
+    if (message.proof !== undefined) {
+      ProofOps.encode(message.proof, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -855,7 +855,7 @@ export const StorageValue = {
           message.value = reader.bytes();
           break;
         case 4:
-          message.Proof = ProofOps.decode(reader, reader.uint32(), useInterfaces);
+          message.proof = ProofOps.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -869,7 +869,7 @@ export const StorageValue = {
     message.storagePrefix = object.storagePrefix ?? "";
     message.key = object.key ?? new Uint8Array();
     message.value = object.value ?? new Uint8Array();
-    message.Proof = object.Proof !== undefined && object.Proof !== null ? ProofOps.fromPartial(object.Proof) : undefined;
+    message.proof = object.proof !== undefined && object.proof !== null ? ProofOps.fromPartial(object.proof) : undefined;
     return message;
   },
   fromAmino(object: StorageValueAmino): StorageValue {
@@ -884,7 +884,7 @@ export const StorageValue = {
       message.value = bytesFromBase64(object.value);
     }
     if (object.Proof !== undefined && object.Proof !== null) {
-      message.Proof = ProofOps.fromAmino(object.Proof);
+      message.proof = ProofOps.fromAmino(object.Proof);
     }
     return message;
   },
@@ -893,7 +893,7 @@ export const StorageValue = {
     obj.storage_prefix = message.storagePrefix === "" ? undefined : message.storagePrefix;
     obj.key = message.key ? base64FromBytes(message.key) : undefined;
     obj.value = message.value ? base64FromBytes(message.value) : undefined;
-    obj.Proof = message.Proof ? ProofOps.toAmino(message.Proof, useInterfaces) : undefined;
+    obj.Proof = message.proof ? ProofOps.toAmino(message.proof, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: StorageValueAminoMsg): StorageValue {

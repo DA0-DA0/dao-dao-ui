@@ -19,7 +19,6 @@ export interface ParamsRequestAminoMsg {
 export interface ParamsRequestSDKType {}
 /** ParamsResponse is the response type for the Query/Params RPC method. */
 export interface ParamsResponse {
-  /** ParamsResponse is the response type for the Query/Params RPC method. */
   params: Params | undefined;
 }
 export interface ParamsResponseProtoMsg {
@@ -28,7 +27,6 @@ export interface ParamsResponseProtoMsg {
 }
 /** ParamsResponse is the response type for the Query/Params RPC method. */
 export interface ParamsResponseAmino {
-  /** ParamsResponse is the response type for the Query/Params RPC method. */
   params?: ParamsAmino | undefined;
 }
 export interface ParamsResponseAminoMsg {
@@ -55,7 +53,6 @@ export interface StateRequestAminoMsg {
 export interface StateRequestSDKType {}
 /** StateResponse is the response type for the Query/State RPC method. */
 export interface StateResponse {
-  /** StateResponse is the response type for the Query/State RPC method. */
   state: State | undefined;
 }
 export interface StateResponseProtoMsg {
@@ -64,7 +61,6 @@ export interface StateResponseProtoMsg {
 }
 /** StateResponse is the response type for the Query/State RPC method. */
 export interface StateResponseAmino {
-  /** StateResponse is the response type for the Query/State RPC method. */
   state?: StateAmino | undefined;
 }
 export interface StateResponseAminoMsg {

@@ -265,7 +265,6 @@ export interface QueryModuleStateRequestAminoMsg {
 export interface QueryModuleStateRequestSDKType {}
 /** QueryModuleStateRequest is a response for the Query/ModuleState methods. */
 export interface QueryModuleStateResponse {
-  /** QueryModuleStateRequest is a response for the Query/ModuleState methods. */
   moduleState: boolean;
 }
 export interface QueryModuleStateResponseProtoMsg {
@@ -274,7 +273,6 @@ export interface QueryModuleStateResponseProtoMsg {
 }
 /** QueryModuleStateRequest is a response for the Query/ModuleState methods. */
 export interface QueryModuleStateResponseAmino {
-  /** QueryModuleStateRequest is a response for the Query/ModuleState methods. */
   module_state?: boolean;
 }
 export interface QueryModuleStateResponseAminoMsg {
@@ -339,7 +337,6 @@ export interface QueryIBCTransientStoreResponseSDKType {
 }
 /** QueryUnclaimedRequest is a request for the Query/Unclaimed methods. */
 export interface QueryUnclaimedRequest {
-  /** QueryUnclaimedRequest is a request for the Query/Unclaimed methods. */
   delegatorAddress: string;
 }
 export interface QueryUnclaimedRequestProtoMsg {
@@ -348,7 +345,6 @@ export interface QueryUnclaimedRequestProtoMsg {
 }
 /** QueryUnclaimedRequest is a request for the Query/Unclaimed methods. */
 export interface QueryUnclaimedRequestAmino {
-  /** QueryUnclaimedRequest is a request for the Query/Unclaimed methods. */
   delegator_address?: string;
 }
 export interface QueryUnclaimedRequestAminoMsg {
@@ -384,10 +380,6 @@ export interface QueryUnclaimedResponseSDKType {
  * methods.
  */
 export interface QueryFailedUnbondingsRequest {
-  /**
-   * QueryFailedUnbondingsRequest is a request for the Query/FailedUnbondings
-   * methods.
-   */
   delegatorAddress: string;
 }
 export interface QueryFailedUnbondingsRequestProtoMsg {
@@ -399,10 +391,6 @@ export interface QueryFailedUnbondingsRequestProtoMsg {
  * methods.
  */
 export interface QueryFailedUnbondingsRequestAmino {
-  /**
-   * QueryFailedUnbondingsRequest is a request for the Query/FailedUnbondings
-   * methods.
-   */
   delegator_address?: string;
 }
 export interface QueryFailedUnbondingsRequestAminoMsg {
@@ -450,10 +438,6 @@ export interface QueryFailedUnbondingsResponseSDKType {
  * methods.
  */
 export interface QueryPendingUnbondingsRequest {
-  /**
-   * QueryPendingUnbondingsRequest is a request for the Query/PendingUnbondings
-   * methods.
-   */
   delegatorAddress: string;
 }
 export interface QueryPendingUnbondingsRequestProtoMsg {
@@ -465,10 +449,6 @@ export interface QueryPendingUnbondingsRequestProtoMsg {
  * methods.
  */
 export interface QueryPendingUnbondingsRequestAmino {
-  /**
-   * QueryPendingUnbondingsRequest is a request for the Query/PendingUnbondings
-   * methods.
-   */
   delegator_address?: string;
 }
 export interface QueryPendingUnbondingsRequestAminoMsg {
@@ -516,10 +496,6 @@ export interface QueryPendingUnbondingsResponseSDKType {
  * Query/UnbondingEpochCValue methods.
  */
 export interface QueryUnbondingEpochCValueRequest {
-  /**
-   * QueryUnbondingEpochCValueRequest is a request for the
-   * Query/UnbondingEpochCValue methods.
-   */
   epochNumber: bigint;
 }
 export interface QueryUnbondingEpochCValueRequestProtoMsg {
@@ -531,10 +507,6 @@ export interface QueryUnbondingEpochCValueRequestProtoMsg {
  * Query/UnbondingEpochCValue methods.
  */
 export interface QueryUnbondingEpochCValueRequestAmino {
-  /**
-   * QueryUnbondingEpochCValueRequest is a request for the
-   * Query/UnbondingEpochCValue methods.
-   */
   epoch_number?: string;
 }
 export interface QueryUnbondingEpochCValueRequestAminoMsg {
@@ -582,10 +554,6 @@ export interface QueryUnbondingEpochCValueResponseSDKType {
  * Query/HostAccountUndelegation methods.
  */
 export interface QueryHostAccountUndelegationRequest {
-  /**
-   * QueryHostAccountUndelegationRequest is a request for the
-   * Query/HostAccountUndelegation methods.
-   */
   epochNumber: bigint;
 }
 export interface QueryHostAccountUndelegationRequestProtoMsg {
@@ -597,10 +565,6 @@ export interface QueryHostAccountUndelegationRequestProtoMsg {
  * Query/HostAccountUndelegation methods.
  */
 export interface QueryHostAccountUndelegationRequestAmino {
-  /**
-   * QueryHostAccountUndelegationRequest is a request for the
-   * Query/HostAccountUndelegation methods.
-   */
   epoch_number?: string;
 }
 export interface QueryHostAccountUndelegationRequestAminoMsg {

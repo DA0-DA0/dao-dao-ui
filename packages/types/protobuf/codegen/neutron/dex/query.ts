@@ -720,7 +720,7 @@ export interface QueryGetPoolMetadataRequestSDKType {
   id: bigint;
 }
 export interface QueryGetPoolMetadataResponse {
-  PoolMetadata: PoolMetadata | undefined;
+  poolMetadata: PoolMetadata | undefined;
 }
 export interface QueryGetPoolMetadataResponseProtoMsg {
   typeUrl: "/neutron.dex.QueryGetPoolMetadataResponse";
@@ -3298,14 +3298,14 @@ export const QueryGetPoolMetadataRequest = {
 };
 function createBaseQueryGetPoolMetadataResponse(): QueryGetPoolMetadataResponse {
   return {
-    PoolMetadata: PoolMetadata.fromPartial({})
+    poolMetadata: PoolMetadata.fromPartial({})
   };
 }
 export const QueryGetPoolMetadataResponse = {
   typeUrl: "/neutron.dex.QueryGetPoolMetadataResponse",
   encode(message: QueryGetPoolMetadataResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.PoolMetadata !== undefined) {
-      PoolMetadata.encode(message.PoolMetadata, writer.uint32(10).fork()).ldelim();
+    if (message.poolMetadata !== undefined) {
+      PoolMetadata.encode(message.poolMetadata, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -3317,7 +3317,7 @@ export const QueryGetPoolMetadataResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.PoolMetadata = PoolMetadata.decode(reader, reader.uint32(), useInterfaces);
+          message.poolMetadata = PoolMetadata.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -3328,19 +3328,19 @@ export const QueryGetPoolMetadataResponse = {
   },
   fromPartial(object: Partial<QueryGetPoolMetadataResponse>): QueryGetPoolMetadataResponse {
     const message = createBaseQueryGetPoolMetadataResponse();
-    message.PoolMetadata = object.PoolMetadata !== undefined && object.PoolMetadata !== null ? PoolMetadata.fromPartial(object.PoolMetadata) : undefined;
+    message.poolMetadata = object.poolMetadata !== undefined && object.poolMetadata !== null ? PoolMetadata.fromPartial(object.poolMetadata) : undefined;
     return message;
   },
   fromAmino(object: QueryGetPoolMetadataResponseAmino): QueryGetPoolMetadataResponse {
     const message = createBaseQueryGetPoolMetadataResponse();
     if (object.Pool_metadata !== undefined && object.Pool_metadata !== null) {
-      message.PoolMetadata = PoolMetadata.fromAmino(object.Pool_metadata);
+      message.poolMetadata = PoolMetadata.fromAmino(object.Pool_metadata);
     }
     return message;
   },
   toAmino(message: QueryGetPoolMetadataResponse, useInterfaces: boolean = false): QueryGetPoolMetadataResponseAmino {
     const obj: any = {};
-    obj.Pool_metadata = message.PoolMetadata ? PoolMetadata.toAmino(message.PoolMetadata, useInterfaces) : undefined;
+    obj.Pool_metadata = message.poolMetadata ? PoolMetadata.toAmino(message.poolMetadata, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetPoolMetadataResponseAminoMsg): QueryGetPoolMetadataResponse {

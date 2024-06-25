@@ -6,7 +6,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
  */
 export interface DenomAuthorityMetadata {
   /** Can be empty for no admin, or a valid kujira address */
-  Admin: string;
+  admin: string;
 }
 export interface DenomAuthorityMetadataProtoMsg {
   typeUrl: "/kujira.denom.DenomAuthorityMetadata";
@@ -35,14 +35,14 @@ export interface DenomAuthorityMetadataSDKType {
 }
 function createBaseDenomAuthorityMetadata(): DenomAuthorityMetadata {
   return {
-    Admin: ""
+    admin: ""
   };
 }
 export const DenomAuthorityMetadata = {
   typeUrl: "/kujira.denom.DenomAuthorityMetadata",
   encode(message: DenomAuthorityMetadata, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.Admin !== "") {
-      writer.uint32(10).string(message.Admin);
+    if (message.admin !== "") {
+      writer.uint32(10).string(message.admin);
     }
     return writer;
   },
@@ -54,7 +54,7 @@ export const DenomAuthorityMetadata = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Admin = reader.string();
+          message.admin = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -65,19 +65,19 @@ export const DenomAuthorityMetadata = {
   },
   fromPartial(object: Partial<DenomAuthorityMetadata>): DenomAuthorityMetadata {
     const message = createBaseDenomAuthorityMetadata();
-    message.Admin = object.Admin ?? "";
+    message.admin = object.admin ?? "";
     return message;
   },
   fromAmino(object: DenomAuthorityMetadataAmino): DenomAuthorityMetadata {
     const message = createBaseDenomAuthorityMetadata();
     if (object.Admin !== undefined && object.Admin !== null) {
-      message.Admin = object.Admin;
+      message.admin = object.Admin;
     }
     return message;
   },
   toAmino(message: DenomAuthorityMetadata, useInterfaces: boolean = false): DenomAuthorityMetadataAmino {
     const obj: any = {};
-    obj.Admin = message.Admin === "" ? undefined : message.Admin;
+    obj.Admin = message.admin === "" ? undefined : message.admin;
     return obj;
   },
   fromAminoMsg(object: DenomAuthorityMetadataAminoMsg): DenomAuthorityMetadata {

@@ -375,6 +375,10 @@ export interface HostChainLSParams {
   restakeFee: string;
   unstakeFee: string;
   redemptionFee: string;
+  /**
+   * LSM validator cap
+   *  Should be used only when HostChainFlag.Lsm == true, orelse default
+   */
   lsmValidatorCap: string;
   /**
    * LSM bond factor
@@ -397,6 +401,10 @@ export interface HostChainLSParamsAmino {
   restake_fee?: string;
   unstake_fee?: string;
   redemption_fee?: string;
+  /**
+   * LSM validator cap
+   *  Should be used only when HostChainFlag.Lsm == true, orelse default
+   */
   lsm_validator_cap?: string;
   /**
    * LSM bond factor

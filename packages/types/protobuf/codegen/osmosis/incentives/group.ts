@@ -160,10 +160,6 @@ export interface GroupSDKType {
  * It takes an array of pool IDs to split the incentives across.
  */
 export interface CreateGroup {
-  /**
-   * CreateGroup is called via governance to create a new group.
-   * It takes an array of pool IDs to split the incentives across.
-   */
   poolIds: bigint[];
 }
 export interface CreateGroupProtoMsg {
@@ -175,10 +171,6 @@ export interface CreateGroupProtoMsg {
  * It takes an array of pool IDs to split the incentives across.
  */
 export interface CreateGroupAmino {
-  /**
-   * CreateGroup is called via governance to create a new group.
-   * It takes an array of pool IDs to split the incentives across.
-   */
   pool_ids?: string[];
 }
 export interface CreateGroupAminoMsg {

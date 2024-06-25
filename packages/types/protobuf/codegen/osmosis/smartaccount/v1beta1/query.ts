@@ -40,7 +40,6 @@ export interface QueryParamsResponseSDKType {
 }
 /** MsgGetAuthenticatorsRequest defines the Msg/GetAuthenticators request type. */
 export interface GetAuthenticatorsRequest {
-  /** MsgGetAuthenticatorsRequest defines the Msg/GetAuthenticators request type. */
   account: string;
 }
 export interface GetAuthenticatorsRequestProtoMsg {
@@ -49,7 +48,6 @@ export interface GetAuthenticatorsRequestProtoMsg {
 }
 /** MsgGetAuthenticatorsRequest defines the Msg/GetAuthenticators request type. */
 export interface GetAuthenticatorsRequestAmino {
-  /** MsgGetAuthenticatorsRequest defines the Msg/GetAuthenticators request type. */
   account?: string;
 }
 export interface GetAuthenticatorsRequestAminoMsg {

@@ -53,6 +53,7 @@ export interface Header {
   lastBlockId: BlockID | undefined;
   /** hashes of block data */
   lastCommitHash: Uint8Array;
+  /** transactions */
   dataHash: Uint8Array;
   /** hashes from the app output from the prev block */
   validatorsHash: Uint8Array;
@@ -62,6 +63,7 @@ export interface Header {
   consensusHash: Uint8Array;
   /** state after txs from the previous block */
   appHash: Uint8Array;
+  /** root hash of all results from the txs from the previous block */
   lastResultsHash: Uint8Array;
   /** consensus info */
   evidenceHash: Uint8Array;
@@ -87,6 +89,7 @@ export interface HeaderAmino {
   last_block_id: BlockIDAmino | undefined;
   /** hashes of block data */
   last_commit_hash?: string;
+  /** transactions */
   data_hash?: string;
   /** hashes from the app output from the prev block */
   validators_hash?: string;
@@ -96,6 +99,7 @@ export interface HeaderAmino {
   consensus_hash?: string;
   /** state after txs from the previous block */
   app_hash?: string;
+  /** root hash of all results from the txs from the previous block */
   last_results_hash?: string;
   /** consensus info */
   evidence_hash?: string;
