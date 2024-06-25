@@ -509,7 +509,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
         {/* Custom PID */}
         {showCustomPid && (
           <>
-            <p className="body-text text-text-secondary text-sm">
+            <p className="body-text text-text-secondary -mt-2 text-sm">
               {t('form.rebalancerSpeedAdvancedDescription')}
             </p>
 
