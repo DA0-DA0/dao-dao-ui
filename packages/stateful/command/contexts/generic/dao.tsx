@@ -58,7 +58,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       coreAddress,
     })
 
-    const [copied, setCopied] = useState<string | undefined>()
+    const [copied, setCopied] = useState<number | undefined>()
     // Debounce clearing copied.
     useEffect(() => {
       const timeout = setTimeout(() => setCopied(undefined), 2000)
@@ -150,9 +150,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             }),
           loading: updatingFollowing,
         },
-        ...accounts.map(({ chainId, address, type }) => ({
+        ...accounts.map(({ chainId, address, type }, accountIndex) => ({
           name:
-            copied === chainId
+            copied === accountIndex
               ? t('info.copiedChainAddress', {
                   chain:
                     getDisplayNameForChainId(chainId) +
@@ -163,10 +163,10 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
                     getDisplayNameForChainId(chainId) +
                     (type === AccountType.Valence ? ' (Valence)' : ''),
                 }),
-          Icon: copied === chainId ? Check : CopyAll,
+          Icon: copied === accountIndex ? Check : CopyAll,
           onChoose: () => {
             navigator.clipboard.writeText(address)
-            setCopied(chainId)
+            setCopied(accountIndex)
           },
         })),
       ],
