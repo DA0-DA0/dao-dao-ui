@@ -189,6 +189,49 @@ telescope({
           useCosmosSDKDec: true,
         },
       },
+      patch: {
+        // AccessType in wasm types has custom serialization names in the x/wasm
+        // module, so replace the default generated names with the correct ones
+        // to fix Amino encoding.
+        'cosmwasm/wasm/v1/types.proto': [
+          {
+            op: 'remove',
+            path: '@/AccessType/values/ACCESS_TYPE_UNSPECIFIED',
+          },
+          {
+            op: 'add',
+            path: '@/AccessType/values/Unspecified',
+            value: 0,
+          },
+          {
+            op: 'remove',
+            path: '@/AccessType/values/ACCESS_TYPE_NOBODY',
+          },
+          {
+            op: 'add',
+            path: '@/AccessType/values/Nobody',
+            value: 1,
+          },
+          {
+            op: 'remove',
+            path: '@/AccessType/values/ACCESS_TYPE_EVERYBODY',
+          },
+          {
+            op: 'add',
+            path: '@/AccessType/values/Everybody',
+            value: 3,
+          },
+          {
+            op: 'remove',
+            path: '@/AccessType/values/ACCESS_TYPE_ANY_OF_ADDRESSES',
+          },
+          {
+            op: 'add',
+            path: '@/AccessType/values/AnyOfAddresses',
+            value: 4,
+          },
+        ],
+      },
     },
     aminoEncoding: {
       enabled: true,

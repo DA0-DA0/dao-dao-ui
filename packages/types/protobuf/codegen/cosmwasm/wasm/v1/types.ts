@@ -4,14 +4,10 @@ import { bytesFromBase64, base64FromBytes } from "../../../helpers";
 import { toUtf8, fromUtf8 } from "@cosmjs/encoding";
 /** AccessType permission types */
 export enum AccessType {
-  /** ACCESS_TYPE_UNSPECIFIED - AccessTypeUnspecified placeholder for empty value */
-  ACCESS_TYPE_UNSPECIFIED = 0,
-  /** ACCESS_TYPE_NOBODY - AccessTypeNobody forbidden */
-  ACCESS_TYPE_NOBODY = 1,
-  /** ACCESS_TYPE_EVERYBODY - AccessTypeEverybody unrestricted */
-  ACCESS_TYPE_EVERYBODY = 3,
-  /** ACCESS_TYPE_ANY_OF_ADDRESSES - AccessTypeAnyOfAddresses allow any of the addresses */
-  ACCESS_TYPE_ANY_OF_ADDRESSES = 4,
+  Unspecified = 0,
+  Nobody = 1,
+  Everybody = 3,
+  AnyOfAddresses = 4,
   UNRECOGNIZED = -1,
 }
 export const AccessTypeSDKType = AccessType;
@@ -20,16 +16,16 @@ export function accessTypeFromJSON(object: any): AccessType {
   switch (object) {
     case 0:
     case "Unspecified":
-      return AccessType.ACCESS_TYPE_UNSPECIFIED;
+      return AccessType.Unspecified;
     case 1:
     case "Nobody":
-      return AccessType.ACCESS_TYPE_NOBODY;
+      return AccessType.Nobody;
     case 3:
     case "Everybody":
-      return AccessType.ACCESS_TYPE_EVERYBODY;
+      return AccessType.Everybody;
     case 4:
     case "AnyOfAddresses":
-      return AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES;
+      return AccessType.AnyOfAddresses;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -38,13 +34,13 @@ export function accessTypeFromJSON(object: any): AccessType {
 }
 export function accessTypeToJSON(object: AccessType): string {
   switch (object) {
-    case AccessType.ACCESS_TYPE_UNSPECIFIED:
+    case AccessType.Unspecified:
       return "Unspecified";
-    case AccessType.ACCESS_TYPE_NOBODY:
+    case AccessType.Nobody:
       return "Nobody";
-    case AccessType.ACCESS_TYPE_EVERYBODY:
+    case AccessType.Everybody:
       return "Everybody";
-    case AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES:
+    case AccessType.AnyOfAddresses:
       return "AnyOfAddresses";
     case AccessType.UNRECOGNIZED:
     default:
