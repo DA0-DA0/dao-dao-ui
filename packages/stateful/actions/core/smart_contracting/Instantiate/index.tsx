@@ -275,13 +275,17 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
               instantiate: {
                 admin: admin || '',
                 code_id: codeId,
-                funds: funds.map(({ denom, amount }, index) => ({
-                  denom,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    amount,
-                    fundsTokens[index]!.decimals
-                  ),
-                })),
+                funds: funds
+                  .map(({ denom, amount }, index) => ({
+                    denom,
+                    amount: convertDenomToMicroDenomStringWithDecimals(
+                      amount,
+                      fundsTokens[index]!.decimals
+                    ),
+                  }))
+                  // Neutron errors with `invalid coins` if the funds list is
+                  // not alphabetized.
+                  .sort((a, b) => a.denom.localeCompare(b.denom)),
                 label,
                 msg,
               },

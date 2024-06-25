@@ -112,13 +112,17 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
           wasm: {
             execute: {
               contract_addr: address,
-              funds: funds.map(({ denom, amount }, index) => ({
-                denom,
-                amount: convertDenomToMicroDenomStringWithDecimals(
-                  amount,
-                  fundsTokens[index]!.decimals
-                ),
-              })),
+              funds: funds
+                .map(({ denom, amount }, index) => ({
+                  denom,
+                  amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount,
+                    fundsTokens[index]!.decimals
+                  ),
+                }))
+                // Neutron errors with `invalid coins` if the funds list is not
+                // alphabetized.
+                .sort((a, b) => a.denom.localeCompare(b.denom)),
               msg,
             },
           },

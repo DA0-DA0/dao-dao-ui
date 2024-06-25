@@ -187,13 +187,17 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
                 codeId: codeId ? BigInt(codeId) : 0n,
                 label,
                 msg: toUtf8(JSON.stringify(msg)),
-                funds: funds.map(({ denom, amount }) => ({
-                  denom,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    amount,
-                    getNativeTokenForChainId(chainId).decimals
-                  ),
-                })),
+                funds: funds
+                  .map(({ denom, amount }) => ({
+                    denom,
+                    amount: convertDenomToMicroDenomStringWithDecimals(
+                      amount,
+                      getNativeTokenForChainId(chainId).decimals
+                    ),
+                  }))
+                  // Neutron errors with `invalid coins` if the funds list is
+                  // not alphabetized.
+                  .sort((a, b) => a.denom.localeCompare(b.denom)),
                 salt: toUtf8(salt),
                 fixMsg: false,
               } as MsgInstantiateContract2,
