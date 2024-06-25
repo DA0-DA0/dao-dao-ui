@@ -558,7 +558,7 @@ export const Params = {
       message.codeUploadAccess = AccessConfig.fromAmino(object.code_upload_access);
     }
     if (object.instantiate_default_permission !== undefined && object.instantiate_default_permission !== null) {
-      message.instantiateDefaultPermission = object.instantiate_default_permission;
+      message.instantiateDefaultPermission = accessTypeFromJSON(object.instantiate_default_permission);
     }
     return message;
   },
