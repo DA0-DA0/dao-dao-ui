@@ -87,6 +87,7 @@ import {
   getRpcForChainId,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
+  makeEmptyUnifiedProfile,
   objectMatchesStructure,
   processError,
   transformIpfsUrlToHttpsIfNecessary,
@@ -97,7 +98,6 @@ import { WalletActionsProvider, useActionOptions } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
 import { useEntity, useProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
-import { makeEmptyUnifiedProfile } from '../../recoil'
 import { EntityDisplay } from '../EntityDisplay'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
 
