@@ -10,7 +10,6 @@ import {
 import { toHex } from '@cosmjs/encoding'
 import { DirectSecp256k1HdWallet, EncodeObject } from '@cosmjs/proto-signing'
 import {
-  GasPrice,
   IndexedTx,
   SigningStargateClient,
   calculateFee,
@@ -19,6 +18,7 @@ import {
 } from '@cosmjs/stargate'
 import { ChainWalletBase } from '@cosmos-kit/core'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
@@ -34,6 +34,7 @@ import {
   refreshPolytoneListenerResultsAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
+import { DynamicGasPrice } from '@dao-dao/state/utils'
 import {
   Button,
   FlyingAnimation,
@@ -97,15 +98,13 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.InjectiveMainnet]: 0.03 * 10 ** 18,
   [ChainId.TerraClassicMainnet]: 1000 * 10 ** 6,
   [ChainId.OmniflixHubMainnet]: 1 * 10 ** 6,
+  [ChainId.BitsongMainnet]: 10 * 10 ** 6,
 }
 
 type Relayer = {
   chain: Chain
   chainImageUrl: string
-  feeToken: {
-    denom: string
-    average_gas_price?: number
-  }
+  feeDenom: string
   wallet: {
     address: string
     signingStargateClient: SigningStargateClient
@@ -124,6 +123,8 @@ export const SelfRelayExecuteModal = ({
   visible,
 }: SelfRelayExecuteModalProps) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
+
   const mnemonicKey = `relayer_mnemonic_${uniqueId}`
 
   // Current chain.
@@ -237,11 +238,11 @@ export const SelfRelayExecuteModal = ({
   const walletFunds = useCachedLoadingWithError(
     relayers
       ? waitForAll(
-          relayers.map(({ chain: { chain_id: chainId }, feeToken, wallet }) =>
+          relayers.map(({ chain: { chain_id: chainId }, feeDenom, wallet }) =>
             genericTokenBalanceSelector({
               type: TokenType.Native,
               chainId,
-              denomOrAddress: feeToken.denom,
+              denomOrAddress: feeDenom,
               address: wallet.address,
             })
           )
@@ -261,10 +262,10 @@ export const SelfRelayExecuteModal = ({
     relayers
       ? waitForAll(
           relayers.map(
-            ({ chain: { chain_id: chainId }, feeToken, relayerAddress }) =>
+            ({ chain: { chain_id: chainId }, feeDenom, relayerAddress }) =>
               nativeDenomBalanceSelector({
                 walletAddress: relayerAddress,
-                denom: feeToken.denom,
+                denom: feeDenom,
                 chainId,
               })
           )
@@ -337,8 +338,8 @@ export const SelfRelayExecuteModal = ({
             getImageUrlForChainId(chain.chain_id) ||
             getFallbackImage(chain.chain_id)
 
-          const feeToken = chain.fees?.fee_tokens[0]
-          if (!feeToken) {
+          const feeDenom = chain.fees?.fee_tokens[0]?.denom
+          if (!feeDenom) {
             throw new Error(t('error.feeTokenNotFound'))
           }
 
@@ -367,16 +368,14 @@ export const SelfRelayExecuteModal = ({
               estimatedBlockTime: 3000,
               // How long it waits until looking for acks.
               estimatedIndexerTime: 3000,
-              gasPrice: GasPrice.fromString(
-                `${feeToken.average_gas_price ?? 0}${feeToken.denom}`
-              ),
+              gasPrice: new DynamicGasPrice(queryClient, chain),
             }
           )
 
           return {
             chain,
             chainImageUrl,
-            feeToken,
+            feeDenom,
             wallet: {
               address,
               // cosmos-kit has an older version of the package. This is a
@@ -432,7 +431,7 @@ export const SelfRelayExecuteModal = ({
       // Get current balance of relayer wallet.
       const currentBalance = await relayer.client.query.bank.balance(
         relayer.relayerAddress,
-        relayer.feeToken.denom
+        relayer.feeDenom
       )
 
       const fundsNeeded =
@@ -450,7 +449,7 @@ export const SelfRelayExecuteModal = ({
                     send: {
                       amount: coins(
                         BigInt(fundsNeeded).toString(),
-                        relayer.feeToken.denom
+                        relayer.feeDenom
                       ),
                       to_address: relayer.relayerAddress,
                     },
@@ -489,7 +488,7 @@ export const SelfRelayExecuteModal = ({
         (
           await relayer.client.query.bank.balance(
             relayer.relayerAddress,
-            relayer.feeToken.denom
+            relayer.feeDenom
           )
         ).amount
       )
@@ -521,7 +520,7 @@ export const SelfRelayExecuteModal = ({
                   SendAuthorization.fromPartial({
                     spendLimit: coins(
                       BigInt(newBalance).toString(),
-                      relayer.feeToken.denom
+                      relayer.feeDenom
                     ),
                   })
                 ),
@@ -1350,11 +1349,7 @@ export const SelfRelayExecuteModal = ({
                     ...(relayers ? [relayers[0]] : []),
                   ].map(
                     (
-                      {
-                        chain: { chain_id },
-                        chainImageUrl,
-                        feeToken: { denom },
-                      },
+                      { chain: { chain_id }, chainImageUrl, feeDenom },
                       index
                     ) => {
                       // Adjust the index to reflect the reordering above.
@@ -1369,7 +1364,7 @@ export const SelfRelayExecuteModal = ({
                       const refunded = refundedAmount[chain_id] ?? 0
                       const feeToken = getTokenForChainIdAndDenom(
                         chain_id,
-                        denom
+                        feeDenom
                       )
 
                       return (

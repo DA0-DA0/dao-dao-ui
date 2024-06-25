@@ -343,6 +343,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // omniflixhub
         remoteChannel: 'channel-41',
       },
+      [ChainId.BitsongMainnet]: {
+        // juno
+        note: 'juno184r596nqsl3f0t46muruscv7zjc5edxt5a3xlxwvww6smfkjjatqasj6lx',
+        // juno
+        listener:
+          'juno1qypq6yjn4nhrnmmskawnx2rayfchu2nfwlslg2ax68a9883sqmwq5zmq22',
+        // bitsong
+        voice:
+          'bitsong1xn9ukrng6pfnkf76rvgsf2c4zkpydjpt6ue2jh6kpea6cnqekkesj662n5',
+        // juno
+        localConnection: 'connection-26',
+        // bitsong
+        remoteConnection: 'connection-9',
+        // juno
+        localChannel: 'channel-568',
+        // bitsong
+        remoteChannel: 'channel-34',
+      },
     },
   },
   {
@@ -590,6 +608,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-78358',
         // omniflixhub
         remoteChannel: 'channel-42',
+      },
+      [ChainId.BitsongMainnet]: {
+        // osmosis
+        note: 'osmo1yz3wn53velq6j3xvgd96cuyerxm3ny06tmw0kk47zwhgnlanqdzsyu6grm',
+        // osmosis
+        listener:
+          'osmo12nxa03mh0dm6nfdu4uhk8fu8nawd49ljmycfpzt7afr3kn7nvl4sj3485j',
+        // bitsong
+        voice:
+          'bitsong1jea5dydjmjemf7fgesllzuhjg78rv40a0dh7gl2379wtyjq6z4jqs23cks',
+        // osmosis
+        localConnection: 'connection-1216',
+        // bitsong
+        remoteConnection: 'connection-0',
+        // osmosis
+        localChannel: 'channel-78440',
+        // bitsong
+        remoteChannel: 'channel-33',
       },
     },
   },
@@ -1678,6 +1714,83 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.BitsongMainnet,
+    name: 'bitsong',
+    mainnet: true,
+    accentColor: '#c53381',
+    // Token creation factory not yet ready.
+    tokenCreationUnderDevelopment: true,
+    factoryContractAddress:
+      'bitsong1gpf39sy2u859wp370t4jty77gxlv9qennkm253swn0rqcm2r3v0q47w4ny',
+    explorerUrlTemplates: {
+      tx: 'https://ping.pub/bitsong/tx/REPLACE',
+      gov: 'https://ping.pub/bitsong/gov',
+      govProp: 'https://ping.pub/bitsong/gov/REPLACE',
+      wallet: 'https://ping.pub/bitsong/account/REPLACE',
+    },
+    codeIds: {
+      Cw1Whitelist: 7,
+      Cw4Group: 8,
+      Cw721Base: 1,
+      CwPayrollFactory: 11,
+      CwTokenSwap: 12,
+      CwVesting: 13,
+      DaoCore: 14,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 16,
+      DaoPreProposeApprover: 17,
+      DaoPreProposeMultiple: 18,
+      DaoPreProposeSingle: 19,
+      DaoProposalMultiple: 20,
+      DaoProposalSingle: 21,
+      DaoVotingCw4: 22,
+      DaoVotingCw721Staked: 23,
+      // TODO(bitsong): deploy when ready
+      DaoVotingTokenStaked: -1,
+
+      // unused
+      CwTokenfactoryIssuerMain: -1,
+    },
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // bitsong
+        note: 'bitsong1ucgr536rjpw3qvt3tkyx2w5w98llfpfe8v6eacud3g7tl3jdh07qkqz6hh',
+        // bitsong
+        listener:
+          'bitsong1c7w23m0g7eg5l8c6pkdgtv52z39gug9vgnk9x8xtkqh9rawvsanqmwtxrx',
+        // juno
+        voice:
+          'juno1czu3wfaj2a06d392a4jkhvvely6pcrxw397ht63pxamu98gv06zqmq85xz',
+        // bitsong
+        localConnection: 'connection-9',
+        // juno
+        remoteConnection: 'connection-26',
+        // bitsong
+        localChannel: 'channel-31',
+        // juno
+        remoteChannel: 'channel-567',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // bitsong
+        note: 'bitsong149h0mwrjpgxnq8a6m8xvjkq9aya77a2rdm9ywkq2td6kqxgeu8rspz9sga',
+        // bitsong
+        listener:
+          'bitsong1c8pgxceamfzr05yhmlkul9p5a7hz4p0vsmc80ffarvpl89nnlx0qdhqjr7',
+        // osmosis
+        voice:
+          'osmo1ew5q937st3vemnk3cjk85rkceapvtmmk673pt0yc5mqt4ffhfa9qa4xfjn',
+        // bitsong
+        localConnection: 'connection-0',
+        // osmosis
+        remoteConnection: 'connection-1216',
+        // bitsong
+        localChannel: 'channel-32',
+        // osmosis
+        remoteChannel: 'channel-78439',
+      },
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
@@ -1932,8 +2045,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'bitsong',
     mainnet: false,
     accentColor: '#c53381',
-    // No token factory on BitSong.
-    noCreateNewTokens: true,
+    // Token creation factory not yet ready.
+    tokenCreationUnderDevelopment: true,
     factoryContractAddress:
       'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
     codeIds: {
@@ -2053,6 +2166,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BitsongTestnet]: {
     rpc: 'https://rpc-testnet.explorebitsong.com',
     rest: 'https://lcd-testnet.explorebitsong.com',
+  },
+  [ChainId.BitsongMainnet]: {
+    rpc: 'https://rpc.explorebitsong.com',
+    rest: 'https://lcd.explorebitsong.com',
   },
 }
 

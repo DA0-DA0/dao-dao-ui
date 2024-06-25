@@ -76,6 +76,7 @@ export enum ChainId {
   OraichainMainnet = 'Oraichain',
   ArchwayMainnet = 'archway-1',
   InjectiveMainnet = 'injective-1',
+  BitsongMainnet = 'bitsong-2b',
   BitsongTestnet = 'bobnet',
   OmniflixHubMainnet = 'omniflixhub-1',
 }
@@ -154,9 +155,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   createWithCw20?: boolean
   /**
-   * Disallow creating new tokens for token-based DAOs. Defaults to false.
+   * Disallow creating new tokens for token-based DAOs and show a tooltip that
+   * token creation is under development. Defaults to false.
    */
-  noCreateNewTokens?: boolean
+  tokenCreationUnderDevelopment?: boolean
   /**
    * Whether or not to create a DAO through chain governance.
    */
