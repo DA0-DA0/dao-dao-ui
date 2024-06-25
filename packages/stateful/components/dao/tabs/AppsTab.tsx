@@ -103,6 +103,15 @@ export const AppsTab = () => {
         types: [AccountType.Ica],
       })
     if (!address) {
+      // If chain ID is empty (user or client error I believe), just return
+      // core DAO address since the error won't be helpful.
+      if (!chainId) {
+        console.error(
+          'DAO DAO app `chainId` should not be empty in `addressForChainId`, but it is. Returning core DAO address.'
+        )
+        return coreAddress
+      }
+
       throw new Error(
         t('error.daoMissingAccountsOnChains', {
           daoName: name,
