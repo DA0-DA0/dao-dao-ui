@@ -65,6 +65,7 @@ import { CreateValenceAccountData } from '../CreateValenceAccount/Component'
 import {
   ConfigureRebalancerData,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
+  pidPresets,
 } from './Component'
 
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
@@ -382,6 +383,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     }
   }
 
+  const kp = Number(data.pid?.p || -1)
+  const ki = Number(data.pid?.i || -1)
+  const kd = Number(data.pid?.d || -1)
+
+  // Show custom PID fields if no preset found for these settings.
+  const showCustomPid = !pidPresets.some(
+    (preset) => preset.kp === kp && preset.ki === ki && preset.kd === kd
+  )
+
   return {
     match: true,
     data: {
@@ -404,10 +414,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
         percent: bps / 100,
       })),
       pid: {
-        kp: Number(data.pid?.p || -1),
-        ki: Number(data.pid?.i || -1),
-        kd: Number(data.pid?.d || -1),
+        kp,
+        ki,
+        kd,
       },
+      showCustomPid,
       maxLimit:
         typeof data.max_limit_bps === 'number'
           ? data.max_limit_bps / 100
@@ -496,12 +507,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
           percent: 50,
         },
       ],
-      // TODO(rebalancer): pick defaults
-      pid: {
-        kp: Number(rebalancerConfig?.pid.p || 0.1),
-        ki: Number(rebalancerConfig?.pid.i || 0.1),
-        kd: Number(rebalancerConfig?.pid.d || 0.1),
-      },
+      pid: pidPresets.find((p) => p.preset === 'medium')!,
       maxLimitBps:
         rebalancerConfig?.max_limit &&
         !isNaN(Number(rebalancerConfig.max_limit))

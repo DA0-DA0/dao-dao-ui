@@ -15,6 +15,7 @@ import {
   RebalancerProjector,
   RebalancerProjectorAsset,
   SegmentedControls,
+  SelectInput,
   SwitchCard,
   TokenInput,
   Tooltip,
@@ -39,6 +40,33 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+export type PidPreset = 'slow' | 'medium' | 'fast'
+export const pidPresets: {
+  preset: PidPreset
+  kp: number
+  ki: number
+  kd: number
+}[] = [
+  {
+    preset: 'slow',
+    kp: 0.05,
+    ki: 0,
+    kd: 0,
+  },
+  {
+    preset: 'medium',
+    kp: 0.1,
+    ki: 0,
+    kd: 0,
+  },
+  {
+    preset: 'fast',
+    kp: 0.2,
+    ki: 0,
+    kd: 0,
+  },
+]
+
 export type ConfigureRebalancerData = {
   // Will be set when a valence account is found so the transformation function
   // has the address.
@@ -55,6 +83,10 @@ export type ConfigureRebalancerData = {
     ki: number
     kd: number
   }
+  /**
+   * Set to true if the advanced field is chosen in the PID preset dropdown.
+   */
+  showCustomPid?: boolean
   maxLimit?: number
   minBalance?: {
     denom: string
@@ -110,6 +142,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
   const pid = watch((fieldNamePrefix + 'pid') as 'pid')
   const tokens = watch((fieldNamePrefix + 'tokens') as 'tokens', [])
   const totalPercent = tokens.reduce((acc, { percent }) => acc + percent, 0)
+  const showCustomPid = watch(
+    (fieldNamePrefix + 'showCustomPid') as 'showCustomPid'
+  )
 
   // Get selected whitelist tokens.
   const denomWhitelistTokensSelected = denomWhitelistTokens.loading
@@ -433,63 +468,105 @@ export const ConfigureRebalancerComponent: ActionComponent<
           )}
         </div>
 
-        {/* PID terms */}
-        <div className="flex flex-row flex-wrap gap-2">
-          <div className="space-y-2">
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <InputLabel name="kp" />
-            <NumberInput
-              error={errors?.pid?.kp}
-              fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
-              hidePlusMinus
-              max={1}
-              min={0}
-              register={register}
-              sizing="sm"
-              step={0.01}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.pid?.kp} />
-          </div>
+        <div className="flex flex-col">
+          <InputLabel name={t('form.behavior')} primary />
 
-          <div className="space-y-2">
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <InputLabel name="ki" />
-            <NumberInput
-              error={errors?.pid?.ki}
-              fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
-              hidePlusMinus
-              max={1}
-              min={0}
-              register={register}
-              sizing="sm"
-              step={0.01}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.pid?.ki} />
-          </div>
+          <MarkdownRenderer
+            className="body-text text-text-secondary mt-1 text-sm"
+            markdown={t('form.behaviorDescription')}
+          />
 
-          <div className="space-y-2">
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <InputLabel name="kd" />
-            <NumberInput
-              error={errors?.pid?.kd}
-              fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
-              hidePlusMinus
-              max={1}
-              min={0}
-              register={register}
-              sizing="sm"
-              step={0.01}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.pid?.kd} />
-          </div>
+          <SelectInput
+            containerClassName="self-start mt-4"
+            disabled={!isCreating}
+            onChange={(preset) => {
+              const pid = pidPresets.find((p) => p.preset === preset)
+              if (pid) {
+                setValue((fieldNamePrefix + 'pid.kp') as 'pid.kp', pid.kp)
+                setValue((fieldNamePrefix + 'pid.ki') as 'pid.ki', pid.ki)
+                setValue((fieldNamePrefix + 'pid.kd') as 'pid.kd', pid.kd)
+              }
+              // Show custom fields if selected advanced.
+              setValue(
+                (fieldNamePrefix + 'showCustomPid') as 'showCustomPid',
+                !pid
+              )
+            }}
+          >
+            <option value="slow">
+              {t('form.slow')} {'(5%)'}
+            </option>
+            <option value="medium">
+              {t('form.medium')} {'(10%)'}
+            </option>
+            <option value="fast">
+              {t('form.fast')} {'(20%)'}
+            </option>
+            <option value="advanced">{t('form.advanced')}</option>
+          </SelectInput>
         </div>
+
+        {/* Custom PID */}
+        {showCustomPid && (
+          <div className="flex flex-row flex-wrap gap-2">
+            <div className="space-y-2">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <InputLabel name="kp" />
+              <NumberInput
+                error={errors?.pid?.kp}
+                fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
+                hidePlusMinus
+                max={1}
+                min={0}
+                register={register}
+                sizing="sm"
+                step={0.01}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors?.pid?.kp} />
+            </div>
+
+            <div className="space-y-2">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <InputLabel name="ki" />
+              <NumberInput
+                error={errors?.pid?.ki}
+                fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
+                hidePlusMinus
+                max={1}
+                min={0}
+                register={register}
+                sizing="sm"
+                step={0.01}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors?.pid?.ki} />
+            </div>
+
+            <div className="space-y-2">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              <InputLabel name="kd" />
+              <NumberInput
+                error={errors?.pid?.kd}
+                fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
+                hidePlusMinus
+                max={1}
+                min={0}
+                register={register}
+                sizing="sm"
+                step={0.01}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors?.pid?.kd} />
+            </div>
+          </div>
+        )}
       </div>
 
+      <div className="my-2 bg-border-secondary h-[1px] -mx-6"></div>
+
       <SwitchCard
-        containerClassName="self-start mt-2"
+        containerClassName="self-start"
         enabled={projection}
         label={t('form.projection')}
         onClick={() => setProjection((p) => !p)}
