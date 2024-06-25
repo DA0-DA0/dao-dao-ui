@@ -1,3 +1,5 @@
+import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+
 import {
   SecretDaoPreProposeMultipleClient,
   SecretDaoProposalMultipleClient,
@@ -7,6 +9,7 @@ import { Coin, ProposalModuleBase } from '@dao-dao/types'
 import {
   MultipleChoiceVote,
   VoteInfo,
+  VoteResponse,
 } from '@dao-dao/types/contracts/SecretDaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
@@ -20,6 +23,7 @@ import { SecretCwDao } from '../dao/SecretCwDao'
 export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   NewProposalData,
+  VoteResponse,
   VoteInfo,
   MultipleChoiceVote
 > {
@@ -173,14 +177,36 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
+  getVoteQuery({
+    proposalId,
+    voter,
+  }: {
+    proposalId: number
+    voter: string | undefined
+  }): UseQueryOptions<VoteResponse> {
+    // If no voter nor permit, return query in loading state.
+    const permit = voter && this.dao.getExistingPermit(voter)
+    if (!permit) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
+    return secretDaoProposalMultipleQueries.getVote({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+      args: {
+        proposalId,
+        auth: {
+          permit,
+        },
+      },
+    })
+  }
+
   async getVote(
-    {
-      proposalId,
-      voter,
-    }: {
-      proposalId: number
-      voter: string
-    },
+    options: Parameters<SecretMultipleChoiceProposalModule['getVoteQuery']>[0],
     /**
      * Whether or not to prompt the wallet for a permit. If true,
      * `dao.registerOfflineSignerAminoGetter` must be called first.
@@ -189,29 +215,14 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
      */
     prompt = false
   ): Promise<VoteInfo | null> {
-    const permit = prompt
-      ? await this.dao.getPermit(voter)
-      : this.dao.getExistingPermit(voter)
-
-    if (!permit) {
-      throw new Error('No permit found')
+    if (prompt && options.voter) {
+      // Load permit now which will be retrieved in getVoteQuery.
+      await this.dao.getPermit(options.voter)
     }
 
     return (
-      (
-        await this.queryClient.fetchQuery(
-          secretDaoProposalMultipleQueries.getVote({
-            chainId: this.dao.chainId,
-            contractAddress: this.info.address,
-            args: {
-              proposalId,
-              auth: {
-                permit,
-              },
-            },
-          })
-        )
-      ).vote || null
+      (await this.queryClient.fetchQuery(this.getVoteQuery(options))).vote ||
+      null
     )
   }
 }

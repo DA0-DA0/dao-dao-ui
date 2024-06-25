@@ -2,7 +2,10 @@ import { useLoadingPromise } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { useWalletWithSecretNetworkPermit } from '../../../../hooks'
+import {
+  useQueryLoadingDataWithError,
+  useWalletWithSecretNetworkPermit,
+} from '../../../../hooks'
 import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
 
@@ -23,19 +26,13 @@ export const useLoadingWalletVoteInfo = ():
 
   const loadingProposal = useLoadingProposal()
 
-  // TODO(dao-client): refresh somehow based on current recoil refreshers
-  const walletVoteLoading = useLoadingPromise({
-    // Loading state if wallet not connected.
-    promise: walletAddress
-      ? () =>
-          proposalModule.getVote({
-            proposalId: proposalNumber,
-            voter: walletAddress,
-          })
-      : undefined,
-    // Refresh when permit, proposal module, wallet, or proposal changes.
-    deps: [permit, proposalModule, walletAddress, proposalNumber],
-  })
+  // TODO(dao-client secret): make sure this refreshes when the permit updates
+  const walletVoteLoading = useQueryLoadingDataWithError(
+    proposalModule.getVoteQuery({
+      proposalId: proposalNumber,
+      voter: walletAddress,
+    })
+  )
 
   const walletVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
     // Loading state if proposal not loaded or wallet not connected.

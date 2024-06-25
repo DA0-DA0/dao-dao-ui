@@ -1,3 +1,5 @@
+import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+
 import {
   DaoPreProposeMultipleClient,
   DaoProposalMultipleClient,
@@ -7,6 +9,7 @@ import { Coin, ProposalModuleBase } from '@dao-dao/types'
 import {
   MultipleChoiceVote,
   VoteInfo,
+  VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
@@ -20,6 +23,7 @@ import { CwDao } from '../dao/CwDao'
 export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   NewProposalData,
+  VoteResponse,
   VoteInfo,
   MultipleChoiceVote
 > {
@@ -147,26 +151,37 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
-  async getVote({
+  getVoteQuery({
     proposalId,
     voter,
   }: {
     proposalId: number
-    voter: string
-  }): Promise<VoteInfo | null> {
+    voter: string | undefined
+  }): UseQueryOptions<VoteResponse> {
+    // If no voter, return query in loading state.
+    if (!voter) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
+    return daoProposalMultipleQueries.getVote({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+      args: {
+        proposalId,
+        voter,
+      },
+    })
+  }
+
+  async getVote(
+    ...params: Parameters<MultipleChoiceProposalModule['getVoteQuery']>
+  ): Promise<VoteInfo | null> {
     return (
-      (
-        await this.queryClient.fetchQuery(
-          daoProposalMultipleQueries.getVote({
-            chainId: this.dao.chainId,
-            contractAddress: this.info.address,
-            args: {
-              proposalId,
-              voter,
-            },
-          })
-        )
-      ).vote || null
+      (await this.queryClient.fetchQuery(this.getVoteQuery(...params))).vote ||
+      null
     )
   }
 }

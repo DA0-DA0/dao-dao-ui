@@ -1,3 +1,5 @@
+import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+
 import {
   CwProposalSingleV1Client,
   DaoPreProposeSingleClient,
@@ -11,6 +13,7 @@ import { Coin, ContractVersion, ProposalModuleBase } from '@dao-dao/types'
 import {
   Vote,
   VoteInfo,
+  VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ContractName,
@@ -25,6 +28,7 @@ import { CwDao } from '../dao/CwDao'
 export class SingleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   NewProposalData,
+  VoteResponse,
   VoteInfo,
   Vote
 > {
@@ -205,31 +209,42 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
-  async getVote({
+  getVoteQuery({
     proposalId,
     voter,
   }: {
     proposalId: number
-    voter: string
-  }): Promise<VoteInfo | null> {
+    voter: string | undefined
+  }): UseQueryOptions<VoteResponse> {
+    // If no voter, return query in loading state.
+    if (!voter) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
     const query =
       this.info.version === ContractVersion.V1
         ? cwProposalSingleV1Queries.vote
         : daoProposalSingleV2Queries.getVote
 
+    return query({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+      args: {
+        proposalId,
+        voter,
+      },
+    })
+  }
+
+  async getVote(
+    ...params: Parameters<SingleChoiceProposalModule['getVoteQuery']>
+  ): Promise<VoteInfo | null> {
     return (
-      (
-        await this.queryClient.fetchQuery(
-          query({
-            chainId: this.dao.chainId,
-            contractAddress: this.info.address,
-            args: {
-              proposalId,
-              voter,
-            },
-          })
-        )
-      ).vote || null
+      (await this.queryClient.fetchQuery(this.getVoteQuery(...params))).vote ||
+      null
     )
   }
 }

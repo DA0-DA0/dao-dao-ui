@@ -1,5 +1,5 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { Coin } from '../contracts/common'
 import { PreProposeModule, ProposalModule } from '../dao'
@@ -9,6 +9,7 @@ import { DaoBase } from './dao'
 export abstract class ProposalModuleBase<
   Dao extends DaoBase = DaoBase,
   Proposal = any,
+  VoteResponse = any,
   VoteInfo = any,
   Vote = any
 > {
@@ -102,6 +103,15 @@ export abstract class ProposalModuleBase<
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
   }): Promise<void>
+
+  /**
+   * Query options to fetch the vote on a proposal by a given address. If voter
+   * is undefined, will return query in loading state.
+   */
+  abstract getVoteQuery(options: {
+    proposalId: number
+    voter: string | undefined
+  }): UseQueryOptions<VoteResponse>
 
   /**
    * Fetch the vote on a proposal by a given address. If the address has not
