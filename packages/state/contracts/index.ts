@@ -94,3 +94,7 @@ export {
   ValenceServiceRebalancerClient,
   ValenceServiceRebalancerQueryClient,
 } from './ValenceServiceRebalancer'
+export {
+  ValenceRebalancerClient,
+  ValenceRebalancerQueryClient,
+} from './ValenceRebalancer'

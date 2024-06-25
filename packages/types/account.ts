@@ -93,11 +93,11 @@ export type ValenceAccount = BaseAccount & {
 
 export type ValenceAccountConfig = {
   // If rebalancer setup, this will be defined.
-  rebalancer?: {
+  rebalancer: {
     config: RebalancerConfig
     // Process targest.
     targets: ValenceAccountRebalancerTarget[]
-  }
+  } | null
 }
 
 export type ValenceAccountRebalancerTarget = {

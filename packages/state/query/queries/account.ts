@@ -6,8 +6,11 @@ import {
   AccountType,
   CryptographicMultisigAccount,
   Cw3MultisigAccount,
+  GenericToken,
   MultisigAccount,
   PolytoneProxies,
+  TokenType,
+  ValenceAccount,
 } from '@dao-dao/types'
 import { ListItemsResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
@@ -21,15 +24,18 @@ import {
   getChainForChainId,
   getConfiguredChainConfig,
   getIbcTransferInfoBetweenChains,
+  getSupportedChainConfig,
   ibcProtoRpcClientRouter,
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
-import { cw3FlexMultisigQueries } from './contracts'
+import { cw3FlexMultisigQueries, valenceRebalancerQueries } from './contracts'
 import { daoDaoCoreQueries } from './contracts/DaoDaoCore'
+import { indexerQueries } from './indexer'
 import { polytoneQueries } from './polytone'
+import { tokenQueries } from './token'
 
 /**
  * Fetch the list of accounts associated with the specified address, with
@@ -62,20 +68,31 @@ export const fetchAccountList = async (
     )
   }
 
-  const [isDao, isPolytoneProxy] = await Promise.all([
+  const [isDao, isPolytoneProxy, isValenceAccount] = await Promise.all([
     queryClient.fetchQuery(
       contractQueries.isDao(queryClient, { chainId, address })
     ),
     queryClient.fetchQuery(
       contractQueries.isPolytoneProxy(queryClient, { chainId, address })
     ),
+    queryClient.fetchQuery(
+      contractQueries.isValenceAccount(queryClient, { chainId, address })
+    ),
   ])
 
-  const mainAccount: Account = {
-    chainId,
-    address,
-    type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
-  }
+  const mainAccount: Account = isValenceAccount
+    ? // If this is a valence account, get its config.
+      await queryClient.fetchQuery(
+        accountQueries.valence(queryClient, {
+          chainId,
+          address,
+        })
+      )
+    : {
+        chainId,
+        address,
+        type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+      }
 
   const [polytoneProxies, registeredIcas] = await Promise.all([
     mainAccount.type !== AccountType.Polytone
@@ -142,6 +159,25 @@ export const fetchAccountList = async (
       })
     }
   })
+
+  // Get valence accounts controlled by all non-valence accounts.
+  const valenceAccounts = (
+    await Promise.allSettled(
+      allAccounts
+        .filter(({ type }) => type !== AccountType.Valence)
+        .map(({ chainId, address }) =>
+          queryClient.fetchQuery(
+            accountQueries.valenceAccounts(queryClient, {
+              address,
+              chainId,
+            })
+          )
+        )
+    )
+  ).flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
+
+  // Add valence accounts.
+  allAccounts.push(...valenceAccounts)
 
   return allAccounts
 }
@@ -378,6 +414,119 @@ export const fetchMultisigAccount = async (
   }
 }
 
+/**
+ * Fetch a Valence account.
+ */
+export const fetchValenceAccount = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<ValenceAccount> => {
+  const rebalancerAddress =
+    getSupportedChainConfig(chainId)?.valence?.rebalancer
+
+  const rebalancerConfig = rebalancerAddress
+    ? await queryClient
+        .fetchQuery(
+          valenceRebalancerQueries.getConfig({
+            chainId,
+            contractAddress: rebalancerAddress,
+            args: {
+              addr: address,
+            },
+          })
+        )
+        // This will error when no rebalancer is configured.
+        .catch(() => null)
+    : null
+
+  const uniqueDenoms = rebalancerConfig?.targets.map(({ denom }) => denom) || []
+  // Map token denom to token.
+  const tokenMap = (
+    await Promise.all(
+      uniqueDenoms.map((denom) =>
+        queryClient.fetchQuery(
+          tokenQueries.info(queryClient, {
+            chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          })
+        )
+      )
+    )
+  ).reduce(
+    (acc, token) => ({
+      ...acc,
+      [token.denomOrAddress]: token,
+    }),
+    {} as Record<string, GenericToken>
+  )
+
+  const account: ValenceAccount = {
+    type: AccountType.Valence,
+    chainId,
+    address,
+    config: {
+      rebalancer: rebalancerConfig && {
+        config: rebalancerConfig,
+        targets: rebalancerConfig.targets.map((target) => ({
+          token: tokenMap[target.denom],
+          // TODO(rebalancer): Get targets over time.
+          targets: [
+            {
+              timestamp: 0,
+              ...target,
+            },
+          ],
+        })),
+      },
+    },
+  }
+
+  return account
+}
+
+/**
+ * Fetch the Valence accounts owned by a given address.
+ */
+export const fetchValenceAccounts = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<ValenceAccount[]> => {
+  const addresses = await queryClient.fetchQuery(
+    indexerQueries.queryWallet(queryClient, {
+      chainId,
+      walletAddress: address,
+      formula: 'valence/accounts',
+    })
+  )
+  if (!addresses || !Array.isArray(addresses)) {
+    return []
+  }
+
+  return Promise.all(
+    addresses.map((address) =>
+      queryClient.fetchQuery(
+        accountQueries.valence(queryClient, {
+          chainId,
+          address,
+        })
+      )
+    )
+  )
+}
+
 export const accountQueries = {
   /**
    * Fetch the list of accounts associated with the specified address.
@@ -432,5 +581,27 @@ export const accountQueries = {
       queryFn: options
         ? () => fetchMultisigAccount(queryClient, options)
         : skipToken,
+    }),
+  /**
+   * Fetch a Valence account.
+   */
+  valence: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchValenceAccount>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['account', 'valence', options],
+      queryFn: () => fetchValenceAccount(queryClient, options),
+    }),
+  /**
+   * Fetch the Valence accounts owned by a given address.
+   */
+  valenceAccounts: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchValenceAccounts>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['account', 'valenceAccounts', options],
+      queryFn: () => fetchValenceAccounts(queryClient, options),
     }),
 }
