@@ -469,11 +469,11 @@ export const ConfigureRebalancerComponent: ActionComponent<
         </div>
 
         <div className="flex flex-col">
-          <InputLabel name={t('form.behavior')} primary />
+          <InputLabel name={t('form.speed')} primary />
 
           <MarkdownRenderer
             className="body-text text-text-secondary mt-1 text-sm"
-            markdown={t('form.behaviorDescription')}
+            markdown={t('form.rebalancerSpeedDescription')}
           />
 
           <SelectInput
@@ -508,58 +508,64 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
         {/* Custom PID */}
         {showCustomPid && (
-          <div className="flex flex-row flex-wrap gap-2">
-            <div className="space-y-2">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <InputLabel name="kp" />
-              <NumberInput
-                error={errors?.pid?.kp}
-                fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
-                hidePlusMinus
-                max={1}
-                min={0}
-                register={register}
-                sizing="sm"
-                step={0.01}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors?.pid?.kp} />
-            </div>
+          <>
+            <p className="body-text text-text-secondary text-sm">
+              {t('form.rebalancerSpeedAdvancedDescription')}
+            </p>
 
-            <div className="space-y-2">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <InputLabel name="ki" />
-              <NumberInput
-                error={errors?.pid?.ki}
-                fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
-                hidePlusMinus
-                max={1}
-                min={0}
-                register={register}
-                sizing="sm"
-                step={0.01}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors?.pid?.ki} />
-            </div>
+            <div className="flex flex-row flex-wrap gap-2">
+              <div className="space-y-2">
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <InputLabel name="P" />
+                <NumberInput
+                  error={errors?.pid?.kp}
+                  fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
+                  hidePlusMinus
+                  max={1}
+                  min={0}
+                  register={register}
+                  sizing="sm"
+                  step={0.01}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors?.pid?.kp} />
+              </div>
 
-            <div className="space-y-2">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <InputLabel name="kd" />
-              <NumberInput
-                error={errors?.pid?.kd}
-                fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
-                hidePlusMinus
-                max={1}
-                min={0}
-                register={register}
-                sizing="sm"
-                step={0.01}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors?.pid?.kd} />
+              <div className="space-y-2">
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <InputLabel name="I" />
+                <NumberInput
+                  error={errors?.pid?.ki}
+                  fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
+                  hidePlusMinus
+                  max={1}
+                  min={0}
+                  register={register}
+                  sizing="sm"
+                  step={0.01}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors?.pid?.ki} />
+              </div>
+
+              <div className="space-y-2">
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <InputLabel name="D" />
+                <NumberInput
+                  error={errors?.pid?.kd}
+                  fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
+                  hidePlusMinus
+                  max={1}
+                  min={0}
+                  register={register}
+                  sizing="sm"
+                  step={0.01}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors?.pid?.kd} />
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 
