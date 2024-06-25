@@ -1731,8 +1731,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     codeIds: {
       Cw1Whitelist: 7,
       Cw4Group: 8,
-      // TODO(bitsong): use their bs721
-      Cw721Base: 9,
+      Cw721Base: 1,
       CwPayrollFactory: 11,
       CwTokenSwap: 12,
       CwVesting: 13,
