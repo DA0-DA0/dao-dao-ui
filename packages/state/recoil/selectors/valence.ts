@@ -74,9 +74,9 @@ export const valenceAccountSelector = selectorFamily<
               }),
             ])
           ).map((loadable) =>
-            loadable.state === 'hasValue' ? loadable.contents : undefined
+            loadable.state === 'hasValue' ? loadable.contents : null
           )[0]
-        : undefined
+        : null
 
       const uniqueDenoms =
         rebalancerConfig?.targets.map(({ denom }) => denom) || []

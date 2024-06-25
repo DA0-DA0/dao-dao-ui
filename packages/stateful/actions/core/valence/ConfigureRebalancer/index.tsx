@@ -1,4 +1,5 @@
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -7,6 +8,7 @@ import { waitForAll } from 'recoil'
 import {
   ValenceServiceRebalancerSelectors,
   genericTokenSelector,
+  tokenQueries,
 } from '@dao-dao/state'
 import { usdPriceSelector } from '@dao-dao/state/recoil/selectors'
 import {
@@ -19,6 +21,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   AccountType,
+  GenericTokenBalance,
+  LoadingData,
   TokenType,
   UseDecodedCosmosMsg,
   ValenceAccount,
@@ -46,6 +50,7 @@ import {
   encodeJsonToBase64,
   getAccount,
   getChainAddressForActionOptions,
+  makeCombineQueryResultsIntoLoadingData,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   mustGetSupportedChainConfig,
@@ -56,6 +61,7 @@ import { AddressInput } from '../../../../components/AddressInput'
 import { useGenerateInstantiate2 } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionForKey, useActionOptions } from '../../../react'
+import { CreateValenceAccountData } from '../CreateValenceAccount/Component'
 import {
   ConfigureRebalancerData,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
@@ -94,6 +100,12 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
     props.allActionsWithData.findIndex(
       ({ actionKey }) => actionKey === ActionKey.CreateValenceAccount
     )
+  // Get the data from the Valence creation action if it exists.
+  const existingCreateValenceAccountActionData =
+    existingCreateValenceAccountActionIndex > -1
+      ? (props.allActionsWithData[existingCreateValenceAccountActionIndex]
+          ?.data as CreateValenceAccountData)
+      : undefined
   const createValenceAccountActionDefaults = useActionForKey(
     ActionKey.CreateValenceAccount
   )?.useDefaults()
@@ -137,7 +149,9 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
             type: AccountType.Valence,
             chainId,
             address: generatedValenceAddress.data,
-            config: {},
+            config: {
+              rebalancer: null,
+            },
           }
         )
       }
@@ -168,18 +182,6 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
       : undefined
   )
 
-  const loadingTokens = useTokenBalances({
-    filter: TokenType.Native,
-    // Ensure chosen tokens are loaded.
-    additionalTokens: selectedTokens.map(({ denom }) => ({
-      chainId,
-      type: TokenType.Native,
-      denomOrAddress: denom,
-    })),
-    // Only fetch balances for Valence account.
-    includeAccountTypes: [AccountType.Valence],
-  })
-
   const minBalanceDenom = watch(
     (props.fieldNamePrefix + 'minBalance.denom') as 'minBalance.denom'
   )
@@ -194,15 +196,59 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
     undefined
   )
 
-  const nativeBalances = loadingTokens.loading
-    ? loadingTokens
-    : {
-        loading: false,
-        updating: loadingTokens.updating,
-        data: loadingTokens.data.filter(
-          ({ token }) => token.chainId === chainId
+  const currentBalances = useTokenBalances({
+    filter: TokenType.Native,
+    // Ensure chosen tokens are loaded.
+    additionalTokens: selectedTokens.map(({ denom }) => ({
+      chainId,
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })),
+    // Only fetch balances for Valence account.
+    includeAccountTypes: [AccountType.Valence],
+  })
+
+  // Load tokens used in the create valence account action if it exists.
+  const queryClient = useQueryClient()
+  const initialTokens = useQueries({
+    queries:
+      existingCreateValenceAccountActionData?.funds.map(({ denom }) =>
+        tokenQueries.info(queryClient, {
+          chainId,
+          type: TokenType.Native,
+          denomOrAddress: denom,
+        })
+      ) ?? [],
+    combine: makeCombineQueryResultsIntoLoadingData({
+      transform: (tokens) =>
+        tokens.map(
+          (token): GenericTokenBalance => ({
+            token,
+            balance: convertDenomToMicroDenomStringWithDecimals(
+              existingCreateValenceAccountActionData?.funds
+                .find(({ denom }) => denom === token.denomOrAddress)
+                ?.amount?.toString() || 0,
+              token.decimals
+            ),
+          })
         ),
-      }
+    }),
+  })
+
+  const nativeBalances: LoadingData<GenericTokenBalance[]> =
+    // If creating new Valence account, use initial tokens from that action,
+    // since there will be no current balances loaded yet.
+    existingCreateValenceAccountActionData
+      ? initialTokens
+      : currentBalances.loading
+      ? currentBalances
+      : {
+          loading: false,
+          updating: currentBalances.updating,
+          data: currentBalances.data.filter(
+            ({ token }) => token.chainId === chainId
+          ),
+        }
 
   const prices = useCachedLoadingWithError(
     whitelists.loading || whitelists.errored
