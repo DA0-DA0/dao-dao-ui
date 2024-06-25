@@ -1,4 +1,4 @@
-import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import {
   SecretDaoPreProposeSingleClient,
@@ -136,6 +136,13 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         permit,
       },
     })
+
+    await this.queryClient.invalidateQueries({
+      queryKey: this.getVoteQuery({
+        proposalId,
+        voter: sender,
+      }).queryKey,
+    })
   }
 
   async execute({
@@ -190,8 +197,8 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     voter,
   }: {
     proposalId: number
-    voter: string | undefined
-  }): UseQueryOptions<VoteResponse> {
+    voter?: string
+  }): FetchQueryOptions<VoteResponse> {
     // If no voter nor permit, return query in loading state.
     const permit = voter && this.dao.getExistingPermit(voter)
     if (!permit) {

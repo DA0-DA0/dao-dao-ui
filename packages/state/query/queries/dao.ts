@@ -1,12 +1,22 @@
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import {
+  FetchQueryOptions,
+  QueryClient,
+  queryOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import { AmountWithTimestamp, DaoSource } from '@dao-dao/types'
+import {
+  TotalPowerAtHeightResponse,
+  VotingPowerAtHeightResponse,
+} from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getSupportedChainConfig,
   isConfiguredChainName,
 } from '@dao-dao/utils'
 
+import { chainQueries } from './chain'
 import { indexerQueries } from './indexer'
 
 /**
@@ -44,6 +54,30 @@ export const fetchDaoTvl = async (
   }
 }
 
+/**
+ * Fetch chain DAO voting power-shaped response.
+ */
+export const fetchChainVotingPower = async (
+  queryClient: QueryClient,
+  options: Parameters<typeof chainQueries.nativeStakedBalance>[0]
+): Promise<VotingPowerAtHeightResponse> => ({
+  power: (
+    await queryClient.fetchQuery(chainQueries.nativeStakedBalance(options))
+  ).amount,
+})
+
+/**
+ * Fetch chain DAO total power-shaped response.
+ */
+export const fetchChainTotalPower = async (
+  queryClient: QueryClient,
+  options: Parameters<typeof chainQueries.totalNativeStakedBalance>[0]
+): Promise<TotalPowerAtHeightResponse> => ({
+  power: await queryClient.fetchQuery(
+    chainQueries.totalNativeStakedBalance(options)
+  ),
+})
+
 export const daoQueries = {
   /**
    * Fetch featured DAOs.
@@ -60,4 +94,26 @@ export const daoQueries = {
       queryKey: ['dao', 'tvl', options],
       queryFn: () => fetchDaoTvl(queryClient, options),
     }),
+  /**
+   * Fetch chain DAO voting power-shaped response.
+   */
+  chainVotingPower: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchChainVotingPower>[1]
+  ): FetchQueryOptions<VotingPowerAtHeightResponse> => ({
+    queryKey: ['dao', 'chainVotingPower', options],
+    queryFn: options
+      ? () => fetchChainVotingPower(queryClient, options)
+      : skipToken,
+  }),
+  /**
+   * Fetch chain DAO total power-shaped response.
+   */
+  chainTotalPower: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchChainTotalPower>[1]
+  ): FetchQueryOptions<TotalPowerAtHeightResponse> => ({
+    queryKey: ['dao', 'chainTotalPower', options],
+    queryFn: () => fetchChainTotalPower(queryClient, options),
+  }),
 }

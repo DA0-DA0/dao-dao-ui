@@ -547,7 +547,8 @@ export interface ProposalModuleCountResponse {
   total_proposal_module_count: number
 }
 export interface TotalPowerAtHeightResponse {
-  height: number
+  // Optional to match DaoCore.v2
+  height?: number
   power: Uint128
 }
 export interface VotingModuleInfo {
@@ -555,6 +556,7 @@ export interface VotingModuleInfo {
   code_hash: string
 }
 export interface VotingPowerAtHeightResponse {
-  height: number
+  // Optional to match DaoCore.v2
+  height?: number
   power: Uint128
 }

@@ -1,8 +1,16 @@
 import { Chain } from '@chain-registry/types'
-import { QueryClient } from '@tanstack/react-query'
+import {
+  FetchQueryOptions,
+  QueryClient,
+  skipToken,
+} from '@tanstack/react-query'
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import { DaoBase, DaoInfo, ProposalModuleBase } from '@dao-dao/types'
+import {
+  TotalPowerAtHeightResponse,
+  VotingPowerAtHeightResponse,
+} from '@dao-dao/types/contracts/DaoCore.v2'
 import { getChainForChainId } from '@dao-dao/utils'
 
 import { daoQueries } from '../../queries'
@@ -102,31 +110,54 @@ export class CwDao extends DaoBase {
     return this._proposalModules
   }
 
-  async getVotingPower(address: string, height?: number): Promise<string> {
+  getVotingPowerQuery(
+    address?: string,
+    height?: number
+  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+    // If no address, return query in loading state.
+    if (!address) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
+    return daoDaoCoreQueries.votingPowerAtHeight({
+      chainId: this.options.chainId,
+      contractAddress: this.options.coreAddress,
+      args: {
+        address,
+        height,
+      },
+    })
+  }
+
+  async getVotingPower(
+    ...params: Parameters<CwDao['getVotingPowerQuery']>
+  ): Promise<string> {
     return (
-      await this.queryClient.fetchQuery(
-        daoDaoCoreQueries.votingPowerAtHeight({
-          chainId: this.options.chainId,
-          contractAddress: this.options.coreAddress,
-          args: {
-            address,
-            height,
-          },
-        })
-      )
+      await this.queryClient.fetchQuery(this.getVotingPowerQuery(...params))
     ).power
   }
 
-  async getTotalVotingPower(height?: number): Promise<string> {
+  getTotalVotingPowerQuery(
+    height?: number
+  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+    return daoDaoCoreQueries.totalPowerAtHeight({
+      chainId: this.options.chainId,
+      contractAddress: this.options.coreAddress,
+      args: {
+        height,
+      },
+    })
+  }
+
+  async getTotalVotingPower(
+    ...params: Parameters<CwDao['getTotalVotingPowerQuery']>
+  ): Promise<string> {
     return (
       await this.queryClient.fetchQuery(
-        daoDaoCoreQueries.totalPowerAtHeight({
-          chainId: this.options.chainId,
-          contractAddress: this.options.coreAddress,
-          args: {
-            height,
-          },
-        })
+        this.getTotalVotingPowerQuery(...params)
       )
     ).power
   }

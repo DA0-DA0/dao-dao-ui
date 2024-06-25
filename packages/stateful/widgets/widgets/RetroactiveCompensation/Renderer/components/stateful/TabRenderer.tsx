@@ -1,3 +1,4 @@
+import { FetchQueryOptions, useQueries } from '@tanstack/react-query'
 import { saveAs } from 'file-saver'
 import { unparse as jsonToCsv } from 'papaparse'
 import { useCallback, useState } from 'react'
@@ -7,9 +8,12 @@ import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
-  useLoadingPromise,
 } from '@dao-dao/stateless'
-import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
+import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
+import {
+  makeCombineQueryResultsIntoLoadingDataWithError,
+  secp256k1PublicKeyToBech32Address,
+} from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../../components'
 import {
@@ -28,7 +32,6 @@ export const TabRenderer = () => {
   const { bech32_prefix: bech32Prefix } = useChain()
   const {
     address: walletAddress,
-    permit,
     hexPublicKey,
     dao,
   } = useWalletWithSecretNetworkPermit({
@@ -54,22 +57,17 @@ export const TabRenderer = () => {
   )
   // Get voting power at time of each completed survey creation to determine if
   // we can download the CSV or not.
-  const loadingMembershipDuringCompletedSurveys = useLoadingPromise({
-    // Loading if surveys still loading or wallet not connected.
-    promise:
+  // TODO(dao-client secret): make sure these refresh when the permit updates
+  const loadingMembershipDuringCompletedSurveys = useQueries({
+    queries:
       loadingCompletedSurveys.loading || !walletAddress
-        ? undefined
-        : () =>
-            Promise.all(
-              loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-                dao
-                  .getVotingPower(walletAddress, createdAtBlockHeight)
-                  // Fail silently.
-                  .catch(() => '0')
-              )
-            ),
-    // Refresh when surveys, wallet, or permit changes.
-    deps: [loadingCompletedSurveys, walletAddress, permit],
+        ? ([] as FetchQueryOptions<VotingPowerAtHeightResponse>[])
+        : loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+            dao.getVotingPowerQuery(walletAddress, createdAtBlockHeight)
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      transform: (results) => results.map((r) => r.power),
+    }),
   })
 
   const postRequest = usePostRequest()

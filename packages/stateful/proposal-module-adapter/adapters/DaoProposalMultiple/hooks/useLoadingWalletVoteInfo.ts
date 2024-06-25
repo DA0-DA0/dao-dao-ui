@@ -1,4 +1,3 @@
-import { useLoadingPromise } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
@@ -26,7 +25,7 @@ export const useLoadingWalletVoteInfo = ():
 
   const loadingProposal = useLoadingProposal()
 
-  // TODO(dao-client secret): make sure this refreshes when the permit updates
+  // TODO(dao-client secret): make sure these refresh when the permit updates
   const walletVoteLoading = useQueryLoadingDataWithError(
     proposalModule.getVoteQuery({
       proposalId: proposalNumber,
@@ -34,31 +33,26 @@ export const useLoadingWalletVoteInfo = ():
     })
   )
 
-  const walletVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
-    // Loading state if proposal not loaded or wallet not connected.
-    promise:
-      !loadingProposal.loading && walletAddress
-        ? () =>
-            proposalModule.dao.getVotingPower(
-              walletAddress,
-              loadingProposal.data.start_height
-            )
-        : undefined,
-    // Refresh when permit, proposal module, wallet, or proposal changes.
-    deps: [permit, proposalModule, walletAddress, proposalNumber],
-  })
-
-  const totalVotingPowerWhenProposalCreatedLoading = useLoadingPromise({
-    // Loading state if proposal not loaded.
-    promise: !loadingProposal.loading
-      ? () =>
-          proposalModule.dao.getTotalVotingPower(
+  const walletVotingPowerWhenProposalCreatedLoading =
+    useQueryLoadingDataWithError(
+      loadingProposal.loading
+        ? // loading state if proposal not yet loaded
+          undefined
+        : proposalModule.dao.getVotingPowerQuery(
+            walletAddress,
             loadingProposal.data.start_height
           )
-      : undefined,
-    // Refresh when proposal module or proposal changes.
-    deps: [proposalModule, proposalNumber],
-  })
+    )
+
+  const totalVotingPowerWhenProposalCreatedLoading =
+    useQueryLoadingDataWithError(
+      loadingProposal.loading
+        ? // loading state if proposal not yet loaded
+          undefined
+        : proposalModule.dao.getTotalVotingPowerQuery(
+            loadingProposal.data.start_height
+          )
+    )
 
   // Return undefined when no permit on Secret Network.
   if (isSecretNetwork && !permit) {
@@ -82,12 +76,12 @@ export const useLoadingWalletVoteInfo = ():
   const walletVotingPowerWhenProposalCreated =
     walletVotingPowerWhenProposalCreatedLoading.errored
       ? 0
-      : Number(walletVotingPowerWhenProposalCreatedLoading.data)
+      : Number(walletVotingPowerWhenProposalCreatedLoading.data.power)
   const couldVote = walletVotingPowerWhenProposalCreated > 0
   const totalVotingPowerWhenProposalCreated =
     totalVotingPowerWhenProposalCreatedLoading.errored
       ? 0
-      : Number(totalVotingPowerWhenProposalCreatedLoading.data)
+      : Number(totalVotingPowerWhenProposalCreatedLoading.data.power)
 
   const canVote =
     couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)

@@ -1,6 +1,10 @@
 import { Chain } from '@chain-registry/types'
-import { QueryClient } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
+import {
+  TotalPowerAtHeightResponse,
+  VotingPowerAtHeightResponse,
+} from '../contracts/DaoCore.v2'
 import { DaoInfo } from '../dao'
 import { ProposalModuleBase } from './proposal-module'
 
@@ -60,10 +64,28 @@ export abstract class DaoBase {
   }
 
   /**
+   * Query options to fetch the voting power for a given address. Optionally
+   * specify a block height. If undefined, the latest block height will be used.
+   * If address is undefined, will return query in loading state.
+   */
+  abstract getVotingPowerQuery(
+    address?: string,
+    height?: number
+  ): FetchQueryOptions<VotingPowerAtHeightResponse>
+
+  /**
    * Fetch the voting power for a given address. Optionally specify a block
    * height. If undefined, the latest block height will be used.
    */
   abstract getVotingPower(address: string, height?: number): Promise<string>
+
+  /**
+   * Query options to fetch the total voting power. Optionally specify a block
+   * height. If undefined, the latest block height will be used.
+   */
+  abstract getTotalVotingPowerQuery(
+    height?: number
+  ): FetchQueryOptions<TotalPowerAtHeightResponse>
 
   /**
    * Fetch the total voting power. Optional specify a block height. If

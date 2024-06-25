@@ -103,25 +103,21 @@ export const AddressInput = <
           )
         : []),
     ],
-    combine: useMemo(
-      () =>
-        makeCombineQueryResultsIntoLoadingData<Entity>({
-          firstLoad: 'none',
-          transform: (entities) =>
-            // Only show entities that are on the current chain or are DAOs with
-            // accounts (polytone probably) on the current chain.
-            entities.filter(
-              (entity) =>
-                entity.chainId === currentChain.chain_id ||
-                (entity.type === EntityType.Dao &&
-                  getAccountAddress({
-                    accounts: entity.daoInfo.accounts,
-                    chainId: currentChain.chain_id,
-                  }))
-            ),
-        }),
-      [currentChain.chain_id]
-    ),
+    combine: makeCombineQueryResultsIntoLoadingData<Entity>({
+      firstLoad: 'none',
+      transform: (entities) =>
+        // Only show entities that are on the current chain or are DAOs with
+        // accounts (polytone probably) on the current chain.
+        entities.filter(
+          (entity) =>
+            entity.chainId === currentChain.chain_id ||
+            (entity.type === EntityType.Dao &&
+              getAccountAddress({
+                accounts: entity.daoInfo.accounts,
+                chainId: currentChain.chain_id,
+              }))
+        ),
+    }),
   })
 
   // Use Fuse to search combined profiles and DAOs by name so that is most

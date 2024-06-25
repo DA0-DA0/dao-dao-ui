@@ -1,4 +1,4 @@
-import { QueryKey, useQuery } from '@tanstack/react-query'
+import { QueryKey, skipToken, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { useUpdatingRef } from '@dao-dao/stateless'
@@ -16,7 +16,7 @@ export const useQueryLoadingDataWithError = <
   /**
    * Query options to passthrough to useQuery.
    */
-  options: Omit<
+  options?: Omit<
     Parameters<
       typeof useQuery<TQueryFnData, Error, TQueryFnData, TQueryKey>
     >[0],
@@ -27,7 +27,13 @@ export const useQueryLoadingDataWithError = <
    */
   transform?: (data: TQueryFnData) => TTransformedData
 ): LoadingDataWithError<TTransformedData> => {
-  const { isPending, isError, isRefetching, data, error } = useQuery(options)
+  const { isPending, isError, isRefetching, data, error } = useQuery(
+    // Loading state if options undefined.
+    options || {
+      queryKey: [] as any,
+      queryFn: skipToken,
+    }
+  )
   const transformRef = useUpdatingRef(transform)
 
   return useMemo((): LoadingDataWithError<TTransformedData> => {

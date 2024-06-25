@@ -1,7 +1,7 @@
 import { ThumbDownOutlined } from '@mui/icons-material'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -11,7 +11,6 @@ import {
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
-  useLoadingPromise,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -71,13 +70,10 @@ export const useProposalVetoState = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const {
-    address: walletAddress = '',
-    getSigningClient,
-    permit,
-  } = useWalletWithSecretNetworkPermit({
-    dao: coreAddress,
-  })
+  const { address: walletAddress = '', getSigningClient } =
+    useWalletWithSecretNetworkPermit({
+      dao: coreAddress,
+    })
   const queryClient = useQueryClient()
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
@@ -87,36 +83,39 @@ export const useProposalVetoState = ({
   const { entity: vetoerEntity } = useEntity(
     vetoConfig?.vetoer || neutronTimelockOverrule?.dao || ''
   )
-  // Flatten vetoer entities in case a cw1-whitelist is the vetoer.
-  const vetoerEntities = !vetoerEntity.loading
-    ? vetoerEntity.data.type === EntityType.Cw1Whitelist
-      ? vetoerEntity.data.entities
-      : [vetoerEntity.data]
-    : []
-  const vetoerDaoEntities = vetoerEntities.filter(
-    (entity) => entity.type === EntityType.Dao
-  )
+  const { vetoerEntities, vetoerDaoEntities, vetoerDaoClients } =
+    useMemo(() => {
+      // Flatten vetoer entities in case a cw1-whitelist is the vetoer.
+      const vetoerEntities = !vetoerEntity.loading
+        ? vetoerEntity.data.type === EntityType.Cw1Whitelist
+          ? vetoerEntity.data.entities
+          : [vetoerEntity.data]
+        : []
+
+      const vetoerDaoEntities = vetoerEntities.filter(
+        (entity) => entity.type === EntityType.Dao
+      )
+
+      const vetoerDaoClients = vetoerDaoEntities.map((entity) =>
+        getDao({
+          queryClient,
+          chainId,
+          coreAddress: entity.address,
+        })
+      )
+
+      return {
+        vetoerEntities,
+        vetoerDaoEntities,
+        vetoerDaoClients,
+      }
+    }, [chainId, queryClient, vetoerEntity])
   // This is the voting power the current wallet has in each of the DAO vetoers.
-  const walletDaoVetoerMemberships = useLoadingPromise({
-    // Loading if vetoer entity not loaded or no wallet address.
-    promise:
-      !vetoerEntity.loading && walletAddress
-        ? () =>
-            Promise.all(
-              vetoerDaoEntities.map((entity) =>
-                getDao({
-                  queryClient,
-                  chainId,
-                  coreAddress: entity.address,
-                })
-                  .getVotingPower(walletAddress)
-                  // Fail silently.
-                  .catch(() => '0')
-              )
-            )
-        : undefined,
-    // Refresh when vetoer entity, wallet, or permit changes.
-    deps: [vetoerEntity, walletAddress, permit],
+  // TODO(dao-client secret): make sure these refresh when the permit updates
+  const walletDaoVetoerMemberships = useQueries({
+    queries: walletAddress
+      ? vetoerDaoClients.map((dao) => dao.getVotingPowerQuery(walletAddress))
+      : [],
   })
   const canBeVetoed =
     vetoEnabled &&
@@ -129,17 +128,22 @@ export const useProposalVetoState = ({
   // wallet can veto.
   const matchingWalletVetoer =
     canBeVetoed && !vetoerEntity.loading
-      ? vetoerEntities.find(
+      ? // Find wallet that matches address.
+        vetoerEntities.find(
           (entity) =>
             entity.type === EntityType.Wallet &&
             entity.address === walletAddress
         ) ||
-        (!walletDaoVetoerMemberships.loading &&
-        !walletDaoVetoerMemberships.errored
-          ? vetoerDaoEntities.find(
-              (_, index) => walletDaoVetoerMemberships.data[index] !== '0'
-            )
-          : undefined)
+        // Find DAO where wallet is a member.
+        vetoerDaoEntities.find((_, index) => {
+          const membershipQuery = walletDaoVetoerMemberships[index]
+          return (
+            !!membershipQuery &&
+            !membershipQuery.isPending &&
+            !membershipQuery.isError &&
+            membershipQuery.data.power !== '0'
+          )
+        })
       : undefined
   const walletCanEarlyExecute =
     !!matchingWalletVetoer &&

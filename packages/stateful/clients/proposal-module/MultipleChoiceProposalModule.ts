@@ -1,4 +1,4 @@
-import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import {
   DaoPreProposeMultipleClient,
@@ -109,9 +109,17 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     sender: string
   }): Promise<void> {
     const client = await getSigningClient()
+
     await new DaoProposalMultipleClient(client, sender, this.address).vote({
       proposalId,
       vote,
+    })
+
+    await this.queryClient.invalidateQueries({
+      queryKey: this.getVoteQuery({
+        proposalId,
+        voter: sender,
+      }).queryKey,
     })
   }
 
@@ -156,8 +164,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     voter,
   }: {
     proposalId: number
-    voter: string | undefined
-  }): UseQueryOptions<VoteResponse> {
+    voter?: string
+  }): FetchQueryOptions<VoteResponse> {
     // If no voter, return query in loading state.
     if (!voter) {
       return {

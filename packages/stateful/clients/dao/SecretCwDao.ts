@@ -1,7 +1,12 @@
 import { OfflineAminoSigner } from '@cosmjs/amino'
+import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import { DaoInfo, PermitForPermitData } from '@dao-dao/types'
+import {
+  TotalPowerAtHeightResponse,
+  VotingPowerAtHeightResponse,
+} from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   createSecretNetworkPermit,
   objectMatchesStructure,
@@ -120,8 +125,33 @@ export class SecretCwDao extends CwDao {
     return permit
   }
 
+  getVotingPowerQuery(
+    address?: string,
+    height?: number
+  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+    // If no address nor permit, return query in loading state.
+    const permit = address && this.getExistingPermit(address)
+    if (!permit) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
+    return secretDaoDaoCoreQueries.votingPowerAtHeight({
+      chainId: this.options.chainId,
+      contractAddress: this.options.coreAddress,
+      args: {
+        auth: {
+          permit,
+        },
+        height,
+      },
+    })
+  }
+
   async getVotingPower(
-    address: string,
+    address?: string,
     height?: number,
     /**
      * Whether or not to prompt the wallet for a permit. If true,
@@ -131,41 +161,33 @@ export class SecretCwDao extends CwDao {
      */
     prompt = false
   ): Promise<string> {
-    const permit = prompt
-      ? await this.getPermit(address)
-      : this.getExistingPermit(address)
-
-    if (!permit) {
-      throw new Error('No permit found')
+    if (prompt && address) {
+      // Load permit now which will be retrieved in getVoteQuery.
+      await this.getPermit(address)
     }
 
     return (
       await this.queryClient.fetchQuery(
-        secretDaoDaoCoreQueries.votingPowerAtHeight({
-          chainId: this.options.chainId,
-          contractAddress: this.options.coreAddress,
-          args: {
-            auth: {
-              permit,
-            },
-            height,
-          },
-        })
+        this.getVotingPowerQuery(address, height)
       )
     ).power
   }
 
+  getTotalVotingPowerQuery(
+    height?: number
+  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+    return secretDaoDaoCoreQueries.totalPowerAtHeight({
+      chainId: this.options.chainId,
+      contractAddress: this.options.coreAddress,
+      args: {
+        height,
+      },
+    })
+  }
+
   async getTotalVotingPower(height?: number): Promise<string> {
     return (
-      await this.queryClient.fetchQuery(
-        secretDaoDaoCoreQueries.totalPowerAtHeight({
-          chainId: this.options.chainId,
-          contractAddress: this.options.coreAddress,
-          args: {
-            height,
-          },
-        })
-      )
+      await this.queryClient.fetchQuery(this.getTotalVotingPowerQuery(height))
     ).power
   }
 }

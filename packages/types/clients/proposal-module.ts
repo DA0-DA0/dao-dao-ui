@@ -1,5 +1,5 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import { Coin } from '../contracts/common'
 import { PreProposeModule, ProposalModule } from '../dao'
@@ -111,7 +111,7 @@ export abstract class ProposalModuleBase<
   abstract getVoteQuery(options: {
     proposalId: number
     voter: string | undefined
-  }): UseQueryOptions<VoteResponse>
+  }): FetchQueryOptions<VoteResponse>
 
   /**
    * Fetch the vote on a proposal by a given address. If the address has not

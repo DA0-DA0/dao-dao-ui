@@ -1,5 +1,4 @@
 import { useQueries, useQueryClient } from '@tanstack/react-query'
-import { useMemo } from 'react'
 import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { daoQueries } from '@dao-dao/state/query'
@@ -30,16 +29,10 @@ export const useLoadingDaos = (
             coreAddress,
           })
         ),
-    combine: useMemo(
-      () =>
-        makeCombineQueryResultsIntoLoadingData<DaoInfo>({
-          transform: (infos) =>
-            infos.sort((a, b) =>
-              alphabetize ? a.name.localeCompare(b.name) : 0
-            ),
-        }),
-      [alphabetize]
-    ),
+    combine: makeCombineQueryResultsIntoLoadingData<DaoInfo>({
+      transform: (infos) =>
+        infos.sort((a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)),
+    }),
   })
 }
 

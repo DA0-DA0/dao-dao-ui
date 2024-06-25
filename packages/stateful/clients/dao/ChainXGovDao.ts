@@ -1,14 +1,22 @@
 import { Chain } from '@chain-registry/types'
-import { QueryClient } from '@tanstack/react-query'
+import {
+  FetchQueryOptions,
+  QueryClient,
+  skipToken,
+} from '@tanstack/react-query'
 
-import { chainQueries } from '@dao-dao/state/query'
+import { daoQueries } from '@dao-dao/state/query'
 import { DaoBase, DaoInfo } from '@dao-dao/types'
+import {
+  TotalPowerAtHeightResponse,
+  VotingPowerAtHeightResponse,
+} from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   getChainForChainId,
   mustGetConfiguredChainConfig,
 } from '@dao-dao/utils'
 
-import { daoQueries } from '../../queries'
+import { daoQueries as statefulDaoQueries } from '../../queries'
 
 export class ChainXGovDao extends DaoBase {
   protected _info: DaoInfo | undefined
@@ -23,7 +31,7 @@ export class ChainXGovDao extends DaoBase {
 
     // Attempt immediate initialization if query is cached.
     this._info = this.queryClient.getQueryData(
-      daoQueries.info(this.queryClient, {
+      statefulDaoQueries.info(this.queryClient, {
         chainId: this.options.chainId,
         coreAddress: mustGetConfiguredChainConfig(this.options.chainId).name,
       }).queryKey
@@ -36,7 +44,7 @@ export class ChainXGovDao extends DaoBase {
     }
 
     this._info = await this.queryClient.fetchQuery(
-      daoQueries.info(this.queryClient, {
+      statefulDaoQueries.info(this.queryClient, {
         chainId: this.options.chainId,
         coreAddress: mustGetConfiguredChainConfig(this.options.chainId).name,
       })
@@ -66,22 +74,44 @@ export class ChainXGovDao extends DaoBase {
     return mustGetConfiguredChainConfig(this.options.chainId).name
   }
 
-  async getVotingPower(address: string): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(
-        chainQueries.nativeStakedBalance({
-          chainId: this.options.chainId,
-          address,
-        })
-      )
-    ).amount
+  getVotingPowerQuery(
+    address?: string
+  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+    // If no address, return query in loading state.
+    if (!address) {
+      return {
+        queryKey: [],
+        queryFn: skipToken,
+      }
+    }
+
+    return daoQueries.chainVotingPower(this.queryClient, {
+      chainId: this.options.chainId,
+      address,
+    })
   }
 
-  async getTotalVotingPower(): Promise<string> {
-    return await this.queryClient.fetchQuery(
-      chainQueries.totalNativeStakedBalance({
-        chainId: this.options.chainId,
-      })
-    )
+  async getVotingPower(
+    ...params: Parameters<ChainXGovDao['getVotingPowerQuery']>
+  ): Promise<string> {
+    return (
+      await this.queryClient.fetchQuery(this.getVotingPowerQuery(...params))
+    ).power
+  }
+
+  getTotalVotingPowerQuery(): FetchQueryOptions<TotalPowerAtHeightResponse> {
+    return daoQueries.chainTotalPower(this.queryClient, {
+      chainId: this.options.chainId,
+    })
+  }
+
+  async getTotalVotingPower(
+    ...params: Parameters<ChainXGovDao['getTotalVotingPowerQuery']>
+  ): Promise<string> {
+    return (
+      await this.queryClient.fetchQuery(
+        this.getTotalVotingPowerQuery(...params)
+      )
+    ).power
   }
 }

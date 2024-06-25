@@ -1,5 +1,4 @@
-import { useLoadingPromise } from '@dao-dao/stateless'
-
+import { useQueryLoadingDataWithError } from './useQueryLoadingDataWithError'
 import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
 
 interface UseMembershipOptions {
@@ -21,37 +20,30 @@ export const useMembership = ({
   const {
     address: walletAddress,
     isWalletConnecting,
-    permit,
     dao,
   } = useWalletWithSecretNetworkPermit({
     dao: coreAddress,
   })
 
-  const _walletVotingWeight = useLoadingPromise({
-    // Loading state if no wallet address.
-    promise: walletAddress
-      ? () => dao.getVotingPower(walletAddress, blockHeight)
-      : undefined,
-    // Refresh when permit, DAO, wallet, or block height changes.
-    deps: [permit, dao, walletAddress, blockHeight],
-  })
-  const _totalVotingWeight = useLoadingPromise({
-    promise: () => dao.getTotalVotingPower(blockHeight),
-    // Refresh when DAO or block height changes.
-    deps: [dao, blockHeight],
-  })
+  // TODO(dao-client secret): make sure these refresh when the permit updates
+  const _walletVotingWeight = useQueryLoadingDataWithError(
+    dao.getVotingPowerQuery(walletAddress, blockHeight)
+  )
+  const _totalVotingWeight = useQueryLoadingDataWithError(
+    dao.getTotalVotingPowerQuery(blockHeight)
+  )
 
   const walletVotingWeight =
     !_walletVotingWeight.loading &&
     !_walletVotingWeight.errored &&
-    !isNaN(Number(_walletVotingWeight.data))
-      ? Number(_walletVotingWeight.data)
+    !isNaN(Number(_walletVotingWeight.data.power))
+      ? Number(_walletVotingWeight.data.power)
       : undefined
   const totalVotingWeight =
     !_totalVotingWeight.loading &&
     !_totalVotingWeight.errored &&
-    !isNaN(Number(_totalVotingWeight.data))
-      ? Number(_totalVotingWeight.data)
+    !isNaN(Number(_totalVotingWeight.data.power))
+      ? Number(_totalVotingWeight.data.power)
       : undefined
   const isMember =
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined

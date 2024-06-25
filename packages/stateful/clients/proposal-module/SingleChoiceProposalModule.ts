@@ -1,4 +1,4 @@
-import { UseQueryOptions, skipToken } from '@tanstack/react-query'
+import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import {
   CwProposalSingleV1Client,
@@ -159,6 +159,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       proposalId,
       vote,
     })
+
+    await this.queryClient.invalidateQueries({
+      queryKey: this.getVoteQuery({
+        proposalId,
+        voter: sender,
+      }).queryKey,
+    })
   }
 
   async execute({
@@ -214,8 +221,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     voter,
   }: {
     proposalId: number
-    voter: string | undefined
-  }): UseQueryOptions<VoteResponse> {
+    voter?: string
+  }): FetchQueryOptions<VoteResponse> {
     // If no voter, return query in loading state.
     if (!voter) {
       return {
