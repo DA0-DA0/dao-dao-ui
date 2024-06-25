@@ -34,7 +34,7 @@ export type UploadCodeData = {
   // Whether or not data is gzipped.
   gzipped?: boolean
   accessType: AccessType
-  // Only used when accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES
+  // Only used when accessType === AccessType.AnyOfAddresses
   allowedAddresses: {
     address: string
   }[]
@@ -191,15 +191,15 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
             [
               {
                 label: t('info.anyone'),
-                value: AccessType.ACCESS_TYPE_EVERYBODY,
+                value: AccessType.Everybody,
               },
               {
                 label: t('form.noOne'),
-                value: AccessType.ACCESS_TYPE_NOBODY,
+                value: AccessType.Nobody,
               },
               {
                 label: t('form.oneOrMoreAccounts'),
-                value: AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES,
+                value: AccessType.AnyOfAddresses,
               },
             ] as RadioInputOption<AccessType>[]
           )
@@ -209,7 +209,7 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
           watch={watch}
         />
 
-        {accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES && (
+        {accessType === AccessType.AnyOfAddresses && (
           <div className={clsx('flex flex-col', isCreating && 'gap-2')}>
             {allowedAddressesFields.map(({ id }, index) => (
               <div key={id} className="flex flex-row items-center gap-2">
