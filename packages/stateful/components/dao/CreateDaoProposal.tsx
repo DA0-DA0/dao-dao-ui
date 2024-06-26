@@ -62,10 +62,12 @@ export const CreateDaoProposal = () => {
   const [selectedProposalModule, setSelectedProposalModule] = useState(() => {
     // Ignore proposals with an approver pre-propose since those are
     // automatically managed by a pre-propose-approval contract in another DAO.
-    const validProposalModules = daoInfo.proposalModules.filter(
-      ({ prePropose }) =>
-        prePropose?.contractName !== ContractName.PreProposeApprover
-    )
+    const validProposalModules = daoInfo.proposalModules
+      .filter(
+        ({ prePropose }) =>
+          prePropose?.contractName !== ContractName.PreProposeApprover
+      )
+      .sort((a, b) => a.prefix.localeCompare(b.prefix))
 
     // Default to single choice proposal module or first otherwise.
     return (
