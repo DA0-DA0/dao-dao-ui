@@ -110,7 +110,7 @@ export const fetchDaoInfo = async (
 
   const [
     parentDao,
-    votingModuleInfo,
+    { info: votingModuleInfo },
     created,
     proposalModules,
     _items,
@@ -200,8 +200,6 @@ export const fetchDaoInfo = async (
       .catch(() => null),
   ])
 
-  const votingModuleContractName = votingModuleInfo.info.contract
-
   // Convert items list into map.
   const items = Object.fromEntries(_items)
 
@@ -211,7 +209,7 @@ export const fetchDaoInfo = async (
     coreVersion,
     supportedFeatures,
     votingModuleAddress: state.voting_module,
-    votingModuleContractName,
+    votingModuleInfo,
     proposalModules: proposalModules.sort((a, b) =>
       a.prefix.localeCompare(b.prefix)
     ),

@@ -39,7 +39,10 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
   },
   supportedFeatures: {} as any,
   votingModuleAddress: '',
-  votingModuleContractName: '',
+  votingModuleInfo: {
+    contract: '',
+    version: '',
+  },
   proposalModules: [],
   // Random date in the past 12 months.
   created:

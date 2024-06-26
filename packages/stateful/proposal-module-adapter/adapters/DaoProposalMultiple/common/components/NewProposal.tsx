@@ -18,7 +18,7 @@ import {
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { BaseNewProposalProps, ProposalModuleBase } from '@dao-dao/types'
+import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
   convertActionsToMessages,
@@ -41,7 +41,7 @@ import { NewProposalMain } from './NewProposalMain'
 import { NewProposalPreview } from './NewProposalPreview'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
-  proposalModule: ProposalModuleBase
+  proposalModule: IProposalModuleBase
   usePublishProposal: UsePublishProposal
 }
 

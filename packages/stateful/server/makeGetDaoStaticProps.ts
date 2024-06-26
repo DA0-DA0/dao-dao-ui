@@ -16,10 +16,10 @@ import {
 import {
   ChainId,
   CommonProposalInfo,
-  DaoBase,
   DaoPageMode,
   GovProposalVersion,
   GovProposalWithDecodedContent,
+  IDaoBase,
   ProposalV1,
   ProposalV1Beta1,
 } from '@dao-dao/types'
@@ -64,7 +64,7 @@ interface GetDaoStaticPropsMakerOptions {
     t: TFunction
     queryClient: QueryClient
     chain: Chain
-    dao: DaoBase
+    dao: IDaoBase
   }) =>
     | GetDaoStaticPropsMakerProps
     | undefined

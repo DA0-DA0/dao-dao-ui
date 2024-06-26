@@ -27,7 +27,10 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         // Unused.
         supportedFeatures: {} as any,
         votingModuleAddress: '',
-        votingModuleContractName: '',
+        votingModuleInfo: {
+          contract: '',
+          version: '',
+        },
         proposalModules: [],
         created: null,
         isActive: true,
@@ -54,7 +57,10 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
         // Unused.
         supportedFeatures: {} as any,
         votingModuleAddress: '',
-        votingModuleContractName: '',
+        votingModuleInfo: {
+          contract: '',
+          version: '',
+        },
         proposalModules: [],
         created: null,
         isActive: true,

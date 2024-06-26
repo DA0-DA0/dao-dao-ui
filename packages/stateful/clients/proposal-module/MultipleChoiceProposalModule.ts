@@ -5,7 +5,7 @@ import {
   DaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin, ProposalModuleBase } from '@dao-dao/types'
+import { Coin } from '@dao-dao/types'
 import {
   MultipleChoiceVote,
   VoteInfo,
@@ -19,6 +19,7 @@ import {
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalMultiple/types'
 import { CwDao } from '../dao/CwDao'
+import { ProposalModuleBase } from './base'
 
 export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,

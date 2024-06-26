@@ -18,7 +18,7 @@ import {
   ActionMaker,
   ContractVersion,
   Feature,
-  ProposalModuleBase,
+  IProposalModuleBase,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -118,7 +118,7 @@ export const makeUpdateProposalConfigV2ActionMaker = ({
   version,
   address: proposalModuleAddress,
   prePropose,
-}: ProposalModuleBase): ActionMaker<UpdateProposalConfigData> => {
+}: IProposalModuleBase): ActionMaker<UpdateProposalConfigData> => {
   const Component: ActionComponent = (props) => {
     const { t } = useTranslation()
     const { setError, clearErrors, watch, trigger } =

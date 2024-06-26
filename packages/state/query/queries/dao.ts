@@ -64,6 +64,7 @@ export const fetchChainVotingPower = async (
   power: (
     await queryClient.fetchQuery(chainQueries.nativeStakedBalance(options))
   ).amount,
+  height: -1,
 })
 
 /**
@@ -76,6 +77,7 @@ export const fetchChainTotalPower = async (
   power: await queryClient.fetchQuery(
     chainQueries.totalNativeStakedBalance(options)
   ),
+  height: -1,
 })
 
 export const daoQueries = {

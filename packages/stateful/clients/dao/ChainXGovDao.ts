@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import { daoQueries } from '@dao-dao/state/query'
-import { DaoBase, DaoInfo } from '@dao-dao/types'
+import { DaoInfo } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -17,6 +17,7 @@ import {
 } from '@dao-dao/utils'
 
 import { daoQueries as statefulDaoQueries } from '../../queries'
+import { DaoBase } from './base'
 
 export class ChainXGovDao extends DaoBase {
   protected _info: DaoInfo | undefined
@@ -91,27 +92,9 @@ export class ChainXGovDao extends DaoBase {
     })
   }
 
-  async getVotingPower(
-    ...params: Parameters<ChainXGovDao['getVotingPowerQuery']>
-  ): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(this.getVotingPowerQuery(...params))
-    ).power
-  }
-
   getTotalVotingPowerQuery(): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return daoQueries.chainTotalPower(this.queryClient, {
       chainId: this.options.chainId,
     })
-  }
-
-  async getTotalVotingPower(
-    ...params: Parameters<ChainXGovDao['getTotalVotingPowerQuery']>
-  ): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(
-        this.getTotalVotingPowerQuery(...params)
-      )
-    ).power
   }
 }

@@ -2,10 +2,10 @@ import {
   ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
+  IProposalModuleBase,
   NeutronTimelockOverrule,
   PercentOrMajorityValue,
   ProcessedTQ,
-  ProposalModuleBase,
   ProposalTimestampInfo,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
@@ -85,7 +85,7 @@ export type PublishProposal = (
 }>
 
 export interface MakeUsePublishProposalOptions {
-  proposalModule: ProposalModuleBase
+  proposalModule: IProposalModuleBase
   depositInfoSelector: DepositInfoSelector
 }
 

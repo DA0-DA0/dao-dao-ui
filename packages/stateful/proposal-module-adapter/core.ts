@@ -1,11 +1,11 @@
 import {
-  DaoBase,
+  IDaoBase,
   IProposalModuleAdapterCommon,
   IProposalModuleAdapterOptions,
+  IProposalModuleBase,
   IProposalModuleCommonContext,
   IProposalModuleContext,
   ProposalModuleAdapter,
-  ProposalModuleBase,
 } from '@dao-dao/types'
 
 import {
@@ -37,11 +37,11 @@ export const matchAdapter = (contractNameToMatch: string) =>
   )
 
 export const matchAndLoadCommon = (
-  dao: DaoBase,
+  dao: IDaoBase,
   proposalModuleAddress: string
 ): IProposalModuleAdapterCommon & {
   id: string
-  proposalModule: ProposalModuleBase
+  proposalModule: IProposalModuleBase
 } => {
   const proposalModule = dao.getProposalModule(proposalModuleAddress)
   if (!proposalModule) {
@@ -71,7 +71,7 @@ export const matchAndLoadCommon = (
 }
 
 export const matchAndLoadAdapter = (
-  dao: DaoBase,
+  dao: IDaoBase,
   proposalId: string
 ): IProposalModuleContext => {
   // Prefix is alphabetical, followed by numeric prop number. If there is an

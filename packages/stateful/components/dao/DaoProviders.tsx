@@ -116,7 +116,7 @@ const InitializedDaoProviders = ({
       children
     ) : (
       <VotingModuleAdapterProvider
-        contractName={context.dao.info.votingModuleContractName}
+        contractName={context.dao.info.votingModuleInfo.contract}
         options={{
           chainId: context.dao.chainId,
           votingModuleAddress: context.dao.info.votingModuleAddress,

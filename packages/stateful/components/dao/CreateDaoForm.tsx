@@ -702,7 +702,10 @@ export const InnerCreateDaoForm = ({
               supportedFeatures: {} as any,
               created: Date.now(),
               votingModuleAddress: '',
-              votingModuleContractName: '',
+              votingModuleInfo: {
+                contract: '',
+                version: '',
+              },
               proposalModules: [],
               isActive: true,
               activeThreshold: null,

@@ -682,7 +682,10 @@ export const getDaoInfoForChainId = (
     {} as SupportedFeatureMap
   ),
   votingModuleAddress: '',
-  votingModuleContractName: '',
+  votingModuleInfo: {
+    contract: '',
+    version: '',
+  },
   proposalModules: [],
   name: getDisplayNameForChainId(chainId),
   description: getChainGovernanceDaoDescription(chainId),

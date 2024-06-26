@@ -5,7 +5,7 @@ import {
   SecretDaoProposalSingleClient,
 } from '@dao-dao/state/contracts'
 import { secretDaoProposalSingleQueries } from '@dao-dao/state/query'
-import { Coin, ProposalModuleBase } from '@dao-dao/types'
+import { Coin } from '@dao-dao/types'
 import {
   Vote,
   VoteInfo,
@@ -20,6 +20,7 @@ import {
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { SecretCwDao } from '../dao/SecretCwDao'
+import { ProposalModuleBase } from './base'
 
 export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,

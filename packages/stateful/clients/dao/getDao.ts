@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query'
 
-import { DaoBase } from '@dao-dao/types'
+import { IDaoBase } from '@dao-dao/types'
 import {
   getSupportedChainConfig,
   isConfiguredChainName,
@@ -23,7 +23,7 @@ export const getDao = ({
   queryClient: QueryClient
   chainId: string
   coreAddress: string
-}): DaoBase => {
+}): IDaoBase => {
   let daoAddress = coreAddress
 
   // Native chain x/gov governance.

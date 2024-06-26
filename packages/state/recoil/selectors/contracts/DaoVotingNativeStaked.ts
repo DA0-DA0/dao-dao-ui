@@ -180,10 +180,10 @@ export const votingPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
-      const votingPower = get(
+      const votingPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingNativeStaked/votingPower',
+          formula: 'daoVotingNativeStaked/votingPowerAtHeight',
           args: {
             address: params[0].address,
           },
@@ -191,11 +191,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
           id,
         })
       )
-      if (votingPower && !isNaN(votingPower)) {
-        return {
-          power: votingPower,
-          height: params[0].height,
-        }
+      if (votingPowerAtHeight) {
+        return votingPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.
@@ -217,19 +214,16 @@ export const totalPowerAtHeightSelector = selectorFamily<
         get(refreshWalletBalancesIdAtom(undefined)) +
         get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
-      const totalPower = get(
+      const totalPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingNativeStaked/totalPower',
+          formula: 'daoVotingNativeStaked/totalPowerAtHeight',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )
-      if (totalPower && !isNaN(totalPower)) {
-        return {
-          power: totalPower,
-          height: params[0].height,
-        }
+      if (totalPowerAtHeight) {
+        return totalPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.

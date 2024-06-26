@@ -1,57 +1,73 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
-import { Coin } from '../contracts/common'
-import { PreProposeModule, ProposalModule } from '../dao'
-import { ContractVersion } from '../features'
-import { IDaoBase } from './dao'
+import {
+  Coin,
+  ContractVersion,
+  IDaoBase,
+  IProposalModuleBase,
+  PreProposeModule,
+  ProposalModule,
+} from '@dao-dao/types'
 
-export interface IProposalModuleBase<
+export abstract class ProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
   Proposal = any,
   VoteResponse = any,
   VoteInfo = any,
   Vote = any
-> {
+> implements IProposalModuleBase<Dao, Proposal, VoteResponse, VoteInfo, Vote>
+{
   /**
-   * DAO this module belongs to.
+   * The contract names that this module supports.
    */
-  dao: Dao
+  static contractNames: readonly string[]
 
-  /**
-   * Proposal module info.
-   */
-  info: ProposalModule
+  constructor(
+    protected readonly queryClient: QueryClient,
+    public readonly dao: Dao,
+    public readonly info: ProposalModule
+  ) {}
 
   /**
    * Contract address.
    */
-  address: string
+  get address(): string {
+    return this.info.address
+  }
 
   /**
    * Contract version.
    */
-  version: ContractVersion
+  get version(): ContractVersion {
+    return this.info.version
+  }
 
   /**
    * Contract name.
    */
-  contractName: string
+  get contractName(): string {
+    return this.info.contractName
+  }
 
   /**
    * Proposal module prefix in the DAO.
    */
-  prefix: string
+  get prefix(): string {
+    return this.info.prefix
+  }
 
   /**
    * Pre-propose module, or null if none.
    */
-  prePropose: PreProposeModule | null
+  get prePropose(): PreProposeModule | null {
+    return this.info.prePropose
+  }
 
   /**
    * Make a proposal.
    */
-  propose(options: {
+  abstract propose(options: {
     data: Proposal
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
@@ -64,7 +80,7 @@ export interface IProposalModuleBase<
   /**
    * Vote on a proposal.
    */
-  vote(options: {
+  abstract vote(options: {
     proposalId: number
     vote: Vote
     getSigningClient: () => Promise<SigningCosmWasmClient>
@@ -74,7 +90,7 @@ export interface IProposalModuleBase<
   /**
    * Execute a passed proposal.
    */
-  execute(options: {
+  abstract execute(options: {
     proposalId: number
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
@@ -84,7 +100,7 @@ export interface IProposalModuleBase<
   /**
    * Close a rejected proposal.
    */
-  close(options: {
+  abstract close(options: {
     proposalId: number
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
@@ -94,7 +110,7 @@ export interface IProposalModuleBase<
    * Query options to fetch the vote on a proposal by a given address. If voter
    * is undefined, will return query in loading state.
    */
-  getVoteQuery(options: {
+  abstract getVoteQuery(options: {
     proposalId: number
     voter: string | undefined
   }): FetchQueryOptions<VoteResponse>
@@ -103,7 +119,7 @@ export interface IProposalModuleBase<
    * Fetch the vote on a proposal by a given address. If the address has not
    * voted, it will return null.
    */
-  getVote(options: {
+  abstract getVote(options: {
     proposalId: number
     voter: string
   }): Promise<VoteInfo | null>

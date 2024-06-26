@@ -22,6 +22,7 @@ import {
 } from './components'
 import {
   ActiveThreshold,
+  ContractVersionInfo,
   DepositRefundPolicy,
   ModuleInstantiateInfo,
 } from './contracts/common'
@@ -60,7 +61,7 @@ export type DaoInfo = {
   coreVersion: ContractVersion
   supportedFeatures: SupportedFeatureMap
   votingModuleAddress: string
-  votingModuleContractName: string
+  votingModuleInfo: ContractVersionInfo
   proposalModules: ProposalModule[]
   /**
    * Wasm contract-level admin that can migrate.

@@ -1,61 +1,32 @@
-import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../contracts/DaoCore.v2'
-import { DaoInfo } from '../dao'
-import { IProposalModuleBase } from './proposal-module'
-import { IVotingModuleBase } from './voting-module'
+import { ContractVersion } from '../features'
+import { IDaoBase } from './dao'
 
-export interface IDaoBase {
+export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
   /**
-   * DAO info object.
+   * DAO this module belongs to.
    */
-  info: DaoInfo
-
-  /**
-   * Chain ID of the DAO.
-   */
-  chainId: string
+  dao: Dao
 
   /**
-   * Chain of the DAO.
+   * Address of the voting module.
    */
-  chain: Chain
+  address: string
 
   /**
-   * Core address of the DAO.
+   * Contract version.
    */
-  coreAddress: string
+  version: ContractVersion
 
   /**
-   * Voting module for the DAO.
+   * Contract name.
    */
-  votingModule: IVotingModuleBase
-
-  /**
-   * Proposal modules for the DAO.
-   */
-  proposalModules: readonly IProposalModuleBase[]
-
-  /**
-   * Whether or not the client has been initialized. This only matters for some
-   * functions, depending on the implementation.
-   */
-  initialized: boolean
-
-  /**
-   * Initialize the client. This only matters for some functions, depending on
-   * the implementation.
-   */
-  init(): Promise<void>
-
-  /**
-   * Get the proposal module with the given address.
-   */
-  getProposalModule(address: string): IProposalModuleBase | undefined
+  contractName: string
 
   /**
    * Query options to fetch the voting power for a given address. Optionally

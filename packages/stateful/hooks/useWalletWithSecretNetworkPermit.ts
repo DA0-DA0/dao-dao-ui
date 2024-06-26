@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useUpdatingRef } from '@dao-dao/stateless'
-import { DaoBase, PermitForPermitData } from '@dao-dao/types'
+import { IDaoBase, PermitForPermitData } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
 import { SecretCwDao, getDao } from '../clients/dao'
@@ -23,7 +23,7 @@ export type UseWalletWithSecretNetworkPermitReturn = UseWalletReturn & {
   /**
    * DAO client.
    */
-  dao: DaoBase
+  dao: IDaoBase
   /**
    * Permit saved for the given DAO, if exists.
    */

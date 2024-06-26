@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
-import { DaoBase, DaoInfo, ProposalModuleBase } from '@dao-dao/types'
+import { DaoInfo, IProposalModuleBase, IVotingModuleBase } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -18,8 +18,23 @@ import {
   MultipleChoiceProposalModule,
   SingleChoiceProposalModule,
 } from '../proposal-module'
+import {
+  Cw20StakedVotingModule,
+  Cw4VotingModule,
+  Cw721StakedVotingModule,
+  NativeStakedVotingModule,
+  TokenStakedVotingModule,
+} from '../voting-module'
+import { DaoBase } from './base'
 
-// TODO(dao-client): move this somewhere better?
+const getVotingModuleBases = () => [
+  Cw4VotingModule,
+  Cw20StakedVotingModule,
+  Cw721StakedVotingModule,
+  NativeStakedVotingModule,
+  TokenStakedVotingModule,
+]
+
 const getProposalModuleBases = () => [
   SingleChoiceProposalModule,
   MultipleChoiceProposalModule,
@@ -27,7 +42,8 @@ const getProposalModuleBases = () => [
 
 export class CwDao extends DaoBase {
   protected _info: DaoInfo | undefined
-  protected _proposalModules: readonly ProposalModuleBase[] = []
+  protected _proposalModules: readonly IProposalModuleBase[] = []
+  protected _votingModule: IVotingModuleBase | undefined
 
   constructor(
     queryClient: QueryClient,
@@ -68,6 +84,19 @@ export class CwDao extends DaoBase {
     this._info = info
 
     if (info) {
+      const VotingModule = getVotingModuleBases().find((Base) =>
+        Base.contractNames.includes(info.votingModuleInfo.contract)
+      )
+      if (!VotingModule) {
+        throw new Error('Voting module not found')
+      }
+      this._votingModule = new VotingModule(
+        this.queryClient,
+        this,
+        info.votingModuleAddress,
+        info.votingModuleInfo
+      )
+
       const proposalModuleBases = getProposalModuleBases()
       this._proposalModules = info.proposalModules.flatMap((proposalModule) => {
         const ProposalModule = proposalModuleBases.find((Base) =>
@@ -106,7 +135,14 @@ export class CwDao extends DaoBase {
     return this.options.coreAddress
   }
 
-  get proposalModules(): readonly ProposalModuleBase[] {
+  get votingModule(): IVotingModuleBase {
+    if (!this._votingModule) {
+      throw new Error('Not initialized')
+    }
+    return this._votingModule
+  }
+
+  get proposalModules(): readonly IProposalModuleBase[] {
     return this._proposalModules
   }
 
@@ -132,14 +168,6 @@ export class CwDao extends DaoBase {
     })
   }
 
-  async getVotingPower(
-    ...params: Parameters<CwDao['getVotingPowerQuery']>
-  ): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(this.getVotingPowerQuery(...params))
-    ).power
-  }
-
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
@@ -150,15 +178,5 @@ export class CwDao extends DaoBase {
         height,
       },
     })
-  }
-
-  async getTotalVotingPower(
-    ...params: Parameters<CwDao['getTotalVotingPowerQuery']>
-  ): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(
-        this.getTotalVotingPowerQuery(...params)
-      )
-    ).power
   }
 }

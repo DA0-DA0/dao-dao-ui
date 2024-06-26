@@ -5,7 +5,7 @@ import {
   SecretDaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
 import { secretDaoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin, ProposalModuleBase } from '@dao-dao/types'
+import { Coin } from '@dao-dao/types'
 import {
   MultipleChoiceVote,
   VoteInfo,
@@ -19,6 +19,7 @@ import {
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalMultiple/types'
 import { SecretCwDao } from '../dao/SecretCwDao'
+import { ProposalModuleBase } from './base'
 
 export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,

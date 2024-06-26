@@ -9,7 +9,7 @@ import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
-import { Coin, ContractVersion, ProposalModuleBase } from '@dao-dao/types'
+import { Coin, ContractVersion } from '@dao-dao/types'
 import {
   Vote,
   VoteInfo,
@@ -24,6 +24,7 @@ import {
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { CwDao } from '../dao/CwDao'
+import { ProposalModuleBase } from './base'
 
 export class SingleChoiceProposalModule extends ProposalModuleBase<
   CwDao,

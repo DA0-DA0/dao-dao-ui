@@ -111,3 +111,7 @@ export {
   SecretDaoPreProposeMultipleClient,
   SecretDaoPreProposeMultipleQueryClient,
 } from './SecretDaoPreProposeMultiple'
+export {
+  DaoVotingCw721StakedClient,
+  DaoVotingCw721StakedQueryClient,
+} from './DaoVotingCw721Staked'

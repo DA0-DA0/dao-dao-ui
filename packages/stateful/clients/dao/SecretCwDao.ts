@@ -18,7 +18,8 @@ import {
 } from '../proposal-module'
 import { CwDao } from './CwDao'
 
-// TODO(dao-client): move this somewhere better?
+const getVotingModuleBases = () => []
+
 const getProposalModuleBases = () => [
   SecretSingleChoiceProposalModule,
   SecretMultipleChoiceProposalModule,
@@ -35,6 +36,19 @@ export class SecretCwDao extends CwDao {
     this._info = info
 
     if (info) {
+      const VotingModule = getVotingModuleBases().find((Base) =>
+        Base.contractNames.includes(info.votingModuleInfo.contract)
+      )
+      if (!VotingModule) {
+        throw new Error('Voting module not found')
+      }
+      this._votingModule = new VotingModule(
+        this.queryClient,
+        this,
+        info.votingModuleAddress,
+        info.votingModuleInfo
+      )
+
       const proposalModuleBases = getProposalModuleBases()
       this._proposalModules = info.proposalModules.flatMap((proposalModule) => {
         const ProposalModule = proposalModuleBases.find((Base) =>
@@ -166,11 +180,7 @@ export class SecretCwDao extends CwDao {
       await this.getPermit(address)
     }
 
-    return (
-      await this.queryClient.fetchQuery(
-        this.getVotingPowerQuery(address, height)
-      )
-    ).power
+    return await super.getVotingPower(address, height)
   }
 
   getTotalVotingPowerQuery(
@@ -183,11 +193,5 @@ export class SecretCwDao extends CwDao {
         height,
       },
     })
-  }
-
-  async getTotalVotingPower(height?: number): Promise<string> {
-    return (
-      await this.queryClient.fetchQuery(this.getTotalVotingPowerQuery(height))
-    ).power
   }
 }

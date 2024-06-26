@@ -2,8 +2,8 @@ import {
   ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
+  IProposalModuleBase,
   ProcessedTQ,
-  ProposalModuleBase,
   ProposalTimestampInfo,
   ProposalVoteOption,
   UnifiedCosmosMsg,
@@ -85,7 +85,7 @@ export type PublishProposal = (
 }>
 
 export interface MakeUsePublishProposalOptions {
-  proposalModule: ProposalModuleBase
+  proposalModule: IProposalModuleBase
   depositInfoSelector: DepositInfoSelector
 }
 

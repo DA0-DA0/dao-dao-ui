@@ -17,7 +17,7 @@ import {
   ActionKey,
   ActionMaker,
   ContractVersion,
-  DaoBase,
+  IDaoBase,
   LoadingData,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -76,7 +76,7 @@ const useV1SubDaos = () => {
     deps: [queryClient, chainId, potentialSubDaos],
   })
 
-  const potentialV1SubDaos: LoadingData<DaoBase[]> = useMemo(
+  const potentialV1SubDaos: LoadingData<IDaoBase[]> = useMemo(
     () =>
       !daos.loading
         ? {
