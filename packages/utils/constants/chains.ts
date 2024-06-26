@@ -2144,6 +2144,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 8169,
       DaoVotingCw20Staked: 8170, // snip20
       DaoVotingCw721Staked: 8182, // snip721
+      // TODO(secret-testnet)
+      QueryAuth: -1,
 
       // unused
       CwTokenfactoryIssuerMain: -1,
@@ -2185,6 +2187,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         '715b7aa5925b46a7fcff277f4ad3763016429daec8ddedd568f892dad2eb88d0', // snip20
       DaoVotingCw721Staked:
         '90f91337256cb3db1b44567ced0457b51271263f67e5df3590de77d22c04a3b3', // snip721
+      // TODO(secret-testnet)
+      QueryAuth: '',
+
+      // unused
+      CwTokenfactoryIssuerMain: '',
+      DaoVotingTokenStaked: '',
+      DaoMigrator: '',
     },
   },
 ]

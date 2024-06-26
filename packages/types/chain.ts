@@ -231,6 +231,9 @@ export type CodeIdConfig = {
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
 
+  // For Secret Network
+  QueryAuth?: number
+
   // For migrating Migaloo DAOs from cosmwasm to osmosis x/tokenfactory.
   CwTokenfactoryIssuerCosmWasm?: number
 
@@ -240,7 +243,9 @@ export type CodeIdConfig = {
   DaoVotingCw20Staked?: number
 }
 
-export type CodeHashConfig = Partial<Record<keyof CodeIdConfig, string>>
+export type CodeHashConfig = {
+  [K in keyof CodeIdConfig]: string
+}
 
 export type PolytoneConnection = {
   // Contract address of note on the local/current chain.

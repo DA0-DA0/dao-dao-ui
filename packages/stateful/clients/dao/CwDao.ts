@@ -6,12 +6,24 @@ import {
 } from '@tanstack/react-query'
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
-import { DaoInfo, IProposalModuleBase, IVotingModuleBase } from '@dao-dao/types'
 import {
+  DaoInfo,
+  IProposalModuleBase,
+  IVotingModuleBase,
+  ModuleInstantiateInfo,
+} from '@dao-dao/types'
+import {
+  InitialItem,
+  InstantiateMsg,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { getChainForChainId } from '@dao-dao/utils'
+import {
+  encodeJsonToBase64,
+  getChainForChainId,
+  getFundsFromDaoInstantiateMsg,
+  mustGetSupportedChainConfig,
+} from '@dao-dao/utils'
 
 import { daoQueries } from '../../queries'
 import {
@@ -63,6 +75,49 @@ export class CwDao extends DaoBase {
         }).queryKey
       )
     )
+  }
+
+  /**
+   * Generate the DAO instantiate info. Use the voting module and proposal
+   * module generateModuleInstantiateInfo functions to get the module
+   * instantiate info objects.
+   */
+  static generateInstantiateInfo(
+    chainId: string,
+    config: {
+      admin?: string | null
+      uri?: string | null
+      name: string
+      description: string
+      imageUrl?: string | null
+      initialItems?: InitialItem[] | null
+      automaticallyAddCw20s?: boolean
+      automaticallyAddCw721s?: boolean
+    },
+    votingModule: ModuleInstantiateInfo,
+    proposalModules: ModuleInstantiateInfo[]
+  ) {
+    return {
+      admin: config.admin || null,
+      code_id: mustGetSupportedChainConfig(chainId).codeIds.DaoCore,
+      label: config.name,
+      msg: encodeJsonToBase64({
+        admin: config.admin,
+        automatically_add_cw20s: config.automaticallyAddCw20s ?? true,
+        automatically_add_cw721s: config.automaticallyAddCw721s ?? true,
+        dao_uri: config.uri,
+        description: config.description,
+        image_url: config.imageUrl,
+        initial_items: config.initialItems,
+        name: config.name,
+        proposal_modules_instantiate_info: proposalModules,
+        voting_module_instantiate_info: votingModule,
+      } as InstantiateMsg),
+      funds: getFundsFromDaoInstantiateMsg({
+        voting_module_instantiate_info: votingModule,
+        proposal_modules_instantiate_info: proposalModules,
+      }),
+    }
   }
 
   async init() {

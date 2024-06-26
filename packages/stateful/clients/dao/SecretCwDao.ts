@@ -4,11 +4,17 @@ import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import { DaoInfo, PermitForPermitData } from '@dao-dao/types'
 import {
+  InitialItem,
+  InstantiateMsg,
+  ModuleInstantiateInfo,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   createSecretNetworkPermit,
+  encodeJsonToBase64,
+  getFundsFromDaoInstantiateMsg,
+  mustGetSupportedChainConfig,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -41,6 +47,61 @@ export class SecretCwDao extends CwDao {
    * be set before `getPermit` and `getVotingPower` can be used.
    */
   private getOfflineSignerAmino?: () => OfflineAminoSigner
+
+  /**
+   * Generate the DAO instantiate info. Use the voting module and proposal
+   * module generateModuleInstantiateInfo functions to get the module
+   * instantiate info objects.
+   */
+  static generateInstantiateInfo(
+    chainId: string,
+    config: {
+      admin?: string | null
+      uri?: string | null
+      name: string
+      description: string
+      imageUrl?: string | null
+      initialItems?: InitialItem[] | null
+    },
+    votingModule: ModuleInstantiateInfo,
+    proposalModules: ModuleInstantiateInfo[]
+  ) {
+    const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
+    if (
+      !codeHashes ||
+      !codeHashes.QueryAuth ||
+      !codeIds.QueryAuth ||
+      !codeHashes.Cw20Base ||
+      !codeHashes.Cw721Base
+    ) {
+      throw new Error('Codes not properly configured for chain ' + chainId)
+    }
+
+    return {
+      admin: config.admin || null,
+      code_id: codeIds.DaoCore,
+      code_hash: codeHashes.DaoCore,
+      label: config.name,
+      msg: encodeJsonToBase64({
+        admin: config.admin,
+        dao_uri: config.uri,
+        description: config.description,
+        image_url: config.imageUrl,
+        initial_items: config.initialItems,
+        name: config.name,
+        proposal_modules_instantiate_info: proposalModules,
+        query_auth_code_hash: codeHashes.QueryAuth,
+        query_auth_code_id: codeIds.QueryAuth,
+        snip20_code_hash: codeHashes.Cw20Base,
+        snip721_code_hash: codeHashes.Cw721Base,
+        voting_module_instantiate_info: votingModule,
+      } as InstantiateMsg),
+      funds: getFundsFromDaoInstantiateMsg({
+        voting_module_instantiate_info: votingModule,
+        proposal_modules_instantiate_info: proposalModules,
+      }),
+    }
+  }
 
   protected setInfo(info: DaoInfo | undefined) {
     this._info = info

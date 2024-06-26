@@ -57,7 +57,10 @@ export const polytoneNoteProxyMapToChainIdMap = (
 export const getFundsFromDaoInstantiateMsg = ({
   voting_module_instantiate_info,
   proposal_modules_instantiate_info,
-}: DaoCoreV2InstantiateMsg) => [
+}: Pick<
+  DaoCoreV2InstantiateMsg,
+  'voting_module_instantiate_info' | 'proposal_modules_instantiate_info'
+>) => [
   ...(voting_module_instantiate_info.funds || []),
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
