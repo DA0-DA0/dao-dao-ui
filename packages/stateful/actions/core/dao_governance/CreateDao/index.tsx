@@ -55,8 +55,9 @@ const useTransformToCosmos: UseTransformToCosmos<CreateDaoData> = () =>
   useCallback(() => undefined, [])
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateDaoData> = (msg) => {
+  // Normal DAO creation via self-admin factory.
   if (
-    !objectMatchesStructure(msg, {
+    objectMatchesStructure(msg, {
       wasm: {
         execute: {
           contract_addr: {},
@@ -72,42 +73,72 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateDaoData> = (msg) => {
       },
     })
   ) {
-    return {
-      match: false,
-    }
+    try {
+      const decoded = decodeJsonFromBase64(
+        msg.wasm.execute.msg.instantiate_contract_with_self_admin
+          .instantiate_msg
+      )
+      if (
+        !objectMatchesStructure(decoded, {
+          admin: {},
+          automatically_add_cw20s: {},
+          automatically_add_cw721s: {},
+          name: {},
+          description: {},
+          image_url: {},
+          proposal_modules_instantiate_info: {},
+          voting_module_instantiate_info: {},
+        })
+      ) {
+        return {
+          match: false,
+        }
+      }
+
+      return {
+        match: true,
+        data: {
+          admin: decoded.admin,
+          name: decoded.name,
+          description: decoded.description,
+          imageUrl: decoded.image_url,
+        },
+      }
+    } catch {}
   }
 
-  try {
-    const decoded = decodeJsonFromBase64(
-      msg.wasm.execute.msg.instantiate_contract_with_self_admin.instantiate_msg
-    )
-    if (
-      !objectMatchesStructure(decoded, {
-        admin: {},
-        automatically_add_cw20s: {},
-        automatically_add_cw721s: {},
-        name: {},
-        description: {},
-        image_url: {},
-        proposal_modules_instantiate_info: {},
-        voting_module_instantiate_info: {},
-      })
-    ) {
-      return {
-        match: false,
-      }
-    }
-
+  // SubDAO creation with parent DAO as admin.
+  if (
+    objectMatchesStructure(msg, {
+      wasm: {
+        instantiate: {
+          code_id: {},
+          funds: {},
+          label: {},
+          msg: {
+            admin: {},
+            automatically_add_cw20s: {},
+            automatically_add_cw721s: {},
+            name: {},
+            description: {},
+            image_url: {},
+            proposal_modules_instantiate_info: {},
+            voting_module_instantiate_info: {},
+          },
+        },
+      },
+    })
+  ) {
     return {
       match: true,
       data: {
-        admin: decoded.admin,
-        name: decoded.name,
-        description: decoded.description,
-        imageUrl: decoded.image_url,
+        admin: msg.wasm.instantiate.msg.admin,
+        name: msg.wasm.instantiate.msg.name,
+        description: msg.wasm.instantiate.msg.description,
+        imageUrl: msg.wasm.instantiate.msg.image_url,
       },
     }
-  } catch {}
+  }
 
   return {
     match: false,

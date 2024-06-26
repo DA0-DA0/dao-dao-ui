@@ -60,11 +60,12 @@ import {
   getSupportedChains,
   instantiateSmartContract,
   makeValidateMsg,
+  makeWasmMessage,
   parseContractVersion,
   processError,
 } from '@dao-dao/utils'
 
-import { ExecuteData } from '../../actions/core/smart_contracting/Execute/Component'
+import { CustomData } from '../../actions/core/advanced/Custom/Component'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -311,11 +312,12 @@ export const InnerCreateDaoForm = ({
       : // Last page creates the DAO.
         CreateDaoSubmitValue.Create
   const submitLabel =
-    // Override with SubDAO button if necessary.
-    submitValue === CreateDaoSubmitValue.Create && makingSubDao
-      ? t('button.createSubDao')
-      : submitValue === CreateDaoSubmitValue.Create && createViaGovernance
+    // Override with continue button if necessary.
+    submitValue === CreateDaoSubmitValue.Create && createViaGovernance
       ? t('button.continue')
+      : // Override with SubDAO button if necessary.
+      submitValue === CreateDaoSubmitValue.Create && makingSubDao
+      ? t('button.createSubDao')
       : t(submitValue)
 
   //! Adapters and message generators
@@ -429,8 +431,8 @@ export const InnerCreateDaoForm = ({
       throw new Error(t('error.logInToContinue'))
     }
 
-    // if admin is set, use it as the contract-level admin as well (for creating
-    // SubDAOs). otherwise, instantiate with self as admin via factory.
+    // If admin is set, use it as the contract-level admin as well (for creating
+    // SubDAOs). Otherwise, instantiate with self as admin via factory.
     if (instantiateMsg.admin) {
       return await instantiateSmartContract(
         await getSigningCosmWasmClient(),
@@ -511,29 +513,63 @@ export const InnerCreateDaoForm = ({
             chainId,
             title: `Create DAO: ${name.trim()}`,
             description: 'This proposal creates a new DAO.',
-            _actionData: [
-              {
-                _id: 'create',
-                actionKey: ActionKey.Execute,
-                data: {
-                  chainId,
-                  address: factoryContractAddress,
-                  message: JSON.stringify(
-                    {
-                      instantiate_contract_with_self_admin: {
-                        code_id: codeIds.DaoCore,
-                        instantiate_msg: encodeJsonToBase64(instantiateMsg),
-                        label: instantiateMsg.name,
-                      },
-                    },
-                    null,
-                    2
-                  ),
-                  funds: [],
-                  cw20: false,
-                } as ExecuteData,
-              },
-            ],
+            // If admin is set, use it as the contract-level admin as well (for
+            // creating SubDAOs). Otherwise, instantiate with self as admin via
+            // factory.
+            _actionData: instantiateMsg.admin
+              ? [
+                  {
+                    _id: 'create',
+                    actionKey: ActionKey.Custom,
+                    data: {
+                      message: JSON.stringify(
+                        makeWasmMessage({
+                          wasm: {
+                            instantiate: {
+                              admin: instantiateMsg.admin,
+                              code_id: codeIds.DaoCore,
+                              funds:
+                                getFundsFromDaoInstantiateMsg(instantiateMsg),
+                              label: instantiateMsg.name,
+                              msg: instantiateMsg,
+                            },
+                          },
+                        }),
+                        null,
+                        2
+                      ),
+                    } as CustomData,
+                  },
+                ]
+              : [
+                  {
+                    _id: 'create',
+                    actionKey: ActionKey.Custom,
+                    data: {
+                      message: JSON.stringify(
+                        makeWasmMessage({
+                          wasm: {
+                            execute: {
+                              contract_addr: factoryContractAddress,
+                              funds:
+                                getFundsFromDaoInstantiateMsg(instantiateMsg),
+                              msg: {
+                                instantiate_contract_with_self_admin: {
+                                  code_id: codeIds.DaoCore,
+                                  instantiate_msg:
+                                    encodeJsonToBase64(instantiateMsg),
+                                  label: instantiateMsg.name,
+                                },
+                              },
+                            },
+                          },
+                        }),
+                        null,
+                        2
+                      ),
+                    } as CustomData,
+                  },
+                ],
           } as Partial<GovernanceProposalActionData>),
         })
       } else if (isWalletConnected) {
