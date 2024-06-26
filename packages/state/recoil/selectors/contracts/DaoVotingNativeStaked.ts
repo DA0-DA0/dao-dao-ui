@@ -3,8 +3,7 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   ClaimsResponse,
-  DaoResponse,
-  GetConfigResponse,
+  Config,
   ListStakersResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -63,7 +62,7 @@ export const executeClient = selectorFamily<
 })
 
 export const daoSelector = selectorFamily<
-  DaoResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingNativeStakedQueryClient['dao']>
   }
@@ -88,7 +87,7 @@ export const daoSelector = selectorFamily<
     },
 })
 export const getConfigSelector = selectorFamily<
-  GetConfigResponse,
+  Config,
   QueryClientParams & {
     params: Parameters<DaoVotingNativeStakedQueryClient['getConfig']>
   }

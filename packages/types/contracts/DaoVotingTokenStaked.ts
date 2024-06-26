@@ -63,7 +63,8 @@ export interface NewDenomMetadata {
 export interface DenomUnit {
   aliases: string[]
   denom: string
-  exponent: number
+  // Serialized as string for some reason.
+  exponent: string
 }
 export type ExecuteMsg =
   | {
