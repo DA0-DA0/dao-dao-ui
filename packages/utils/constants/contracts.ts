@@ -44,6 +44,9 @@ export const DAO_VOTING_CW20_STAKED_CONTRACT_NAMES = [
   // V2+
   'crates.io:cwd-voting-cw20-staked',
   'crates.io:dao-voting-cw20-staked',
+
+  // Secret
+  'crates.io:dao-voting-snip20-staked',
 ]
 
 export const DAO_VOTING_CW4_CONTRACT_NAMES = [
@@ -57,6 +60,9 @@ export const DAO_VOTING_CW4_CONTRACT_NAMES = [
 export const DAO_VOTING_CW721_STAKED_CONTRACT_NAMES = [
   // V2+
   'crates.io:dao-voting-cw721-staked',
+
+  // Secret
+  'crates.io:dao-voting-snip721-staked',
 ]
 
 export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [

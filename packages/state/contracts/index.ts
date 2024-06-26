@@ -115,3 +115,12 @@ export {
   DaoVotingCw721StakedClient,
   DaoVotingCw721StakedQueryClient,
 } from './DaoVotingCw721Staked'
+export { SecretDaoVotingCw4QueryClient } from './SecretDaoVotingCw4'
+export {
+  SecretDaoVotingTokenStakedClient,
+  SecretDaoVotingTokenStakedQueryClient,
+} from './SecretDaoVotingTokenStaked'
+export {
+  SecretDaoVotingSnip721StakedClient,
+  SecretDaoVotingSnip721StakedQueryClient,
+} from './SecretDaoVotingSnip721Staked'

@@ -1,4 +1,4 @@
 export * from './SingleChoiceProposalModule'
 export * from './MultipleChoiceProposalModule'
-export * from './SecretSingleChoiceProposalModule'
-export * from './SecretMultipleChoiceProposalModule'
+export * from './SingleChoiceProposalModule.secret'
+export * from './MultipleChoiceProposalModule.secret'

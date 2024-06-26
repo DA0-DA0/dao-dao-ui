@@ -16,9 +16,19 @@ import {
   SecretMultipleChoiceProposalModule,
   SecretSingleChoiceProposalModule,
 } from '../proposal-module'
+import {
+  SecretCw4VotingModule,
+  SecretSnip721StakedVotingModule,
+  SecretTokenStakedVotingModule,
+} from '../voting-module'
 import { CwDao } from './CwDao'
 
-const getVotingModuleBases = () => []
+const getVotingModuleBases = () => [
+  SecretCw4VotingModule,
+  // SecretSnip20StakedVotingModule,
+  SecretSnip721StakedVotingModule,
+  SecretTokenStakedVotingModule,
+]
 
 const getProposalModuleBases = () => [
   SecretSingleChoiceProposalModule,
