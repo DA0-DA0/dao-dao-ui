@@ -59,9 +59,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       allowRevoting: boolean
-      veto?: VetoConfig
+      veto?: VetoConfig | null
       approver?: string
-      deposit?: UncheckedDepositInfo
+      deposit?: UncheckedDepositInfo | null
       submissionPolicy: 'members' | 'anyone'
       /**
        * Defaults to true.

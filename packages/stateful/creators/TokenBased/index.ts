@@ -3,9 +3,9 @@ import { DaoCreator, DurationUnits } from '@dao-dao/types'
 import { TokenBasedCreatorId } from '@dao-dao/utils'
 
 import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
+import { getInstantiateInfo } from './getInstantiateInfo'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
-import { mutate } from './mutate'
 import { CreatorData, GovernanceTokenType } from './types'
 import { UnstakingDurationVotingConfigItem } from './UnstakingDurationVotingConfigItem'
 
@@ -58,5 +58,5 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     items: [UnstakingDurationVotingConfigItem],
     advancedItems: [makeActiveThresholdVotingConfigItem()],
   },
-  mutate,
+  getInstantiateInfo,
 }

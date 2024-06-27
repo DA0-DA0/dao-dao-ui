@@ -2,9 +2,9 @@ import { HandshakeEmoji } from '@dao-dao/stateless'
 import { DaoCreator } from '@dao-dao/types'
 import { MembershipBasedCreatorId } from '@dao-dao/utils'
 
+import { getInstantiateInfo } from './getInstantiateInfo'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
-import { mutate } from './mutate'
 
 export const MembershipBasedCreator: DaoCreator = {
   id: MembershipBasedCreatorId,
@@ -35,5 +35,5 @@ export const MembershipBasedCreator: DaoCreator = {
   votingConfig: {
     items: [],
   },
-  mutate,
+  getInstantiateInfo,
 }

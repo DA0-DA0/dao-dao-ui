@@ -30,8 +30,8 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
     chainId: string,
     daoName: string,
     config: {
-      activeThreshold?: ActiveThreshold
-      unstakingDuration?: Duration
+      activeThreshold?: ActiveThreshold | null
+      unstakingDuration?: Duration | null
       nft: {
         /**
          * Use an existing cw721 collection.

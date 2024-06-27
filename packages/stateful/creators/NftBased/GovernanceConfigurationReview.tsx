@@ -2,11 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { CommonNftSelectors } from '@dao-dao/state'
-import {
-  CopyToClipboard,
-  FormattedJsonDisplay,
-  useChain,
-} from '@dao-dao/stateless'
+import { CopyToClipboard, Loader, useChain } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 
 import { CreatorData } from './types'
@@ -17,16 +13,8 @@ export const GovernanceConfigurationReview = ({
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
-  const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
+  const collectionInfoLoadable = useRecoilValueLoadable(
     CommonNftSelectors.contractInfoSelector({
-      chainId,
-      contractAddress: existingGovernanceNftCollectionAddress,
-      params: [],
-    })
-  )
-
-  const numOfTokensLoadable = useRecoilValueLoadable(
-    CommonNftSelectors.numTokensSelector({
       chainId,
       contractAddress: existingGovernanceNftCollectionAddress,
       params: [],
@@ -47,14 +35,15 @@ export const GovernanceConfigurationReview = ({
           value={existingGovernanceNftCollectionAddress}
         />
 
-        <FormattedJsonDisplay
-          jsonLoadable={existingGovernanceTokenInfoLoadable}
-          title={t('title.collectionInfo')}
-        />
-        <FormattedJsonDisplay
-          jsonLoadable={numOfTokensLoadable}
-          title={t('title.totalSupply')}
-        />
+        {collectionInfoLoadable.state === 'loading' ? (
+          <Loader />
+        ) : (
+          collectionInfoLoadable.state === 'hasValue' && (
+            <p className="primary-text text-text-interactive-valid">
+              ${collectionInfoLoadable.valueMaybe()?.symbol}
+            </p>
+          )
+        )}
       </div>
     </div>
   )

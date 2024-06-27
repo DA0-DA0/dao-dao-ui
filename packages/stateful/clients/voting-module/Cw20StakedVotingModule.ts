@@ -33,7 +33,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
     chainId: string,
     daoName: string,
     config: {
-      activeThreshold?: ActiveThreshold
+      activeThreshold?: ActiveThreshold | null
       token:
         | {
             /**
@@ -46,14 +46,16 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
                     /**
                      * Use an existing cw20 staking contract.
                      */
-                    existing: string
+                    existing: {
+                      address: string
+                    }
                   }
                 | {
                     /**
                      * Create a new cw20 staking contract.
                      */
                     new: {
-                      unstakingDuration?: Duration
+                      unstakingDuration?: Duration | null
                     }
                   }
             }
@@ -66,10 +68,10 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
               symbol: string
               decimals: number
               name: string
-              unstakingDuration?: Duration
               initialBalances: Cw20Coin[]
               initialDaoBalance?: string
-              marketingInfo?: InstantiateMarketingInfo
+              marketingInfo?: InstantiateMarketingInfo | null
+              unstakingDuration?: Duration | null
             }
           }
     }

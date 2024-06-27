@@ -30,13 +30,17 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
     chainId: string,
     daoName: string,
     config: {
-      /**
-       * Use an existing native token, including IBC and token factory
-       * tokens.
-       */
-      denom: string
-      activeThreshold?: ActiveThreshold
-      unstakingDuration?: Duration
+      activeThreshold?: ActiveThreshold | null
+      unstakingDuration?: Duration | null
+      token: {
+        /**
+         * Use an existing native token, including IBC and token factory
+         * tokens.
+         */
+        existing: {
+          denom: string
+        }
+      }
     }
   ): SecretModuleInstantiateInfo {
     const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
@@ -54,7 +58,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
         dao_code_hash: codeHashes.DaoCore,
         token_info: {
           existing: {
-            denom: config.denom,
+            denom: config.token.existing.denom,
           },
         },
         unstaking_duration: config.unstakingDuration,

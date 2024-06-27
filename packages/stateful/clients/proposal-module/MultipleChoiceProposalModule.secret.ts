@@ -53,8 +53,8 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       allowRevoting: boolean
-      veto?: VetoConfig
-      deposit?: UncheckedDepositInfo
+      veto?: VetoConfig | null
+      deposit?: UncheckedDepositInfo | null
       submissionPolicy: 'members' | 'anyone'
       /**
        * Defaults to true.

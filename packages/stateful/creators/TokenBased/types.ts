@@ -36,6 +36,10 @@ export type CreatorData = {
    * one with the specified unstaking duration. Does not work for native.
    */
   customStakingAddress?: string
+  /**
+   * On Secret Network, load the code hash of the custom staking contract.
+   */
+  customStakingCodeHash?: string
   // If token factory denom requires a creation fee, this should be set.
   tokenFactoryDenomCreationFee?: Coin[]
 } & DaoCreationVotingConfigWithActiveThreshold

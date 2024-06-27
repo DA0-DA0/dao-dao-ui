@@ -4,6 +4,7 @@ import { secretDaoVotingSnip20StakedQueries } from '@dao-dao/state/query'
 import { SecretModuleInstantiateInfo } from '@dao-dao/types'
 import {
   ActiveThreshold,
+  Duration,
   InitialBalance,
   InstantiateMsg,
   TotalPowerAtHeightResponse,
@@ -30,7 +31,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
     chainId: string,
     daoName: string,
     config: {
-      activeThreshold?: ActiveThreshold
+      activeThreshold?: ActiveThreshold | null
       token:
         | {
             /**
@@ -54,7 +55,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
                      * Create a new cw20 staking contract.
                      */
                     new: {
-                      unstakingDuration?: Duration
+                      unstakingDuration?: Duration | null
                     }
                   }
             }
@@ -67,9 +68,9 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
               symbol: string
               decimals: number
               name: string
-              unstakingDuration?: Duration
               initialBalances: InitialBalance[]
               initialDaoBalance?: string
+              unstakingDuration?: Duration | null
             }
           }
     }

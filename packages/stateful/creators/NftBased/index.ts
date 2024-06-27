@@ -4,9 +4,9 @@ import { NftBasedCreatorId } from '@dao-dao/utils'
 
 import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
 import { GovernanceTokenType } from '../TokenBased/types'
+import { getInstantiateInfo } from './getInstantiateInfo'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
-import { mutate } from './mutate'
 import { UnstakingDurationVotingConfigItem } from './UnstakingDurationVotingConfigItem'
 
 export const NftBasedCreator: DaoCreator = {
@@ -34,5 +34,5 @@ export const NftBasedCreator: DaoCreator = {
     items: [UnstakingDurationVotingConfigItem],
     advancedItems: [makeActiveThresholdVotingConfigItem()],
   },
-  mutate,
+  getInstantiateInfo,
 }

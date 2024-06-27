@@ -39,9 +39,11 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
         }
       | {
           /**
-           * Creates a new cw4-group contract with these members.
+           * Create a new cw4-group contract.
            */
-          members: Member[]
+          new: {
+            members: Member[]
+          }
         }
   ): SecretModuleInstantiateInfo {
     const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
@@ -68,7 +70,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
                 new: {
                   cw4_group_code_hash: codeHashes.Cw4Group,
                   cw4_group_code_id: codeIds.Cw4Group,
-                  initial_members: config.members,
+                  initial_members: config.new.members,
                 },
               },
       } as InstantiateMsg),

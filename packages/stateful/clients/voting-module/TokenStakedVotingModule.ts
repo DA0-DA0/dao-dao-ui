@@ -31,8 +31,8 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
     chainId: string,
     daoName: string,
     config: {
-      activeThreshold?: ActiveThreshold
-      unstakingDuration?: Duration
+      activeThreshold?: ActiveThreshold | null
+      unstakingDuration?: Duration | null
       token:
         | {
             /**

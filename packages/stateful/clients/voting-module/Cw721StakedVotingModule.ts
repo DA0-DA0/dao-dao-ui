@@ -34,8 +34,8 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     chainId: string,
     daoName: string,
     config: {
-      activeThreshold?: ActiveThreshold
-      unstakingDuration?: Duration
+      activeThreshold?: ActiveThreshold | null
+      unstakingDuration?: Duration | null
       nft:
         | {
             /**

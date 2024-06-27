@@ -5,7 +5,7 @@ import {
   DaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin, ModuleInstantiateInfo } from '@dao-dao/types'
+import { Coin, ContractVersion, ModuleInstantiateInfo } from '@dao-dao/types'
 import {
   InstantiateMsg as DaoPreProposeMultipleInstantiateMsg,
   UncheckedDepositInfo,
@@ -53,8 +53,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       maxVotingPeriod: Duration
       minVotingPeriod?: Duration
       allowRevoting: boolean
-      veto?: VetoConfig
-      deposit?: UncheckedDepositInfo
+      veto?: VetoConfig | null
+      deposit?: UncheckedDepositInfo | null
       submissionPolicy: 'members' | 'anyone'
       /**
        * Defaults to true.
@@ -64,29 +64,52 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
        * Defaults to true.
        */
       onlyMembersExecute?: boolean
+    },
+    options: {
+      /**
+       * If true, omits the funds field from the module instantiate info objects
+       * and uses v2.1.0 contracts. This is used when enabling multiple choice
+       * via the action for a DAO that is on a version below v2.3.0, since there
+       * was a breaking change on the `funds` field.
+       *
+       * Defaults to false.
+       */
+      useV210WithoutFunds?: boolean
+    } = {
+      useV210WithoutFunds: false,
     }
   ): ModuleInstantiateInfo {
-    const { codeIds } = mustGetSupportedChainConfig(chainId)
+    const { codeIds, historicalCodeIds } = mustGetSupportedChainConfig(chainId)
+    const codeIdsToUse = {
+      ...codeIds,
+      ...(options.useV210WithoutFunds &&
+        historicalCodeIds?.[ContractVersion.V210]),
+    }
 
     const pre_propose_info: PreProposeInfo = {
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: codeIds.DaoPreProposeMultiple,
+          code_id: codeIdsToUse.DaoPreProposeMultiple,
           label: `DAO_${daoName}_pre-propose-multiple`,
           msg: encodeJsonToBase64({
             deposit_info: config.deposit,
             extension: {},
             open_proposal_submission: config.submissionPolicy === 'anyone',
           } as DaoPreProposeMultipleInstantiateMsg),
-          funds: [],
+          // This function is used by the enable multiple choice action, and
+          // DAOs before v2.3.0 still might want to enable multiple choice, so
+          // make sure to support the old version without the `funds` field.
+          ...(!options.useV210WithoutFunds && {
+            funds: [],
+          }),
         },
       },
     }
 
     return {
       admin: { core_module: {} },
-      code_id: codeIds.DaoProposalMultiple,
+      code_id: codeIdsToUse.DaoProposalMultiple,
       label: `DAO_${daoName}_proposal-multiple`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
@@ -103,7 +126,12 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           },
         },
       } as InstantiateMsg),
-      funds: [],
+      // This function is used by the enable multiple choice action, and DAOs
+      // before v2.3.0 still might want to enable multiple choice, so make sure
+      // to support the old version without the `funds` field.
+      ...(!options.useV210WithoutFunds && {
+        funds: [],
+      }),
     }
   }
 

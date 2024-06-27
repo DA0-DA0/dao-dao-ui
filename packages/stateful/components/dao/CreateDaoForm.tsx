@@ -354,6 +354,14 @@ export const InnerCreateDaoForm = ({
   let instantiateMsg: DaoCoreV2InstantiateMsg | undefined
   let instantiateMsgError: string | undefined
   try {
+    // Generate voting module adapter instantiation message.
+    const votingModuleInstantiateInfo = creator.getInstantiateInfo({
+      chainConfig: chainContext.config,
+      newDao,
+      data: creatorData,
+      t,
+    })
+
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
@@ -374,24 +382,8 @@ export const InnerCreateDaoForm = ({
       image_url: imageUrl ?? null,
       name: name.trim(),
       proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
-      // Placeholder. Should be replaced by creator's mutate function.
-      voting_module_instantiate_info: {
-        code_id: -1,
-        funds: [],
-        label: '',
-        msg: '',
-      },
+      voting_module_instantiate_info: votingModuleInstantiateInfo,
     }
-
-    // Mutate instantiateMsg via creator. Voting module adapter should be set
-    // through this.
-    instantiateMsg = creator.mutate(
-      instantiateMsg,
-      newDao,
-      creatorData,
-      t,
-      codeIds
-    )
   } catch (err) {
     instantiateMsgError = err instanceof Error ? err.message : `${err}`
   }
