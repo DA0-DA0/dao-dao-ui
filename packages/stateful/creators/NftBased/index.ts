@@ -20,7 +20,7 @@ export const NftBasedCreator: DaoCreator = {
   },
   makeDefaultConfig: () => ({
     tokenType: GovernanceTokenType.Existing,
-    existingGovernanceTokenDenomOrAddress: '',
+    existingGovernanceNftCollectionAddress: '',
     unstakingDuration: {
       value: 2,
       units: DurationUnits.Weeks,

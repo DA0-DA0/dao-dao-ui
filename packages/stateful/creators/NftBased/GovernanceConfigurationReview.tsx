@@ -12,7 +12,7 @@ import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { CreatorData } from './types'
 
 export const GovernanceConfigurationReview = ({
-  data: { existingGovernanceTokenDenomOrAddress },
+  data: { existingGovernanceNftCollectionAddress },
 }: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
@@ -20,7 +20,7 @@ export const GovernanceConfigurationReview = ({
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     CommonNftSelectors.contractInfoSelector({
       chainId,
-      contractAddress: existingGovernanceTokenDenomOrAddress,
+      contractAddress: existingGovernanceNftCollectionAddress,
       params: [],
     })
   )
@@ -28,7 +28,7 @@ export const GovernanceConfigurationReview = ({
   const numOfTokensLoadable = useRecoilValueLoadable(
     CommonNftSelectors.numTokensSelector({
       chainId,
-      contractAddress: existingGovernanceTokenDenomOrAddress,
+      contractAddress: existingGovernanceNftCollectionAddress,
       params: [],
     })
   )
@@ -44,7 +44,7 @@ export const GovernanceConfigurationReview = ({
       <div className="space-y-4 p-4">
         <CopyToClipboard
           takeAll
-          value={existingGovernanceTokenDenomOrAddress}
+          value={existingGovernanceNftCollectionAddress}
         />
 
         <FormattedJsonDisplay

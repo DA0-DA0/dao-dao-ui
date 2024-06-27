@@ -10,8 +10,7 @@ export enum GovernanceTokenType {
 
 export type CreatorData = {
   tokenType: GovernanceTokenType
-  existingGovernanceTokenDenomOrAddress: string
-  // TokenInfoResponse
+  existingGovernanceNftCollectionAddress: string
   existingGovernanceTokenInfo?: {
     name: string
     symbol: string

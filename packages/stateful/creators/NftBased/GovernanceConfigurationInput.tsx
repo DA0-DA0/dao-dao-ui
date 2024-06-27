@@ -34,26 +34,26 @@ export const GovernanceConfigurationInput = ({
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   //! Validate existing governance token.
-  const existingGovernanceTokenDenomOrAddress =
+  const existingGovernanceNftCollectionAddress =
     data.tokenType === GovernanceTokenType.Existing
-      ? data.existingGovernanceTokenDenomOrAddress
+      ? data.existingGovernanceNftCollectionAddress
       : undefined
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenDenomOrAddress &&
-      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
+    existingGovernanceNftCollectionAddress &&
+      isValidBech32Address(existingGovernanceNftCollectionAddress, bech32Prefix)
       ? CommonNftSelectors.contractInfoSelector({
           chainId,
-          contractAddress: existingGovernanceTokenDenomOrAddress,
+          contractAddress: existingGovernanceNftCollectionAddress,
           params: [],
         })
       : constSelector(undefined)
   )
   const numOfTokensLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenDenomOrAddress &&
-      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
+    existingGovernanceNftCollectionAddress &&
+      isValidBech32Address(existingGovernanceNftCollectionAddress, bech32Prefix)
       ? CommonNftSelectors.numTokensSelector({
           chainId,
-          contractAddress: existingGovernanceTokenDenomOrAddress,
+          contractAddress: existingGovernanceNftCollectionAddress,
           params: [],
         })
       : constSelector(undefined)
@@ -103,9 +103,9 @@ export const GovernanceConfigurationInput = ({
             <TextInput
               className="symbol-small-body-text font-mono text-text-secondary"
               error={
-                errors.creator?.data?.existingGovernanceTokenDenomOrAddress
+                errors.creator?.data?.existingGovernanceNftCollectionAddress
               }
-              fieldName="creator.data.existingGovernanceTokenDenomOrAddress"
+              fieldName="creator.data.existingGovernanceNftCollectionAddress"
               ghost
               placeholder={bech32Prefix + '...'}
               register={register}
@@ -113,7 +113,7 @@ export const GovernanceConfigurationInput = ({
             />
             <InputErrorMessage
               error={
-                errors.creator?.data?.existingGovernanceTokenDenomOrAddress ||
+                errors.creator?.data?.existingGovernanceNftCollectionAddress ||
                 errors.creator?.data?.existingGovernanceTokenInfo?._error
               }
             />

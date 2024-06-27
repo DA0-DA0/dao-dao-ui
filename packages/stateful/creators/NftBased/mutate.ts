@@ -11,11 +11,15 @@ import { CreatorData } from './types'
 export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
   { name: daoName },
-  { existingGovernanceTokenDenomOrAddress, unstakingDuration, activeThreshold },
+  {
+    existingGovernanceNftCollectionAddress,
+    unstakingDuration,
+    activeThreshold,
+  },
   t,
   codeIds
 ) => {
-  if (!existingGovernanceTokenDenomOrAddress) {
+  if (!existingGovernanceNftCollectionAddress) {
     throw new Error(t('error.missingGovernanceTokenAddress'))
   }
 
@@ -37,7 +41,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     active_threshold,
     nft_contract: {
       existing: {
-        address: existingGovernanceTokenDenomOrAddress,
+        address: existingGovernanceNftCollectionAddress,
       },
     },
     unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
