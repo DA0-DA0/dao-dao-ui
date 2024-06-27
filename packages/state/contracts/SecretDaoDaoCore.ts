@@ -4,7 +4,6 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -38,7 +37,6 @@ import {
   VotingModuleInfo,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoDaoCore'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoDaoCoreReadOnlyInterface {
   contractAddress: string
@@ -328,7 +326,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -338,7 +336,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -348,7 +346,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       duration: Duration
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -366,7 +364,7 @@ export interface SecretDaoDaoCoreInterface
       msg?: Binary
       sender: Addr
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     _memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -380,7 +378,7 @@ export interface SecretDaoDaoCoreInterface
       sender: Addr
       tokenId: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -390,7 +388,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       key: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -402,7 +400,7 @@ export interface SecretDaoDaoCoreInterface
       key: string
       value: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -412,17 +410,17 @@ export interface SecretDaoDaoCoreInterface
     }: {
       admin?: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
   acceptAdminNomination: (
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
   withdrawAdminNomination: (
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -432,7 +430,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       config: Config
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -444,7 +442,7 @@ export interface SecretDaoDaoCoreInterface
       toAdd: string[]
       toRemove: string[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -456,7 +454,7 @@ export interface SecretDaoDaoCoreInterface
       toAdd: string[]
       toRemove: string[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -468,7 +466,7 @@ export interface SecretDaoDaoCoreInterface
       toAdd: ModuleInstantiateInfo[]
       toDisable: string[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -478,7 +476,7 @@ export interface SecretDaoDaoCoreInterface
     }: {
       module: ModuleInstantiateInfo
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -490,7 +488,7 @@ export interface SecretDaoDaoCoreInterface
       toAdd: SubDao[]
       toRemove: string[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -534,7 +532,7 @@ export class SecretDaoDaoCoreClient
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -557,7 +555,7 @@ export class SecretDaoDaoCoreClient
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -580,7 +578,7 @@ export class SecretDaoDaoCoreClient
     }: {
       duration: Duration
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -611,7 +609,7 @@ export class SecretDaoDaoCoreClient
       msg?: Binary
       sender: Addr
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     _memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -642,7 +640,7 @@ export class SecretDaoDaoCoreClient
       sender: Addr
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -667,7 +665,7 @@ export class SecretDaoDaoCoreClient
     }: {
       key: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -692,7 +690,7 @@ export class SecretDaoDaoCoreClient
       key: string
       value: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -716,7 +714,7 @@ export class SecretDaoDaoCoreClient
     }: {
       admin?: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -734,7 +732,7 @@ export class SecretDaoDaoCoreClient
     )
   }
   acceptAdminNomination = async (
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -750,7 +748,7 @@ export class SecretDaoDaoCoreClient
     )
   }
   withdrawAdminNomination = async (
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -771,7 +769,7 @@ export class SecretDaoDaoCoreClient
     }: {
       config: Config
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -796,7 +794,7 @@ export class SecretDaoDaoCoreClient
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -822,7 +820,7 @@ export class SecretDaoDaoCoreClient
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -848,7 +846,7 @@ export class SecretDaoDaoCoreClient
       toAdd: ModuleInstantiateInfo[]
       toDisable: string[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -872,7 +870,7 @@ export class SecretDaoDaoCoreClient
     }: {
       module: ModuleInstantiateInfo
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -897,7 +895,7 @@ export class SecretDaoDaoCoreClient
       toAdd: SubDao[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

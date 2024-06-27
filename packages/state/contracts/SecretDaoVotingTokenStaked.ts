@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { Coin, StdFee } from '@cosmjs/amino'
+import { Coin } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -29,7 +29,6 @@ import {
   Uint128,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoVotingTokenStaked'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoVotingTokenStakedReadOnlyInterface {
   contractAddress: string
@@ -175,7 +174,7 @@ export interface SecretDaoVotingTokenStakedInterface
   contractAddress: string
   sender: string
   stake: (
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -185,7 +184,7 @@ export interface SecretDaoVotingTokenStakedInterface
     }: {
       amount: Uint128
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -195,12 +194,12 @@ export interface SecretDaoVotingTokenStakedInterface
     }: {
       duration?: Duration
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
   claim: (
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -210,7 +209,7 @@ export interface SecretDaoVotingTokenStakedInterface
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -222,7 +221,7 @@ export interface SecretDaoVotingTokenStakedInterface
       addr: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -234,7 +233,7 @@ export interface SecretDaoVotingTokenStakedInterface
       addr: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -264,7 +263,7 @@ export class SecretDaoVotingTokenStakedClient
     this.removeHook = this.removeHook.bind(this)
   }
   stake = async (
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -285,7 +284,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       amount: Uint128
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -308,7 +307,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       duration?: Duration
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -326,7 +325,7 @@ export class SecretDaoVotingTokenStakedClient
     )
   }
   claim = async (
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -347,7 +346,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -372,7 +371,7 @@ export class SecretDaoVotingTokenStakedClient
       addr: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -398,7 +397,7 @@ export class SecretDaoVotingTokenStakedClient
       addr: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

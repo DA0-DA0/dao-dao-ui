@@ -486,7 +486,7 @@ export const InnerCreateDaoForm = ({
               label: instantiateMsg.name,
             },
           },
-          undefined,
+          500_000,
           undefined,
           instantiateFunds
         )

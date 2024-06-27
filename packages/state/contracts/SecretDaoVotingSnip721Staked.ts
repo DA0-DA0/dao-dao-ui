@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { Coin, StdFee } from '@cosmjs/amino'
+import { Coin } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -28,7 +28,6 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoVotingSnip721Staked'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoVotingSnip721StakedReadOnlyInterface {
   contractAddress: string
@@ -156,7 +155,7 @@ export interface SecretDaoVotingSnip721StakedInterface
       sender: Addr
       tokenId: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -166,12 +165,12 @@ export interface SecretDaoVotingSnip721StakedInterface
     }: {
       tokenIds: string[]
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
   claimNfts: (
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -181,7 +180,7 @@ export interface SecretDaoVotingSnip721StakedInterface
     }: {
       duration?: Duration
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -193,7 +192,7 @@ export interface SecretDaoVotingSnip721StakedInterface
       addr: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -205,7 +204,7 @@ export interface SecretDaoVotingSnip721StakedInterface
       addr: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -215,7 +214,7 @@ export interface SecretDaoVotingSnip721StakedInterface
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -254,7 +253,7 @@ export class SecretDaoVotingSnip721StakedClient
       sender: Addr
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -279,7 +278,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       tokenIds: string[]
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -297,7 +296,7 @@ export class SecretDaoVotingSnip721StakedClient
     )
   }
   claimNfts = async (
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -318,7 +317,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       duration?: Duration
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -343,7 +342,7 @@ export class SecretDaoVotingSnip721StakedClient
       addr: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -369,7 +368,7 @@ export class SecretDaoVotingSnip721StakedClient
       addr: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -393,7 +392,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

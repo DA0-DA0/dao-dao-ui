@@ -1,4 +1,3 @@
-import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -33,7 +32,7 @@ export interface SecretCwAdminFactoryInterface
     }: {
       moduleInfo: ModuleInstantiateInfo
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -63,15 +62,7 @@ export class SecretCwAdminFactoryClient
     }: {
       moduleInfo: ModuleInstantiateInfo
     },
-    fee: number | StdFee | 'auto' = {
-      amount: [
-        {
-          amount: BigInt(1 * 10 ** 5).toString(),
-          denom: 'uscrt',
-        },
-      ],
-      gas: '150000',
-    },
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

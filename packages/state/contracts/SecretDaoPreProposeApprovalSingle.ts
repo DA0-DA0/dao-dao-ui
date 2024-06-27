@@ -4,7 +4,6 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -26,7 +25,6 @@ import {
   UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoPreProposeApprovalSingleReadOnlyInterface {
   contractAddress: string
@@ -107,7 +105,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       auth: Auth
       msg: ProposeMessage
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -119,7 +117,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -131,7 +129,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       denom?: UncheckedDenom
       key?: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -141,7 +139,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
     }: {
       msg: ExecuteExt
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -153,7 +151,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -165,7 +163,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -177,7 +175,7 @@ export interface SecretDaoPreProposeApprovalSingleInterface
       newStatus: Status
       proposalId: number
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -215,7 +213,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       auth: Auth
       msg: ProposeMessage
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -241,7 +239,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -267,7 +265,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       denom?: UncheckedDenom
       key?: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -291,7 +289,7 @@ export class SecretDaoPreProposeApprovalSingleClient
     }: {
       msg: ExecuteExt
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -316,7 +314,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -342,7 +340,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -368,7 +366,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       newStatus: Status
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

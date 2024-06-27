@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { Coin, StdFee } from '@cosmjs/amino'
+import { Coin } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -21,7 +21,6 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoVotingSnip20Staked'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoVotingSnip20StakedReadOnlyInterface {
   contractAddress: string
@@ -127,7 +126,7 @@ export interface SecretDaoVotingSnip20StakedInterface
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -156,7 +155,7 @@ export class SecretDaoVotingSnip20StakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

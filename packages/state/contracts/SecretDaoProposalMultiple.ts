@@ -4,7 +4,6 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -31,7 +30,6 @@ import {
   VoteResponse,
   VotingStrategy,
 } from '@dao-dao/types/contracts/SecretDaoProposalMultiple'
-import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface SecretDaoProposalMultipleReadOnlyInterface {
   contractAddress: string
@@ -228,7 +226,7 @@ export interface SecretDaoProposalMultipleInterface
       proposer?: string
       title: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -244,7 +242,7 @@ export interface SecretDaoProposalMultipleInterface
       rationale?: string
       vote: MultipleChoiceVote
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -256,7 +254,7 @@ export interface SecretDaoProposalMultipleInterface
       auth: Auth
       proposalId: number
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -266,7 +264,7 @@ export interface SecretDaoProposalMultipleInterface
     }: {
       proposalId: number
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -276,7 +274,7 @@ export interface SecretDaoProposalMultipleInterface
     }: {
       proposalId: number
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -298,7 +296,7 @@ export interface SecretDaoProposalMultipleInterface
       veto?: VetoConfig
       votingStrategy: VotingStrategy
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -310,7 +308,7 @@ export interface SecretDaoProposalMultipleInterface
       proposalId: number
       rationale?: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -320,7 +318,7 @@ export interface SecretDaoProposalMultipleInterface
     }: {
       info: PreProposeInfo
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -332,7 +330,7 @@ export interface SecretDaoProposalMultipleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -344,7 +342,7 @@ export interface SecretDaoProposalMultipleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -356,7 +354,7 @@ export interface SecretDaoProposalMultipleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -368,7 +366,7 @@ export interface SecretDaoProposalMultipleInterface
       address: string
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -380,7 +378,7 @@ export interface SecretDaoProposalMultipleInterface
       address: Addr
       codeHash: string
     },
-    fee?: number | StdFee | 'auto',
+    fee?: number,
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
@@ -427,7 +425,7 @@ export class SecretDaoProposalMultipleClient
       proposer?: string
       title: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -459,7 +457,7 @@ export class SecretDaoProposalMultipleClient
       rationale?: string
       vote: MultipleChoiceVote
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -487,7 +485,7 @@ export class SecretDaoProposalMultipleClient
       auth: Auth
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -511,7 +509,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -534,7 +532,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -569,7 +567,7 @@ export class SecretDaoProposalMultipleClient
       veto?: VetoConfig
       votingStrategy: VotingStrategy
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -600,7 +598,7 @@ export class SecretDaoProposalMultipleClient
       proposalId: number
       rationale?: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -624,7 +622,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       info: PreProposeInfo
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -649,7 +647,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -675,7 +673,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -701,7 +699,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -727,7 +725,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -753,7 +751,7 @@ export class SecretDaoProposalMultipleClient
       address: Addr
       codeHash: string
     },
-    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    fee: number = 500_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
