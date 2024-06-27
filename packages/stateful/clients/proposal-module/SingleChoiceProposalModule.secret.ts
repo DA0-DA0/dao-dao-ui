@@ -84,7 +84,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
           code_hash: config.approver
             ? codeHashes.DaoPreProposeApprovalSingle
             : codeHashes.DaoPreProposeSingle,
-          label: `DAO_${daoName}_pre-propose${
+          label: `DAO_${daoName.trim()}_pre-propose${
             config.approver ? '-approval' : ''
           }-single`,
           msg: encodeJsonToBase64(
@@ -115,7 +115,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       admin: { core_module: {} },
       code_id: codeIds.DaoProposalSingle,
       code_hash: codeHashes.DaoProposalSingle,
-      label: `DAO_${daoName}_proposal-single`,
+      label: `DAO_${daoName.trim()}_proposal-single`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:

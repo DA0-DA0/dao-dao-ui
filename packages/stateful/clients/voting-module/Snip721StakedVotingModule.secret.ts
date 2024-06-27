@@ -52,7 +52,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw721Staked,
       code_hash: codeHashes.DaoVotingCw721Staked,
-      label: `DAO_${daoName}_snip721-staked`,
+      label: `DAO_${daoName.trim()}_snip721-staked`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,

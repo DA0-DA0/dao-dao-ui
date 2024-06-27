@@ -93,7 +93,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw20Staked,
       code_hash: codeHashes.DaoVotingCw20Staked,
-      label: `DAO_${daoName}_snip20-staked`,
+      label: `DAO_${daoName.trim()}_snip20-staked`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,
@@ -117,7 +117,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
                         }
                       : {
                           new: {
-                            label: `DAO_${daoName}_snip20-stake`,
+                            label: `DAO_${daoName.trim()}_snip20-stake`,
                             // Type-checked above.
                             staking_code_hash: codeHashes.Cw20Stake!,
                             // Type-checked above.

@@ -41,14 +41,17 @@ import {
   GovernanceProposalActionData,
   NewDao,
   ProposalModuleAdapter,
+  SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
+import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
+  decodeJsonFromBase64,
   encodeJsonToBase64,
   findWasmAttributeValue,
   getDisplayNameForChainId,
@@ -65,6 +68,8 @@ import {
 } from '@dao-dao/utils'
 
 import { CustomData } from '../../actions/core/advanced/Custom/Component'
+import { CwDao } from '../../clients/dao/CwDao'
+import { SecretCwDao } from '../../clients/dao/SecretCwDao'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -351,7 +356,10 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
-  let instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  let instantiateMsg:
+    | DaoCoreV2InstantiateMsg
+    | SecretDaoDaoCoreInstantiateMsg
+    | undefined
   let instantiateMsgError: string | undefined
   try {
     // Generate voting module adapter instantiation message.
@@ -373,16 +381,43 @@ export const InnerCreateDaoForm = ({
         )
       )
 
-    instantiateMsg = {
+    const commonConfig = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
-      automatically_add_cw20s: true,
-      automatically_add_cw721s: true,
-      description,
-      image_url: imageUrl ?? null,
       name: name.trim(),
-      proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
-      voting_module_instantiate_info: votingModuleInstantiateInfo,
+      description,
+      imageUrl,
+    }
+
+    if (isSecretNetwork(chainId)) {
+      // Type-checks. Adapters are responsible for using the correct proposal
+      // module info generator based on the chain.
+      if (!('code_hash' in votingModuleInstantiateInfo)) {
+        throw new Error('Missing code_hash in voting module info')
+      }
+      if (
+        proposalModuleInstantiateInfos.some((info) => !('code_hash' in info))
+      ) {
+        throw new Error('Missing code_hash in proposal module info')
+      }
+
+      instantiateMsg = decodeJsonFromBase64(
+        SecretCwDao.generateInstantiateInfo(
+          chainContext.chainId,
+          commonConfig,
+          votingModuleInstantiateInfo,
+          proposalModuleInstantiateInfos as SecretModuleInstantiateInfo[]
+        ).msg
+      )
+    } else {
+      instantiateMsg = decodeJsonFromBase64(
+        CwDao.generateInstantiateInfo(
+          chainContext.chainId,
+          commonConfig,
+          votingModuleInstantiateInfo,
+          proposalModuleInstantiateInfos
+        ).msg
+      )
     }
   } catch (err) {
     instantiateMsgError = err instanceof Error ? err.message : `${err}`
@@ -412,7 +447,7 @@ export const InnerCreateDaoForm = ({
       sender: walletAddress ?? '',
     })
 
-  const createDaoWithFactory = async () => {
+  const doCreateDao = async () => {
     if (instantiateMsgError) {
       throw new Error(instantiateMsgError)
     } else if (!instantiateMsg) {
@@ -435,20 +470,25 @@ export const InnerCreateDaoForm = ({
       )
     } else {
       if (isSecretNetwork(chainId)) {
+        if (!codeHashes?.DaoCore) {
+          throw new Error('Code hash not found for DAO core contract')
+        }
+
+        const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
         const { events } = await secretInstantiateWithSelfAdmin(
           {
             moduleInfo: {
               code_id: codeIds.DaoCore,
-              code_hash: codeHashes?.DaoCore ?? '',
+              code_hash: codeHashes.DaoCore,
               msg: encodeJsonToBase64(instantiateMsg),
               admin: { core_module: {} },
-              funds: [],
+              funds: instantiateFunds,
               label: instantiateMsg.name,
             },
           },
           undefined,
           undefined,
-          getFundsFromDaoInstantiateMsg(instantiateMsg)
+          instantiateFunds
         )
         return findWasmAttributeValue(
           events,
@@ -588,7 +628,7 @@ export const InnerCreateDaoForm = ({
       } else if (isWalletConnected) {
         setCreating(true)
         try {
-          const coreAddress = await toast.promise(createDaoWithFactory(), {
+          const coreAddress = await toast.promise(doCreateDao(), {
             loading: t('info.creatingDao'),
             success: t('success.daoCreatedPleaseWait'),
             error: (err) => processError(err),

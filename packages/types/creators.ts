@@ -3,6 +3,7 @@ import { FieldValues } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
 import { SupportedChainConfig } from './chain'
+import { SecretModuleInstantiateInfo } from './clients'
 import { ModuleInstantiateInfo } from './contracts'
 import {
   DaoCreationGovernanceConfigInputProps,
@@ -20,7 +21,7 @@ export type DaoCreatorGetInstantiateInfo<Data extends FieldValues = any> =
     newDao: NewDao<any>
     data: Data
     t: TFunction
-  }) => ModuleInstantiateInfo
+  }) => ModuleInstantiateInfo | SecretModuleInstantiateInfo
 
 export type DaoCreator<Data extends FieldValues = any> = {
   id: string

@@ -82,7 +82,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           code_id: config.approver
             ? codeIds.DaoPreProposeApprovalSingle
             : codeIds.DaoPreProposeSingle,
-          label: `DAO_${daoName}_pre-propose${
+          label: `DAO_${daoName.trim()}_pre-propose${
             config.approver ? '-approval' : ''
           }-single`,
           msg: encodeJsonToBase64(
@@ -110,7 +110,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoProposalSingle,
-      label: `DAO_${daoName}_proposal-single`,
+      label: `DAO_${daoName.trim()}_proposal-single`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:

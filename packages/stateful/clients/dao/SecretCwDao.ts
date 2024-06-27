@@ -90,7 +90,8 @@ export class SecretCwDao extends CwDao {
         admin: config.admin,
         dao_uri: config.uri,
         description: config.description,
-        image_url: config.imageUrl,
+        // Replace empty strings with null.
+        image_url: config.imageUrl?.trim() || null,
         initial_items: config.initialItems,
         name: config.name,
         proposal_modules_instantiate_info: proposalModules,

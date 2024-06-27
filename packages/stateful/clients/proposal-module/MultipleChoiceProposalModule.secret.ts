@@ -77,7 +77,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
           admin: { core_module: {} },
           code_id: codeIds.DaoPreProposeMultiple,
           code_hash: codeHashes.DaoPreProposeMultiple,
-          label: `DAO_${daoName}_pre-propose-multiple`,
+          label: `DAO_${daoName.trim()}_pre-propose-multiple`,
           msg: encodeJsonToBase64({
             deposit_info: config.deposit,
             extension: {},
@@ -93,7 +93,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       admin: { core_module: {} },
       code_id: codeIds.DaoProposalMultiple,
       code_hash: codeHashes.DaoProposalMultiple,
-      label: `DAO_${daoName}_proposal-multiple`,
+      label: `DAO_${daoName.trim()}_proposal-multiple`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:

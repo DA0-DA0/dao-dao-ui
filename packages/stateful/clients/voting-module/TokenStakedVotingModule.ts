@@ -76,7 +76,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingTokenStaked,
-      label: `DAO_${daoName}_token-staked`,
+      label: `DAO_${daoName.trim()}_token-staked`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         token_info:

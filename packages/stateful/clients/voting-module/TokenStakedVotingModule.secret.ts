@@ -52,7 +52,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingTokenStaked,
       code_hash: codeHashes.DaoVotingTokenStaked,
-      label: `DAO_${daoName}_token-staked`,
+      label: `DAO_${daoName.trim()}_token-staked`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,

@@ -92,7 +92,13 @@ export class CwDao extends DaoBase {
       description: string
       imageUrl?: string | null
       initialItems?: InitialItem[] | null
+      /**
+       * Defaults to true.
+       */
       automaticallyAddCw20s?: boolean
+      /**
+       * Defaults to true.
+       */
       automaticallyAddCw721s?: boolean
     },
     votingModule: ModuleInstantiateInfo,
@@ -108,7 +114,8 @@ export class CwDao extends DaoBase {
         automatically_add_cw721s: config.automaticallyAddCw721s ?? true,
         dao_uri: config.uri,
         description: config.description,
-        image_url: config.imageUrl,
+        // Replace empty strings with null.
+        image_url: config.imageUrl?.trim() || null,
         initial_items: config.initialItems,
         name: config.name,
         proposal_modules_instantiate_info: proposalModules,
