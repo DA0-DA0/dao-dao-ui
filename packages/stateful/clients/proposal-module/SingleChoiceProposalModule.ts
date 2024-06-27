@@ -9,17 +9,29 @@ import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
-import { Coin, ContractVersion } from '@dao-dao/types'
+import { Coin, ContractVersion, ModuleInstantiateInfo } from '@dao-dao/types'
+import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
+  InstantiateMsg as DaoPreProposeSingleInstantiateMsg,
+  UncheckedDepositInfo,
+} from '@dao-dao/types/contracts/DaoPreProposeSingle'
+import {
+  Duration,
+  InstantiateMsg,
+  PreProposeInfo,
+  Threshold,
+  VetoConfig,
   Vote,
   VoteInfo,
   VoteResponse,
-} from '@dao-dao/types/contracts/DaoProposalSingle.common'
+} from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   ContractName,
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   SupportedSigningCosmWasmClient,
+  encodeJsonToBase64,
   findWasmAttributeValue,
+  mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
@@ -34,6 +46,85 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   Vote
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
+
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   */
+  static generateModuleInstantiateInfo(
+    chainId: string,
+    daoName: string,
+    config: {
+      threshold: Threshold
+      maxVotingPeriod: Duration
+      minVotingPeriod?: Duration
+      allowRevoting: boolean
+      veto?: VetoConfig
+      approver?: string
+      deposit?: UncheckedDepositInfo
+      submissionPolicy: 'members' | 'anyone'
+      /**
+       * Defaults to true.
+       */
+      closeProposalOnExecutionFailure?: boolean
+      /**
+       * Defaults to true.
+       */
+      onlyMembersExecute?: boolean
+    }
+  ): ModuleInstantiateInfo {
+    const { codeIds } = mustGetSupportedChainConfig(chainId)
+
+    const pre_propose_info: PreProposeInfo = {
+      module_may_propose: {
+        info: {
+          admin: { core_module: {} },
+          code_id: config.approver
+            ? codeIds.DaoPreProposeApprovalSingle
+            : codeIds.DaoPreProposeSingle,
+          label: `DAO_${daoName}_pre-propose${
+            config.approver ? '-approval' : ''
+          }-single`,
+          msg: encodeJsonToBase64(
+            config.approver
+              ? ({
+                  deposit_info: config.deposit,
+                  extension: {
+                    approver: config.approver,
+                  },
+                  open_proposal_submission:
+                    config.submissionPolicy === 'anyone',
+                } as DaoPreProposeApprovalSingleInstantiateMsg)
+              : ({
+                  deposit_info: config.deposit,
+                  extension: {},
+                  open_proposal_submission:
+                    config.submissionPolicy === 'anyone',
+                } as DaoPreProposeSingleInstantiateMsg)
+          ),
+          funds: [],
+        },
+      },
+    }
+
+    return {
+      admin: { core_module: {} },
+      code_id: codeIds.DaoProposalSingle,
+      label: `DAO_${daoName}_proposal-single`,
+      msg: encodeJsonToBase64({
+        allow_revoting: config.allowRevoting,
+        close_proposal_on_execution_failure:
+          config.closeProposalOnExecutionFailure ?? true,
+        max_voting_period: config.maxVotingPeriod,
+        min_voting_period: config.minVotingPeriod,
+        only_members_execute: config.onlyMembersExecute ?? true,
+        pre_propose_info,
+        threshold: config.threshold,
+        veto: config.veto,
+      } as InstantiateMsg),
+      funds: [],
+    }
+  }
 
   async propose({
     data,

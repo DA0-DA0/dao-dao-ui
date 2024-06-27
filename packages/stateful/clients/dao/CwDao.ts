@@ -10,6 +10,7 @@ import {
   DaoInfo,
   IProposalModuleBase,
   IVotingModuleBase,
+  InstantiateInfo,
   ModuleInstantiateInfo,
 } from '@dao-dao/types'
 import {
@@ -96,10 +97,10 @@ export class CwDao extends DaoBase {
     },
     votingModule: ModuleInstantiateInfo,
     proposalModules: ModuleInstantiateInfo[]
-  ) {
+  ): InstantiateInfo {
     return {
       admin: config.admin || null,
-      code_id: mustGetSupportedChainConfig(chainId).codeIds.DaoCore,
+      codeId: mustGetSupportedChainConfig(chainId).codeIds.DaoCore,
       label: config.name,
       msg: encodeJsonToBase64({
         admin: config.admin,

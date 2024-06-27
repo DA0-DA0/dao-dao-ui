@@ -124,3 +124,11 @@ export {
   SecretDaoVotingSnip721StakedClient,
   SecretDaoVotingSnip721StakedQueryClient,
 } from './SecretDaoVotingSnip721Staked'
+export {
+  SecretDaoPreProposeApprovalSingleClient,
+  SecretDaoPreProposeApprovalSingleQueryClient,
+} from './SecretDaoPreProposeApprovalSingle'
+export {
+  SecretDaoVotingSnip20StakedClient,
+  SecretDaoVotingSnip20StakedQueryClient,
+} from './SecretDaoVotingSnip20Staked'

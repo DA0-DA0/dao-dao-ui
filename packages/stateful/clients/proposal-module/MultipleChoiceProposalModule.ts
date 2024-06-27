@@ -5,16 +5,27 @@ import {
   DaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin } from '@dao-dao/types'
+import { Coin, ModuleInstantiateInfo } from '@dao-dao/types'
 import {
+  InstantiateMsg as DaoPreProposeMultipleInstantiateMsg,
+  UncheckedDepositInfo,
+} from '@dao-dao/types/contracts/DaoPreProposeMultiple'
+import {
+  Duration,
+  InstantiateMsg,
   MultipleChoiceVote,
+  PercentageThreshold,
+  PreProposeInfo,
+  VetoConfig,
   VoteInfo,
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
   SupportedSigningCosmWasmClient,
+  encodeJsonToBase64,
   findWasmAttributeValue,
+  mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalMultiple/types'
@@ -29,6 +40,72 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   MultipleChoiceVote
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES
+
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   */
+  static generateModuleInstantiateInfo(
+    chainId: string,
+    daoName: string,
+    config: {
+      quorum: PercentageThreshold
+      maxVotingPeriod: Duration
+      minVotingPeriod?: Duration
+      allowRevoting: boolean
+      veto?: VetoConfig
+      deposit?: UncheckedDepositInfo
+      submissionPolicy: 'members' | 'anyone'
+      /**
+       * Defaults to true.
+       */
+      closeProposalOnExecutionFailure?: boolean
+      /**
+       * Defaults to true.
+       */
+      onlyMembersExecute?: boolean
+    }
+  ): ModuleInstantiateInfo {
+    const { codeIds } = mustGetSupportedChainConfig(chainId)
+
+    const pre_propose_info: PreProposeInfo = {
+      module_may_propose: {
+        info: {
+          admin: { core_module: {} },
+          code_id: codeIds.DaoPreProposeMultiple,
+          label: `DAO_${daoName}_pre-propose-multiple`,
+          msg: encodeJsonToBase64({
+            deposit_info: config.deposit,
+            extension: {},
+            open_proposal_submission: config.submissionPolicy === 'anyone',
+          } as DaoPreProposeMultipleInstantiateMsg),
+          funds: [],
+        },
+      },
+    }
+
+    return {
+      admin: { core_module: {} },
+      code_id: codeIds.DaoProposalMultiple,
+      label: `DAO_${daoName}_proposal-multiple`,
+      msg: encodeJsonToBase64({
+        allow_revoting: config.allowRevoting,
+        close_proposal_on_execution_failure:
+          config.closeProposalOnExecutionFailure ?? true,
+        max_voting_period: config.maxVotingPeriod,
+        min_voting_period: config.minVotingPeriod,
+        only_members_execute: config.onlyMembersExecute ?? true,
+        pre_propose_info,
+        veto: config.veto,
+        voting_strategy: {
+          single_choice: {
+            quorum: config.quorum,
+          },
+        },
+      } as InstantiateMsg),
+      funds: [],
+    }
+  }
 
   async propose({
     data,

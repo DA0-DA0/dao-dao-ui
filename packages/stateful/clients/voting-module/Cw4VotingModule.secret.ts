@@ -1,17 +1,80 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoVotingCw4Queries } from '@dao-dao/state/query'
+import { SecretModuleInstantiateInfo } from '@dao-dao/types'
 import {
+  InstantiateMsg,
+  Member,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoVotingCw4'
-import { DAO_VOTING_CW4_CONTRACT_NAMES } from '@dao-dao/utils'
+} from '@dao-dao/types/contracts/SecretDaoVotingCw4'
+import {
+  DAO_VOTING_CW4_CONTRACT_NAMES,
+  encodeJsonToBase64,
+  mustGetSupportedChainConfig,
+} from '@dao-dao/utils'
 
 import { SecretCwDao } from '../dao'
 import { VotingModuleBase } from './base'
 
 export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
   static contractNames: readonly string[] = DAO_VOTING_CW4_CONTRACT_NAMES
+
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   */
+  static generateModuleInstantiateInfo(
+    chainId: string,
+    daoName: string,
+    config:
+      | {
+          /**
+           * Use an existing cw4-group contract.
+           */
+          existingCw4GroupContract: {
+            address: string
+            codeHash: string
+          }
+        }
+      | {
+          /**
+           * Creates a new cw4-group contract with these members.
+           */
+          members: Member[]
+        }
+  ): SecretModuleInstantiateInfo {
+    const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
+    if (!codeHashes) {
+      throw new Error('Code hashes not configured for chain ' + chainId)
+    }
+
+    return {
+      admin: { core_module: {} },
+      code_id: codeIds.DaoVotingCw4,
+      code_hash: codeHashes.DaoVotingCw4,
+      label: `DAO_${daoName}_cw4`,
+      msg: encodeJsonToBase64({
+        dao_code_hash: codeHashes.DaoCore,
+        group_contract:
+          'existingCw4GroupContract' in config
+            ? {
+                existing: {
+                  address: config.existingCw4GroupContract.address,
+                  code_hash: config.existingCw4GroupContract.codeHash,
+                },
+              }
+            : {
+                new: {
+                  cw4_group_code_hash: codeHashes.Cw4Group,
+                  cw4_group_code_id: codeIds.Cw4Group,
+                  initial_members: config.members,
+                },
+              },
+      } as InstantiateMsg),
+      funds: [],
+    }
+  }
 
   getVotingPowerQuery(
     address?: string,

@@ -1,27 +1,24 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingCw20StakedQueries } from '@dao-dao/state/query'
-import { ActiveThreshold, ModuleInstantiateInfo } from '@dao-dao/types'
+import { secretDaoVotingSnip20StakedQueries } from '@dao-dao/state/query'
+import { SecretModuleInstantiateInfo } from '@dao-dao/types'
 import {
-  Cw20Coin,
-  InstantiateMarketingInfo,
-} from '@dao-dao/types/contracts/Cw20Base'
-import {
-  Duration,
+  ActiveThreshold,
+  InitialBalance,
   InstantiateMsg,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoVotingCw20Staked'
+} from '@dao-dao/types/contracts/SecretDaoVotingSnip20Staked'
 import {
   DAO_VOTING_CW20_STAKED_CONTRACT_NAMES,
   encodeJsonToBase64,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
-import { CwDao } from '../dao/CwDao'
+import { SecretCwDao } from '../dao'
 import { VotingModuleBase } from './base'
 
-export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
+export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao> {
   static contractNames: readonly string[] =
     DAO_VOTING_CW20_STAKED_CONTRACT_NAMES
 
@@ -41,12 +38,16 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
              */
             existing: {
               address: string
+              codeHash: string
               stakingContract:
                 | {
                     /**
                      * Use an existing cw20 staking contract.
                      */
-                    existing: string
+                    existing: {
+                      address: string
+                      codeHash: string
+                    }
                   }
                 | {
                     /**
@@ -67,21 +68,22 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
               decimals: number
               name: string
               unstakingDuration?: Duration
-              initialBalances: Cw20Coin[]
+              initialBalances: InitialBalance[]
               initialDaoBalance?: string
-              marketingInfo?: InstantiateMarketingInfo
             }
           }
     }
-  ): ModuleInstantiateInfo {
-    const { codeIds } = mustGetSupportedChainConfig(chainId)
+  ): SecretModuleInstantiateInfo {
+    const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
     if (
+      !codeHashes ||
       !codeIds.DaoVotingCw20Staked ||
+      !codeHashes.DaoVotingCw20Staked ||
       ((('existing' in config.token &&
         'new' in config.token.existing.stakingContract) ||
         'new' in config.token) &&
-        !codeIds.Cw20Stake) ||
-      ('new' in config.token && !codeIds.Cw20Base)
+        (!codeIds.Cw20Stake || !codeHashes.Cw20Stake)) ||
+      ('new' in config.token && (!codeIds.Cw20Base || !codeHashes.Cw20Base))
     ) {
       throw new Error('Codes not configured for chain ' + chainId)
     }
@@ -89,24 +91,34 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw20Staked,
-      label: `DAO_${daoName}_cw20-staked`,
+      code_hash: codeHashes.DaoVotingCw20Staked,
+      label: `DAO_${daoName}_snip20-staked`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
+        dao_code_hash: codeHashes.DaoCore,
         token_info:
           'existing' in config.token
             ? {
                 existing: {
                   address: config.token.existing.address,
+                  code_hash: config.token.existing.codeHash,
                   staking_contract:
                     'existing' in config.token.existing.stakingContract
                       ? {
                           existing: {
                             staking_contract_address:
-                              config.token.existing.stakingContract.existing,
+                              config.token.existing.stakingContract.existing
+                                .address,
+                            staking_contract_code_hash:
+                              config.token.existing.stakingContract.existing
+                                .codeHash,
                           },
                         }
                       : {
                           new: {
+                            label: `DAO_${daoName}_snip20-stake`,
+                            // Type-checked above.
+                            staking_code_hash: codeHashes.Cw20Stake!,
                             // Type-checked above.
                             staking_code_id: codeIds.Cw20Stake!,
                             unstaking_duration:
@@ -119,13 +131,16 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
             : {
                 new: {
                   // Type-checked above.
+                  code_hash: codeHashes.Cw20Base!,
+                  // Type-checked above.
                   code_id: codeIds.Cw20Base!,
                   decimals: config.token.new.decimals,
                   initial_balances: config.token.new.initialBalances,
                   initial_dao_balance: config.token.new.initialDaoBalance,
                   label: config.token.new.name,
-                  marketing: config.token.new.marketingInfo,
                   name: config.token.new.name,
+                  // Type-checked above.
+                  staking_code_hash: codeHashes.Cw20Stake!,
                   // Type-checked above.
                   staking_code_id: codeIds.Cw20Stake!,
                   symbol: config.token.new.symbol,
@@ -141,28 +156,52 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
     address?: string,
     height?: number
   ): FetchQueryOptions<VotingPowerAtHeightResponse> {
-    // If no address, return query in loading state.
-    if (!address) {
+    // If no address nor permit, return query in loading state.
+    const permit = address && this.dao.getExistingPermit(address)
+    if (!permit) {
       return {
         queryKey: [],
         queryFn: skipToken,
       }
     }
 
-    return daoVotingCw20StakedQueries.votingPowerAtHeight({
+    return secretDaoVotingSnip20StakedQueries.votingPowerAtHeight({
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {
-        address,
+        auth: { permit },
         height,
       },
     })
   }
 
+  async getVotingPower(
+    address?: string,
+    height?: number,
+    /**
+     * Whether or not to prompt the wallet for a permit. If true,
+     * `dao.registerOfflineSignerAminoGetter` must be called first.
+     *
+     * Defaults to false.
+     */
+    prompt = false
+  ): Promise<string> {
+    if (prompt && address) {
+      // Load permit now which will be retrieved in getVotingPowerQuery.
+      await this.dao.getPermit(address)
+    }
+
+    return (
+      await this.queryClient.fetchQuery(
+        this.getVotingPowerQuery(address, height)
+      )
+    ).power
+  }
+
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw20StakedQueries.totalPowerAtHeight({
+    return secretDaoVotingSnip20StakedQueries.totalPowerAtHeight({
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {

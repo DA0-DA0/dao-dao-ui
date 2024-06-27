@@ -2,7 +2,11 @@ import { OfflineAminoSigner } from '@cosmjs/amino'
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
-import { DaoInfo, PermitForPermitData } from '@dao-dao/types'
+import {
+  DaoInfo,
+  PermitForPermitData,
+  SecretInstantiateInfo,
+} from '@dao-dao/types'
 import {
   InitialItem,
   InstantiateMsg,
@@ -65,7 +69,7 @@ export class SecretCwDao extends CwDao {
     },
     votingModule: ModuleInstantiateInfo,
     proposalModules: ModuleInstantiateInfo[]
-  ) {
+  ): SecretInstantiateInfo {
     const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
     if (
       !codeHashes ||
@@ -79,8 +83,8 @@ export class SecretCwDao extends CwDao {
 
     return {
       admin: config.admin || null,
-      code_id: codeIds.DaoCore,
-      code_hash: codeHashes.DaoCore,
+      codeId: codeIds.DaoCore,
+      codeHash: codeHashes.DaoCore,
       label: config.name,
       msg: encodeJsonToBase64({
         admin: config.admin,

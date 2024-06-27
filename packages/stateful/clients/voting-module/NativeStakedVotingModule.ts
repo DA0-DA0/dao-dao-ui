@@ -14,6 +14,16 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
   static contractNames: readonly string[] =
     DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES
 
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   *
+   * @deprecated Use `TokenStakedVotingModule` instead.
+   */
+  static generateModuleInstantiateInfo() {
+    throw new Error('Deprecated. Use TokenStakedVotingModule instead.')
+  }
+
   getVotingPowerQuery(
     address?: string,
     height?: number

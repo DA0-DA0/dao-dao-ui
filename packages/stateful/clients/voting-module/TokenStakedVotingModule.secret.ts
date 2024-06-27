@@ -1,11 +1,19 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoVotingTokenStakedQueries } from '@dao-dao/state/query'
+import { SecretModuleInstantiateInfo } from '@dao-dao/types'
 import {
+  ActiveThreshold,
+  Duration,
+  InstantiateMsg,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoVotingCw4'
-import { DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES } from '@dao-dao/utils'
+} from '@dao-dao/types/contracts/SecretDaoVotingTokenStaked'
+import {
+  DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
+  encodeJsonToBase64,
+  mustGetSupportedChainConfig,
+} from '@dao-dao/utils'
 
 import { SecretCwDao } from '../dao'
 import { VotingModuleBase } from './base'
@@ -13,6 +21,47 @@ import { VotingModuleBase } from './base'
 export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao> {
   static contractNames: readonly string[] =
     DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES
+
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   */
+  static generateModuleInstantiateInfo(
+    chainId: string,
+    daoName: string,
+    config: {
+      /**
+       * Use an existing native token, including IBC and token factory
+       * tokens.
+       */
+      denom: string
+      activeThreshold?: ActiveThreshold
+      unstakingDuration?: Duration
+    }
+  ): SecretModuleInstantiateInfo {
+    const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
+    if (!codeHashes) {
+      throw new Error('Codes not configured for chain ' + chainId)
+    }
+
+    return {
+      admin: { core_module: {} },
+      code_id: codeIds.DaoVotingTokenStaked,
+      code_hash: codeHashes.DaoVotingTokenStaked,
+      label: `DAO_${daoName}_token-staked`,
+      msg: encodeJsonToBase64({
+        active_threshold: config.activeThreshold,
+        dao_code_hash: codeHashes.DaoCore,
+        token_info: {
+          existing: {
+            denom: config.denom,
+          },
+        },
+        unstaking_duration: config.unstakingDuration,
+      } as InstantiateMsg),
+      funds: [],
+    }
+  }
 
   getVotingPowerQuery(
     address?: string,

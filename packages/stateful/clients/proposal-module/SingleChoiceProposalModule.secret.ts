@@ -5,8 +5,18 @@ import {
   SecretDaoProposalSingleClient,
 } from '@dao-dao/state/contracts'
 import { secretDaoProposalSingleQueries } from '@dao-dao/state/query'
-import { Coin } from '@dao-dao/types'
+import { Coin, SecretModuleInstantiateInfo } from '@dao-dao/types'
+import { InstantiateMsg as SecretDaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
 import {
+  InstantiateMsg as SecretDaoPreProposeSingleInstantiateMsg,
+  UncheckedDepositInfo,
+} from '@dao-dao/types/contracts/SecretDaoPreProposeSingle'
+import {
+  Duration,
+  InstantiateMsg,
+  PreProposeInfo,
+  Threshold,
+  VetoConfig,
   Vote,
   VoteInfo,
   VoteResponse,
@@ -15,7 +25,9 @@ import {
   ContractName,
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   SupportedSigningCosmWasmClient,
+  encodeJsonToBase64,
   findWasmAttributeValue,
+  mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import { NewProposalData } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
@@ -30,6 +42,95 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   Vote
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
+
+  /**
+   * Generate the module instantiate info to plug into the DAO instantiate info
+   * generator function.
+   */
+  static generateModuleInstantiateInfo(
+    chainId: string,
+    daoName: string,
+    config: {
+      threshold: Threshold
+      maxVotingPeriod: Duration
+      minVotingPeriod?: Duration
+      allowRevoting: boolean
+      veto?: VetoConfig
+      approver?: string
+      deposit?: UncheckedDepositInfo
+      submissionPolicy: 'members' | 'anyone'
+      /**
+       * Defaults to true.
+       */
+      closeProposalOnExecutionFailure?: boolean
+      /**
+       * Defaults to true.
+       */
+      onlyMembersExecute?: boolean
+    }
+  ): SecretModuleInstantiateInfo {
+    const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
+    if (!codeHashes) {
+      throw new Error('Code hashes not configured for chain ' + chainId)
+    }
+
+    const pre_propose_info: PreProposeInfo = {
+      module_may_propose: {
+        info: {
+          admin: { core_module: {} },
+          code_id: config.approver
+            ? codeIds.DaoPreProposeApprovalSingle
+            : codeIds.DaoPreProposeSingle,
+          code_hash: config.approver
+            ? codeHashes.DaoPreProposeApprovalSingle
+            : codeHashes.DaoPreProposeSingle,
+          label: `DAO_${daoName}_pre-propose${
+            config.approver ? '-approval' : ''
+          }-single`,
+          msg: encodeJsonToBase64(
+            config.approver
+              ? ({
+                  deposit_info: config.deposit,
+                  extension: {
+                    approver: config.approver,
+                  },
+                  open_proposal_submission:
+                    config.submissionPolicy === 'anyone',
+                  proposal_module_code_hash: codeHashes.DaoProposalSingle,
+                } as SecretDaoPreProposeApprovalSingleInstantiateMsg)
+              : ({
+                  deposit_info: config.deposit,
+                  extension: {},
+                  open_proposal_submission:
+                    config.submissionPolicy === 'anyone',
+                  proposal_module_code_hash: codeHashes.DaoProposalSingle,
+                } as SecretDaoPreProposeSingleInstantiateMsg)
+          ),
+          funds: [],
+        },
+      },
+    }
+
+    return {
+      admin: { core_module: {} },
+      code_id: codeIds.DaoProposalSingle,
+      code_hash: codeHashes.DaoProposalSingle,
+      label: `DAO_${daoName}_proposal-single`,
+      msg: encodeJsonToBase64({
+        allow_revoting: config.allowRevoting,
+        close_proposal_on_execution_failure:
+          config.closeProposalOnExecutionFailure ?? true,
+        dao_code_hash: codeHashes.DaoCore,
+        max_voting_period: config.maxVotingPeriod,
+        min_voting_period: config.minVotingPeriod,
+        only_members_execute: config.onlyMembersExecute ?? true,
+        pre_propose_info,
+        threshold: config.threshold,
+        veto: config.veto,
+      } as InstantiateMsg),
+      funds: [],
+    }
+  }
 
   async propose({
     data,
