@@ -1,11 +1,14 @@
-import { DurationWithUnits } from '@dao-dao/types'
+import {
+  DaoCreationVotingConfigWithActiveThreshold,
+  DurationWithUnits,
+} from '@dao-dao/types'
 
 export enum GovernanceTokenType {
   New,
   Existing,
 }
 
-export interface CreatorData {
+export type CreatorData = {
   tokenType: GovernanceTokenType
   existingGovernanceTokenDenomOrAddress: string
   // TokenInfoResponse
@@ -16,4 +19,4 @@ export interface CreatorData {
     _error?: undefined
   }
   unstakingDuration: DurationWithUnits
-}
+} & DaoCreationVotingConfigWithActiveThreshold

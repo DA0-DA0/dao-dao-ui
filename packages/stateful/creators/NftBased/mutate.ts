@@ -1,5 +1,8 @@
 import { DaoCreatorMutate } from '@dao-dao/types'
-import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
+import {
+  ActiveThreshold,
+  InstantiateMsg,
+} from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   NftBasedCreatorId,
   convertDurationWithUnitsToDuration,
@@ -13,7 +16,7 @@ import { CreatorData } from './types'
 export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
   { name: daoName },
-  { existingGovernanceTokenDenomOrAddress, unstakingDuration },
+  { existingGovernanceTokenDenomOrAddress, unstakingDuration, activeThreshold },
   t,
   codeIds
 ) => {
@@ -21,7 +24,22 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     throw new Error(t('error.missingGovernanceTokenAddress'))
   }
 
+  const active_threshold: ActiveThreshold | null = activeThreshold?.enabled
+    ? !activeThreshold.type || activeThreshold.type === 'percent'
+      ? {
+          percentage: {
+            percent: (activeThreshold.value / 100).toString(),
+          },
+        }
+      : {
+          absolute_count: {
+            count: BigInt(activeThreshold.value).toString(),
+          },
+        }
+    : null
+
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
+    active_threshold,
     nft_contract: {
       existing: {
         address: existingGovernanceTokenDenomOrAddress,
