@@ -43,7 +43,6 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
-import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
   CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
@@ -60,7 +59,6 @@ import {
   getSupportedChains,
   instantiateSmartContract,
   isSecretNetwork,
-  makeValidateMsg,
   makeWasmMessage,
   parseContractVersion,
   processError,
@@ -353,11 +351,6 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
-  const validateInstantiateMsg = useMemo(
-    () => makeValidateMsg<DaoCoreV2InstantiateMsg>(instantiateSchema, t),
-    [t]
-  )
-
   let instantiateMsg: DaoCoreV2InstantiateMsg | undefined
   let instantiateMsgError: string | undefined
   try {
@@ -399,9 +392,6 @@ export const InnerCreateDaoForm = ({
       t,
       codeIds
     )
-
-    // Validate and throw error if invalid according to JSON schema.
-    validateInstantiateMsg(instantiateMsg)
   } catch (err) {
     instantiateMsgError = err instanceof Error ? err.message : `${err}`
   }

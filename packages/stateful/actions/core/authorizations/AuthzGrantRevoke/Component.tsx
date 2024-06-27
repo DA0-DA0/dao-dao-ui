@@ -41,7 +41,7 @@ import {
   getNativeTokenForChainId,
   makeValidateAddress,
   makeWasmMessage,
-  validateCosmosMsg,
+  validateCosmosMsgForChain,
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
@@ -363,7 +363,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
                       msgs.forEach((msg, index) => {
                         try {
-                          validateCosmosMsg(msg)
+                          validateCosmosMsgForChain(chainId, msg)
                         } catch (err) {
                           return (
                             `Message ${index + 1}: ` +

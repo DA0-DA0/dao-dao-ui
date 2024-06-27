@@ -13,12 +13,8 @@ import {
   convertVetoConfigToCosmos,
   encodeJsonToBase64,
 } from '@dao-dao/utils'
-import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import { DaoCreationExtraVotingConfig } from '../types'
-import instantiateSchema from './instantiate_schema.json'
-import preProposeApprovalInstantiateSchema from './pre_propose_approval_instantiate_schema.json'
-import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
@@ -37,8 +33,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { quorumEnabled, threshold },
-  t
+  { quorumEnabled, threshold }
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
 
@@ -87,14 +82,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       } as DaoPreProposeApprovalSingleInstantiateMsg)
     : (preProposeInstantiateMsgCommon as DaoPreProposeSingleInstantiateMsg)
 
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<any>(
-    approver.enabled
-      ? preProposeApprovalInstantiateSchema
-      : preProposeInstantiateSchema,
-    t
-  )(preProposeInstantiateMsg)
-
   const msg: DaoProposalSingleInstantiateMsg = {
     allow_revoting: allowRevoting,
     close_proposal_on_execution_failure: true,
@@ -132,9 +119,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         },
     veto: convertVetoConfigToCosmos(veto),
   }
-
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<DaoProposalSingleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
     admin: { core_module: {} },

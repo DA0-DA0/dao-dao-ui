@@ -13,10 +13,7 @@ import {
   encodeJsonToBase64,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
-import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import instantiateSchemaCw20 from './instantiate_schema_cw20.json'
-import instantiateSchemaNative from './instantiate_schema_native.json'
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
@@ -167,14 +164,6 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
           },
         }
   }
-
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<
-    DaoVotingTokenStakedInstantiateMsg | DaoVotingCw20StakedInstantiateMsg
-  >(
-    isNative ? instantiateSchemaNative : instantiateSchemaCw20,
-    t
-  )(votingModuleAdapterInstantiateMsg)
 
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },

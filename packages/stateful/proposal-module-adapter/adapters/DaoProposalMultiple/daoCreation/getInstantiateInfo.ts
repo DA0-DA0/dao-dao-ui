@@ -8,12 +8,9 @@ import {
   convertVetoConfigToCosmos,
   encodeJsonToBase64,
 } from '@dao-dao/utils'
-import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import { DaoCreationExtraVotingConfig } from '../types'
 import { convertPercentOrMajorityValueToPercentageThreshold } from '../utils'
-import instantiateSchema from './instantiate_schema.json'
-import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
@@ -31,8 +28,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { moduleInstantiateFundsUnsupported },
-  t
+  { moduleInstantiateFundsUnsupported }
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
 
@@ -71,12 +67,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       open_proposal_submission: anyoneCanPropose,
     }
 
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<DaoPreProposeMultipleInstantiateMsg>(
-    preProposeInstantiateSchema,
-    t
-  )(preProposeMultipleInstantiateMsg)
-
   const codeIdsToUse = {
     ...codeIds,
     // If module instantiation funds are unsupported, use the v2.1.0 contracts
@@ -114,9 +104,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     },
     veto: convertVetoConfigToCosmos(veto),
   }
-
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<DaoProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
     admin: { core_module: {} },

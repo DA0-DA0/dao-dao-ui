@@ -1,9 +1,7 @@
 import { DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
 import { MembershipBasedCreatorId, encodeJsonToBase64 } from '@dao-dao/utils'
-import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import instantiateSchema from './instantiate_schema.json'
 import { CreatorData } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
@@ -30,12 +28,6 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       new: newData,
     },
   }
-
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<InstantiateMsg>(
-    instantiateSchema,
-    t
-  )(votingModuleAdapterInstantiateMsg)
 
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },

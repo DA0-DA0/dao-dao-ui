@@ -262,7 +262,7 @@ export const makeBankMessage = (
 
 /**
  * Convert stringified JSON object into CosmWasm-formatted Cosmos message. Used
- * by the Custom action component to encode generic a JSON string.
+ * by the Custom action component to encode a generic JSON string.
  */
 export const convertJsonToCWCosmosMsg = (value: string): UnifiedCosmosMsg => {
   let msg = JSON5.parse(value)
