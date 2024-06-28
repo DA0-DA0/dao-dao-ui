@@ -669,13 +669,19 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: 576,
       DaoVotingTokenStaked: 577,
 
-      ValenceAccount: 1403,
+      ValenceAccount: 1506,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
         DaoPreProposeMultiple: 224,
         DaoProposalMultiple: 226,
       },
+    },
+    valence: {
+      servicesManager:
+        'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
+      rebalancer:
+        'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
     // There is no IBC connection with:
     // - Juno
@@ -800,12 +806,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // injective
         remoteChannel: 'channel-304',
       },
-    },
-    valence: {
-      servicesManager:
-        'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
-      rebalancer:
-        'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
   },
   {
