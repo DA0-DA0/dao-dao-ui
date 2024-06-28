@@ -1,8 +1,10 @@
 import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
+import { daoQueries } from '@dao-dao/state/query'
 import {
   Account,
+  AmountWithTimestamp,
   ContractVersion,
   DaoCardLazyData,
   DaoInfo,
@@ -167,4 +169,21 @@ export abstract class DaoBase implements IDaoBase {
    * Fetch the lazy data for the DAO card.
    */
   abstract getDaoCardLazyData(): Promise<DaoCardLazyData>
+
+  /**
+   * Query options to fetch the TVL.
+   */
+  get tvlQuery(): FetchQueryOptions<AmountWithTimestamp> {
+    return daoQueries.tvl(this.queryClient, {
+      chainId: this.chainId,
+      coreAddress: this.coreAddress,
+    })
+  }
+
+  /**
+   * Fetch the TVL.
+   */
+  getTvl(): Promise<AmountWithTimestamp> {
+    return this.queryClient.fetchQuery(this.tvlQuery)
+  }
 }

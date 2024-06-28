@@ -9,6 +9,7 @@ import {
 } from '../contracts/DaoCore.v2'
 import { DaoInfo, DaoSource } from '../dao'
 import { ContractVersion } from '../features'
+import { AmountWithTimestamp } from '../token'
 import { IProposalModuleBase } from './proposal-module'
 import { IVotingModuleBase } from './voting-module'
 
@@ -124,4 +125,14 @@ export interface IDaoBase {
    * Fetch the lazy data for the DAO card.
    */
   getDaoCardLazyData(): Promise<DaoCardLazyData>
+
+  /**
+   * Query options to fetch the TVL.
+   */
+  tvlQuery: FetchQueryOptions<AmountWithTimestamp>
+
+  /**
+   * Fetch the TVL.
+   */
+  getTvl(): Promise<AmountWithTimestamp>
 }

@@ -6,7 +6,6 @@ import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 import {
   Account,
   AccountType,
-  AmountWithTimestamp,
   GenericToken,
   GenericTokenSource,
   LoadingTokens,
@@ -19,9 +18,7 @@ import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
-  getSupportedChainConfig,
   getTokenForChainIdAndDenom,
-  isConfiguredChainName,
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
@@ -164,43 +161,6 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
           }
         })
         .filter(Boolean) as TransformedTreasuryTransaction[]
-    },
-})
-
-export const daoTvlSelector = selectorFamily<
-  AmountWithTimestamp,
-  WithChainId<{
-    coreAddress: string
-  }>
->({
-  key: 'daoTvl',
-  get:
-    ({ chainId, coreAddress }) =>
-    ({ get }) => {
-      // Native chain x/gov module.
-      if (isConfiguredChainName(chainId, coreAddress)) {
-        coreAddress =
-          // If chain uses a contract-based DAO, load it instead.
-          getSupportedChainConfig(chainId)?.govContractAddress ||
-          COMMUNITY_POOL_ADDRESS_PLACEHOLDER
-      }
-
-      const timestamp = new Date()
-
-      const { total: amount } = get(
-        querySnapperSelector({
-          query: 'daodao-tvl',
-          parameters: {
-            chainId,
-            address: coreAddress,
-          },
-        })
-      )
-
-      return {
-        amount,
-        timestamp,
-      }
     },
 })
 

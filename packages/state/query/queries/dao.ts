@@ -1,7 +1,6 @@
 import {
   FetchQueryOptions,
   QueryClient,
-  queryOptions,
   skipToken,
 } from '@tanstack/react-query'
 
@@ -91,11 +90,13 @@ export const daoQueries = {
   /**
    * Fetch a DAO's TVL.
    */
-  tvl: (queryClient: QueryClient, options: Parameters<typeof fetchDaoTvl>[1]) =>
-    queryOptions({
-      queryKey: ['dao', 'tvl', options],
-      queryFn: () => fetchDaoTvl(queryClient, options),
-    }),
+  tvl: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaoTvl>[1]
+  ): FetchQueryOptions<AmountWithTimestamp> => ({
+    queryKey: ['dao', 'tvl', options],
+    queryFn: () => fetchDaoTvl(queryClient, options),
+  }),
   /**
    * Fetch chain DAO voting power-shaped response.
    */

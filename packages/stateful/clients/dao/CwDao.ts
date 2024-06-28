@@ -5,10 +5,7 @@ import {
   skipToken,
 } from '@tanstack/react-query'
 
-import {
-  daoDaoCoreQueries,
-  daoQueries as stateDaoQueries,
-} from '@dao-dao/state/query'
+import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import {
   DaoCardLazyData,
   DaoInfo,
@@ -253,12 +250,7 @@ export class CwDao extends DaoBase {
   }
 
   async getDaoCardLazyData(): Promise<DaoCardLazyData> {
-    const { amount: tvl } = await this.queryClient.fetchQuery(
-      stateDaoQueries.tvl(this.queryClient, {
-        chainId: this.options.chainId,
-        coreAddress: this.options.coreAddress,
-      })
-    )
+    const { amount: tvl } = await this.getTvl()
 
     const proposalModuleCounts = await Promise.all(
       this.proposalModules.map((p) => p.getProposalCount())

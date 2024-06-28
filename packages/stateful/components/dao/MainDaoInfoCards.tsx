@@ -2,13 +2,12 @@ import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { Cw1WhitelistSelectors, daoTvlSelector } from '@dao-dao/state'
+import { Cw1WhitelistSelectors } from '@dao-dao/state'
 import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
-  useCachedLoading,
   useChain,
-  useDaoInfoContext,
+  useDaoContext,
 } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
 import {
@@ -17,6 +16,7 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingData } from '../../hooks'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -40,21 +40,15 @@ const InnerMainDaoInfoCards = () => {
     hooks: { useMainDaoInfoCards, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleCards = useMainDaoInfoCards()
-  const { coreAddress, activeThreshold, created, proposalModules } =
-    useDaoInfoContext()
-
   const tokenInfo = useCommonGovernanceTokenInfo?.()
 
-  const treasuryUsdcValueLoading = useCachedLoading(
-    daoTvlSelector({
-      coreAddress,
-      chainId,
-    }),
-    {
-      amount: -1,
-      timestamp: new Date(),
-    }
-  )
+  const { dao } = useDaoContext()
+  const { activeThreshold, created, proposalModules } = dao.info
+
+  const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
+    amount: -1,
+    timestamp: new Date(),
+  })
 
   // Get unique approvers from all proposal modules.
   const allApprovers = uniq(
@@ -115,17 +109,15 @@ const InnerMainDaoInfoCards = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                treasuryUsdcValueLoading.loading
+                tvlLoading.loading
                   ? { loading: true }
                   : {
                       loading: false,
-                      data: treasuryUsdcValueLoading.data.amount,
+                      data: tvlLoading.data.amount,
                     }
               }
               dateFetched={
-                treasuryUsdcValueLoading.loading
-                  ? undefined
-                  : treasuryUsdcValueLoading.data.timestamp
+                tvlLoading.loading ? undefined : tvlLoading.data.timestamp
               }
               estimatedUsdValue
               hideApprox
