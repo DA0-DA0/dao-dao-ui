@@ -1,18 +1,19 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useUpdatingRef } from '@dao-dao/stateless'
-import { IDaoBase, PermitForPermitData } from '@dao-dao/types'
+import { DaoSource, IDaoBase, PermitForPermitData } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
-import { SecretCwDao, getDao } from '../clients/dao'
+import { SecretCwDao } from '../clients/dao'
+import { useDaoClient } from './useDaoClient'
+import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
 import { UseWalletOptions, UseWalletReturn, useWallet } from './useWallet'
 
 export type UseWalletWithSecretNetworkPermitOptions = UseWalletOptions & {
   /**
-   * DAO to fetch permit for. Must be on the current chain.
+   * DAO to fetch the permit for, or the current DAO context.
    */
-  dao: string
+  dao?: DaoSource
 }
 
 export type UseWalletWithSecretNetworkPermitReturn = UseWalletReturn & {
@@ -35,40 +36,30 @@ export type UseWalletWithSecretNetworkPermitReturn = UseWalletReturn & {
 }
 
 /**
- * Hook to help manage Secret Network permits.
+ * Hook to help manage a wallet's Secret Network permits for a DAO.
  *
  * TODO(dao-client): refactor this into a more general wallet / DAO client hook
  */
-export const useWalletWithSecretNetworkPermit = ({
+export const useDaoWithWalletSecretNetworkPermit = ({
   dao,
   ...options
-}: UseWalletWithSecretNetworkPermitOptions): UseWalletWithSecretNetworkPermitReturn => {
+}: UseWalletWithSecretNetworkPermitOptions = {}): UseWalletWithSecretNetworkPermitReturn => {
+  const { dao: daoClient } = useDaoClient({
+    dao,
+  })
   const wallet = useWallet(options)
-  const queryClient = useQueryClient()
 
   // Stabilize reference so callback doesn't change. This only needs to update
   // on wallet connection state change anyway.
   const getOfflineSignerAminoRef = useUpdatingRef(wallet.getOfflineSignerAmino)
-
-  // Get DAO client for permit fetching.
-  const daoClient = useMemo(() => {
-    const client = getDao({
-      queryClient,
-      chainId: wallet.chain.chain_id,
-      coreAddress: dao,
-    })
-    // Register for offline signer if Secret DAO.
-    if (client instanceof SecretCwDao && wallet.isWalletConnected) {
-      client.registerOfflineSignerAminoGetter(getOfflineSignerAminoRef.current)
+  // Register for offline signer if Secret DAO.
+  useEffect(() => {
+    if (daoClient instanceof SecretCwDao && wallet.isWalletConnected) {
+      daoClient.registerOfflineSignerAminoGetter(
+        getOfflineSignerAminoRef.current
+      )
     }
-    return client
-  }, [
-    dao,
-    queryClient,
-    wallet.chain.chain_id,
-    wallet.isWalletConnected,
-    getOfflineSignerAminoRef,
-  ])
+  }, [daoClient, getOfflineSignerAminoRef, wallet.isWalletConnected])
 
   // Attempt to initialize with existing permit.
   const [permit, setPermit] = useState<PermitForPermitData | undefined>(() =>
@@ -90,23 +81,20 @@ export const useWalletWithSecretNetworkPermit = ({
     }
   }, [daoClient, wallet.address, wallet.isWalletConnected])
 
-  // On window event, attempt to fetch existing permit if not already set.
-  useEffect(() => {
-    if (typeof window === 'undefined' || !(daoClient instanceof SecretCwDao)) {
-      return
-    }
-
-    const listener = () => {
-      if (!permit && wallet.isWalletConnected && wallet.address) {
-        setPermit(daoClient.getExistingPermit(wallet.address))
-      }
-    }
-
-    window.addEventListener('secretPermitUpdate', listener)
-    return () => {
-      window.removeEventListener('secretPermitUpdate', listener)
-    }
-  }, [permit, daoClient, wallet.address, wallet.isWalletConnected])
+  // Attempt to fetch existing permit on change if not already set.
+  useOnSecretNetworkPermitUpdate({
+    dao,
+    callback:
+      daoClient instanceof SecretCwDao && wallet.isWalletConnected
+        ? () => {
+            if (wallet.address) {
+              setPermit(daoClient.getExistingPermit(wallet.address))
+            }
+          }
+        : undefined,
+    // We already set state and re-render in the callback.
+    reRender: false,
+  })
 
   const getPermit = useCallback(async (): Promise<PermitForPermitData> => {
     if (!(daoClient instanceof SecretCwDao)) {

@@ -52,9 +52,7 @@ export const makeUsePublishProposal =
       address: walletAddress,
       getSigningClient,
     } = useWallet()
-    const { isMember = false } = useMembership({
-      coreAddress,
-    })
+    const { isMember = false } = useMembership()
 
     const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({

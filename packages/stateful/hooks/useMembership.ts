@@ -1,8 +1,15 @@
+import { DaoSource } from '@dao-dao/types'
+
+import { useDaoClient } from './useDaoClient'
+import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
 import { useQueryLoadingDataWithError } from './useQueryLoadingDataWithError'
-import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
+import { useWallet } from './useWallet'
 
 interface UseMembershipOptions {
-  coreAddress: string
+  /**
+   * Override current DAO context.
+   */
+  dao?: DaoSource
   blockHeight?: number
 }
 
@@ -14,24 +21,23 @@ interface UseMembershipResponse {
 }
 
 export const useMembership = ({
-  coreAddress,
+  dao: daoSource,
   blockHeight,
-}: UseMembershipOptions): UseMembershipResponse => {
-  const {
-    address: walletAddress,
-    isWalletConnecting,
-    dao,
-  } = useWalletWithSecretNetworkPermit({
-    dao: coreAddress,
+}: UseMembershipOptions = {}): UseMembershipResponse => {
+  const { address: walletAddress, isWalletConnecting } = useWallet()
+  const { dao } = useDaoClient({
+    dao: daoSource,
   })
 
-  // TODO(dao-client secret): make sure these refresh when the permit updates
   const _walletVotingWeight = useQueryLoadingDataWithError(
     dao.getVotingPowerQuery(walletAddress, blockHeight)
   )
   const _totalVotingWeight = useQueryLoadingDataWithError(
     dao.getTotalVotingPowerQuery(blockHeight)
   )
+  // Make sure this component re-renders if the Secret Network permit changes so
+  // the voting query above refreshes.
+  useOnSecretNetworkPermitUpdate()
 
   const walletVotingWeight =
     !_walletVotingWeight.loading &&

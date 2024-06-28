@@ -77,9 +77,7 @@ export const ProfileProposalCard = () => {
 
   // If wallet is a member right now as opposed to when the proposal was open.
   // Relevant for showing them membership join info or not.
-  const { isMember = false } = useMembership({
-    coreAddress: dao.coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 

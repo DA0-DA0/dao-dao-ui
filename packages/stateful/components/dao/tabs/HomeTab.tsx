@@ -14,7 +14,7 @@ import {
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
-import { useWalletWithSecretNetworkPermit } from '../../../hooks'
+import { useDaoWithWalletSecretNetworkPermit } from '../../../hooks'
 import { matchAndLoadCommon } from '../../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
@@ -28,9 +28,7 @@ export const HomeTab = () => {
   const { dao } = useDaoContext()
   const { mode } = useAppContext()
   const { isSecretNetwork, isWalletConnected, permit, getPermit } =
-    useWalletWithSecretNetworkPermit({
-      dao: dao.coreAddress,
-    })
+    useDaoWithWalletSecretNetworkPermit()
 
   const [creatingPermit, setCreatingPermit] = useState(false)
   const createPermit = async () => {

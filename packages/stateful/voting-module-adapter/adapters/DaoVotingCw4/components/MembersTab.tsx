@@ -21,9 +21,7 @@ export const MembersTab = () => {
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
-  const { isMember = false, totalVotingWeight } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false, totalVotingWeight } = useMembership()
   const votingModule = useLoadingVotingModule(coreAddress, {
     fetchMembers: true,
   })

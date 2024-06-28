@@ -3,6 +3,7 @@ import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   DaoInfo,
+  DaoSource,
   IDaoBase,
   IProposalModuleBase,
   IVotingModuleBase,
@@ -46,6 +47,16 @@ export abstract class DaoBase implements IDaoBase {
    * Core address of the DAO.
    */
   abstract get coreAddress(): string
+
+  /**
+   * DAO source object.
+   */
+  get source(): DaoSource {
+    return {
+      chainId: this.chainId,
+      coreAddress: this.coreAddress,
+    }
+  }
 
   /**
    * Proposal modules for the DAO.

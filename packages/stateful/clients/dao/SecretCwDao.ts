@@ -4,6 +4,7 @@ import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import {
   DaoInfo,
+  DaoSource,
   PermitForPermitData,
   SecretInstantiateInfo,
 } from '@dao-dao/types'
@@ -20,6 +21,7 @@ import {
   getFundsFromDaoInstantiateMsg,
   mustGetSupportedChainConfig,
   objectMatchesStructure,
+  serializeDaoSource,
 } from '@dao-dao/utils'
 
 import {
@@ -44,6 +46,12 @@ const getProposalModuleBases = () => [
   SecretSingleChoiceProposalModule,
   SecretMultipleChoiceProposalModule,
 ]
+
+export const SECRET_PERMIT_UPDATE_EVENT_PREFIX = 'secretPermitUpdate:'
+export type SecretPermitUpdateEvent = {
+  dao: DaoSource
+  permit: PermitForPermitData
+}
 
 export class SecretCwDao extends CwDao {
   /**
@@ -209,8 +217,23 @@ export class SecretCwDao extends CwDao {
       JSON.stringify(permit)
     )
 
+    const dao: DaoSource = {
+      chainId: this.options.chainId,
+      coreAddress: this.options.coreAddress,
+    }
+
     // Notify window of new permit.
-    window.dispatchEvent(new Event('secretPermitUpdate'))
+    window.dispatchEvent(
+      new CustomEvent<SecretPermitUpdateEvent>(
+        SECRET_PERMIT_UPDATE_EVENT_PREFIX + serializeDaoSource(dao),
+        {
+          detail: {
+            dao,
+            permit,
+          },
+        }
+      )
+    )
 
     return permit
   }

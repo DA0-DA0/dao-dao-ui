@@ -65,9 +65,7 @@ export const NewProposal = ({
   const { watch } = useFormContext<NewProposalForm>()
   const proposalTitle = watch('title')
 
-  const { isMember = false, loading: membershipLoading } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false, loading: membershipLoading } = useMembership()
 
   const [loading, setLoading] = useState(false)
 

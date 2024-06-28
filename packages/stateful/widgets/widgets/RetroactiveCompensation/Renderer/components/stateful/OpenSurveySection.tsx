@@ -67,7 +67,6 @@ export const OpenSurveySection = ({
   // Voting power at time of survey creation, which determines what access level
   // this wallet has.
   const { isMember = false } = useMembership({
-    coreAddress,
     blockHeight: status.survey.createdAtBlockHeight,
   })
 

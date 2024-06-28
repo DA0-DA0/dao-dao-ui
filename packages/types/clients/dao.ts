@@ -5,7 +5,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../contracts/DaoCore.v2'
-import { DaoInfo } from '../dao'
+import { DaoInfo, DaoSource } from '../dao'
 import { IProposalModuleBase } from './proposal-module'
 import { IVotingModuleBase } from './voting-module'
 
@@ -29,6 +29,11 @@ export interface IDaoBase {
    * Core address of the DAO.
    */
   coreAddress: string
+
+  /**
+   * DAO source object.
+   */
+  source: DaoSource
 
   /**
    * Voting module for the DAO.

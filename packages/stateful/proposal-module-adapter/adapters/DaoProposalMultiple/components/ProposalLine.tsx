@@ -37,14 +37,11 @@ const InnerProposalLine = ({
   proposal: ProposalWithMetadata
 }) => {
   const {
-    coreAddress,
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })

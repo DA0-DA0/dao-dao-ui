@@ -33,7 +33,8 @@ import { getDao } from '../clients'
 import { ButtonLink, EntityDisplay } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useEntity } from './useEntity'
-import { useWalletWithSecretNetworkPermit } from './useWalletWithSecretNetworkPermit'
+import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
+import { useWallet } from './useWallet'
 
 export type UseProposalVetoStateOptions = {
   statusKey: ProposalStatusKey
@@ -70,10 +71,7 @@ export const useProposalVetoState = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '', getSigningClient } =
-    useWalletWithSecretNetworkPermit({
-      dao: coreAddress,
-    })
+  const { address: walletAddress = '', getSigningClient } = useWallet()
   const queryClient = useQueryClient()
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
@@ -110,13 +108,19 @@ export const useProposalVetoState = ({
         vetoerDaoClients,
       }
     }, [chainId, queryClient, vetoerEntity])
+
   // This is the voting power the current wallet has in each of the DAO vetoers.
-  // TODO(dao-client secret): make sure these refresh when the permit updates
   const walletDaoVetoerMemberships = useQueries({
     queries: walletAddress
       ? vetoerDaoClients.map((dao) => dao.getVotingPowerQuery(walletAddress))
       : [],
   })
+  // Make sure this component re-renders if the Secret Network permit changes so
+  // the voting queries above refresh.
+  useOnSecretNetworkPermitUpdate({
+    dao: vetoerDaoClients,
+  })
+
   const canBeVetoed =
     vetoEnabled &&
     (statusKey === 'veto_timelock' ||

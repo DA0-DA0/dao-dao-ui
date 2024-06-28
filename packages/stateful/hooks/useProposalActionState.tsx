@@ -70,9 +70,7 @@ export const useProposalActionState = ({
     address: walletAddress = '',
     getSigningClient,
   } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const config = useRecoilValue(
     DaoProposalSingleCommonSelectors.configSelector({

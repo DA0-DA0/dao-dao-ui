@@ -15,19 +15,19 @@ import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
-  const daoInfo = useDaoInfoContext()
+  const { chainId, coreAddress, supportedFeatures } = useDaoInfoContext()
   const { getDaoPath, getDaoProposalPath } = useDaoNavHelpers()
 
-  const { isMember = false } = useMembership(daoInfo)
+  const { isMember = false } = useMembership()
 
   const queryClient = useQueryClient()
   const subDaos = useQueryLoadingData(
     {
       ...daoQueries.subDaoInfos(queryClient, {
-        chainId: daoInfo.chainId,
-        coreAddress: daoInfo.coreAddress,
+        chainId,
+        coreAddress,
       }),
-      enabled: !!daoInfo.supportedFeatures[Feature.SubDaos],
+      enabled: !!supportedFeatures[Feature.SubDaos],
     },
     []
   )
@@ -39,10 +39,10 @@ export const SubDaosTab = () => {
     <StatelessSubDaosTab
       ButtonLink={ButtonLink}
       DaoCard={DaoCard}
-      createSubDaoHref={getDaoPath(daoInfo.coreAddress, 'create')}
+      createSubDaoHref={getDaoPath(coreAddress, 'create')}
       isMember={isMember}
       subDaos={subDaos}
-      upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
+      upgradeToV2Href={getDaoProposalPath(coreAddress, 'create', {
         prefill: getDaoProposalSinglePrefill({
           actions: upgradeToV2Action
             ? [

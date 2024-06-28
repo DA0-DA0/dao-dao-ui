@@ -2,8 +2,8 @@ import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
+  useDaoWithWalletSecretNetworkPermit,
   useQueryLoadingDataWithError,
-  useWalletWithSecretNetworkPermit,
 } from '../../../../hooks'
 import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
@@ -15,17 +15,20 @@ export const useLoadingWalletVoteInfo = ():
     proposalModule,
     options: { proposalNumber, isPreProposeApprovalProposal },
   } = useProposalModuleAdapterContext()
+
+  // Re-renders when permit is updated.
   const {
     address: walletAddress,
     permit,
     isSecretNetwork,
-  } = useWalletWithSecretNetworkPermit({
-    dao: proposalModule.dao.coreAddress,
+  } = useDaoWithWalletSecretNetworkPermit({
+    dao: proposalModule.dao,
   })
 
   const loadingProposal = useLoadingProposal()
 
-  // TODO(dao-client secret): make sure these refresh when the permit updates
+  // Refreshes when Secret Network permit is updated since the wallet hook
+  // above re-renders.
   const walletVoteLoading = useQueryLoadingDataWithError(
     proposalModule.getVoteQuery({
       proposalId: proposalNumber,
@@ -33,6 +36,8 @@ export const useLoadingWalletVoteInfo = ():
     })
   )
 
+  // Refreshes when Secret Network permit is updated since the wallet hook
+  // above re-renders.
   const walletVotingPowerWhenProposalCreatedLoading =
     useQueryLoadingDataWithError(
       loadingProposal.loading

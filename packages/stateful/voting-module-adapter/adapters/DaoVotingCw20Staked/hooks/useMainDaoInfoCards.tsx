@@ -19,11 +19,8 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress, coreAddress } =
-    useVotingModuleAdapterOptions()
-  const { totalVotingWeight } = useMembership({
-    coreAddress,
-  })
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { totalVotingWeight } = useMembership()
 
   const { unstakingDuration } = useStakingInfo()
 

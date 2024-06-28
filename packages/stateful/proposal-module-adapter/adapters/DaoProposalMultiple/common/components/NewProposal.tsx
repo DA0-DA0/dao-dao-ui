@@ -67,9 +67,7 @@ export const NewProposal = ({
   const proposalTitle = watch('title')
   const choices = watch('choices') ?? []
 
-  const { isMember = false, loading: membershipLoading } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false, loading: membershipLoading } = useMembership()
 
   const [loading, setLoading] = useState(false)
 

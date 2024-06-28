@@ -56,9 +56,7 @@ export const ProposalList = ({
   const { dao } = useDaoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { mode } = useAppContext()
-  const { isMember = false } = useMembership({
-    coreAddress: dao.coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const [openProposals, setOpenProposals] = useState<
     StatefulProposalLineProps[]

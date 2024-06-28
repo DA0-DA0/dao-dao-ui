@@ -1,11 +1,12 @@
 import { selectorFamily } from 'recoil'
 
-import { Addr, WithChainId } from '@dao-dao/types'
+import { Addr, SecretAnyContractInfo, WithChainId } from '@dao-dao/types'
 import {
   Config,
   DepositInfoResponse,
   HooksResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeApprover'
+import { isSecretNetwork, objectMatchesStructure } from '@dao-dao/utils'
 
 import { DaoPreProposeApproverQueryClient } from '../../../contracts/DaoPreProposeApprover'
 import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
@@ -177,10 +178,15 @@ export const queryExtensionSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       const res = await client.queryExtension(...params)
 
-      // TODO(secret): ??
-      // This will be an object if on Secret Network and a string otherwise.
-      if ('pre_propose_approval_contract' in query && typeof res === 'object') {
-        return res
+      // Secret Network returns an object for the contract.
+      if (
+        isSecretNetwork(queryClientParams.chainId) &&
+        'pre_propose_approval_contract' in query &&
+        objectMatchesStructure(res, {
+          addr: {},
+        })
+      ) {
+        return (res as unknown as SecretAnyContractInfo).addr
       }
 
       return res
