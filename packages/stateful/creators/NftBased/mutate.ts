@@ -1,8 +1,5 @@
-import { DaoCreatorMutate } from '@dao-dao/types'
-import {
-  ActiveThreshold,
-  InstantiateMsg,
-} from '@dao-dao/types/contracts/DaoVotingCw721Staked'
+import { ActiveThreshold, DaoCreatorMutate } from '@dao-dao/types'
+import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   NftBasedCreatorId,
   convertDurationWithUnitsToDuration,
