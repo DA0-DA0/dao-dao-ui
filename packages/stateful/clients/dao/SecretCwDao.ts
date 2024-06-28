@@ -296,12 +296,10 @@ export class SecretCwDao extends CwDao {
   }
 
   async getDaoCardLazyData(): Promise<DaoCardLazyData> {
-    const proposalModuleCounts = await Promise.all(
-      this.proposalModules.map((p) => p.getProposalCount())
-    )
+    const proposalCount = await this.getProposalCount()
 
     return {
-      proposalCount: proposalModuleCounts.reduce((a, b) => a + b, 0),
+      proposalCount,
       // No TVL because we don't index Secret DAOs.
     }
   }

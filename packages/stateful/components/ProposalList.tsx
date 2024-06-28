@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
+import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
 import {
   daoVetoableDaosSelector,
@@ -12,6 +12,7 @@ import {
   useCachedLoadingWithError,
   useDaoContext,
   useDaoNavHelpers,
+  useLoadingPromise,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
@@ -81,11 +82,10 @@ export const ProposalList = ({
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
 
-  const loadingProposalCounts = useCachedLoadingWithError(
-    waitForAll(
-      commonSelectors.map(({ selectors: { proposalCount } }) => proposalCount)
-    )
-  )
+  const loadingProposalCounts = useLoadingPromise({
+    promise: () => dao.getProposalCount(),
+    deps: [dao],
+  })
 
   const vetoableDaosLoading = useCachedLoadingWithError(
     daoVetoableDaosSelector({
@@ -377,12 +377,9 @@ export const ProposalList = ({
           proposals: historyProposals,
           total:
             !loadingProposalCounts.loading && !loadingProposalCounts.errored
-              ? loadingProposalCounts.data.reduce(
-                  (acc, count) => acc + count,
-                  0
-                  // Remove open proposals from total history count since they
-                  // are shown above.
-                ) - openProposals.length
+              ? // Remove open proposals from total history count since they
+                // are shown above.
+                loadingProposalCounts.data - openProposals.length
               : undefined,
         },
       ]}

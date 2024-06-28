@@ -168,7 +168,26 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Fetch the lazy data for the DAO card.
    */
-  abstract getDaoCardLazyData(): Promise<DaoCardLazyData>
+  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
+    const [{ amount: tvl }, proposalCount] = await Promise.all([
+      this.getTvl(),
+      this.getProposalCount(),
+    ])
+
+    return {
+      proposalCount,
+      tokenWithBalance: {
+        balance: tvl,
+        symbol: 'USD',
+        decimals: 2,
+      },
+    }
+  }
+
+  /**
+   * Fetch the number of proposals in the DAO.
+   */
+  abstract getProposalCount(): Promise<number>
 
   /**
    * Query options to fetch the TVL.

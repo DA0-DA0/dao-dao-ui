@@ -7,7 +7,6 @@ import {
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import {
-  DaoCardLazyData,
   DaoInfo,
   IProposalModuleBase,
   IVotingModuleBase,
@@ -249,20 +248,9 @@ export class CwDao extends DaoBase {
     })
   }
 
-  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
-    const { amount: tvl } = await this.getTvl()
-
-    const proposalModuleCounts = await Promise.all(
-      this.proposalModules.map((p) => p.getProposalCount())
-    )
-
-    return {
-      proposalCount: proposalModuleCounts.reduce((a, b) => a + b, 0),
-      tokenWithBalance: {
-        balance: tvl,
-        symbol: 'USD',
-        decimals: 2,
-      },
-    }
+  async getProposalCount(): Promise<number> {
+    return (
+      await Promise.all(this.proposalModules.map((p) => p.getProposalCount()))
+    ).reduce((a, b) => a + b, 0)
   }
 }

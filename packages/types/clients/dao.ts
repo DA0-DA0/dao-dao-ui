@@ -127,6 +127,11 @@ export interface IDaoBase {
   getDaoCardLazyData(): Promise<DaoCardLazyData>
 
   /**
+   * Fetch the number of proposals in the DAO.
+   */
+  getProposalCount(): Promise<number>
+
+  /**
    * Query options to fetch the TVL.
    */
   tvlQuery: FetchQueryOptions<AmountWithTimestamp>

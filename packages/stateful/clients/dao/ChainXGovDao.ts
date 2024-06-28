@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import { chainQueries, daoQueries } from '@dao-dao/state/query'
-import { DaoCardLazyData, DaoInfo } from '@dao-dao/types'
+import { DaoInfo } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -98,24 +98,15 @@ export class ChainXGovDao extends DaoBase {
     })
   }
 
-  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
-    const { amount: tvl } = await this.getTvl()
-
+  async getProposalCount(): Promise<number> {
     // Get proposal count by loading one proposal and getting the total.
-    const { total: proposalCount } = await this.queryClient.fetchQuery(
-      chainQueries.govProposals(this.queryClient, {
-        chainId: this.options.chainId,
-        limit: 1,
-      })
-    )
-
-    return {
-      proposalCount,
-      tokenWithBalance: {
-        balance: tvl,
-        symbol: 'USD',
-        decimals: 2,
-      },
-    }
+    return (
+      await this.queryClient.fetchQuery(
+        chainQueries.govProposals(this.queryClient, {
+          chainId: this.options.chainId,
+          limit: 1,
+        })
+      )
+    ).total
   }
 }
