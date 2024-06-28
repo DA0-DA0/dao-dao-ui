@@ -120,10 +120,14 @@ codegen({
         /from "\.\/(.+)\.client"/,
         'from "../../../contracts/$1"\n'
       )
-      // add import
+      // add imports
       content = content.replace(
         'export const',
-        "import { getCosmWasmClientForChainId } from '@dao-dao/utils'\n\nexport const"
+        "import { getCosmWasmClientForChainId } from '@dao-dao/utils'\nimport { contractQueries } from '../contract'\nimport { indexerQueries } from '../indexer'\n\nexport const"
+      )
+      content = content.replace(
+        'import { UseQueryOptions',
+        'import { QueryClient, UseQueryOptions'
       )
       // remove hooks
       content = content.replace(/\nexport function use.+\n[^;]+;\n\}/gm, '')
@@ -132,6 +136,18 @@ codegen({
         `"'queryKey' | 'queryFn' | 'initialData'"`,
         '"queryKey" | "queryFn" | "initialData"'
       )
+      // remove enabled lines
+      content = content.replace(/    +enabled:[^)]+\)\n/g, '')
+      // replace info query with common contract info query
+      content = content.replace(
+        /info: <TData = InfoResponse,>[\s\S]+\.info\(\),[\s\S]+\}\),?/m,
+        'info: contractQueries.info,'
+      )
+      // add queryClient argument to functions
+      content = content.replace(
+        /(: <TData = [^>]+>\()\{/g,
+        '$1queryClient: QueryClient,{'
+      )
       // replace client with chain ID and contract address
       content = content.replace(
         /client: [^;]+;/g,
@@ -139,12 +155,30 @@ codegen({
       )
       content = content.replace(/client,/g, 'chainId, contractAddress,')
       content = content.replace(/client\?\.contractAddress/g, 'contractAddress')
+      const camelCasedContractName =
+        contractName.charAt(0).toLowerCase() + contractName.slice(1)
       content = content.replace(
-        /queryFn: \(\) => client/g,
-        `queryFn: async () => new ${contractName}QueryClient(await getCosmWasmClientForChainId(chainId), contractAddress)`
+        /queryFn: \(\) => client\.([^(]+)(\([^\)]*\)),/gm,
+        `
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: '${camelCasedContractName}/$1',
+            args,
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new ${contractName}QueryClient(await getCosmWasmClientForChainId(chainId), contractAddress).$1$2
+    },`.trim()
       )
-      // remove enabled lines
-      content = content.replace(/    +enabled:[^)]+\)\n/g, '')
 
       // add index export if not already added
       if (!fs.readFileSync(QUERIES_INDEX, 'utf8').includes(contractName)) {
