@@ -80,7 +80,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingCw4Queries.votingPowerAtHeight({
+    return daoVotingCw4Queries.votingPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {
@@ -93,7 +93,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw4Queries.totalPowerAtHeight({
+    return daoVotingCw4Queries.totalPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {

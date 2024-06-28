@@ -328,7 +328,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         ? cwProposalSingleV1Queries.vote
         : daoProposalSingleV2Queries.getVote
 
-    return query({
+    return query(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
       args: {
@@ -353,7 +353,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         ? cwProposalSingleV1Queries.proposalCount
         : daoProposalSingleV2Queries.proposalCount
 
-    return query({
+    return query(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
     })

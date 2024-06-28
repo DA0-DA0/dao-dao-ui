@@ -732,7 +732,7 @@ export const historicalUsdPriceSelector = selectorFamily<
         )
 
         return prices.map(([timestamp, amount]) => ({
-          timestamp: new Date(timestamp),
+          timestamp,
           amount,
         }))
       } catch (err) {

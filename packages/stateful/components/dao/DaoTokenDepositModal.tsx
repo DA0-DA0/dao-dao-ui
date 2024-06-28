@@ -77,7 +77,7 @@ export const DaoTokenDepositModal = ({
         }),
     {
       amount: 0,
-      timestamp: new Date(),
+      timestamp: Date.now(),
     }
   )
 

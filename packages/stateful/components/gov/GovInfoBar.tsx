@@ -14,7 +14,7 @@ export const GovInfoBar = () => {
   const { dao } = useDaoContext()
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
     amount: -1,
-    timestamp: new Date(),
+    timestamp: Date.now(),
   })
 
   return (
@@ -34,7 +34,9 @@ export const GovInfoBar = () => {
                     }
               }
               dateFetched={
-                tvlLoading.loading ? undefined : tvlLoading.data.timestamp
+                tvlLoading.loading
+                  ? undefined
+                  : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
               hideApprox

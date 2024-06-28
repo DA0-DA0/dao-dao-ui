@@ -47,7 +47,7 @@ const InnerMainDaoInfoCards = () => {
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
     amount: -1,
-    timestamp: new Date(),
+    timestamp: Date.now(),
   })
 
   // Get unique approvers from all proposal modules.
@@ -117,7 +117,9 @@ const InnerMainDaoInfoCards = () => {
                     }
               }
               dateFetched={
-                tvlLoading.loading ? undefined : tvlLoading.data.timestamp
+                tvlLoading.loading
+                  ? undefined
+                  : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
               hideApprox
