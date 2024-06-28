@@ -269,12 +269,12 @@ export const daoProposalMultipleQueries = {
       }),
     ...options,
   }),
-  proposalCount: <TData = Uint64>({
+  proposalCount: <TData = number>({
     chainId,
     contractAddress,
     options,
   }: DaoProposalMultipleProposalCountQuery<TData>): UseQueryOptions<
-    Uint64,
+    number,
     Error,
     TData
   > => ({
@@ -413,7 +413,7 @@ export interface DaoProposalMultipleProposalHooksQuery<TData>
 export interface DaoProposalMultipleProposalCreationPolicyQuery<TData>
   extends DaoProposalMultipleReactQuery<ProposalCreationPolicy, TData> {}
 export interface DaoProposalMultipleProposalCountQuery<TData>
-  extends DaoProposalMultipleReactQuery<Uint64, TData> {}
+  extends DaoProposalMultipleReactQuery<number, TData> {}
 export interface DaoProposalMultipleListVotesQuery<TData>
   extends DaoProposalMultipleReactQuery<VoteListResponse, TData> {
   args: {

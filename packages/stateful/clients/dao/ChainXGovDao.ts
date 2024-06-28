@@ -5,13 +5,14 @@ import {
   skipToken,
 } from '@tanstack/react-query'
 
-import { daoQueries } from '@dao-dao/state/query'
-import { DaoInfo } from '@dao-dao/types'
+import { chainQueries, daoQueries } from '@dao-dao/state/query'
+import { DaoCardLazyData, DaoInfo } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getChainForChainId,
   mustGetConfiguredChainConfig,
 } from '@dao-dao/utils'
@@ -96,5 +97,31 @@ export class ChainXGovDao extends DaoBase {
     return daoQueries.chainTotalPower(this.queryClient, {
       chainId: this.options.chainId,
     })
+  }
+
+  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
+    const { amount: tvl } = await this.queryClient.fetchQuery(
+      daoQueries.tvl(this.queryClient, {
+        chainId: this.options.chainId,
+        coreAddress: COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
+      })
+    )
+
+    // Get proposal count by loading one proposal and getting the total.
+    const { total: proposalCount } = await this.queryClient.fetchQuery(
+      chainQueries.govProposals(this.queryClient, {
+        chainId: this.options.chainId,
+        limit: 1,
+      })
+    )
+
+    return {
+      proposalCount,
+      tokenWithBalance: {
+        balance: tvl,
+        symbol: 'USD',
+        decimals: 2,
+      },
+    }
   }
 }

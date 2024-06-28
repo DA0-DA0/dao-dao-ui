@@ -69,7 +69,7 @@ export interface SecretDaoProposalSingleReadOnlyInterface {
     proposalId: number
     startAfter?: string
   }) => Promise<VoteListResponse>
-  proposalCount: () => Promise<Uint64>
+  proposalCount: () => Promise<number>
   proposalCreationPolicy: () => Promise<ProposalCreationPolicy>
   proposalHooks: () => Promise<HooksResponse>
   voteHooks: () => Promise<HooksResponse>
@@ -174,7 +174,7 @@ export class SecretDaoProposalSingleQueryClient
       },
     })
   }
-  proposalCount = async (): Promise<Uint64> => {
+  proposalCount = async (): Promise<number> => {
     return this.client.queryContractSmart(this.contractAddress, {
       proposal_count: {},
     })

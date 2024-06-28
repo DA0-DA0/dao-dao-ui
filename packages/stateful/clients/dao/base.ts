@@ -4,6 +4,7 @@ import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 import {
   Account,
   ContractVersion,
+  DaoCardLazyData,
   DaoInfo,
   DaoSource,
   IDaoBase,
@@ -161,4 +162,9 @@ export abstract class DaoBase implements IDaoBase {
       )
     ).power
   }
+
+  /**
+   * Fetch the lazy data for the DAO card.
+   */
+  abstract getDaoCardLazyData(): Promise<DaoCardLazyData>
 }

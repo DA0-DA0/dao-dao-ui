@@ -13,18 +13,14 @@ import {
   contractInfoSelector,
   contractVersionSelector,
   daoDropdownInfoSelector,
-  daoTvlSelector,
   daoVetoableDaosSelector,
   followingDaosSelector,
-  govProposalsSelector,
   isDaoSelector,
-  nativeDelegatedBalanceSelector,
   queryClientAtom,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
-  DaoCardLazyData,
   DaoPageMode,
   DaoSource,
   DaoWithDropdownVetoableProposalList,
@@ -37,116 +33,11 @@ import {
 import {
   DaoVotingCw20StakedAdapterId,
   getDaoProposalPath,
-  getSupportedChainConfig,
   isConfiguredChainName,
 } from '@dao-dao/utils'
 
-import { getDao } from '../../clients'
-import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
 import { fetchProposalModules } from '../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
-
-export const daoCardLazyDataSelector = selectorFamily<
-  DaoCardLazyData,
-  WithChainId<{
-    coreAddress: string
-    walletAddress?: string
-  }>
->({
-  key: 'daoCardLazyData',
-  get:
-    ({ chainId, coreAddress, walletAddress }) =>
-    async ({ get }) => {
-      const { amount: tvl } = get(
-        daoTvlSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-
-      // TODO(dao-client): add all this stuff to DAO client
-      // Native chain x/gov module.
-      if (isConfiguredChainName(chainId, coreAddress)) {
-        // If chain uses a contract-based DAO, load it instead.
-        const govContractAddress =
-          getSupportedChainConfig(chainId)?.govContractAddress
-        if (govContractAddress) {
-          coreAddress = govContractAddress
-        } else {
-          // Use chain x/gov module info.
-
-          // Get proposal count by loading one proposal and getting the total.
-          const { total: proposalCount } = get(
-            govProposalsSelector({
-              chainId,
-              limit: 1,
-            })
-          )
-
-          const isMember = walletAddress
-            ? get(
-                nativeDelegatedBalanceSelector({
-                  chainId,
-                  address: walletAddress,
-                })
-              ).amount !== '0'
-            : false
-
-          return {
-            isMember,
-            proposalCount,
-            tokenWithBalance: {
-              balance: tvl,
-              symbol: 'USD',
-              decimals: 2,
-            },
-          }
-        }
-      }
-
-      // DAO.
-
-      const queryClient = get(queryClientAtom)
-      const daoClient = getDao({
-        queryClient,
-        chainId,
-        coreAddress,
-      })
-      const walletVotingWeight = walletAddress
-        ? Number(await daoClient.getVotingPower(walletAddress))
-        : 0
-
-      const proposalModules = get(
-        daoCoreProposalModulesSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-      const proposalModuleCounts = get(
-        waitForAll(
-          proposalModules.map(({ address }) =>
-            proposalModuleAdapterProposalCountSelector({
-              chainId,
-              proposalModuleAddress: address,
-            })
-          )
-        )
-      ).filter(Boolean) as number[]
-
-      return {
-        isMember: walletVotingWeight > 0,
-        proposalCount: proposalModuleCounts.reduce(
-          (acc, curr) => acc + curr,
-          0
-        ),
-        tokenWithBalance: {
-          balance: tvl,
-          symbol: 'USD',
-          decimals: 2,
-        },
-      }
-    },
-})
 
 export const followingDaosWithProposalModulesSelector = selectorFamily<
   (DaoSource & {

@@ -1,12 +1,11 @@
 import { ComponentType } from 'react'
 
 import { DaoInfo } from '../dao'
-import { LoadingData } from '../misc'
+import { LoadingDataWithError } from '../misc'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
 export type DaoCardLazyData = {
-  isMember: boolean
   proposalCount: number
   /**
    * Show a token line, typically TVL.
@@ -26,9 +25,10 @@ export type FollowState = {
 
 export type DaoCardProps = {
   info: DaoInfo
-  lazyData: LoadingData<DaoCardLazyData>
+  lazyData: LoadingDataWithError<DaoCardLazyData>
   follow: { hide: true } | ({ hide?: false } & FollowState)
   LinkWrapper: ComponentType<LinkWrapperProps>
+  isMember?: boolean
   /**
    * Whether or not to show the member checkmark if they're a member. Defaults
    * to true.

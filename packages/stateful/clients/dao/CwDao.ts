@@ -5,8 +5,12 @@ import {
   skipToken,
 } from '@tanstack/react-query'
 
-import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import {
+  daoDaoCoreQueries,
+  daoQueries as stateDaoQueries,
+} from '@dao-dao/state/query'
+import {
+  DaoCardLazyData,
   DaoInfo,
   IProposalModuleBase,
   IVotingModuleBase,
@@ -36,6 +40,7 @@ import {
   Cw4VotingModule,
   Cw721StakedVotingModule,
   NativeStakedVotingModule,
+  NeutronVotingRegistryVotingModule,
   TokenStakedVotingModule,
 } from '../voting-module'
 import { DaoBase } from './base'
@@ -46,6 +51,7 @@ const getVotingModuleBases = () => [
   Cw721StakedVotingModule,
   NativeStakedVotingModule,
   TokenStakedVotingModule,
+  NeutronVotingRegistryVotingModule,
 ]
 
 const getProposalModuleBases = () => [
@@ -151,7 +157,10 @@ export class CwDao extends DaoBase {
         Base.contractNames.includes(info.votingModuleInfo.contract)
       )
       if (!VotingModule) {
-        throw new Error('Voting module not found')
+        throw new Error(
+          'Voting module not found for contract: ' +
+            info.votingModuleInfo.contract
+        )
       }
       this._votingModule = new VotingModule(
         this.queryClient,
@@ -241,5 +250,27 @@ export class CwDao extends DaoBase {
         height,
       },
     })
+  }
+
+  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
+    const { amount: tvl } = await this.queryClient.fetchQuery(
+      stateDaoQueries.tvl(this.queryClient, {
+        chainId: this.options.chainId,
+        coreAddress: this.options.coreAddress,
+      })
+    )
+
+    const proposalModuleCounts = await Promise.all(
+      this.proposalModules.map((p) => p.getProposalCount())
+    )
+
+    return {
+      proposalCount: proposalModuleCounts.reduce((a, b) => a + b, 0),
+      tokenWithBalance: {
+        balance: tvl,
+        symbol: 'USD',
+        decimals: 2,
+      },
+    }
   }
 }

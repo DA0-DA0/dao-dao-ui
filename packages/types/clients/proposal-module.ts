@@ -107,4 +107,14 @@ export interface IProposalModuleBase<
     proposalId: number
     voter: string
   }): Promise<VoteInfo | null>
+
+  /**
+   * Query options to fetch the total number of proposals.
+   */
+  getProposalCountQuery(): FetchQueryOptions<number>
+
+  /**
+   * Fetch the total number of proposals.
+   */
+  getProposalCount(): Promise<number>
 }

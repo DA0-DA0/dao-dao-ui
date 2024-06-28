@@ -1,20 +1,37 @@
+import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
-import { ChainId } from '@dao-dao/types'
+import {
+  ChainId,
+  GovProposalVersion,
+  GovProposalWithDecodedContent,
+  ProposalV1,
+  ProposalV1Beta1,
+} from '@dao-dao/types'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   cosmosProtoRpcClientRouter,
+  cosmosSdkVersionIs46OrHigher,
+  cosmosSdkVersionIs47OrHigher,
   cosmwasmProtoRpcClientRouter,
+  decodeGovProposal,
   feemarketProtoRpcClientRouter,
+  getAllRpcResponse,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   isValidBech32Address,
   osmosisProtoRpcClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
+
+import {
+  SearchGovProposalsOptions,
+  searchGovProposals,
+} from '../../indexer/search'
 
 /**
  * Fetch the module address associated with the specified name.
@@ -341,6 +358,270 @@ export const fetchDenomMetadata = async ({
   return null
 }
 
+/**
+ * Fetch the cosmos-sdk version of a chain.
+ */
+export const fetchChainCosmosSdkVersion = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<string> => {
+  const protoClient = await cosmosProtoRpcClientRouter.connect(chainId)
+
+  const { applicationVersion } =
+    await protoClient.base.tendermint.v1beta1.getNodeInfo()
+
+  // Remove `v` prefix.
+  return applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
+}
+
+/**
+ * Fetch whether or not a chain supports the v1 gov module.
+ */
+export const fetchChainSupportsV1GovModule = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    require47 = false,
+  }: {
+    chainId: string
+    /**
+     * Whether or not v0.47 or higher is required. V1 gov is supported by
+     * v0.46+, but some other things, like unified gov params, are supported
+     * only on v0.47+.
+     *
+     * Defaults to false.
+     */
+    require47?: boolean
+  }
+): Promise<boolean> => {
+  const cosmosSdkVersion = await queryClient.fetchQuery(
+    chainQueries.cosmosSdkVersion({ chainId })
+  )
+
+  const checker = require47
+    ? cosmosSdkVersionIs47OrHigher
+    : cosmosSdkVersionIs46OrHigher
+  if (!checker(cosmosSdkVersion)) {
+    return false
+  }
+
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+
+  // Double-check by testing a v1 gov route.
+  try {
+    await client.gov.v1.params({
+      paramsType: 'voting',
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Search chain governance proposals and decode their content.
+ */
+export const searchAndDecodeGovProposals = async (
+  queryClient: QueryClient,
+  options: SearchGovProposalsOptions
+): Promise<{
+  proposals: GovProposalWithDecodedContent[]
+  total: number
+}> => {
+  const [supportsV1Gov, { results, total }] = await Promise.all([
+    queryClient.fetchQuery(
+      chainQueries.supportsV1GovModule(queryClient, {
+        chainId: options.chainId,
+      })
+    ),
+    queryClient.fetchQuery(chainQueries.searchGovProposals(options)),
+  ])
+
+  const proposals = (
+    await Promise.allSettled(
+      results.map(async ({ value: { id, data } }) =>
+        decodeGovProposal(
+          options.chainId,
+          supportsV1Gov
+            ? {
+                version: GovProposalVersion.V1,
+                id: BigInt(id),
+                proposal: ProposalV1.decode(fromBase64(data)),
+              }
+            : {
+                version: GovProposalVersion.V1_BETA_1,
+                id: BigInt(id),
+                proposal: ProposalV1Beta1.decode(
+                  fromBase64(data),
+                  undefined,
+                  true
+                ),
+              }
+        )
+      )
+    )
+  ).flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
+
+  return {
+    proposals,
+    total,
+  }
+}
+
+/**
+ * Fetch the governance proposals for a chain, defaulting to those that are
+ * currently open for voting.
+ */
+export const fetchGovProposals = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    status,
+    offset,
+    limit,
+  }: {
+    chainId: string
+    status?: ProposalStatus
+    offset?: number
+    limit?: number
+  }
+): Promise<{
+  proposals: GovProposalWithDecodedContent[]
+  total: number
+}> => {
+  const indexerProposals = await queryClient
+    .fetchQuery(
+      chainQueries.searchAndDecodeGovProposals(queryClient, {
+        chainId,
+        status,
+        offset,
+        limit,
+      })
+    )
+    .catch(() => undefined)
+
+  if (indexerProposals?.proposals.length) {
+    return indexerProposals
+  }
+
+  // Fallback to querying chain if indexer failed.
+  const [client, supportsV1Gov] = await Promise.all([
+    cosmosProtoRpcClientRouter.connect(chainId),
+    queryClient.fetchQuery(
+      chainQueries.supportsV1GovModule(queryClient, {
+        chainId,
+      })
+    ),
+  ])
+
+  let v1Proposals: ProposalV1[] | undefined
+  let v1Beta1Proposals: ProposalV1Beta1[] | undefined
+  let total = 0
+
+  if (supportsV1Gov) {
+    try {
+      if (limit === undefined && offset === undefined) {
+        v1Proposals = await getAllRpcResponse(
+          client.gov.v1.proposals,
+          {
+            proposalStatus:
+              status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+            voter: '',
+            depositor: '',
+            pagination: undefined,
+          },
+          'proposals',
+          true
+        )
+        total = v1Proposals.length
+      } else {
+        const response = await client.gov.v1.proposals({
+          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+          voter: '',
+          depositor: '',
+          pagination: {
+            key: new Uint8Array(),
+            offset: BigInt(offset || 0),
+            limit: BigInt(limit || 0),
+            countTotal: true,
+            reverse: true,
+          },
+        })
+        v1Proposals = response.proposals
+        total = Number(response.pagination?.total || 0)
+      }
+    } catch (err) {
+      // Fallback to v1beta1 query if v1 not supported.
+      if (
+        !(err instanceof Error) ||
+        !err.message.includes('unknown query path')
+      ) {
+        // Rethrow other errors.
+        throw err
+      }
+    }
+  }
+
+  if (!v1Proposals) {
+    if (limit === undefined && offset === undefined) {
+      v1Beta1Proposals = await getAllRpcResponse(
+        client.gov.v1beta1.proposals,
+        {
+          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+          voter: '',
+          depositor: '',
+          pagination: undefined,
+        },
+        'proposals',
+        true,
+        true
+      )
+      total = v1Beta1Proposals.length
+    } else {
+      const response = await client.gov.v1beta1.proposals(
+        {
+          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+          voter: '',
+          depositor: '',
+          pagination: {
+            key: new Uint8Array(),
+            offset: BigInt(offset || 0),
+            limit: BigInt(limit || 0),
+            countTotal: true,
+            reverse: true,
+          },
+        },
+        true
+      )
+      v1Beta1Proposals = response.proposals
+      total = Number(response.pagination?.total || 0)
+    }
+  }
+
+  const proposals = await Promise.all([
+    ...(v1Beta1Proposals || []).map((proposal) =>
+      decodeGovProposal(chainId, {
+        version: GovProposalVersion.V1_BETA_1,
+        id: proposal.proposalId,
+        proposal,
+      })
+    ),
+    ...(v1Proposals || []).map((proposal) =>
+      decodeGovProposal(chainId, {
+        version: GovProposalVersion.V1,
+        id: proposal.id,
+        proposal,
+      })
+    ),
+  ])
+
+  return {
+    proposals,
+    total,
+  }
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -422,5 +703,57 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'denomMetadata', options],
       queryFn: () => fetchDenomMetadata(options),
+    }),
+  /**
+   * Fetch the cosmos-sdk version of a chain.
+   */
+  cosmosSdkVersion: (
+    options: Parameters<typeof fetchChainCosmosSdkVersion>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'cosmosSdkVersion', options],
+      queryFn: () => fetchChainCosmosSdkVersion(options),
+    }),
+  /**
+   * Fetch whether or not a chain supports the v1 gov module.
+   */
+  supportsV1GovModule: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchChainSupportsV1GovModule>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'supportsV1GovModule', options],
+      queryFn: () => fetchChainSupportsV1GovModule(queryClient, options),
+    }),
+  /**
+   * Search chain governance proposals.
+   */
+  searchGovProposals: (options: SearchGovProposalsOptions) =>
+    queryOptions({
+      queryKey: ['chain', 'searchGovProposals', options],
+      queryFn: () => searchGovProposals(options),
+    }),
+  /**
+   * Search chain governance proposals and decode their content.
+   */
+  searchAndDecodeGovProposals: (
+    queryClient: QueryClient,
+    options: Parameters<typeof searchAndDecodeGovProposals>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'searchAndDecodeGovProposals', options],
+      queryFn: () => searchAndDecodeGovProposals(queryClient, options),
+    }),
+  /**
+   * Fetch the governance proposals for a chain, defaulting to those that are
+   * currently open for voting.
+   */
+  govProposals: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovProposals>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govProposals', options],
+      queryFn: () => fetchGovProposals(queryClient, options),
     }),
 }

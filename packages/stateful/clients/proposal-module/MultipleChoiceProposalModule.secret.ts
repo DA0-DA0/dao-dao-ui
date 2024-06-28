@@ -317,4 +317,11 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       null
     )
   }
+
+  getProposalCountQuery(): FetchQueryOptions<number> {
+    return secretDaoProposalMultipleQueries.proposalCount({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+    })
+  }
 }

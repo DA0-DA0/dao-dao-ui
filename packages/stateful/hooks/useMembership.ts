@@ -2,6 +2,7 @@ import { DaoSource } from '@dao-dao/types'
 
 import { useDaoClient } from './useDaoClient'
 import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
+import { useProfile } from './useProfile'
 import { useQueryLoadingDataWithError } from './useQueryLoadingDataWithError'
 import { useWallet } from './useWallet'
 
@@ -24,10 +25,23 @@ export const useMembership = ({
   dao: daoSource,
   blockHeight,
 }: UseMembershipOptions = {}): UseMembershipResponse => {
-  const { address: walletAddress, isWalletConnecting } = useWallet()
   const { dao } = useDaoClient({
     dao: daoSource,
   })
+
+  // Don't load chain-specific profile because the wallet may not be connected
+  // to that chain and thus the correct profile won't load. Instead, fetch the
+  // chains from the currently connected profile and find the correct address.
+  const { chains } = useProfile()
+  const { address: currentWalletAddress, isWalletConnecting } = useWallet({
+    chainId: dao.chainId,
+  })
+
+  // Use profile chains if present, falling back to the current wallet address.
+  const walletAddress =
+    (!chains.loading &&
+      chains.data.find((c) => c.chainId === dao.chainId)?.address) ||
+    currentWalletAddress
 
   const _walletVotingWeight = useQueryLoadingDataWithError(
     dao.getVotingPowerQuery(walletAddress, blockHeight)

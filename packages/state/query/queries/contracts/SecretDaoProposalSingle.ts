@@ -273,12 +273,12 @@ export const secretDaoProposalSingleQueries = {
       }),
     ...options,
   }),
-  proposalCount: <TData = Uint64>({
+  proposalCount: <TData = number>({
     chainId,
     contractAddress,
     options,
   }: SecretDaoProposalSingleProposalCountQuery<TData>): UseQueryOptions<
-    Uint64,
+    number,
     Error,
     TData
   > => ({
@@ -420,7 +420,7 @@ export interface SecretDaoProposalSingleProposalHooksQuery<TData>
 export interface SecretDaoProposalSingleProposalCreationPolicyQuery<TData>
   extends SecretDaoProposalSingleReactQuery<ProposalCreationPolicy, TData> {}
 export interface SecretDaoProposalSingleProposalCountQuery<TData>
-  extends SecretDaoProposalSingleReactQuery<Uint64, TData> {}
+  extends SecretDaoProposalSingleReactQuery<number, TData> {}
 export interface SecretDaoProposalSingleListVotesQuery<TData>
   extends SecretDaoProposalSingleReactQuery<VoteListResponse, TData> {
   args: {

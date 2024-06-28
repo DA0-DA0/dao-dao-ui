@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state/recoil'
 import {
   DaoCard as StatelessDaoCard,
-  useCachedLoading,
+  useLoadingPromise,
 } from '@dao-dao/stateless'
 import { DaoSource } from '@dao-dao/types'
 import {
@@ -11,35 +11,26 @@ import {
   StatefulDaoCardProps,
 } from '@dao-dao/types/components/DaoCard'
 
-import { useFollowingDaos, useProfile } from '../../hooks'
-import { daoCardLazyDataSelector } from '../../recoil'
+import { useDaoClient, useFollowingDaos, useMembership } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: StatefulDaoCardProps) => {
-  // Don't load chain-specific profile because the wallet may not be connected
-  // to that chain and thus the correct profile won't load. Instead, fetch the
-  // chains from the currently connected profile and find the correct one.
-  const { chains } = useProfile()
-
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
 
-  const lazyData = useCachedLoading(
-    daoCardLazyDataSelector({
-      coreAddress: props.info.coreAddress,
-      chainId: props.info.chainId,
-      walletAddress: chains.loading
-        ? undefined
-        : chains.data.find((chain) => chain.chainId === props.info.chainId)
-            ?.address,
-    }),
-    {
-      isMember: false,
-      proposalCount: NaN,
-    }
-  )
+  const { dao } = useDaoClient({
+    dao: props.info,
+  })
+  const { isMember } = useMembership({
+    dao: props.info,
+  })
+  const lazyData = useLoadingPromise({
+    promise: () => dao.getDaoCardLazyData(),
+    // Refresh if DAO changes.
+    deps: [dao],
+  })
 
   const followedDao: DaoSource = {
     chainId: props.info.chainId,
@@ -59,6 +50,7 @@ export const DaoCard = (props: StatefulDaoCardProps) => {
       {...props}
       LinkWrapper={LinkWrapper}
       follow={follow}
+      isMember={isMember}
       lazyData={lazyData}
       showParentDao={
         /*

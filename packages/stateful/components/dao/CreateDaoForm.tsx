@@ -738,9 +738,8 @@ export const InnerCreateDaoForm = ({
             },
             lazyData: {
               loading: false,
+              errored: false,
               data: {
-                // Does not matter, will not show.
-                isMember: false,
                 proposalCount: 0,
                 tokenWithBalance: {
                   balance: tokenBalance,

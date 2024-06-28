@@ -346,4 +346,16 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       null
     )
   }
+
+  getProposalCountQuery(): FetchQueryOptions<number> {
+    const query =
+      this.info.version === ContractVersion.V1
+        ? cwProposalSingleV1Queries.proposalCount
+        : daoProposalSingleV2Queries.proposalCount
+
+    return query({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+    })
+  }
 }

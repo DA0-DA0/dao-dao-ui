@@ -123,4 +123,20 @@ export abstract class ProposalModuleBase<
     proposalId: number
     voter: string
   }): Promise<VoteInfo | null>
+
+  /**
+   * Query options to fetch the total number of proposals.
+   */
+  abstract getProposalCountQuery(): FetchQueryOptions<number>
+
+  /**
+   * Fetch the total number of proposals.
+   */
+  async getProposalCount(
+    ...params: Parameters<ProposalModuleBase['getProposalCountQuery']>
+  ): Promise<number> {
+    return await this.queryClient.fetchQuery(
+      this.getProposalCountQuery(...params)
+    )
+  }
 }

@@ -342,4 +342,11 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       null
     )
   }
+
+  getProposalCountQuery(): FetchQueryOptions<number> {
+    return secretDaoProposalSingleQueries.proposalCount({
+      chainId: this.dao.chainId,
+      contractAddress: this.info.address,
+    })
+  }
 }

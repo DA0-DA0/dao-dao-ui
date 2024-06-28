@@ -3,6 +3,7 @@ import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import {
+  DaoCardLazyData,
   DaoInfo,
   DaoSource,
   PermitForPermitData,
@@ -292,5 +293,16 @@ export class SecretCwDao extends CwDao {
         height,
       },
     })
+  }
+
+  async getDaoCardLazyData(): Promise<DaoCardLazyData> {
+    const proposalModuleCounts = await Promise.all(
+      this.proposalModules.map((p) => p.getProposalCount())
+    )
+
+    return {
+      proposalCount: proposalModuleCounts.reduce((a, b) => a + b, 0),
+      // No TVL because we don't index Secret DAOs.
+    }
   }
 }

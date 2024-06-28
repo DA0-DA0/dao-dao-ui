@@ -2,6 +2,7 @@ import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
 import { Account } from '../account'
+import { DaoCardLazyData } from '../components'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -118,4 +119,9 @@ export interface IDaoBase {
    * undefined, the latest block height will be used.
    */
   getTotalVotingPower(height?: number): Promise<string>
+
+  /**
+   * Fetch the lazy data for the DAO card.
+   */
+  getDaoCardLazyData(): Promise<DaoCardLazyData>
 }

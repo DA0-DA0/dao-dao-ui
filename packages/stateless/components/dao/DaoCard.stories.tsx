@@ -64,8 +64,8 @@ export const makeDaoCardProps = (id = 1): DaoCardProps => ({
   },
   lazyData: {
     loading: false,
+    errored: false,
     data: {
-      isMember: Math.random() < 0.5,
       proposalCount: 25,
       tokenWithBalance: {
         balance: 120,
@@ -74,6 +74,7 @@ export const makeDaoCardProps = (id = 1): DaoCardProps => ({
       },
     },
   },
+  isMember: true,
   LinkWrapper,
 })
 
@@ -89,7 +90,7 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...makeDaoCardProps(),
-  lazyData: { loading: true },
+  lazyData: { loading: true, errored: false },
 }
 Loading.parameters = {
   design: {

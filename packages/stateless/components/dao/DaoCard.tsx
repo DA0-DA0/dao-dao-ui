@@ -23,6 +23,7 @@ export const DaoCard = ({
   lazyData,
   follow,
   LinkWrapper,
+  isMember,
   showIsMember = true,
   showingEstimatedUsdValue = true,
   showParentDao = true,
@@ -45,7 +46,7 @@ export const DaoCard = ({
       prefetch
     >
       <div className="absolute top-0 left-0 flex w-full flex-row items-center justify-between p-2 sm:p-3">
-        {showIsMember && !lazyData.loading && lazyData.data.isMember ? (
+        {showIsMember && isMember ? (
           <Tooltip title={t('info.youAreMember')}>
             <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
           </Tooltip>
@@ -104,7 +105,8 @@ export const DaoCard = ({
           {removeMarkdown(description)}
         </p>
 
-        {(lazyData.loading || lazyData.data.tokenWithBalance) && (
+        {(lazyData.loading ||
+          (!lazyData.errored && lazyData.data.tokenWithBalance)) && (
           <div
             className={clsx(
               'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
@@ -148,7 +150,7 @@ export const DaoCard = ({
           </div>
         )}
 
-        {(lazyData.loading || !isNaN(lazyData.data.proposalCount)) && (
+        {(lazyData.loading || !lazyData.errored) && (
           <div
             className={clsx(
               'caption-text flex flex-row items-center gap-3 font-mono',
