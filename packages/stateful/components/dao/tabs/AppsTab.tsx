@@ -79,13 +79,11 @@ export const AppsTab = () => {
   } = useDaoInfoContext()
 
   // Select the single choice proposal module to use for proposals.
-  const singleChoiceProposalModule = proposalModules
-    .sort((a, b) => a.prefix.localeCompare(b.prefix))
-    .find(
-      ({ contractName }) =>
-        matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapterId
-    )
+  const singleChoiceProposalModule = proposalModules.find(
+    ({ contractName }) =>
+      matchProposalModuleAdapter(contractName)?.id ===
+      DaoProposalSingleAdapterId
+  )
 
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
   const [fullScreen, setFullScreen] = useState(false)
