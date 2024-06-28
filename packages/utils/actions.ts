@@ -76,7 +76,7 @@ export const getChainAddressForActionOptions = (
     : // If on different chain, return DAO's polytone proxy address.
     context.type === ActionContextType.Dao
     ? getAccountAddress({
-        accounts: context.info.accounts,
+        accounts: context.dao.accounts,
         chainId,
       })
     : // If on different chain, return wallet's chain profile address if set.

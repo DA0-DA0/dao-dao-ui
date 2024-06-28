@@ -33,7 +33,7 @@ export const makeCreateCrossChainAccountAction: ActionMaker<
 
   const missingChainIds = Object.keys(
     chainContext.config.polytone || {}
-  ).filter((chainId) => !(chainId in context.info.polytoneProxies))
+  ).filter((chainId) => !(chainId in context.dao.info.polytoneProxies))
 
   const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => ({
     chainId: missingChainIds[0],

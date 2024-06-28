@@ -184,10 +184,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
         const title =
           overrideTitle ??
-          [leadingTitle?.trim(), dao.info.name, followingTitle?.trim()]
+          [leadingTitle?.trim(), dao.name, followingTitle?.trim()]
             .filter(Boolean)
             .join(' | ')
-        const description = overrideDescription ?? dao.info.description
+        const description = overrideDescription ?? dao.description
         const accentColor =
           // If viewing configured gov chain, use its accent color.
           configuredGovChain?.accentColor ||

@@ -77,7 +77,9 @@ export const makeConfigureVestingPaymentsAction: ActionMaker<
   }
 
   const vestingEnabled =
-    !!context.info.items[DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments]
+    !!context.dao.info.items[
+      DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments
+    ]
 
   return {
     key: ActionKey.ConfigureVestingPayments,

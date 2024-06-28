@@ -358,7 +358,7 @@ export const ProposalList = ({
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(dao.coreAddress, 'create')}
-      daoName={dao.info.name}
+      daoName={dao.name}
       daosWithVetoableProposals={
         daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
           ? []

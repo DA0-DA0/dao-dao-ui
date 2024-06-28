@@ -172,7 +172,7 @@ const VoteFooter = ({
           {t('info.subjectsVote', {
             subject:
               context.type === ActionContextType.Dao
-                ? context.info.name
+                ? context.dao.name
                 : t('info.your'),
           })}
         </p>
@@ -211,7 +211,7 @@ const VoteFooter = ({
                 {t('info.subjectsCurrentlyCastVote', {
                   subject:
                     context.type === ActionContextType.Dao
-                      ? context.info.name
+                      ? context.dao.name
                       : t('info.your'),
                 })}
               </p>
@@ -220,7 +220,7 @@ const VoteFooter = ({
                 title={t('info.subjectsCurrentlyCastVoteTooltip', {
                   subject:
                     context.type === ActionContextType.Dao
-                      ? context.info.name
+                      ? context.dao.name
                       : t('info.you'),
                 })}
               />

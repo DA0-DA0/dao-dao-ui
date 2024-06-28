@@ -110,10 +110,10 @@ const Component: ActionComponent = (props) => {
         // Has parent if admin is not self.
         hasParent:
           context.type === ActionContextType.Dao &&
-          context.info.admin !== address,
+          context.dao.info.admin !== address,
         onV1:
           context.type === ActionContextType.Dao &&
-          context.info.coreVersion === ContractVersion.V1,
+          context.dao.coreVersion === ContractVersion.V1,
         AddressInput,
         EntityDisplay,
       }}
@@ -143,7 +143,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     // Load sub DAOs for registering as the current DAO upgrades to v2. If this
     // DAO is not on v1, there are no SubDAOs to load.
     const potentialSubDaos = useCachedLoading(
-      context.info.coreVersion === ContractVersion.V1
+      context.dao.coreVersion === ContractVersion.V1
         ? daoPotentialSubDaosSelector({
             coreAddress: address,
             chainId: chain.chain_id,
@@ -155,7 +155,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     return {
       targetAddress:
         // If DAO is not on v1, don't default to the DAO address.
-        context.info.coreVersion === ContractVersion.V1 ? address : '',
+        context.dao.coreVersion === ContractVersion.V1 ? address : '',
       subDaos: !potentialSubDaos.loading
         ? potentialSubDaos.data.map((addr) => ({
             addr,
@@ -352,7 +352,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     const v1SubDaos = useV1SubDaos()
 
     return (
-      context.info.coreVersion !== ContractVersion.V1 ||
+      context.dao.coreVersion !== ContractVersion.V1 ||
       v1SubDaos.loading ||
       v1SubDaos.data.length === 0
     )

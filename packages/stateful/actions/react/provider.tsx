@@ -55,7 +55,6 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     context: {
       type: ActionContextType.Dao,
       dao,
-      info: dao.info,
     },
   }
 

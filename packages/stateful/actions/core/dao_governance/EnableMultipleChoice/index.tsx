@@ -100,10 +100,10 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   //   support approval flow right now and that would be confusing.
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
+    !context.dao.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
     // Neutron fork SubDAOs don't support multiple choice proposals due to the
     // timelock/overrule system only being designed for single choice proposals.
-    context.info.coreVersion === ContractVersion.V2AlphaNeutronFork ||
+    context.dao.coreVersion === ContractVersion.V2AlphaNeutronFork ||
     chainContext.type !== ActionChainContextType.Supported
   ) {
     return null
@@ -112,7 +112,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     EnableMultipleChoiceData
   > = () => {
-    const singleChoiceProposal = context.info.proposalModules.find(
+    const singleChoiceProposal = context.dao.proposalModules.find(
       ({ contractName }) =>
         DaoProposalSingleAdapter.contractNames.some((name) =>
           contractName.includes(name)
@@ -186,13 +186,13 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         {
           ...makeDefaultNewDao(chainId),
           // Only the name is used in this function to pick the contract label.
-          name: context.info.name,
+          name: context.dao.name,
         },
         {
           ...makeDefaultNewDao(chainId).votingConfig,
           enableMultipleChoice: true,
           moduleInstantiateFundsUnsupported:
-            !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
+            !context.dao.info.supportedFeatures[Feature.ModuleInstantiateFunds],
           quorum: {
             majority: 'majority' in quorum,
             value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
@@ -256,7 +256,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   // - multiple choice proposal module already exists
   // - single-choice approval flow is enabled, since multiple choice doesn't
   //   support approval flow right now and that would be confusing.
-  const hideFromPicker = context.info.proposalModules.some(
+  const hideFromPicker = context.dao.proposalModules.some(
     ({ contractName, prePropose }) =>
       DaoProposalMultipleAdapter.contractNames.some((name) =>
         contractName.includes(name)

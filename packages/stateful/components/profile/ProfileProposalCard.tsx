@@ -94,7 +94,7 @@ export const ProfileProposalCard = () => {
 
   const commonProps = {
     votingPower: votingPowerPercent,
-    daoName: dao.info.name,
+    daoName: dao.name,
     profile,
     showUpdateProfileNft: () => setUpdateProfileNftVisible(true),
     updateProfile,

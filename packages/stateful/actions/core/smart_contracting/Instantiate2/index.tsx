@@ -112,7 +112,7 @@ const Component: ActionComponent = (props) => {
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
               getAccountAddress({
-                accounts: context.info.accounts,
+                accounts: context.dao.accounts,
                 chainId,
               }) || ''
             )

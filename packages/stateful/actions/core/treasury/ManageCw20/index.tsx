@@ -163,7 +163,7 @@ export const makeManageCw20Action: ActionMaker<ManageCw20Data> = ({
     return null
   }
 
-  const storageItemValueKey = context.info.supportedFeatures[
+  const storageItemValueKey = context.dao.info.supportedFeatures[
     Feature.StorageItemValueKey
   ]
     ? 'value'

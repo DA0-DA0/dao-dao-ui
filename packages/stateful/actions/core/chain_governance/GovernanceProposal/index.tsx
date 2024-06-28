@@ -290,7 +290,7 @@ export const makeGovernanceProposalAction: ActionMaker<
     currentChainId === ChainId.NeutronMainnet ||
     currentChainId === ChainId.NeutronTestnet
       ? context.type === ActionContextType.Dao
-        ? context.info.accounts.find((a) => a.type === AccountType.Polytone)
+        ? context.dao.accounts.find((a) => a.type === AccountType.Polytone)
             ?.chainId
         : undefined
       : // If not on Neutron, default to current chain.

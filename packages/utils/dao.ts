@@ -71,9 +71,9 @@ export const getAccount = ({
   chainId,
   types = [AccountType.Native, AccountType.Polytone],
 }: {
-  accounts: Account[]
+  accounts: readonly Account[]
   chainId: string
-  types?: AccountType[]
+  types?: readonly AccountType[]
 }): Account | undefined =>
   accounts.find(
     (account) => types.includes(account.type) && account.chainId === chainId

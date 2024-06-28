@@ -63,7 +63,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.SubDaos]
+    !context.dao.info.supportedFeatures[Feature.SubDaos]
   ) {
     return null
   }

@@ -2,6 +2,8 @@ import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
+  Account,
+  ContractVersion,
   DaoInfo,
   DaoSource,
   IDaoBase,
@@ -59,10 +61,10 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
-   * Proposal modules for the DAO.
+   * Core contract version.
    */
-  get proposalModules(): readonly IProposalModuleBase[] {
-    return []
+  get coreVersion(): ContractVersion {
+    return this.info.coreVersion
   }
 
   /**
@@ -70,6 +72,41 @@ export abstract class DaoBase implements IDaoBase {
    */
   get votingModule(): IVotingModuleBase {
     throw new Error('Not implemented')
+  }
+
+  /**
+   * Proposal modules for the DAO.
+   */
+  get proposalModules(): readonly IProposalModuleBase[] {
+    return []
+  }
+
+  /**
+   * DAO-controlled accounts.
+   */
+  get accounts(): readonly Account[] {
+    return this.info.accounts
+  }
+
+  /**
+   * DAO name.
+   */
+  get name(): string {
+    return this.info.name
+  }
+
+  /**
+   * DAO description.
+   */
+  get description(): string {
+    return this.info.description
+  }
+
+  /**
+   * DAO image URL.
+   */
+  get imageUrl(): string {
+    return this.info.imageUrl
   }
 
   /**

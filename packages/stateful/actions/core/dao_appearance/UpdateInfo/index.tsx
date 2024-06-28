@@ -58,8 +58,8 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
               msg: {
                 update_config: {
                   config:
-                    context.info.chainId === ChainId.NeutronMainnet &&
-                    context.info.coreVersion ===
+                    context.dao.chainId === ChainId.NeutronMainnet &&
+                    context.dao.coreVersion ===
                       ContractVersion.V2AlphaNeutronFork
                       ? // The Neutron fork DAO has a different config structure.
                         {

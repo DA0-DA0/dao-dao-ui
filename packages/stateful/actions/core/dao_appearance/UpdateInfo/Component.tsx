@@ -36,8 +36,8 @@ export const UpdateInfoComponent: ActionComponent<
 
   const isNeutronForkDao =
     context.type === ActionContextType.Dao &&
-    context.info.chainId === ChainId.NeutronMainnet &&
-    context.info.coreVersion === ContractVersion.V2AlphaNeutronFork
+    context.dao.chainId === ChainId.NeutronMainnet &&
+    context.dao.coreVersion === ContractVersion.V2AlphaNeutronFork
 
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-4">

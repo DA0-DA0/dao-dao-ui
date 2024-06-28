@@ -11,7 +11,6 @@ import {
 } from './chain'
 import { IDaoBase } from './clients'
 import { UnifiedCosmosMsg } from './contracts/common'
-import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
 import { PfpkProfile } from './profile'
 
@@ -241,8 +240,6 @@ export type ActionContext =
   | {
       type: ActionContextType.Dao
       dao: IDaoBase
-      // TODO(dao-client): refactor to use dao client, remove info
-      info: DaoInfo
     }
   | {
       type: ActionContextType.Wallet

@@ -105,7 +105,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
               fieldName={(fieldNamePrefix + 'targetAddress') as 'targetAddress'}
               options={[
                 // If current DAO is on v1, include it first.
-                ...(context.info.coreVersion === ContractVersion.V1
+                ...(context.dao.coreVersion === ContractVersion.V1
                   ? [address]
                   : []),
                 // Add v1 SubDAOs.

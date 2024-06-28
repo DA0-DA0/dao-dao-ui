@@ -117,7 +117,7 @@ const useVestingInfosOwnedByEntity = () => {
     waitForAll(
       context.type === ActionContextType.Dao
         ? // Get vesting infos owned by any of the DAO's accounts.
-          context.info.accounts.map(({ chainId, address }) =>
+          context.dao.accounts.map(({ chainId, address }) =>
             vestingInfosOwnedBySelector({
               address,
               chainId,

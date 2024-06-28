@@ -1,11 +1,13 @@
 import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
+import { Account } from '../account'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../contracts/DaoCore.v2'
 import { DaoInfo, DaoSource } from '../dao'
+import { ContractVersion } from '../features'
 import { IProposalModuleBase } from './proposal-module'
 import { IVotingModuleBase } from './voting-module'
 
@@ -36,6 +38,11 @@ export interface IDaoBase {
   source: DaoSource
 
   /**
+   * Core contract version.
+   */
+  coreVersion: ContractVersion
+
+  /**
    * Voting module for the DAO.
    */
   votingModule: IVotingModuleBase
@@ -44,6 +51,26 @@ export interface IDaoBase {
    * Proposal modules for the DAO.
    */
   proposalModules: readonly IProposalModuleBase[]
+
+  /**
+   * DAO-controlled accounts.
+   */
+  accounts: readonly Account[]
+
+  /**
+   * DAO name.
+   */
+  name: string
+
+  /**
+   * DAO description.
+   */
+  description: string
+
+  /**
+   * DAO image URL.
+   */
+  imageUrl: string
 
   /**
    * Whether or not the client has been initialized. This only matters for some
