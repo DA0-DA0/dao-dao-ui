@@ -282,7 +282,7 @@ export const balanceWithTimestampSelector = selectorFamily<
 
       return {
         amount,
-        timestamp: new Date(),
+        timestamp: Date.now(),
       }
     },
 })

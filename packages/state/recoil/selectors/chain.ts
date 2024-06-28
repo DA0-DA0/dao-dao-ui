@@ -515,7 +515,7 @@ export const nativeDenomBalanceWithTimestampSelector = selectorFamily<
 
       return {
         amount,
-        timestamp: new Date(),
+        timestamp: Date.now(),
       }
     },
 })

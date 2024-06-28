@@ -161,7 +161,13 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           chainId,
           coreAddress,
         })
-        await dao.init()
+
+        await Promise.all([
+          // Initialize to load info.
+          dao.init(),
+          // Pre-fetch TVL.
+          dao.getTvl(),
+        ])
 
         // Must be called after server side translations has been awaited,
         // because props may use the `t` function, and it won't be available

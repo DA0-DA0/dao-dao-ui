@@ -33,8 +33,6 @@ export const fetchDaoTvl = async (
       COMMUNITY_POOL_ADDRESS_PLACEHOLDER
   }
 
-  const timestamp = new Date()
-
   const { total: amount } = (await queryClient.fetchQuery(
     indexerQueries.snapper<{ total: number }>({
       query: 'daodao-tvl',
@@ -49,7 +47,7 @@ export const fetchDaoTvl = async (
 
   return {
     amount,
-    timestamp,
+    timestamp: Date.now(),
   }
 }
 

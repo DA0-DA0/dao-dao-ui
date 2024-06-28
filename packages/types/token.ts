@@ -206,7 +206,7 @@ export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
 
 export type AmountWithTimestamp = {
   amount: number
-  timestamp: Date
+  timestamp: number
 }
 
 export enum TokenPriceHistoryRange {
