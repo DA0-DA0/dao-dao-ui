@@ -15,7 +15,7 @@ export const ProposalDaoInfoCardSections = () => {
 
   return (
     <>
-      {dao.info.proposalModules.map((proposalModule) => (
+      {dao.proposalModules.map((proposalModule) => (
         <SuspenseLoader key={proposalModule.address} fallback={<Loader />}>
           <ProposalModuleAdapterCommonProvider
             proposalModuleAddress={proposalModule.address}

@@ -66,11 +66,10 @@ export const ProposalList = ({
     StatefulProposalLineProps[]
   >([])
 
-  // TODO(dao-client): refactor to use proposal module clients
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
     () =>
-      dao.info.proposalModules.map((proposalModule) => ({
+      dao.proposalModules.map((proposalModule) => ({
         selectors: matchAndLoadCommon(dao, proposalModule.address).selectors,
         proposalModule,
       })),
@@ -222,7 +221,7 @@ export const ProposalList = ({
 
             // Store startBefore cursor values for next query based on last
             // proposal ID in list from each proposal module.
-            newStartBefores = dao.info.proposalModules.reduce(
+            newStartBefores = dao.proposalModules.reduce(
               (acc, proposalModule) => {
                 const thisModulesProposalInfos = newProposalInfos.filter(
                   (info) => info.proposalModule === proposalModule

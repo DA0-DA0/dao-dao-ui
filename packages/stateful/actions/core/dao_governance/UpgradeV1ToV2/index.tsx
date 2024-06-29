@@ -171,7 +171,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     const depositInfoSelectors = v1SubDaos.loading
       ? []
       : v1SubDaos.data.map((dao) =>
-          dao.info.proposalModules.map(
+          dao.proposalModules.map(
             (proposalModule) =>
               matchAndLoadCommon(dao, proposalModule.address).selectors
                 .depositInfo

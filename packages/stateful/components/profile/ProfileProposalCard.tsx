@@ -45,7 +45,7 @@ export const ProfileProposalCard = () => {
 
   const depositInfoSelectors = useMemo(
     () =>
-      dao.info.proposalModules.map(
+      dao.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(dao, proposalModule.address).selectors.depositInfo
       ),
