@@ -382,7 +382,7 @@ export const pauseInfoSelector = selectorFamily<
       const paused = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoCore/paused',
+          formula: 'daoCore/pauseInfo',
         })
       )
       if (paused) {

@@ -226,7 +226,7 @@ export class CwDao extends DaoBase {
       }
     }
 
-    return daoDaoCoreQueries.votingPowerAtHeight({
+    return daoDaoCoreQueries.votingPowerAtHeight(this.queryClient, {
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {
@@ -239,7 +239,7 @@ export class CwDao extends DaoBase {
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoDaoCoreQueries.totalPowerAtHeight({
+    return daoDaoCoreQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {
