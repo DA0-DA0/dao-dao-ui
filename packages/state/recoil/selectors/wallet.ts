@@ -18,7 +18,7 @@ import {
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { Config as DaoCoreV2Config } from '@dao-dao/types/contracts/DaoCore.v2'
+import { Config as DaoDaoCoreConfig } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
   HIDDEN_BALANCE_PREFIX,
@@ -40,7 +40,7 @@ import {
 import { accountsSelector } from './account'
 import { nativeBalancesSelector, nativeDelegatedBalanceSelector } from './chain'
 import { isContractSelector } from './contract'
-import { votingModuleSelector } from './contracts/DaoCore.v2'
+import { votingModuleSelector } from './contracts/DaoDaoCore'
 import * as DaoVotingTokenStaked from './contracts/DaoVotingTokenStaked'
 import { lazyDaoCardPropsSelector } from './dao'
 import { followingDaosSelector } from './following'
@@ -509,7 +509,7 @@ export const lazyWalletDaosSelector = selectorFamily<
       const daos: {
         dao: string
         info: ContractVersionInfo
-        config: DaoCoreV2Config
+        config: DaoDaoCoreConfig
         proposalCount: number
       }[] = get(
         queryWalletIndexerSelector({

@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoDaoCoreSelectors } from '@dao-dao/state'
 import { PlayPauseEmoji, useCachedLoading } from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
@@ -94,7 +94,7 @@ const Component: ActionComponent<undefined, ManageSubDaoPauseData> = (
   props
 ) => {
   const neutronSubdaos = useCachedLoading(
-    DaoCoreV2Selectors.listAllSubDaosSelector({
+    DaoDaoCoreSelectors.listAllSubDaosSelector({
       chainId: ChainId.NeutronMainnet,
       contractAddress: NEUTRON_GOVERNANCE_DAO,
     }),

@@ -43,7 +43,7 @@ import {
   ProposalModuleAdapter,
   SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
-import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
+import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -357,7 +357,7 @@ export const InnerCreateDaoForm = ({
   )
 
   let instantiateMsg:
-    | DaoCoreV2InstantiateMsg
+    | DaoDaoCoreInstantiateMsg
     | SecretDaoDaoCoreInstantiateMsg
     | undefined
   let instantiateMsgError: string | undefined

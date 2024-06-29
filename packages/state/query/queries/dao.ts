@@ -8,7 +8,7 @@ import { AmountWithTimestamp, DaoSource } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getSupportedChainConfig,

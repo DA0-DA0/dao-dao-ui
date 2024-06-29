@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
 import {
   UnifiedCosmosMsg,
@@ -41,7 +41,7 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
 
   const polytoneProxies = useRecoilValue(
     isValidBech32Address(senderAddress, bech32Prefix)
-      ? DaoCoreV2Selectors.polytoneProxiesSelector({
+      ? DaoDaoCoreSelectors.polytoneProxiesSelector({
           chainId,
           contractAddress: senderAddress,
         })

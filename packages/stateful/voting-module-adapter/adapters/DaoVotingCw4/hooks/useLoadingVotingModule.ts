@@ -3,7 +3,7 @@ import { constSelector } from 'recoil'
 
 import {
   Cw4GroupSelectors,
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoVotingCw4Selectors,
 } from '@dao-dao/state'
 import { useCachedLoadingWithError, useChain } from '@dao-dao/stateless'
@@ -27,7 +27,7 @@ export const useLoadingVotingModule = (
   const { chain_id: chainId } = useChain()
 
   const votingModuleAddress = useCachedLoadingWithError(
-    DaoCoreV2Selectors.votingModuleSelector({
+    DaoDaoCoreSelectors.votingModuleSelector({
       chainId,
       contractAddress: coreAddress,
       params: [],

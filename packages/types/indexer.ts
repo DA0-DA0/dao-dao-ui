@@ -3,7 +3,7 @@ import {
   Config,
   DumpStateResponse,
   ProposalModuleWithInfo,
-} from './contracts/DaoCore.v2'
+} from './contracts/DaoDaoCore'
 
 export enum IndexerFormulaType {
   Contract = 'contract',

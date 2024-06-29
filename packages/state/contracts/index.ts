@@ -23,7 +23,7 @@ export {
 } from './CwTokenfactoryIssuer'
 export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'
 export { CwVestingClient, CwVestingQueryClient } from './CwVesting'
-export { DaoCoreV2Client, DaoCoreV2QueryClient } from './DaoCore.v2'
+export { DaoDaoCoreClient, DaoDaoCoreQueryClient } from './DaoDaoCore'
 export {
   DaoPreProposeApprovalSingleClient,
   DaoPreProposeApprovalSingleQueryClient,

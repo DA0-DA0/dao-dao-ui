@@ -46,7 +46,7 @@ import { isDaoSelector, secretContractCodeHashSelector } from './contract'
 import {
   Cw20BaseSelectors,
   Cw20StakeSelectors,
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoVotingNativeStakedSelectors,
 } from './contracts'
 import { queryGenericIndexerSelector, querySnapperSelector } from './indexer'
@@ -384,7 +384,7 @@ export const genericTokenBalancesSelector = selectorFamily<
                   ? // Get native cw20s.
                     chainId === mainChainId && address === mainAddress
                     ? [
-                        DaoCoreV2Selectors.nativeCw20TokensWithBalancesSelector(
+                        DaoDaoCoreSelectors.nativeCw20TokensWithBalancesSelector(
                           {
                             chainId: mainChainId,
                             contractAddress: mainAddress,
@@ -395,7 +395,7 @@ export const genericTokenBalancesSelector = selectorFamily<
                     : // Get polytone cw20s if they exist.
                     chainId !== mainChainId
                     ? [
-                        DaoCoreV2Selectors.polytoneCw20TokensWithBalancesSelector(
+                        DaoDaoCoreSelectors.polytoneCw20TokensWithBalancesSelector(
                           {
                             chainId: mainChainId,
                             contractAddress: mainAddress,
@@ -934,7 +934,7 @@ export const daosWithNativeVotingContractSelector = selectorFamily<
       const votingModuleAddresses = get(
         waitForAll(
           daos.map((contractAddress) =>
-            DaoCoreV2Selectors.votingModuleSelector({
+            DaoDaoCoreSelectors.votingModuleSelector({
               contractAddress,
               chainId,
               params: [],

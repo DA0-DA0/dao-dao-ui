@@ -10,7 +10,7 @@ import { DaoInfo } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   getChainForChainId,
   mustGetConfiguredChainConfig,

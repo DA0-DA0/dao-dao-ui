@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoPreProposeApprovalSingleSelectors,
   DaoProposalSingleCommonSelectors,
 } from '@dao-dao/state/recoil'
@@ -153,7 +153,7 @@ const Component: ActionComponent = (props) => {
   }, [dao, props.fieldNamePrefix, props.isCreating, setValue])
 
   const options = useCachedLoading(
-    DaoCoreV2Selectors.approvalDaosSelector({
+    DaoDaoCoreSelectors.approvalDaosSelector({
       chainId,
       contractAddress: address,
     }),

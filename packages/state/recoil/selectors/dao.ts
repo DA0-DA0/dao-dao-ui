@@ -23,7 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { contractInfoSelector, contractVersionSelector } from './contract'
-import { DaoCoreV2Selectors } from './contracts'
+import { DaoDaoCoreSelectors } from './contracts'
 import { queryContractIndexerSelector } from './indexer'
 
 export const lazyDaoCardPropsSelector = selectorFamily<
@@ -61,7 +61,7 @@ export const lazyDaoCardPropsSelector = selectorFamily<
             chainId,
             contractAddress: coreAddress,
           }),
-          DaoCoreV2Selectors.configSelector({
+          DaoDaoCoreSelectors.configSelector({
             chainId,
             contractAddress: coreAddress,
             params: [],
@@ -144,7 +144,7 @@ export const daoDropdownInfoSelector: (
             chainId,
             contractAddress: coreAddress,
           }),
-          DaoCoreV2Selectors.configSelector({
+          DaoDaoCoreSelectors.configSelector({
             chainId,
             contractAddress: coreAddress,
             params: [],
@@ -154,7 +154,7 @@ export const daoDropdownInfoSelector: (
 
       const subDaos = isFeatureSupportedByVersion(Feature.SubDaos, version)
         ? get(
-            DaoCoreV2Selectors.listAllSubDaosSelector({
+            DaoDaoCoreSelectors.listAllSubDaosSelector({
               chainId,
               contractAddress: coreAddress,
             })
@@ -199,7 +199,7 @@ export const daoVetoableDaosSelector = selectorFamily<
     ({ chainId, coreAddress }) =>
     ({ get }) =>
       get(
-        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+        DaoDaoCoreSelectors.listAllItemsWithPrefixSelector({
           chainId,
           contractAddress: coreAddress,
           prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,

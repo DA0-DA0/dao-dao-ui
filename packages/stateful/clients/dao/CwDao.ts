@@ -18,7 +18,7 @@ import {
   InstantiateMsg,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   encodeJsonToBase64,
   getChainForChainId,

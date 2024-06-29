@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenBalancesSelector } from '@dao-dao/state'
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
@@ -250,7 +250,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
       // Only care about loading the governance token if on the chain we're
       // creating the token swap on.
       entity.data.chainId === chainId
-      ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
+      ? DaoDaoCoreSelectors.tryFetchGovernanceTokenAddressSelector({
           chainId,
           contractAddress: entity.data.address,
         })

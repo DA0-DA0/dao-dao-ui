@@ -8,7 +8,7 @@ import {
   DaoWebSocketChannelInfo,
   PolytoneProxies,
 } from '@dao-dao/types'
-import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
+import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
 
 import { getSupportedChainConfig } from './chain'
 
@@ -58,7 +58,7 @@ export const getFundsFromDaoInstantiateMsg = ({
   voting_module_instantiate_info,
   proposal_modules_instantiate_info,
 }: Pick<
-  DaoCoreV2InstantiateMsg,
+  DaoDaoCoreInstantiateMsg,
   'voting_module_instantiate_info' | 'proposal_modules_instantiate_info'
 >) => [
   ...(voting_module_instantiate_info.funds || []),

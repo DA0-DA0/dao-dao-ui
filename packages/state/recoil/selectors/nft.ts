@@ -28,7 +28,7 @@ import {
   refreshWalletStargazeNftsAtom,
 } from '../atoms'
 import { accountsSelector } from './account'
-import { CommonNftSelectors, DaoCoreV2Selectors } from './contracts'
+import { CommonNftSelectors, DaoDaoCoreSelectors } from './contracts'
 import { stakerForNftSelector } from './contracts/DaoVotingCw721Staked'
 import { queryWalletIndexerSelector } from './indexer'
 import { stargazeWalletUsdValueSelector } from './stargaze'
@@ -378,7 +378,7 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
     ({ chainId, coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
       const allNfts = get(
-        DaoCoreV2Selectors.allCw721CollectionsSelector({
+        DaoDaoCoreSelectors.allCw721CollectionsSelector({
           contractAddress: coreAddress,
           chainId,
           governanceCollectionAddress,

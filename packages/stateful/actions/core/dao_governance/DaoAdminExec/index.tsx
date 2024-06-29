@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
+import { DaoDaoCoreSelectors, walletAdminOfDaosSelector } from '@dao-dao/state'
 import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
@@ -94,7 +94,7 @@ const Component: ActionComponent = (props) => {
 
   const daoSubDaosLoadable = useCachedLoadable(
     context.type === ActionContextType.Dao
-      ? DaoCoreV2Selectors.listAllSubDaosSelector({
+      ? DaoDaoCoreSelectors.listAllSubDaosSelector({
           contractAddress: address,
           chainId,
           // We only care about the SubDAOs this DAO has admin powers over.

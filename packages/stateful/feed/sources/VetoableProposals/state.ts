@@ -1,6 +1,6 @@
 import { selectorFamily, waitForAny } from 'recoil'
 
-import { DaoCoreV2Selectors, followingDaosSelector } from '@dao-dao/state'
+import { DaoDaoCoreSelectors, followingDaosSelector } from '@dao-dao/state'
 import { VetoableProposalsProps } from '@dao-dao/stateless'
 import {
   DaoPageMode,
@@ -48,7 +48,7 @@ export const feedVetoableProposalsSelector = selectorFamily<
       const followingDaoConfigs = get(
         waitForAny(
           followingDaos.map(({ chainId, coreAddress }) =>
-            DaoCoreV2Selectors.configSelector({
+            DaoDaoCoreSelectors.configSelector({
               chainId,
               contractAddress: coreAddress,
               params: [],

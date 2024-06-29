@@ -19,25 +19,22 @@ import {
 } from '@dao-dao/types'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  ActiveProposalModulesResponse,
+  Addr,
   AdminNominationResponse,
-  AdminResponse,
-  ConfigResponse,
+  ArrayOfAddr,
+  ArrayOfProposalModule,
+  ArrayOfSubDao,
+  Config,
   Cw20BalancesResponse,
-  Cw20TokenListResponse,
-  Cw721TokenListResponse,
   DaoURIResponse,
   DumpStateResponse,
   GetItemResponse,
   ListItemsResponse,
-  ListSubDaosResponse,
   PauseInfoResponse,
-  ProposalModulesResponse,
   SubDao,
   TotalPowerAtHeightResponse,
-  VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
   MAINNET,
@@ -54,9 +51,9 @@ import {
   PolytoneNoteSelectors,
 } from '.'
 import {
-  DaoCoreV2Client,
-  DaoCoreV2QueryClient,
-} from '../../../contracts/DaoCore.v2'
+  DaoDaoCoreClient,
+  DaoDaoCoreQueryClient,
+} from '../../../contracts/DaoDaoCore'
 import {
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
@@ -82,15 +79,15 @@ type QueryClientParams = WithChainId<{
 }>
 
 export const queryClient = selectorFamily<
-  DaoCoreV2QueryClient,
+  DaoDaoCoreQueryClient,
   QueryClientParams
 >({
-  key: 'daoCoreV2QueryClient',
+  key: 'daoDaoCoreQueryClient',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
-      return new DaoCoreV2QueryClient(client, contractAddress)
+      return new DaoDaoCoreQueryClient(client, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -101,28 +98,28 @@ export type ExecuteClientParams = WithChainId<{
 }>
 
 export const executeClient = selectorFamily<
-  DaoCoreV2Client | undefined,
+  DaoDaoCoreClient | undefined,
   ExecuteClientParams
 >({
-  key: 'daoCoreV2ExecuteClient',
+  key: 'daoDaoCoreExecuteClient',
   get:
     ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
       const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
 
-      return new DaoCoreV2Client(client, sender, contractAddress)
+      return new DaoDaoCoreClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
 
 export const adminSelector = selectorFamily<
-  AdminResponse,
+  Addr,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['admin']>
+    params: Parameters<DaoDaoCoreQueryClient['admin']>
   }
 >({
-  key: 'daoCoreV2Admin',
+  key: 'daoDaoCoreAdmin',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -145,10 +142,10 @@ export const adminSelector = selectorFamily<
 export const adminNominationSelector = selectorFamily<
   AdminNominationResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['adminNomination']>
+    params: Parameters<DaoDaoCoreQueryClient['adminNomination']>
   }
 >({
-  key: 'daoCoreV2AdminNomination',
+  key: 'daoDaoCoreAdminNomination',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -169,12 +166,12 @@ export const adminNominationSelector = selectorFamily<
     },
 })
 export const configSelector = selectorFamily<
-  ConfigResponse,
+  Config,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['config']>
+    params: Parameters<DaoDaoCoreQueryClient['config']>
   }
 >({
-  key: 'daoCoreV2Config',
+  key: 'daoDaoCoreConfig',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -198,10 +195,10 @@ export const configSelector = selectorFamily<
 export const _cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['cw20Balances']>
+    params: Parameters<DaoDaoCoreQueryClient['cw20Balances']>
   }
 >({
-  key: 'daoCoreV2_Cw20Balances',
+  key: 'daoDaoCore_Cw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -214,12 +211,12 @@ export const _cw20BalancesSelector = selectorFamily<
 // Use allNativeCw20TokenListSelector as it uses the indexer and implements
 // pagination for chain queries.
 export const _cw20TokenListSelector = selectorFamily<
-  Cw20TokenListResponse,
+  ArrayOfAddr,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['cw20TokenList']>
+    params: Parameters<DaoDaoCoreQueryClient['cw20TokenList']>
   }
 >({
-  key: 'daoCoreV2_Cw20TokenList',
+  key: 'daoDaoCore_Cw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -230,12 +227,12 @@ export const _cw20TokenListSelector = selectorFamily<
 // Use allNativeCw721TokenListSelector as it uses the indexer and implements
 // pagination for chain queries.
 export const _cw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse,
+  ArrayOfAddr,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['cw721TokenList']>
+    params: Parameters<DaoDaoCoreQueryClient['cw721TokenList']>
   }
 >({
-  key: 'daoCoreV2_Cw721TokenList',
+  key: 'daoDaoCore_Cw721TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -248,10 +245,10 @@ export const _cw721TokenListSelector = selectorFamily<
 export const dumpStateSelector = selectorFamily<
   DumpStateResponse | IndexerDumpState | undefined,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['dumpState']>
+    params: Parameters<DaoDaoCoreQueryClient['dumpState']>
   }
 >({
-  key: 'daoCoreV2DumpState',
+  key: 'daoDaoCoreDumpState',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -279,10 +276,10 @@ export const dumpStateSelector = selectorFamily<
 export const getItemSelector = selectorFamily<
   GetItemResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['getItem']>
+    params: Parameters<DaoDaoCoreQueryClient['getItem']>
   }
 >({
-  key: 'daoCoreV2GetItem',
+  key: 'daoDaoCoreGetItem',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -308,10 +305,10 @@ export const getItemSelector = selectorFamily<
 export const _listItemsSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['listItems']>
+    params: Parameters<DaoDaoCoreQueryClient['listItems']>
   }
 >({
-  key: 'daoCoreV2_ListItems',
+  key: 'daoDaoCore_ListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -320,12 +317,12 @@ export const _listItemsSelector = selectorFamily<
     },
 })
 export const proposalModulesSelector = selectorFamily<
-  ProposalModulesResponse,
+  ArrayOfProposalModule,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['proposalModules']>
+    params: Parameters<DaoDaoCoreQueryClient['proposalModules']>
   }
 >({
-  key: 'daoCoreV2ProposalModules',
+  key: 'daoDaoCoreProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -345,12 +342,12 @@ export const proposalModulesSelector = selectorFamily<
     },
 })
 export const activeProposalModulesSelector = selectorFamily<
-  ActiveProposalModulesResponse,
+  ArrayOfProposalModule,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['activeProposalModules']>
+    params: Parameters<DaoDaoCoreQueryClient['activeProposalModules']>
   }
 >({
-  key: 'daoCoreV2ActiveProposalModules',
+  key: 'daoDaoCoreActiveProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -372,10 +369,10 @@ export const activeProposalModulesSelector = selectorFamily<
 export const pauseInfoSelector = selectorFamily<
   PauseInfoResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['pauseInfo']>
+    params: Parameters<DaoDaoCoreQueryClient['pauseInfo']>
   }
 >({
-  key: 'daoCoreV2PauseInfo',
+  key: 'daoDaoCorePauseInfo',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -395,12 +392,12 @@ export const pauseInfoSelector = selectorFamily<
     },
 })
 export const votingModuleSelector = selectorFamily<
-  VotingModuleResponse,
+  Addr,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['votingModule']>
+    params: Parameters<DaoDaoCoreQueryClient['votingModule']>
   }
 >({
-  key: 'daoCoreV2VotingModule',
+  key: 'daoDaoCoreVotingModule',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -422,12 +419,12 @@ export const votingModuleSelector = selectorFamily<
 // Use listAllSubDaosSelector as it uses the indexer and implements pagination
 // for chain queries.
 export const _listSubDaosSelector = selectorFamily<
-  ListSubDaosResponse,
+  ArrayOfSubDao,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['listSubDaos']>
+    params: Parameters<DaoDaoCoreQueryClient['listSubDaos']>
   }
 >({
-  key: 'daoCoreV2_ListSubDaos',
+  key: 'daoDaoCore_ListSubDaos',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -438,10 +435,10 @@ export const _listSubDaosSelector = selectorFamily<
 export const daoURISelector = selectorFamily<
   DaoURIResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['daoURI']>
+    params: Parameters<DaoDaoCoreQueryClient['daoURI']>
   }
 >({
-  key: 'daoCoreV2DaoURI',
+  key: 'daoDaoCoreDaoURI',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -464,10 +461,10 @@ export const daoURISelector = selectorFamily<
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['votingPowerAtHeight']>
+    params: Parameters<DaoDaoCoreQueryClient['votingPowerAtHeight']>
   }
 >({
-  key: 'daoCoreV2VotingPowerAtHeight',
+  key: 'daoDaoCoreVotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -498,10 +495,10 @@ export const votingPowerAtHeightSelector = selectorFamily<
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['totalPowerAtHeight']>
+    params: Parameters<DaoDaoCoreQueryClient['totalPowerAtHeight']>
   }
 >({
-  key: 'daoCoreV2TotalPowerAtHeight',
+  key: 'daoDaoCoreTotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -533,10 +530,10 @@ export const infoSelector = contractInfoSelector
 
 const CW20_TOKEN_LIST_LIMIT = 30
 export const allNativeCw20TokenListSelector = selectorFamily<
-  Cw20TokenListResponse,
+  ArrayOfAddr,
   QueryClientParams
 >({
-  key: 'daoCoreV2AllNativeCw20TokenList',
+  key: 'daoDaoCoreAllNativeCw20TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -552,7 +549,7 @@ export const allNativeCw20TokenListSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: Cw20TokenListResponse = []
+      const tokenList: ArrayOfAddr = []
       while (true) {
         const response = await get(
           _cw20TokenListSelector({
@@ -591,7 +588,7 @@ export const allPolytoneCw20TokensSelector = selectorFamily<
   >,
   QueryClientParams
 >({
-  key: 'daoCoreV2AllPolytoneCw20Tokens',
+  key: 'daoDaoCoreAllPolytoneCw20Tokens',
   get:
     (queryClientParams) =>
     ({ get }) => {
@@ -649,7 +646,7 @@ export const allCw20TokensSelector = selectorFamily<
     governanceCollectionAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw20Tokens',
+  key: 'daoDaoCoreAllCw20Tokens',
   get:
     (queryClientParams) =>
     ({ get }) => {
@@ -695,7 +692,7 @@ export const nativeCw20TokensWithBalancesSelector = selectorFamily<
     governanceTokenAddress?: string
   }
 >({
-  key: 'daoCoreV2NativeCw20TokensWithBalances',
+  key: 'daoDaoCoreNativeCw20TokensWithBalances',
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -793,7 +790,7 @@ export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
     polytoneChainId: string
   }
 >({
-  key: 'daoCoreV2PolytoneCw20TokensWithBalances',
+  key: 'daoDaoCorePolytoneCw20TokensWithBalances',
   get:
     ({ chainId: mainChainId, contractAddress, polytoneChainId }) =>
     ({ get }) => {
@@ -859,12 +856,12 @@ export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
 
 const CW721_TOKEN_LIST_LIMIT = 30
 export const allNativeCw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse,
+  ArrayOfAddr,
   QueryClientParams & {
     governanceCollectionAddress?: string
   }
 >({
-  key: 'daoCoreV2AllNativeCw721TokenList',
+  key: 'daoDaoCoreAllNativeCw721TokenList',
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -898,7 +895,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: Cw721TokenListResponse = [...workaroundContracts]
+      const tokenList: ArrayOfAddr = [...workaroundContracts]
       while (true) {
         const response = await get(
           _cw721TokenListSelector({
@@ -940,7 +937,7 @@ export const allCrossChainCw721CollectionsSelector = selectorFamily<
   Record<string, string[]>,
   QueryClientParams
 >({
-  key: 'daoCoreV2AllCrossChainCw721Collections',
+  key: 'daoDaoCoreAllCrossChainCw721Collections',
   get:
     (queryClientParams) =>
     ({ get }) => {
@@ -979,7 +976,7 @@ export const allCw721CollectionsSelector = selectorFamily<
     governanceCollectionAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw721Collections',
+  key: 'daoDaoCoreAllCw721Collections',
   get:
     (queryClientParams) =>
     ({ get }) => {
@@ -1073,7 +1070,7 @@ export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
   } & ContractInfoResponse)[],
   QueryClientParams
 >({
-  key: 'daoCoreV2AllCw721CollectionsWithDaoAsMinter',
+  key: 'daoDaoCoreAllCw721CollectionsWithDaoAsMinter',
   get:
     (queryClientParams) =>
     ({ get }) => {
@@ -1149,11 +1146,11 @@ export const listAllSubDaosSelector = selectorFamily<
     onlyAdmin?: boolean
   }
 >({
-  key: 'daoCoreV2ListAllSubDaos',
+  key: 'daoDaoCoreListAllSubDaos',
   get:
     ({ onlyAdmin, ...queryClientParams }) =>
     async ({ get }) => {
-      let subDaos: ListSubDaosResponse = []
+      let subDaos: ArrayOfSubDao = []
 
       const indexerSubDaos = get(
         queryContractIndexerSelector({
@@ -1272,10 +1269,10 @@ export const listAllSubDaosSelector = selectorFamily<
  * SubDAOs on the same chain.
  */
 export const allSubDaoConfigsSelector = selectorFamily<
-  (WithChainId<{ address: string }> & ConfigResponse)[],
+  (WithChainId<{ address: string }> & Config)[],
   QueryClientParams
 >({
-  key: 'daoCoreV2AllSubDaoConfigs',
+  key: 'daoDaoCoreAllSubDaoConfigs',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -1305,7 +1302,7 @@ export const tryFetchGovernanceTokenAddressSelector = selectorFamily<
   string,
   QueryClientParams
 >({
-  key: 'daoCoreV2TryFetchGovernanceTokenAddress',
+  key: 'daoDaoCoreTryFetchGovernanceTokenAddress',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -1328,7 +1325,7 @@ export const listAllItemsSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams
 >({
-  key: 'daoCoreV2ListAllItems',
+  key: 'daoDaoCoreListAllItems',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -1379,7 +1376,7 @@ export const listAllItemsWithPrefixSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & { prefix: string }
 >({
-  key: 'daoCoreV2ListAllItemsWithPrefix',
+  key: 'daoDaoCoreListAllItemsWithPrefix',
   get:
     ({ prefix, ...queryClientParams }) =>
     async ({ get }) => {
@@ -1394,7 +1391,7 @@ export const polytoneProxiesSelector = selectorFamily<
   PolytoneProxies,
   QueryClientParams
 >({
-  key: 'daoCoreV2PolytoneProxies',
+  key: 'daoDaoCorePolytoneProxies',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -1454,7 +1451,7 @@ export const approvalDaosSelector = selectorFamily<
   }[],
   QueryClientParams
 >({
-  key: 'daoCoreV2ApprovalDaos',
+  key: 'daoDaoCoreApprovalDaos',
   get:
     ({ chainId, contractAddress }) =>
     ({ get }) =>

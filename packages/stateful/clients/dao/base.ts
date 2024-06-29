@@ -16,7 +16,7 @@ import {
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 
 export abstract class DaoBase implements IDaoBase {
   constructor(protected readonly queryClient: QueryClient) {}

@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useCachedLoading, useChain, useDaoContext } from '@dao-dao/stateless'
-import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
+import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   makeCombineQueryResultsIntoLoadingDataWithError,
   secp256k1PublicKeyToBech32Address,

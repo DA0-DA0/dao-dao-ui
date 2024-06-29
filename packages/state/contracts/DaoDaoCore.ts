@@ -11,6 +11,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
   Addr,
   AdminNominationResponse,
@@ -28,7 +29,6 @@ import {
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,
-  ModuleInstantiateInfo,
   PauseInfoResponse,
   ProposalModuleCountResponse,
   SubDao,

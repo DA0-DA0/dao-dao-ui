@@ -7,7 +7,7 @@ import {
 } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoVotingCw20StakedSelectors,
   accountsSelector,
   contractInfoSelector,
@@ -111,7 +111,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
     ({ coreAddress, chainId }) =>
     ({ get }) => {
       const votingModuleAddress = get(
-        DaoCoreV2Selectors.votingModuleSelector({
+        DaoDaoCoreSelectors.votingModuleSelector({
           contractAddress: coreAddress,
           chainId,
           params: [],
@@ -238,7 +238,7 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
         waitForAllSettled(
           uniqueChainsAndDaos.map((chainAndDao) => {
             const [chainId, coreAddress] = chainAndDao.split(':')
-            return DaoCoreV2Selectors.configSelector({
+            return DaoDaoCoreSelectors.configSelector({
               chainId,
               contractAddress: coreAddress,
               params: [],

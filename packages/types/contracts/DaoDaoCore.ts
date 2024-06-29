@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { ContractVersionInfo } from './common'
+import { ContractVersionInfo, ModuleInstantiateInfo } from './common'
 
 export type Admin =
   | {
@@ -32,13 +32,6 @@ export interface InstantiateMsg {
 export interface InitialItem {
   key: string
   value: string
-}
-export interface ModuleInstantiateInfo {
-  admin?: Admin | null
-  code_id: number
-  funds: Coin[]
-  label: string
-  msg: Binary
 }
 export interface Coin {
   amount: Uint128
@@ -498,7 +491,8 @@ export type Expiration =
     }
 export interface DumpStateResponse {
   active_proposal_module_count: number
-  admin: Addr
+  // Neutron DAO returns undefined admin.
+  admin: Addr | undefined
   config: Config
   pause_info: PauseInfoResponse
   proposal_modules: ProposalModule[]

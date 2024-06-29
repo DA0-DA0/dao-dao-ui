@@ -3,7 +3,7 @@ import { FetchQueryOptions } from '@tanstack/react-query'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '../contracts/DaoCore.v2'
+} from '../contracts/DaoDaoCore'
 import { ContractVersion } from '../features'
 import { IDaoBase } from './dao'
 

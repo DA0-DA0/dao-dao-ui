@@ -16,7 +16,7 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
 
-import { DaoCoreV2Selectors, DaoVotingCw20StakedSelectors } from '.'
+import { DaoDaoCoreSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
   Cw20BaseClient,
   Cw20BaseQueryClient,
@@ -404,7 +404,7 @@ export const daosWithVotingAndStakingContractSelector = selectorFamily<
       const votingModuleAddresses = get(
         waitForAll(
           daos.map((contractAddress) =>
-            DaoCoreV2Selectors.votingModuleSelector({
+            DaoDaoCoreSelectors.votingModuleSelector({
               ...queryClientParams,
               contractAddress,
               params: [],

@@ -9,7 +9,7 @@ import {
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/DaoCore.v2'
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import { parseContractVersion } from '@dao-dao/utils'
 
 export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>

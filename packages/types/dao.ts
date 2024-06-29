@@ -28,9 +28,9 @@ import {
   ModuleInstantiateInfo,
 } from './contracts/common'
 import {
-  InstantiateMsg as DaoCoreV2InstantiateMsg,
+  InstantiateMsg as DaoDaoCoreInstantiateMsg,
   ProposalModuleWithInfo,
-} from './contracts/DaoCore.v2'
+} from './contracts/DaoDaoCore'
 import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
 import {
   ProposalResponse as SingleChoiceProposalResponse,
@@ -220,7 +220,7 @@ export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   form: UseFormReturn<NewDao<CreatorData>>
   instantiateMsg:
-    | DaoCoreV2InstantiateMsg
+    | DaoDaoCoreInstantiateMsg
     | SecretDaoDaoCoreInstantiateMsg
     | undefined
   instantiateMsgError: string | undefined

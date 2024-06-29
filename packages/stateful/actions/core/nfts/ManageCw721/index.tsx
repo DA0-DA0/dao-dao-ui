@@ -8,7 +8,7 @@ import {
   waitForNone,
 } from 'recoil'
 
-import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { ImageEmoji } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
@@ -102,7 +102,7 @@ const Component: ActionComponent = (props) => {
   }, [fieldNamePrefix, setValue, tokenInfoLoadable, workaround])
 
   const existingTokenAddresses = useRecoilValue(
-    DaoCoreV2Selectors.allCw721CollectionsSelector({
+    DaoDaoCoreSelectors.allCw721CollectionsSelector({
       contractAddress: address,
       chainId: currentChainId,
     })

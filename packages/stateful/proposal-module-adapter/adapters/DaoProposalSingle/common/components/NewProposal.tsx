@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoProposalSingleCommonSelectors,
   blocksPerYearSelector,
 } from '@dao-dao/state'
@@ -73,7 +73,7 @@ export const NewProposal = ({
   // which is refreshed periodically, so use a loadable to avoid unnecessary
   // re-renders.
   const pauseInfo = useCachedLoadable(
-    DaoCoreV2Selectors.pauseInfoSelector({
+    DaoDaoCoreSelectors.pauseInfoSelector({
       chainId,
       contractAddress: coreAddress,
       params: [],

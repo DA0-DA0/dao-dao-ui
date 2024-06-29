@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback } from 'recoil'
 
-import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
@@ -33,7 +33,7 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
   // loading state and load nothing.
   const existingCollectionsLoadable = useCachedLoadable(
     context.type === ActionContextType.Dao
-      ? DaoCoreV2Selectors.allCw721CollectionsWithDaoAsMinterSelector({
+      ? DaoDaoCoreSelectors.allCw721CollectionsWithDaoAsMinterSelector({
           contractAddress: address,
           chainId: currentChainId,
         })

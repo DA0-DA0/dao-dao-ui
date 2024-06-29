@@ -6,7 +6,7 @@ import { DaoCardLazyData } from '../components'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '../contracts/DaoCore.v2'
+} from '../contracts/DaoDaoCore'
 import { DaoInfo, DaoSource } from '../dao'
 import { ContractVersion } from '../features'
 import { AmountWithTimestamp } from '../token'
