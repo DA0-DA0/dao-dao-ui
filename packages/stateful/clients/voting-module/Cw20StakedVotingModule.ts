@@ -151,7 +151,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingCw20StakedQueries.votingPowerAtHeight({
+    return daoVotingCw20StakedQueries.votingPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {
@@ -164,7 +164,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw20StakedQueries.totalPowerAtHeight({
+    return daoVotingCw20StakedQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {

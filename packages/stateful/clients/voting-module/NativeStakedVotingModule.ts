@@ -36,7 +36,7 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingNativeStakedQueries.votingPowerAtHeight({
+    return daoVotingNativeStakedQueries.votingPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {
@@ -49,7 +49,7 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingNativeStakedQueries.totalPowerAtHeight({
+    return daoVotingNativeStakedQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.address,
       args: {
