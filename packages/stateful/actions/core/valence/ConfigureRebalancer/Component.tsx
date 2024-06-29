@@ -185,6 +185,11 @@ export const ConfigureRebalancerComponent: ActionComponent<
     .fill(0)
     .map((_, i) => new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000))
 
+  const selectedPidPreset = pidPresets.find(
+    (preset) =>
+      preset.kp === pid.kp && preset.ki === pid.ki && preset.kd === pid.kd
+  )?.preset
+
   return (
     <>
       <div className="flex max-w-prose flex-col gap-5">
@@ -493,16 +498,27 @@ export const ConfigureRebalancerComponent: ActionComponent<
               )
             }}
           >
-            <option value="slow">
+            <option
+              selected={!showCustomPid && selectedPidPreset === 'slow'}
+              value="slow"
+            >
               {t('form.slow')} {'(5%)'}
             </option>
-            <option value="medium">
+            <option
+              selected={!showCustomPid && selectedPidPreset === 'medium'}
+              value="medium"
+            >
               {t('form.medium')} {'(10%)'}
             </option>
-            <option value="fast">
+            <option
+              selected={!showCustomPid && selectedPidPreset === 'fast'}
+              value="fast"
+            >
               {t('form.fast')} {'(20%)'}
             </option>
-            <option value="advanced">{t('form.advanced')}</option>
+            <option selected={showCustomPid} value="advanced">
+              {t('form.advanced')}
+            </option>
           </SelectInput>
         </div>
 

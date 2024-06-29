@@ -485,6 +485,22 @@ export const makeConfigureRebalancerAction: ActionMaker<
       return whitelists.error
     }
 
+    const defaultPid: ConfigureRebalancerData['pid'] = rebalancerConfig
+      ? {
+          kp: Number(rebalancerConfig.pid.p),
+          ki: Number(rebalancerConfig.pid.i),
+          kd: Number(rebalancerConfig.pid.d),
+        }
+      : {
+          ...pidPresets.find((p) => p.preset === 'medium')!,
+        }
+    const showCustomPid = !pidPresets.some(
+      (preset) =>
+        preset.kp === defaultPid.kp &&
+        preset.ki === defaultPid.ki &&
+        preset.kd === defaultPid.kd
+    )
+
     return {
       // If no valence account found, the action will detect this and add the
       // create account action automatically.
@@ -507,7 +523,8 @@ export const makeConfigureRebalancerAction: ActionMaker<
           percent: 50,
         },
       ],
-      pid: pidPresets.find((p) => p.preset === 'medium')!,
+      pid: defaultPid,
+      showCustomPid,
       maxLimitBps:
         rebalancerConfig?.max_limit &&
         !isNaN(Number(rebalancerConfig.max_limit))
