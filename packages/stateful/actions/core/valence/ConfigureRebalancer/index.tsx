@@ -529,9 +529,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
         rebalancerConfig?.max_limit &&
         !isNaN(Number(rebalancerConfig.max_limit))
           ? Number(rebalancerConfig.max_limit)
-          : // TODO(rebalancer): pick default
-            // 5%
-            500,
+          : 500,
       minBalance:
         minBalanceTarget?.min_balance && !minBalanceToken.loading
           ? {
