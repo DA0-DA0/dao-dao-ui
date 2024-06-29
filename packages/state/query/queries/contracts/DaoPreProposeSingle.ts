@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -17,6 +17,7 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoPreProposeSingleQueryClient } from '../../../contracts/DaoPreProposeSingle'
+import { indexerQueries } from '../indexer'
 
 export const daoPreProposeSingleQueryKeys = {
   contract: [
@@ -84,75 +85,124 @@ export const daoPreProposeSingleQueryKeys = {
     ] as const,
 }
 export const daoPreProposeSingleQueries = {
-  proposalModule: <TData = Addr>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoPreProposeSingleProposalModuleQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
+  proposalModule: <TData = Addr>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoPreProposeSingleProposalModuleQuery<TData>
+  ): UseQueryOptions<Addr, Error, TData> => ({
     queryKey: daoPreProposeSingleQueryKeys.proposalModule(contractAddress),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoPreProposeSingle/proposalModule',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).proposalModule(),
+      ).proposalModule()
+    },
     ...options,
   }),
-  dao: <TData = Addr>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoPreProposeSingleDaoQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
+  dao: <TData = Addr>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoPreProposeSingleDaoQuery<TData>
+  ): UseQueryOptions<Addr, Error, TData> => ({
     queryKey: daoPreProposeSingleQueryKeys.dao(contractAddress),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoPreProposeSingle/dao',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).dao(),
+      ).dao()
+    },
     ...options,
   }),
-  config: <TData = Config>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoPreProposeSingleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
+  config: <TData = Config>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoPreProposeSingleConfigQuery<TData>
+  ): UseQueryOptions<Config, Error, TData> => ({
     queryKey: daoPreProposeSingleQueryKeys.config(contractAddress),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoPreProposeSingle/config',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).config(),
+      ).config()
+    },
     ...options,
   }),
-  depositInfo: <TData = DepositInfoResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoPreProposeSingleDepositInfoQuery<TData>): UseQueryOptions<
-    DepositInfoResponse,
-    Error,
-    TData
-  > => ({
+  depositInfo: <TData = DepositInfoResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoPreProposeSingleDepositInfoQuery<TData>
+  ): UseQueryOptions<DepositInfoResponse, Error, TData> => ({
     queryKey: daoPreProposeSingleQueryKeys.depositInfo(contractAddress, args),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoPreProposeSingle/depositInfo',
+            args,
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).depositInfo({
         proposalId: args.proposalId,
-      }),
+      })
+    },
     ...options,
   }),
   proposalSubmittedHooks: <TData = HooksResponse>({
@@ -166,11 +216,12 @@ export const daoPreProposeSingleQueries = {
   > => ({
     queryKey:
       daoPreProposeSingleQueryKeys.proposalSubmittedHooks(contractAddress),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).proposalSubmittedHooks(),
+      ).proposalSubmittedHooks()
+    },
     ...options,
   }),
   queryExtension: <TData = Binary>({
@@ -187,13 +238,14 @@ export const daoPreProposeSingleQueries = {
       contractAddress,
       args
     ),
-    queryFn: async () =>
-      new DaoPreProposeSingleQueryClient(
+    queryFn: async () => {
+      return new DaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).queryExtension({
         msg: args.msg,
-      }),
+      })
+    },
     ...options,
   }),
 }

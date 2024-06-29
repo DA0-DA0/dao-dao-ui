@@ -140,7 +140,7 @@ codegen({
       content = content.replace(/    +enabled:[^)]+\)\n/g, '')
       // replace info query with common contract info query
       content = content.replace(
-        /info: <TData = InfoResponse,>[^}]+\}[^{]+\{[^,]+,[^,]+,[^,]+,[^,]+,/m,
+        /info: <TData = InfoResponse,?>[^}]+\}[^{]+\{[^,]+,[^,]+,[^)]+\),?/m,
         'info: contractQueries.info,'
       )
       // add queryClient argument to functions

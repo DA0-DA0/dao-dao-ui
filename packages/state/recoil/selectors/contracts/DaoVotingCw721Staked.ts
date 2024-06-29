@@ -137,6 +137,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
     },
 })
 
+///! Custom selectors
+
 // Retrieve the staker for a given NFT from the indexer.
 export const stakerForNftSelector = selectorFamily<
   string | undefined,
@@ -161,8 +163,6 @@ export const stakerForNftSelector = selectorFamily<
         })
       ),
 })
-
-///! Custom selectors
 
 export const topStakersSelector = selectorFamily<
   | {

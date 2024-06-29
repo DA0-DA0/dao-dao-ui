@@ -53,6 +53,8 @@ export const polytoneProxyQueries = {
         console.error(error)
       }
 
+      // Contract throws error if instantiator not found, so we should too if
+      // the indexer query succeeds but the instantiator is not found.
       if (indexerNonExistent) {
         throw new Error('Instantiator not found')
       }
