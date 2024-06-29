@@ -216,7 +216,7 @@ export const fetchDaoInfo = async (
       a.prefix.localeCompare(b.prefix)
     ),
     contractAdmin,
-    admin: state.admin,
+    admin: state.admin || '',
     name: state.config.name,
     description: state.config.description,
     imageUrl: state.config.image_url || getFallbackImage(coreAddress),

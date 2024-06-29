@@ -69,7 +69,8 @@ export type PauseInfoResponse =
     }
 export interface DumpStateResponse {
   active_proposal_module_count: number
-  admin: Addr
+  // Neutron DAO returns undefined admin.
+  admin: Addr | undefined
   config: Config
   created_timestamp?: Timestamp | null
   pause_info: PauseInfoResponse
