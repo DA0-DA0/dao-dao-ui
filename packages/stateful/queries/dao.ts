@@ -212,7 +212,9 @@ export const fetchDaoInfo = async (
     supportedFeatures,
     votingModuleAddress: state.voting_module,
     votingModuleContractName,
-    proposalModules,
+    proposalModules: proposalModules.sort((a, b) =>
+      a.prefix.localeCompare(b.prefix)
+    ),
     contractAdmin,
     admin: state.admin,
     name: state.config.name,
