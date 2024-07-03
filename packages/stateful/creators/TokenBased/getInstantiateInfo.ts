@@ -1,4 +1,5 @@
-import { DaoCreatorGetInstantiateInfo } from '@dao-dao/types'
+import { ChainId, DaoCreatorGetInstantiateInfo } from '@dao-dao/types'
+import { ExecuteMsg as BtsgFtFactoryExecuteMsg } from '@dao-dao/types/contracts/BtsgFtFactory'
 import { InitialBalance } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
   NEW_DAO_TOKEN_DECIMALS,
@@ -15,7 +16,7 @@ import { SecretTokenStakedVotingModule } from '../../clients/voting-module/Token
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
-  chainConfig: { createWithCw20 },
+  chainConfig: { createWithCw20, tokenCreationFactoryAddress },
   newDao: { chainId },
   data: {
     tiers,
@@ -89,8 +90,48 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       )
     }
 
-    return isNative
-      ? TokenStakedVotingModule.generateModuleInstantiateInfo(chainId, {
+    if (isNative) {
+      // New BitSong Fantoken
+      if (
+        chainId === ChainId.BitsongMainnet ||
+        chainId === ChainId.BitsongTestnet
+      ) {
+        if (!tokenCreationFactoryAddress) {
+          throw new Error('tokenCreationFactoryAddress not set')
+        }
+
+        const fantokenExecute: BtsgFtFactoryExecuteMsg = {
+          issue: {
+            symbol,
+            name,
+            // TODO(bitsong-fantoken-factory)
+            max_supply: (
+              microInitialBalances.reduce(
+                (acc, { amount }) => acc + BigInt(amount),
+                0n
+              ) + BigInt(microInitialTreasuryBalance)
+            ).toString(),
+            // TODO(bitsong-fantoken-factory)
+            uri: '',
+            initial_balances: microInitialBalances,
+            initial_dao_balance: microInitialTreasuryBalance,
+          },
+        }
+
+        return TokenStakedVotingModule.generateModuleInstantiateInfo(chainId, {
+          ...commonConfig,
+          unstakingDuration,
+          token: {
+            factory: {
+              address: tokenCreationFactoryAddress,
+              message: fantokenExecute,
+              funds: tokenFactoryDenomCreationFee,
+            },
+          },
+        })
+      } else {
+        // New tokenfactory token
+        return TokenStakedVotingModule.generateModuleInstantiateInfo(chainId, {
           ...commonConfig,
           unstakingDuration,
           token: {
@@ -104,23 +145,26 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
             },
           },
         })
-      : (isSecret
-          ? SecretSnip20StakedVotingModule
-          : Cw20StakedVotingModule
-        ).generateModuleInstantiateInfo(chainId, {
-          ...commonConfig,
-          token: {
-            new: {
-              symbol,
-              decimals: NEW_DAO_TOKEN_DECIMALS,
-              name: symbol,
-              initialBalances: microInitialBalances,
-              initialDaoBalance: microInitialTreasuryBalance,
-              marketingInfo: imageUrl ? { logo: { url: imageUrl } } : null,
-              unstakingDuration,
-            },
+      }
+    } else {
+      // New CW20 / SNIP20
+      return (
+        isSecret ? SecretSnip20StakedVotingModule : Cw20StakedVotingModule
+      ).generateModuleInstantiateInfo(chainId, {
+        ...commonConfig,
+        token: {
+          new: {
+            symbol,
+            decimals: NEW_DAO_TOKEN_DECIMALS,
+            name: symbol,
+            initialBalances: microInitialBalances,
+            initialDaoBalance: microInitialTreasuryBalance,
+            marketingInfo: imageUrl ? { logo: { url: imageUrl } } : null,
+            unstakingDuration,
           },
-        })
+        },
+      })
+    }
   } else {
     if (!existingTokenDenomOrAddress) {
       throw new Error(t('error.missingGovernanceTokenDenom'))

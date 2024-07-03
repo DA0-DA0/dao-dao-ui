@@ -118,6 +118,7 @@ telescope({
           'pstake.lscosmos.v1beta1',
           'pstake.ratesync.v1beta1',
           'bitsong.fantoken',
+          'bitsong.fantoken.v1beta1',
           'feemarket.feemarket.v1',
           'secret.compute.v1beta1',
           'secret.emergencybutton.v1beta1',

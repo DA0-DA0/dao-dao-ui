@@ -38,33 +38,39 @@ export const instantiateContract = async ({
   let contractAddress = override
 
   if (!contractAddress) {
-    const { events, transactionHash } = await client.signAndBroadcast(
-      sender,
-      [
-        cwMsgToEncodeObject(
-          chainId,
-          {
-            wasm: {
-              instantiate: {
-                code_id: codeId,
-                msg: encodeJsonToBase64(msg),
-                funds: [],
-                label,
-                admin: undefined,
+    let transactionHash
+    try {
+      transactionHash = await client.signAndBroadcastSync(
+        sender,
+        [
+          cwMsgToEncodeObject(
+            chainId,
+            {
+              wasm: {
+                instantiate: {
+                  code_id: codeId,
+                  msg: encodeJsonToBase64(msg),
+                  funds: [],
+                  label,
+                  admin: undefined,
+                },
               },
             },
-          },
-          sender
-        ),
-      ],
-      CHAIN_GAS_MULTIPLIER
-    )
-
-    contractAddress = findEventsAttributeValue(
-      events,
-      'instantiate',
-      '_contract_address'
-    )
+            sender
+          ),
+        ],
+        CHAIN_GAS_MULTIPLIER
+      )
+    } catch (err) {
+      log(
+        chalk.red(
+          `[${id}.CONTRACT]${' '.repeat(
+            prefixLength - id.length - 11
+          )}instantiate failed`
+        )
+      )
+      throw err
+    }
 
     log(
       chalk.greenBright(
@@ -72,6 +78,38 @@ export const instantiateContract = async ({
           prefixLength - id.length - 5
         )}${transactionHash}`
       )
+    )
+
+    // Poll for TX.
+    let events
+    let tries = 15
+    while (tries > 0) {
+      try {
+        events = (await client.getTx(transactionHash))?.events
+        if (events) {
+          break
+        }
+      } catch {}
+
+      tries--
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
+
+    if (!events) {
+      log(
+        chalk.red(
+          `[${id}.CONTRACT]${' '.repeat(
+            prefixLength - id.length - 11
+          )}TX not found`
+        )
+      )
+      process.exit(1)
+    }
+
+    contractAddress = findEventsAttributeValue(
+      events,
+      'instantiate',
+      '_contract_address'
     )
 
     if (!contractAddress) {

@@ -10,6 +10,7 @@ import {
 
 import {
   OmniFlix,
+  bitsong,
   cosmos,
   cosmwasm,
   feemarket,
@@ -261,6 +262,22 @@ export const feemarketProtoRpcClientRouter = makeProtoRpcClientRouter(
   feemarket,
   'feemarket'
 )
+
+/*
+ * Router for connecting to an RPC client with BitSong protobufs.
+ */
+export const bitsongProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await bitsong.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).bitsong
+    ),
+})
 
 /**
  * Get CosmWasmClient for the appropriate chain.

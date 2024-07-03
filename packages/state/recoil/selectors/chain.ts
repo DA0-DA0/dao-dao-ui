@@ -50,6 +50,7 @@ import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tar
 import {
   MAINNET,
   SecretCosmWasmClient,
+  bitsongProtoRpcClientRouter,
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
@@ -392,6 +393,15 @@ export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
         const kujiraClient = await kujiraProtoRpcClientRouter.connect(chainId)
         const { params } = await kujiraClient.denom.params()
         return params?.creationFee
+      }
+
+      if (
+        chainId === ChainId.BitsongMainnet ||
+        chainId === ChainId.BitsongTestnet
+      ) {
+        const bitsongClient = await bitsongProtoRpcClientRouter.connect(chainId)
+        const { params } = await bitsongClient.fantoken.v1beta1.params()
+        return params?.issueFee && [params.issueFee]
       }
 
       const osmosisClient = get(osmosisRpcClientForChainSelector(chainId))
