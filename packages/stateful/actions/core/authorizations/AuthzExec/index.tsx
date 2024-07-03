@@ -28,6 +28,7 @@ import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
+  isValidBech32Address,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -100,19 +101,24 @@ const InnerComponentWrapper: ActionComponent<
   const {
     options: { address },
   } = props
-  const { chain_id: chainId } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   const queryClient = useQueryClient()
   const isDao = useQueryLoadingData(
-    contractQueries.isDao(queryClient, {
-      chainId,
-      address,
-    }),
+    contractQueries.isDao(
+      queryClient,
+      address && isValidBech32Address(address, bech32Prefix)
+        ? {
+            chainId,
+            address,
+          }
+        : undefined
+    ),
     false
   )
   const daoInfo = useQueryLoadingDataWithError(
     daoQueries.info(
-      useQueryClient(),
+      queryClient,
       !isDao.loading && isDao.data
         ? {
             chainId,

@@ -1,5 +1,5 @@
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { InfoResponse } from '@dao-dao/types'
 import {
@@ -181,23 +181,28 @@ export const contractQueries = {
    */
   isContract: (
     queryClient: QueryClient,
-    options: Parameters<typeof fetchIsContract>[1]
+    options?: Parameters<typeof fetchIsContract>[1]
   ) =>
     queryOptions({
       queryKey: ['contract', 'isContract', options],
-      queryFn: () => fetchIsContract(queryClient, options),
+      queryFn: options
+        ? () => fetchIsContract(queryClient, options)
+        : skipToken,
     }),
   /**
    * Check if a contract is a DAO.
    */
   isDao: (
     queryClient: QueryClient,
-    options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
+    options?: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(queryClient, {
-      ...options,
-      nameOrNames: DAO_CORE_CONTRACT_NAMES,
-    }),
+    contractQueries.isContract(
+      queryClient,
+      options && {
+        ...options,
+        nameOrNames: DAO_CORE_CONTRACT_NAMES,
+      }
+    ),
   /**
    * Check if a contract is a Polytone proxy.
    */
