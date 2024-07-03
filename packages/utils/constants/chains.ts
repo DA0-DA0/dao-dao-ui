@@ -2084,10 +2084,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'bitsong',
     mainnet: false,
     accentColor: '#c53381',
-    // Token creation factory not yet ready.
-    tokenCreationUnderDevelopment: true,
     factoryContractAddress:
       'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
+    tokenCreationFactoryAddress:
+      'bitsong1czmxw9memalgt7823ud5r9hpknhcq2jzz7skah803rx0ug0xpx9qxsq6gx',
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
