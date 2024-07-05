@@ -9,6 +9,7 @@ import {
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   MembershipBasedCreatorId,
+  NftBasedCreatorId,
   getDisplayNameForChainId,
   transformBech32Address,
   validateRequired,
@@ -145,6 +146,9 @@ export const CreateDaoStart = ({
               }
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
+              underDevelopment={
+                chainConfig.nftDaosUnderDevelopment && id === NftBasedCreatorId
+              }
             />
           )
         )}

@@ -1791,6 +1791,43 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.OmniflixHubMainnet,
+    name: 'omniflix',
+    mainnet: true,
+    accentColor: '#d71d6a',
+    // NFT DAOs not yet ready.
+    nftDaosUnderDevelopment: true,
+    factoryContractAddress:
+      'omniflix13ehuhysn5mqjeaheeuew2gjs785f6k7jm8vfsqg3jhtpkwppcmzqjrdywp',
+    explorerUrlTemplates: {
+      tx: 'https://ping.pub/omniflixhub/tx/REPLACE',
+      gov: 'https://ping.pub/omniflixhub/gov',
+      govProp: 'https://ping.pub/omniflixhub/gov/REPLACE',
+      wallet: 'https://ping.pub/omniflixhub/account/REPLACE',
+    },
+    codeIds: {
+      Cw1Whitelist: 5,
+      Cw4Group: 6,
+      CwPayrollFactory: 8,
+      CwTokenSwap: 9,
+      CwTokenfactoryIssuerMain: 21,
+      CwVesting: 10,
+      DaoCore: 11,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 13,
+      DaoPreProposeApprover: 14,
+      DaoPreProposeMultiple: 15,
+      DaoPreProposeSingle: 16,
+      DaoProposalMultiple: 17,
+      DaoProposalSingle: 18,
+      DaoVotingCw4: 19,
+      DaoVotingTokenStaked: 22,
+
+      // Unused
+      DaoVotingCw721Staked: -1,
+    },
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
@@ -2170,6 +2207,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BitsongMainnet]: {
     rpc: 'https://rpc.explorebitsong.com',
     rest: 'https://lcd.explorebitsong.com',
+  },
+  [ChainId.OmniflixHubMainnet]: {
+    rpc: 'https://omniflix-rpc.polkachu.com',
+    rest: 'https://omniflix-api.polkachu.com',
   },
 }
 

@@ -160,6 +160,11 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   tokenCreationUnderDevelopment?: boolean
   /**
+   * Disallow creating NFT DAOs and show an under development banner. Defaults
+   * to false.
+   */
+  nftDaosUnderDevelopment?: boolean
+  /**
    * Whether or not to create a DAO through chain governance.
    */
   createViaGovernance?: boolean
