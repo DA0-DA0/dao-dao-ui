@@ -48,9 +48,15 @@ program.option(
   '-a, --authz <granter>',
   'upload contracts via authz exec as this granter'
 )
+program.option(
+  '-x, --exclude <contracts>',
+  'comma-separated list of contracts to exclude (without .wasm extension)'
+)
 
 program.parse(process.argv)
-const { chain: chainId, polytone, authz } = program.opts()
+const { chain: chainId, polytone, authz, exclude: _exclude } = program.opts()
+
+const exclude = _exclude?.split(',')
 
 const { log } = console
 
@@ -121,16 +127,13 @@ const main = async () => {
           value: msgStoreCode,
         }
 
-    let events, transactionHash
+    let transactionHash
     try {
-      const res = await client.signAndBroadcast(
+      transactionHash = await client.signAndBroadcastSync(
         sender,
         [msg],
         CHAIN_GAS_MULTIPLIER
       )
-
-      events = res.events
-      transactionHash = res.transactionHash
     } catch (err) {
       if (
         err instanceof Error &&
@@ -139,12 +142,17 @@ const main = async () => {
         log(
           chalk.red(
             `[${id}.CODE_ID]${' '.repeat(
-              prefixLength - id.length - 5
+              prefixLength - id.length - 10
             )}no authz permission granted`
           )
         )
         process.exit(1)
       } else {
+        log(
+          chalk.red(
+            `[${id}.CODE_ID]${' '.repeat(prefixLength - id.length - 10)}failed`
+          )
+        )
         throw err
       }
     }
@@ -156,6 +164,32 @@ const main = async () => {
         )}${transactionHash}`
       )
     )
+
+    // Poll for TX.
+    let events
+    let tries = 15
+    while (tries > 0) {
+      try {
+        events = (await client.getTx(transactionHash))?.events
+        if (events) {
+          break
+        }
+      } catch {}
+
+      tries--
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
+
+    if (!events) {
+      log(
+        chalk.red(
+          `[${id}.CODE_ID]${' '.repeat(
+            prefixLength - id.length - 10
+          )}TX not found`
+        )
+      )
+      process.exit(1)
+    }
 
     const codeId = findEventsAttributeValue(events, 'store_code', 'code_id')
 
@@ -289,6 +323,10 @@ const main = async () => {
 
   for (const contract of contracts) {
     const id = contract.slice(0, -5)
+    if (exclude?.includes(id)) {
+      continue
+    }
+
     const file = path.join(DAO_CONTRACTS_DIR, contract)
 
     if (!(id in codeIdMap)) {
