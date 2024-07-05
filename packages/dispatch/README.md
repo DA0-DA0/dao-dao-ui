@@ -20,9 +20,9 @@ behalf of the granter you pass to `-a`.
 Usage: yarn deploy [options]
 
 Options:
-  -c, --chain <ID>           chain ID
-  -p, --polytone             only deploy polytone contracts
-  -a, --authz <granter>      upload contracts via authz exec as this granter
-  -x, --exclude <contracts>  comma-separated list of contracts to exclude (without .wasm extension)
-  -h, --help                 display help for command
+  -c, --chain <ID>            chain ID
+  -p, --polytone              only deploy polytone contracts
+  -a, --authz <granter>       upload contracts via authz exec as this granter
+  -x, --exclude <substrings>  ignore contracts containing any of these comma-separated substrings (e.g. cw721)
+  -h, --help                  display help for command
 ```

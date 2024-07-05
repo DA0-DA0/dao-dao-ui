@@ -49,14 +49,14 @@ program.option(
   'upload contracts via authz exec as this granter'
 )
 program.option(
-  '-x, --exclude <contracts>',
-  'comma-separated list of contracts to exclude (without .wasm extension)'
+  '-x, --exclude <substrings>',
+  'ignore contracts containing any of these comma-separated substrings (e.g. cw721)'
 )
 
 program.parse(process.argv)
 const { chain: chainId, polytone, authz, exclude: _exclude } = program.opts()
 
-const exclude = _exclude?.split(',')
+const exclude: string[] | undefined = _exclude?.split(',')
 
 const { log } = console
 
@@ -263,7 +263,7 @@ const main = async () => {
       log(
         chalk.red(
           `[${id}.CONTRACT]${' '.repeat(
-            prefixLength - id.length - 12
+            prefixLength - id.length - 11
           )}not found`
         )
       )
@@ -273,7 +273,7 @@ const main = async () => {
     log(
       chalk.green(
         `[${id}.CONTRACT]${' '.repeat(
-          prefixLength - id.length - 12
+          prefixLength - id.length - 11
         )}${contractAddress}`
       )
     )
@@ -323,7 +323,7 @@ const main = async () => {
 
   for (const contract of contracts) {
     const id = contract.slice(0, -5)
-    if (exclude?.includes(id)) {
+    if (exclude?.some((substring) => id.includes(substring))) {
       continue
     }
 
