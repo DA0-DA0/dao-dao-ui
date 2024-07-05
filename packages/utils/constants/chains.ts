@@ -1792,7 +1792,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   },
   {
     chainId: ChainId.OmniflixHubMainnet,
-    name: 'omniflix',
+    name: 'omniflixhub',
     mainnet: true,
     accentColor: '#d71d6a',
     // NFT DAOs not yet ready.
