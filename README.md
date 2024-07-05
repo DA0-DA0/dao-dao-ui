@@ -71,6 +71,7 @@ If something is misconfigured, check out the docs for
 | Package                             | Summary                                                                                               |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | [`config`](./packages/config)       | Configurations for various dev tools.                                                                 |
+| [`dispatch`](./packages/dispatch)   | DAO DAO Dispatch.                                                                                     |
 | [`email`](./packages/email)         | Email template and generator tools.                                                                   |
 | [`i18n`](./packages/i18n)           | Internationalization/translation system.                                                              |
 | [`state`](./packages/state)         | State retrieval and management for the DAO DAO UI.                                                    |
