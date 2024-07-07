@@ -2085,32 +2085,32 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: false,
     accentColor: '#c53381',
     factoryContractAddress:
-      'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
+      'bitsong143q5c9ceafcve0xcllxlnk3a8kw3q4xjyk0j27mpye9gamdaaxvq8d7f7h',
     tokenCreationFactoryAddress:
       'bitsong1czmxw9memalgt7823ud5r9hpknhcq2jzz7skah803rx0ug0xpx9qxsq6gx',
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      Cw1Whitelist: 7,
-      Cw4Group: 8, // v0.16
+      Cw1Whitelist: 30,
+      Cw4Group: 31, // v0.16
       // https://github.com/CosmWasm/cw-nfts
-      Cw721Base: 9,
+      Cw721Base: 32,
 
-      CwPayrollFactory: 11,
-      CwTokenSwap: 12,
-      CwTokenfactoryIssuerMain: 27,
-      CwVesting: 13,
-      DaoCore: 14,
+      CwPayrollFactory: 33,
+      CwTokenSwap: 34,
+      CwTokenfactoryIssuerMain: 46,
+      CwVesting: 35,
+      DaoCore: 36,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 16,
-      DaoPreProposeApprover: 17,
-      DaoPreProposeMultiple: 18,
-      DaoPreProposeSingle: 19,
-      DaoProposalMultiple: 20,
-      DaoProposalSingle: 21,
-      DaoVotingCw4: 22,
-      DaoVotingCw721Staked: 23,
-      DaoVotingTokenStaked: 28,
+      DaoPreProposeApprovalSingle: 38,
+      DaoPreProposeApprover: 39,
+      DaoPreProposeMultiple: 40,
+      DaoPreProposeSingle: 41,
+      DaoProposalMultiple: 42,
+      DaoProposalSingle: 43,
+      DaoVotingCw4: 44,
+      DaoVotingCw721Staked: 45,
+      DaoVotingTokenStaked: 47,
     },
   },
   {
@@ -2289,7 +2289,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://archway-api.polkachu.com',
   },
   [ChainId.BitsongTestnet]: {
-    rpc: 'https://rpc-testnet.explorebitsong.com',
+    rpc: 'http://146.190.159.232:26657',
+    // rpc: 'https://rpc-testnet.explorebitsong.com',
     rest: 'https://lcd-testnet.explorebitsong.com',
   },
   [ChainId.BitsongMainnet]: {
