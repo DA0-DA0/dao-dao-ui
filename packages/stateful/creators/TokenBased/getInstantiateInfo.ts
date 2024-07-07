@@ -128,7 +128,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
               factory: {
                 address: tokenCreationFactoryAddress,
                 message: fantokenExecute,
-                funds: [],
+                funds: tokenFactoryDenomCreationFee,
               },
             },
           }

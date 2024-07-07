@@ -12,8 +12,8 @@ import * as _369 from "./alliance/tx.amino";
 import * as _370 from "./alliance/tx.registry";
 import * as _371 from "./alliance/query.rpc.Query";
 import * as _372 from "./alliance/tx.rpc.msg";
-import * as _624 from "./rpc.query";
-import * as _625 from "./rpc.tx";
+import * as _625 from "./rpc.query";
+import * as _626 from "./rpc.tx";
 export namespace alliance {
   export const alliance = {
     ..._0,
@@ -32,7 +32,7 @@ export namespace alliance {
     ..._372
   };
   export const ClientFactory = {
-    ..._624,
-    ..._625
+    ..._625,
+    ..._626
   };
 }

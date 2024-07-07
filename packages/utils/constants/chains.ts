@@ -2289,8 +2289,7 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://archway-api.polkachu.com',
   },
   [ChainId.BitsongTestnet]: {
-    rpc: 'http://146.190.159.232:26657',
-    // rpc: 'https://rpc-testnet.explorebitsong.com',
+    rpc: 'https://rpc-testnet.explorebitsong.com',
     rest: 'https://lcd-testnet.explorebitsong.com',
   },
   [ChainId.BitsongMainnet]: {

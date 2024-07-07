@@ -9,6 +9,7 @@ import {
 } from '@cosmjs/tendermint-rpc'
 
 import {
+  bitsong,
   cosmos,
   cosmwasm,
   feemarket,
@@ -290,6 +291,22 @@ export const feemarketProtoRpcClientRouter = new ChainClientRouter({
             rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).feemarket
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with BitSong protobufs.
+ */
+export const bitsongProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await bitsong.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).bitsong
     ),
 })
 
