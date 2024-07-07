@@ -34,6 +34,11 @@ export const makeDaoInfo = (): DaoInfo => ({
         version: ContractVersion.V2Alpha,
         address: 'preProposeModuleAddress',
         type: PreProposeModuleType.Other,
+        submissionPolicy: {
+          specific: {
+            dao_members: true,
+          },
+        },
       },
       config: {
         veto: null,

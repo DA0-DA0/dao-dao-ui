@@ -13,12 +13,13 @@ import {
 
 import {
   Addr,
-  Binary,
+  Boolean,
   Coin,
   Config,
   DepositInfoResponse,
   Empty,
   HooksResponse,
+  PreProposeSubmissionPolicy,
   ProposeMessage,
   Status,
   UncheckedDenom,
@@ -36,8 +37,9 @@ export interface DaoPreProposeSingleReadOnlyInterface {
   }: {
     proposalId: number
   }) => Promise<DepositInfoResponse>
+  canPropose: ({ address }: { address: string }) => Promise<Boolean>
   proposalSubmittedHooks: () => Promise<HooksResponse>
-  queryExtension: ({ msg }: { msg: Empty }) => Promise<Binary>
+  queryExtension: ({ msg }: { msg: Empty }) => Promise<any>
 }
 export class DaoPreProposeSingleQueryClient
   implements DaoPreProposeSingleReadOnlyInterface
@@ -51,6 +53,7 @@ export class DaoPreProposeSingleQueryClient
     this.dao = this.dao.bind(this)
     this.config = this.config.bind(this)
     this.depositInfo = this.depositInfo.bind(this)
+    this.canPropose = this.canPropose.bind(this)
     this.proposalSubmittedHooks = this.proposalSubmittedHooks.bind(this)
     this.queryExtension = this.queryExtension.bind(this)
   }
@@ -80,12 +83,19 @@ export class DaoPreProposeSingleQueryClient
       },
     })
   }
+  canPropose = async ({ address }: { address: string }): Promise<Boolean> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      can_propose: {
+        address,
+      },
+    })
+  }
   proposalSubmittedHooks = async (): Promise<HooksResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       proposal_submitted_hooks: {},
     })
   }
-  queryExtension = async ({ msg }: { msg: Empty }): Promise<Binary> => {
+  queryExtension = async ({ msg }: { msg: Empty }): Promise<any> => {
     return this.client.queryContractSmart(this.contractAddress, {
       query_extension: {
         msg,
@@ -110,10 +120,28 @@ export interface DaoPreProposeSingleInterface
   updateConfig: (
     {
       depositInfo,
-      openProposalSubmission,
+      submissionPolicy,
     }: {
       depositInfo?: UncheckedDepositInfo
-      openProposalSubmission: boolean
+      submissionPolicy?: PreProposeSubmissionPolicy
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ) => Promise<ExecuteResult>
+  updateSubmissionPolicy: (
+    {
+      allowlistAdd,
+      allowlistRemove,
+      denylistAdd,
+      denylistRemove,
+      setDaoMembers,
+    }: {
+      allowlistAdd?: string[]
+      allowlistRemove?: string[]
+      denylistAdd?: string[]
+      denylistRemove?: string[]
+      setDaoMembers?: boolean
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -190,6 +218,7 @@ export class DaoPreProposeSingleClient
     this.contractAddress = contractAddress
     this.propose = this.propose.bind(this)
     this.updateConfig = this.updateConfig.bind(this)
+    this.updateSubmissionPolicy = this.updateSubmissionPolicy.bind(this)
     this.withdraw = this.withdraw.bind(this)
     this.extension = this.extension.bind(this)
     this.addProposalSubmittedHook = this.addProposalSubmittedHook.bind(this)
@@ -223,10 +252,10 @@ export class DaoPreProposeSingleClient
   updateConfig = async (
     {
       depositInfo,
-      openProposalSubmission,
+      submissionPolicy,
     }: {
       depositInfo?: UncheckedDepositInfo
-      openProposalSubmission: boolean
+      submissionPolicy?: PreProposeSubmissionPolicy
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -238,7 +267,42 @@ export class DaoPreProposeSingleClient
       {
         update_config: {
           deposit_info: depositInfo,
-          open_proposal_submission: openProposalSubmission,
+          submission_policy: submissionPolicy,
+        },
+      },
+      fee,
+      memo,
+      _funds
+    )
+  }
+  updateSubmissionPolicy = async (
+    {
+      allowlistAdd,
+      allowlistRemove,
+      denylistAdd,
+      denylistRemove,
+      setDaoMembers,
+    }: {
+      allowlistAdd?: string[]
+      allowlistRemove?: string[]
+      denylistAdd?: string[]
+      denylistRemove?: string[]
+      setDaoMembers?: boolean
+    },
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    _funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        update_submission_policy: {
+          allowlist_add: allowlistAdd,
+          allowlist_remove: allowlistRemove,
+          denylist_add: denylistAdd,
+          denylist_remove: denylistRemove,
+          set_dao_members: setDaoMembers,
         },
       },
       fee,

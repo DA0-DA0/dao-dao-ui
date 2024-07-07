@@ -68,7 +68,10 @@ export type NewProposalProps<
   isActive: boolean
   activeThreshold: ActiveThreshold | null
   isMember: LoadingData<boolean>
-  anyoneCanPropose: boolean
+  /**
+   * If defined, this is the reason why the user cannot propose.
+   */
+  cannotProposeReason?: string
   depositUnsatisfied: boolean
   connected: boolean
   simulationBypassExpiration?: Date
@@ -90,7 +93,7 @@ export const NewProposal = <
   isActive,
   activeThreshold,
   isMember,
-  anyoneCanPropose,
+  cannotProposeReason,
   depositUnsatisfied,
   connected,
   draft,
@@ -267,9 +270,7 @@ export const NewProposal = <
                   // simulating.
                   (!holdingAltForSimulation &&
                     (!connected ||
-                      (!anyoneCanPropose &&
-                        !isMember.loading &&
-                        !isMember.data) ||
+                      !!cannotProposeReason ||
                       depositUnsatisfied ||
                       isPaused ||
                       !isActive)) ||
@@ -320,14 +321,11 @@ export const NewProposal = <
           </div>
         </div>
 
-        {!anyoneCanPropose &&
-          !isMember.loading &&
-          !isMember.data &&
-          !isWalletConnecting && (
-            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
-              {t('error.mustBeMemberToCreateProposal')}
-            </p>
-          )}
+        {!!cannotProposeReason && !isMember.loading && !isWalletConnecting && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+            {cannotProposeReason}
+          </p>
+        )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">

@@ -37,10 +37,7 @@ import {
   DaoProposalMultipleAdapter,
   DaoProposalSingleAdapter,
 } from '../../../../proposal-module-adapter'
-import {
-  anyoneCanProposeSelector,
-  depositInfoSelector,
-} from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/common'
+import { depositInfoSelector } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/common'
 import { makeDefaultNewDao } from '../../../../recoil'
 import { EnableMultipleChoiceComponent as Component } from './Component'
 
@@ -153,12 +150,6 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
                 : depositInfo.data.denom.native,
           })
     )
-    const anyoneCanPropose = useCachedLoadingWithError(
-      anyoneCanProposeSelector({
-        chainId,
-        preProposeAddress: singleChoiceProposal.prePropose?.address ?? null,
-      })
-    )
 
     return useCallback(() => {
       if (
@@ -167,9 +158,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         depositInfo.loading ||
         depositInfo.errored ||
         depositInfoToken.loading ||
-        depositInfoToken.errored ||
-        anyoneCanPropose.loading ||
-        anyoneCanPropose.errored
+        depositInfoToken.errored
       ) {
         return
       }
@@ -222,7 +211,10 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
             refundPolicy:
               depositInfo.data?.refund_policy ?? DepositRefundPolicy.OnlyPassed,
           },
-          anyoneCanPropose: anyoneCanPropose.data,
+          anyoneCanPropose: singleChoiceProposal.prePropose
+            ? 'anyone' in singleChoiceProposal.prePropose.submissionPolicy
+            : // If no pre-propose module, default to only members can propose.
+              false,
           allowRevoting: config.data.allow_revoting,
           approver: {
             enabled: false,
@@ -249,7 +241,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           },
         },
       })
-    }, [anyoneCanPropose, config, depositInfo, depositInfoToken])
+    }, [config, depositInfo, depositInfoToken, singleChoiceProposal.prePropose])
   }
 
   // Disallow creation if:

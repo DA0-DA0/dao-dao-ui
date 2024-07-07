@@ -1,10 +1,11 @@
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
   PreProposeModule,
   PreProposeModuleType,
   PreProposeModuleTypedConfig,
 } from '@dao-dao/types'
+import { PreProposeSubmissionPolicy } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
@@ -17,19 +18,28 @@ import {
   DaoPreProposeApproverQueryClient,
   NeutronCwdSubdaoPreProposeSingleQueryClient,
   NeutronCwdSubdaoTimelockSingleQueryClient,
-} from '../contracts'
-import { queryIndexer } from '../indexer'
-import { contractQueries } from '../query'
+} from '../../contracts'
+import { contractQueries } from './contract'
+import { daoPreProposeSingleQueries } from './contracts/DaoPreProposeSingle'
+import { indexerQueries } from './indexer'
 
+/**
+ * Fetch pre-propose module info.
+ */
 export const fetchPreProposeModule = async (
   queryClient: QueryClient,
-  chainId: string,
-  preProposeAddress: string
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
 ): Promise<PreProposeModule> => {
   const { info: contractInfo } = await queryClient.fetchQuery(
     contractQueries.info(queryClient, {
       chainId,
-      address: preProposeAddress,
+      address: address,
     })
   )
   const contractVersion = parseContractVersion(contractInfo.version)
@@ -38,6 +48,18 @@ export const fetchPreProposeModule = async (
     type: PreProposeModuleType.Other,
   }
 
+  // All pre-propose modules share the same config.
+  const moduleConfig = await queryClient
+    .fetchQuery(
+      daoPreProposeSingleQueries.config(queryClient, {
+        chainId,
+        contractAddress: address,
+      })
+    )
+    // If failed to query config, fail gracefully since a DAO may use any custom
+    // pre-propose module.
+    .catch(() => undefined)
+
   switch (contractInfo.contract) {
     case ContractName.PreProposeApprovalSingle: {
       let approver: string | undefined
@@ -45,12 +67,13 @@ export const fetchPreProposeModule = async (
 
       // Try indexer first.
       try {
-        approver = await queryIndexer({
-          type: 'contract',
-          address: preProposeAddress,
-          formula: 'daoPreProposeApprovalSingle/approver',
-          chainId,
-        })
+        approver = await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: address,
+            formula: 'daoPreProposeApprovalSingle/approver',
+          })
+        )
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -59,7 +82,7 @@ export const fetchPreProposeModule = async (
       if (!approver) {
         const client = new DaoPreProposeApprovalSingleQueryClient(
           await getCosmWasmClientForChainId(chainId),
-          preProposeAddress
+          address
         )
 
         approver = (await client.queryExtension({
@@ -87,12 +110,13 @@ export const fetchPreProposeModule = async (
         // Get DAO address from approver contract.
         // Try indexer first.
         try {
-          approver = await queryIndexer({
-            type: 'contract',
-            address: preProposeApproverContract,
-            formula: 'daoPreProposeApprover/dao',
-            chainId,
-          })
+          approver = await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress: preProposeApproverContract,
+              formula: 'daoPreProposeApprover/dao',
+            })
+          )
         } catch (err) {
           // Ignore error.
           console.error(err)
@@ -121,12 +145,13 @@ export const fetchPreProposeModule = async (
       let preProposeApprovalContract: string | undefined
       // Try indexer first.
       try {
-        preProposeApprovalContract = await queryIndexer({
-          type: 'contract',
-          address: preProposeAddress,
-          formula: 'daoPreProposeApprover/preProposeApprovalContract',
-          chainId,
-        })
+        preProposeApprovalContract = await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: address,
+            formula: 'daoPreProposeApprover/preProposeApprovalContract',
+          })
+        )
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -135,7 +160,7 @@ export const fetchPreProposeModule = async (
       if (!preProposeApprovalContract) {
         const client = new DaoPreProposeApproverQueryClient(
           await getCosmWasmClientForChainId(chainId),
-          preProposeAddress
+          address
         )
 
         preProposeApprovalContract = (await client.queryExtension({
@@ -148,12 +173,13 @@ export const fetchPreProposeModule = async (
       let approvalDao: string | undefined
       // Try indexer first.
       try {
-        approvalDao = await queryIndexer({
-          type: 'contract',
-          address: preProposeApprovalContract,
-          formula: 'daoPreProposeApprovalSingle/dao',
-          chainId,
-        })
+        approvalDao = await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: preProposeApprovalContract,
+            formula: 'daoPreProposeApprovalSingle/dao',
+          })
+        )
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -181,12 +207,13 @@ export const fetchPreProposeModule = async (
       let timelockAddress: string | undefined
       // Try indexer first.
       try {
-        timelockAddress = await queryIndexer({
-          type: 'contract',
-          address: preProposeAddress,
-          formula: 'neutron/cwdSubdaoPreProposeSingle/timelockAddress',
-          chainId,
-        })
+        timelockAddress = await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: address,
+            formula: 'neutron/cwdSubdaoPreProposeSingle/timelockAddress',
+          })
+        )
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -195,7 +222,7 @@ export const fetchPreProposeModule = async (
       if (!timelockAddress) {
         const client = new NeutronCwdSubdaoPreProposeSingleQueryClient(
           await getCosmWasmClientForChainId(chainId),
-          preProposeAddress
+          address
         )
 
         timelockAddress = (await client.queryExtension({
@@ -208,12 +235,13 @@ export const fetchPreProposeModule = async (
       let config: NeutronCwdSubdaoTimelockSingleConfig | undefined
       // Try indexer first.
       try {
-        config = await queryIndexer({
-          type: 'contract',
-          address: timelockAddress,
-          formula: 'neutron/cwdSubdaoTimelockSingle/config',
-          chainId,
-        })
+        config = await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: timelockAddress,
+            formula: 'neutron/cwdSubdaoTimelockSingle/config',
+          })
+        )
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -244,10 +272,53 @@ export const fetchPreProposeModule = async (
       break
   }
 
+  const submissionPolicy: PreProposeSubmissionPolicy = moduleConfig
+    ? // < v2.5.0
+      'open_proposal_submission' in moduleConfig
+      ? moduleConfig.open_proposal_submission
+        ? {
+            anyone: {},
+          }
+        : {
+            specific: {
+              dao_members: true,
+            },
+          }
+      : // >= v2.5.0
+      'submission_policy' in moduleConfig && moduleConfig.submission_policy
+      ? moduleConfig.submission_policy
+      : // If unknown config shape, assume only members can propose.
+        {
+          specific: {
+            dao_members: true,
+          },
+        }
+    : // If no config loaded, assume only members can propose.
+      {
+        specific: {
+          dao_members: true,
+        },
+      }
+
   return {
     contractName: contractInfo.contract,
     version: contractVersion,
-    address: preProposeAddress,
+    address,
+    submissionPolicy,
     ...typedConfig,
   }
+}
+
+export const proposalQueries = {
+  /**
+   * Fetch pre-propose module info.
+   */
+  preProposeModule: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchPreProposeModule>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['proposal', 'preProposeModule', options],
+      queryFn: () => fetchPreProposeModule(queryClient, options),
+    }),
 }

@@ -31,6 +31,7 @@ import {
   InstantiateMsg as DaoDaoCoreInstantiateMsg,
   ProposalModuleWithInfo,
 } from './contracts/DaoDaoCore'
+import { PreProposeSubmissionPolicy } from './contracts/DaoPreProposeSingle'
 import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
 import {
   ProposalResponse as SingleChoiceProposalResponse,
@@ -163,6 +164,7 @@ export type PreProposeModule = {
   contractName: string
   version: ContractVersion
   address: string
+  submissionPolicy: PreProposeSubmissionPolicy
 } & PreProposeModuleTypedConfig
 
 export enum ProposalModuleType {

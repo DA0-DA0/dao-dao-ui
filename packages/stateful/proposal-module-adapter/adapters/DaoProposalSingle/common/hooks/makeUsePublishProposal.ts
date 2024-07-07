@@ -14,7 +14,11 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { expirationExpired, processError } from '@dao-dao/utils'
+import {
+  checkProposalSubmissionPolicy,
+  expirationExpired,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   Cw20BaseHooks,
@@ -30,7 +34,6 @@ import {
   SimulateProposal,
   UsePublishProposal,
 } from '../../types'
-import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
@@ -49,13 +52,6 @@ export const makeUsePublishProposal =
       getSigningClient,
     } = useWallet()
     const { isMember = false } = useMembership()
-
-    const anyoneCanPropose = useRecoilValueLoadable(
-      anyoneCanProposeSelector({
-        chainId: chainId,
-        preProposeAddress: prePropose?.address ?? null,
-      })
-    )
 
     const depositInfo = useRecoilValueLoadable(depositInfoSelector)
     const depositInfoCw20TokenAddress =
@@ -188,6 +184,13 @@ export const makeUsePublishProposal =
       [simulateMsgs, t]
     )
 
+    const cannotProposeReason = checkProposalSubmissionPolicy({
+      proposalModule: proposalModule.info,
+      address: walletAddress,
+      isMember,
+      t,
+    })
+
     const publishProposal: PublishProposal = useCallback(
       async (
         { title, description, msgs },
@@ -196,12 +199,8 @@ export const makeUsePublishProposal =
         if (!isWalletConnected || !walletAddress) {
           throw new Error(t('error.logInToContinue'))
         }
-        if (
-          anyoneCanPropose.state === 'hasValue' &&
-          !anyoneCanPropose.contents &&
-          !isMember
-        ) {
-          throw new Error(t('error.mustBeMemberToCreateProposal'))
+        if (cannotProposeReason) {
+          throw new Error(cannotProposeReason)
         }
         if (depositUnsatisfied) {
           throw new Error(t('error.notEnoughForDeposit'))
@@ -315,8 +314,7 @@ export const makeUsePublishProposal =
       [
         isWalletConnected,
         walletAddress,
-        anyoneCanPropose,
-        isMember,
+        cannotProposeReason,
         depositUnsatisfied,
         simulationBypassExpiration,
         requiredProposalDeposit,
@@ -336,10 +334,7 @@ export const makeUsePublishProposal =
     return {
       simulateProposal,
       publishProposal,
-      // Default to true while loading. This is safe because the contract will
-      // reject anyone who is unauthorized. Defaulting to true here results in
-      // hiding the error until the real value is ready.
-      anyoneCanPropose: anyoneCanPropose.valueMaybe() ?? true,
+      cannotProposeReason,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

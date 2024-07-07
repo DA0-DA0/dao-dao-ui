@@ -1,4 +1,10 @@
-import { DurationUnits, ProposalVetoConfig } from '@dao-dao/types'
+import { TFunction } from 'react-i18next'
+
+import {
+  DurationUnits,
+  ProposalModule,
+  ProposalVetoConfig,
+} from '@dao-dao/types'
 import {
   ProposalStatus,
   ProposalStatusKey,
@@ -102,3 +108,56 @@ export const convertCosmosVetoConfigToVeto = (
         earlyExecute: true,
         vetoBeforePassed: false,
       }
+
+/**
+ * Check whether or not the submission policy allows an address and return an
+ * error text if not. If allowed to propose, return undefined.
+ */
+export const checkProposalSubmissionPolicy = ({
+  proposalModule: { prePropose },
+  address,
+  isMember,
+  t,
+}: {
+  /**
+   * The proposal module.
+   */
+  proposalModule: ProposalModule
+  /**
+   * Current wallet address. Undefined if not connected.
+   */
+  address?: string
+  /**
+   * Whether or not the current wallet is a member of the DAO.
+   */
+  isMember?: boolean
+  /**
+   * I18n translation getter.
+   */
+  t: TFunction
+}): string | undefined =>
+  prePropose
+    ? 'anyone' in prePropose.submissionPolicy
+      ? // Cannot create proposal if on denylist.
+        address &&
+        prePropose.submissionPolicy.anyone.denylist?.includes(address)
+        ? t('error.notAllowedToCreateProposal')
+        : undefined
+      : // Cannot create proposal if on denylist.
+      address &&
+        prePropose.submissionPolicy.specific.denylist?.includes(address)
+      ? t('error.notAllowedToCreateProposal')
+      : // Cannot create proposal if not a member.
+      (!prePropose.submissionPolicy.specific.dao_members || !isMember) &&
+        (!address ||
+          !prePropose.submissionPolicy.specific.allowlist?.includes(address))
+      ? // If members can propose and current wallet is not a member, prioritize that as the reason...
+        prePropose.submissionPolicy.specific.dao_members && !isMember
+        ? t('error.mustBeMemberToCreateProposal')
+        : // ...otherwise their membership doesn't matter and they aren't on the allowlist.
+          t('error.notAllowedToCreateProposal')
+      : undefined
+    : // If no pre-propose module in use, only DAO members can propose.
+    isMember
+    ? undefined
+    : t('error.mustBeMemberToCreateProposal')

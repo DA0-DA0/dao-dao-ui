@@ -25,7 +25,6 @@ import {
   ProposalResponse,
   SingleChoiceAutoVote,
   Threshold,
-  Uint64,
   VetoConfig,
   Vote,
   VoteListResponse,
@@ -77,7 +76,7 @@ export interface DaoProposalSingleV2ReadOnlyInterface {
   voteHooks: () => Promise<HooksResponse>
   dao: () => Promise<Addr>
   info: () => Promise<InfoResponse>
-  nextProposalId: () => Promise<Uint64>
+  nextProposalId: () => Promise<number>
 }
 export class DaoProposalSingleV2QueryClient
   implements DaoProposalSingleV2ReadOnlyInterface
@@ -206,7 +205,7 @@ export class DaoProposalSingleV2QueryClient
       info: {},
     })
   }
-  nextProposalId = async (): Promise<Uint64> => {
+  nextProposalId = async (): Promise<number> => {
     return this.client.queryContractSmart(this.contractAddress, {
       next_proposal_id: {},
     })

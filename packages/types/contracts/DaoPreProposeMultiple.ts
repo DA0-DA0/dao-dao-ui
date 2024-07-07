@@ -25,10 +25,30 @@ export type UncheckedDenom =
     }
 export type VotingModuleTokenType = 'native' | 'cw20'
 export type DepositRefundPolicy = 'always' | 'only_passed' | 'never'
+export type PreProposeSubmissionPolicy =
+  | {
+      anyone: {
+        denylist?: string[] | null
+      }
+    }
+  | {
+      specific: {
+        allowlist?: string[] | null
+        dao_members: boolean
+        denylist?: string[] | null
+      }
+    }
 export interface InstantiateMsg {
   deposit_info?: UncheckedDepositInfo | null
   extension: Empty
-  open_proposal_submission: boolean
+  /**
+   * < v2.5.0
+   */
+  open_proposal_submission?: boolean
+  /**
+   * >= v2.5.0
+   */
+  submission_policy?: PreProposeSubmissionPolicy
 }
 export interface UncheckedDepositInfo {
   amount: Uint128
@@ -45,7 +65,23 @@ export type ExecuteMsg =
   | {
       update_config: {
         deposit_info?: UncheckedDepositInfo | null
-        open_proposal_submission: boolean
+        /**
+         * < v2.5.0
+         */
+        open_proposal_submission?: boolean
+        /**
+         * >= v2.5.0
+         */
+        submission_policy?: PreProposeSubmissionPolicy | null
+      }
+    }
+  | {
+      update_submission_policy: {
+        allowlist_add?: string[] | null
+        allowlist_remove?: string[] | null
+        denylist_add?: string[] | null
+        denylist_remove?: string[] | null
+        set_dao_members?: boolean | null
       }
     }
   | {
@@ -285,6 +321,11 @@ export type QueryMsg =
       }
     }
   | {
+      can_propose: {
+        address: string
+      }
+    }
+  | {
       proposal_submitted_hooks: {}
     }
   | {
@@ -292,6 +333,7 @@ export type QueryMsg =
         msg: Empty
       }
     }
+export type Boolean = boolean
 export type CheckedDenom =
   | {
       native: string
@@ -302,7 +344,14 @@ export type CheckedDenom =
 export type Addr = string
 export interface Config {
   deposit_info?: CheckedDepositInfo | null
-  open_proposal_submission: boolean
+  /**
+   * < v2.5.0
+   */
+  open_proposal_submission?: boolean
+  /**
+   * >= v2.5.0
+   */
+  submission_policy?: PreProposeSubmissionPolicy
 }
 export interface CheckedDepositInfo {
   amount: Uint128

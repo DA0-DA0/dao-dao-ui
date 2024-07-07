@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -14,13 +14,14 @@ import {
   ProposalCreationPolicy,
   ProposalListResponse,
   ProposalResponse,
-  Uint64,
   VoteListResponse,
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoProposalMultipleQueryClient } from '../../../contracts/DaoProposalMultiple'
+import { contractQueries } from '../contract'
+import { indexerQueries } from '../indexer'
 
 export const daoProposalMultipleQueryKeys = {
   contract: [
@@ -144,164 +145,287 @@ export const daoProposalMultipleQueryKeys = {
     ] as const,
 }
 export const daoProposalMultipleQueries = {
-  config: <TData = Config>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
+  config: <TData = Config>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoProposalMultipleConfigQuery<TData>
+  ): UseQueryOptions<Config, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.config(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/config',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).config(),
+      ).config()
+    },
     ...options,
   }),
-  proposal: <TData = ProposalResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoProposalMultipleProposalQuery<TData>): UseQueryOptions<
-    ProposalResponse,
-    Error,
-    TData
-  > => ({
+  proposal: <TData = ProposalResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoProposalMultipleProposalQuery<TData>
+  ): UseQueryOptions<ProposalResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.proposal(contractAddress, args),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/proposal',
+            args: {
+              id: args.proposalId,
+            },
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).proposal({
         proposalId: args.proposalId,
-      }),
+      })
+    },
     ...options,
   }),
-  listProposals: <TData = ProposalListResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoProposalMultipleListProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
+  listProposals: <TData = ProposalListResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoProposalMultipleListProposalsQuery<TData>
+  ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.listProposals(contractAddress, args),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return {
+          proposals: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoProposalMultiple/listProposals',
+              args,
+            })
+          ),
+        }
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listProposals({
         limit: args.limit,
         startAfter: args.startAfter,
-      }),
+      })
+    },
     ...options,
   }),
-  reverseProposals: <TData = ProposalListResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoProposalMultipleReverseProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
+  reverseProposals: <TData = ProposalListResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoProposalMultipleReverseProposalsQuery<TData>
+  ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.reverseProposals(
       contractAddress,
       args
     ),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return {
+          proposals: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoProposalMultiple/reverseProposals',
+              args,
+            })
+          ),
+        }
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).reverseProposals({
         limit: args.limit,
         startBefore: args.startBefore,
-      }),
+      })
+    },
     ...options,
   }),
-  getVote: <TData = VoteResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoProposalMultipleGetVoteQuery<TData>): UseQueryOptions<
-    VoteResponse,
-    Error,
-    TData
-  > => ({
+  getVote: <TData = VoteResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoProposalMultipleGetVoteQuery<TData>
+  ): UseQueryOptions<VoteResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.getVote(contractAddress, args),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return {
+          vote: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoProposalMultiple/vote',
+              args,
+            })
+          ),
+        }
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getVote({
         proposalId: args.proposalId,
         voter: args.voter,
-      }),
+      })
+    },
     ...options,
   }),
-  listVotes: <TData = VoteListResponse>({
-    chainId,
-    contractAddress,
-    args,
-    options,
-  }: DaoProposalMultipleListVotesQuery<TData>): UseQueryOptions<
-    VoteListResponse,
-    Error,
-    TData
-  > => ({
+  listVotes: <TData = VoteListResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoProposalMultipleListVotesQuery<TData>
+  ): UseQueryOptions<VoteListResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.listVotes(contractAddress, args),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return {
+          votes: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoProposalMultiple/listVotes',
+              args,
+            })
+          ),
+        }
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listVotes({
         limit: args.limit,
         proposalId: args.proposalId,
         startAfter: args.startAfter,
-      }),
+      })
+    },
     ...options,
   }),
-  proposalCount: <TData = number>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleProposalCountQuery<TData>): UseQueryOptions<
-    number,
-    Error,
-    TData
-  > => ({
+  proposalCount: <TData = number>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoProposalMultipleProposalCountQuery<TData>
+  ): UseQueryOptions<number, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.proposalCount(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/proposalCount',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).proposalCount(),
+      ).proposalCount()
+    },
     ...options,
   }),
-  proposalCreationPolicy: <TData = ProposalCreationPolicy>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleProposalCreationPolicyQuery<TData>): UseQueryOptions<
-    ProposalCreationPolicy,
-    Error,
-    TData
-  > => ({
+  proposalCreationPolicy: <TData = ProposalCreationPolicy>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoProposalMultipleProposalCreationPolicyQuery<TData>
+  ): UseQueryOptions<ProposalCreationPolicy, Error, TData> => ({
     queryKey:
       daoProposalMultipleQueryKeys.proposalCreationPolicy(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/creationPolicy',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).proposalCreationPolicy(),
+      ).proposalCreationPolicy()
+    },
     ...options,
   }),
   proposalHooks: <TData = HooksResponse>({
@@ -314,11 +438,12 @@ export const daoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: daoProposalMultipleQueryKeys.proposalHooks(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).proposalHooks(),
+      ).proposalHooks()
+    },
     ...options,
   }),
   voteHooks: <TData = HooksResponse>({
@@ -331,62 +456,71 @@ export const daoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: daoProposalMultipleQueryKeys.voteHooks(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).voteHooks(),
+      ).voteHooks()
+    },
     ...options,
   }),
-  dao: <TData = Addr>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleDaoQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
+  dao: <TData = Addr>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoProposalMultipleDaoQuery<TData>
+  ): UseQueryOptions<Addr, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.dao(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/dao',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).dao(),
+      ).dao()
+    },
     ...options,
   }),
-  info: <TData = InfoResponse>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleInfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoProposalMultipleQueryKeys.info(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).info(),
-    ...options,
-  }),
-  nextProposalId: <TData = Uint64>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoProposalMultipleNextProposalIdQuery<TData>): UseQueryOptions<
-    Uint64,
-    Error,
-    TData
-  > => ({
+  info: contractQueries.info,
+  nextProposalId: <TData = number>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoProposalMultipleNextProposalIdQuery<TData>
+  ): UseQueryOptions<number, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.nextProposalId(contractAddress),
-    queryFn: async () =>
-      new DaoProposalMultipleQueryClient(
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/nextProposalId',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress
-      ).nextProposalId(),
+      ).nextProposalId()
+    },
     ...options,
   }),
 }
@@ -401,7 +535,7 @@ export interface DaoProposalMultipleReactQuery<TResponse, TData = TResponse> {
   }
 }
 export interface DaoProposalMultipleNextProposalIdQuery<TData>
-  extends DaoProposalMultipleReactQuery<Uint64, TData> {}
+  extends DaoProposalMultipleReactQuery<number, TData> {}
 export interface DaoProposalMultipleInfoQuery<TData>
   extends DaoProposalMultipleReactQuery<InfoResponse, TData> {}
 export interface DaoProposalMultipleDaoQuery<TData>

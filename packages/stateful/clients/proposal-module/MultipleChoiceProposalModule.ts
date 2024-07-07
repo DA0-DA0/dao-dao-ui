@@ -280,7 +280,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       }
     }
 
-    return daoProposalMultipleQueries.getVote({
+    return daoProposalMultipleQueries.getVote(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
       args: {
@@ -300,7 +300,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getProposalCountQuery(): FetchQueryOptions<number> {
-    return daoProposalMultipleQueries.proposalCount({
+    return daoProposalMultipleQueries.proposalCount(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
     })

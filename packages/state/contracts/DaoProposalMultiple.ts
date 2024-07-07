@@ -25,7 +25,6 @@ import {
   ProposalCreationPolicy,
   ProposalListResponse,
   ProposalResponse,
-  Uint64,
   VetoConfig,
   VoteListResponse,
   VoteResponse,
@@ -77,7 +76,7 @@ export interface DaoProposalMultipleReadOnlyInterface {
   voteHooks: () => Promise<HooksResponse>
   dao: () => Promise<Addr>
   info: () => Promise<InfoResponse>
-  nextProposalId: () => Promise<Uint64>
+  nextProposalId: () => Promise<number>
 }
 export class DaoProposalMultipleQueryClient
   implements DaoProposalMultipleReadOnlyInterface
@@ -206,7 +205,7 @@ export class DaoProposalMultipleQueryClient
       info: {},
     })
   }
-  nextProposalId = async (): Promise<Uint64> => {
+  nextProposalId = async (): Promise<number> => {
     return this.client.queryContractSmart(this.contractAddress, {
       next_proposal_id: {},
     })

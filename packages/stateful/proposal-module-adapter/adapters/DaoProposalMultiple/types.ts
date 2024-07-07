@@ -92,7 +92,11 @@ export interface MakeUsePublishProposalOptions {
 export type UsePublishProposal = () => {
   simulateProposal: SimulateProposal
   publishProposal: PublishProposal
-  anyoneCanPropose: boolean
+  /**
+   * If defined, the current wallet cannot propose for this reason. If
+   * undefined, the current wallet can propose.
+   */
+  cannotProposeReason?: string
   depositUnsatisfied: boolean
   simulationBypassExpiration: Date | undefined
 }

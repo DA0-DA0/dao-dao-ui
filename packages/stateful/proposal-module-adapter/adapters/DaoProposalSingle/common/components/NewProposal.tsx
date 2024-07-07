@@ -94,7 +94,7 @@ export const NewProposal = ({
   const {
     simulateProposal: _simulateProposal,
     publishProposal,
-    anyoneCanPropose,
+    cannotProposeReason,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
@@ -244,7 +244,7 @@ export const NewProposal = ({
   return (
     <StatelessNewProposal<NewProposalForm, NewProposalData>
       activeThreshold={activeThreshold}
-      anyoneCanPropose={anyoneCanPropose}
+      cannotProposeReason={cannotProposeReason}
       connected={isWalletConnected}
       content={{
         Header: NewProposalTitleDescriptionHeader,

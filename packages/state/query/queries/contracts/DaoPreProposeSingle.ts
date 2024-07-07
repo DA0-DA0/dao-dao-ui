@@ -9,6 +9,7 @@ import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 import {
   Addr,
   Binary,
+  Boolean,
   Config,
   DepositInfoResponse,
   Empty,
@@ -61,6 +62,14 @@ export const daoPreProposeSingleQueryKeys = {
       {
         ...daoPreProposeSingleQueryKeys.address(contractAddress)[0],
         method: 'deposit_info',
+        args,
+      },
+    ] as const,
+  canPropose: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...daoPreProposeSingleQueryKeys.address(contractAddress)[0],
+        method: 'can_propose',
         args,
       },
     ] as const,
@@ -205,6 +214,27 @@ export const daoPreProposeSingleQueries = {
     },
     ...options,
   }),
+  canPropose: <TData = Boolean>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeSingleCanProposeQuery<TData>): UseQueryOptions<
+    Boolean,
+    Error,
+    TData
+  > => ({
+    queryKey: daoPreProposeSingleQueryKeys.canPropose(contractAddress, args),
+    queryFn: async () => {
+      return new DaoPreProposeSingleQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).canPropose({
+        address: args.address,
+      })
+    },
+    ...options,
+  }),
   proposalSubmittedHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
@@ -267,6 +297,12 @@ export interface DaoPreProposeSingleQueryExtensionQuery<TData>
 }
 export interface DaoPreProposeSingleProposalSubmittedHooksQuery<TData>
   extends DaoPreProposeSingleReactQuery<HooksResponse, TData> {}
+export interface DaoPreProposeSingleCanProposeQuery<TData>
+  extends DaoPreProposeSingleReactQuery<Boolean, TData> {
+  args: {
+    address: string
+  }
+}
 export interface DaoPreProposeSingleDepositInfoQuery<TData>
   extends DaoPreProposeSingleReactQuery<DepositInfoResponse, TData> {
   args: {

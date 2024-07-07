@@ -96,7 +96,7 @@ export const NewProposal = ({
   const {
     simulateProposal: _simulateProposal,
     publishProposal,
-    anyoneCanPropose,
+    cannotProposeReason,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
@@ -265,7 +265,7 @@ export const NewProposal = ({
             })
           : undefined
       }
-      anyoneCanPropose={anyoneCanPropose}
+      cannotProposeReason={cannotProposeReason}
       connected={isWalletConnected}
       content={{
         Header: NewProposalTitleDescriptionHeader,

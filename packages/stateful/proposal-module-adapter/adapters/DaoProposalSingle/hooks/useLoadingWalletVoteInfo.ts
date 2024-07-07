@@ -78,7 +78,8 @@ export const useLoadingWalletVoteInfo = ():
 
   const proposal = loadingProposal.data
   const walletVote =
-    (!walletVoteLoading.errored && walletVoteLoading.data?.vote) || undefined
+    (!walletVoteLoading.errored && walletVoteLoading.data?.vote?.vote) ||
+    undefined
   const walletVotingPowerWhenProposalCreated =
     walletVotingPowerWhenProposalCreatedLoading.errored
       ? 0

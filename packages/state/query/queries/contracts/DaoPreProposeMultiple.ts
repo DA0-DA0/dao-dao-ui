@@ -9,6 +9,7 @@ import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 import {
   Addr,
   Binary,
+  Boolean,
   Config,
   DepositInfoResponse,
   Empty,
@@ -61,6 +62,14 @@ export const daoPreProposeMultipleQueryKeys = {
       {
         ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
         method: 'deposit_info',
+        args,
+      },
+    ] as const,
+  canPropose: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
+        method: 'can_propose',
         args,
       },
     ] as const,
@@ -209,6 +218,27 @@ export const daoPreProposeMultipleQueries = {
     },
     ...options,
   }),
+  canPropose: <TData = Boolean>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeMultipleCanProposeQuery<TData>): UseQueryOptions<
+    Boolean,
+    Error,
+    TData
+  > => ({
+    queryKey: daoPreProposeMultipleQueryKeys.canPropose(contractAddress, args),
+    queryFn: async () => {
+      return new DaoPreProposeMultipleQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).canPropose({
+        address: args.address,
+      })
+    },
+    ...options,
+  }),
   proposalSubmittedHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
@@ -271,6 +301,12 @@ export interface DaoPreProposeMultipleQueryExtensionQuery<TData>
 }
 export interface DaoPreProposeMultipleProposalSubmittedHooksQuery<TData>
   extends DaoPreProposeMultipleReactQuery<HooksResponse, TData> {}
+export interface DaoPreProposeMultipleCanProposeQuery<TData>
+  extends DaoPreProposeMultipleReactQuery<Boolean, TData> {
+  args: {
+    address: string
+  }
+}
 export interface DaoPreProposeMultipleDepositInfoQuery<TData>
   extends DaoPreProposeMultipleReactQuery<DepositInfoResponse, TData> {
   args: {
