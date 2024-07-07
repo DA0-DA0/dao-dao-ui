@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { stringToPath as stringToHdPath } from '@cosmjs/crypto'
 import { DirectSecp256k1HdWallet, EncodeObject } from '@cosmjs/proto-signing'
 import chalk from 'chalk'
 import { Command } from 'commander'
@@ -11,9 +12,12 @@ import {
   chainQueries,
   makeGetSignerOptions,
   makeReactQueryClient,
-  skipQueries,
 } from '@dao-dao/state'
-import { SupportedChainConfig, cwMsgToEncodeObject } from '@dao-dao/types'
+import {
+  ContractVersion,
+  SupportedChainConfig,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
 import { MsgExec } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
@@ -21,30 +25,42 @@ import {
   CHAIN_GAS_MULTIPLIER,
   encodeJsonToBase64,
   findEventsAttributeValue,
+  getChainForChainId,
   getRpcForChainId,
   gzipCompress,
-  maybeGetChainForChainId,
 } from '@dao-dao/utils'
+
+const { log } = console
 
 const { parsed: { MNEMONIC, DAO_CONTRACTS_DIR, POLYTONE_CONTRACTS_DIR } = {} } =
   dotenv.config()
 
 if (!MNEMONIC) {
-  console.error('MNEMONIC not set')
+  log(chalk.red('MNEMONIC not set'))
   process.exit(1)
 }
 if (!DAO_CONTRACTS_DIR) {
-  console.error('DAO_CONTRACTS_DIR not set')
+  log(chalk.red('DAO_CONTRACTS_DIR not set'))
   process.exit(1)
 }
 if (!POLYTONE_CONTRACTS_DIR) {
-  console.error('POLYTONE_CONTRACTS_DIR not set')
+  log(chalk.red('POLYTONE_CONTRACTS_DIR not set'))
   process.exit(1)
+}
+
+enum Mode {
+  Dao = 'dao',
+  Polytone = 'polytone',
+  Factory = 'factory',
 }
 
 const program = new Command()
 program.requiredOption('-c, --chain <ID>', 'chain ID')
-program.option('-p, --polytone', 'only deploy polytone contracts')
+program.option(
+  '-m, --mode <mode>',
+  'deploy mode (dao = deploy DAO contracts and instantiate admin factory, polytone = deploy Polytone contracts, factory = instantiate admin factory)',
+  'dao'
+)
 program.option(
   '-a, --authz <granter>',
   'upload contracts via authz exec as this granter'
@@ -55,25 +71,28 @@ program.option(
 )
 
 program.parse(process.argv)
-const { chain: chainId, polytone, authz, exclude: _exclude } = program.opts()
+const { chain: chainId, mode, authz, exclude: _exclude } = program.opts()
 
 const exclude: string[] | undefined = _exclude?.split(',')
 
-const { log } = console
+if (!Object.values(Mode).includes(mode)) {
+  log(
+    chalk.red('Invalid mode. Must be one of: ' + Object.values(Mode).join(', '))
+  )
+  process.exit(1)
+}
+
+const codeIdMap: Record<string, number | undefined> = {}
 
 const main = async () => {
   const queryClient = await makeReactQueryClient()
 
-  const chain =
-    maybeGetChainForChainId(chainId) ||
-    // Fetch from Skip API if doesn't exist locally.
-    (await queryClient.fetchQuery(
-      skipQueries.chain(queryClient, {
-        chainId,
-      })
-    ))
-  const chainName = chain.chain_name
-  const bech32Prefix = chain.bech32_prefix
+  const {
+    chain_name: chainName,
+    bech32_prefix: bech32Prefix,
+    network_type: networkType,
+    slip44,
+  } = getChainForChainId(chainId)
 
   await queryClient.prefetchQuery(
     chainQueries.dynamicGasPrice({ chainId: chainId })
@@ -81,6 +100,7 @@ const main = async () => {
 
   const signer = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
     prefix: bech32Prefix,
+    hdPaths: [stringToHdPath(`m/44'/${slip44}'/0'/0/0`)],
   })
   const sender = (await signer.getAccounts())[0].address
 
@@ -230,33 +250,39 @@ const main = async () => {
     label: string
     prefixLength: number
   }) => {
-    const { events, transactionHash } = await client.signAndBroadcast(
-      sender,
-      [
-        cwMsgToEncodeObject(
-          chainId,
-          {
-            wasm: {
-              instantiate: {
-                code_id: codeId,
-                msg: encodeJsonToBase64(msg),
-                funds: [],
-                label,
-                admin: undefined,
+    let transactionHash
+    try {
+      transactionHash = await client.signAndBroadcastSync(
+        sender,
+        [
+          cwMsgToEncodeObject(
+            chainId,
+            {
+              wasm: {
+                instantiate: {
+                  code_id: codeId,
+                  msg: encodeJsonToBase64(msg),
+                  funds: [],
+                  label,
+                  admin: undefined,
+                },
               },
             },
-          },
-          sender
-        ),
-      ],
-      CHAIN_GAS_MULTIPLIER
-    )
-
-    const contractAddress = findEventsAttributeValue(
-      events,
-      'instantiate',
-      '_contract_address'
-    )
+            sender
+          ),
+        ],
+        CHAIN_GAS_MULTIPLIER
+      )
+    } catch (err) {
+      log(
+        chalk.red(
+          `[${id}.CONTRACT]${' '.repeat(
+            prefixLength - id.length - 11
+          )}instantiate failed`
+        )
+      )
+      throw err
+    }
 
     log(
       chalk.greenBright(
@@ -264,6 +290,38 @@ const main = async () => {
           prefixLength - id.length - 5
         )}${transactionHash}`
       )
+    )
+
+    // Poll for TX.
+    let events
+    let tries = 15
+    while (tries > 0) {
+      try {
+        events = (await client.getTx(transactionHash))?.events
+        if (events) {
+          break
+        }
+      } catch {}
+
+      tries--
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
+
+    if (!events) {
+      log(
+        chalk.red(
+          `[${id}.CONTRACT]${' '.repeat(
+            prefixLength - id.length - 11
+          )}TX not found`
+        )
+      )
+      process.exit(1)
+    }
+
+    const contractAddress = findEventsAttributeValue(
+      events,
+      'instantiate',
+      '_contract_address'
     )
 
     if (!contractAddress) {
@@ -291,7 +349,7 @@ const main = async () => {
   log()
 
   // Upload polytone contracts only.
-  if (polytone) {
+  if (mode === Mode.Polytone) {
     const contracts = [
       'polytone_listener',
       'polytone_note',
@@ -313,44 +371,59 @@ const main = async () => {
     process.exit(0)
   }
 
+  let consolePrefixLength = 32
+
   // Upload DAO contracts.
+  if (mode === Mode.Dao) {
+    // List files in the contracts directory.
+    const contracts = fs
+      .readdirSync(DAO_CONTRACTS_DIR)
+      .filter((file) => file.endsWith('.wasm'))
+      .sort()
 
-  // List files in the contracts directory.
-  const contracts = fs
-    .readdirSync(DAO_CONTRACTS_DIR)
-    .filter((file) => file.endsWith('.wasm'))
-    .sort()
+    // Set console prefix length to the max file length plus space for brackets
+    // and longest ID suffix (CONTRACT).
+    consolePrefixLength = Math.max(...contracts.map((file) => file.length)) + 10
 
-  // Set console prefix length to the max file length plus space for brackets
-  // and longest ID suffix (CONTRACT).
-  const consolePrefixLength =
-    Math.max(...contracts.map((file) => file.length)) + 10
+    for (const contract of contracts) {
+      const id = contract.slice(0, -5)
+      if (exclude?.some((substring) => id.includes(substring))) {
+        continue
+      }
 
-  const codeIdMap: Record<string, number | undefined> = {}
+      const file = path.join(DAO_CONTRACTS_DIR, contract)
 
-  for (const contract of contracts) {
-    const id = contract.slice(0, -5)
-    if (exclude?.some((substring) => id.includes(substring))) {
-      continue
-    }
-
-    const file = path.join(DAO_CONTRACTS_DIR, contract)
-
-    if (!(id in codeIdMap)) {
-      codeIdMap[id] = await uploadContract({
-        id,
-        file,
-        prefixLength: consolePrefixLength,
-      })
-    } else {
-      log(
-        chalk.green(
-          `[${id}.CODE_ID]${' '.repeat(consolePrefixLength - id.length - 10)}${
-            codeIdMap[id]
-          }`
+      if (!(id in codeIdMap)) {
+        codeIdMap[id] = await uploadContract({
+          id,
+          file,
+          prefixLength: consolePrefixLength,
+        })
+      } else {
+        log(
+          chalk.green(
+            `[${id}.CODE_ID]${' '.repeat(
+              consolePrefixLength - id.length - 10
+            )}${codeIdMap[id]}`
+          )
         )
-      )
+      }
     }
+  }
+
+  // Upload just admin factory if needed.
+  else if (mode === Mode.Factory && !codeIdMap['cw_admin_factory']) {
+    const file = path.join(DAO_CONTRACTS_DIR, 'cw_admin_factory.wasm')
+    if (!fs.existsSync(file)) {
+      log(chalk.red('cw_admin_factory.wasm not found'))
+      process.exit(1)
+    }
+
+    codeIdMap['cw_admin_factory'] = await uploadContract({
+      id: 'cw_admin_factory',
+      file,
+      prefixLength: consolePrefixLength,
+    })
   }
 
   // Instantiate admin factory.
@@ -374,10 +447,7 @@ const main = async () => {
   const config: SupportedChainConfig = {
     chainId,
     name: chainName,
-    mainnet:
-      'is_testnet' in chain
-        ? !chain.is_testnet
-        : chain.network_type === 'mainnet',
+    mainnet: networkType === 'mainnet',
     accentColor: 'ACCENT_COLOR',
     factoryContractAddress: adminFactoryAddress,
     explorerUrlTemplates: {
@@ -386,6 +456,7 @@ const main = async () => {
       govProp: `https://ping.pub/${chainName}/gov/REPLACE`,
       wallet: `https://ping.pub/${chainName}/account/REPLACE`,
     },
+    codeIdsVersion: ContractVersion.Unknown,
     codeIds: {
       Cw1Whitelist: codeIdMap['cw1_whitelist'] ?? -1,
       Cw4Group: codeIdMap['cw4_group'] ?? -1,
