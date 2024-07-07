@@ -7,7 +7,6 @@ import {
 import { indexerQueries } from '@dao-dao/state/query'
 import {
   ContractVersion,
-  Feature,
   ProposalModule,
   ProposalModuleType,
 } from '@dao-dao/types'
@@ -18,7 +17,6 @@ import {
   DaoProposalSingleAdapterId,
   cosmWasmClientRouter,
   indexToProposalModulePrefix,
-  isFeatureSupportedByVersion,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -57,7 +55,7 @@ export const fetchProposalModules = async (
   }
 
   const proposalModules: ProposalModule[] = await Promise.all(
-    activeProposalModules.map(async ({ info, address, prefix }, index) => {
+    activeProposalModules.map(async ({ info, address, prefix }) => {
       const version = (info && parseContractVersion(info.version)) ?? null
 
       // Get adapter for this contract.
@@ -85,12 +83,7 @@ export const fetchProposalModules = async (
 
       return {
         address,
-        prefix: isFeatureSupportedByVersion(
-          Feature.StaticProposalModulePrefixes,
-          coreVersion
-        )
-          ? prefix
-          : indexToProposalModulePrefix(index),
+        prefix,
         contractName: info?.contract || '',
         version,
         prePropose:
