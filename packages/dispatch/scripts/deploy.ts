@@ -228,6 +228,7 @@ const main = async () => {
       sender,
       [
         cwMsgToEncodeObject(
+          chainId,
           {
             wasm: {
               instantiate: {
