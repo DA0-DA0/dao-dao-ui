@@ -86,10 +86,10 @@ export const CreateDaoReview = ({
             msg.voting_module_instantiate_info.msg.token_info.factory
           )
 
-        msg.voting_module_instantiate_info.msg.token_info.factory.wasm.execute.msg =
+        msg.voting_module_instantiate_info.msg.token_info.factory.execute.msg =
           decodeJsonFromBase64(
-            msg.voting_module_instantiate_info.msg.token_info.factory.wasm
-              .execute.msg
+            msg.voting_module_instantiate_info.msg.token_info.factory.execute
+              .msg
           )
       }
     }
