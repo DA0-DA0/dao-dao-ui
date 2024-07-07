@@ -5,7 +5,12 @@ import {
   DaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
 import { daoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin, ContractVersion, ModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  Coin,
+  ContractVersion,
+  Feature,
+  ModuleInstantiateInfo,
+} from '@dao-dao/types'
 import {
   InstantiateMsg as DaoPreProposeMultipleInstantiateMsg,
   UncheckedDepositInfo,
@@ -25,6 +30,7 @@ import {
   SupportedSigningCosmWasmClient,
   encodeJsonToBase64,
   findWasmAttributeValue,
+  isFeatureSupportedByVersion,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
@@ -79,7 +85,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       useV210WithoutFunds: false,
     }
   ): ModuleInstantiateInfo {
-    const { codeIds, historicalCodeIds } = mustGetSupportedChainConfig(chainId)
+    const { codeIds, codeIdsVersion, historicalCodeIds } =
+      mustGetSupportedChainConfig(chainId)
     const codeIdsToUse = {
       ...codeIds,
       ...(options.useV210WithoutFunds &&
@@ -95,7 +102,27 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           msg: encodeJsonToBase64({
             deposit_info: config.deposit,
             extension: {},
-            open_proposal_submission: config.submissionPolicy === 'anyone',
+            ...(!options.useV210WithoutFunds &&
+            isFeatureSupportedByVersion(
+              Feature.GranularSubmissionPolicy,
+              codeIdsVersion
+            )
+              ? {
+                  submission_policy:
+                    config.submissionPolicy === 'anyone'
+                      ? {
+                          anyone: {},
+                        }
+                      : {
+                          specific: {
+                            dao_members: true,
+                          },
+                        },
+                }
+              : {
+                  open_proposal_submission:
+                    config.submissionPolicy === 'anyone',
+                }),
           } as DaoPreProposeMultipleInstantiateMsg),
           // This function is used by the enable multiple choice action, and
           // DAOs before v2.3.0 still might want to enable multiple choice, so

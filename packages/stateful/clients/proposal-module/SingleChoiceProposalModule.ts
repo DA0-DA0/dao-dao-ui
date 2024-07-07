@@ -9,7 +9,12 @@ import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
-import { Coin, ContractVersion, ModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  Coin,
+  ContractVersion,
+  Feature,
+  ModuleInstantiateInfo,
+} from '@dao-dao/types'
 import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
   InstantiateMsg as DaoPreProposeSingleInstantiateMsg,
@@ -31,6 +36,7 @@ import {
   SupportedSigningCosmWasmClient,
   encodeJsonToBase64,
   findWasmAttributeValue,
+  isFeatureSupportedByVersion,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
@@ -73,7 +79,30 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       onlyMembersExecute?: boolean
     }
   ): ModuleInstantiateInfo {
-    const { codeIds } = mustGetSupportedChainConfig(chainId)
+    const { codeIds, codeIdsVersion } = mustGetSupportedChainConfig(chainId)
+
+    const preProposeCommon = {
+      deposit_info: config.deposit,
+      ...(isFeatureSupportedByVersion(
+        Feature.GranularSubmissionPolicy,
+        codeIdsVersion
+      )
+        ? {
+            submission_policy:
+              config.submissionPolicy === 'anyone'
+                ? {
+                    anyone: {},
+                  }
+                : {
+                    specific: {
+                      dao_members: true,
+                    },
+                  },
+          }
+        : {
+            open_proposal_submission: config.submissionPolicy === 'anyone',
+          }),
+    }
 
     const pre_propose_info: PreProposeInfo = {
       module_may_propose: {
@@ -88,18 +117,14 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           msg: encodeJsonToBase64(
             config.approver
               ? ({
-                  deposit_info: config.deposit,
+                  ...preProposeCommon,
                   extension: {
                     approver: config.approver,
                   },
-                  open_proposal_submission:
-                    config.submissionPolicy === 'anyone',
                 } as DaoPreProposeApprovalSingleInstantiateMsg)
               : ({
-                  deposit_info: config.deposit,
+                  ...preProposeCommon,
                   extension: {},
-                  open_proposal_submission:
-                    config.submissionPolicy === 'anyone',
                 } as DaoPreProposeSingleInstantiateMsg)
           ),
           funds: [],

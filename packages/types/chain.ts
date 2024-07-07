@@ -148,6 +148,10 @@ export type SupportedChainConfig = BaseChainConfig & {
     network: string
   }
   /**
+   * Version of the code IDs in the config below.
+   */
+  codeIdsVersion: ContractVersion
+  /**
    * Code IDs stored on this chain that are used throughout the UI.
    */
   codeIds: CodeIdConfig
