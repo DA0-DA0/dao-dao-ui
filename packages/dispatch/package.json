@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/dispatch",
-  "version": "2.4.2-rc.0",
+  "version": "2.4.2-rc.1",
   "license": "BSD-3-Clause-Clear",
   "private": true,
   "scripts": {
@@ -9,10 +9,10 @@
     "deploy": "ts-node ./scripts/deploy.ts"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.4.2-rc.0",
-    "@dao-dao/state": "2.4.2-rc.0",
-    "@dao-dao/types": "2.4.2-rc.0",
-    "@dao-dao/utils": "2.4.2-rc.0",
+    "@dao-dao/config": "2.4.2-rc.1",
+    "@dao-dao/state": "2.4.2-rc.1",
+    "@dao-dao/types": "2.4.2-rc.1",
+    "@dao-dao/utils": "2.4.2-rc.1",
     "chalk": "^4",
     "commander": "^11.0.0",
     "dotenv": "^16.4.5",
