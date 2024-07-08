@@ -34,7 +34,7 @@ export type FetchIndexerQueryOptions = QueryIndexerOptions & {
 export const fetchIndexerQuery = async <T = any>(
   queryClient: QueryClient,
   { noFallback, ...options }: FetchIndexerQueryOptions
-): Promise<T | null> => {
+): Promise<T> => {
   // If the indexer is behind and either there's a fallback or we're on the
   // server, return null to make the caller use the fallback. Throw error if no
   // fallback and on client.
@@ -49,8 +49,9 @@ export const fetchIndexerQuery = async <T = any>(
   }
 
   // Replace undefined responses with null since react-query and static props
-  // can't serialize undefined.
-  return (await queryIndexer<T>(options)) ?? null
+  // can't serialize undefined. Rely on caller knowing that this may return
+  // null to type it correctly.
+  return (await queryIndexer<T>(options)) ?? (null as T)
 }
 
 export const indexerQueries = {
