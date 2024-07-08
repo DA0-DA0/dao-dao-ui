@@ -13,7 +13,11 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
-import { SupportedChainConfig, cwMsgToEncodeObject } from '@dao-dao/types'
+import {
+  ContractVersion,
+  SupportedChainConfig,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
 import { MsgExec } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
@@ -371,21 +375,23 @@ const main = async () => {
   log()
   log(chalk.green('Done! UI config entry:'))
 
+  const mainnet =
+    'is_testnet' in chain ? !chain.is_testnet : chain.network_type === 'mainnet'
+  const explorerUrlDomain = mainnet ? 'ping.pub' : 'testnet.ping.pub'
+
   const config: SupportedChainConfig = {
     chainId,
     name: chainName,
-    mainnet:
-      'is_testnet' in chain
-        ? !chain.is_testnet
-        : chain.network_type === 'mainnet',
+    mainnet,
     accentColor: 'ACCENT_COLOR',
     factoryContractAddress: adminFactoryAddress,
     explorerUrlTemplates: {
-      tx: `https://ping.pub/${chainName}/tx/REPLACE`,
-      gov: `https://ping.pub/${chainName}/gov`,
-      govProp: `https://ping.pub/${chainName}/gov/REPLACE`,
-      wallet: `https://ping.pub/${chainName}/account/REPLACE`,
+      tx: `https://${explorerUrlDomain}/${chainName}/tx/REPLACE`,
+      gov: `https://${explorerUrlDomain}/${chainName}/gov`,
+      govProp: `https://${explorerUrlDomain}/${chainName}/gov/REPLACE`,
+      wallet: `https://${explorerUrlDomain}/${chainName}/account/REPLACE`,
     },
+    codeIdsVersion: ContractVersion.Unknown,
     codeIds: {
       Cw1Whitelist: codeIdMap['cw1_whitelist'] ?? -1,
       Cw4Group: codeIdMap['cw4_group'] ?? -1,
