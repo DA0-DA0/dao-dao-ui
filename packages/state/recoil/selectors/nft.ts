@@ -31,7 +31,6 @@ import {
 } from '../atoms'
 import { accountsSelector } from './account'
 import { CommonNftSelectors, DaoDaoCoreSelectors } from './contracts'
-import { stakerForNftSelector } from './contracts/DaoVotingCw721Staked'
 import { queryWalletIndexerSelector } from './indexer'
 import { stargazeWalletUsdValueSelector } from './stargaze'
 import { genericTokenSelector } from './token'
@@ -297,6 +296,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
     },
 })
 
+// TODO(omniflix): move this to react-query and load ONFT JSON metadata URI
 export const nftCardInfoSelector = selectorFamily<
   NftCardInfo,
   WithChainId<{ tokenId: string; collection: string }>
@@ -607,47 +607,5 @@ export const walletStakedLazyNftCardInfosSelector = selectorFamily<
         ...info,
         staked: true,
       }))
-    },
-})
-
-// Get owner of NFT, or staker if NFT is staked with the given staking contract.
-export const nftStakerOrOwnerSelector = selectorFamily<
-  {
-    staked: boolean
-    address: string
-  },
-  WithChainId<{
-    collectionAddress: string
-    tokenId: string
-    stakingContractAddress?: string
-  }>
->({
-  key: 'nftStakerOrOwner',
-  get:
-    ({ collectionAddress, tokenId, stakingContractAddress, chainId }) =>
-    async ({ get }) => {
-      const { owner } = get(
-        CommonNftSelectors.ownerOfSelector({
-          contractAddress: collectionAddress,
-          params: [{ tokenId }],
-          chainId,
-        })
-      )
-
-      const staker =
-        stakingContractAddress && owner === stakingContractAddress
-          ? get(
-              stakerForNftSelector({
-                contractAddress: stakingContractAddress,
-                tokenId,
-                chainId,
-              })
-            )
-          : undefined
-
-      return {
-        staked: staker !== undefined,
-        address: staker || owner,
-      }
     },
 })

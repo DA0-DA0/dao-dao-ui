@@ -40,8 +40,7 @@ export const useStakingInfo = ({
     chainId,
   })
 
-  const { collectionAddress: governanceTokenAddress } =
-    useGovernanceCollectionInfo()
+  const { collectionAddress } = useGovernanceCollectionInfo()
 
   const queryClient = useQueryClient()
   const [stakingContractVersion, unstakingDuration] = useSuspenseQueries({
@@ -88,7 +87,7 @@ export const useStakingInfo = ({
     queryClient.invalidateQueries({
       queryKey: omniflixQueries.onftCollectionSupply({
         chainId,
-        id: governanceTokenAddress,
+        id: collectionAddress,
       }).queryKey,
     })
     queryClient.invalidateQueries({
@@ -97,7 +96,7 @@ export const useStakingInfo = ({
         'paginatedOnfts',
         {
           chainId,
-          id: governanceTokenAddress,
+          id: collectionAddress,
         },
       ],
     })
@@ -107,7 +106,7 @@ export const useStakingInfo = ({
         'allOnfts',
         {
           chainId,
-          id: governanceTokenAddress,
+          id: collectionAddress,
         },
       ],
     })
@@ -147,7 +146,7 @@ export const useStakingInfo = ({
   }, [
     chainId,
     dao,
-    governanceTokenAddress,
+    collectionAddress,
     queryClient,
     setRefreshDaoVotingPower,
     votingModuleAddress,
@@ -247,7 +246,7 @@ export const useStakingInfo = ({
           loadingWalletStakedNftIds.data.map((tokenId) =>
             nftCardInfoSelector({
               chainId,
-              collection: governanceTokenAddress,
+              collection: collectionAddress,
               tokenId,
             })
           )
@@ -258,7 +257,7 @@ export const useStakingInfo = ({
   const loadingWalletUnstakedOnfts = useQueryLoadingDataWithError({
     ...omniflixQueries.allOnfts(queryClient, {
       chainId,
-      id: governanceTokenAddress,
+      id: collectionAddress,
       owner: walletAddress ?? '',
     }),
     enabled: fetchWalletUnstakedNfts && !!walletAddress,
@@ -270,7 +269,7 @@ export const useStakingInfo = ({
           loadingWalletUnstakedOnfts.data.map(({ id }) =>
             nftCardInfoSelector({
               chainId,
-              collection: governanceTokenAddress,
+              collection: collectionAddress,
               tokenId: id,
             })
           )

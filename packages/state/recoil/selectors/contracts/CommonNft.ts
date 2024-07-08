@@ -2,15 +2,10 @@ import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import { ChainId, WithChainId } from '@dao-dao/types'
 import {
-  AllNftInfoResponseForEmpty,
-  ApprovalResponse,
-  ApprovalsResponse,
   ContractInfoResponse,
   MinterResponse,
   NftInfoResponseForEmpty,
   NumTokensResponse,
-  OperatorsResponse,
-  OwnerOfResponse,
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
 
@@ -42,75 +37,6 @@ export const queryClient = selectorFamily<
         ? get(sg721BaseQueryClient(params))
         : get(commonNftQueryClient(params)),
   dangerouslyAllowMutability: true,
-})
-
-export const ownerOfSelector = selectorFamily<
-  OwnerOfResponse,
-  QueryClientParams & {
-    params: Parameters<Cw721BaseQueryClient['ownerOf']>
-  }
->({
-  key: 'commonNftOwnerOf',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-      const client = get(queryClient(queryClientParams))
-      return await client.ownerOf(...params)
-    },
-})
-export const approvalSelector = selectorFamily<
-  ApprovalResponse,
-  QueryClientParams & {
-    params: Parameters<Cw721BaseQueryClient['approval']>
-  }
->({
-  key: 'commonNftApproval',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-      const client = get(queryClient(queryClientParams))
-      return await client.approval(...params)
-    },
-})
-export const approvalsSelector = selectorFamily<
-  ApprovalsResponse,
-  QueryClientParams & {
-    params: Parameters<Cw721BaseQueryClient['approvals']>
-  }
->({
-  key: 'commonNftApprovals',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-      const client = get(queryClient(queryClientParams))
-      return await client.approvals(...params)
-    },
-})
-export const allOperatorsSelector = selectorFamily<
-  OperatorsResponse,
-  QueryClientParams & {
-    params: Parameters<Cw721BaseQueryClient['allOperators']>
-  }
->({
-  key: 'commonNftAllOperators',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-      const client = get(queryClient(queryClientParams))
-      return await client.allOperators(...params)
-    },
 })
 export const numTokensSelector = selectorFamily<
   NumTokensResponse,
@@ -163,24 +89,6 @@ export const nftInfoSelector = selectorFamily<
       return await client.nftInfo(...params)
     },
 })
-export const allNftInfoSelector = selectorFamily<
-  AllNftInfoResponseForEmpty,
-  QueryClientParams & {
-    params: Parameters<Cw721BaseQueryClient['allNftInfo']>
-  }
->({
-  key: 'commonNftAllNftInfo',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-      const client = get(queryClient(queryClientParams))
-      return await client.allNftInfo(...params)
-    },
-})
-
 export const tokensSelector = selectorFamily<
   TokensResponse,
   QueryClientParams & {

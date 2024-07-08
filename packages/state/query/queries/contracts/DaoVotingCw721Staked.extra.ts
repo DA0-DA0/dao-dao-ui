@@ -3,9 +3,9 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 import { indexerQueries } from '../indexer'
 
 /**
- * Fetch ONFT-staked voting module top stakers.
+ * Fetch cw721-staked voting module top stakers.
  */
-export const fetchDaoVotingOnftStakedTopStakers = async (
+export const fetchDaoVotingCw721StakedTopStakers = async (
   queryClient: QueryClient,
   {
     chainId,
@@ -27,17 +27,17 @@ export const fetchDaoVotingOnftStakedTopStakers = async (
     indexerQueries.queryContract(queryClient, {
       chainId,
       contractAddress: address,
-      formula: 'daoVotingOnftStaked/topStakers',
+      formula: 'daoVotingCw721Staked/topStakers',
       ...(limit && { args: { limit } }),
       noFallback: true,
     })
   )) || []
 
 /**
- * Fetch staker for given ONFT in ONFT-staked voting module. Returns null if not
+ * Fetch staker for given NFT in cw721-staked voting module. Returns null if not
  * staked.
  */
-export const fetchDaoVotingOnftStakedStaker = (
+export const fetchDaoVotingCw721StakedStaker = (
   queryClient: QueryClient,
   {
     chainId,
@@ -53,7 +53,7 @@ export const fetchDaoVotingOnftStakedStaker = (
     indexerQueries.queryContract(queryClient, {
       chainId,
       contractAddress: address,
-      formula: 'daoVotingOnftStaked/staker',
+      formula: 'daoVotingCw721Staked/staker',
       args: {
         tokenId,
       },
@@ -61,29 +61,28 @@ export const fetchDaoVotingOnftStakedStaker = (
     })
   )
 
-export const daoVotingOnftStakedExtraQueries = {
+export const daoVotingCw721StakedExtraQueries = {
   /**
-   * Fetch top stakers.
+   * Fetch cw721-staked voting module top stakers.
    */
   topStakers: (
     queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoVotingOnftStakedTopStakers>[1]
+    options: Parameters<typeof fetchDaoVotingCw721StakedTopStakers>[1]
   ) =>
     queryOptions({
-      queryKey: ['daoVotingOnftStakedExtra', 'topStakers', options],
-      queryFn: () => fetchDaoVotingOnftStakedTopStakers(queryClient, options),
+      queryKey: ['daoVotingCw721StakedExtra', 'topStakers', options],
+      queryFn: () => fetchDaoVotingCw721StakedTopStakers(queryClient, options),
     }),
-
   /**
-   * Fetch staker for given ONFT in ONFT-staked voting module. Returns null if
+   * Fetch staker for given NFT in cw721-staked voting module. Returns null if
    * not staked.
    */
   staker: (
     queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoVotingOnftStakedStaker>[1]
+    options: Parameters<typeof fetchDaoVotingCw721StakedStaker>[1]
   ) =>
     queryOptions({
-      queryKey: ['daoVotingOnftStakedExtra', 'staker', options],
-      queryFn: () => fetchDaoVotingOnftStakedStaker(queryClient, options),
+      queryKey: ['daoVotingCw721StakedExtra', 'staker', options],
+      queryFn: () => fetchDaoVotingCw721StakedStaker(queryClient, options),
     }),
 }
