@@ -310,6 +310,7 @@ export const NftSelectionModal = ({
           .map(({ item }) => (
             <LazyNftCard
               ref={selectedKeys[0] === item.key ? firstSelectedRef : undefined}
+              type="collection"
               {...item}
               key={item.key}
               checkbox={{
