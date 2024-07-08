@@ -30,6 +30,8 @@ export * from "./kujira/bundle";
 export * from "./kujira/client";
 export * from "./neutron/bundle";
 export * from "./neutron/client";
+export * from "./OmniFlix/bundle";
+export * from "./OmniFlix/client";
 export * from "./osmosis/bundle";
 export * from "./osmosis/client";
 export * from "./pstake/bundle";

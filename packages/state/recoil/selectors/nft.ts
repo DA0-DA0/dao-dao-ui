@@ -23,7 +23,9 @@ import {
   stargazeTokenQuery,
   stargazeTokensForOwnerQuery,
 } from '../../graphql'
+import { omniflixQueries } from '../../query'
 import {
+  queryClientAtom,
   refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
 } from '../atoms'
@@ -339,6 +341,45 @@ export const nftCardInfoSelector = selectorFamily<
             data.token,
             genericToken
           )
+        }
+      }
+
+      if (
+        chainId === ChainId.OmniflixHubMainnet ||
+        chainId === ChainId.OmniflixHubTestnet
+      ) {
+        const queryClient = get(queryClientAtom)
+
+        const [collectionInfo, onft] = await Promise.all([
+          queryClient.fetchQuery(
+            omniflixQueries.onftCollectionInfo({
+              chainId,
+              id: collection,
+            })
+          ),
+          queryClient.fetchQuery(
+            omniflixQueries.onft({
+              chainId,
+              collectionId: collection,
+              tokenId,
+            })
+          ),
+        ])
+
+        return {
+          chainId,
+          key: getNftKey(chainId, collection, tokenId),
+          collectionAddress: collection,
+          collectionName: collectionInfo.name,
+          tokenId,
+          owner: onft.owner,
+          externalLink: {
+            href: `https://omniflix.market/c/${collection}/${tokenId}`,
+            name: 'OmniFlix',
+          },
+          imageUrl: onft.metadata?.mediaUri,
+          name: onft.metadata?.name || tokenId,
+          description: onft.metadata?.description,
         }
       }
 

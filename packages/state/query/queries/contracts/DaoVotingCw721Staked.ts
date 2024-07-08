@@ -169,14 +169,16 @@ export const daoVotingCw721StakedQueries = {
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVotingCw721Staked/nftClaims',
-            args,
-          })
-        )
+        return {
+          nft_claims: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVotingCw721Staked/nftClaims',
+              args,
+            })
+          ),
+        }
       } catch (error) {
         console.error(error)
       }

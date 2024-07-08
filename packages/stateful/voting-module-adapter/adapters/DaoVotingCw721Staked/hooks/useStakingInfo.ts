@@ -32,7 +32,7 @@ export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
-  fetchWalletUnstakedValue = false,
+  fetchWalletUnstakedNfts = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
   const { address: walletAddress } = useWallet({
@@ -99,20 +99,16 @@ export const useStakingInfo = ({
       : constSelector(undefined),
     undefined
   )
-  const claims = loadingClaims.loading
-    ? []
-    : !loadingClaims.data
-    ? undefined
-    : loadingClaims.data.nft_claims
-
-  const nftClaims = claims
-    ? claims.map(
-        ({ token_id, release_at }): NftClaim => ({
-          release_at,
-          token_id,
-        })
-      )
-    : []
+  const claims =
+    loadingClaims.loading || !loadingClaims.data
+      ? []
+      : loadingClaims.data.nft_claims
+  const nftClaims = claims.map(
+    ({ token_id, release_at }): NftClaim => ({
+      release_at,
+      token_id,
+    })
+  )
 
   const claimsPending = blockHeight
     ? nftClaims?.filter((c) => !claimAvailable(c, blockHeight))
@@ -162,7 +158,7 @@ export const useStakingInfo = ({
   )
 
   const loadingWalletUnstakedNftsLoadable = useCachedLoadingWithError(
-    fetchWalletUnstakedValue && walletAddress && governanceTokenAddress
+    fetchWalletUnstakedNfts && walletAddress && governanceTokenAddress
       ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
           chainId,
           contractAddress: governanceTokenAddress,

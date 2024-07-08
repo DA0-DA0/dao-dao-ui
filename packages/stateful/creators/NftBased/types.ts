@@ -11,7 +11,9 @@ export enum GovernanceTokenType {
 export type CreatorData = {
   tokenType: GovernanceTokenType
   existingGovernanceNftCollectionAddress: string
-  _existingError?: any
+  existingCollectionInfo?: {
+    symbol: string
+  }
   // Must be loaded on Secret Network.
   secretCodeHash?: string
   unstakingDuration: DurationWithUnits

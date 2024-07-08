@@ -9,6 +9,7 @@ import {
 } from '@cosmjs/tendermint-rpc'
 
 import {
+  OmniFlix,
   cosmos,
   cosmwasm,
   feemarket,
@@ -274,6 +275,22 @@ export const kujiraProtoRpcClientRouter = new ChainClientRouter({
             rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).kujira
+    ),
+})
+
+/*
+ * Router for connecting to an RPC client with OmniFlix protobufs.
+ */
+export const omniflixProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await OmniFlix.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).OmniFlix
     ),
 })
 

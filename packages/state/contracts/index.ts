@@ -132,3 +132,7 @@ export {
   SecretDaoVotingSnip20StakedClient,
   SecretDaoVotingSnip20StakedQueryClient,
 } from './SecretDaoVotingSnip20Staked'
+export {
+  DaoVotingOnftStakedClient,
+  DaoVotingOnftStakedQueryClient,
+} from './DaoVotingOnftStaked'

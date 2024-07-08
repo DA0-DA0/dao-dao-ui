@@ -2116,8 +2116,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'omniflixhub',
     mainnet: false,
     accentColor: '#d71d6a',
-    // NFT DAOs not yet ready.
-    nftDaosUnderDevelopment: true,
     factoryContractAddress:
       'omniflix1990vf0gumc2wqynl6cr836avhfd89y9225q0dk0s5dwzm7pnkgtqmn4dy7',
     explorerUrlTemplates: {
@@ -2144,6 +2142,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoProposalSingle: 194,
       DaoVotingCw4: 195,
       DaoVotingTokenStaked: 197,
+      DaoVotingOnftStaked: 198,
 
       // Unused
       DaoVotingCw721Staked: -1,

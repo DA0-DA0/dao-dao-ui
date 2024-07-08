@@ -2,15 +2,14 @@ import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import { ChainId, WithChainId } from '@dao-dao/types'
 import {
-  AllNftInfoResponse,
-  AllOperatorsResponse,
-  AllTokensResponse,
+  AllNftInfoResponseForEmpty,
   ApprovalResponse,
   ApprovalsResponse,
   ContractInfoResponse,
   MinterResponse,
-  NftInfoResponse,
+  NftInfoResponseForEmpty,
   NumTokensResponse,
+  OperatorsResponse,
   OwnerOfResponse,
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
@@ -97,7 +96,7 @@ export const approvalsSelector = selectorFamily<
     },
 })
 export const allOperatorsSelector = selectorFamily<
-  AllOperatorsResponse,
+  OperatorsResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allOperators']>
   }
@@ -148,7 +147,7 @@ export const contractInfoSelector = selectorFamily<
     },
 })
 export const nftInfoSelector = selectorFamily<
-  NftInfoResponse,
+  NftInfoResponseForEmpty,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['nftInfo']>
   }
@@ -165,7 +164,7 @@ export const nftInfoSelector = selectorFamily<
     },
 })
 export const allNftInfoSelector = selectorFamily<
-  AllNftInfoResponse,
+  AllNftInfoResponseForEmpty,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allNftInfo']>
   }
@@ -198,7 +197,7 @@ export const tokensSelector = selectorFamily<
     },
 })
 export const allTokensSelector = selectorFamily<
-  AllTokensResponse,
+  TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }
@@ -233,7 +232,7 @@ export const minterSelector = selectorFamily<
 })
 
 export const paginatedStargazeAllTokensSelector = selectorFamily<
-  AllTokensResponse['tokens'],
+  TokensResponse['tokens'],
   QueryClientParams & { limit: number; offset: number }
 >({
   key: 'commonNftPaginatedStargazeAllTokens',
@@ -270,7 +269,7 @@ export const paginatedStargazeAllTokensSelector = selectorFamily<
 
 export const paginatedAllTokensSelector: (
   param: QueryClientParams & { page: number; pageSize: number }
-) => RecoilValueReadOnly<AllTokensResponse['tokens']> = selectorFamily({
+) => RecoilValueReadOnly<TokensResponse['tokens']> = selectorFamily({
   key: 'commonNftPaginatedAllTokens',
   get:
     ({ chainId, contractAddress, page, pageSize }) =>
@@ -330,14 +329,14 @@ export const paginatedAllTokensSelector: (
 const ALL_TOKENS_LIMIT = 30
 const ALL_TOKENS_STARGAZE_INDEXER_LIMIT = 100
 export const unpaginatedAllTokensSelector = selectorFamily<
-  AllTokensResponse['tokens'],
+  TokensResponse['tokens'],
   QueryClientParams
 >({
   key: 'commonNftUnpaginatedAllTokens',
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const allTokens: AllTokensResponse['tokens'] = []
+      const allTokens: TokensResponse['tokens'] = []
 
       // Use Stargaze indexer if collection is on Stargaze.
       if (

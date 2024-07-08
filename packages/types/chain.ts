@@ -239,6 +239,9 @@ export type CodeIdConfig = {
   // For Secret Network
   QueryAuth?: number
 
+  // For OmniFlix
+  DaoVotingOnftStaked?: number
+
   // For migrating Migaloo DAOs from cosmwasm to osmosis x/tokenfactory.
   CwTokenfactoryIssuerCosmWasm?: number
 

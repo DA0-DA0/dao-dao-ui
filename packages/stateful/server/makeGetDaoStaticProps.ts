@@ -166,7 +166,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           // Initialize to load info.
           dao.init(),
           // Pre-fetch TVL.
-          dao.getTvl(),
+          dao.getTvl().catch(() => undefined),
         ])
 
         // Must be called after server side translations has been awaited,

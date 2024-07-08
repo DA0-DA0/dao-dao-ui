@@ -9,6 +9,7 @@ import {
   DaoVotingCw4Adapter,
   DaoVotingCw721StakedAdapter,
   DaoVotingNativeStakedAdapter,
+  DaoVotingOnftStakedAdapter,
   DaoVotingTokenStakedAdapter,
   FallbackAdapter,
 } from './adapters'
@@ -28,6 +29,7 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw20StakedAdapter,
   DaoVotingCw721StakedAdapter,
   DaoVotingNativeStakedAdapter,
+  DaoVotingOnftStakedAdapter,
   DaoVotingTokenStakedAdapter,
   NeutronVotingRegistryAdapter,
 ]
