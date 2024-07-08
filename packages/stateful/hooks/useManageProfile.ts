@@ -299,10 +299,9 @@ export const useManageProfile = ({
           }
 
           // Get the account public key.
-          const pubkeyData = (
-            await chainWallet.client.getAccount?.(chainWallet.chainId)
-          )?.pubkey
-          if (!pubkeyData) {
+          const { address, pubkey: pubkeyData } =
+            (await chainWallet.client.getAccount?.(chainWallet.chainId)) ?? {}
+          if (!address || !pubkeyData) {
             throw new Error(t('error.failedToGetAccountFromWallet'))
           }
 
@@ -324,6 +323,7 @@ export const useManageProfile = ({
             type: 'DAO DAO Profile | Add Chain Allowance',
             nonce,
             chainId: chainWallet.chainId,
+            address,
             hexPublicKey,
             data: {
               allow: currentHexPublicKey.data,

@@ -49,7 +49,6 @@ export const useCfWorkerAuthPostRequest = (
             getChainForChainId(overrideChainId).chain_name
           )
         : chainWallet
-      const thisChainId = overrideChainId || chain.chain_id
 
       // If hex public key not loaded, load it from the wallet.
       if (!thisChainWallet) {
@@ -67,8 +66,9 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       // Get public key from wallet client, if possible.
-      const publicKey = (await thisChainWallet.client.getAccount?.(thisChainId))
-        ?.pubkey
+      const publicKey = (
+        await thisChainWallet.client.getAccount?.(thisChainWallet.chainId)
+      )?.pubkey
       if (!publicKey) {
         throw new Error(t('error.unsupportedWallet'))
       }
@@ -126,13 +126,12 @@ export const useCfWorkerAuthPostRequest = (
               getChainForChainId(overrideChainId).chain_name
             )
           : chainWallet
-      const thisChainId = overrideChainId || chain.chain_id
 
       const offlineSignerAmino =
         await thisChainWallet?.client.getOfflineSignerAmino?.bind(
           thisChainWallet.client
-        )?.(thisChainId)
-      if (!offlineSignerAmino) {
+        )?.(thisChainWallet.chainId)
+      if (!thisChainWallet?.address || !offlineSignerAmino) {
         throw new Error(t('error.unsupportedWallet'))
       }
 
@@ -142,7 +141,8 @@ export const useCfWorkerAuthPostRequest = (
       const body = await signOffChainAuth({
         type: signatureType,
         nonce,
-        chainId: thisChainId,
+        chainId: thisChainWallet.chainId,
+        address: thisChainWallet.address,
         hexPublicKey,
         data,
         offlineSignerAmino,
@@ -179,9 +179,9 @@ export const useCfWorkerAuthPostRequest = (
     [
       defaultSignatureType,
       getHexPublicKey,
+      chain.chain_id,
       chainWallet,
       getNonce,
-      chain.chain_id,
       apiBase,
       t,
     ]
