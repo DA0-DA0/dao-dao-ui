@@ -259,14 +259,13 @@ export const daoVotingCw721StakedQueries = {
       try {
         // Attempt to fetch data from the indexer.
         return {
-          active_threshold:
-            (await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
-                chainId,
-                contractAddress,
-                formula: 'daoVotingCw721Staked/activeThreshold',
-              })
-            )) || null,
+          active_threshold: await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVotingCw721Staked/activeThreshold',
+            })
+          ),
         }
       } catch (error) {
         console.error(error)
