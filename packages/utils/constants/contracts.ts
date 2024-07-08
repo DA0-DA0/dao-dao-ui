@@ -65,6 +65,10 @@ export const DAO_VOTING_CW721_STAKED_CONTRACT_NAMES = [
   'crates.io:dao-voting-snip721-staked',
 ]
 
+export const DAO_VOTING_ONFT_STAKED_CONTRACT_NAMES = [
+  'crates.io:dao-voting-onft-staked',
+]
+
 export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [
   // V2.3.0+
   'crates.io:dao-voting-token-staked',

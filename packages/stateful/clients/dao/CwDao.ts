@@ -37,6 +37,7 @@ import {
   Cw721StakedVotingModule,
   NativeStakedVotingModule,
   NeutronVotingRegistryVotingModule,
+  OnftStakedVotingModule,
   TokenStakedVotingModule,
 } from '../voting-module'
 import { DaoBase } from './base'
@@ -48,6 +49,7 @@ const getVotingModuleBases = () => [
   NativeStakedVotingModule,
   TokenStakedVotingModule,
   NeutronVotingRegistryVotingModule,
+  OnftStakedVotingModule,
 ]
 
 const getProposalModuleBases = () => [

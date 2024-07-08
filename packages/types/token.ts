@@ -12,9 +12,22 @@ import { TokenInfoResponse } from './contracts/Cw20Base'
 import { LoadingData, LoadingDataWithError } from './misc'
 
 export enum TokenType {
+  /**
+   * Native token.
+   */
   Native = 'native',
+  /**
+   * CosmWasm token.
+   */
   Cw20 = 'cw20',
+  /**
+   * CosmWasm NFT.
+   */
   Cw721 = 'cw721',
+  /**
+   * OmniFlix ONFT.
+   */
+  Onft = 'onft',
 }
 
 export type GenericTokenSource = Pick<

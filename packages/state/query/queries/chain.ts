@@ -522,18 +522,19 @@ export const fetchGovProposals = async (
   if (supportsV1Gov) {
     try {
       if (limit === undefined && offset === undefined) {
-        v1Proposals = await getAllRpcResponse(
-          client.gov.v1.proposals,
-          {
-            proposalStatus:
-              status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-            voter: '',
-            depositor: '',
-            pagination: undefined,
-          },
-          'proposals',
-          true
-        )
+        v1Proposals =
+          (await getAllRpcResponse(
+            client.gov.v1.proposals,
+            {
+              proposalStatus:
+                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+              voter: '',
+              depositor: '',
+              pagination: undefined,
+            },
+            'proposals',
+            true
+          )) || []
         total = v1Proposals.length
       } else {
         const response = await client.gov.v1.proposals({
@@ -565,18 +566,20 @@ export const fetchGovProposals = async (
 
   if (!v1Proposals) {
     if (limit === undefined && offset === undefined) {
-      v1Beta1Proposals = await getAllRpcResponse(
-        client.gov.v1beta1.proposals,
-        {
-          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-          voter: '',
-          depositor: '',
-          pagination: undefined,
-        },
-        'proposals',
-        true,
-        true
-      )
+      v1Beta1Proposals =
+        (await getAllRpcResponse(
+          client.gov.v1beta1.proposals,
+          {
+            proposalStatus:
+              status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+            voter: '',
+            depositor: '',
+            pagination: undefined,
+          },
+          'proposals',
+          true,
+          true
+        )) || []
       total = v1Beta1Proposals.length
     } else {
       const response = await client.gov.v1beta1.proposals(

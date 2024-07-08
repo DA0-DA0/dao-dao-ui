@@ -78,7 +78,7 @@ const InnerStakingModal = ({
     fetchClaims: true,
     fetchTotalStakedValue: false,
     fetchWalletStakedValue: true,
-    fetchWalletUnstakedValue: true,
+    fetchWalletUnstakedNfts: true,
   })
 
   const hasStake =

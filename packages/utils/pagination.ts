@@ -6,14 +6,15 @@ import {
 export const getAllRpcResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },
   R extends { pagination?: PageResponse; [key: string]: any },
-  K extends keyof R
+  K extends keyof R,
+  V = R[K] extends any[] ? R[K] : R[K][]
 >(
   queryFn: (params: P, useInterfaces?: boolean) => Promise<R>,
   params: P,
   key: K,
   reverse = false,
   useInterfaces = false
-): Promise<R[K]> => {
+): Promise<V> => {
   let pagination: Partial<PageRequest> | undefined
   const data = [] as any[]
 
@@ -39,14 +40,21 @@ export const getAllRpcResponse = async <
         }
       : undefined
 
-    const results = response[key] as any[]
-    // If no results retrieved, stop.
-    if (!results?.length) {
-      break
-    }
+    const results = response[key] as any
 
-    data.push(...results)
+    // If `key` accesses an array, flatten into result data. Otherwise, just
+    // concatenate all the responses (in case the paginated array is nested
+    // inside `key`).
+    if (Array.isArray(results)) {
+      // If no results retrieved, stop.
+      if (!results?.length) {
+        break
+      }
+      data.push(...results)
+    } else {
+      data.push(results)
+    }
   } while (pagination !== undefined)
 
-  return data as R[K]
+  return data as V
 }
