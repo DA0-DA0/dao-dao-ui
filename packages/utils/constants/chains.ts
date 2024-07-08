@@ -2148,7 +2148,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: -1,
     },
   },
-  // TODO(secret-testnet)
+  // // TODO(secret-testnet)
   // {
   //   chainId: ChainId.SecretTestnet,
   //   name: 'secret',
@@ -2167,20 +2167,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //   codeIds: {
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: -1,
-  //     Cw4Group: 8168,
+  //     Cw4Group: 9158,
   //     Cw20Base: 8164, // snip20
   //     Cw721Base: 8172, // snip721
   //     CwPayrollFactory: 8186,
   //     CwTokenSwap: 8187,
   //     CwVesting: 8189,
-  //     DaoCore: 8607,
+  //     DaoCore: 9155,
   //     DaoPreProposeApprovalSingle: 8180,
   //     DaoPreProposeApprover: 8181,
   //     DaoPreProposeMultiple: 8177,
   //     DaoPreProposeSingle: 8175,
   //     DaoProposalMultiple: 8178,
   //     DaoProposalSingle: 8176,
-  //     DaoVotingCw4: 8169,
+  //     DaoVotingCw4: 9160,
   //     DaoVotingCw20Staked: 8170, // snip20
   //     DaoVotingCw721Staked: 8182, // snip721
   //     DaoVotingTokenStaked: 8174,
@@ -2194,7 +2194,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: '',
   //     Cw4Group:
-  //       '0945d46e86259fffb84c5d7d501f773071ef8101a4112ae5ce1847c2abe297ab',
+  //       '588d5b95d865df2b18d05fa32f93fc6d82864ec84cca87ef139390e6e0524e58',
   //     Cw20Base:
   //       'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
   //     Cw721Base:
@@ -2206,7 +2206,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     CwVesting:
   //       '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
   //     DaoCore:
-  //       'ad3f67d0983fd13726f34148835e07f65f9225ad698a30d0b55e78e783363fd4',
+  //       '24514b34e44eed3898400192d8744fdb0f89cb98cec0377127d364dc2e71ce6f',
   //     DaoPreProposeApprovalSingle:
   //       '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
   //     DaoPreProposeApprover:
@@ -2220,7 +2220,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     DaoProposalSingle:
   //       '0d412146fccc5936cacc463db54e7721eae03d13977e4c3c3ee570fdbba530c6',
   //     DaoVotingCw4:
-  //       '732a247721d7629a0c33bbf39c40a5b410fcd7d9b58415f3bcd91fb68a792176',
+  //       'f80641ebe9bf07ac2e44f6a7c33de7ece8d4706a709b3ea2ccad046384251009',
   //     DaoVotingCw20Staked:
   //       '715b7aa5925b46a7fcff277f4ad3763016429daec8ddedd568f892dad2eb88d0', // snip20
   //     DaoVotingCw721Staked:
