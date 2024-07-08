@@ -15,7 +15,7 @@ import {
   AddressInputProps,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
-import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
+import { SubDao } from '@dao-dao/types/contracts/DaoDaoCore'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'

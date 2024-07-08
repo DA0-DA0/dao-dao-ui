@@ -2,8 +2,8 @@ import {
   ActionContextType,
   ActionKeyAndData,
   ActionOptions,
-  CosmosMsgForEmpty,
   LoadedActions,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 
 import { getAccountAddress } from './dao'
@@ -19,7 +19,7 @@ export const convertActionsToMessages = (
   }: {
     throwErrors?: boolean
   } = {}
-): CosmosMsgForEmpty[] =>
+): UnifiedCosmosMsg[] =>
   actions
     .map(({ actionKey, data }) => {
       // If no action, skip it.
@@ -58,7 +58,7 @@ export const convertActionsToMessages = (
       }
     })
     // Filter out undefined messages.
-    .filter(Boolean) as CosmosMsgForEmpty[]
+    .filter(Boolean) as UnifiedCosmosMsg[]
 
 /**
  * Get the address for the given action options for the given chain. If a DAO,
@@ -76,7 +76,7 @@ export const getChainAddressForActionOptions = (
     : // If on different chain, return DAO's polytone proxy address.
     context.type === ActionContextType.Dao
     ? getAccountAddress({
-        accounts: context.info.accounts,
+        accounts: context.dao.accounts,
         chainId,
       })
     : // If on different chain, return wallet's chain profile address if set.

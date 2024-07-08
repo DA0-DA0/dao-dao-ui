@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoDaoCoreSelectors } from '@dao-dao/state'
 import { WrenchEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
@@ -35,7 +35,7 @@ const Component: ActionComponent<undefined, ManageStorageItemsData> = (
   } = useActionOptions()
 
   const existingItems = useCachedLoadingWithError(
-    DaoCoreV2Selectors.listAllItemsSelector({
+    DaoDaoCoreSelectors.listAllItemsSelector({
       contractAddress: address,
       chainId,
     })
@@ -62,7 +62,9 @@ export const makeManageStorageItemsAction: ActionMaker<
     return null
   }
 
-  const valueKey = context.info.supportedFeatures[Feature.StorageItemValueKey]
+  const valueKey = context.dao.info.supportedFeatures[
+    Feature.StorageItemValueKey
+  ]
     ? 'value'
     : 'addr'
 

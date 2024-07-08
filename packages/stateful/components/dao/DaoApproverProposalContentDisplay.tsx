@@ -126,14 +126,12 @@ export const DaoApproverProposalContentDisplay = ({
   }
 
   return (
-    <DaoProviders info={daoInfo}>
+    <DaoProviders chainId={chainId} coreAddress={approvalDao}>
       <ProposalModuleAdapterProvider
-        coreAddress={daoInfo.coreAddress}
         proposalId={
           // Add prefix of target proposal module so it matches.
           `${proposalModuleWithPreProposeApproval.prefix}${preProposeApprovalProposalId}`
         }
-        proposalModules={[proposalModuleWithPreProposeApproval]}
       >
         <SuspenseLoader
           fallback={<InnerDaoApproverProposalContentDisplay {...innerProps} />}

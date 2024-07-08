@@ -1,7 +1,7 @@
 import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { NullableString } from '@dao-dao/types/contracts/PolytoneNote'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { PolytoneNoteQueryClient } from '../../../contracts/PolytoneNote'
 import { indexerQueries } from '../indexer'
@@ -57,7 +57,7 @@ export const polytoneNoteQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new PolytoneNoteQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).remoteAddress({
         localAddress: args.localAddress,

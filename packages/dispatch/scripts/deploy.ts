@@ -23,6 +23,7 @@ import {
   findEventsAttributeValue,
   getRpcForChainId,
   gzipCompress,
+  maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
 const { parsed: { MNEMONIC, DAO_CONTRACTS_DIR, POLYTONE_CONTRACTS_DIR } = {} } =
@@ -63,34 +64,39 @@ const { log } = console
 const main = async () => {
   const queryClient = await makeReactQueryClient()
 
-  const chain = await queryClient.fetchQuery(
-    skipQueries.chain(queryClient, {
-      chainId,
-    })
-  )
+  const chain =
+    maybeGetChainForChainId(chainId) ||
+    // Fetch from Skip API if doesn't exist locally.
+    (await queryClient.fetchQuery(
+      skipQueries.chain(queryClient, {
+        chainId,
+      })
+    ))
+  const chainName = chain.chain_name
+  const bech32Prefix = chain.bech32_prefix
 
   await queryClient.prefetchQuery(
-    chainQueries.dynamicGasPrice({ chainId: chain.chain_id })
+    chainQueries.dynamicGasPrice({ chainId: chainId })
   )
 
   const signer = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
-    prefix: chain.bech32_prefix,
+    prefix: bech32Prefix,
   })
   const sender = (await signer.getAccounts())[0].address
 
   log()
   log(
     chalk.underline(
-      `Deploying on ${chain.chain_name} from ${sender}${
+      `Deploying on ${chainName} from ${sender}${
         authz ? ` as ${authz}` : ''
       }...`
     )
   )
 
   const client = await SigningCosmWasmClient.connectWithSigner(
-    getRpcForChainId(chain.chain_id),
+    getRpcForChainId(chainId),
     signer,
-    makeGetSignerOptions(queryClient)(chain.chain_name)
+    makeGetSignerOptions(queryClient)(chainName)
   )
 
   const uploadContract = async ({
@@ -228,6 +234,7 @@ const main = async () => {
       sender,
       [
         cwMsgToEncodeObject(
+          chainId,
           {
             wasm: {
               instantiate: {
@@ -366,15 +373,18 @@ const main = async () => {
 
   const config: SupportedChainConfig = {
     chainId,
-    name: chain.chain_name,
-    mainnet: !chain.is_testnet,
+    name: chainName,
+    mainnet:
+      'is_testnet' in chain
+        ? !chain.is_testnet
+        : chain.network_type === 'mainnet',
     accentColor: 'ACCENT_COLOR',
     factoryContractAddress: adminFactoryAddress,
     explorerUrlTemplates: {
-      tx: `https://ping.pub/${chain.chain_name}/tx/REPLACE`,
-      gov: `https://ping.pub/${chain.chain_name}/gov`,
-      govProp: `https://ping.pub/${chain.chain_name}/gov/REPLACE`,
-      wallet: `https://ping.pub/${chain.chain_name}/account/REPLACE`,
+      tx: `https://ping.pub/${chainName}/tx/REPLACE`,
+      gov: `https://ping.pub/${chainName}/gov`,
+      govProp: `https://ping.pub/${chainName}/gov/REPLACE`,
+      wallet: `https://ping.pub/${chainName}/account/REPLACE`,
     },
     codeIds: {
       Cw1Whitelist: codeIdMap['cw1_whitelist'] ?? -1,

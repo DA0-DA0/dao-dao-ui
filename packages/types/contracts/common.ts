@@ -288,7 +288,9 @@ export enum DepositRefundPolicy {
 export interface CheckedDepositInfo {
   amount: Uint128
   denom: CheckedDenom
-  refund_policy: DepositRefundPolicy
+  // make compatible with string union types with matching values, which is what
+  // gets auto-generated
+  refund_policy: `${DepositRefundPolicy}`
 }
 
 /**
@@ -321,7 +323,10 @@ export type ProposalStatusVetoTimelock = {
  *
  * Used by both DaoProposalSingle and DaoProposalMultiple.
  */
-export type ProposalStatus = ProposalStatusEnum | ProposalStatusVetoTimelock
+export type ProposalStatus =
+  // make compatible with string union types with matching values, which is what
+  // gets auto-generated
+  `${ProposalStatusEnum}` | ProposalStatusVetoTimelock
 /**
  * The flattened set of proposal status keys that can be represented as strings.
  * This uses the strings as-is and the key of the object enum variants.
@@ -344,4 +349,109 @@ export type ActiveThreshold =
 
 export type ActiveThresholdResponse = {
   active_threshold?: ActiveThreshold | null
+}
+
+export type UnifiedCosmosMsg = CosmosMsgFor_Empty | SecretCosmosMsgForEmpty
+
+// Secret Network
+
+export type SecretAnyContractInfo = {
+  addr: Addr
+  code_hash: string
+}
+
+export type SecretCosmosMsgForEmpty =
+  | {
+      bank: BankMsg
+    }
+  | {
+      custom: Empty
+    }
+  | {
+      staking: StakingMsg
+    }
+  | {
+      distribution: DistributionMsg
+    }
+  | {
+      ibc: IbcMsg
+    }
+  | {
+      wasm: SecretWasmMsg
+    }
+  | {
+      gov: GovMsg
+    }
+  | {
+      finalize_tx: Empty
+    }
+  | StargateMsg
+export type SecretWasmMsg =
+  | {
+      execute: {
+        code_hash: string
+        contract_addr: string
+        msg: Binary
+        send: Coin[]
+      }
+    }
+  | {
+      instantiate: {
+        admin?: string | null
+        code_hash: string
+        code_id: number
+        label: string
+        msg: Binary
+        send: Coin[]
+      }
+    }
+  | {
+      migrate: {
+        code_hash: string
+        code_id: number
+        contract_addr: string
+        msg: Binary
+      }
+    }
+  | {
+      update_admin: {
+        admin: string
+        contract_addr: string
+      }
+    }
+  | {
+      clear_admin: {
+        contract_addr: string
+      }
+    }
+
+export type Auth =
+  | {
+      viewing_key: {
+        address: string
+        key: string
+      }
+    }
+  | {
+      permit: PermitForPermitData
+    }
+export interface PermitForPermitData {
+  account_number?: Uint128 | null
+  chain_id?: string | null
+  memo?: string | null
+  params: PermitData
+  sequence?: Uint128 | null
+  signature: PermitSignature
+}
+export interface PermitData {
+  data: Binary
+  key: string
+}
+export interface PermitSignature {
+  pub_key: PubKey
+  signature: Binary
+}
+export interface PubKey {
+  type: string
+  value: Binary
 }

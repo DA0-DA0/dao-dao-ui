@@ -1,4 +1,4 @@
-import { CosmosMsgForEmpty } from '../contracts'
+import { UnifiedCosmosMsg } from '../contracts'
 import { CrossChainPacketInfo } from '../proposal'
 import { ModalProps } from './Modal'
 
@@ -28,7 +28,7 @@ export type SelfRelayTransaction =
       type: 'execute'
       // CosmWasm-formatted messages to execute that will create IBC packets
       // that need self-relaying.
-      msgs: CosmosMsgForEmpty[]
+      msgs: UnifiedCosmosMsg[]
     }
   | {
       type: 'exists'

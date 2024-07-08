@@ -10,7 +10,7 @@ import {
   ActionComponent,
   ActionKey,
   ActionMaker,
-  ProposalModule,
+  IProposalModuleBase,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -115,7 +115,7 @@ const Component: ActionComponent = (props) => {
 export const makeUpdateProposalConfigV1ActionMaker =
   ({
     address: proposalModuleAddress,
-  }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
+  }: IProposalModuleBase): ActionMaker<UpdateProposalConfigData> =>
   ({ t, address, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(

@@ -38,6 +38,8 @@ export * from "./publicawesome/bundle";
 export * from "./publicawesome/client";
 export * from "./regen/bundle";
 export * from "./regen/client";
+export * from "./secret/bundle";
+export * from "./secret/client";
 export * from "./noble/bundle";
 export * from "./tendermint/bundle";
 export * from "./varint";

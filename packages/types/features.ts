@@ -29,6 +29,7 @@ export enum ContractVersion {
   V240 = '2.4.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.4.2
   V242 = '2.4.2',
+  V250 = '2.5.0',
 }
 
 /**
@@ -88,6 +89,10 @@ export enum Feature {
    * Veto was added.
    */
   Veto,
+  /**
+   * The ability to specify a more granular pre-propose submission policy.
+   */
+  GranularSubmissionPolicy,
 }
 
 /**

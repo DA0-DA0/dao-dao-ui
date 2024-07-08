@@ -16,7 +16,7 @@ import {
   VoterListResponse,
   VoterResponse,
 } from '@dao-dao/types/contracts/Cw3FlexMultisig'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { Cw3FlexMultisigQueryClient } from '../../../contracts/Cw3FlexMultisig'
 
@@ -119,7 +119,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.threshold(contractAddress),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).threshold(),
     ...options,
@@ -137,7 +137,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.proposal(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).proposal({
         proposalId: args.proposalId,
@@ -157,7 +157,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.listProposals(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listProposals({
         limit: args.limit,
@@ -178,7 +178,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.reverseProposals(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).reverseProposals({
         limit: args.limit,
@@ -199,7 +199,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.getVote(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getVote({
         proposalId: args.proposalId,
@@ -220,7 +220,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.listVotes(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listVotes({
         limit: args.limit,
@@ -242,7 +242,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.voter(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).voter({
         address: args.address,
@@ -262,7 +262,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.listVoters(contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).listVoters({
         limit: args.limit,
@@ -327,7 +327,7 @@ export const cw3FlexMultisigQueries = {
     queryKey: cw3FlexMultisigQueryKeys.config(contractAddress),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).config(),
     ...options,

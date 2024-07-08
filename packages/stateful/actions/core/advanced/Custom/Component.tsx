@@ -13,7 +13,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertJsonToCWCosmosMsg,
   objectMatchesStructure,
-  validateCosmosMsg,
+  validateCosmosMsgForChain,
 } from '@dao-dao/utils'
 
 export type CustomData = {
@@ -91,7 +91,10 @@ export const CustomComponent: ActionComponent = ({
         validation={[
           (value: string) => {
             try {
-              validateCosmosMsg(convertJsonToCWCosmosMsg(value))
+              validateCosmosMsgForChain(
+                chainId,
+                convertJsonToCWCosmosMsg(value)
+              )
             } catch (err) {
               return err instanceof Error ? err.message : `${err}`
             }

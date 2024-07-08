@@ -396,13 +396,9 @@ export const useManageProfile = ({
         address: chainWallet.address!,
       })
     ),
-    combine: useMemo(
-      () =>
-        makeCombineQueryResultsIntoLoadingData<UnifiedProfile>({
-          firstLoad: 'none',
-        }),
-      []
-    ),
+    combine: makeCombineQueryResultsIntoLoadingData<UnifiedProfile>({
+      firstLoad: 'none',
+    }),
   })
 
   const merge: UseManageProfileReturn['merge'] = useMemo(() => {

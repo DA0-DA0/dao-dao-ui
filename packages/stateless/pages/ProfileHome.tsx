@@ -18,7 +18,8 @@ import {
 } from '@dao-dao/utils'
 
 import { Loader, TabBar, WalletProfileHeader } from '../components'
-import { useChain, useTabBarScrollReset } from '../hooks'
+import { useChain } from '../contexts'
+import { useTabBarScrollReset } from '../hooks'
 
 export type ProfileHomeProps = {
   tabs: AccountTab[]

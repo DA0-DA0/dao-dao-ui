@@ -9,7 +9,7 @@ import {
   MultisigAccount,
   PolytoneProxies,
 } from '@dao-dao/types'
-import { ListItemsResponse } from '@dao-dao/types/contracts/DaoCore.v2'
+import { ListItemsResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'

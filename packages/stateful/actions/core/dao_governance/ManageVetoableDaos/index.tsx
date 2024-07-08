@@ -61,7 +61,7 @@ export const makeManageVetoableDaosAction: ActionMaker<
     return null
   }
 
-  const storageItemValueKey = context.info.supportedFeatures[
+  const storageItemValueKey = context.dao.info.supportedFeatures[
     Feature.StorageItemValueKey
   ]
     ? 'value'

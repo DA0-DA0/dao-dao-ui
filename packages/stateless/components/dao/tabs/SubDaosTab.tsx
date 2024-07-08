@@ -11,7 +11,8 @@ import {
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 
-import { useDaoInfoContext, useDaoNavHelpers } from '../../../hooks'
+import { useDaoInfoContext } from '../../../contexts'
+import { useDaoNavHelpers } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'
 import { NoContent } from '../../NoContent'
 import { Tooltip } from '../../tooltip'

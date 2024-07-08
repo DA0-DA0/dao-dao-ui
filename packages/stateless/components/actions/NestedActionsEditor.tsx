@@ -5,10 +5,10 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   ActionCategoryWithLabel,
   ActionComponent,
-  CosmosMsgFor_Empty,
   LoadedActions,
   NestedActionsEditorFormData,
   SuspenseLoaderProps,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import { convertActionsToMessages } from '@dao-dao/utils'
 
@@ -35,7 +35,7 @@ export const NestedActionsEditor: ActionComponent<
     watch((fieldNamePrefix + '_actionData') as '_actionData') || []
 
   // Update action msgs from actions form data.
-  let msgs: CosmosMsgFor_Empty[] = []
+  let msgs: UnifiedCosmosMsg[] = []
   try {
     msgs = convertActionsToMessages(loadedActions, actionData)
 

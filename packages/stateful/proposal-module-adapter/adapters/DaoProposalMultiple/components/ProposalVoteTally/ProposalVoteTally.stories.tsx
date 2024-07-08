@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProcessedTQType, ProposalStatusEnum } from '@dao-dao/types'
-import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
+import { ProcessedMultipleChoiceOption } from '../../types'
 import { ProposalVoteTally } from './ProposalVoteTally'
 
 export default {
@@ -17,12 +17,12 @@ const Template: ComponentStory<typeof ProposalVoteTally> = (args) => (
   </div>
 )
 
-const choices = [
+const choices: ProcessedMultipleChoiceOption[] = [
   {
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 1',
     turnoutVotePercentage: 100,
     color: '#8B2EFF',
@@ -31,7 +31,7 @@ const choices = [
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 3',
     turnoutVotePercentage: 0,
     color: '#004EFF',
@@ -40,7 +40,7 @@ const choices = [
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 2',
     turnoutVotePercentage: 0,
     color: '#4F00FF',
@@ -49,19 +49,19 @@ const choices = [
     description: 'description',
     index: 1,
     msgs: [],
-    optionType: MultipleChoiceOptionType.None,
+    optionType: 'none',
     title: 'titular_none_option',
     turnoutVotePercentage: 0,
     color: '#00B3FF',
   },
 ]
 
-const choicesTied = [
+const choicesTied: ProcessedMultipleChoiceOption[] = [
   {
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 1',
     turnoutVotePercentage: 25,
     color: '#00B3FF',
@@ -70,7 +70,7 @@ const choicesTied = [
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 3',
     turnoutVotePercentage: 25,
     color: '#4F00FF',
@@ -79,7 +79,7 @@ const choicesTied = [
     description: 'description',
     index: 0,
     msgs: [],
-    optionType: MultipleChoiceOptionType.Standard,
+    optionType: 'standard',
     title: 'OPTION 2',
     turnoutVotePercentage: 25,
     color: '#8B2EFF',
@@ -88,7 +88,7 @@ const choicesTied = [
     description: 'description',
     index: 1,
     msgs: [],
-    optionType: MultipleChoiceOptionType.None,
+    optionType: 'none',
     title: 'titular_none_option',
     turnoutVotePercentage: 25,
     color: '#004EFF',

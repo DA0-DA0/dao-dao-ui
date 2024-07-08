@@ -18,7 +18,10 @@ export const makeDaoInfo = (): DaoInfo => ({
   coreVersion: ContractVersion.V2Alpha,
   supportedFeatures: getSupportedFeatures(ContractVersion.V2Alpha),
   votingModuleAddress: 'votingModuleAddress',
-  votingModuleContractName: 'crates.io:dao-voting-cw20-staked',
+  votingModuleInfo: {
+    contract: 'crates.io:dao-voting-cw20-staked',
+    version: ContractVersion.V2Alpha,
+  },
   proposalModules: [
     {
       type: ProposalModuleType.Single,
@@ -31,6 +34,11 @@ export const makeDaoInfo = (): DaoInfo => ({
         version: ContractVersion.V2Alpha,
         address: 'preProposeModuleAddress',
         type: PreProposeModuleType.Other,
+        submissionPolicy: {
+          specific: {
+            dao_members: true,
+          },
+        },
       },
       config: {
         veto: null,

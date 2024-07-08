@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoDaoCoreSelectors } from '@dao-dao/state'
 import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -38,7 +38,7 @@ const Component: ActionComponent = (props) => {
   } = useActionOptions()
 
   const currentSubDaos = useRecoilValue(
-    DaoCoreV2Selectors.allSubDaoConfigsSelector({
+    DaoDaoCoreSelectors.allSubDaoConfigsSelector({
       chainId,
       contractAddress: address,
     })
@@ -63,7 +63,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.SubDaos]
+    !context.dao.info.supportedFeatures[Feature.SubDaos]
   ) {
     return null
   }

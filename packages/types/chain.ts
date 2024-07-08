@@ -79,6 +79,8 @@ export enum ChainId {
   BitsongMainnet = 'bitsong-2b',
   BitsongTestnet = 'bobnet',
   OmniflixHubMainnet = 'omniflixhub-1',
+  SecretMainnet = 'secret-4',
+  SecretTestnet = 'pulsar-3',
 }
 
 export type BaseChainConfig = {
@@ -146,9 +148,17 @@ export type SupportedChainConfig = BaseChainConfig & {
     network: string
   }
   /**
+   * Version of the code IDs in the config below.
+   */
+  codeIdsVersion: ContractVersion
+  /**
    * Code IDs stored on this chain that are used throughout the UI.
    */
   codeIds: CodeIdConfig
+  /**
+   * Code hashes for IDs above. Only used by Secret Network.
+   */
+  codeHashes?: CodeHashConfig
   /**
    * Whether or not to create DAOs with CW20s. The alternative is to use token
    * factory native tokens. Defaults to false.
@@ -225,6 +235,9 @@ export type CodeIdConfig = {
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
 
+  // For Secret Network
+  QueryAuth?: number
+
   // For migrating Migaloo DAOs from cosmwasm to osmosis x/tokenfactory.
   CwTokenfactoryIssuerCosmWasm?: number
 
@@ -232,6 +245,10 @@ export type CodeIdConfig = {
   Cw20Base?: number
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
+}
+
+export type CodeHashConfig = {
+  [K in keyof CodeIdConfig]: string
 }
 
 export type PolytoneConnection = {

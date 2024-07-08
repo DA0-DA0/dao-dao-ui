@@ -4,7 +4,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
   CommonNftSelectors,
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   nftCardInfoWithUriSelector,
   nftUriDataSelector,
 } from '@dao-dao/state/recoil'
@@ -97,7 +97,7 @@ export const MintNft: ActionComponent = (props) => {
   // Get all collections in DAO.
   const daoCollections = useRecoilValueLoadable(
     props.isCreating && context.type === ActionContextType.Dao
-      ? DaoCoreV2Selectors.allCw721CollectionsSelector({
+      ? DaoDaoCoreSelectors.allCw721CollectionsSelector({
           contractAddress: address,
           chainId: currentChainId,
         })

@@ -54,20 +54,8 @@ Default.args = {
   },
   loadingMembershipDuringCompletedSurveys: {
     loading: false,
-    data: [
-      {
-        height: 1,
-        power: '0',
-      },
-      {
-        height: 2,
-        power: '5',
-      },
-      {
-        height: 3,
-        power: '10',
-      },
-    ],
+    errored: false,
+    data: ['0', '5', '10'],
   },
   isMember: true,
   NewSurveyForm: () => <NewStoryFormStory {...makeNewSurveyFormProps()} />,

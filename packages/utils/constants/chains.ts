@@ -145,6 +145,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/juno/gov/REPLACE',
       wallet: 'https://ping.pub/juno/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 3914,
@@ -152,7 +153,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1994, // v0.16
 
-      // ContractVersion.V240
       CwPayrollFactory: 4042,
       CwTokenSwap: 4043,
       CwTokenfactoryIssuerMain: 4045,
@@ -379,6 +379,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://ping.pub/osmosis/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 351,
@@ -386,7 +387,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 124, // v0.16
 
-      // ContractVersion.V240
       CwPayrollFactory: 353,
       CwTokenSwap: 354,
       CwTokenfactoryIssuerMain: 364,
@@ -645,6 +645,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       tx: 'https://neutron.celat.one/neutron-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/neutron-1/accounts/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 552,
@@ -652,7 +653,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 232,
 
-      // ContractVersion.V240
       CwPayrollFactory: 553,
       CwTokenSwap: 564,
       CwTokenfactoryIssuerMain: 565,
@@ -813,12 +813,12 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://ping.pub/stargaze/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 152,
       Cw4Group: 83, // v0.16
 
-      // ContractVersion.V240
       CwPayrollFactory: 148,
       CwTokenSwap: 149,
       CwTokenfactoryIssuerMain: 150,
@@ -1016,6 +1016,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://inbloc.org/migaloo/proposal/REPLACE',
       wallet: 'https://inbloc.org/migaloo/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 304,
@@ -1023,7 +1024,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 303,
 
-      // ContractVersion.V240
       CwPayrollFactory: 286,
       CwTokenSwap: 287,
       CwTokenfactoryIssuerMain: 401,
@@ -1207,6 +1207,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/terra/gov/REPLACE',
       wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 2627,
@@ -1214,7 +1215,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 2629,
 
-      // ContractVersion.V240
       CwPayrollFactory: 2631,
       CwTokenSwap: 2632,
       CwTokenfactoryIssuerMain: 2633,
@@ -1375,6 +1375,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/terra-luna/gov/REPLACE',
       wallet: 'https://finder.terra.money/classic/address/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 8725,
@@ -1382,7 +1383,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 8727,
 
-      // ContractVersion.V242
       CwPayrollFactory: 8729,
       CwTokenSwap: 8730,
       CwTokenfactoryIssuerMain: -1, // Not used
@@ -1493,6 +1493,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://scan.orai.io/proposals/REPLACE',
       wallet: 'https://scan.orai.io/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 1546,
@@ -1500,7 +1501,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1548,
 
-      // ContractVersion.V240
       CwPayrollFactory: 1550,
       CwTokenSwap: 1551,
       CwTokenfactoryIssuerMain: 1552,
@@ -1576,6 +1576,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://blue.kujira.network/govern/REPLACE',
       wallet: 'https://finder.kujira.network/kaiyo-1/address/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 259,
@@ -1583,7 +1584,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 261,
 
-      // ContractVersion.V242
       CwPayrollFactory: 262,
       CwTokenSwap: 263,
       CwTokenfactoryIssuerMain: 264,
@@ -1728,6 +1728,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/bitsong/gov/REPLACE',
       wallet: 'https://ping.pub/bitsong/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       Cw1Whitelist: 7,
       Cw4Group: 8,
@@ -1805,6 +1806,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/omniflixhub/gov/REPLACE',
       wallet: 'https://ping.pub/omniflixhub/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       Cw1Whitelist: 5,
       Cw4Group: 6,
@@ -1840,6 +1842,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/juno/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/juno/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 4060,
@@ -1847,7 +1850,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 179,
 
-      // ContractVersion.V240
       CwPayrollFactory: 4062,
       CwTokenSwap: 4063,
       CwTokenfactoryIssuerMain: 4065,
@@ -1888,6 +1890,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/osmosis/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 5839,
@@ -1895,7 +1898,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1326, // v0.16
 
-      // ContractVersion.V240
       CwPayrollFactory: 5841,
       CwTokenSwap: 5842,
       CwTokenfactoryIssuerMain: 5843,
@@ -1932,27 +1934,27 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 3459,
       Cw4Group: 2887, // v0.16
 
-      // ContractVersion.V240
-      CwPayrollFactory: 3461,
-      CwTokenSwap: 3462,
-      CwTokenfactoryIssuerMain: 3463,
-      CwVesting: 3464,
-      DaoCore: 3465,
+      CwPayrollFactory: 4355,
+      CwTokenSwap: 4356,
+      CwTokenfactoryIssuerMain: 4357,
+      CwVesting: 4358,
+      DaoCore: 4359,
       DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 3467,
-      DaoPreProposeApprover: 3468,
-      DaoPreProposeMultiple: 3469,
-      DaoPreProposeSingle: 3470,
-      DaoProposalMultiple: 3471,
-      DaoProposalSingle: 3472,
-      DaoVotingCw4: 3473,
-      DaoVotingCw721Staked: 3474,
-      DaoVotingTokenStaked: 3475,
+      DaoPreProposeApprovalSingle: 4360,
+      DaoPreProposeApprover: 4361,
+      DaoPreProposeMultiple: 4362,
+      DaoPreProposeSingle: 4363,
+      DaoProposalMultiple: 4364,
+      DaoProposalSingle: 4365,
+      DaoVotingCw4: 4366,
+      DaoVotingCw721Staked: 4367,
+      DaoVotingTokenStaked: 4368,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -1974,6 +1976,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/migaloo/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/migaloo/account/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V240,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 1,
@@ -1981,7 +1984,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 19,
 
-      // ContractVersion.V240
       CwPayrollFactory: 3,
       CwTokenSwap: 4,
       CwTokenfactoryIssuerMain: 65,
@@ -2015,6 +2017,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // govProp: 'https://blue.kujira.network/govern/REPLACE',
       wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 3361,
@@ -2022,7 +2025,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 3363,
 
-      // ContractVersion.V242
       CwPayrollFactory: 3365,
       CwTokenSwap: 3366,
       CwTokenfactoryIssuerMain: 3378,
@@ -2052,6 +2054,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',
     },
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 4618,
@@ -2059,7 +2062,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 4620,
 
-      // ContractVersion.V242
       CwPayrollFactory: 4622,
       CwTokenSwap: 4623,
       CwTokenfactoryIssuerMain: 4635,
@@ -2086,6 +2088,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     tokenCreationUnderDevelopment: true,
     factoryContractAddress:
       'bitsong1ewd84afkxwxmqeu56p5mt3h446mgh3nh8yvmj2238akvu4ax7kss4a3u5c',
+    codeIdsVersion: ContractVersion.V242,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 7,
@@ -2093,7 +2096,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 9,
 
-      // ContractVersion.V242
       CwPayrollFactory: 11,
       CwTokenSwap: 12,
       CwTokenfactoryIssuerMain: 27,
@@ -2111,6 +2113,93 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 28,
     },
   },
+  // TODO(secret-testnet)
+  // {
+  //   chainId: ChainId.SecretTestnet,
+  //   name: 'secret',
+  //   mainnet: false,
+  //   accentColor: '#000000',
+  //   factoryContractAddress: 'secret13dk93ms25qu8j06pxn2p9yphzmsskpejtmddh0',
+  //   noIndexer: true,
+  //   createWithCw20: true,
+  //   explorerUrlTemplates: {
+  //     tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
+  //     gov: 'https://testnet.ping.pub/secret/gov',
+  //     govProp: 'https://testnet.ping.pub/secret/gov/REPLACE',
+  //     wallet: 'https://testnet.ping.pub/secret/account/REPLACE',
+  //   },
+  //   codeIdsVersion: ContractVersion.V242,
+  //   codeIds: {
+  //     // TODO(secret-testnet)
+  //     Cw1Whitelist: -1,
+  //     Cw4Group: 8168,
+  //     Cw20Base: 8164, // snip20
+  //     Cw721Base: 8172, // snip721
+  //     CwPayrollFactory: 8186,
+  //     CwTokenSwap: 8187,
+  //     CwVesting: 8189,
+  //     DaoCore: 8607,
+  //     DaoPreProposeApprovalSingle: 8180,
+  //     DaoPreProposeApprover: 8181,
+  //     DaoPreProposeMultiple: 8177,
+  //     DaoPreProposeSingle: 8175,
+  //     DaoProposalMultiple: 8178,
+  //     DaoProposalSingle: 8176,
+  //     DaoVotingCw4: 8169,
+  //     DaoVotingCw20Staked: 8170, // snip20
+  //     DaoVotingCw721Staked: 8182, // snip721
+  //     DaoVotingTokenStaked: 8174,
+  //     QueryAuth: 8195,
+
+  //     // unused
+  //     CwTokenfactoryIssuerMain: -1,
+  //     DaoMigrator: -1,
+  //   },
+  //   codeHashes: {
+  //     // TODO(secret-testnet)
+  //     Cw1Whitelist: '',
+  //     Cw4Group:
+  //       '0945d46e86259fffb84c5d7d501f773071ef8101a4112ae5ce1847c2abe297ab',
+  //     Cw20Base:
+  //       'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
+  //     Cw721Base:
+  //       'ab0f16b065e766eee7181c4357d29bc6f947d73dbd48943fc0e501b2147a492e', // snip721
+  //     CwPayrollFactory:
+  //       'f6f0bd62757f19c513fd2e0bccea1aa4d6bc57ff65c2cdd1f5c849a397eea9fd',
+  //     CwTokenSwap:
+  //       '26f2ce755019de01c65a5742ac3c8e704130a2feaa92bd69d161e76030998f2c',
+  //     CwVesting:
+  //       '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
+  //     DaoCore:
+  //       'ad3f67d0983fd13726f34148835e07f65f9225ad698a30d0b55e78e783363fd4',
+  //     DaoPreProposeApprovalSingle:
+  //       '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
+  //     DaoPreProposeApprover:
+  //       '5fc6a014fd017a62bbfea437322857e952eac7572c901a0a6ca23ef7598f971f',
+  //     DaoPreProposeMultiple:
+  //       '24e2a494b9450e6747bdf2b00b01e0f9afb54d455121c58b3857396af74d298f',
+  //     DaoPreProposeSingle:
+  //       'd5fde27c749424968f14a70f4383d3aa1df97ba9ab4933a7e648186ecf8afa1c',
+  //     DaoProposalMultiple:
+  //       '78584b7acdbeae211e71b8711147985217999ab7cf146812df456c48a24835b9',
+  //     DaoProposalSingle:
+  //       '0d412146fccc5936cacc463db54e7721eae03d13977e4c3c3ee570fdbba530c6',
+  //     DaoVotingCw4:
+  //       '732a247721d7629a0c33bbf39c40a5b410fcd7d9b58415f3bcd91fb68a792176',
+  //     DaoVotingCw20Staked:
+  //       '715b7aa5925b46a7fcff277f4ad3763016429daec8ddedd568f892dad2eb88d0', // snip20
+  //     DaoVotingCw721Staked:
+  //       '90f91337256cb3db1b44567ced0457b51271263f67e5df3590de77d22c04a3b3', // snip721
+  //     DaoVotingTokenStaked:
+  //       '3bc835c9e0fdd0deea88202d3de32caa8125891eb0821973f1c5244f818f2d45',
+  //     QueryAuth:
+  //       'dbedf461d93392c5f5e36e07feb46ac4ce0700069d1be6c0796980ef48d1aab4',
+
+  //     // unused
+  //     CwTokenfactoryIssuerMain: '',
+  //     DaoMigrator: '',
+  //   },
+  // },
 ]
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -2211,6 +2300,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.OmniflixHubMainnet]: {
     rpc: 'https://omniflix-rpc.polkachu.com',
     rest: 'https://omniflix-api.polkachu.com',
+  },
+  [ChainId.SecretTestnet]: {
+    rpc: 'https://rpc.pulsar.scrttestnet.com',
+    rest: 'https://api.pulsar.scrttestnet.com',
   },
 }
 

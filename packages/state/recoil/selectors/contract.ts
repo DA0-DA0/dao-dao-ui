@@ -8,8 +8,10 @@ import {
   DAO_CORE_CONTRACT_NAMES,
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
   getChainForChainId,
+  isSecretNetwork,
   isValidBech32Address,
   parseContractVersion,
+  secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
 import {
@@ -144,19 +146,45 @@ export const contractInfoSelector = selectorFamily<
 
       // If indexer fails, fallback to querying chain.
       const client = get(cosmWasmClientForChainSelector(chainId))
-      const { data: contractInfo } = await client[
-        'forceGetQueryClient'
-      ]().wasm.queryContractRaw(contractAddress, toUtf8('contract_info'))
-      if (contractInfo) {
-        const info: InfoResponse = {
-          info: JSON.parse(fromUtf8(contractInfo)),
+
+      if (isSecretNetwork(chainId)) {
+        // Secret Network does not allow accessing raw state directly, so this
+        // will only work if the contract has an `info` query, which all our DAO
+        // contracts do, but not all DAO contracts do.
+        return await client.queryContractSmart(contractAddress, {
+          info: {},
+        })
+      } else {
+        const { data: contractInfo } = await client[
+          'forceGetQueryClient'
+        ]().wasm.queryContractRaw(contractAddress, toUtf8('contract_info'))
+        if (contractInfo) {
+          const info: InfoResponse = {
+            info: JSON.parse(fromUtf8(contractInfo)),
+          }
+          return info
         }
-        return info
       }
 
       throw new Error(
         'Failed to query contract info for contract: ' + contractAddress
       )
+    },
+})
+
+/**
+ * Get code hash for a Secret Network contract.
+ */
+export const secretContractCodeHashSelector = selectorFamily<
+  string,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'secretContractCodeHash',
+  get:
+    ({ chainId, contractAddress }) =>
+    async () => {
+      const client = await secretCosmWasmClientRouter.connect(chainId)
+      return client.queryCodeHashForContractAddress(contractAddress)
     },
 })
 

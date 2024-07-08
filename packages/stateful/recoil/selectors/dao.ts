@@ -7,24 +7,20 @@ import {
 } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoVotingCw20StakedSelectors,
   accountsSelector,
   contractInfoSelector,
   contractVersionSelector,
   daoDropdownInfoSelector,
-  daoTvlSelector,
   daoVetoableDaosSelector,
   followingDaosSelector,
-  govProposalsSelector,
   isDaoSelector,
-  nativeDelegatedBalanceSelector,
   queryClientAtom,
   queryWalletIndexerSelector,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
-  DaoCardLazyData,
   DaoPageMode,
   DaoSource,
   DaoWithDropdownVetoableProposalList,
@@ -37,116 +33,11 @@ import {
 import {
   DaoVotingCw20StakedAdapterId,
   getDaoProposalPath,
-  getSupportedChainConfig,
   isConfiguredChainName,
 } from '@dao-dao/utils'
 
-import { proposalModuleAdapterProposalCountSelector } from '../../proposal-module-adapter'
 import { fetchProposalModules } from '../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-adapter'
-
-export const daoCardLazyDataSelector = selectorFamily<
-  DaoCardLazyData,
-  WithChainId<{
-    coreAddress: string
-    walletAddress?: string
-  }>
->({
-  key: 'daoCardLazyData',
-  get:
-    ({ coreAddress, chainId, walletAddress }) =>
-    ({ get }) => {
-      const { amount: tvl } = get(
-        daoTvlSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-
-      // Native chain x/gov module.
-      if (isConfiguredChainName(chainId, coreAddress)) {
-        // If chain uses a contract-based DAO, load it instead.
-        const govContractAddress =
-          getSupportedChainConfig(chainId)?.govContractAddress
-        if (govContractAddress) {
-          coreAddress = govContractAddress
-        } else {
-          // Use chain x/gov module info.
-
-          // Get proposal count by loading one proposal and getting the total.
-          const { total: proposalCount } = get(
-            govProposalsSelector({
-              chainId,
-              limit: 1,
-            })
-          )
-
-          const isMember = walletAddress
-            ? get(
-                nativeDelegatedBalanceSelector({
-                  chainId,
-                  address: walletAddress,
-                })
-              ).amount !== '0'
-            : false
-
-          return {
-            isMember,
-            proposalCount,
-            tokenWithBalance: {
-              balance: tvl,
-              symbol: 'USD',
-              decimals: 2,
-            },
-          }
-        }
-      }
-
-      // DAO.
-
-      const walletVotingWeight = walletAddress
-        ? Number(
-            get(
-              DaoCoreV2Selectors.votingPowerAtHeightSelector({
-                chainId,
-                contractAddress: coreAddress,
-                params: [{ address: walletAddress }],
-              })
-            ).power
-          )
-        : 0
-
-      const proposalModules = get(
-        daoCoreProposalModulesSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-      const proposalModuleCounts = get(
-        waitForAll(
-          proposalModules.map(({ address }) =>
-            proposalModuleAdapterProposalCountSelector({
-              chainId,
-              proposalModuleAddress: address,
-            })
-          )
-        )
-      ).filter(Boolean) as number[]
-
-      return {
-        isMember: walletVotingWeight > 0,
-        proposalCount: proposalModuleCounts.reduce(
-          (acc, curr) => acc + curr,
-          0
-        ),
-        tokenWithBalance: {
-          balance: tvl,
-          symbol: 'USD',
-          decimals: 2,
-        },
-      }
-    },
-})
 
 export const followingDaosWithProposalModulesSelector = selectorFamily<
   (DaoSource & {
@@ -220,7 +111,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
     ({ coreAddress, chainId }) =>
     ({ get }) => {
       const votingModuleAddress = get(
-        DaoCoreV2Selectors.votingModuleSelector({
+        DaoDaoCoreSelectors.votingModuleSelector({
           contractAddress: coreAddress,
           chainId,
           params: [],
@@ -343,34 +234,27 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
         )
       )
 
-      const daoConfigAndProposalModules = get(
+      const daoConfigs = get(
         waitForAllSettled(
           uniqueChainsAndDaos.map((chainAndDao) => {
             const [chainId, coreAddress] = chainAndDao.split(':')
-            return waitForAll([
-              DaoCoreV2Selectors.configSelector({
-                chainId,
-                contractAddress: coreAddress,
-                params: [],
-              }),
-              daoCoreProposalModulesSelector({
-                chainId,
-                coreAddress,
-              }),
-            ])
+            return DaoDaoCoreSelectors.configSelector({
+              chainId,
+              contractAddress: coreAddress,
+              params: [],
+            })
           })
         )
       )
 
       return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
-        const daoData = daoConfigAndProposalModules[index]
+        const config = daoConfigs[index]
 
-        return daoData.state === 'hasValue'
+        return config.state === 'hasValue'
           ? {
               chainId: chainAndDao.split(':')[0],
               dao: chainAndDao.split(':')[1],
-              name: daoData.contents[0].name,
-              proposalModules: daoData.contents[1],
+              name: config.contents.name,
               proposalsWithModule: daoVetoableProposalsPerChain.find(
                 (vetoable) =>
                   `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
@@ -412,7 +296,6 @@ export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
         ({
           chainId,
           dao,
-          proposalModules,
           proposalsWithModule,
         }):
           | DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>
@@ -438,7 +321,6 @@ export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
                   ({ id }): StatefulProposalLineProps => ({
                     chainId,
                     coreAddress: dao,
-                    proposalModules,
                     proposalId: `${prefix}${id}`,
                     proposalViewUrl: getDaoProposalPath(
                       daoPageMode,

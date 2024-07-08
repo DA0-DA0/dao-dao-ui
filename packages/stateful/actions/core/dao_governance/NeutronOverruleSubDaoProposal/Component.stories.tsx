@@ -25,7 +25,6 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    daoProposalModules: { loading: false, data: [] },
     EntityDisplay,
     ProposalLine,
   },

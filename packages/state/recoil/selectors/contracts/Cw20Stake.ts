@@ -89,10 +89,10 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
         ).asset_key
       }
 
-      const balance = get(
+      const stakedBalanceAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'cw20Stake/stakedBalance',
+          formula: 'cw20Stake/stakedBalanceAtHeight',
           args: {
             address: params[0].address,
             oraichainStakingToken,
@@ -101,11 +101,8 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
           id,
         })
       )
-      if (balance && !isNaN(balance)) {
-        return {
-          balance,
-          height: params[0].height,
-        }
+      if (stakedBalanceAtHeight) {
+        return stakedBalanceAtHeight
       }
 
       // If indexer query fails, fallback to contract query.
@@ -136,10 +133,10 @@ export const totalStakedAtHeightSelector = selectorFamily<
         ).asset_key
       }
 
-      const total = get(
+      const totalStakedAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'cw20Stake/totalStaked',
+          formula: 'cw20Stake/totalStakedAtHeight',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
           args: {
@@ -147,11 +144,8 @@ export const totalStakedAtHeightSelector = selectorFamily<
           },
         })
       )
-      if (total && !isNaN(total)) {
-        return {
-          total,
-          height: params[0].height,
-        }
+      if (totalStakedAtHeight) {
+        return totalStakedAtHeight
       }
 
       // If indexer query fails, fallback to contract query.

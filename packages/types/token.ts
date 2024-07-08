@@ -38,6 +38,10 @@ export type GenericToken = {
    */
   denomOrAddress: string
   /**
+   * SNIP-20 code hash if isSecretNetwork(chainId) && type === TokenType.Cw20
+   */
+  snip20CodeHash?: string | null
+  /**
    * The symbol for this token.
    */
   symbol: string
@@ -202,7 +206,7 @@ export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
 
 export type AmountWithTimestamp = {
   amount: number
-  timestamp: Date
+  timestamp: number
 }
 
 export enum TokenPriceHistoryRange {

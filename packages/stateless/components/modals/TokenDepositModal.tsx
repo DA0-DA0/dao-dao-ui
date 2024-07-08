@@ -104,7 +104,9 @@ export const TokenDepositModal = ({
                 : { loading: false, data: loadingBalance.data.amount }
             }
             dateFetched={
-              loadingBalance.loading ? undefined : loadingBalance.data.timestamp
+              loadingBalance.loading
+                ? undefined
+                : new Date(loadingBalance.data.timestamp)
             }
             decimals={token.decimals}
             iconUrl={token.imageUrl}

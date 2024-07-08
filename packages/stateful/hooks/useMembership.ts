@@ -1,10 +1,16 @@
-import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { DaoSource } from '@dao-dao/types'
 
+import { useDaoClient } from './useDaoClient'
+import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
+import { useProfile } from './useProfile'
+import { useQueryLoadingDataWithError } from './useQueryLoadingDataWithError'
 import { useWallet } from './useWallet'
 
 interface UseMembershipOptions {
-  coreAddress: string
+  /**
+   * Override current DAO context.
+   */
+  dao?: DaoSource
   blockHeight?: number
 }
 
@@ -16,49 +22,48 @@ interface UseMembershipResponse {
 }
 
 export const useMembership = ({
-  coreAddress,
+  dao: daoSource,
   blockHeight,
-}: UseMembershipOptions): UseMembershipResponse => {
-  const { chain_id: chainId } = useChain()
-  const { address: walletAddress, isWalletConnecting } = useWallet()
+}: UseMembershipOptions = {}): UseMembershipResponse => {
+  const { dao } = useDaoClient({
+    dao: daoSource,
+  })
 
-  // Use loadable to prevent flickering loading states when wallet address
-  // changes and on initial load if wallet is connecting.
-  const _walletVotingWeight = useCachedLoadable(
-    walletAddress
-      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [
-            {
-              address: walletAddress,
-              height: blockHeight,
-            },
-          ],
-        })
-      : undefined
+  // Don't load chain-specific profile because the wallet may not be connected
+  // to that chain and thus the correct profile won't load. Instead, fetch the
+  // chains from the currently connected profile and find the correct address.
+  const { chains } = useProfile()
+  const { address: currentWalletAddress, isWalletConnecting } = useWallet({
+    chainId: dao.chainId,
+  })
+
+  // Use profile chains if present, falling back to the current wallet address.
+  const walletAddress =
+    (!chains.loading &&
+      chains.data.find((c) => c.chainId === dao.chainId)?.address) ||
+    currentWalletAddress
+
+  const _walletVotingWeight = useQueryLoadingDataWithError(
+    dao.getVotingPowerQuery(walletAddress, blockHeight)
   )
-  const _totalVotingWeight = useCachedLoadable(
-    DaoCoreV2Selectors.totalPowerAtHeightSelector({
-      contractAddress: coreAddress,
-      chainId,
-      params: [
-        {
-          height: blockHeight,
-        },
-      ],
-    })
+  const _totalVotingWeight = useQueryLoadingDataWithError(
+    dao.getTotalVotingPowerQuery(blockHeight)
   )
+  // Make sure this component re-renders if the Secret Network permit changes so
+  // the voting query above refreshes.
+  useOnSecretNetworkPermitUpdate()
 
   const walletVotingWeight =
-    _walletVotingWeight.state === 'hasValue' &&
-    !isNaN(Number(_walletVotingWeight.contents.power))
-      ? Number(_walletVotingWeight.contents.power)
+    !_walletVotingWeight.loading &&
+    !_walletVotingWeight.errored &&
+    !isNaN(Number(_walletVotingWeight.data.power))
+      ? Number(_walletVotingWeight.data.power)
       : undefined
   const totalVotingWeight =
-    _totalVotingWeight.state === 'hasValue' &&
-    !isNaN(Number(_totalVotingWeight.contents.power))
-      ? Number(_totalVotingWeight.contents.power)
+    !_totalVotingWeight.loading &&
+    !_totalVotingWeight.errored &&
+    !isNaN(Number(_totalVotingWeight.data.power))
+      ? Number(_totalVotingWeight.data.power)
       : undefined
   const isMember =
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
@@ -68,8 +73,8 @@ export const useMembership = ({
     walletVotingWeight,
     totalVotingWeight,
     loading:
-      _walletVotingWeight.state === 'loading' ||
-      _totalVotingWeight.state === 'loading' ||
+      _walletVotingWeight.loading ||
+      _totalVotingWeight.loading ||
       isWalletConnecting,
   }
 }

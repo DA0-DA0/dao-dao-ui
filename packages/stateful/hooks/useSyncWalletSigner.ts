@@ -1,4 +1,3 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -10,7 +9,7 @@ import { useWallet } from './useWallet'
 export const useSyncWalletSigner = () => {
   const {
     chain: { chain_id: chainId },
-    getSigningCosmWasmClient,
+    getSigningClient,
     address,
     isWalletConnected,
   } = useWallet()
@@ -28,19 +27,11 @@ export const useSyncWalletSigner = () => {
 
     ;(async () => {
       try {
-        const signingCosmWasmClient = await getSigningCosmWasmClient()
-        setSigningCosmWasmClient(
-          // cosmos-kit has an older version of the package. This is a workaround.
-          signingCosmWasmClient as unknown as SigningCosmWasmClient
-        )
+        const signingCosmWasmClient = await getSigningClient()
+        setSigningCosmWasmClient(signingCosmWasmClient)
       } catch (err) {
         console.error(err)
       }
     })()
-  }, [
-    setSigningCosmWasmClient,
-    address,
-    isWalletConnected,
-    getSigningCosmWasmClient,
-  ])
+  }, [getSigningClient, address, isWalletConnected, setSigningCosmWasmClient])
 }

@@ -36,7 +36,7 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
                   : [...current, props.info.coreAddress]
               ),
           }}
-          lazyData={{ loading: true }}
+          lazyData={{ loading: true, errored: false }}
         />
       )}
     />

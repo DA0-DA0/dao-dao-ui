@@ -39,7 +39,7 @@ const Component: ActionComponent = (props) => {
   }
 
   const currentlyEnabled = getFilteredDaoItemsByPrefix(
-    context.info.items,
+    context.dao.info.items,
     ICA_CHAINS_TX_PREFIX
   ).map(([key]) => key)
 
@@ -64,7 +64,7 @@ export const makeManageIcasAction: ActionMaker<ManageIcasData> = ({
     return null
   }
 
-  const storageItemValueKey = context.info.supportedFeatures[
+  const storageItemValueKey = context.dao.info.supportedFeatures[
     Feature.StorageItemValueKey
   ]
     ? 'value'

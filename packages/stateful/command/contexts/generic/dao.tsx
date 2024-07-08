@@ -22,7 +22,7 @@ import {
 } from '@dao-dao/types/command'
 import { getDisplayNameForChainId, getFallbackImage } from '@dao-dao/utils'
 
-import { DaoProvidersWithoutInfo } from '../../../components'
+import { DaoProviders } from '../../../components'
 import {
   useDaoTabs,
   useFollowingDaos,
@@ -229,9 +229,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
   }
 
   const Wrapper: CommandModalContextWrapper = ({ children }) => (
-    <DaoProvidersWithoutInfo chainId={chainId} coreAddress={coreAddress}>
+    <DaoProviders chainId={chainId} coreAddress={coreAddress}>
       {children}
-    </DaoProvidersWithoutInfo>
+    </DaoProviders>
   )
 
   return {

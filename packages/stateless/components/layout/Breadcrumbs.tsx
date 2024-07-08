@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import { BreadcrumbsProps, DaoPageMode } from '@dao-dao/types'
 
-import { useDaoInfoContextIfAvailable, useDaoNavHelpers } from '../../hooks'
+import { useDaoInfoContextIfAvailable } from '../../contexts'
+import { useDaoNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'

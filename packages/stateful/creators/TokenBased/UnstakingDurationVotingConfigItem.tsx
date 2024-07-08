@@ -1,6 +1,9 @@
+import { useEffect } from 'react'
 import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { secretContractCodeHashSelector } from '@dao-dao/state/recoil'
 import {
   ClockEmoji,
   InputErrorMessage,
@@ -18,6 +21,8 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToHumanReadableString,
+  isSecretNetwork,
+  isValidBech32Address,
   makeValidateAddress,
   validatePositive,
   validateRequired,
@@ -38,12 +43,35 @@ export const UnstakingDurationInput = ({
   const holdingAltForCustomStaking = useHoldingKey({ key: 'alt' })
 
   const {
+    chainId,
     chain: { bech32_prefix: bech32Prefix },
     config: { createWithCw20 },
   } = useSupportedChainContext()
 
   const showCustomStakingAddress =
     createWithCw20 && customStakingAddress !== undefined
+
+  // Load custom staking contract code hash on Secret Network.
+  const customStakingCodeHashLoadable = useRecoilValueLoadable(
+    isSecretNetwork(chainId) &&
+      customStakingAddress &&
+      isValidBech32Address(customStakingAddress, bech32Prefix)
+      ? secretContractCodeHashSelector({
+          chainId,
+          contractAddress: customStakingAddress,
+        })
+      : constSelector(undefined)
+  )
+  useEffect(() => {
+    if (!isSecretNetwork(chainId)) {
+      return
+    }
+
+    setValue(
+      'customStakingCodeHash',
+      customStakingCodeHashLoadable.valueMaybe()
+    )
+  }, [setValue, chainId, customStakingCodeHashLoadable])
 
   return (
     <>
@@ -79,7 +107,12 @@ export const UnstakingDurationInput = ({
             watch={watch as UseFormWatch<CreatorData>}
           />
 
-          <InputErrorMessage error={errors?.customStakingAddress} />
+          <InputErrorMessage
+            error={
+              errors?.customStakingAddress ||
+              customStakingCodeHashLoadable.errorMaybe()
+            }
+          />
         </div>
       ) : (
         <div className="flex flex-row gap-2">

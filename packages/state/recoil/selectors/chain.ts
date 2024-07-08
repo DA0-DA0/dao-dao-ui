@@ -49,7 +49,7 @@ import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feere
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
   MAINNET,
-  cosmWasmClientRouter,
+  SecretCosmWasmClient,
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
@@ -57,6 +57,7 @@ import {
   cosmwasmProtoRpcClientRouter,
   decodeGovProposal,
   getAllRpcResponse,
+  getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
   junoProtoRpcClientRouter,
@@ -64,6 +65,7 @@ import {
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
+  secretCosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -98,7 +100,17 @@ export const cosmWasmClientForChainSelector = selectorFamily<
   string
 >({
   key: 'cosmWasmClientForChain',
-  get: (chainId) => async () => await cosmWasmClientRouter.connect(chainId),
+  get: (chainId) => async () => await getCosmWasmClientForChainId(chainId),
+  dangerouslyAllowMutability: true,
+})
+
+export const secretCosmWasmClientForChainSelector = selectorFamily<
+  SecretCosmWasmClient,
+  string
+>({
+  key: 'secretCosmWasmClientForChain',
+  get: (chainId) => async () =>
+    await secretCosmWasmClientRouter.connect(chainId),
   dangerouslyAllowMutability: true,
 })
 
@@ -503,7 +515,7 @@ export const nativeDenomBalanceWithTimestampSelector = selectorFamily<
 
       return {
         amount,
-        timestamp: new Date(),
+        timestamp: Date.now(),
       }
     },
 })

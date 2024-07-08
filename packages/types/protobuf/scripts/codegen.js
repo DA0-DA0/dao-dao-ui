@@ -118,6 +118,10 @@ telescope({
           'pstake.ratesync.v1beta1',
           'bitsong.fantoken',
           'feemarket.feemarket.v1',
+          'secret.compute.v1beta1',
+          'secret.emergencybutton.v1beta1',
+          'secret.intertx.v1beta1',
+          'secret.registration.v1beta1',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

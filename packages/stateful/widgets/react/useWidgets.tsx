@@ -32,10 +32,8 @@ export const useWidgets = ({
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { coreAddress, items } = useDaoInfoContext()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { items } = useDaoInfoContext()
+  const { isMember = false } = useMembership()
 
   const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {
     const parsedWidgets = getFilteredDaoItemsByPrefix(

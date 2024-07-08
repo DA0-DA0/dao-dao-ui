@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoDaoCoreSelectors } from '@dao-dao/state'
 import { InfoEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionContextType,
@@ -31,7 +31,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
 
   const useDefaults: UseDefaults<UpdateInfoData> = () => {
     const config = useCachedLoadingWithError(
-      DaoCoreV2Selectors.configSelector({
+      DaoDaoCoreSelectors.configSelector({
         chainId,
         contractAddress: address,
         params: [],
@@ -58,8 +58,8 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
               msg: {
                 update_config: {
                   config:
-                    context.info.chainId === ChainId.NeutronMainnet &&
-                    context.info.coreVersion ===
+                    context.dao.chainId === ChainId.NeutronMainnet &&
+                    context.dao.coreVersion ===
                       ContractVersion.V2AlphaNeutronFork
                       ? // The Neutron fork DAO has a different config structure.
                         {

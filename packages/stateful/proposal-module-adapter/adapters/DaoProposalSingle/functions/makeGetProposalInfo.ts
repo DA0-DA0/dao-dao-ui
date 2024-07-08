@@ -16,7 +16,10 @@ import {
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { cosmWasmClientRouter, parseContractVersion } from '@dao-dao/utils'
+import {
+  getCosmWasmClientForChainId,
+  parseContractVersion,
+} from '@dao-dao/utils'
 
 export const makeGetProposalInfo =
   ({
@@ -30,7 +33,7 @@ export const makeGetProposalInfo =
     let _cosmWasmClient: CosmWasmClient
     const getCosmWasmClient = async () => {
       if (!_cosmWasmClient) {
-        _cosmWasmClient = await cosmWasmClientRouter.connect(chainId)
+        _cosmWasmClient = await getCosmWasmClientForChainId(chainId)
       }
       return _cosmWasmClient
     }

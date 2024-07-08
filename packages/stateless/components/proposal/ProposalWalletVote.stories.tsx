@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalWalletVoteClassNameMap } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalWalletVote'
-import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ProposalWalletVote } from './ProposalWalletVote'
 
@@ -30,7 +29,7 @@ Pending.parameters = {
 
 export const Yes = Template.bind({})
 Yes.args = {
-  className: ProposalWalletVoteClassNameMap[Vote.Yes],
+  className: ProposalWalletVoteClassNameMap.yes,
   label: 'Yes',
   showBadge: false,
 }
@@ -38,7 +37,7 @@ Yes.parameters = Pending.parameters
 
 export const No = Template.bind({})
 No.args = {
-  className: ProposalWalletVoteClassNameMap[Vote.No],
+  className: ProposalWalletVoteClassNameMap.no,
   label: 'No',
   showBadge: false,
 }
@@ -46,7 +45,7 @@ No.parameters = Pending.parameters
 
 export const Abstain = Template.bind({})
 Abstain.args = {
-  className: ProposalWalletVoteClassNameMap[Vote.Abstain],
+  className: ProposalWalletVoteClassNameMap.abstain,
   label: 'Abstain',
   showBadge: false,
 }

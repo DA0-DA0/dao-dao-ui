@@ -1,5 +1,5 @@
 import { NestedActionsEditorFormData } from './actions'
-import { Coin, CosmosMsgFor_Empty } from './contracts'
+import { Coin, UnifiedCosmosMsg } from './contracts'
 import { LoadingData } from './misc'
 import { ProcessedTQ, ProposalTimestampInfo } from './proposal'
 import { CommunityPoolSpendProposal } from './protobuf/codegen/cosmos/distribution/v1beta1/distribution'
@@ -47,7 +47,7 @@ export type GovProposalV1 = {
   proposal: ProposalV1
 }
 
-export type GovProposalV1DecodedMessages = CosmosMsgFor_Empty[]
+export type GovProposalV1DecodedMessages = UnifiedCosmosMsg[]
 export type GovProposalV1WithDecodedMessages = GovProposalV1 & {
   chainId: string
   title: string

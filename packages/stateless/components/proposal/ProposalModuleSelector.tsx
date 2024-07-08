@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/types'
 import { ContractName } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../hooks'
+import { useDaoInfoContext } from '../../contexts'
 import { SegmentedControls } from '../inputs/SegmentedControls'
 
 export type ProposalModuleSelectorProps = {

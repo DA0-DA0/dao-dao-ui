@@ -16,8 +16,8 @@ import {
 } from '@dao-dao/types'
 import {
   BankMsg,
-  CosmosMsgFor_Empty,
   StargateMsg,
+  UnifiedCosmosMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 import { MsgSendTx } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
@@ -27,14 +27,17 @@ import {
   Type,
 } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
+import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 
 import {
   getChainForChainName,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromConnection,
   getSupportedChainConfig,
+  isSecretNetwork,
 } from '../chain'
 import { IBC_TIMEOUT_SECONDS } from '../constants'
+import { bech32AddressToBase64 } from '../contracts'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { decodeJsonFromBase64, encodeJsonToBase64 } from './encoding'
@@ -63,7 +66,7 @@ const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   migrate: true,
 }
 
-export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
+export function isWasmMsg(msg?: UnifiedCosmosMsg): msg is { wasm: WasmMsg } {
   if (msg) {
     return (msg as any).wasm !== undefined
   }
@@ -94,7 +97,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export const decodeMessage = (msg: CosmosMsgFor_Empty): Record<string, any> => {
+export const decodeMessage = (msg: UnifiedCosmosMsg): Record<string, any> => {
   // Decode base64 wasm binary into object.
   if (isWasmMsg(msg)) {
     const msgType = getWasmMsgType(msg.wasm)
@@ -129,13 +132,52 @@ export const decodeMessage = (msg: CosmosMsgFor_Empty): Record<string, any> => {
 }
 
 export const decodeMessages = (
-  msgs: CosmosMsgFor_Empty[]
+  msgs: UnifiedCosmosMsg[]
 ): Record<string, any>[] => msgs.map(decodeMessage)
 
-export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
+export function decodedMessagesString(msgs: UnifiedCosmosMsg[]): string {
   const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
+
+/**
+ * Make a Cosmos message that executes a smart contract, intelligently encoded
+ * to support Secret Network if necessary.
+ */
+export const makeExecuteSmartContractMessage = ({
+  chainId,
+  sender,
+  contractAddress,
+  msg,
+  funds,
+}: {
+  chainId: string
+  sender: string
+  contractAddress: string
+  msg: Record<string, any>
+  funds?: Coin[]
+}): UnifiedCosmosMsg =>
+  isSecretNetwork(chainId)
+    ? makeStargateMessage({
+        stargate: {
+          typeUrl: SecretMsgExecuteContract.typeUrl,
+          value: SecretMsgExecuteContract.fromAmino({
+            sender: bech32AddressToBase64(sender),
+            contract: bech32AddressToBase64(contractAddress),
+            sent_funds: funds || [],
+            msg: encodeJsonToBase64(msg),
+          }),
+        },
+      })
+    : makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: contractAddress,
+            funds: funds || [],
+            msg,
+          },
+        },
+      })
 
 /**
  * Encode relevant components of wasm messages into base64 strings as the chain
@@ -220,9 +262,9 @@ export const makeBankMessage = (
 
 /**
  * Convert stringified JSON object into CosmWasm-formatted Cosmos message. Used
- * by the Custom action component to encode generic a JSON string.
+ * by the Custom action component to encode a generic JSON string.
  */
-export const convertJsonToCWCosmosMsg = (value: string): CosmosMsgFor_Empty => {
+export const convertJsonToCWCosmosMsg = (value: string): UnifiedCosmosMsg => {
   let msg = JSON5.parse(value)
 
   // Convert the wasm message component to base64 if necessary.
@@ -284,8 +326,8 @@ export const maybeMakePolytoneExecuteMessage = (
   destChainId: string,
   // Allow passing no message, which just creates an account. `msg` cannot be an
   // array if the chains are the same.
-  msg?: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
-): CosmosMsgFor_Empty => {
+  msg?: UnifiedCosmosMsg | UnifiedCosmosMsg[]
+): UnifiedCosmosMsg => {
   // If on same chain, just return the message.
   if (srcChainId === destChainId && msg) {
     if (Array.isArray(msg)) {
@@ -394,8 +436,8 @@ export const maybeMakeIcaExecuteMessage = (
   icaHostAddress: string,
   // The ICA remote address on the destination chain (i.e. the dest sender).
   icaRemoteAddress: string,
-  msg: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
-): CosmosMsgFor_Empty => {
+  msg: UnifiedCosmosMsg | UnifiedCosmosMsg[]
+): UnifiedCosmosMsg => {
   // If on same chain, just return the message.
   if (srcChainId === destChainId && msg) {
     if (Array.isArray(msg)) {
@@ -420,7 +462,9 @@ export const maybeMakeIcaExecuteMessage = (
           data: CosmosTx.toProto({
             messages: [msg]
               .flat()
-              .map((msg) => cwMsgToProtobuf(msg, icaRemoteAddress)),
+              .map((msg) =>
+                cwMsgToProtobuf(destChainId, msg, icaRemoteAddress)
+              ),
           }),
           memo: '',
         }),
@@ -456,13 +500,14 @@ export const decodeIcaExecuteMsg = (
       srcChainId,
       connectionId
     )
-    const chainId = getChainForChainName(destinationChain.chain_name).chain_id
+    const chain = getChainForChainName(destinationChain.chain_name)
 
     const { packetData: { data } = {} } = decodedMsg.stargate.value as MsgSendTx
     const protobufMessages = data && CosmosTx.decode(data).messages
     const cosmosMsgsWithSenders =
-      protobufMessages?.map((protobuf) => protobufToCwMsg(protobuf, false)) ||
-      []
+      protobufMessages?.map((protobuf) =>
+        protobufToCwMsg(chain, protobuf, false)
+      ) || []
 
     if (
       (type === 'zero' && cosmosMsgsWithSenders.length !== 0) ||
@@ -481,7 +526,7 @@ export const decodeIcaExecuteMsg = (
 
     return {
       match: true,
-      chainId,
+      chainId: chain.chain_id,
       msgWithSender: msgsWithSenders[0],
       cosmosMsgWithSender: cosmosMsgsWithSenders[0],
       msgsWithSenders,
@@ -501,7 +546,7 @@ export const decodeIcaExecuteMsg = (
 export const decodeCrossChainMessages = (
   srcChainId: string,
   srcAddress: string,
-  msgs: CosmosMsgFor_Empty[]
+  msgs: UnifiedCosmosMsg[]
 ): CrossChainPacketInfo[] =>
   decodeMessages(msgs).flatMap(
     (msg): CrossChainPacketInfo | CrossChainPacketInfo[] => {
@@ -570,8 +615,8 @@ export const decodeCrossChainMessages = (
  */
 export const makeCw1WhitelistExecuteMessage = (
   cw1WhitelistContract: string,
-  msg: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
-): CosmosMsgFor_Empty =>
+  msg: UnifiedCosmosMsg | UnifiedCosmosMsg[]
+): UnifiedCosmosMsg =>
   makeWasmMessage({
     wasm: {
       execute: {
@@ -598,7 +643,7 @@ export const decodeCw1WhitelistExecuteMsg = (
   | {
       address: string
       msgs: Record<string, any>[]
-      cosmosMsgs: CosmosMsgFor_Empty[]
+      cosmosMsgs: UnifiedCosmosMsg[]
     }
   | undefined => {
   if (
@@ -634,7 +679,7 @@ export const decodeCw1WhitelistExecuteMsg = (
   }
 }
 
-export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
+export const getFundsUsedInCwMessage = (msg: UnifiedCosmosMsg): Coin[] =>
   'bank' in msg
     ? 'send' in msg.bank
       ? msg.bank.send.amount
@@ -655,11 +700,15 @@ export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
       : []
     : 'wasm' in msg
     ? 'execute' in msg.wasm
-      ? msg.wasm.execute.funds
+      ? 'funds' in msg.wasm.execute
+        ? msg.wasm.execute.funds
+        : // Secret Network
+          msg.wasm.execute.send
       : 'instantiate' in msg.wasm
-      ? msg.wasm.instantiate.funds
-      : 'instantiate2' in msg.wasm
-      ? msg.wasm.instantiate2.funds
+      ? 'funds' in msg.wasm.instantiate
+        ? msg.wasm.instantiate.funds
+        : // Secret Network
+          msg.wasm.instantiate.send
       : []
     : isCosmWasmStargateMsg(msg)
     ? (() => {

@@ -1,16 +1,20 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { CommonNftSelectors } from '@dao-dao/state'
 import {
-  FormattedJsonDisplay,
+  CommonNftSelectors,
+  secretContractCodeHashSelector,
+} from '@dao-dao/state'
+import {
   InputErrorMessage,
+  Loader,
   TextInput,
   useChain,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigInputProps } from '@dao-dao/types'
 import {
+  isSecretNetwork,
   isValidBech32Address,
   makeValidateAddress,
   validateRequired,
@@ -34,56 +38,62 @@ export const GovernanceConfigurationInput = ({
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   //! Validate existing governance token.
-  const existingGovernanceTokenDenomOrAddress =
+  const existingGovernanceNftCollectionAddress =
     data.tokenType === GovernanceTokenType.Existing
-      ? data.existingGovernanceTokenDenomOrAddress
+      ? data.existingGovernanceNftCollectionAddress
       : undefined
-  const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenDenomOrAddress &&
-      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
-      ? CommonNftSelectors.contractInfoSelector({
-          chainId,
-          contractAddress: existingGovernanceTokenDenomOrAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-  const numOfTokensLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenDenomOrAddress &&
-      isValidBech32Address(existingGovernanceTokenDenomOrAddress, bech32Prefix)
-      ? CommonNftSelectors.numTokensSelector({
-          chainId,
-          contractAddress: existingGovernanceTokenDenomOrAddress,
-          params: [],
-        })
+  const collectionInfoLoadable = useRecoilValueLoadable(
+    existingGovernanceNftCollectionAddress &&
+      isValidBech32Address(existingGovernanceNftCollectionAddress, bech32Prefix)
+      ? waitForAll([
+          CommonNftSelectors.contractInfoSelector({
+            chainId,
+            contractAddress: existingGovernanceNftCollectionAddress,
+            params: [],
+          }),
+          CommonNftSelectors.numTokensSelector({
+            chainId,
+            contractAddress: existingGovernanceNftCollectionAddress,
+            params: [],
+          }),
+          isSecretNetwork(chainId)
+            ? secretContractCodeHashSelector({
+                chainId,
+                contractAddress: existingGovernanceNftCollectionAddress,
+              })
+            : constSelector(undefined),
+        ])
       : constSelector(undefined)
   )
 
   useEffect(() => {
-    setValue(
-      'creator.data.existingGovernanceTokenInfo',
-      existingGovernanceTokenInfoLoadable.state === 'hasValue'
-        ? existingGovernanceTokenInfoLoadable.contents
-        : undefined
-    )
+    if (isSecretNetwork(chainId)) {
+      setValue(
+        'creator.data.secretCodeHash',
+        collectionInfoLoadable.valueMaybe()?.[2]
+          ? collectionInfoLoadable.contents[2]
+          : undefined
+      )
+    }
 
-    if (existingGovernanceTokenInfoLoadable.state !== 'hasError') {
-      if (errors?.creator?.data?.existingGovernanceTokenInfo) {
-        clearErrors('creator.data.existingGovernanceTokenInfo._error')
+    if (collectionInfoLoadable.state !== 'hasError') {
+      if (errors?.creator?.data?._existingError) {
+        clearErrors('creator.data._existingError')
       }
       return
     }
 
-    if (!errors?.creator?.data?.existingGovernanceTokenInfo) {
-      setError('creator.data.existingGovernanceTokenInfo._error', {
+    if (!errors?.creator?.data?._existingError) {
+      setError('creator.data._existingError', {
         type: 'manual',
         message: t('error.failedToGetTokenInfo', { tokenType: 'CW721' }),
       })
     }
   }, [
+    chainId,
     clearErrors,
-    errors?.creator?.data?.existingGovernanceTokenInfo,
-    existingGovernanceTokenInfoLoadable,
+    collectionInfoLoadable,
+    errors?.creator?.data?._existingError,
     setError,
     setValue,
     t,
@@ -103,9 +113,9 @@ export const GovernanceConfigurationInput = ({
             <TextInput
               className="symbol-small-body-text font-mono text-text-secondary"
               error={
-                errors.creator?.data?.existingGovernanceTokenDenomOrAddress
+                errors.creator?.data?.existingGovernanceNftCollectionAddress
               }
-              fieldName="creator.data.existingGovernanceTokenDenomOrAddress"
+              fieldName="creator.data.existingGovernanceNftCollectionAddress"
               ghost
               placeholder={bech32Prefix + '...'}
               register={register}
@@ -113,19 +123,21 @@ export const GovernanceConfigurationInput = ({
             />
             <InputErrorMessage
               error={
-                errors.creator?.data?.existingGovernanceTokenDenomOrAddress ||
-                errors.creator?.data?.existingGovernanceTokenInfo?._error
+                errors.creator?.data?.existingGovernanceNftCollectionAddress ||
+                errors.creator?.data?._existingError
               }
             />
           </div>
-          <FormattedJsonDisplay
-            jsonLoadable={existingGovernanceTokenInfoLoadable}
-            title={t('title.collectionInfo')}
-          />
-          <FormattedJsonDisplay
-            jsonLoadable={numOfTokensLoadable}
-            title={t('title.totalSupply')}
-          />
+
+          {collectionInfoLoadable.state === 'loading' ? (
+            <Loader />
+          ) : collectionInfoLoadable.state === 'hasValue' ? (
+            <p className="primary-text text-text-interactive-valid">
+              ${collectionInfoLoadable.valueMaybe()?.[0].symbol}
+            </p>
+          ) : (
+            <InputErrorMessage error={collectionInfoLoadable.errorMaybe()} />
+          )}
         </div>
       </div>
     </>

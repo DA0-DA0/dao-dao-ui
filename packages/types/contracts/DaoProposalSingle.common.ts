@@ -1,10 +1,6 @@
 import { Addr, Decimal, Uint128 } from './common'
 
-export enum Vote {
-  Yes = 'yes',
-  No = 'no',
-  Abstain = 'abstain',
-}
+export type Vote = 'yes' | 'no' | 'abstain'
 
 export type Threshold =
   | {

@@ -12,7 +12,7 @@ import {
   SwordsEmoji,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { CosmosMsgForEmpty, TokenType } from '@dao-dao/types'
+import { TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -22,13 +22,18 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
+  bech32DataToAddress,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
   encodeJsonToBase64,
-  makeWasmMessage,
+  getChainAddressForActionOptions,
+  isDecodedStargateMsg,
+  isSecretNetwork,
+  makeExecuteSmartContractMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -56,7 +61,7 @@ const useDefaults: UseDefaults<ExecuteData> = () => {
 
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
   const { t } = useTranslation()
-  const currentChainId = useActionOptions().chain.chain_id
+  const options = useActionOptions()
   const tokenBalances = useTokenBalances()
 
   return useCallback(
@@ -82,56 +87,55 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         )
       }
 
-      let executeMsg: CosmosMsgForEmpty | undefined
+      let executeMsg: UnifiedCosmosMsg | undefined
       if (cw20) {
         if (funds.length !== 1 || fundsTokens.length !== 1) {
           throw new Error(t('error.loadingData'))
         }
 
         // Execute CW20 send message.
-        executeMsg = makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: fundsTokens[0]!.denomOrAddress,
-              funds: [],
-              msg: {
-                send: {
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    funds[0].amount,
-                    fundsTokens[0]!.decimals
-                  ),
-                  contract: address,
-                  msg: encodeJsonToBase64(msg),
-                },
-              },
+        const isSecret = isSecretNetwork(chainId)
+        executeMsg = makeExecuteSmartContractMessage({
+          chainId,
+          sender: getChainAddressForActionOptions(options, chainId) || '',
+          contractAddress: fundsTokens[0]!.denomOrAddress,
+          msg: {
+            send: {
+              amount: convertDenomToMicroDenomStringWithDecimals(
+                funds[0].amount,
+                fundsTokens[0]!.decimals
+              ),
+              [isSecret ? 'recipient' : 'contract']: address,
+              msg: encodeJsonToBase64(msg),
+              ...(isSecret && {
+                padding: '',
+              }),
             },
           },
         })
       } else {
-        executeMsg = makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: address,
-              funds: funds.map(({ denom, amount }, index) => ({
-                denom,
-                amount: convertDenomToMicroDenomStringWithDecimals(
-                  amount,
-                  fundsTokens[index]!.decimals
-                ),
-              })),
-              msg,
-            },
-          },
+        executeMsg = makeExecuteSmartContractMessage({
+          chainId,
+          sender: getChainAddressForActionOptions(options, chainId) || '',
+          contractAddress: address,
+          msg,
+          funds: funds.map(({ denom, amount }, index) => ({
+            denom,
+            amount: convertDenomToMicroDenomStringWithDecimals(
+              amount,
+              fundsTokens[index]!.decimals
+            ),
+          })),
         })
       }
 
       return maybeMakePolytoneExecuteMessage(
-        currentChainId,
+        options.chain.chain_id,
         chainId,
         executeMsg
       )
     },
-    [currentChainId, t, tokenBalances]
+    [t, tokenBalances, options]
   )
 }
 
@@ -145,7 +149,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     msg = decodedPolytone.msg
   }
 
-  const isExecute = objectMatchesStructure(msg, {
+  const isWasmExecute = objectMatchesStructure(msg, {
     wasm: {
       execute: {
         contract_addr: {},
@@ -155,37 +159,58 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     },
   })
 
+  const isSecretExecuteMsg =
+    isDecodedStargateMsg(msg) &&
+    msg.stargate.typeUrl === SecretMsgExecuteContract.typeUrl
+
+  const executeMsg = isWasmExecute
+    ? msg.wasm.execute.msg
+    : isSecretExecuteMsg
+    ? decodeJsonFromBase64(msg.stargate.value.msg)
+    : undefined
+
   // Check if a CW20 execute, which is a subset of execute.
-  const isCw20 = objectMatchesStructure(msg, {
-    wasm: {
-      execute: {
-        contract_addr: {},
-        funds: {},
-        msg: {
-          send: {
-            amount: {},
-            contract: {},
-            msg: {},
-          },
+  const isCw20 =
+    (isWasmExecute &&
+      objectMatchesStructure(executeMsg, {
+        send: {
+          amount: {},
+          contract: {},
+          msg: {},
         },
-      },
-    },
-  })
+      })) ||
+    (isSecretExecuteMsg &&
+      objectMatchesStructure(executeMsg, {
+        send: {
+          amount: {},
+          recipient: {},
+          msg: {},
+          padding: {},
+        },
+      }))
 
   const cw20Token = useCachedLoadingWithError(
     isCw20
       ? genericTokenSelector({
           chainId,
           type: TokenType.Cw20,
-          denomOrAddress: msg.wasm.execute.contract_addr,
+          denomOrAddress: isWasmExecute
+            ? msg.wasm.execute.contract_addr
+            : bech32DataToAddress(chainId, msg.stargate.value.contract),
         })
       : undefined
   )
 
+  const funds: Coin[] | undefined = isWasmExecute
+    ? msg.wasm.execute.funds
+    : isSecretExecuteMsg
+    ? msg.stargate.value.sentFunds
+    : undefined
+
   const fundsTokens = useCachedLoadingWithError(
-    isExecute && !isCw20
+    funds?.length && !isCw20
       ? waitForAll(
-          (msg.wasm.execute.funds as Coin[]).map(({ denom }) =>
+          funds.map(({ denom }) =>
             genericTokenSelector({
               chainId,
               type: TokenType.Native,
@@ -198,28 +223,26 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 
   // Can't match until we have the token info.
   if (
-    !isExecute ||
+    (!isWasmExecute && !isSecretExecuteMsg) ||
     (isCw20 && (cw20Token.loading || cw20Token.errored)) ||
-    (!isCw20 &&
-      msg.wasm.execute.funds.length > 0 &&
-      (fundsTokens.loading || fundsTokens.errored))
+    (!isCw20 && !!funds?.length && (fundsTokens.loading || fundsTokens.errored))
   ) {
     return { match: false }
   }
 
-  return isExecute
+  return isWasmExecute
     ? {
         match: true,
         data: {
           chainId,
           address: isCw20
-            ? msg.wasm.execute.msg.send.contract
+            ? executeMsg.send.contract
             : msg.wasm.execute.contract_addr,
           message: JSON.stringify(
             isCw20
-              ? decodeJsonFromBase64(msg.wasm.execute.msg.send.msg, true)
-              : msg.wasm.execute.msg,
-            undefined,
+              ? decodeJsonFromBase64(executeMsg.send.msg, true)
+              : executeMsg,
+            null,
             2
           ),
           funds: isCw20
@@ -227,28 +250,70 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
                 {
                   denom: msg.wasm.execute.contract_addr,
                   amount: convertMicroDenomToDenomWithDecimals(
-                    msg.wasm.execute.msg.send.amount,
+                    executeMsg.send.amount,
                     !cw20Token.loading && !cw20Token.errored
                       ? cw20Token.data.decimals
                       : 0
                   ),
                 },
               ]
-            : !fundsTokens.loading && !fundsTokens.errored
-            ? (msg.wasm.execute.funds as Coin[]).map(
-                ({ denom, amount }, index) => ({
-                  denom,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    fundsTokens.data[index].decimals
-                  ),
-                })
-              )
+            : !fundsTokens.loading && !fundsTokens.errored && funds
+            ? funds.map(({ denom, amount }, index) => ({
+                denom,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  fundsTokens.data[index].decimals
+                ),
+              }))
             : [],
           cw20: isCw20,
         },
       }
-    : { match: false }
+    : isSecretExecuteMsg
+    ? {
+        match: true,
+        data: {
+          chainId,
+          address: isCw20
+            ? executeMsg.send.recipient
+            : bech32DataToAddress(chainId, msg.stargate.value.contract),
+          message: JSON.stringify(
+            isCw20
+              ? decodeJsonFromBase64(executeMsg.send.msg, true)
+              : executeMsg,
+            null,
+            2
+          ),
+          funds: isCw20
+            ? [
+                {
+                  denom: bech32DataToAddress(
+                    chainId,
+                    msg.stargate.value.contract
+                  ),
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    executeMsg.send.amount,
+                    !cw20Token.loading && !cw20Token.errored
+                      ? cw20Token.data.decimals
+                      : 0
+                  ),
+                },
+              ]
+            : !fundsTokens.loading && !fundsTokens.errored && funds
+            ? funds.map(({ denom, amount }, index) => ({
+                denom,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  fundsTokens.data[index].decimals
+                ),
+              }))
+            : [],
+          cw20: isCw20,
+        },
+      }
+    : {
+        match: false,
+      }
 }
 
 const Component: ActionComponent = (props) => {

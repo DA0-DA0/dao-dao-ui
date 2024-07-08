@@ -15,7 +15,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useSupportedChainContext } from '../../../../hooks'
+import { useSupportedChainContext } from '../../../../contexts'
 import { Button } from '../../../buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoCreatorCard } from '../DaoCreatorCard'

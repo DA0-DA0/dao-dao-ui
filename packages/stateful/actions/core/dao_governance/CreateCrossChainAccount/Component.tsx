@@ -37,9 +37,9 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
   }
 
   const missingChainIds = Object.keys(chainContext.config.polytone).filter(
-    (chainId) => !(chainId in context.info.polytoneProxies)
+    (chainId) => !(chainId in context.dao.info.polytoneProxies)
   )
-  const createdAddress = context.info.polytoneProxies[chainId]
+  const createdAddress = context.dao.info.polytoneProxies[chainId]
 
   return (
     <>

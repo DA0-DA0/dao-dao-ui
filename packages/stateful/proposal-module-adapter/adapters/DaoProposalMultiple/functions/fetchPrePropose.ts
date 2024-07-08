@@ -1,13 +1,6 @@
-import {
-  DaoProposalMultipleQueryClient,
-  fetchPreProposeModule,
-  queryIndexer,
-} from '@dao-dao/state'
+import { daoProposalMultipleQueries, proposalQueries } from '@dao-dao/state'
 import { Feature, FetchPreProposeFunction } from '@dao-dao/types'
-import {
-  cosmWasmClientRouter,
-  isFeatureSupportedByVersion,
-} from '@dao-dao/utils'
+import { isFeatureSupportedByVersion } from '@dao-dao/utils'
 
 export const fetchPrePropose: FetchPreProposeFunction = async (
   queryClient,
@@ -19,41 +12,30 @@ export const fetchPrePropose: FetchPreProposeFunction = async (
     return null
   }
 
-  // Try indexer first.
-  let creationPolicy
-  try {
-    creationPolicy = await queryIndexer({
-      type: 'contract',
-      address: proposalModuleAddress,
-      formula: 'daoProposalMultiple/creationPolicy',
+  const creationPolicy = await queryClient.fetchQuery(
+    daoProposalMultipleQueries.proposalCreationPolicy(queryClient, {
       chainId,
+      contractAddress: proposalModuleAddress,
     })
-  } catch (err) {
-    // Ignore error.
-    console.error(err)
-
-    // If indexer fails, fallback to querying chain.
-    if (!creationPolicy) {
-      const client = new DaoProposalMultipleQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        proposalModuleAddress
-      )
-
-      creationPolicy = await client.proposalCreationPolicy()
-    }
-  }
+  )
 
   const preProposeAddress =
-    creationPolicy && 'Module' in creationPolicy && creationPolicy.Module.addr
+    'Module' in creationPolicy && creationPolicy.Module.addr
       ? creationPolicy.Module.addr
       : creationPolicy &&
         'module' in creationPolicy &&
         creationPolicy.module.addr
       ? creationPolicy.module.addr
       : null
+
   if (!preProposeAddress) {
     return null
   }
 
-  return await fetchPreProposeModule(queryClient, chainId, preProposeAddress)
+  return await queryClient.fetchQuery(
+    proposalQueries.preProposeModule(queryClient, {
+      chainId,
+      address: preProposeAddress,
+    })
+  )
 }

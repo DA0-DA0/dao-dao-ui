@@ -276,30 +276,3 @@ export const depositInfoSelector: (
       return depositInfo
     },
 })
-
-export const anyoneCanProposeSelector = selectorFamily<
-  boolean,
-  WithChainId<{
-    // Null if not v2 or doesn't have pre-propose module.
-    preProposeAddress: string | null
-  }>
->({
-  key: 'daoPreProposeSingleAnyoneCanPropose',
-  get:
-    ({ chainId, preProposeAddress }) =>
-    ({ get }) => {
-      if (preProposeAddress) {
-        const config = get(
-          DaoPreProposeSingleSelectors.configSelector({
-            contractAddress: preProposeAddress,
-            chainId,
-            params: [],
-          })
-        )
-
-        return config.open_proposal_submission
-      }
-
-      return false
-    },
-})

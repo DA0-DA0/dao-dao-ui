@@ -4,19 +4,20 @@ import toast from 'react-hot-toast'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { processError } from '@dao-dao/utils'
 
-import { DaoProposalMultipleHooks } from '../../../../hooks'
-import { useWallet } from '../../../../hooks/useWallet'
-import { useProposalModuleAdapterOptions } from '../../../react'
+import { useWallet } from '../../../../hooks'
+import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
-
-  const _castVote = DaoProposalMultipleHooks.useVote({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
+  const {
+    proposalModule,
+    options: { proposalNumber },
+  } = useProposalModuleAdapterContext()
+  const {
+    isWalletConnected,
+    address: walletAddress = '',
+    getSigningClient,
+  } = useWallet()
 
   const [castingVote, setCastingVote] = useState(false)
 
@@ -33,14 +34,19 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
   const castVote = useCallback(
     async (vote: MultipleChoiceVote) => {
-      if (!isWalletConnected) return
+      if (!isWalletConnected) {
+        toast.error('Log in to continue.')
+        return
+      }
 
       setCastingVote(true)
 
       try {
-        await _castVote({
+        await proposalModule.vote({
           proposalId: proposalNumber,
           vote,
+          getSigningClient,
+          sender: walletAddress,
         })
 
         await onSuccess?.()
@@ -54,7 +60,14 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
       // Loading will stop on success when vote data refreshes.
     },
-    [isWalletConnected, setCastingVote, _castVote, proposalNumber, onSuccess]
+    [
+      isWalletConnected,
+      proposalModule,
+      proposalNumber,
+      getSigningClient,
+      walletAddress,
+      onSuccess,
+    ]
   )
 
   return {

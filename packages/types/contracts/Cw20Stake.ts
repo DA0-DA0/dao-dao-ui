@@ -120,8 +120,7 @@ export type QueryMsg =
     }
 export interface StakedBalanceAtHeightResponse {
   balance: Uint128
-  // Optional because the indexer does not provide this.
-  height?: number
+  height: number
 }
 export interface StakedValueResponse {
   value: Uint128
@@ -133,8 +132,7 @@ export interface TokenInfoResponse {
   total_supply: Uint128
 }
 export interface TotalStakedAtHeightResponse {
-  // Optional because the indexer does not provide this.
-  height?: number
+  height: number
   total: Uint128
 }
 export interface TotalValueResponse {

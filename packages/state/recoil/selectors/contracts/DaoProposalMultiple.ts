@@ -4,7 +4,7 @@ import { Addr, WithChainId } from '@dao-dao/types'
 import {
   Config,
   HooksResponse,
-  ProposalCreationPolicyResponse,
+  ProposalCreationPolicy,
   ProposalListResponse,
   ProposalResponse,
   VoteInfo,
@@ -276,7 +276,7 @@ export const listVotesSelector = selectorFamily<
     },
 })
 export const proposalCreationPolicySelector = selectorFamily<
-  ProposalCreationPolicyResponse,
+  ProposalCreationPolicy,
   QueryClientParams & {
     params: Parameters<DaoProposalMultipleQueryClient['proposalCreationPolicy']>
   }

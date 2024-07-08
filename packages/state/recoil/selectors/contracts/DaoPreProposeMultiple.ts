@@ -2,10 +2,9 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import {
+  Addr,
   Config,
-  DaoResponse,
   DepositInfoResponse,
-  ProposalModuleResponse,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 
 import {
@@ -56,7 +55,7 @@ export const executeClient = selectorFamily<
 })
 
 export const proposalModuleSelector = selectorFamily<
-  ProposalModuleResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoPreProposeMultipleQueryClient['proposalModule']>
   }
@@ -80,7 +79,7 @@ export const proposalModuleSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  DaoResponse,
+  Addr,
   QueryClientParams & {
     params: Parameters<DaoPreProposeMultipleQueryClient['dao']>
   }

@@ -6,7 +6,7 @@ import i18n from './i18next'
 import {
   ChainDecorator,
   NotificationsDecorator,
-  RecoilDecorator,
+  StateDecorator,
   ThemeDecorator,
   makeAppContextDecorator,
 } from '../decorators'
@@ -55,7 +55,7 @@ export const parameters = {
 export const decorators = [
   ChainDecorator,
   ThemeDecorator,
-  RecoilDecorator,
+  StateDecorator,
   NotificationsDecorator,
   makeAppContextDecorator(),
 ]

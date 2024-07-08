@@ -9,7 +9,7 @@ import {
   waitForAny,
 } from 'recoil'
 
-import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import {
   AddressInput,
   Button,
@@ -59,7 +59,7 @@ export const MintNftEditor = ({
   )
 
   const existingTokenAddresses = useRecoilValue(
-    DaoCoreV2Selectors.allCw721CollectionsSelector({
+    DaoDaoCoreSelectors.allCw721CollectionsSelector({
       contractAddress: address,
       chainId,
     })

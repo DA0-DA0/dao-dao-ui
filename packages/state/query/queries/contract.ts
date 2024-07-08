@@ -6,9 +6,11 @@ import {
   ContractName,
   DAO_CORE_CONTRACT_NAMES,
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
-  cosmWasmClientRouter,
   getChainForChainId,
+  getCosmWasmClientForChainId,
+  isSecretNetwork,
   isValidBech32Address,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
@@ -50,15 +52,37 @@ export const fetchContractInfo = async (
   }
 
   // If indexer fails, fallback to querying chain.
-  const client = await cosmWasmClientRouter.connect(chainId)
-  const { data: contractInfo } = await client[
-    'forceGetQueryClient'
-  ]().wasm.queryContractRaw(address, toUtf8('contract_info'))
-  if (contractInfo) {
-    const info: InfoResponse = {
-      info: JSON.parse(fromUtf8(contractInfo)),
+  const client = await getCosmWasmClientForChainId(chainId)
+
+  if (isSecretNetwork(chainId)) {
+    // Secret Network does not allow accessing raw state directly, so this will
+    // only work if the contract has an `info` query, which all our DAO
+    // contracts do, but not all contracts do.
+    const info = await client.queryContractSmart(address, {
+      info: {},
+    })
+
+    // Verify it looks like a valid info response.
+    if (
+      objectMatchesStructure(info, {
+        info: {
+          contract: {},
+          version: {},
+        },
+      })
+    ) {
+      return info
     }
-    return info
+  } else {
+    const { data: contractInfo } = await client[
+      'forceGetQueryClient'
+    ]().wasm.queryContractRaw(address, toUtf8('contract_info'))
+    if (contractInfo) {
+      const info: InfoResponse = {
+        info: JSON.parse(fromUtf8(contractInfo)),
+      }
+      return info
+    }
   }
 
   throw new Error('Failed to query contract info for contract: ' + address)
@@ -144,7 +168,7 @@ export const fetchContractInstantiationTime = async (
   }
 
   // If indexer fails, fallback to querying chain.
-  const client = await cosmWasmClientRouter.connect(chainId)
+  const client = await getCosmWasmClientForChainId(chainId)
   const events = await client.searchTx([
     { key: 'instantiate._contract_address', value: address },
   ])

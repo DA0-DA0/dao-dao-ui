@@ -1,17 +1,20 @@
-import { useMemo } from 'react'
+import { Key } from '@mui/icons-material'
+import { useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
 import {
+  Button,
   DaoSplashHeader,
   useAppContext,
   useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
+  useDaoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
+import { processError } from '@dao-dao/utils'
 
-import { useWallet } from '../../../hooks'
+import { useDaoWithWalletSecretNetworkPermit } from '../../../hooks'
 import { matchAndLoadCommon } from '../../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
@@ -22,10 +25,24 @@ import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
-  const chain = useChain()
-  const daoInfo = useDaoInfoContext()
+  const { dao } = useDaoContext()
   const { mode } = useAppContext()
-  const { isWalletConnected } = useWallet()
+  const { isSecretNetwork, isWalletConnected, permit, getPermit } =
+    useDaoWithWalletSecretNetworkPermit()
+
+  const [creatingPermit, setCreatingPermit] = useState(false)
+  const createPermit = async () => {
+    setCreatingPermit(true)
+    try {
+      await getPermit()
+      toast.success(t('success.createdPermit'))
+    } catch (error) {
+      console.error(error)
+      toast.error(processError(error))
+    } finally {
+      setCreatingPermit(false)
+    }
+  }
 
   const {
     components: { ProfileCardMemberInfo },
@@ -34,14 +51,11 @@ export const HomeTab = () => {
 
   const depositInfoSelectors = useMemo(
     () =>
-      daoInfo.proposalModules.map(
+      dao.proposalModules.map(
         (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain,
-            coreAddress: daoInfo.coreAddress,
-          }).selectors.depositInfo
+          matchAndLoadCommon(dao, proposalModule.address).selectors.depositInfo
       ),
-    [chain, daoInfo.coreAddress, daoInfo.proposalModules]
+    [dao]
   )
   const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
@@ -73,14 +87,14 @@ export const HomeTab = () => {
         <DaoSplashHeader
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
-          daoInfo={daoInfo}
+          daoInfo={dao.info}
         />
       )}
 
       <p className="title-text mt-2">{t('title.membership')}</p>
 
       <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
-        {isWalletConnected ? (
+        {isWalletConnected && (!isSecretNetwork || permit) ? (
           <ProfileCardMemberInfo
             maxGovernanceTokenDeposit={
               maxGovernanceTokenProposalModuleDeposit > 0
@@ -88,6 +102,22 @@ export const HomeTab = () => {
                 : undefined
             }
           />
+        ) : isWalletConnected && isSecretNetwork && !permit ? (
+          <>
+            <p className="body-text mb-3">
+              {t('info.createPermitToInteractWithDao')}
+            </p>
+
+            <Button
+              loading={creatingPermit}
+              onClick={createPermit}
+              size="md"
+              variant="brand"
+            >
+              <Key className="!h-5 !w-5" />
+              <p>{t('button.createPermit')}</p>
+            </Button>
+          </>
         ) : (
           <>
             <p className="body-text mb-3">{t('info.logInToViewMembership')}</p>

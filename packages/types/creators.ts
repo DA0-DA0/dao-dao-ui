@@ -2,8 +2,9 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { CodeIdConfig, SupportedChainConfig } from './chain'
-import { InstantiateMsg } from './contracts/DaoCore.v2'
+import { SupportedChainConfig } from './chain'
+import { SecretModuleInstantiateInfo } from './clients'
+import { ModuleInstantiateInfo } from './contracts'
 import {
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
@@ -11,15 +12,16 @@ import {
   NewDao,
 } from './dao'
 
-export type DaoCreatorMutate<Data extends FieldValues = any> = (
-  msg: InstantiateMsg,
-  // Used within voting and proposal module adapters, so the data generic passed
-  // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>,
-  data: Data,
-  t: TFunction,
-  codeIds: CodeIdConfig
-) => InstantiateMsg
+export type DaoCreatorGetInstantiateInfo<Data extends FieldValues = any> =
+  (options: {
+    chainConfig: SupportedChainConfig
+    // Used within voting and proposal module adapters, so the data generic
+    // passed in may not necessarily be the voting module adapter data. Must use
+    // `any`.
+    newDao: NewDao<any>
+    data: Data
+    t: TFunction
+  }) => ModuleInstantiateInfo | SecretModuleInstantiateInfo
 
 export type DaoCreator<Data extends FieldValues = any> = {
   id: string
@@ -45,5 +47,5 @@ export type DaoCreator<Data extends FieldValues = any> = {
 
   // Modify `msg` to add any additional fields the creator needs to set based on
   // its own config.
-  mutate: DaoCreatorMutate<Data>
+  getInstantiateInfo: DaoCreatorGetInstantiateInfo<Data>
 }

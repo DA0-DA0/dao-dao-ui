@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalWalletVote } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalWalletVote'
 import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
-import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ProfileVoteCard } from './ProfileVoteCard'
 
@@ -26,7 +25,7 @@ Default.args = {
     loading: false,
     data: WALLET_PROFILE_DATA,
   },
-  vote: <ProposalWalletVote fallback="hasNoVote" vote={Vote.Yes} />,
+  vote: <ProposalWalletVote fallback="hasNoVote" vote="yes" />,
 }
 
 Default.parameters = {
