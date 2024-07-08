@@ -21,42 +21,12 @@ const assets = [...chainRegistryAssets]
 
 // BitSong Testnet
 const bitSongTestnetChain: Chain = {
+  ...chains.find((c) => c.chain_id === ChainId.BitsongMainnet)!,
   chain_name: 'bitsongtestnet',
   status: 'live',
   network_type: 'testnet',
   pretty_name: 'BitSong Testnet',
-  chain_id: 'bobnet',
-  bech32_prefix: 'bitsong',
-  bech32_config: {
-    bech32PrefixAccAddr: 'bitsong',
-    bech32PrefixAccPub: 'bitsongpub',
-    bech32PrefixValAddr: 'bitsongvaloper',
-    bech32PrefixValPub: 'bitsongvaloperpub',
-    bech32PrefixConsAddr: 'bitsongvalcons',
-    bech32PrefixConsPub: 'bitsongvalconspub',
-  },
-  slip44: 639,
-  logo_URIs: {
-    png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/btsg.png',
-  },
-  fees: {
-    fee_tokens: [
-      {
-        denom: 'ubtsg',
-        fixed_min_gas_price: 0,
-        low_gas_price: 0,
-        average_gas_price: 0,
-        high_gas_price: 0,
-      },
-    ],
-  },
-  staking: {
-    staking_tokens: [
-      {
-        denom: 'ubtsg',
-      },
-    ],
-  },
+  chain_id: ChainId.BitsongTestnet,
   apis: {
     rpc: [
       {
@@ -75,6 +45,34 @@ assets.push({
   chain_name: bitSongTestnetChain.chain_name,
   // Copy assets from BitSong mainnet.
   assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
+})
+
+// OmniFlix Hub Testnet
+const omniFlixHubTestnetChain: Chain = {
+  ...chains.find((c) => c.chain_id === ChainId.OmniflixHubMainnet)!,
+  chain_name: 'omniflixhubtestnet',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'OmniFlix Hub Testnet',
+  chain_id: ChainId.OmniflixHubTestnet,
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc.testnet.omniflix.network',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://api.testnet.omniflix.network',
+      },
+    ],
+  },
+}
+chains.push(omniFlixHubTestnetChain)
+assets.push({
+  chain_name: omniFlixHubTestnetChain.chain_name,
+  // Copy assets from OmniFlix Hub mainnet.
+  assets: assets.find((a) => a.chain_name === 'omniflixhub')?.assets ?? [],
 })
 
 // Remove thorchain and althea since they spam the console.
@@ -2113,6 +2111,44 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 28,
     },
   },
+  {
+    chainId: ChainId.OmniflixHubTestnet,
+    name: 'omniflixhub',
+    mainnet: false,
+    accentColor: '#d71d6a',
+    // NFT DAOs not yet ready.
+    nftDaosUnderDevelopment: true,
+    factoryContractAddress:
+      'omniflix1990vf0gumc2wqynl6cr836avhfd89y9225q0dk0s5dwzm7pnkgtqmn4dy7',
+    explorerUrlTemplates: {
+      tx: 'https://testnet.ping.pub/omniflix/tx/REPLACE',
+      gov: 'https://testnet.ping.pub/omniflix/gov',
+      govProp: 'https://testnet.ping.pub/omniflix/gov/REPLACE',
+      wallet: 'https://testnet.ping.pub/omniflix/account/REPLACE',
+    },
+    codeIdsVersion: ContractVersion.V242,
+    codeIds: {
+      Cw1Whitelist: 181,
+      Cw4Group: 182,
+      CwPayrollFactory: 184,
+      CwTokenSwap: 185,
+      CwTokenfactoryIssuerMain: 196,
+      CwVesting: 186,
+      DaoCore: 187,
+      DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 189,
+      DaoPreProposeApprover: 190,
+      DaoPreProposeMultiple: 191,
+      DaoPreProposeSingle: 192,
+      DaoProposalMultiple: 193,
+      DaoProposalSingle: 194,
+      DaoVotingCw4: 195,
+      DaoVotingTokenStaked: 197,
+
+      // Unused
+      DaoVotingCw721Staked: -1,
+    },
+  },
   // TODO(secret-testnet)
   // {
   //   chainId: ChainId.SecretTestnet,
@@ -2300,6 +2336,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.OmniflixHubMainnet]: {
     rpc: 'https://omniflix-rpc.polkachu.com',
     rest: 'https://omniflix-api.polkachu.com',
+  },
+  [ChainId.OmniflixHubTestnet]: {
+    rpc: 'https://rpc.testnet.omniflix.network',
+    rest: 'https://api.testnet.omniflix.network',
   },
   [ChainId.SecretTestnet]: {
     rpc: 'https://rpc.pulsar.scrttestnet.com',
