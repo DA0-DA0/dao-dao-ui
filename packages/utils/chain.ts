@@ -181,10 +181,18 @@ export const getImageUrlForChainId = (chainId: string): string => {
   return image
 }
 
-// Convert public key in hex format to a bech32 address.
-// https://github.com/cosmos/cosmos-sdk/blob/e09516f4795c637ab12b30bf732ce5d86da78424/crypto/keys/secp256k1/secp256k1.go#L152-L162
-// Keplr implementation:
-// https://github.com/chainapsis/keplr-wallet/blob/088dc701ce14df77a1ee22b7e39c651e50879d9f/packages/crypto/src/key.ts#L56-L63
+/**
+ * Convert secp256k1 public key in hex format to a bech32 address.
+ *
+ * Be very careful to ensure the public key is actually a secp256k1 key. Some
+ * chains, like Injective, use a different curve than secp256k1 and thus this
+ * will not work.
+ *
+ * https://github.com/cosmos/cosmos-sdk/blob/e09516f4795c637ab12b30bf732ce5d86da78424/crypto/keys/secp256k1/secp256k1.go#L152-L162
+ *
+ * Keplr implementation:
+ * https://github.com/chainapsis/keplr-wallet/blob/088dc701ce14df77a1ee22b7e39c651e50879d9f/packages/crypto/src/key.ts#L56-L63
+ */
 export const secp256k1PublicKeyToBech32Address = async (
   hexPublicKey: string,
   bech32Prefix: string

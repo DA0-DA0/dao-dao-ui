@@ -224,6 +224,7 @@ export const fetchCryptographicMultisigAccount = async ({
 
   const addresses = await Promise.all(
     publicKeys.map((key) =>
+      // Safe to use since we validated the public key curve above.
       secp256k1PublicKeyToBech32Address(
         toHex(Secp256k1PubKey.decode(key.value).key),
         bech32Prefix
