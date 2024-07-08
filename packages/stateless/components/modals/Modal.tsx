@@ -74,7 +74,7 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'hd-screen wd-screen fixed top-0 left-0 z-40 flex flex-col items-center justify-center backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe-or-4',
+            'hd-screen wd-screen fixed top-0 left-0 z-40 flex flex-col items-center justify-center backdrop-brightness-50 backdrop-filter p-safe-or-4',
             visible
               ? 'animate-fade-in opacity-100'
               : 'pointer-events-none animate-fade-out opacity-0',
@@ -90,7 +90,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'relative flex h-min max-h-[min(96dvh,_100%)] max-w-[min(96dvw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 duration-[120ms] sm:max-h-[82dvh] sm:max-w-md',
+              'relative flex h-min max-h-[min(96dvh,_100%)] max-w-[min(96dvw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 sm:max-h-[82dvh] sm:max-w-md',
               visible
                 ? 'scale-100 animate-expand-in'
                 : 'scale-90 animate-contract-out',
