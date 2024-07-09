@@ -307,13 +307,13 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     return daoProposalMultipleQueries.getVote(this.queryClient, {
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
-      // Force type-cast since the query won't be enabled until this is set.
-      // This allows us to pass an undefined `voter` argument in order to
-      // invalidate/refresh the query for all voters.
       args: {
         proposalId,
-        ...(voter && { voter }),
-      } as any,
+        // Force type-cast since the query won't be enabled until this is set.
+        // This allows us to pass an undefined `voter` argument in order to
+        // invalidate/refresh the query for all voters.
+        voter: voter!,
+      },
       // If no voter, return query in loading state.
       options: {
         enabled: !!voter,
