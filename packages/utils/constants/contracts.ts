@@ -69,6 +69,10 @@ export const DAO_VOTING_ONFT_STAKED_CONTRACT_NAMES = [
   'crates.io:dao-voting-onft-staked',
 ]
 
+export const DAO_VOTING_SG_COMMUNITY_NFT_CONTRACT_NAMES = [
+  'crates.io:dao-voting-sg-community-nft',
+]
+
 export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [
   // V2.3.0+
   'crates.io:dao-voting-token-staked',

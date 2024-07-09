@@ -38,6 +38,7 @@ import {
   NativeStakedVotingModule,
   NeutronVotingRegistryVotingModule,
   OnftStakedVotingModule,
+  SgCommunityNftVotingModule,
   TokenStakedVotingModule,
 } from '../voting-module'
 import { DaoBase } from './base'
@@ -50,6 +51,7 @@ const getVotingModuleBases = () => [
   TokenStakedVotingModule,
   NeutronVotingRegistryVotingModule,
   OnftStakedVotingModule,
+  SgCommunityNftVotingModule,
 ]
 
 const getProposalModuleBases = () => [

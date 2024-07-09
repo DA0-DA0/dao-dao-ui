@@ -136,3 +136,7 @@ export {
   DaoVotingOnftStakedClient,
   DaoVotingOnftStakedQueryClient,
 } from './DaoVotingOnftStaked'
+export {
+  DaoVotingSgCommunityNftClient,
+  DaoVotingSgCommunityNftQueryClient,
+} from './DaoVotingSgCommunityNft'

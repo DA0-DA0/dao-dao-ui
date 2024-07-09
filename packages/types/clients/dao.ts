@@ -99,7 +99,10 @@ export interface IDaoBase {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse>
+  ): Pick<
+    FetchQueryOptions<VotingPowerAtHeightResponse>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Fetch the voting power for a given address. Optionally specify a block
@@ -113,7 +116,7 @@ export interface IDaoBase {
    */
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse>
+  ): Pick<FetchQueryOptions<TotalPowerAtHeightResponse>, 'queryKey' | 'queryFn'>
 
   /**
    * Fetch the total voting power. Optional specify a block height. If
@@ -134,7 +137,7 @@ export interface IDaoBase {
   /**
    * Query options to fetch the TVL.
    */
-  tvlQuery: FetchQueryOptions<AmountWithTimestamp>
+  tvlQuery: Pick<FetchQueryOptions<AmountWithTimestamp>, 'queryKey' | 'queryFn'>
 
   /**
    * Fetch the TVL.

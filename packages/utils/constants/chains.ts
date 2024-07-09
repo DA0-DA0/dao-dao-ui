@@ -1953,6 +1953,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 4366,
       DaoVotingCw721Staked: 4367,
       DaoVotingTokenStaked: 4368,
+
+      // DaoVotingSgCommunityNft: 4370
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {

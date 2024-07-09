@@ -36,7 +36,10 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse>
+  ): Pick<
+    FetchQueryOptions<VotingPowerAtHeightResponse>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Fetch the voting power for a given address. Optionally specify a block
@@ -50,7 +53,7 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
    */
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse>
+  ): Pick<FetchQueryOptions<TotalPowerAtHeightResponse>, 'queryKey' | 'queryFn'>
 
   /**
    * Fetch the total voting power. Optional specify a block height. If
