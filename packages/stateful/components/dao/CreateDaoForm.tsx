@@ -49,7 +49,7 @@ import {
   CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
   NEW_DAO_TOKEN_DECIMALS,
-  SECRET_GAS_PRICES,
+  SECRET_GAS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
@@ -487,7 +487,7 @@ export const InnerCreateDaoForm = ({
               label: instantiateMsg.name,
             },
           },
-          SECRET_GAS_PRICES.DAO_CREATION,
+          SECRET_GAS.DAO_CREATION,
           undefined,
           instantiateFunds
         )

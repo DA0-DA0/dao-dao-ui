@@ -175,6 +175,6 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
 /**
  * Gas prices for Secret transactions.
  */
-export const SECRET_GAS_PRICES = {
+export const SECRET_GAS = {
   DAO_CREATION: 1_000_000,
 }
