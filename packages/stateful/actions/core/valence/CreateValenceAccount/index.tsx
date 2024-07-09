@@ -122,20 +122,27 @@ const Component: ActionComponent = (props) => {
                 : {
                     loading: false,
                     updating: nativeBalances.updating,
-                    data: nativeBalances.data.map(({ balance, ...data }) => ({
-                      ...data,
-                      // Subtract service fee from balance for corresponding
-                      // token to ensure that they leave enough for the fee.
-                      // This value is used as the input max.
-                      balance:
-                        !serviceFee.errored &&
-                        serviceFee.data &&
-                        tokensEqual(data.token, serviceFee.data.token)
-                          ? (
-                              BigInt(balance) - BigInt(serviceFee.data.balance)
-                            ).toString()
-                          : balance,
-                    })),
+                    data: nativeBalances.data.map(
+                      ({ balance: _balance, ...data }) => {
+                        // Subtract service fee from balance for corresponding
+                        // token to ensure that they leave enough for the fee.
+                        // This value is used as the input max.
+                        let balance =
+                          !serviceFee.errored &&
+                          serviceFee.data &&
+                          tokensEqual(data.token, serviceFee.data.token)
+                            ? BigInt(_balance) - BigInt(serviceFee.data.balance)
+                            : BigInt(_balance)
+                        if (balance < 0n) {
+                          balance = 0n
+                        }
+
+                        return {
+                          ...data,
+                          balance: balance.toString(),
+                        }
+                      }
+                    ),
                   },
             serviceFee,
           }}

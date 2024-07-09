@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   FormCheckbox,
+  InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
   NativeCoinSelectorProps,
@@ -181,6 +182,8 @@ export const CreateValenceAccountComponent: ActionComponent<
                 })}
               </p>
             </div>
+
+            <InputErrorMessage error={errors?.acknowledgedServiceFee} />
           </>
         )}
       </div>
