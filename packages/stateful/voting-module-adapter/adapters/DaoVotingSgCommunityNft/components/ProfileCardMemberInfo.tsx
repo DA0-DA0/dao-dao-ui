@@ -395,7 +395,15 @@ export const ProfileCardMemberInfo = ({
           </Button>
         )
       ) : (
-        <Button loading size="lg" variant="secondary" />
+        <Button
+          center
+          className="w-full mt-4"
+          loading
+          size="lg"
+          variant="secondary"
+        >
+          {t('info.loading')}
+        </Button>
       )}
     </>
   )
