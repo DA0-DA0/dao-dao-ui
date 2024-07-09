@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
+  ButtonLink,
   DaoFiatDepositModal,
   DaoTokenLine,
   TreasuryHistoryGraph,
@@ -54,6 +55,8 @@ Default.args = {
   NftCard,
   FiatDepositModal: DaoFiatDepositModal,
   TreasuryHistoryGraph,
+  ButtonLink,
+  configureRebalancerHref: '#',
 }
 
 export const Loading = Template.bind({})
@@ -67,4 +70,6 @@ Loading.args = {
   NftCard,
   FiatDepositModal: DaoFiatDepositModal,
   TreasuryHistoryGraph,
+  ButtonLink,
+  configureRebalancerHref: '#',
 }

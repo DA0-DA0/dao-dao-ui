@@ -1,4 +1,4 @@
-import { GroupRounded } from '@mui/icons-material'
+import { GroupRounded, WalletRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +25,7 @@ export type AccountProps = {
   address: string
   hexPublicKey: LoadingDataWithError<string | undefined>
   AccountDaos: ComponentType
+  AccountWallet: ComponentType
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   ButtonLink: ComponentType<ButtonLinkProps>
 } & Pick<WalletProfileHeaderProps, 'profile'>
@@ -33,6 +34,7 @@ export const Account = ({
   address,
   hexPublicKey,
   AccountDaos,
+  AccountWallet,
   SuspenseLoader,
   ButtonLink,
   ...headerProps
@@ -46,6 +48,12 @@ export const Account = ({
       label: t('title.daos'),
       Icon: GroupRounded,
       Component: AccountDaos,
+    },
+    {
+      id: AccountTabId.Wallet,
+      label: t('title.wallet'),
+      Icon: WalletRounded,
+      Component: AccountWallet,
     },
   ]
 

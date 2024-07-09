@@ -27,14 +27,17 @@ import {
   useNamedThemeColor,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   TokenPriceHistoryRange,
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTimeTz,
+  formatPercentOf100,
   serializeTokenSource,
   shortenTokenSymbol,
+  tokenSourcesEqual,
 } from '@dao-dao/utils'
 
 import 'chartjs-adapter-date-fns'
@@ -51,11 +54,12 @@ ChartJS.register(
   annotationPlugin
 )
 
-// TODO: add way to set base price denom to use instead of USD
+// TODO(rebalancer): add way to set base price denom to use instead of USD
 export const TreasuryHistoryGraph = ({
   chainId,
   address,
   account,
+  showRebalancer = false,
   className,
   graphClassName,
   registerTokenColors,
@@ -83,6 +87,17 @@ export const TreasuryHistoryGraph = ({
           chainId: account.chainId,
           address: account.address,
         },
+        // Filter by rebalancer tokens.
+        tokens:
+          showRebalancer && account.type === AccountType.Valence
+            ? account.config.rebalancer?.targets.map(
+                ({ token: { chainId, type, denomOrAddress } }) => ({
+                  chainId,
+                  type,
+                  denomOrAddress,
+                })
+              )
+            : undefined,
       },
     })
   )
@@ -115,6 +130,7 @@ export const TreasuryHistoryGraph = ({
           }
 
           return {
+            token,
             order: 2,
             label:
               '$' +
@@ -128,11 +144,82 @@ export const TreasuryHistoryGraph = ({
           }
         })
 
+  const showTargets =
+    !!account &&
+    account.type === AccountType.Valence &&
+    !!account.config.rebalancer?.targets.length &&
+    showRebalancer &&
+    !treasuryValueHistory.loading &&
+    !treasuryValueHistory.errored
+
+  // Show targets if rebalancer configured account.
+  const targetValues = !showTargets
+    ? []
+    : (account.config.rebalancer?.targets || []).flatMap(
+        ({ token, targets }) => {
+          if (targets.length === 0) {
+            return []
+          }
+
+          const data = treasuryValueHistory.data.timestamps.map(
+            (_timestamp, timestampIndex) => {
+              // Find first target that is after this timestamp so we can
+              // choose the most recent target before it.
+              let nextTargetIndex = targets.findIndex(
+                (target) => target.timestamp > _timestamp.getTime()
+              )
+              const targetIndex =
+                nextTargetIndex === -1
+                  ? // If all targets are before, use last one.
+                    targets.length - 1
+                  : // If all targets are after, no target for this timestamp.
+                  nextTargetIndex === 0
+                  ? undefined
+                  : // Otherwise use the previous one.
+                    nextTargetIndex - 1
+              if (targetIndex === undefined) {
+                return null
+              }
+
+              // Get total value at this point in time.
+              const totalValue =
+                treasuryValueHistory.data.totals[timestampIndex]
+              if (totalValue === null) {
+                return null
+              }
+
+              const { percentage } = targets[targetIndex]
+
+              // The target at this point is based on the total value.
+              return totalValue * Number(percentage)
+            }
+          )
+
+          return {
+            token,
+            order: 3,
+            label:
+              '$' +
+              shortenTokenSymbol(token.symbol).tokenSymbol +
+              ' ' +
+              t('title.target'),
+            data,
+            borderDash: [2.5, 2.5],
+            borderColor: tokenColors[serializeTokenSource(token)],
+            backgroundColor: tokenColors[serializeTokenSource(token)],
+            pointRadius: 0,
+            pointHitRadius: 0,
+            borderWidth: 2.5,
+          }
+        }
+      )
+
   const totalValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
       : [
           {
+            token: undefined,
             order: 1,
             label: t('title.totalValue'),
             data: treasuryValueHistory.data.totals,
@@ -142,13 +229,18 @@ export const TreasuryHistoryGraph = ({
           },
         ]
 
-  const datasets = [...tokenValues, ...totalValues]
+  const datasets = [...tokenValues, ...targetValues, ...totalValues]
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
   // Contains information on the data point that is currently hovered. Can be
   // used to retrieve the timestamp value (`.parsed.x`) and index in the dataset
   // (`.dataIndex`).
   const tooltipFirstDataPoint = tooltipData?.dataPoints[0]
+  const tooltipTotalValue =
+    tooltipData &&
+    (tooltipData.dataPoints.find(
+      ({ datasetIndex }) => datasetIndex === datasets.length - 1
+    )?.raw as number | undefined)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -355,13 +447,26 @@ export const TreasuryHistoryGraph = ({
               ),
             ].flatMap(
               (
-                { data, label, borderWidth, borderColor, backgroundColor },
+                {
+                  token,
+                  data,
+                  label,
+                  borderWidth,
+                  borderColor,
+                  backgroundColor,
+                },
                 index
               ) => {
                 const value = data[tooltipFirstDataPoint.dataIndex]
                 if (value === null) {
                   return
                 }
+
+                const targetValue =
+                  token &&
+                  targetValues.find(({ token: t }) =>
+                    tokenSourcesEqual(token, t)
+                  )?.data[tooltipFirstDataPoint.dataIndex]
 
                 return (
                   <div
@@ -391,6 +496,24 @@ export const TreasuryHistoryGraph = ({
                           maximumFractionDigits: 2,
                         })}
                       </p>
+
+                      {index > 0 && !!tooltipTotalValue && showTargets && (
+                        <>
+                          <p className="caption-text">
+                            {formatPercentOf100(
+                              (value / tooltipTotalValue) * 100
+                            )}
+
+                            {` (${
+                              typeof targetValue === 'number'
+                                ? `${t('info.target')}: ${formatPercentOf100(
+                                    (targetValue / tooltipTotalValue) * 100
+                                  )}`
+                                : t('info.noTarget')
+                            })`}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                 )

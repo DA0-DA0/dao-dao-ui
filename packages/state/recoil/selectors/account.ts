@@ -10,21 +10,14 @@ import {
   AccountType,
   GenericToken,
   GenericTokenBalanceWithOwner,
-  IcaAccount,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  ICA_CHAINS_TX_PREFIX,
-  POLYTONE_CONFIG_PER_CHAIN,
-  getConfiguredChainConfig,
-  tokensEqual,
-} from '@dao-dao/utils'
+import { POLYTONE_CONFIG_PER_CHAIN, tokensEqual } from '@dao-dao/utils'
 
-import { moduleAddressSelector } from './chain'
-import { isDaoSelector, isPolytoneProxySelector } from './contract'
-import { DaoDaoCoreSelectors, PolytoneProxySelectors } from './contracts'
-import { icaRemoteAddressSelector } from './ica'
+import { accountQueries } from '../../query'
+import { queryClientAtom } from '../atoms'
+import { PolytoneProxySelectors } from './contracts'
 import {
   genericTokenBalanceSelector,
   genericTokenBalancesSelector,
@@ -32,8 +25,12 @@ import {
   genericTokenUndelegatingBalancesSelector,
 } from './token'
 
-// Get accounts controlled by this address, including its native chain, all
-// polytone proxies, and all ICA accounts.
+/**
+ * Fetch the list of accounts associated with the specified address, with
+ * support for:
+ * - detecting if the address is a polytone proxy
+ * - automatically loading a DAO's registered ICAs
+ */
 export const accountsSelector = selectorFamily<
   Account[],
   WithChainId<{
@@ -46,102 +43,14 @@ export const accountsSelector = selectorFamily<
   get:
     ({ chainId, address, includeIcaChains }) =>
     ({ get }) => {
-      const chainConfig = getConfiguredChainConfig(chainId)
-      // In case address is the name of a chain, get the gov module address.
-      if (chainConfig?.name === address) {
-        address = get(
-          moduleAddressSelector({
-            chainId,
-            name: 'gov',
-          })
-        )
-      }
-
-      const [isDao, isPolytoneProxy] = get(
-        waitForAll([
-          isDaoSelector({
-            chainId,
-            address,
-          }),
-          isPolytoneProxySelector({
-            chainId,
-            address,
-          }),
-        ])
+      const queryClient = get(queryClientAtom)
+      return queryClient.fetchQuery(
+        accountQueries.list(queryClient, {
+          chainId,
+          address,
+          ...(includeIcaChains && { includeIcaChains }),
+        })
       )
-
-      // If this is a DAO, get its polytone proxies and registered ICAs.
-      const [polytoneProxies, registeredIcas] = isDao
-        ? get(
-            waitForAll([
-              DaoDaoCoreSelectors.polytoneProxiesSelector({
-                chainId,
-                contractAddress: address,
-              }),
-              DaoDaoCoreSelectors.listAllItemsWithPrefixSelector({
-                chainId,
-                contractAddress: address,
-                prefix: ICA_CHAINS_TX_PREFIX,
-              }),
-            ])
-          )
-        : []
-
-      const mainAccount: Account = {
-        chainId,
-        address,
-        type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
-      }
-
-      const allAccounts: Account[] = [
-        // Main account.
-        mainAccount,
-        // Polytone.
-        ...Object.entries(polytoneProxies || {}).map(
-          ([chainId, address]): Account => ({
-            chainId,
-            address,
-            type: AccountType.Polytone,
-          })
-        ),
-      ]
-
-      // If main account is native, load ICA accounts.
-      const icaChains =
-        mainAccount.type === AccountType.Native
-          ? [
-              ...(registeredIcas || []).map(([key]) => key),
-              ...(includeIcaChains || []),
-            ]
-          : []
-
-      // Get ICA addresses controlled by native account.
-      const icas = icaChains.length
-        ? get(
-            waitForAllSettled(
-              icaChains.map((chainId) =>
-                icaRemoteAddressSelector({
-                  srcChainId: mainAccount.chainId,
-                  address: mainAccount.address,
-                  destChainId: chainId,
-                })
-              )
-            )
-          ).flatMap((addressLoadable, index): IcaAccount | [] =>
-            addressLoadable.valueMaybe()
-              ? {
-                  type: AccountType.Ica,
-                  chainId: icaChains[index],
-                  address: addressLoadable.valueMaybe()!,
-                }
-              : []
-          )
-        : []
-
-      // Add ICA accounts.
-      allAccounts.push(...icas)
-
-      return allAccounts
     },
 })
 
@@ -166,6 +75,10 @@ export const allBalancesSelector = selectorFamily<
     >[]
     // Ignore staked and unstaking tokens.
     ignoreStaked?: boolean
+    // Include only these account types.
+    includeAccountTypes?: AccountType[]
+    // Exclude these account types.
+    excludeAccountTypes?: AccountType[]
   }>
 >({
   key: 'allBalances',
@@ -179,6 +92,8 @@ export const allBalancesSelector = selectorFamily<
       filter,
       additionalTokens,
       ignoreStaked,
+      includeAccountTypes,
+      excludeAccountTypes = [AccountType.Valence],
     }) =>
     ({ get }) => {
       const allAccounts = get(
@@ -187,7 +102,15 @@ export const allBalancesSelector = selectorFamily<
           address: mainAddress,
           includeIcaChains,
         })
-      )
+      ).filter(({ type }) => {
+        if (includeAccountTypes) {
+          return includeAccountTypes.includes(type)
+        }
+        if (excludeAccountTypes) {
+          return !excludeAccountTypes.includes(type)
+        }
+        return true
+      })
 
       const accountBalances = get(
         waitForAll(

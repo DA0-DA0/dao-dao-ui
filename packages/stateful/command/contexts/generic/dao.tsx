@@ -13,7 +13,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
 import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
-import { ContractVersion, Feature } from '@dao-dao/types'
+import { AccountType, ContractVersion, Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -58,7 +58,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       coreAddress,
     })
 
-    const [copied, setCopied] = useState<string | undefined>()
+    const [copied, setCopied] = useState<number | undefined>()
     // Debounce clearing copied.
     useEffect(() => {
       const timeout = setTimeout(() => setCopied(undefined), 2000)
@@ -150,19 +150,23 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             }),
           loading: updatingFollowing,
         },
-        ...accounts.map(({ chainId, address }) => ({
+        ...accounts.map(({ chainId, address, type }, accountIndex) => ({
           name:
-            copied === chainId
+            copied === accountIndex
               ? t('info.copiedChainAddress', {
-                  chain: getDisplayNameForChainId(chainId),
+                  chain:
+                    getDisplayNameForChainId(chainId) +
+                    (type === AccountType.Valence ? ' (Valence)' : ''),
                 })
-              : t('button.copyDaoChainAddress', {
-                  chain: getDisplayNameForChainId(chainId),
+              : t('button.copyChainAddress', {
+                  chain:
+                    getDisplayNameForChainId(chainId) +
+                    (type === AccountType.Valence ? ' (Valence)' : ''),
                 }),
-          Icon: copied === chainId ? Check : CopyAll,
+          Icon: copied === accountIndex ? Check : CopyAll,
           onChoose: () => {
             navigator.clipboard.writeText(address)
-            setCopied(chainId)
+            setCopied(accountIndex)
           },
         })),
       ],

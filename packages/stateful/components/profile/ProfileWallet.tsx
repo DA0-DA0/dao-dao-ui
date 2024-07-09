@@ -9,13 +9,26 @@ import {
   ProfileWallet as StatelessProfileWallet,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
+import { ActionKey, StatefulProfileWalletProps } from '@dao-dao/types'
+import { getActionBuilderPrefillPath } from '@dao-dao/utils'
 
+import { useActionForKey } from '../../actions'
 import { useProfile } from '../../hooks'
+import { ButtonLink } from '../ButtonLink'
+import { IconButtonLink } from '../IconButtonLink'
+import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
+import { WalletTokenLineReadonly } from '../wallet'
 import { WalletTokenLine } from '../wallet/WalletTokenLine'
 import { ProfileAddChains } from './ProfileAddChains'
 
-export const ProfileWallet = () => {
-  const { chains, uniquePublicKeys } = useProfile()
+export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
+  // Read-only if address is defined.
+  const readOnly = !!address
+
+  const { chains, uniquePublicKeys } = useProfile({
+    address,
+  })
+
   const accounts = useCachedLoadingWithError(
     chains.loading
       ? undefined
@@ -61,12 +74,30 @@ export const ProfileWallet = () => {
     (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
   )
 
+  const configureRebalancerActionDefaults = useActionForKey(
+    ActionKey.ConfigureRebalancer
+  )?.useDefaults()
+
   return (
     <StatelessProfileWallet
+      ButtonLink={ButtonLink}
+      IconButtonLink={IconButtonLink}
       ProfileAddChains={ProfileAddChains}
-      TokenLine={WalletTokenLine}
+      TokenLine={readOnly ? WalletTokenLineReadonly : WalletTokenLine}
+      TreasuryHistoryGraph={TreasuryHistoryGraph}
       accounts={accounts}
+      configureRebalancerHref={
+        !readOnly && configureRebalancerActionDefaults
+          ? getActionBuilderPrefillPath([
+              {
+                actionKey: ActionKey.ConfigureRebalancer,
+                data: configureRebalancerActionDefaults,
+              },
+            ])
+          : undefined
+      }
       hiddenTokens={hiddenTokens}
+      readOnly={readOnly}
       tokens={tokens}
     />
   )

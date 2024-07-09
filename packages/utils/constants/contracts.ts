@@ -16,6 +16,7 @@ export enum ContractName {
   NeutronCwdPreProposeSingleOverrule = 'crates.io:cwd-pre-propose-single-overrule',
   // https://github.com/oraichain/cw20-staking/tree/master/contracts/proxy-snapshot
   OraichainCw20StakingProxySnapshot = 'cw20-staking-proxy-snapshot',
+  ValenceAccount = 'crates.io:valence-account',
 }
 
 export const NEUTRON_SUBDAO_CORE_CONTRACT_NAMES = [

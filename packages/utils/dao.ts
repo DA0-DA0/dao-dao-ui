@@ -72,11 +72,12 @@ export const getAccount = ({
   types = [AccountType.Native, AccountType.Polytone],
 }: {
   accounts: readonly Account[]
-  chainId: string
+  chainId?: string
   types?: readonly AccountType[]
 }): Account | undefined =>
   accounts.find(
-    (account) => types.includes(account.type) && account.chainId === chainId
+    (account) =>
+      types.includes(account.type) && (!chainId || account.chainId === chainId)
   )
 
 // Gets the account address on the specified chain or undefined if nonexistent.

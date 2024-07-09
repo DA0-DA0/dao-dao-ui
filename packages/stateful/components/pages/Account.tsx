@@ -34,6 +34,7 @@ import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { AccountDaos } from './AccountDaos'
+import { AccountWallet } from './AccountWallet'
 
 export const Account: NextPage = () => {
   const { t } = useTranslation()
@@ -139,6 +140,7 @@ export const Account: NextPage = () => {
       <ChainProvider chainId={configuredChain.chainId}>
         <StatelessAccount
           AccountDaos={AccountDaos}
+          AccountWallet={AccountWallet}
           ButtonLink={ButtonLink}
           SuspenseLoader={SuspenseLoader}
           address={accountAddress}

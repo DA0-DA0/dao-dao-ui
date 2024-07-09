@@ -36,6 +36,7 @@ import {
   mountedInBrowserAtom,
   web3AuthPromptAtom,
 } from '@dao-dao/state/recoil'
+import { useUpdatingRef } from '@dao-dao/stateless'
 import {
   CHAIN_ENDPOINTS,
   MAINNET,
@@ -228,8 +229,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   const previousChain = usePrevious(chain.chain_name)
   const previousConnected = usePrevious(isWalletConnected)
   const previousWalletName = usePrevious(wallet?.name)
-  const walletRepoRef = useRef(walletRepo)
-  walletRepoRef.current = walletRepo
+  const walletRepoRef = useUpdatingRef(walletRepo)
   const reconnectingRef = useRef(false)
   useEffect(() => {
     if (
@@ -253,6 +253,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     previousChain,
     chain.chain_name,
     previousWalletName,
+    walletRepoRef,
   ])
 
   // Refresh connection on wallet change.

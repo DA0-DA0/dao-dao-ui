@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useUpdatingRef } from './useUpdatingRef'
+
 // Pass `null` to left, right, or width to skip setting that property.
 export type UseTrackDropdownOptions = {
   // Default: rect.bottom
@@ -99,22 +101,23 @@ export const useTrackDropdown = ({
   }
 
   // Memoize ref to prevent listener from resetting on every render.
-  const updateRectRef = useRef(updateRect)
-  updateRectRef.current = updateRect
+  const updateRectRef = useUpdatingRef(updateRect)
 
   // Update the rect of the element on window scroll and resize.
   useEffect(() => {
+    const updateRect = updateRectRef.current
+
     // The third argument set to `true` makes the event fire when any scroll
     // event happens, not just when the window is scrolled. The actual
     // scrollable container is some parent element.
-    window.addEventListener('scroll', updateRectRef.current, true)
-    // window.addEventListener('resize', updateRectRef.current, true)
+    window.addEventListener('scroll', updateRect, true)
+    // window.addEventListener('resize', updateRect, true)
 
     return () => {
-      window.removeEventListener('scroll', updateRectRef.current)
-      // window.removeEventListener('resize', updateRectRef.current)
+      window.removeEventListener('scroll', updateRect)
+      // window.removeEventListener('resize', updateRect)
     }
-  }, [])
+  }, [updateRectRef])
 
   // Trigger state change when elements are set so the effects run.
   const [dropdownReady, setDropdownReady] = useState(false)
@@ -125,7 +128,7 @@ export const useTrackDropdown = ({
     if (dropdownReady && trackReady) {
       updateRectRef.current()
     }
-  }, [dropdownReady, trackReady])
+  }, [dropdownReady, trackReady, updateRectRef])
 
   // Use a ResizeObserver to update the rect when the element changes size.
   useEffect(() => {
@@ -143,7 +146,7 @@ export const useTrackDropdown = ({
       observer.disconnect()
       clearInterval(timer)
     }
-  }, [trackReady])
+  }, [trackReady, updateRectRef])
 
   // Use a callback ref so we can trigger a state change to update.
   const onDropdownRef = useCallback((element: HTMLDivElement | null) => {

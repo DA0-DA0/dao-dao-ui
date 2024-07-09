@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import { waitForAll } from 'recoil'
 
 import { lazyDaoCardPropsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useUpdatingRef } from '@dao-dao/stateless'
 import { FeedDaoWithItems, FeedState } from '@dao-dao/types'
 
 import { getSources } from '../core'
@@ -38,12 +38,11 @@ export const useFeed = (): FeedState => {
 
   // Update all sources once per minute. Memoize refresh function so that it
   // doesn't restart the interval when the ref changes.
-  const refreshRef = useRef(refresh)
-  refreshRef.current = refresh
+  const refreshRef = useUpdatingRef(refresh)
   useEffect(() => {
     const interval = setInterval(() => refreshRef.current(), 60 * 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [refreshRef])
 
   // Sort and combine items from all sources.
   const { pendingItemCount, totalItemCount, sourceDaosWithItems } =

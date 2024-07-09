@@ -666,12 +666,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 574,
       DaoVotingCw721Staked: 576,
       DaoVotingTokenStaked: 577,
+
+      ValenceAccount: 1506,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
         DaoPreProposeMultiple: 224,
         DaoProposalMultiple: 226,
       },
+    },
+    valence: {
+      servicesManager:
+        'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
+      rebalancer:
+        'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
     // There is no IBC connection with:
     // - Juno
@@ -2244,6 +2252,10 @@ export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
     chainId as ChainId,
     polytone,
   ])
+
+export const VALENCE_SUPPORTED_CHAINS = SUPPORTED_CHAINS.filter(
+  ({ valence }) => valence
+).map(({ chainId }) => chainId as ChainId)
 
 export const CHAIN_ENDPOINTS: Partial<
   Record<

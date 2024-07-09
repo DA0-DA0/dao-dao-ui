@@ -30,6 +30,7 @@ export type NativeCoinSelectorProps = Pick<
   onRemove?: () => void
   className?: string
   dontValidate?: boolean
+  min?: number
 }
 
 export const NativeCoinSelector = ({
@@ -41,6 +42,7 @@ export const NativeCoinSelector = ({
   className,
   chainId,
   dontValidate = false,
+  min,
 }: NativeCoinSelectorProps) => {
   const { t } = useTranslation()
   const nativeToken = getNativeTokenForChainId(chainId)
@@ -149,10 +151,11 @@ export const NativeCoinSelector = ({
     dontValidate,
   ])
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(
+  const minUnit = convertMicroDenomToDenomWithDecimals(
     1,
     selectedTokenBalance?.token?.decimals ?? nativeToken.decimals
   )
+  const minAmount = min ?? minUnit
 
   return (
     <div className={className}>
@@ -165,7 +168,7 @@ export const NativeCoinSelector = ({
             fieldName: fieldNamePrefix + 'amount',
             error: errors?.amount || errors?._error,
             min: minAmount,
-            step: minAmount,
+            step: minUnit,
             max: dontValidate
               ? undefined
               : selectedTokenBalance &&
@@ -195,7 +198,7 @@ export const NativeCoinSelector = ({
           }
         />
 
-        {isCreating && (
+        {isCreating && onRemove && (
           <IconButton
             Icon={Close}
             className="self-center"

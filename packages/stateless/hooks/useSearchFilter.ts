@@ -12,6 +12,7 @@ import {
 
 import { SearchBarProps } from '../components'
 import { useQuerySyncedState } from './useQuerySyncedState'
+import { useUpdatingRef } from './useUpdatingRef'
 
 export type UseSearchFilterOptions<T> = {
   /**
@@ -122,15 +123,14 @@ export const useSearchFilter = <T extends unknown>({
     }
   }, [fuse, filter, data])
 
-  const onFilterChangeRef = useRef(onFilterChange)
-  onFilterChangeRef.current = onFilterChange
+  const onFilterChangeRef = useUpdatingRef(onFilterChange)
   const onChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
       const filter = event.target.value
       setFilter(filter)
       onFilterChangeRef.current?.(filter)
     },
-    [setFilter]
+    [onFilterChangeRef, setFilter]
   )
 
   return {

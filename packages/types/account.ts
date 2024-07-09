@@ -2,13 +2,14 @@ import { ComponentType } from 'react'
 
 import { ActionKeyAndData } from './actions'
 import { Threshold } from './contracts/DaoProposalSingle.common'
+import { ParsedTarget, RebalancerConfig } from './contracts/ValenceRebalancer'
+import { GenericToken } from './token'
 
 /**
  * The type of account given whatever the relevant context is.
  */
 export enum AccountType {
   /**
-   * Wallet/smart contract/module address on the current chain given the
    * context.
    */
   Native = 'native',
@@ -28,6 +29,10 @@ export enum AccountType {
    * A cw3 smart-contract-based multisig.
    */
   Cw3Multisig = 'cw3Multisig',
+  /**
+   * A Timewave Valence account.
+   */
+  Valence = 'valence',
 }
 
 export type BaseAccount = {
@@ -78,12 +83,40 @@ export type Cw3MultisigAccount = BaseAccount & {
 
 export type MultisigAccount = CryptographicMultisigAccount | Cw3MultisigAccount
 
+export type ValenceAccount = BaseAccount & {
+  type: AccountType.Valence
+  config: ValenceAccountConfig
+}
+
+export type ValenceAccountConfig = {
+  // If rebalancer setup, this will be defined.
+  rebalancer: {
+    config: RebalancerConfig
+    // Process targest.
+    targets: ValenceAccountRebalancerTarget[]
+  } | null
+}
+
+export type ValenceAccountRebalancerTarget = {
+  /**
+   * The token being rebalanced.
+   */
+  token: GenericToken
+  /**
+   * Target changes over time for this token.
+   */
+  targets: ({
+    timestamp: number
+  } & ParsedTarget)[]
+}
+
 export type Account =
   | NativeAccount
   | PolytoneAccount
   | IcaAccount
   | CryptographicMultisigAccount
   | Cw3MultisigAccount
+  | ValenceAccount
 
 /**
  * Unique identifier for account tabs, which is used in the URL path.
@@ -98,7 +131,7 @@ export type AccountTab = {
   id: AccountTabId
   label: string
   Icon: ComponentType<{ className: string }>
-  Component: ComponentType
+  Component: ComponentType<any>
 }
 
 export type AccountTxForm = {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RecoilValue, constSelector, useRecoilValueLoadable } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
@@ -61,8 +61,7 @@ export const useCachedLoadable = <T extends unknown>(
   const [updating, setUpdating] = useState(loadableLoadingOrNotReady)
 
   // Store the last cached key for use in the effect below.
-  const lastCachedKey = useRef(cachedKey)
-  lastCachedKey.current = cachedKey
+  const lastCachedKey = useUpdatingRef(cachedKey)
 
   useEffect(() => {
     if (loadableLoadingOrNotReady) {
@@ -106,7 +105,7 @@ export const useCachedLoadable = <T extends unknown>(
       setUpdating(false)
       setCachedKey(recoilValue?.key)
     }
-  }, [loadable, loadableLoadingOrNotReady, recoilValue])
+  }, [lastCachedKey, loadable, loadableLoadingOrNotReady, recoilValue])
 
   // Memoize the loadable so it can be used in `useEffect` dependencies to
   // prevent causing infinite loops. If this is not memoized, it will change on

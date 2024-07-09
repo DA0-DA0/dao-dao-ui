@@ -8,6 +8,9 @@ export type TreasuryHistoryGraphProps = {
   address: string
   // If defined, only show history for this account.
   account?: Account
+  // If account above is a valence account, and `showRebalancer` is true, only
+  // show rebalanced tokens with their associated targets.
+  showRebalancer?: boolean
   // Applied to container.
   className?: string
   // Applied to graph container.

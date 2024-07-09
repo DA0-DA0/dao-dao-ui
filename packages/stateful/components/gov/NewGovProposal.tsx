@@ -38,6 +38,7 @@ import {
 } from 'recoil'
 
 import {
+  accountsSelector,
   govProposalSelector,
   latestProposalSaveAtom,
   proposalCreatedCardPropsAtom,
@@ -54,9 +55,11 @@ import {
   PageLoader,
   ProposalContentDisplay,
   Tooltip,
+  useCachedLoadingWithError,
   useConfiguredChainContext,
   useDaoNavHelpers,
   useHoldingKey,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   Action,
@@ -84,6 +87,7 @@ import {
   getRpcForChainId,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
+  makeEmptyUnifiedProfile,
   objectMatchesStructure,
   processError,
   transformIpfsUrlToHttpsIfNecessary,
@@ -92,7 +96,7 @@ import {
 
 import { WalletActionsProvider, useActionOptions } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
-import { useEntity } from '../../hooks'
+import { useEntity, useProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { EntityDisplay } from '../EntityDisplay'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
@@ -113,6 +117,15 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
   const chainContext = useConfiguredChainContext()
 
   const { address: walletAddress = '' } = useWallet()
+  const { profile } = useProfile()
+  const accounts = useCachedLoadingWithError(
+    walletAddress
+      ? accountsSelector({
+          chainId: chainContext.chainId,
+          address: walletAddress,
+        })
+      : undefined
+  )
 
   const governanceProposalAction = makeGovernanceProposalAction({
     t,
@@ -124,6 +137,10 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     address: walletAddress,
     context: {
       type: ActionContextType.Wallet,
+      profile: profile.loading
+        ? makeEmptyUnifiedProfile(chainContext.chainId, walletAddress)
+        : profile.data,
+      accounts: accounts.loading || accounts.errored ? [] : accounts.data,
     },
   })!
   const defaults = governanceProposalAction.useDefaults()
@@ -204,7 +221,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     loadFromPrefill()
   }, [router.query.prefill, router.query.pi, router.isReady, prefillChecked, t])
 
-  return !defaults || !prefillChecked ? (
+  return !defaults || accounts.loading || !prefillChecked ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
     <ErrorPage error={defaults} />
@@ -548,12 +565,12 @@ const InnerNewGovProposal = ({
   }
 
   const saveQueuedRef = useRef(false)
-  const saveLatestProposalRef = useRef(() => {})
-  saveLatestProposalRef.current = () =>
+  const saveLatestProposalRef = useUpdatingRef(() =>
     setLatestProposalSave(
       // If created proposal, clear latest proposal save.
       proposalCreatedCardProps ? {} : cloneDeep(proposalData)
     )
+  )
 
   // Save latest data to atom and thus localStorage every second.
   useEffect(() => {
@@ -573,7 +590,12 @@ const InnerNewGovProposal = ({
       saveLatestProposalRef.current()
       saveQueuedRef.current = false
     }, 1000)
-  }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
+  }, [
+    proposalCreatedCardProps,
+    setLatestProposalSave,
+    proposalData,
+    saveLatestProposalRef,
+  ])
 
   const [drafts, setDrafts] = useRecoilState(
     proposalDraftsAtom(localStorageKey)

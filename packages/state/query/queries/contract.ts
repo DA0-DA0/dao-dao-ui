@@ -239,6 +239,17 @@ export const contractQueries = {
       nameOrNames: ContractName.PolytoneProxy,
     }),
   /**
+   * Check if a contract is a Valence account.
+   */
+  isValenceAccount: (
+    queryClient: QueryClient,
+    options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
+  ) =>
+    contractQueries.isContract(queryClient, {
+      ...options,
+      nameOrNames: ContractName.ValenceAccount,
+    }),
+  /**
    * Check if a contract is a cw1-whitelist.
    */
   isCw1Whitelist: (

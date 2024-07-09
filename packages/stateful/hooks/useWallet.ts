@@ -16,6 +16,7 @@ import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
   useCachedLoading,
   useChainContextIfAvailable,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import {
@@ -85,8 +86,7 @@ export const useWallet = ({
   const _walletChain = useChain(chain.chain_name, false)
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
-  const walletChainRef = useRef(_walletChain)
-  walletChainRef.current = _walletChain
+  const walletChainRef = useUpdatingRef(_walletChain)
 
   // Chain of main wallet connection.
   const mainWalletChainId = useRecoilValue(walletChainIdAtom)
@@ -97,8 +97,7 @@ export const useWallet = ({
   const mainWalletConnected = !!mainWallet?.isWalletConnected
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
-  const mainWalletRef = useRef(mainWallet)
-  mainWalletRef.current = mainWallet
+  const mainWalletRef = useUpdatingRef(mainWallet)
 
   // Only attempt connection once per enable.
   const attemptedConnection = useRef(false)
@@ -143,6 +142,7 @@ export const useWallet = ({
     attemptConnection,
     connect,
     _walletChain.isWalletConnected,
+    mainWalletRef,
   ])
 
   const [account, setAccount] = useState<WalletAccount>()
@@ -185,6 +185,7 @@ export const useWallet = ({
   }, [
     account?.address,
     loadAccount,
+    walletChainRef,
     walletChainRef.current.address,
     walletChainRef.current.chain.chain_id,
     walletChainRef.current.status,

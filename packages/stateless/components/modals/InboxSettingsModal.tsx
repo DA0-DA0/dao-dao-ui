@@ -21,6 +21,7 @@ import {
 } from '@dao-dao/types'
 import { validateEmail } from '@dao-dao/utils'
 
+import { useUpdatingRef } from '../../hooks'
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { Checkbox, InputLabel, Switch, TextInput } from '../inputs'
@@ -79,8 +80,7 @@ export const InboxSettingsModal = ({
   const loadingRef = useRef(false)
   const routerPush = router.push
   // Memoize so we only load config once.
-  const loadConfigRef = useRef(loadConfig)
-  loadConfigRef.current = loadConfig
+  const loadConfigRef = useUpdatingRef(loadConfig)
 
   useEffect(() => {
     ;(async () => {
@@ -97,7 +97,7 @@ export const InboxSettingsModal = ({
         }
       }
     })()
-  }, [props.visible, config, routerPush, t])
+  }, [props.visible, config, routerPush, t, loadConfigRef])
 
   // Once config is loaded, populate form with config values.
   useEffect(() => {

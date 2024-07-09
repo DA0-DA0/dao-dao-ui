@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { useUpdatingRef } from '@dao-dao/stateless'
 import { CreateCw1Whitelist } from '@dao-dao/types'
 import { InstantiateMsg as Cw1WhitelistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
 import {
@@ -53,8 +54,7 @@ export const useCreateCw1Whitelist = ({
     getSupportedChainConfig(chainId)?.codeIds?.Cw1Whitelist ?? -1
   const [creatingCw1Whitelist, setCreatingCw1Whitelist] = useState(false)
 
-  const validationRef = useRef(validation)
-  validationRef.current = validation
+  const validationRef = useUpdatingRef(validation)
   const createCw1Whitelist: CreateCw1Whitelist = useCallback(
     async (admins: string[], mutable = false) => {
       try {
@@ -105,6 +105,7 @@ export const useCreateCw1Whitelist = ({
       cw1WhitelistCodeId,
       getSigningClient,
       t,
+      validationRef,
       walletAddress,
     ]
   )

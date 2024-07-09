@@ -206,6 +206,19 @@ export type SupportedChainConfig = BaseChainConfig & {
    * Polytone connections to other chains from this chain.
    */
   polytone?: PolytoneConfig
+  /**
+   * Timewave's Valence config.
+   */
+  valence?: {
+    /**
+     * Address of services manager contract.
+     */
+    servicesManager: string
+    /**
+     * Address of rebalancer contract.
+     */
+    rebalancer: string
+  }
 }
 
 export type SupportedChain = SupportedChainConfig & {
@@ -249,6 +262,9 @@ export type CodeIdConfig = {
   Cw20Base?: number
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
+
+  // Valence
+  ValenceAccount?: number
 }
 
 export type CodeHashConfig = {

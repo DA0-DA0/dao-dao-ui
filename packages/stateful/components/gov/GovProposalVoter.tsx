@@ -1,5 +1,5 @@
 import { EncodeObject } from '@cosmjs/proto-signing'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
@@ -10,6 +10,7 @@ import {
   ProposalVoter as StatelessProposalVoter,
   useChain,
   useGovProposalVoteOptions,
+  useUpdatingRef,
 } from '@dao-dao/stateless'
 import { GovProposalWithMetadata, ProposalVoterProps } from '@dao-dao/types'
 import {
@@ -70,8 +71,7 @@ const InnerGovProposalVoter = ({
     [setRefreshProposal]
   )
 
-  const onVoteSuccessRef = useRef(onVoteSuccess)
-  onVoteSuccessRef.current = onVoteSuccess
+  const onVoteSuccessRef = useUpdatingRef(onVoteSuccess)
 
   const [castingVote, setCastingVote] = useState(false)
   const castVote = useCallback(
@@ -114,6 +114,7 @@ const InnerGovProposalVoter = ({
     [
       getSigningStargateClient,
       isWalletConnected,
+      onVoteSuccessRef,
       proposalId,
       refreshProposal,
       t,
