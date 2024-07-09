@@ -31,7 +31,7 @@ import {
   ValenceAccount,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
+import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceRebalancer'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -585,7 +585,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
         )}
       </div>
 
-      <div className="my-2 bg-border-secondary h-[1px] -mx-6"></div>
+      <div className="bg-border-secondary my-2 h-[1px] -mx-6"></div>
 
       <SwitchCard
         containerClassName="self-start"
@@ -598,7 +598,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
       {projection && (
         <>
           <div className="flex flex-row gap-1 items-start -mt-2 max-w-prose">
-            <InfoOutlined className="!h-4 !w-4 !text-icon-secondary" />
+            <InfoOutlined className="!text-icon-secondary !h-4 !w-4" />
             <p className="secondary-text">
               {t('info.rebalancerProjectionExplanation')}
             </p>

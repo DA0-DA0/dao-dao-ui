@@ -6,14 +6,18 @@
 
 import { UseQueryOptions } from '@tanstack/react-query'
 
+import { Addr } from '@dao-dao/types'
 import {
   ArrayOfTupleOfAddrAndRebalancerConfig,
+  ManagersAddrsResponse,
   NullableCoin,
   PauseData,
   QueryFeeAction,
   RebalancerConfig,
+  SystemRebalanceStatus,
+  WhitelistsResponse,
 } from '@dao-dao/types/contracts/ValenceRebalancer'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { ValenceRebalancerQueryClient } from '../../../contracts/ValenceRebalancer'
 
@@ -54,11 +58,43 @@ export const valenceRebalancerQueryKeys = {
         args,
       },
     ] as const,
+  getSystemStatus: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        method: 'get_system_status',
+        args,
+      },
+    ] as const,
   getServiceFee: (contractAddress: string, args?: Record<string, unknown>) =>
     [
       {
         ...valenceRebalancerQueryKeys.address(contractAddress)[0],
         method: 'get_service_fee',
+        args,
+      },
+    ] as const,
+  getWhiteLists: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        method: 'get_white_lists',
+        args,
+      },
+    ] as const,
+  getManagersAddrs: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        method: 'get_managers_addrs',
+        args,
+      },
+    ] as const,
+  getAdmin: (contractAddress: string, args?: Record<string, unknown>) =>
+    [
+      {
+        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        method: 'get_admin',
         args,
       },
     ] as const,
@@ -75,13 +111,14 @@ export const valenceRebalancerQueries = {
     TData
   > => ({
     queryKey: valenceRebalancerQueryKeys.getConfig(contractAddress, args),
-    queryFn: async () =>
-      new ValenceRebalancerQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getConfig({
         addr: args.addr,
-      }),
+      })
+    },
     ...options,
   }),
   getAllConfigs: <TData = ArrayOfTupleOfAddrAndRebalancerConfig>({
@@ -95,14 +132,15 @@ export const valenceRebalancerQueries = {
     TData
   > => ({
     queryKey: valenceRebalancerQueryKeys.getAllConfigs(contractAddress, args),
-    queryFn: async () =>
-      new ValenceRebalancerQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getAllConfigs({
         limit: args.limit,
         startAfter: args.startAfter,
-      }),
+      })
+    },
     ...options,
   }),
   getPausedConfig: <TData = PauseData>({
@@ -116,13 +154,32 @@ export const valenceRebalancerQueries = {
     TData
   > => ({
     queryKey: valenceRebalancerQueryKeys.getPausedConfig(contractAddress, args),
-    queryFn: async () =>
-      new ValenceRebalancerQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getPausedConfig({
         addr: args.addr,
-      }),
+      })
+    },
+    ...options,
+  }),
+  getSystemStatus: <TData = SystemRebalanceStatus>({
+    chainId,
+    contractAddress,
+    options,
+  }: ValenceRebalancerGetSystemStatusQuery<TData>): UseQueryOptions<
+    SystemRebalanceStatus,
+    Error,
+    TData
+  > => ({
+    queryKey: valenceRebalancerQueryKeys.getSystemStatus(contractAddress),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).getSystemStatus()
+    },
     ...options,
   }),
   getServiceFee: <TData = NullableCoin>({
@@ -136,14 +193,69 @@ export const valenceRebalancerQueries = {
     TData
   > => ({
     queryKey: valenceRebalancerQueryKeys.getServiceFee(contractAddress, args),
-    queryFn: async () =>
-      new ValenceRebalancerQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).getServiceFee({
         account: args.account,
         action: args.action,
-      }),
+      })
+    },
+    ...options,
+  }),
+  getWhiteLists: <TData = WhitelistsResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: ValenceRebalancerGetWhiteListsQuery<TData>): UseQueryOptions<
+    WhitelistsResponse,
+    Error,
+    TData
+  > => ({
+    queryKey: valenceRebalancerQueryKeys.getWhiteLists(contractAddress),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).getWhiteLists()
+    },
+    ...options,
+  }),
+  getManagersAddrs: <TData = ManagersAddrsResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: ValenceRebalancerGetManagersAddrsQuery<TData>): UseQueryOptions<
+    ManagersAddrsResponse,
+    Error,
+    TData
+  > => ({
+    queryKey: valenceRebalancerQueryKeys.getManagersAddrs(contractAddress),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).getManagersAddrs()
+    },
+    ...options,
+  }),
+  getAdmin: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: ValenceRebalancerGetAdminQuery<TData>): UseQueryOptions<
+    Addr,
+    Error,
+    TData
+  > => ({
+    queryKey: valenceRebalancerQueryKeys.getAdmin(contractAddress),
+    queryFn: async () => {
+      return new ValenceRebalancerQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).getAdmin()
+    },
     ...options,
   }),
 }
@@ -170,6 +282,8 @@ export interface ValenceRebalancerGetPausedConfigQuery<TData>
     addr: string
   }
 }
+export interface ValenceRebalancerGetSystemStatusQuery<TData>
+  extends ValenceRebalancerReactQuery<SystemRebalanceStatus, TData> {}
 export interface ValenceRebalancerGetAllConfigsQuery<TData>
   extends ValenceRebalancerReactQuery<
     ArrayOfTupleOfAddrAndRebalancerConfig,
@@ -186,3 +300,9 @@ export interface ValenceRebalancerGetConfigQuery<TData>
     addr: string
   }
 }
+export interface ValenceRebalancerGetWhiteListsQuery<TData>
+  extends ValenceRebalancerReactQuery<WhitelistsResponse, TData> {}
+export interface ValenceRebalancerGetManagersAddrsQuery<TData>
+  extends ValenceRebalancerReactQuery<ManagersAddrsResponse, TData> {}
+export interface ValenceRebalancerGetAdminQuery<TData>
+  extends ValenceRebalancerReactQuery<Addr, TData> {}

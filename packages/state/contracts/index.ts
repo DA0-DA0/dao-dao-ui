@@ -92,10 +92,6 @@ export { PolytoneVoiceClient, PolytoneVoiceQueryClient } from './PolytoneVoice'
 export { SecretCwAdminFactoryClient } from './SecretCwAdminFactory'
 export { Sg721BaseClient, Sg721BaseQueryClient } from './Sg721Base'
 export {
-  ValenceServiceRebalancerClient,
-  ValenceServiceRebalancerQueryClient,
-} from './ValenceServiceRebalancer'
-export {
   ValenceRebalancerClient,
   ValenceRebalancerQueryClient,
 } from './ValenceRebalancer'

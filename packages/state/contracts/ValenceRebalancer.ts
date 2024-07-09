@@ -12,8 +12,10 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 
 import {
+  Addr,
   ArrayOfTupleOfAddrAndRebalancerConfig,
   Coin,
+  ManagersAddrsResponse,
   NullableCoin,
   PauseData,
   QueryFeeAction,
@@ -21,6 +23,8 @@ import {
   RebalancerConfig,
   RebalancerData,
   RebalancerUpdateData,
+  SystemRebalanceStatus,
+  WhitelistsResponse,
 } from '@dao-dao/types/contracts/ValenceRebalancer'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
@@ -35,6 +39,7 @@ export interface ValenceRebalancerReadOnlyInterface {
     startAfter?: string
   }) => Promise<ArrayOfTupleOfAddrAndRebalancerConfig>
   getPausedConfig: ({ addr }: { addr: string }) => Promise<PauseData>
+  getSystemStatus: () => Promise<SystemRebalanceStatus>
   getServiceFee: ({
     account,
     action,
@@ -42,6 +47,9 @@ export interface ValenceRebalancerReadOnlyInterface {
     account: string
     action: QueryFeeAction
   }) => Promise<NullableCoin>
+  getWhiteLists: () => Promise<WhitelistsResponse>
+  getManagersAddrs: () => Promise<ManagersAddrsResponse>
+  getAdmin: () => Promise<Addr>
 }
 export class ValenceRebalancerQueryClient
   implements ValenceRebalancerReadOnlyInterface
@@ -54,7 +62,11 @@ export class ValenceRebalancerQueryClient
     this.getConfig = this.getConfig.bind(this)
     this.getAllConfigs = this.getAllConfigs.bind(this)
     this.getPausedConfig = this.getPausedConfig.bind(this)
+    this.getSystemStatus = this.getSystemStatus.bind(this)
     this.getServiceFee = this.getServiceFee.bind(this)
+    this.getWhiteLists = this.getWhiteLists.bind(this)
+    this.getManagersAddrs = this.getManagersAddrs.bind(this)
+    this.getAdmin = this.getAdmin.bind(this)
   }
   getConfig = async ({ addr }: { addr: string }): Promise<RebalancerConfig> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -84,6 +96,11 @@ export class ValenceRebalancerQueryClient
       },
     })
   }
+  getSystemStatus = async (): Promise<SystemRebalanceStatus> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_system_status: {},
+    })
+  }
   getServiceFee = async ({
     account,
     action,
@@ -97,6 +114,21 @@ export class ValenceRebalancerQueryClient
         action,
       },
     })
+  }
+  getWhiteLists = async (): Promise<WhitelistsResponse> => {
+    return this.client.queryContractSmart(
+      this.contractAddress,
+      'get_white_lists'
+    )
+  }
+  getManagersAddrs = async (): Promise<ManagersAddrsResponse> => {
+    return this.client.queryContractSmart(
+      this.contractAddress,
+      'get_managers_addrs'
+    )
+  }
+  getAdmin = async (): Promise<Addr> => {
+    return this.client.queryContractSmart(this.contractAddress, 'get_admin')
   }
 }
 export interface ValenceRebalancerInterface

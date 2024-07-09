@@ -6,9 +6,9 @@ import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
 import {
-  ValenceServiceRebalancerSelectors,
   genericTokenSelector,
   tokenQueries,
+  valenceRebalancerExtraQueries,
 } from '@dao-dao/state'
 import { usdPriceSelector } from '@dao-dao/state/recoil/selectors'
 import {
@@ -40,7 +40,7 @@ import { ExecuteMsg as ValenceAccountExecuteMsg } from '@dao-dao/types/contracts
 import {
   RebalancerData,
   RebalancerUpdateData,
-} from '@dao-dao/types/contracts/ValenceServiceRebalancer'
+} from '@dao-dao/types/contracts/ValenceRebalancer'
 import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
@@ -58,7 +58,10 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
-import { useGenerateInstantiate2 } from '../../../../hooks'
+import {
+  useGenerateInstantiate2,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionForKey, useActionOptions } from '../../../react'
 import { CreateValenceAccountData } from '../CreateValenceAccount/Component'
@@ -71,6 +74,7 @@ import {
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
 ) => {
+  const queryClient = useQueryClient()
   const options = useActionOptions()
   const { watch, setValue } = useFormContext<ConfigureRebalancerData>()
   const valenceAccount = watch(
@@ -174,13 +178,16 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   ])
 
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
-  const whitelists = useCachedLoadingWithError(
-    rebalancer
-      ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
-          chainId,
-          contractAddress: rebalancer,
-        })
-      : undefined
+  const whitelists = useQueryLoadingDataWithError(
+    valenceRebalancerExtraQueries.whitelistGenericTokens(
+      queryClient,
+      rebalancer
+        ? {
+            chainId,
+            address: rebalancer,
+          }
+        : undefined
+    )
   )
 
   const minBalanceDenom = watch(
@@ -210,7 +217,6 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   })
 
   // Load tokens used in the create valence account action if it exists.
-  const queryClient = useQueryClient()
   const initialTokens = useQueries({
     queries:
       existingCreateValenceAccountActionData?.funds.map(({ denom }) =>
@@ -306,6 +312,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
   msg: Record<string, any>
 ) => {
+  const queryClient = useQueryClient()
   let chainId = useActionOptions().chain.chain_id
   const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
@@ -357,13 +364,16 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
   )
 
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
-  const whitelists = useCachedLoadingWithError(
-    rebalancer
-      ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
-          chainId,
-          contractAddress: rebalancer,
-        })
-      : undefined
+  const whitelists = useQueryLoadingDataWithError(
+    valenceRebalancerExtraQueries.whitelistGenericTokens(
+      queryClient,
+      rebalancer
+        ? {
+            chainId,
+            address: rebalancer,
+          }
+        : undefined
+    )
   )
 
   if (
@@ -455,13 +465,17 @@ export const makeConfigureRebalancerAction: ActionMaker<
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
 
   const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
-    const whitelists = useCachedLoadingWithError(
-      rebalancer
-        ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
-            chainId,
-            contractAddress: rebalancer,
-          })
-        : undefined
+    const queryClient = useQueryClient()
+    const whitelists = useQueryLoadingDataWithError(
+      valenceRebalancerExtraQueries.whitelistGenericTokens(
+        queryClient,
+        rebalancer
+          ? {
+              chainId,
+              address: rebalancer,
+            }
+          : undefined
+      )
     )
 
     const rebalancerConfig = valenceAccount?.config?.rebalancer?.config
@@ -548,13 +562,17 @@ export const makeConfigureRebalancerAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     ConfigureRebalancerData
   > = () => {
-    const whitelists = useCachedLoadingWithError(
-      rebalancer
-        ? ValenceServiceRebalancerSelectors.whitelistGenericTokensSelector({
-            chainId,
-            contractAddress: rebalancer,
-          })
-        : undefined
+    const queryClient = useQueryClient()
+    const whitelists = useQueryLoadingDataWithError(
+      valenceRebalancerExtraQueries.whitelistGenericTokens(
+        queryClient,
+        rebalancer
+          ? {
+              chainId,
+              address: rebalancer,
+            }
+          : undefined
+      )
     )
 
     return useCallback(

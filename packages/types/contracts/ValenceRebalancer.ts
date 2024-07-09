@@ -208,7 +208,7 @@ export type QueryMsg =
       }
     }
 export type QueryFeeAction = 'register' | 'resume'
-export type SignedDecimal = [Decimal, boolean]
+export type SignedDecimal = string
 export type ArrayOfTupleOfAddrAndRebalancerConfig = [Addr, RebalancerConfig][]
 export interface RebalancerConfig {
   base_denom: string
@@ -221,14 +221,14 @@ export interface RebalancerConfig {
   trustee?: Addr | null
 }
 export interface ParsedPID {
-  d: Decimal
-  i: Decimal
-  p: Decimal
+  d: SignedDecimal
+  i: SignedDecimal
+  p: SignedDecimal
 }
 export interface ParsedTarget {
   denom: string
   last_i: SignedDecimal
-  last_input?: Decimal | null
+  last_input?: SignedDecimal | null
   min_balance?: Uint128 | null
   percentage: Decimal
 }
@@ -250,7 +250,6 @@ export type NullableCoin = Coin | null
 export interface Coin {
   amount: Uint128
   denom: string
-  [k: string]: unknown
 }
 export interface WhitelistsResponse {
   base_denom_whitelist: BaseDenom[]

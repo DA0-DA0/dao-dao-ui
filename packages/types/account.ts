@@ -2,10 +2,7 @@ import { ComponentType } from 'react'
 
 import { ActionKeyAndData } from './actions'
 import { Threshold } from './contracts/DaoProposalSingle.common'
-import {
-  ParsedTarget,
-  RebalancerConfig,
-} from './contracts/ValenceServiceRebalancer'
+import { ParsedTarget, RebalancerConfig } from './contracts/ValenceRebalancer'
 import { GenericToken } from './token'
 
 /**
