@@ -1,41 +1,100 @@
+import { useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  FormCheckbox,
   InputLabel,
   NativeCoinSelector,
   NativeCoinSelectorProps,
   useChain,
 } from '@dao-dao/stateless'
-import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
+import {
+  GenericTokenBalance,
+  LoadingData,
+  LoadingDataWithError,
+} from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { Coin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 export type CreateValenceAccountData = {
   chainId: string
   funds: { denom: string; amount: number }[]
+  acknowledgedServiceFee?: boolean
+  serviceFee?: Coin
 }
 
 export type CreateValenceAccountOptions = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
+  serviceFee: LoadingDataWithError<GenericTokenBalance | null>
 }
 
 export const CreateValenceAccountComponent: ActionComponent<
   CreateValenceAccountOptions
 > = (props) => {
+  const {
+    fieldNamePrefix,
+    isCreating,
+    errors,
+    options: { serviceFee },
+  } = props
+
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
-  const { control } = useFormContext<CreateValenceAccountData>()
+  const { control, watch, setValue, setError, clearErrors } =
+    useFormContext<CreateValenceAccountData>()
   const {
     fields: coins,
     append: appendCoin,
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: (props.fieldNamePrefix + 'funds') as 'funds',
+    name: (fieldNamePrefix + 'funds') as 'funds',
   })
+
+  const acknowledgedServiceFee = watch(
+    (fieldNamePrefix + 'acknowledgedServiceFee') as 'acknowledgedServiceFee'
+  )
+
+  useEffect(() => {
+    if (!isCreating) {
+      return
+    }
+
+    if (acknowledgedServiceFee) {
+      if (errors?.acknowledgedServiceFee) {
+        clearErrors(
+          (fieldNamePrefix +
+            'acknowledgedServiceFee') as 'acknowledgedServiceFee'
+        )
+      }
+    } else {
+      if (!errors?.acknowledgedServiceFee) {
+        setError(
+          (fieldNamePrefix +
+            'acknowledgedServiceFee') as 'acknowledgedServiceFee',
+          {
+            type: 'required',
+            message: t('error.acknowledgeServiceFee'),
+          }
+        )
+      }
+    }
+  }, [
+    isCreating,
+    acknowledgedServiceFee,
+    fieldNamePrefix,
+    clearErrors,
+    setError,
+    t,
+    errors?.acknowledgedServiceFee,
+  ])
 
   return (
     <>
@@ -50,34 +109,79 @@ export const CreateValenceAccountComponent: ActionComponent<
               chainId,
               onRemove:
                 // Don't allow removing the first token.
-                props.isCreating && coins.length > 1
+                isCreating && coins.length > 1
                   ? () => removeCoin(index)
                   : undefined,
             } as NativeCoinSelectorProps)}
-            errors={props.errors?.funds?.[index]}
-            fieldNamePrefix={props.fieldNamePrefix + `funds.${index}.`}
+            errors={errors?.funds?.[index]}
+            fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
           />
         ))}
 
-        {!props.isCreating && coins.length === 0 && (
+        {!isCreating && coins.length === 0 && (
           <p className="-mt-1 text-xs italic text-text-tertiary">
             {t('info.none')}
           </p>
         )}
 
-        {props.isCreating && (
-          <Button
-            className="self-start"
-            onClick={() =>
-              appendCoin({
-                amount: 1,
-                denom: getNativeTokenForChainId(chainId).denomOrAddress,
-              })
-            }
-            variant="secondary"
-          >
-            {t('button.addToken')}
-          </Button>
+        {isCreating && (
+          <>
+            <Button
+              className="self-start"
+              onClick={() =>
+                appendCoin({
+                  amount: 1,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                })
+              }
+              variant="secondary"
+            >
+              {t('button.addToken')}
+            </Button>
+
+            <div className="flex flex-row gap-2 items-center mt-4">
+              <FormCheckbox
+                fieldName={
+                  (fieldNamePrefix +
+                    'acknowledgedServiceFee') as 'acknowledgedServiceFee'
+                }
+                setValue={setValue}
+                size="sm"
+                value={acknowledgedServiceFee}
+              />
+
+              <p
+                className="body-text cursor-pointer"
+                onClick={() =>
+                  setValue(
+                    (fieldNamePrefix +
+                      'acknowledgedServiceFee') as 'acknowledgedServiceFee',
+                    !acknowledgedServiceFee
+                  )
+                }
+              >
+                {t('info.acknowledgeServiceFee', {
+                  fee: serviceFee.loading
+                    ? '...'
+                    : serviceFee.errored
+                    ? '<error>'
+                    : serviceFee.data
+                    ? t('format.token', {
+                        amount: convertMicroDenomToDenomWithDecimals(
+                          serviceFee.data.balance,
+                          serviceFee.data.token.decimals
+                        ),
+                        symbol: serviceFee.data.token.symbol,
+                      })
+                    : '',
+                  context:
+                    serviceFee.loading || serviceFee.errored || serviceFee.data
+                      ? undefined
+                      : 'none',
+                })}
+              </p>
+            </div>
+          </>
         )}
       </div>
     </>

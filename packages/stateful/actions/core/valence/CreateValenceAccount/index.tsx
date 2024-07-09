@@ -1,8 +1,10 @@
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
-import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
+import { valenceRebalancerExtraQueries } from '@dao-dao/state/query'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   AtomEmoji,
@@ -33,8 +35,11 @@ import {
   getSupportedChainConfig,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessage,
+  mustGetSupportedChainConfig,
+  tokensEqual,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react/context'
 import {
@@ -63,6 +68,34 @@ const Component: ActionComponent = (props) => {
         })),
   })
 
+  const queryClient = useQueryClient()
+  const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
+  const serviceFee = useQueryLoadingDataWithError(
+    valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
+      queryClient,
+      rebalancer
+        ? {
+            chainId,
+            address: rebalancer,
+          }
+        : undefined
+    )
+  )
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'serviceFee') as 'serviceFee',
+      serviceFee.loading ||
+        serviceFee.errored ||
+        serviceFee.updating ||
+        !serviceFee.data
+        ? undefined
+        : {
+            amount: serviceFee.data.balance,
+            denom: serviceFee.data.token.denomOrAddress,
+          }
+    )
+  }, [props.fieldNamePrefix, serviceFee, setValue])
+
   return (
     <>
       {context.type === ActionContextType.Dao &&
@@ -83,7 +116,28 @@ const Component: ActionComponent = (props) => {
         <CreateValenceAccountComponent
           {...props}
           options={{
-            nativeBalances,
+            nativeBalances:
+              nativeBalances.loading || serviceFee.loading
+                ? { loading: true }
+                : {
+                    loading: false,
+                    updating: nativeBalances.updating,
+                    data: nativeBalances.data.map(({ balance, ...data }) => ({
+                      ...data,
+                      // Subtract service fee from balance for corresponding
+                      // token to ensure that they leave enough for the fee.
+                      // This value is used as the input max.
+                      balance:
+                        !serviceFee.errored &&
+                        serviceFee.data &&
+                        tokensEqual(data.token, serviceFee.data.token)
+                          ? (
+                              BigInt(balance) - BigInt(serviceFee.data.balance)
+                            ).toString()
+                          : balance,
+                    })),
+                  },
+            serviceFee,
           }}
         />
       </ChainProvider>
@@ -177,7 +231,7 @@ export const makeCreateValenceAccountAction: ActionMaker<
     })
 
     return useCallback(
-      ({ chainId, funds }) => {
+      ({ chainId, funds, serviceFee }) => {
         const config = getSupportedChainConfig(chainId)
         if (!config?.codeIds?.ValenceAccount || !config?.valence) {
           throw new Error(t('error.unsupportedValenceChain'))
@@ -190,6 +244,35 @@ export const makeCreateValenceAccountAction: ActionMaker<
               chain: getDisplayNameForChainId(chainId),
             })
           )
+        }
+
+        const convertedFunds = funds.map(({ denom, amount }) => ({
+          denom,
+          amount: convertDenomToMicroDenomStringWithDecimals(
+            amount,
+            (!nativeBalances.loading &&
+              nativeBalances.data.find(
+                ({ token }) =>
+                  token.chainId === chainId && token.denomOrAddress === denom
+              )?.token.decimals) ||
+              0
+          ),
+        }))
+        // Add service fee to funds.
+        if (serviceFee && serviceFee.amount !== '0') {
+          const existing = convertedFunds.find(
+            (f) => f.denom === serviceFee.denom
+          )
+          if (existing) {
+            existing.amount = (
+              BigInt(existing.amount) + BigInt(serviceFee.amount)
+            ).toString()
+          } else {
+            convertedFunds.push({
+              denom: serviceFee.denom,
+              amount: serviceFee.amount,
+            })
+          }
         }
 
         return maybeMakePolytoneExecuteMessage(
@@ -208,19 +291,10 @@ export const makeCreateValenceAccountAction: ActionMaker<
                     services_manager: config.valence.servicesManager,
                   } as ValenceAccountInstantiateMsg)
                 ),
-                funds: funds.map(({ denom, amount }) => ({
-                  denom,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    amount,
-                    (!nativeBalances.loading &&
-                      nativeBalances.data.find(
-                        ({ token }) =>
-                          token.chainId === chainId &&
-                          token.denomOrAddress === denom
-                      )?.token.decimals) ||
-                      0
-                  ),
-                })),
+                funds: convertedFunds
+                  // Neutron errors with `invalid coins` if the funds list is
+                  // not alphabetized.
+                  .sort((a, b) => a.denom.localeCompare(b.denom)),
                 salt: toUtf8(VALENCE_INSTANTIATE2_SALT),
                 fixMsg: false,
               } as MsgInstantiateContract2,

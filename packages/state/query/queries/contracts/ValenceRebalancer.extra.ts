@@ -1,6 +1,6 @@
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
-import { GenericToken, TokenType } from '@dao-dao/types'
+import { GenericToken, GenericTokenBalance, TokenType } from '@dao-dao/types'
 
 import { tokenQueries } from '../token'
 import { valenceRebalancerQueries } from './ValenceRebalancer'
@@ -59,6 +59,49 @@ export const fetchValenceRebalancerWhitelistGenericTokens = async (
   }
 }
 
+/**
+ * Get the rebalancer registration service fee.
+ */
+export const fetchValenceRebalancerRegistrationServiceFee = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<GenericTokenBalance | null> => {
+  const serviceFee = await queryClient.fetchQuery(
+    valenceRebalancerQueries.getServiceFee({
+      chainId,
+      contractAddress: address,
+      args: {
+        account: '',
+        action: 'register',
+      },
+    })
+  )
+
+  const token =
+    serviceFee &&
+    (await queryClient.fetchQuery(
+      tokenQueries.info(queryClient, {
+        chainId,
+        type: TokenType.Native,
+        denomOrAddress: serviceFee.denom,
+      })
+    ))
+
+  return (
+    serviceFee &&
+    token && {
+      token,
+      balance: serviceFee.amount,
+    }
+  )
+}
+
 export const valenceRebalancerExtraQueries = {
   /**
    * Get the generic tokens for the whitelisted tokens in the rebalancer.
@@ -72,6 +115,24 @@ export const valenceRebalancerExtraQueries = {
       queryFn: options
         ? () =>
             fetchValenceRebalancerWhitelistGenericTokens(queryClient, options)
+        : skipToken,
+    }),
+  /**
+   * Get the rebalancer registration service fee.
+   */
+  rebalancerRegistrationServiceFee: (
+    queryClient: QueryClient,
+    options?: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
+  ) =>
+    queryOptions({
+      queryKey: [
+        'valenceRebalancerExtra',
+        'rebalancerRegistrationServiceFee',
+        options,
+      ],
+      queryFn: options
+        ? () =>
+            fetchValenceRebalancerRegistrationServiceFee(queryClient, options)
         : skipToken,
     }),
 }
