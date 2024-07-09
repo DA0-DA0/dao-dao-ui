@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { FetchQueryOptions } from '@tanstack/react-query'
 
 import {
   SecretDaoPreProposeMultipleClient,
@@ -278,21 +278,19 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   }): FetchQueryOptions<VoteResponse> {
     // If no voter nor permit, return query in loading state.
     const permit = voter && this.dao.getExistingPermit(voter)
-    if (!permit) {
-      return {
-        queryKey: [],
-        queryFn: skipToken,
-      }
-    }
-
     return secretDaoProposalMultipleQueries.getVote({
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
+      // Force type-cast since the query won't be enabled until this is set.
+      // This allows us to pass an undefined `voter` argument in order to
+      // invalidate/refresh the query for all voters.
       args: {
         proposalId,
-        auth: {
-          permit,
-        },
+        ...(permit && { auth: { permit } }),
+      } as any,
+      // If no voter nor permit, return query in loading state.
+      options: {
+        enabled: !!permit,
       },
     })
   }
