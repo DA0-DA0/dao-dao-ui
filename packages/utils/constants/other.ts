@@ -195,14 +195,6 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
 export const VALENCE_INSTANTIATE2_SALT = 'valence'
 
 /**
- * DAOs allowed to use the Valence Rebalancer.
- */
-export const VALENCE_ALLOWLIST = [
-  // NEWT DAO
-  'neutron1lqhw66n563pr2vszv4zqhjp7akwpd74vfj5gukh2crw45t5kfmvsa96ujv',
-]
-
-/**
  * Gas prices for Secret transactions.
  */
 export const SECRET_GAS = {
