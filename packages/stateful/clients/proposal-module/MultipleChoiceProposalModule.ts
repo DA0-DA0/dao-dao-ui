@@ -185,15 +185,20 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         client,
         sender,
         this.prePropose.address
-      ).propose({
-        msg: {
-          // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
-          // The contract execution will fail if the messages are invalid, so
-          // this is safe. The UI should ensure that the co rrect messages are
-          // used for the given chain anyways.
-          propose: data as any,
+      ).propose(
+        {
+          msg: {
+            // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+            // The contract execution will fail if the messages are invalid, so
+            // this is safe. The UI should ensure that the co rrect messages are
+            // used for the given chain anyways.
+            propose: data as any,
+          },
         },
-      })
+        undefined,
+        undefined,
+        funds
+      )
 
       proposalNumber = Number(
         findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
