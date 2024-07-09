@@ -213,7 +213,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       auth: Auth
       msg: ProposeMessage
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -239,7 +239,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -265,7 +265,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       denom?: UncheckedDenom
       key?: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -289,7 +289,7 @@ export class SecretDaoPreProposeApprovalSingleClient
     }: {
       msg: ExecuteExt
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -314,7 +314,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -340,7 +340,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -366,7 +366,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       newStatus: Status
       proposalId: number
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

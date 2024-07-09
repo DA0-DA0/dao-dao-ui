@@ -532,7 +532,7 @@ export class SecretDaoDaoCoreClient
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -555,7 +555,7 @@ export class SecretDaoDaoCoreClient
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -578,7 +578,7 @@ export class SecretDaoDaoCoreClient
     }: {
       duration: Duration
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -609,7 +609,7 @@ export class SecretDaoDaoCoreClient
       msg?: Binary
       sender: Addr
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     _memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -640,7 +640,7 @@ export class SecretDaoDaoCoreClient
       sender: Addr
       tokenId: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -665,7 +665,7 @@ export class SecretDaoDaoCoreClient
     }: {
       key: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -690,7 +690,7 @@ export class SecretDaoDaoCoreClient
       key: string
       value: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -714,7 +714,7 @@ export class SecretDaoDaoCoreClient
     }: {
       admin?: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -732,7 +732,7 @@ export class SecretDaoDaoCoreClient
     )
   }
   acceptAdminNomination = async (
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -748,7 +748,7 @@ export class SecretDaoDaoCoreClient
     )
   }
   withdrawAdminNomination = async (
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -769,7 +769,7 @@ export class SecretDaoDaoCoreClient
     }: {
       config: Config
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -794,7 +794,7 @@ export class SecretDaoDaoCoreClient
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -820,7 +820,7 @@ export class SecretDaoDaoCoreClient
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -846,7 +846,7 @@ export class SecretDaoDaoCoreClient
       toAdd: ModuleInstantiateInfo[]
       toDisable: string[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -870,7 +870,7 @@ export class SecretDaoDaoCoreClient
     }: {
       module: ModuleInstantiateInfo
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -895,7 +895,7 @@ export class SecretDaoDaoCoreClient
       toAdd: SubDao[]
       toRemove: string[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

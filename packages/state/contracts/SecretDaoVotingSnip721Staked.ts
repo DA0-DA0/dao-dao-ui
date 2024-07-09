@@ -253,7 +253,7 @@ export class SecretDaoVotingSnip721StakedClient
       sender: Addr
       tokenId: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -278,7 +278,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       tokenIds: string[]
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -296,7 +296,7 @@ export class SecretDaoVotingSnip721StakedClient
     )
   }
   claimNfts = async (
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -317,7 +317,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       duration?: Duration
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -342,7 +342,7 @@ export class SecretDaoVotingSnip721StakedClient
       addr: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -368,7 +368,7 @@ export class SecretDaoVotingSnip721StakedClient
       addr: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -392,7 +392,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

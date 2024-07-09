@@ -263,7 +263,7 @@ export class SecretDaoVotingTokenStakedClient
     this.removeHook = this.removeHook.bind(this)
   }
   stake = async (
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -284,7 +284,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       amount: Uint128
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -307,7 +307,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       duration?: Duration
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -325,7 +325,7 @@ export class SecretDaoVotingTokenStakedClient
     )
   }
   claim = async (
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -346,7 +346,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -371,7 +371,7 @@ export class SecretDaoVotingTokenStakedClient
       addr: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -397,7 +397,7 @@ export class SecretDaoVotingTokenStakedClient
       addr: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

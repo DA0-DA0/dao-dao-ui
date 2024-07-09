@@ -425,7 +425,7 @@ export class SecretDaoProposalMultipleClient
       proposer?: string
       title: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -457,7 +457,7 @@ export class SecretDaoProposalMultipleClient
       rationale?: string
       vote: MultipleChoiceVote
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -485,7 +485,7 @@ export class SecretDaoProposalMultipleClient
       auth: Auth
       proposalId: number
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -509,7 +509,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -532,7 +532,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -567,7 +567,7 @@ export class SecretDaoProposalMultipleClient
       veto?: VetoConfig
       votingStrategy: VotingStrategy
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -598,7 +598,7 @@ export class SecretDaoProposalMultipleClient
       proposalId: number
       rationale?: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -622,7 +622,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       info: PreProposeInfo
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -647,7 +647,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -673,7 +673,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -699,7 +699,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -725,7 +725,7 @@ export class SecretDaoProposalMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -751,7 +751,7 @@ export class SecretDaoProposalMultipleClient
       address: Addr
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

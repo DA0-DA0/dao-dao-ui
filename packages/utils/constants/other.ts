@@ -171,3 +171,10 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
   'unknown query path',
   'decoding bech32 failed',
 ]
+
+/**
+ * Gas prices for Secret transactions.
+ */
+export const SECRET_GAS_PRICES = {
+  DAO_CREATION: 1_000_000,
+}

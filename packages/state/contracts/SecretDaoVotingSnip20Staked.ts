@@ -155,7 +155,7 @@ export class SecretDaoVotingSnip20StakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

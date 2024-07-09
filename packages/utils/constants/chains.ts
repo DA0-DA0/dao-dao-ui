@@ -2196,7 +2196,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: '',
   //     Cw4Group:
-  //       '588d5b95d865df2b18d05fa32f93fc6d82864ec84cca87ef139390e6e0524e58',
+  //       'dbf5ab79a2fee24347284fc1be79df2ff5506b8002e317426d3025060e6b782b',
   //     Cw20Base:
   //       'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
   //     Cw721Base:

@@ -212,7 +212,7 @@ export class SecretDaoPreProposeMultipleClient
       auth: Auth
       msg: ProposeMessage
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -238,7 +238,7 @@ export class SecretDaoPreProposeMultipleClient
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -264,7 +264,7 @@ export class SecretDaoPreProposeMultipleClient
       denom?: UncheckedDenom
       key?: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -288,7 +288,7 @@ export class SecretDaoPreProposeMultipleClient
     }: {
       msg: Empty
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -313,7 +313,7 @@ export class SecretDaoPreProposeMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -339,7 +339,7 @@ export class SecretDaoPreProposeMultipleClient
       address: string
       codeHash: string
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -365,7 +365,7 @@ export class SecretDaoPreProposeMultipleClient
       newStatus: Status
       proposalId: number
     },
-    fee: number = 500_000,
+    fee: number = 1_000_000,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
