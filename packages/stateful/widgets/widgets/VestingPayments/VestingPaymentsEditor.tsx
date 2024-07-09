@@ -126,7 +126,7 @@ const VestingFactoryChain = ({
   const {
     address: walletAddress,
     isWalletConnected,
-    getSigningCosmWasmClient,
+    getSigningClient,
   } = useWallet({
     chainId,
   })
@@ -187,7 +187,7 @@ const VestingFactoryChain = ({
     setInstantiating(true)
     try {
       const createdFactoryAddress = await instantiateSmartContract(
-        await getSigningCosmWasmClient(),
+        getSigningClient,
         walletAddress,
         codeIds.CwPayrollFactory,
         `DAO_${name}_VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}`,

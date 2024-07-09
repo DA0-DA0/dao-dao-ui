@@ -1,7 +1,7 @@
 import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { AdminListResponse } from '@dao-dao/types/contracts/Cw1Whitelist'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { Cw1WhitelistQueryClient } from '../../../contracts/Cw1Whitelist'
 import { contractQueries } from '../contract'
@@ -74,7 +74,7 @@ export const cw1WhitelistQueries = {
 
       // If indexer query fails, fallback to contract query.
       return new Cw1WhitelistQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).adminList()
     },

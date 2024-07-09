@@ -19,6 +19,7 @@ import {
   Feature,
   LoadingData,
   PreProposeModuleType,
+  ProposalStatus,
   ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
@@ -61,9 +62,10 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     (err) => console.error(err)
   )
 
-  let proposalStatus = loadingProposalResponse.loading
-    ? undefined
-    : loadingProposalResponse.data?.proposal.status
+  let proposalStatus: ProposalStatus | undefined =
+    loadingProposalResponse.loading
+      ? undefined
+      : loadingProposalResponse.data?.proposal.status
   // Update status to take into account Neutron pre-propose timelock/overrule
   // system.
   const usesNeutronPreProposeTimelockOverruleSystem =

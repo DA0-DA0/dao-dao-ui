@@ -9,12 +9,13 @@ import {
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   MembershipBasedCreatorId,
+  NftBasedCreatorId,
   getDisplayNameForChainId,
   transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useSupportedChainContext } from '../../../../hooks'
+import { useSupportedChainContext } from '../../../../contexts'
 import { Button } from '../../../buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoCreatorCard } from '../DaoCreatorCard'
@@ -145,6 +146,9 @@ export const CreateDaoStart = ({
               }
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
+              underDevelopment={
+                chainConfig.nftDaosUnderDevelopment && id === NftBasedCreatorId
+              }
             />
           )
         )}

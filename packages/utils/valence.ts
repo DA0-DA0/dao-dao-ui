@@ -10,5 +10,5 @@ export const actionContextSupportsValence = ({
   VALENCE_SUPPORTED_CHAINS.includes(chainId as ChainId) ||
   (context.type === ActionContextType.Dao &&
     VALENCE_SUPPORTED_CHAINS.some(
-      (chainId) => chainId in context.info.polytoneProxies
+      (chainId) => chainId in context.dao.info.polytoneProxies
     ))

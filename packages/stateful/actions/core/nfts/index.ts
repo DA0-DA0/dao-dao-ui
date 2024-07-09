@@ -2,6 +2,7 @@ import {
   ActionCategoryKey,
   ActionCategoryMaker,
   ActionChainContextType,
+  ChainId,
 } from '@dao-dao/types'
 
 import { makeBurnNftAction } from './BurnNft'
@@ -17,7 +18,9 @@ export const makeManageNftsActionCategory: ActionCategoryMaker = ({
 }) =>
   // Chains without CosmWasm cannot use NFTs.
   chainContext.type !== ActionChainContextType.Any &&
-  !chainContext.config.noCosmWasm
+  !chainContext.config.noCosmWasm &&
+  // OmniFlix doesn't use CW721 NFTs.
+  chainContext.chainId !== ChainId.OmniflixHubMainnet
     ? {
         key: ActionCategoryKey.Nfts,
         label: t('actionCategory.nftsLabel'),

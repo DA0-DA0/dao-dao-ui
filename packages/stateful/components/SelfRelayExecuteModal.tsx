@@ -444,6 +444,7 @@ export const SelfRelayExecuteModal = ({
           ? // Send tokens to relayer wallet if needed.
             [
               cwMsgToEncodeObject(
+                chainId,
                 {
                   bank: {
                     send: {
@@ -464,7 +465,7 @@ export const SelfRelayExecuteModal = ({
       if (withExecuteRelay && !executeTx && transaction.type === 'execute') {
         msgs.push(
           ...transaction.msgs.map((msg) =>
-            cwMsgToEncodeObject(msg, relayer.wallet.address)
+            cwMsgToEncodeObject(chainId, msg, relayer.wallet.address)
           )
         )
       }
@@ -997,6 +998,7 @@ export const SelfRelayExecuteModal = ({
         relayerAddress,
         [
           cwMsgToEncodeObject(
+            chain.chain_id,
             {
               bank: makeBankMessage(
                 remainingTokens.amount,

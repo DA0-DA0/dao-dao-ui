@@ -27,7 +27,7 @@ import {
   isPolytoneProxySelector,
   isValenceAccountSelector,
 } from './contract'
-import { DaoCoreV2Selectors, PolytoneProxySelectors } from './contracts'
+import { DaoDaoCoreSelectors, PolytoneProxySelectors } from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalanceSelector,
@@ -83,11 +83,11 @@ export const accountsSelector = selectorFamily<
       const [polytoneProxies, registeredIcas] = isDao
         ? get(
             waitForAll([
-              DaoCoreV2Selectors.polytoneProxiesSelector({
+              DaoDaoCoreSelectors.polytoneProxiesSelector({
                 chainId,
                 contractAddress: address,
               }),
-              DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+              DaoDaoCoreSelectors.listAllItemsWithPrefixSelector({
                 chainId,
                 contractAddress: address,
                 prefix: ICA_CHAINS_TX_PREFIX,

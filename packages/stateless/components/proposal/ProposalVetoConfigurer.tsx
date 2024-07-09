@@ -17,7 +17,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useChain } from '../../hooks'
+import { useChain } from '../../contexts'
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import {

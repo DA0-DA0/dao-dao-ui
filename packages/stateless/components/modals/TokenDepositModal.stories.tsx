@@ -28,7 +28,7 @@ Default.args = {
     loading: false,
     data: {
       amount: 12345.6789,
-      timestamp: new Date(),
+      timestamp: Date.now(),
     },
   },
   onDeposit: (amount) => alert(amount),

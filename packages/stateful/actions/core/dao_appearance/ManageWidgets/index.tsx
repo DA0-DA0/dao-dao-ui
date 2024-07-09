@@ -68,7 +68,9 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
     return null
   }
 
-  const valueKey = context.info.supportedFeatures[Feature.StorageItemValueKey]
+  const valueKey = context.dao.info.supportedFeatures[
+    Feature.StorageItemValueKey
+  ]
     ? 'value'
     : 'addr'
 

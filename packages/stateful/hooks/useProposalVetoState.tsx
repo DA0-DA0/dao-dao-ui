@@ -1,15 +1,13 @@
 import { ThumbDownOutlined } from '@mui/icons-material'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   ProposalStatusAndInfoProps,
   Tooltip,
-  useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -24,16 +22,18 @@ import {
 } from '@dao-dao/types'
 import { VetoConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
-  CHAIN_GAS_MULTIPLIER,
+  executeSmartContract,
   getDaoProposalSinglePrefill,
   makeCw1WhitelistExecuteMessage,
   makeWasmMessage,
   processError,
 } from '@dao-dao/utils'
 
+import { getDao } from '../clients'
 import { ButtonLink, EntityDisplay } from '../components'
 import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
 import { useEntity } from './useEntity'
+import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
 import { useWallet } from './useWallet'
 
 export type UseProposalVetoStateOptions = {
@@ -71,7 +71,8 @@ export const useProposalVetoState = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningClient } = useWallet()
+  const queryClient = useQueryClient()
 
   const vetoEnabled = !!vetoConfig || !!neutronTimelockOverrule
   const [vetoLoading, setVetoLoading] = useState<
@@ -80,30 +81,46 @@ export const useProposalVetoState = ({
   const { entity: vetoerEntity } = useEntity(
     vetoConfig?.vetoer || neutronTimelockOverrule?.dao || ''
   )
-  // Flatten vetoer entities in case a cw1-whitelist is the vetoer.
-  const vetoerEntities = !vetoerEntity.loading
-    ? vetoerEntity.data.type === EntityType.Cw1Whitelist
-      ? vetoerEntity.data.entities
-      : [vetoerEntity.data]
-    : []
-  const vetoerDaoEntities = vetoerEntities.filter(
-    (entity) => entity.type === EntityType.Dao
-  )
+  const { vetoerEntities, vetoerDaoEntities, vetoerDaoClients } =
+    useMemo(() => {
+      // Flatten vetoer entities in case a cw1-whitelist is the vetoer.
+      const vetoerEntities = !vetoerEntity.loading
+        ? vetoerEntity.data.type === EntityType.Cw1Whitelist
+          ? vetoerEntity.data.entities
+          : [vetoerEntity.data]
+        : []
+
+      const vetoerDaoEntities = vetoerEntities.filter(
+        (entity) => entity.type === EntityType.Dao
+      )
+
+      const vetoerDaoClients = vetoerDaoEntities.map((entity) =>
+        getDao({
+          queryClient,
+          chainId,
+          coreAddress: entity.address,
+        })
+      )
+
+      return {
+        vetoerEntities,
+        vetoerDaoEntities,
+        vetoerDaoClients,
+      }
+    }, [chainId, queryClient, vetoerEntity])
+
   // This is the voting power the current wallet has in each of the DAO vetoers.
-  const walletDaoVetoerMemberships = useCachedLoading(
-    !vetoerEntity.loading && walletAddress
-      ? waitForAll(
-          vetoerDaoEntities.map((entity) =>
-            DaoCoreV2Selectors.votingPowerAtHeightSelector({
-              contractAddress: entity.address,
-              chainId,
-              params: [{ address: walletAddress }],
-            })
-          )
-        )
-      : undefined,
-    undefined
-  )
+  const walletDaoVetoerMemberships = useQueries({
+    queries: walletAddress
+      ? vetoerDaoClients.map((dao) => dao.getVotingPowerQuery(walletAddress))
+      : [],
+  })
+  // Make sure this component re-renders if the Secret Network permit changes so
+  // the voting queries above refresh.
+  useOnSecretNetworkPermitUpdate({
+    dao: vetoerDaoClients,
+  })
+
   const canBeVetoed =
     vetoEnabled &&
     (statusKey === 'veto_timelock' ||
@@ -115,17 +132,22 @@ export const useProposalVetoState = ({
   // wallet can veto.
   const matchingWalletVetoer =
     canBeVetoed && !vetoerEntity.loading
-      ? vetoerEntities.find(
+      ? // Find wallet that matches address.
+        vetoerEntities.find(
           (entity) =>
             entity.type === EntityType.Wallet &&
             entity.address === walletAddress
         ) ||
-        (!walletDaoVetoerMemberships.loading && walletDaoVetoerMemberships.data
-          ? vetoerDaoEntities.find(
-              (_, index) =>
-                walletDaoVetoerMemberships.data![index].power !== '0'
-            )
-          : undefined)
+        // Find DAO where wallet is a member.
+        vetoerDaoEntities.find((_, index) => {
+          const membershipQuery = walletDaoVetoerMemberships[index]
+          return (
+            !!membershipQuery &&
+            !membershipQuery.isPending &&
+            !membershipQuery.isError &&
+            membershipQuery.data.power !== '0'
+          )
+        })
       : undefined
   const walletCanEarlyExecute =
     !!matchingWalletVetoer &&
@@ -153,7 +175,6 @@ export const useProposalVetoState = ({
         (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
           matchingWalletVetoer.type === EntityType.Wallet)
       ) {
-        const client = await getSigningCosmWasmClient()
         const msg = makeWasmMessage({
           wasm: {
             execute: {
@@ -168,24 +189,18 @@ export const useProposalVetoState = ({
           },
         })
 
-        if (vetoerEntity.data.type === EntityType.Wallet) {
-          await client.signAndBroadcast(
-            walletAddress,
-            [cwMsgToEncodeObject(msg, walletAddress)],
-            CHAIN_GAS_MULTIPLIER
+        await executeSmartContract(
+          getSigningClient,
+          walletAddress,
+          proposalModule.address,
+          cwMsgToEncodeObject(
+            chainId,
+            vetoerEntity.data.type === EntityType.Wallet
+              ? msg
+              : makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),
+            walletAddress
           )
-        } else {
-          await client.signAndBroadcast(
-            walletAddress,
-            [
-              cwMsgToEncodeObject(
-                makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),
-                walletAddress
-              ),
-            ],
-            CHAIN_GAS_MULTIPLIER
-          )
-        }
+        )
 
         await onVetoSuccess()
       } else if (matchingWalletVetoer.type === EntityType.Dao) {
@@ -223,7 +238,7 @@ export const useProposalVetoState = ({
     neutronTimelockOverrule,
     router,
     getDaoProposalPath,
-    getSigningCosmWasmClient,
+    getSigningClient,
     proposalModule.address,
     proposalNumber,
     onVetoSuccess,
@@ -243,7 +258,6 @@ export const useProposalVetoState = ({
         (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
           matchingWalletVetoer.type === EntityType.Wallet)
       ) {
-        const client = await getSigningCosmWasmClient()
         const msg = makeWasmMessage({
           wasm: {
             execute: {
@@ -258,24 +272,18 @@ export const useProposalVetoState = ({
           },
         })
 
-        if (vetoerEntity.data.type === EntityType.Wallet) {
-          await client.signAndBroadcast(
-            walletAddress,
-            [cwMsgToEncodeObject(msg, walletAddress)],
-            CHAIN_GAS_MULTIPLIER
+        await executeSmartContract(
+          getSigningClient,
+          walletAddress,
+          proposalModule.address,
+          cwMsgToEncodeObject(
+            chainId,
+            vetoerEntity.data.type === EntityType.Wallet
+              ? msg
+              : makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),
+            walletAddress
           )
-        } else {
-          await client.signAndBroadcast(
-            walletAddress,
-            [
-              cwMsgToEncodeObject(
-                makeCw1WhitelistExecuteMessage(vetoerEntity.data.address, msg),
-                walletAddress
-              ),
-            ],
-            CHAIN_GAS_MULTIPLIER
-          )
-        }
+        )
 
         await onExecuteSuccess()
       } else if (matchingWalletVetoer.type === EntityType.Dao) {
@@ -310,7 +318,7 @@ export const useProposalVetoState = ({
   }, [
     vetoerEntity,
     matchingWalletVetoer,
-    getSigningCosmWasmClient,
+    getSigningClient,
     proposalModule.address,
     proposalNumber,
     onExecuteSuccess,

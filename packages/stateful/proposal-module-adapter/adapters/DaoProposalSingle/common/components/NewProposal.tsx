@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoProposalSingleCommonSelectors,
   blocksPerYearSelector,
 } from '@dao-dao/state'
@@ -19,10 +19,7 @@ import {
   useDaoInfoContext,
   useProcessTQ,
 } from '@dao-dao/stateless'
-import {
-  BaseNewProposalProps,
-  IProposalModuleAdapterCommonOptions,
-} from '@dao-dao/types'
+import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
 import {
   convertActionsToMessages,
   convertExpirationToDate,
@@ -43,13 +40,13 @@ import { NewProposalMain } from './NewProposalMain'
 import { NewProposalPreview } from './NewProposalPreview'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
-  options: IProposalModuleAdapterCommonOptions
+  proposalModule: IProposalModuleBase
   usePublishProposal: UsePublishProposal
 }
 
 export const NewProposal = ({
   onCreateSuccess,
-  options,
+  proposalModule,
   usePublishProposal,
   ...props
 }: NewProposalProps) => {
@@ -68,9 +65,7 @@ export const NewProposal = ({
   const { watch } = useFormContext<NewProposalForm>()
   const proposalTitle = watch('title')
 
-  const { isMember = false, loading: membershipLoading } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false, loading: membershipLoading } = useMembership()
 
   const [loading, setLoading] = useState(false)
 
@@ -78,7 +73,7 @@ export const NewProposal = ({
   // which is refreshed periodically, so use a loadable to avoid unnecessary
   // re-renders.
   const pauseInfo = useCachedLoadable(
-    DaoCoreV2Selectors.pauseInfoSelector({
+    DaoDaoCoreSelectors.pauseInfoSelector({
       chainId,
       contractAddress: coreAddress,
       params: [],
@@ -99,7 +94,7 @@ export const NewProposal = ({
   const {
     simulateProposal: _simulateProposal,
     publishProposal,
-    anyoneCanPropose,
+    cannotProposeReason,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
@@ -142,7 +137,9 @@ export const NewProposal = ({
 
           // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
-            ...options,
+            chain: proposalModule.dao.chain,
+            coreAddress: proposalModule.dao.coreAddress,
+            proposalModule: proposalModule.info,
             proposalNumber,
             proposalId,
             isPreProposeApprovalProposal,
@@ -158,7 +155,7 @@ export const NewProposal = ({
           const config = await snapshot.getPromise(
             DaoProposalSingleCommonSelectors.configSelector({
               chainId,
-              contractAddress: options.proposalModule.address,
+              contractAddress: proposalModule.address,
             })
           )
 
@@ -220,7 +217,7 @@ export const NewProposal = ({
     [
       isWalletConnected,
       publishProposal,
-      options,
+      proposalModule,
       blocksPerYearLoadable,
       getStargateClient,
       chainId,
@@ -247,7 +244,7 @@ export const NewProposal = ({
   return (
     <StatelessNewProposal<NewProposalForm, NewProposalData>
       activeThreshold={activeThreshold}
-      anyoneCanPropose={anyoneCanPropose}
+      cannotProposeReason={cannotProposeReason}
       connected={isWalletConnected}
       content={{
         Header: NewProposalTitleDescriptionHeader,

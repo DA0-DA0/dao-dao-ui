@@ -8,7 +8,7 @@ import {
 } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
   govProposalVoteSelector,
@@ -146,7 +146,7 @@ export const feedOpenProposalsSelector = selectorFamily<
                   coreAddress,
                   height: start_height,
                   selector: address
-                    ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
+                    ? DaoDaoCoreSelectors.votingPowerAtHeightSelector({
                         chainId,
                         contractAddress: coreAddress,
                         params: [
@@ -303,7 +303,6 @@ export const feedOpenProposalsSelector = selectorFamily<
                             chainId,
                             coreAddress,
                             proposalId: `${proposalModule.prefix}${id}`,
-                            proposalModules,
                             proposalViewUrl: getDaoProposalPath(
                               DaoPageMode.Dapp,
                               coreAddress,

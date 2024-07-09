@@ -31,8 +31,8 @@ import {
   ActionKeyAndData,
   ActionKeyAndDataNoId,
   BaseNewProposalProps,
-  CosmosMsgFor_Empty,
   ProposalDraft,
+  UnifiedCosmosMsg,
   aminoTypes,
   decodedStargateMsgToCw,
   protobufToCwMsg,
@@ -45,6 +45,7 @@ import {
   decodeMessages,
   getAccountAddress,
   getAccountChainId,
+  getChainForChainId,
   getDisplayNameForChainId,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
@@ -85,7 +86,7 @@ export const AppsTab = () => {
       DaoProposalSingleAdapterId
   )
 
-  const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
+  const [msgs, setMsgs] = useState<UnifiedCosmosMsg[]>()
   const [fullScreen, setFullScreen] = useState(false)
 
   const addressForChainId = (chainId: string) => {
@@ -115,7 +116,7 @@ export const AppsTab = () => {
       throw new Error(
         t('error.daoMissingAccountsOnChains', {
           daoName: name,
-          chains: getDisplayNameForChainId(chainId),
+          chains: `${getDisplayNameForChainId(chainId)} (${chainId})`,
           count: 1,
         })
       )
@@ -140,7 +141,7 @@ export const AppsTab = () => {
       maybeMakePolytoneExecuteMessage(
         currentChainId,
         chainId,
-        protobufToCwMsg(msg, false).msg
+        protobufToCwMsg(getChainForChainId(chainId), msg, false).msg
       )
     )
     setMsgs(messages)
@@ -156,7 +157,10 @@ export const AppsTab = () => {
       maybeMakePolytoneExecuteMessage(
         currentChainId,
         chainId,
-        decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
+        decodedStargateMsgToCw(
+          getChainForChainId(chainId),
+          aminoTypes.fromAmino(msg)
+        ).msg
       )
     )
     setMsgs(messages)
@@ -182,7 +186,9 @@ export const AppsTab = () => {
             daoName: name,
             chains: [chainIds]
               .flat()
-              .map((chainId) => getDisplayNameForChainId(chainId))
+              .map(
+                (chainId) => `${getDisplayNameForChainId(chainId)} (${chainId})`
+              )
               .join(', '),
             count: [chainIds].flat().length,
           }),
@@ -328,8 +334,7 @@ export const AppsTab = () => {
 
       {msgs && (
         <ProposalModuleAdapterCommonProvider
-          coreAddress={coreAddress}
-          proposalModule={singleChoiceProposalModule}
+          proposalModuleAddress={singleChoiceProposalModule.address}
         >
           <ActionMatcherAndProposer
             key={JSON.stringify(msgs)}
@@ -348,8 +353,8 @@ export const AppsTab = () => {
 }
 
 type ActionMatcherAndProposerProps = {
-  msgs: CosmosMsgFor_Empty[]
-  setMsgs: (msgs: CosmosMsgFor_Empty[] | undefined) => void
+  msgs: UnifiedCosmosMsg[]
+  setMsgs: (msgs: UnifiedCosmosMsg[] | undefined) => void
 }
 
 const ActionMatcherAndProposer = ({

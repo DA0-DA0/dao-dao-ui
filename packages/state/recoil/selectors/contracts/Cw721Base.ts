@@ -2,15 +2,14 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import {
-  AllNftInfoResponse,
-  AllOperatorsResponse,
-  AllTokensResponse,
+  AllNftInfoResponseForEmpty,
   ApprovalResponse,
   ApprovalsResponse,
   ContractInfoResponse,
   MinterResponse,
-  NftInfoResponse,
+  NftInfoResponseForEmpty,
   NumTokensResponse,
+  OperatorsResponse,
   OwnerOfResponse,
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
@@ -115,7 +114,7 @@ export const approvalsSelector = selectorFamily<
     },
 })
 export const allOperatorsSelector = selectorFamily<
-  AllOperatorsResponse,
+  OperatorsResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allOperators']>
   }
@@ -166,7 +165,7 @@ export const contractInfoSelector = selectorFamily<
     },
 })
 export const nftInfoSelector = selectorFamily<
-  NftInfoResponse,
+  NftInfoResponseForEmpty,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['nftInfo']>
   }
@@ -183,7 +182,7 @@ export const nftInfoSelector = selectorFamily<
     },
 })
 export const allNftInfoSelector = selectorFamily<
-  AllNftInfoResponse,
+  AllNftInfoResponseForEmpty,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allNftInfo']>
   }
@@ -216,7 +215,7 @@ export const tokensSelector = selectorFamily<
     },
 })
 export const allTokensSelector = selectorFamily<
-  AllTokensResponse,
+  TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }

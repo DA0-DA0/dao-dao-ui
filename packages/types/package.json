@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.4.0-rc.9",
+  "version": "2.4.2-rc.1",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "lint": "eslint .",
@@ -22,8 +22,9 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.32.3",
     "@cosmology/telescope": "^1.4.12",
-    "@dao-dao/config": "2.4.0-rc.9",
+    "@dao-dao/config": "2.4.2-rc.1",
     "@tanstack/react-query": "^5.40.0"
   },
   "peerDependencies": {
@@ -31,5 +32,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "0d76facc26ddc496b58d1f5c7458e5db243cdd14"
+  "gitHead": "d7b959f412c3990123b0e2afb11f32acd9c3764c"
 }

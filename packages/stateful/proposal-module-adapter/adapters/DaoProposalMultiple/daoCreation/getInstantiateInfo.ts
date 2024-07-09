@@ -1,24 +1,20 @@
-import { ContractVersion, DaoCreationGetInstantiateInfo } from '@dao-dao/types'
-import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
-import { InstantiateMsg as DaoProposalMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
 import {
-  DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
-  encodeJsonToBase64,
+  isSecretNetwork,
 } from '@dao-dao/utils'
-import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
+import { MultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule'
+import { SecretMultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule.secret'
 import { DaoCreationExtraVotingConfig } from '../types'
 import { convertPercentOrMajorityValueToPercentageThreshold } from '../utils'
-import instantiateSchema from './instantiate_schema.json'
-import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  { createWithCw20, codeIds, historicalCodeIds },
+  { chainId, createWithCw20 },
   {
     name,
     votingConfig: {
@@ -31,103 +27,109 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { moduleInstantiateFundsUnsupported },
-  t
+  { moduleInstantiateFundsUnsupported }
 ) => {
-  const decimals = proposalDeposit.token?.decimals ?? 0
+  const commonConfig = {
+    quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
+    maxVotingPeriod: convertDurationWithUnitsToDuration(votingDuration),
+    allowRevoting,
+    veto: convertVetoConfigToCosmos(veto),
+    submissionPolicy: anyoneCanPropose ? 'anyone' : 'members',
+    onlyMembersExecute: onlyMembersExecute,
+  } as const
 
-  const preProposeMultipleInstantiateMsg: DaoPreProposeMultipleInstantiateMsg =
-    {
-      deposit_info: proposalDeposit.enabled
-        ? {
-            amount: convertDenomToMicroDenomStringWithDecimals(
-              proposalDeposit.amount,
-              decimals
-            ),
-            denom:
-              proposalDeposit.type === 'voting_module_token'
-                ? {
-                    voting_module_token: {
-                      token_type: createWithCw20 ? 'cw20' : 'native',
-                    },
-                  }
-                : {
-                    token: {
-                      denom:
-                        proposalDeposit.type === 'native'
-                          ? {
-                              native: proposalDeposit.denomOrAddress,
-                            }
-                          : // proposalDeposit.type === 'cw20'
-                            {
-                              cw20: proposalDeposit.denomOrAddress,
-                            },
-                    },
-                  },
-            refund_policy: proposalDeposit.refundPolicy,
-          }
-        : null,
-      extension: {},
-      open_proposal_submission: anyoneCanPropose,
+  if (isSecretNetwork(chainId)) {
+    if (
+      proposalDeposit.enabled &&
+      proposalDeposit.type === 'cw20' &&
+      !proposalDeposit.token?.snip20CodeHash
+    ) {
+      throw new Error('SNIP20 proposal deposit token code hash not loaded')
     }
 
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<DaoPreProposeMultipleInstantiateMsg>(
-    preProposeInstantiateSchema,
-    t
-  )(preProposeMultipleInstantiateMsg)
-
-  const codeIdsToUse = {
-    ...codeIds,
-    // If module instantiation funds are unsupported, use the v2.1.0 contracts
-    // which are the last ones that did not support funds.
-    ...(moduleInstantiateFundsUnsupported &&
-      historicalCodeIds?.[ContractVersion.V210]),
-  }
-
-  const msg: DaoProposalMultipleInstantiateMsg = {
-    allow_revoting: allowRevoting,
-    close_proposal_on_execution_failure: true,
-    max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
-    min_voting_period: null,
-    only_members_execute: !!onlyMembersExecute,
-    pre_propose_info: {
-      module_may_propose: {
-        info: {
-          admin: { core_module: {} },
-          code_id: codeIdsToUse.DaoPreProposeMultiple,
-          label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
-          msg: encodeJsonToBase64(preProposeMultipleInstantiateMsg),
-          // This function is used by the enable multiple choice action, and
-          // DAOs before v2.3.0 still might want to enable multiple choice, so
-          // make sure to support the old version without the `funds` field.
-          ...(!moduleInstantiateFundsUnsupported && {
-            funds: [],
-          }),
-        },
+    return SecretMultipleChoiceProposalModule.generateModuleInstantiateInfo(
+      chainId,
+      name,
+      {
+        ...commonConfig,
+        deposit: proposalDeposit.enabled
+          ? {
+              amount: convertDenomToMicroDenomStringWithDecimals(
+                proposalDeposit.amount,
+                proposalDeposit.token?.decimals ?? 0
+              ),
+              denom:
+                proposalDeposit.type === 'voting_module_token'
+                  ? {
+                      voting_module_token: {
+                        token_type: createWithCw20 ? 'cw20' : 'native',
+                      },
+                    }
+                  : {
+                      token: {
+                        denom:
+                          proposalDeposit.type === 'native'
+                            ? {
+                                native: proposalDeposit.denomOrAddress,
+                              }
+                            : // proposalDeposit.type === 'cw20'
+                              {
+                                snip20: [
+                                  proposalDeposit.denomOrAddress,
+                                  // Type-checked above.
+                                  proposalDeposit.token!.snip20CodeHash!,
+                                ],
+                              },
+                      },
+                    },
+              refund_policy: proposalDeposit.refundPolicy,
+            }
+          : null,
+      }
+    )
+  } else {
+    return MultipleChoiceProposalModule.generateModuleInstantiateInfo(
+      chainId,
+      name,
+      {
+        ...commonConfig,
+        deposit: proposalDeposit.enabled
+          ? {
+              amount: convertDenomToMicroDenomStringWithDecimals(
+                proposalDeposit.amount,
+                proposalDeposit.token?.decimals ?? 0
+              ),
+              denom:
+                proposalDeposit.type === 'voting_module_token'
+                  ? {
+                      voting_module_token: {
+                        token_type: createWithCw20 ? 'cw20' : 'native',
+                      },
+                    }
+                  : {
+                      token: {
+                        denom:
+                          proposalDeposit.type === 'native'
+                            ? {
+                                native: proposalDeposit.denomOrAddress,
+                              }
+                            : // proposalDeposit.type === 'cw20'
+                              {
+                                cw20: proposalDeposit.denomOrAddress,
+                              },
+                      },
+                    },
+              refund_policy: proposalDeposit.refundPolicy,
+            }
+          : null,
       },
-    },
-    voting_strategy: {
-      single_choice: {
-        quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
-      },
-    },
-    veto: convertVetoConfigToCosmos(veto),
-  }
-
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<DaoProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
-
-  return {
-    admin: { core_module: {} },
-    code_id: codeIdsToUse.DaoProposalMultiple,
-    label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
-    msg: encodeJsonToBase64(msg),
-    // This function is used by the enable multiple choice action, and DAOs
-    // before v2.3.0 still might want to enable multiple choice, so make sure to
-    // support the old version without the `funds` field.
-    ...(!moduleInstantiateFundsUnsupported && {
-      funds: [],
-    }),
+      {
+        // Omit the funds field from the module instantiate info objects and use
+        // v2.1.0 contracts. This is used when enabling multiple choice via the
+        // action for a DAO that is on a version below v2.3.0, since there was a
+        // breaking change on the `funds` field.
+        useV210WithoutFunds: moduleInstantiateFundsUnsupported,
+      }
+    )
   }
 }

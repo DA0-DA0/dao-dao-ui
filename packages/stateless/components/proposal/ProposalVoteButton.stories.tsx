@@ -22,7 +22,7 @@ Default.args = {
   option: {
     Icon: Texture,
     label: 'Abstain',
-    value: Vote.Abstain,
+    value: 'abstain',
   },
 }
 Default.parameters = {

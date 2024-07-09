@@ -10,13 +10,11 @@ export enum GovernanceTokenType {
 
 export type CreatorData = {
   tokenType: GovernanceTokenType
-  existingGovernanceTokenDenomOrAddress: string
-  // TokenInfoResponse
-  existingGovernanceTokenInfo?: {
-    name: string
+  existingGovernanceNftCollectionAddress: string
+  existingCollectionInfo?: {
     symbol: string
-    total_supply?: string
-    _error?: undefined
   }
+  // Must be loaded on Secret Network.
+  secretCodeHash?: string
   unstakingDuration: DurationWithUnits
 } & DaoCreationVotingConfigWithActiveThreshold

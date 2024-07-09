@@ -14,6 +14,7 @@ import {
 
 import { Account } from './account'
 import { SupportedChainConfig, WithChainId } from './chain'
+import { SecretModuleInstantiateInfo } from './clients'
 import {
   DaoCardProps,
   DaoDropdownInfo,
@@ -22,13 +23,15 @@ import {
 } from './components'
 import {
   ActiveThreshold,
+  ContractVersionInfo,
   DepositRefundPolicy,
   ModuleInstantiateInfo,
 } from './contracts/common'
 import {
-  InstantiateMsg as DaoCoreV2InstantiateMsg,
+  InstantiateMsg as DaoDaoCoreInstantiateMsg,
   ProposalModuleWithInfo,
-} from './contracts/DaoCore.v2'
+} from './contracts/DaoDaoCore'
+import { PreProposeSubmissionPolicy } from './contracts/DaoPreProposeSingle'
 import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
 import {
   ProposalResponse as SingleChoiceProposalResponse,
@@ -36,6 +39,7 @@ import {
 } from './contracts/DaoProposalSingle.v2'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
+import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { ProposalVetoConfig } from './proposal'
@@ -60,7 +64,7 @@ export type DaoInfo = {
   coreVersion: ContractVersion
   supportedFeatures: SupportedFeatureMap
   votingModuleAddress: string
-  votingModuleContractName: string
+  votingModuleInfo: ContractVersionInfo
   proposalModules: ProposalModule[]
   /**
    * Wasm contract-level admin that can migrate.
@@ -160,6 +164,7 @@ export type PreProposeModule = {
   contractName: string
   version: ContractVersion
   address: string
+  submissionPolicy: PreProposeSubmissionPolicy
 } & PreProposeModuleTypedConfig
 
 export enum ProposalModuleType {
@@ -189,7 +194,7 @@ export type ProposalModuleTypedConfig =
 
 export type ProposalModule = {
   contractName: string
-  version: ContractVersion | null
+  version: ContractVersion
   address: string
   prefix: string
   // If set, this uses a pre-propose module.
@@ -216,7 +221,10 @@ export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   form: UseFormReturn<NewDao<CreatorData>>
-  instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  instantiateMsg:
+    | DaoDaoCoreInstantiateMsg
+    | SecretDaoDaoCoreInstantiateMsg
+    | undefined
   instantiateMsgError: string | undefined
   commonVotingConfig: DaoCreationCommonVotingConfigItems
   availableCreators: readonly DaoCreator[]
@@ -335,7 +343,7 @@ export type DaoCreationGetInstantiateInfo<
   newDao: NewDao<any, ModuleData>,
   data: DaoCreationVotingConfig & ModuleData,
   t: TFunction
-) => ModuleInstantiateInfo
+) => ModuleInstantiateInfo | SecretModuleInstantiateInfo
 
 export type DaoCreatedCardProps = Omit<
   DaoCardProps,
@@ -500,7 +508,6 @@ export type IndexerDaoWithVetoableProposals = {
 export type DaoWithVetoableProposals = WithChainId<
   IndexerDaoWithVetoableProposals & {
     name: string
-    proposalModules: ProposalModule[]
   }
 >
 

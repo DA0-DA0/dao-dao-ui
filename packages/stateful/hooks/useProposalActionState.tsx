@@ -1,4 +1,3 @@
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { CancelOutlined, Key, Send } from '@mui/icons-material'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -27,7 +26,7 @@ import {
 } from '@dao-dao/utils'
 
 import { ProfileProposalCard } from '../components'
-import { useProposalModuleAdapterOptions } from '../proposal-module-adapter'
+import { useProposalModuleAdapterContext } from '../proposal-module-adapter'
 import { useMembership } from './useMembership'
 import { UseProposalRelayStateReturn } from './useProposalRelayState'
 import { useWallet } from './useWallet'
@@ -36,13 +35,6 @@ export type UseProposalActionStateOptions = {
   relayState: UseProposalRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
-  executeProposal: (
-    options: { proposalId: number },
-    // No need.
-    fee?: undefined,
-    memo?: string | undefined
-  ) => Promise<ExecuteResult>
-  closeProposal: (options: { proposalId: number }) => Promise<ExecuteResult>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -61,8 +53,6 @@ export const useProposalActionState = ({
   relayState,
   statusKey,
   loadingExecutionTxHash,
-  executeProposal,
-  closeProposal,
   onExecuteSuccess,
   onCloseSuccess,
 }: UseProposalActionStateOptions): UseProposalActionStateReturn => {
@@ -71,11 +61,16 @@ export const useProposalActionState = ({
     chain: { chain_id: chainId },
   } = useConfiguredChainContext()
   const { coreAddress, items } = useDaoInfoContext()
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const {
+    options: { proposalNumber },
+    proposalModule,
+  } = useProposalModuleAdapterContext()
+  const {
+    isWalletConnected,
+    address: walletAddress = '',
+    getSigningClient,
+  } = useWallet()
+  const { isMember = false } = useMembership()
 
   const config = useRecoilValue(
     DaoProposalSingleCommonSelectors.configSelector({
@@ -103,13 +98,12 @@ export const useProposalActionState = ({
 
     setActionLoading(true)
     try {
-      await executeProposal(
-        {
-          proposalId: proposalNumber,
-        },
-        undefined,
-        allowMemoOnExecute && memo ? memo : undefined
-      )
+      await proposalModule.execute({
+        proposalId: proposalNumber,
+        getSigningClient,
+        sender: walletAddress,
+        memo: allowMemoOnExecute && memo ? memo : undefined,
+      })
 
       await onExecuteSuccess()
     } catch (err) {
@@ -123,8 +117,10 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [
     isWalletConnected,
-    executeProposal,
+    proposalModule,
     proposalNumber,
+    getSigningClient,
+    walletAddress,
     allowMemoOnExecute,
     memo,
     onExecuteSuccess,
@@ -138,8 +134,10 @@ export const useProposalActionState = ({
     setActionLoading(true)
 
     try {
-      await closeProposal({
+      await proposalModule.close({
         proposalId: proposalNumber,
+        getSigningClient,
+        sender: walletAddress,
       })
 
       await onCloseSuccess()
@@ -152,7 +150,14 @@ export const useProposalActionState = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
+  }, [
+    isWalletConnected,
+    proposalModule,
+    proposalNumber,
+    getSigningClient,
+    walletAddress,
+    onCloseSuccess,
+  ])
 
   const showRelayStatus =
     !relayState.loading &&

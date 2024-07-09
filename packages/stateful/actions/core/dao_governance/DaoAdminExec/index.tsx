@@ -1,9 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
-import { ErrorPage, JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { DaoDaoCoreSelectors, walletAdminOfDaosSelector } from '@dao-dao/state'
+import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
   ActionComponent,
@@ -26,8 +25,6 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
-import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { daoQueries } from '../../../../queries/dao'
 import {
   useActionOptions,
   useActionsForMatching,
@@ -97,7 +94,7 @@ const Component: ActionComponent = (props) => {
 
   const daoSubDaosLoadable = useCachedLoadable(
     context.type === ActionContextType.Dao
-      ? DaoCoreV2Selectors.listAllSubDaosSelector({
+      ? DaoDaoCoreSelectors.listAllSubDaosSelector({
           contractAddress: address,
           chainId,
           // We only care about the SubDAOs this DAO has admin powers over.
@@ -119,18 +116,6 @@ const Component: ActionComponent = (props) => {
       ? daoSubDaosLoadable
       : walletAdminOfDaosLoadable
 
-  const daoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
-      useQueryClient(),
-      coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
-        ? {
-            chainId,
-            coreAddress,
-          }
-        : undefined
-    )
-  )
-
   const options: InnerOptions = {
     childDaos:
       childDaosLoadable.state === 'hasValue'
@@ -143,18 +128,19 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return daoInfo.loading ? (
-    <InnerComponentLoading {...props} options={options} />
-  ) : daoInfo.errored ? (
-    <ErrorPage error={daoInfo.error} />
-  ) : (
-    <SuspenseLoader
-      fallback={<InnerComponentLoading {...props} options={options} />}
+  return (
+    <DaoProviders
+      chainId={chainId}
+      coreAddress={
+        // Loading state if invalid address.
+        coreAddress && isValidBech32Address(coreAddress, bech32Prefix)
+          ? coreAddress
+          : ''
+      }
+      loaderFallback={<InnerComponentLoading {...props} options={options} />}
     >
-      <DaoProviders info={daoInfo.data}>
-        <InnerComponent {...props} options={options} />
-      </DaoProviders>
-    </SuspenseLoader>
+      <InnerComponent {...props} options={options} />
+    </DaoProviders>
   )
 }
 

@@ -2,23 +2,21 @@ import { QueryClient } from '@tanstack/react-query'
 
 import {
   CwCoreV1QueryClient,
-  DaoCoreV2QueryClient,
+  DaoDaoCoreQueryClient,
 } from '@dao-dao/state/contracts'
 import { indexerQueries } from '@dao-dao/state/query'
 import {
   ContractVersion,
-  Feature,
   ProposalModule,
   ProposalModuleType,
 } from '@dao-dao/types'
 import { InfoResponse } from '@dao-dao/types/contracts/common'
-import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
+import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
-  cosmWasmClientRouter,
+  getCosmWasmClientForChainId,
   indexToProposalModulePrefix,
-  isFeatureSupportedByVersion,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -57,8 +55,9 @@ export const fetchProposalModules = async (
   }
 
   const proposalModules: ProposalModule[] = await Promise.all(
-    activeProposalModules.map(async ({ info, address, prefix }, index) => {
-      const version = (info && parseContractVersion(info.version)) ?? null
+    activeProposalModules.map(async ({ info, address, prefix }) => {
+      const version =
+        (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
 
       // Get adapter for this contract.
       const adapter = info && matchAdapter(info.contract)
@@ -85,12 +84,7 @@ export const fetchProposalModules = async (
 
       return {
         address,
-        prefix: isFeatureSupportedByVersion(
-          Feature.StaticProposalModulePrefixes,
-          coreVersion
-        )
-          ? prefix
-          : indexToProposalModulePrefix(index),
+        prefix,
         contractName: info?.contract || '',
         version,
         prePropose:
@@ -118,7 +112,7 @@ export const fetchProposalModulesWithInfoFromChain = async (
   coreAddress: string,
   coreVersion: ContractVersion
 ): Promise<ProposalModuleWithInfo[]> => {
-  const cwClient = await cosmWasmClientRouter.connect(chainId)
+  const cwClient = await getCosmWasmClientForChainId(chainId)
 
   let paginationStart: string | undefined
 
@@ -152,7 +146,7 @@ export const fetchProposalModulesWithInfoFromChain = async (
 
   const getV2ProposalModules = async () =>
     (
-      await new DaoCoreV2QueryClient(
+      await new DaoDaoCoreQueryClient(
         cwClient,
         coreAddress
       ).activeProposalModules({

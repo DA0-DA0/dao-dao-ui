@@ -1,0 +1,28 @@
+{
+  "name": "@dao-dao/dispatch",
+  "version": "2.4.2-rc.1",
+  "license": "BSD-3-Clause-Clear",
+  "private": true,
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint .",
+    "deploy": "ts-node ./scripts/deploy.ts"
+  },
+  "devDependencies": {
+    "@dao-dao/config": "2.4.2-rc.1",
+    "@dao-dao/state": "2.4.2-rc.1",
+    "@dao-dao/types": "2.4.2-rc.1",
+    "@dao-dao/utils": "2.4.2-rc.1",
+    "chalk": "^4",
+    "commander": "^11.0.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.23.1",
+    "ts-node": "^10.9.1",
+    "typescript": "5.3.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.32.3",
+    "@cosmjs/proto-signing": "^0.32.3"
+  }
+}

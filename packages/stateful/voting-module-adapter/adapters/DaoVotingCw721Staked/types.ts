@@ -12,7 +12,7 @@ export interface UseStakingInfoOptions {
   fetchClaims?: boolean
   fetchTotalStakedValue?: boolean
   fetchWalletStakedValue?: boolean
-  fetchWalletUnstakedValue?: boolean
+  fetchWalletUnstakedNfts?: boolean
 }
 
 export interface UseStakingInfoResponse {

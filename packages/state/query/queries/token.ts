@@ -77,7 +77,7 @@ export const fetchTokenInfo = async (
   if (type === TokenType.Cw20) {
     const [tokenInfo, imageUrl] = await Promise.all([
       queryClient.fetchQuery(
-        cw20BaseQueries.tokenInfo({
+        cw20BaseQueries.tokenInfo(queryClient, {
           chainId,
           contractAddress: denomOrAddress,
         })
@@ -262,7 +262,7 @@ export const fetchCw20LogoUrl = async (
   const logoInfo = (
     await queryClient
       .fetchQuery(
-        cw20BaseQueries.marketingInfo({
+        cw20BaseQueries.marketingInfo(queryClient, {
           chainId,
           contractAddress: address,
         })

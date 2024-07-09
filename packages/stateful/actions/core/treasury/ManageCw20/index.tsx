@@ -9,7 +9,7 @@ import {
 } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { TokenEmoji } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
@@ -76,7 +76,7 @@ const Component: ActionComponent = (props) => {
   )
 
   const existingTokenAddresses = useRecoilValue(
-    DaoCoreV2Selectors.allCw20TokensSelector({
+    DaoDaoCoreSelectors.allCw20TokensSelector({
       contractAddress: address,
       chainId: currentChainId,
     })
@@ -163,7 +163,7 @@ export const makeManageCw20Action: ActionMaker<ManageCw20Data> = ({
     return null
   }
 
-  const storageItemValueKey = context.info.supportedFeatures[
+  const storageItemValueKey = context.dao.info.supportedFeatures[
     Feature.StorageItemValueKey
   ]
     ? 'value'

@@ -569,7 +569,7 @@ export const Params = {
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     obj.code_upload_access = message.codeUploadAccess ? AccessConfig.toAmino(message.codeUploadAccess, useInterfaces) : AccessConfig.fromPartial({});
-    obj.instantiate_default_permission = accessTypeToJSON(message.instantiateDefaultPermission);
+    obj.instantiate_default_permission = message.instantiateDefaultPermission;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

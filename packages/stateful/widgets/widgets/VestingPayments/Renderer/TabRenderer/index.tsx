@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   useCachedLoadingWithError,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -31,12 +30,9 @@ import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 export const TabRenderer = ({
   variables: { factories, factory, oldFactories },
 }: WidgetRendererProps<VestingPaymentsWidgetData>) => {
-  const { chain_id: defaultChainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { chainId: defaultChainId, coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const setRefresh = useSetRecoilState(refreshVestingAtom(''))
   // Refresh vesting data every 30 seconds.

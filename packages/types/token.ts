@@ -12,9 +12,22 @@ import { TokenInfoResponse } from './contracts/Cw20Base'
 import { LoadingData, LoadingDataWithError } from './misc'
 
 export enum TokenType {
+  /**
+   * Native token.
+   */
   Native = 'native',
+  /**
+   * CosmWasm token.
+   */
   Cw20 = 'cw20',
+  /**
+   * CosmWasm NFT.
+   */
   Cw721 = 'cw721',
+  /**
+   * OmniFlix ONFT.
+   */
+  Onft = 'onft',
 }
 
 export type GenericTokenSource = Pick<
@@ -37,6 +50,10 @@ export type GenericToken = {
    * native, and contract address when type is cw20/cw721.
    */
   denomOrAddress: string
+  /**
+   * SNIP-20 code hash if isSecretNetwork(chainId) && type === TokenType.Cw20
+   */
+  snip20CodeHash?: string | null
   /**
    * The symbol for this token.
    */
@@ -202,7 +219,7 @@ export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
 
 export type AmountWithTimestamp = {
   amount: number
-  timestamp: Date
+  timestamp: number
 }
 
 export enum TokenPriceHistoryRange {

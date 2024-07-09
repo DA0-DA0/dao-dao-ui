@@ -95,8 +95,7 @@ export const CreateDaoProposal = () => {
 
   return latestProposalSave ? (
     <ProposalModuleAdapterCommonProvider
-      coreAddress={daoInfo.coreAddress}
-      proposalModule={selectedProposalModule}
+      proposalModuleAddress={selectedProposalModule.address}
     >
       <InnerCreateDaoProposal
         latestProposalSave={latestProposalSave}

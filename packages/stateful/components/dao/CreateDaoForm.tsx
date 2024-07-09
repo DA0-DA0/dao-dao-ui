@@ -41,15 +41,18 @@ import {
   GovernanceProposalActionData,
   NewDao,
   ProposalModuleAdapter,
+  SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
-import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
-import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
+import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
+import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
   NEW_DAO_TOKEN_DECIMALS,
+  SECRET_GAS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
+  decodeJsonFromBase64,
   encodeJsonToBase64,
   findWasmAttributeValue,
   getDisplayNameForChainId,
@@ -59,13 +62,15 @@ import {
   getSupportedChainConfig,
   getSupportedChains,
   instantiateSmartContract,
-  makeValidateMsg,
+  isSecretNetwork,
   makeWasmMessage,
   parseContractVersion,
   processError,
 } from '@dao-dao/utils'
 
 import { CustomData } from '../../actions/core/advanced/Custom/Component'
+import { CwDao } from '../../clients/dao/CwDao'
+import { SecretCwDao } from '../../clients/dao/SecretCwDao'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -73,6 +78,7 @@ import {
 } from '../../creators/TokenBased/types'
 import {
   CwAdminFactoryHooks,
+  SecretCwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
   useQuerySyncedRecoilState,
@@ -159,6 +165,7 @@ export const InnerCreateDaoForm = ({
       name: chainGovName,
       factoryContractAddress,
       codeIds,
+      codeHashes,
       createViaGovernance,
     },
   } = chainContext
@@ -350,14 +357,20 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
-  const validateInstantiateMsg = useMemo(
-    () => makeValidateMsg<DaoCoreV2InstantiateMsg>(instantiateSchema, t),
-    [t]
-  )
-
-  let instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  let instantiateMsg:
+    | DaoDaoCoreInstantiateMsg
+    | SecretDaoDaoCoreInstantiateMsg
+    | undefined
   let instantiateMsgError: string | undefined
   try {
+    // Generate voting module adapter instantiation message.
+    const votingModuleInstantiateInfo = creator.getInstantiateInfo({
+      chainConfig: chainContext.config,
+      newDao,
+      data: creatorData,
+      t,
+    })
+
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
@@ -369,36 +382,44 @@ export const InnerCreateDaoForm = ({
         )
       )
 
-    instantiateMsg = {
+    const commonConfig = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
-      automatically_add_cw20s: true,
-      automatically_add_cw721s: true,
-      description,
-      image_url: imageUrl ?? null,
       name: name.trim(),
-      proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
-      // Placeholder. Should be replaced by creator's mutate function.
-      voting_module_instantiate_info: {
-        code_id: -1,
-        funds: [],
-        label: '',
-        msg: '',
-      },
+      description,
+      imageUrl,
     }
 
-    // Mutate instantiateMsg via creator. Voting module adapter should be set
-    // through this.
-    instantiateMsg = creator.mutate(
-      instantiateMsg,
-      newDao,
-      creatorData,
-      t,
-      codeIds
-    )
+    if (isSecretNetwork(chainId)) {
+      // Type-checks. Adapters are responsible for using the correct proposal
+      // module info generator based on the chain.
+      if (!('code_hash' in votingModuleInstantiateInfo)) {
+        throw new Error('Missing code_hash in voting module info')
+      }
+      if (
+        proposalModuleInstantiateInfos.some((info) => !('code_hash' in info))
+      ) {
+        throw new Error('Missing code_hash in proposal module info')
+      }
 
-    // Validate and throw error if invalid according to JSON schema.
-    validateInstantiateMsg(instantiateMsg)
+      instantiateMsg = decodeJsonFromBase64(
+        SecretCwDao.generateInstantiateInfo(
+          chainContext.chainId,
+          commonConfig,
+          votingModuleInstantiateInfo,
+          proposalModuleInstantiateInfos as SecretModuleInstantiateInfo[]
+        ).msg
+      )
+    } else {
+      instantiateMsg = decodeJsonFromBase64(
+        CwDao.generateInstantiateInfo(
+          chainContext.chainId,
+          commonConfig,
+          votingModuleInstantiateInfo,
+          proposalModuleInstantiateInfos
+        ).msg
+      )
+    }
   } catch (err) {
     instantiateMsgError = err instanceof Error ? err.message : `${err}`
   }
@@ -412,17 +433,22 @@ export const InnerCreateDaoForm = ({
   const {
     isWalletConnected,
     address: walletAddress,
-    getSigningCosmWasmClient,
+    getSigningClient,
   } = useWallet()
   const { refreshBalances } = useWalletBalances()
 
-  const instantiateWithFactory =
+  const instantiateWithSelfAdmin =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
       contractAddress: factoryContractAddress,
       sender: walletAddress ?? '',
     })
+  const secretInstantiateWithSelfAdmin =
+    SecretCwAdminFactoryHooks.useInstantiateContractWithSelfAdmin({
+      contractAddress: factoryContractAddress,
+      sender: walletAddress ?? '',
+    })
 
-  const createDaoWithFactory = async () => {
+  const doCreateDao = async () => {
     if (instantiateMsgError) {
       throw new Error(instantiateMsgError)
     } else if (!instantiateMsg) {
@@ -435,7 +461,7 @@ export const InnerCreateDaoForm = ({
     // SubDAOs). Otherwise, instantiate with self as admin via factory.
     if (instantiateMsg.admin) {
       return await instantiateSmartContract(
-        await getSigningCosmWasmClient(),
+        getSigningClient,
         walletAddress,
         codeIds.DaoCore,
         instantiateMsg.name,
@@ -444,21 +470,49 @@ export const InnerCreateDaoForm = ({
         instantiateMsg.admin
       )
     } else {
-      const { events } = await instantiateWithFactory(
-        {
-          codeId: codeIds.DaoCore,
-          instantiateMsg: encodeJsonToBase64(instantiateMsg),
-          label: instantiateMsg.name,
-        },
-        CHAIN_GAS_MULTIPLIER,
-        undefined,
-        getFundsFromDaoInstantiateMsg(instantiateMsg)
-      )
-      return findWasmAttributeValue(
-        events,
-        factoryContractAddress,
-        'set contract admin as itself'
-      )!
+      if (isSecretNetwork(chainId)) {
+        if (!codeHashes?.DaoCore) {
+          throw new Error('Code hash not found for DAO core contract')
+        }
+
+        const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
+        const { events } = await secretInstantiateWithSelfAdmin(
+          {
+            moduleInfo: {
+              code_id: codeIds.DaoCore,
+              code_hash: codeHashes.DaoCore,
+              msg: encodeJsonToBase64(instantiateMsg),
+              admin: { core_module: {} },
+              funds: instantiateFunds,
+              label: instantiateMsg.name,
+            },
+          },
+          SECRET_GAS.DAO_CREATION,
+          undefined,
+          instantiateFunds
+        )
+        return findWasmAttributeValue(
+          events,
+          factoryContractAddress,
+          'set contract admin as itself'
+        )!
+      } else {
+        const { events } = await instantiateWithSelfAdmin(
+          {
+            codeId: codeIds.DaoCore,
+            instantiateMsg: encodeJsonToBase64(instantiateMsg),
+            label: instantiateMsg.name,
+          },
+          CHAIN_GAS_MULTIPLIER,
+          undefined,
+          getFundsFromDaoInstantiateMsg(instantiateMsg)
+        )
+        return findWasmAttributeValue(
+          events,
+          factoryContractAddress,
+          'set contract admin as itself'
+        )!
+      }
     }
   }
 
@@ -575,7 +629,7 @@ export const InnerCreateDaoForm = ({
       } else if (isWalletConnected) {
         setCreating(true)
         try {
-          const coreAddress = await toast.promise(createDaoWithFactory(), {
+          const coreAddress = await toast.promise(doCreateDao(), {
             loading: t('info.creatingDao'),
             success: t('success.daoCreatedPleaseWait'),
             error: (err) => processError(err),
@@ -671,7 +725,10 @@ export const InnerCreateDaoForm = ({
               supportedFeatures: {} as any,
               created: Date.now(),
               votingModuleAddress: '',
-              votingModuleContractName: '',
+              votingModuleInfo: {
+                contract: '',
+                version: '',
+              },
               proposalModules: [],
               isActive: true,
               activeThreshold: null,
@@ -682,9 +739,8 @@ export const InnerCreateDaoForm = ({
             },
             lazyData: {
               loading: false,
+              errored: false,
               data: {
-                // Does not matter, will not show.
-                isMember: false,
                 proposalCount: 0,
                 tokenWithBalance: {
                   balance: tokenBalance,

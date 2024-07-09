@@ -582,13 +582,14 @@ export const GovernanceConfigurationInput = ({
 
             {existingGovernanceTokenLoadable.state === 'loading' ? (
               <Loader />
+            ) : existingGovernanceTokenLoadable.state === 'hasValue' ? (
+              <p className="primary-text text-text-interactive-valid">
+                ${existingGovernanceTokenLoadable.valueMaybe()?.symbol}
+              </p>
             ) : (
-              existingGovernanceTokenLoadable.state === 'hasValue' &&
-              !!existingGovernanceTokenLoadable.contents && (
-                <p className="primary-text text-text-interactive-valid">
-                  ${existingGovernanceTokenLoadable.contents?.symbol}
-                </p>
-              )
+              <InputErrorMessage
+                error={existingGovernanceTokenLoadable.errorMaybe()}
+              />
             )}
           </div>
         </div>

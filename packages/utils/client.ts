@@ -9,6 +9,7 @@ import {
 } from '@cosmjs/tendermint-rpc'
 
 import {
+  OmniFlix,
   cosmos,
   cosmwasm,
   feemarket,
@@ -20,15 +21,16 @@ import {
   osmosis,
 } from '@dao-dao/types/protobuf'
 
-import { getRpcForChainId } from './chain'
+import { getLcdForChainId, getRpcForChainId, isSecretNetwork } from './chain'
 import { retry } from './network'
+import { SecretCosmWasmClient } from './secret'
 
-type HandleConnect<T> = (chainId: string) => Promise<T>
-type ChainClientRouterOptions<T> = {
+type HandleConnect<T, P> = (chainId: string, ...args: P[]) => Promise<T>
+type ChainClientRouterOptions<T, P> = {
   /**
    * The connection handler that returns the client for a given chain ID.
    */
-  handleConnect: HandleConnect<T>
+  handleConnect: HandleConnect<T, P>
 }
 
 /*
@@ -48,11 +50,11 @@ type ChainClientRouterOptions<T> = {
  * const queryResponse = await client.queryContractSmart(...);
  * ```
  */
-class ChainClientRouter<T> {
-  private readonly handleConnect: HandleConnect<T>
+class ChainClientRouter<T, P> {
+  private readonly handleConnect: HandleConnect<T, P>
   private instances: Record<string, T> = {}
 
-  constructor({ handleConnect }: ChainClientRouterOptions<T>) {
+  constructor({ handleConnect }: ChainClientRouterOptions<T, P>) {
     this.handleConnect = handleConnect
   }
 
@@ -60,9 +62,9 @@ class ChainClientRouter<T> {
    * Connect to the chain and return the client or return an existing instance
    * of the client.
    */
-  async connect(chainId: string): Promise<T> {
+  async connect(chainId: string, ...args: P[]): Promise<T> {
     if (!this.instances[chainId]) {
-      const instance = await this.handleConnect(chainId)
+      const instance = await this.handleConnect(chainId, ...args)
       this.instances[chainId] = instance
     }
 
@@ -70,8 +72,12 @@ class ChainClientRouter<T> {
   }
 }
 
-/*
- * Router for connecting to `CosmWasmClient`.
+/**
+ * Router for connecting to CosmWasmClient for the appropriate chain.
+ *
+ * Uses SecretCosmWasmClient for Secret Network mainnet and testnet.
+ *
+ * Defaults to CosmWasmClient for all other chains.
  */
 export const cosmWasmClientRouter = new ChainClientRouter({
   handleConnect: async (chainId: string) =>
@@ -88,7 +94,37 @@ export const cosmWasmClientRouter = new ChainClientRouter({
           | typeof Comet38Client
       ).create(httpClient)
 
-      return await CosmWasmClient.create(tmClient)
+      return isSecretNetwork(chainId)
+        ? await SecretCosmWasmClient.secretCreate(tmClient, {
+            chainId,
+            url: getLcdForChainId(chainId, attempt - 1),
+          })
+        : await CosmWasmClient.create(tmClient)
+    }),
+})
+
+/**
+ * Router for connecting to SecretCosmWasmClient.
+ */
+export const secretCosmWasmClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(10, async (attempt) => {
+      const rpc = getRpcForChainId(chainId, attempt - 1)
+
+      const httpClient = new HttpBatchClient(rpc)
+      const tmClient = await (
+        (
+          await connectComet(rpc)
+        ).constructor as
+          | typeof Tendermint34Client
+          | typeof Tendermint37Client
+          | typeof Comet38Client
+      ).create(httpClient)
+
+      return await SecretCosmWasmClient.secretCreate(tmClient, {
+        chainId,
+        url: getLcdForChainId(chainId, attempt - 1),
+      })
     }),
 })
 
@@ -243,6 +279,22 @@ export const kujiraProtoRpcClientRouter = new ChainClientRouter({
 })
 
 /*
+ * Router for connecting to an RPC client with OmniFlix protobufs.
+ */
+export const omniflixProtoRpcClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await OmniFlix.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).OmniFlix
+    ),
+})
+
+/*
  * Router for connecting to an RPC client with feemarket protobufs.
  */
 export const feemarketProtoRpcClientRouter = new ChainClientRouter({
@@ -257,6 +309,20 @@ export const feemarketProtoRpcClientRouter = new ChainClientRouter({
         ).feemarket
     ),
 })
+
+/**
+ * Get CosmWasmClient for the appropriate chain.
+ *
+ * Uses SecretCosmWasmClient for Secret Network mainnet and testnet.
+ *
+ * Defaults to CosmWasmClient for all other chains.
+ */
+export const getCosmWasmClientForChainId = async (
+  chainId: string
+): Promise<CosmWasmClient> =>
+  isSecretNetwork(chainId)
+    ? await secretCosmWasmClientRouter.connect(chainId)
+    : await cosmWasmClientRouter.connect(chainId)
 
 /**
  * In response events from a transaction with a wasm event, gets the attribute

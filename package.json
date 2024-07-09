@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.4.0-rc.9",
+  "version": "2.4.2-rc.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -25,6 +25,7 @@
     "types": "yarn workspace @dao-dao/types",
     "utils": "yarn workspace @dao-dao/utils",
     "email": "yarn workspace @dao-dao/email",
+    "dispatch": "yarn workspace @dao-dao/dispatch",
     "publish-all": "lerna publish --no-private from-package"
   },
   "devDependencies": {

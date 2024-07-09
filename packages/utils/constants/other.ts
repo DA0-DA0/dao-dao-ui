@@ -176,3 +176,10 @@ export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
  * The salt used to generate a predictable Valence account address.
  */
 export const VALENCE_INSTANTIATE2_SALT = 'valence'
+
+/**
+ * Gas prices for Secret transactions.
+ */
+export const SECRET_GAS = {
+  DAO_CREATION: 1_000_000,
+}

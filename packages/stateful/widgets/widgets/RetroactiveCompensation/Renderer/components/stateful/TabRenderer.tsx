@@ -1,19 +1,22 @@
+import { FetchQueryOptions, useQueries } from '@tanstack/react-query'
 import { saveAs } from 'file-saver'
 import { unparse as jsonToCsv } from 'papaparse'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { waitForAll } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { useCachedLoading, useChain, useDaoContext } from '@dao-dao/stateless'
+import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
-  useCachedLoading,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
-import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
+  makeCombineQueryResultsIntoLoadingDataWithError,
+  secp256k1PublicKeyToBech32Address,
+} from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../../components'
-import { useMembership, useWallet } from '../../../../../../hooks'
+import {
+  useMembership,
+  useOnSecretNetworkPermitUpdate,
+  useWallet,
+} from '../../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
 import { CompletedSurvey, CompletedSurveyListing } from '../../types'
@@ -22,49 +25,43 @@ import { NewSurveyForm } from './NewSurveyForm'
 import { OpenSurveySection } from './OpenSurveySection'
 
 export const TabRenderer = () => {
-  const { coreAddress } = useDaoInfoContext()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress = '', hexPublicKey } = useWallet({
+  const { dao } = useDaoContext()
+  const { bech32_prefix: bech32Prefix } = useChain()
+  const { address: walletAddress, hexPublicKey } = useWallet({
     loadAccount: true,
   })
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const loadingStatus = useCachedLoading(
     statusSelector({
-      daoAddress: coreAddress,
+      daoAddress: dao.coreAddress,
       walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
     }),
     undefined
   )
   const loadingCompletedSurveys = useCachedLoading(
     listCompletedSurveysSelector({
-      daoAddress: coreAddress,
+      daoAddress: dao.coreAddress,
     }),
     []
   )
+
   // Get voting power at time of each completed survey creation to determine if
   // we can download the CSV or not.
-  const loadingMembershipDuringCompletedSurveys = useCachedLoading(
-    loadingCompletedSurveys.loading || !walletAddress
-      ? undefined
-      : waitForAll(
-          loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-            DaoCoreV2Selectors.votingPowerAtHeightSelector({
-              contractAddress: coreAddress,
-              chainId,
-              params: [
-                {
-                  address: walletAddress,
-                  height: createdAtBlockHeight,
-                },
-              ],
-            })
-          )
-        ),
-    []
-  )
+  const loadingMembershipDuringCompletedSurveys = useQueries({
+    queries:
+      loadingCompletedSurveys.loading || !walletAddress
+        ? ([] as FetchQueryOptions<VotingPowerAtHeightResponse>[])
+        : loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+            dao.getVotingPowerQuery(walletAddress, createdAtBlockHeight)
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      transform: (results) => results.map((r) => r.power),
+    }),
+  })
+  // Make sure this component re-renders if the Secret Network permit changes so
+  // the voting queries above refresh.
+  useOnSecretNetworkPermitUpdate()
 
   const postRequest = usePostRequest()
 
@@ -75,7 +72,7 @@ export const TabRenderer = () => {
       setLoadingCompletedSurveyId(id)
       try {
         const { survey }: { survey: CompletedSurvey } = await postRequest(
-          `/${coreAddress}/view/${id}`
+          `/${dao.coreAddress}/view/${id}`
         )
 
         const raterTitles = (
@@ -133,7 +130,7 @@ export const TabRenderer = () => {
         setLoadingCompletedSurveyId(undefined)
       }
     },
-    [bech32Prefix, coreAddress, postRequest]
+    [bech32Prefix, dao.coreAddress, postRequest]
   )
 
   return (

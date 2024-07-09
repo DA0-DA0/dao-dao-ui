@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/email",
-  "version": "2.4.0-rc.9",
+  "version": "2.4.2-rc.1",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "@aws-sdk/client-ses": "^3.592.0",
-    "@dao-dao/config": "2.4.0-rc.9",
-    "@dao-dao/types": "2.4.0-rc.9",
+    "@dao-dao/config": "2.4.2-rc.1",
+    "@dao-dao/types": "2.4.2-rc.1",
     "@react-email/components": "^0.0.7",
     "@react-email/render": "0.0.7",
     "commander": "^11.0.0",
@@ -25,5 +25,5 @@
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "0d76facc26ddc496b58d1f5c7458e5db243cdd14"
+  "gitHead": "d7b959f412c3990123b0e2afb11f32acd9c3764c"
 }

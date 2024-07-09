@@ -22,7 +22,7 @@ import {
   getNativeTokenForChainId,
   makeValidateAddress,
   makeWasmMessage,
-  validateCosmosMsg,
+  validateCosmosMsgForChain,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -124,7 +124,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
               })
 
               try {
-                validateCosmosMsg(msg)
+                validateCosmosMsgForChain(chainId, msg)
               } catch (err) {
                 return err instanceof Error ? err.message : `${err}`
               }

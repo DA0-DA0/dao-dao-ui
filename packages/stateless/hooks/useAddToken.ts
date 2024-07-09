@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { MAINNET, suggestToken } from '@dao-dao/utils'
 
-import { useChain } from './useChainContext'
+import { useChain } from '../contexts/Chain'
 
 export const useAddToken = () => {
   const { t } = useTranslation()

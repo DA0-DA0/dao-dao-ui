@@ -12,7 +12,7 @@ import {
   TokenType,
   ValenceAccount,
 } from '@dao-dao/types'
-import { ListItemsResponse } from '@dao-dao/types/contracts/DaoCore.v2'
+import { ListItemsResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
@@ -260,6 +260,7 @@ export const fetchCryptographicMultisigAccount = async ({
 
   const addresses = await Promise.all(
     publicKeys.map((key) =>
+      // Safe to use since we validated the public key curve above.
       secp256k1PublicKeyToBech32Address(
         toHex(Secp256k1PubKey.decode(key.value).key),
         bech32Prefix

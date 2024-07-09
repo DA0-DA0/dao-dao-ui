@@ -1,10 +1,6 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 
-import {
-  getChainForChainId,
-  getNativeTokenForChainId,
-  secp256k1PublicKeyToBech32Address,
-} from './chain'
+import { getChainForChainId, getNativeTokenForChainId } from './chain'
 
 export type SignatureOptions<
   Data extends Record<string, unknown> | undefined = Record<string, any>
@@ -12,6 +8,7 @@ export type SignatureOptions<
   type: string
   nonce: number
   chainId: string
+  address: string
   hexPublicKey: string
   data: Data
   offlineSignerAmino: OfflineAminoSigner
@@ -50,6 +47,7 @@ export const signOffChainAuth = async <
   type,
   nonce,
   chainId,
+  address,
   hexPublicKey,
   data,
   offlineSignerAmino,
@@ -69,18 +67,13 @@ export const signOffChainAuth = async <
     },
   }
 
-  const signer = await secp256k1PublicKeyToBech32Address(
-    hexPublicKey,
-    chain.bech32_prefix
-  )
-
   // Generate data to sign.
   const signDocAmino = makeSignDoc(
     [
       {
         type: dataWithAuth.auth.type,
         value: {
-          signer,
+          signer: address,
           data: JSON.stringify(dataWithAuth, undefined, 2),
         },
       },
@@ -103,7 +96,7 @@ export const signOffChainAuth = async <
   let signature = ''
   // Sign data.
   if (!generateOnly) {
-    signature = (await offlineSignerAmino.signAmino(signer, signDocAmino))
+    signature = (await offlineSignerAmino.signAmino(address, signDocAmino))
       .signature.signature
   }
 

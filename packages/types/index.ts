@@ -1,6 +1,7 @@
 export * from './account'
 export * from './actions'
 export * from './chain'
+export * from './clients'
 export * from './command'
 export * from './components'
 export * from './contracts'

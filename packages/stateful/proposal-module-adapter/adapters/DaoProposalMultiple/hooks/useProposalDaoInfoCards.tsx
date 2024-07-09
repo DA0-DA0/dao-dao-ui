@@ -24,37 +24,28 @@ import {
 
 import { EntityDisplay } from '../../../../components'
 import { useProposalModuleAdapterCommonContext } from '../../../react/context'
-import { anyoneCanProposeSelector, useProcessQ } from '../common'
+import { useProcessQ } from '../common'
 
 export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
   const {
-    options: {
-      chain: { chain_id: chainId },
-      proposalModule,
-    },
+    options: { proposalModule },
     common: { selectors },
   } = useProposalModuleAdapterCommonContext()
 
   const config = useCachedLoadingWithError(
     DaoProposalMultipleSelectors.configSelector({
-      chainId,
+      chainId: proposalModule.dao.chainId,
       contractAddress: proposalModule.address,
     })
   )
   const depositInfo = useCachedLoadingWithError(selectors.depositInfo)
-  const anyoneCanPropose = useCachedLoadingWithError(
-    anyoneCanProposeSelector({
-      chainId,
-      preProposeAddress: proposalModule.prePropose?.address ?? null,
-    })
-  )
   const depositTokenInfo = useCachedLoadingWithError(
     depositInfo.loading
       ? undefined
       : !depositInfo.errored && depositInfo.data
       ? genericTokenSelector({
-          chainId,
+          chainId: proposalModule.dao.chainId,
           type:
             'native' in depositInfo.data.denom
               ? TokenType.Native
@@ -82,7 +73,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       : config.errored || !('veto' in config.data) || !config.data.veto
       ? constSelector(undefined)
       : Cw1WhitelistSelectors.adminsIfCw1Whitelist({
-          chainId,
+          chainId: proposalModule.dao.chainId,
           contractAddress: config.data.veto.vetoer,
         })
   )
@@ -188,14 +179,14 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
     {
       label: t('title.creationPolicy'),
       tooltip: t('info.creationPolicyTooltip'),
-      loading: anyoneCanPropose.loading,
-      value: anyoneCanPropose.loading
-        ? undefined
-        : anyoneCanPropose.errored
-        ? '<error>'
-        : anyoneCanPropose.data
-        ? t('info.anyone')
-        : t('info.onlyMembers'),
+      value: proposalModule.prePropose
+        ? 'anyone' in proposalModule.prePropose.submissionPolicy
+          ? t('info.anyone')
+          : proposalModule.prePropose.submissionPolicy.specific.dao_members
+          ? t('info.onlyMembers')
+          : t('info.allowlist')
+        : // If no pre-propose module, only members can create proposals.
+          t('info.onlyMembers'),
     },
     // If vetoer(s) found, show all of them. Otherwise, show loading and none
     // iff this proposal module version supports veto.

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
+import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
 import {
   daoVetoableDaosSelector,
@@ -10,9 +10,9 @@ import {
   ProposalList as StatelessProposalList,
   useAppContext,
   useCachedLoadingWithError,
-  useChain,
-  useDaoInfoContext,
+  useDaoContext,
   useDaoNavHelpers,
+  useLoadingPromise,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
@@ -54,13 +54,10 @@ export const ProposalList = ({
   hideVetoable = false,
 }: StatefulProposalListProps) => {
   const { t } = useTranslation()
-  const chain = useChain()
-  const { coreAddress, proposalModules, name: daoName } = useDaoInfoContext()
+  const { dao } = useDaoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { mode } = useAppContext()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   const [openProposals, setOpenProposals] = useState<
     StatefulProposalLineProps[]
@@ -72,14 +69,11 @@ export const ProposalList = ({
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
     () =>
-      proposalModules.map((proposalModule) => ({
-        selectors: matchAndLoadCommon(proposalModule, {
-          chain,
-          coreAddress,
-        }).selectors,
+      dao.proposalModules.map((proposalModule) => ({
+        selectors: matchAndLoadCommon(dao, proposalModule.address).selectors,
         proposalModule,
       })),
-    [chain, coreAddress, proposalModules]
+    [dao]
   )
 
   // Cursor values for each proposal module for incremental queries.
@@ -87,24 +81,23 @@ export const ProposalList = ({
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
 
-  const loadingProposalCounts = useCachedLoadingWithError(
-    waitForAll(
-      commonSelectors.map(({ selectors: { proposalCount } }) => proposalCount)
-    )
-  )
+  const loadingProposalCounts = useLoadingPromise({
+    promise: () => dao.getProposalCount(),
+    deps: [dao],
+  })
 
   const vetoableDaosLoading = useCachedLoadingWithError(
     daoVetoableDaosSelector({
-      chainId: chain.chain_id,
-      coreAddress,
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
     })
   )
   const daosWithVetoableProposals = useCachedLoadingWithError(
     hideVetoable
       ? undefined
       : daosWithDropdownVetoableProposalListSelector({
-          chainId: chain.chain_id,
-          coreAddress,
+          chainId: dao.chainId,
+          coreAddress: dao.coreAddress,
           daoPageMode: mode,
         })
   )
@@ -228,29 +221,32 @@ export const ProposalList = ({
 
             // Store startBefore cursor values for next query based on last
             // proposal ID in list from each proposal module.
-            newStartBefores = proposalModules.reduce((acc, proposalModule) => {
-              const thisModulesProposalInfos = newProposalInfos.filter(
-                (info) => info.proposalModule === proposalModule
-              )
+            newStartBefores = dao.proposalModules.reduce(
+              (acc, proposalModule) => {
+                const thisModulesProposalInfos = newProposalInfos.filter(
+                  (info) => info.proposalModule === proposalModule
+                )
 
-              return {
-                ...acc,
-                [proposalModule.address]: PROPOSAL_TYPES.reduce(
-                  (acc, type) => ({
-                    ...acc,
-                    [type]:
-                      thisModulesProposalInfos
-                        .filter((info) => info.type === type)
-                        .slice(-1)[0]?.proposalNumber ??
-                      // If no proposal from this proposal module with this type
-                      // shows up in the proposals we are listing here, use the
-                      // startBefore from before.
-                      newStartBefores[proposalModule.address]?.[type],
-                  }),
-                  {} as Record<ProposalType, number | undefined>
-                ),
-              }
-            }, {} as typeof newStartBefores)
+                return {
+                  ...acc,
+                  [proposalModule.address]: PROPOSAL_TYPES.reduce(
+                    (acc, type) => ({
+                      ...acc,
+                      [type]:
+                        thisModulesProposalInfos
+                          .filter((info) => info.type === type)
+                          .slice(-1)[0]?.proposalNumber ??
+                        // If no proposal from this proposal module with this
+                        // type shows up in the proposals we are listing here,
+                        // use the startBefore from before.
+                        newStartBefores[proposalModule.address]?.[type],
+                    }),
+                    {} as Record<ProposalType, number | undefined>
+                  ),
+                }
+              },
+              {} as typeof newStartBefores
+            )
 
             // If we loaded the max we asked for, there may be more in another
             // query.
@@ -267,13 +263,12 @@ export const ProposalList = ({
               id,
               type,
             }: typeof newProposalInfos[number]): StatefulProposalLineProps => ({
-              chainId: chain.chain_id,
-              coreAddress,
-              proposalModules,
+              chainId: dao.chainId,
+              coreAddress: dao.coreAddress,
               proposalId: id,
               proposalViewUrl: onClickRef.current
                 ? '#'
-                : getDaoProposalPath(coreAddress, id),
+                : getDaoProposalPath(dao.coreAddress, id),
               onClick: onClickRef.current
                 ? () => onClickRef.current?.({ proposalId: id })
                 : undefined,
@@ -324,8 +319,7 @@ export const ProposalList = ({
       historyProposals,
       startBefores,
       commonSelectors,
-      proposalModules,
-      coreAddress,
+      dao,
       getDaoProposalPath,
     ]
   )
@@ -361,8 +355,8 @@ export const ProposalList = ({
       LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
-      createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
-      daoName={daoName}
+      createNewProposalHref={getDaoProposalPath(dao.coreAddress, 'create')}
+      daoName={dao.name}
       daosWithVetoableProposals={
         daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
           ? []
@@ -381,12 +375,9 @@ export const ProposalList = ({
           proposals: historyProposals,
           total:
             !loadingProposalCounts.loading && !loadingProposalCounts.errored
-              ? loadingProposalCounts.data.reduce(
-                  (acc, count) => acc + count,
-                  0
-                  // Remove open proposals from total history count since they
-                  // are shown above.
-                ) - openProposals.length
+              ? // Remove open proposals from total history count since they
+                // are shown above.
+                loadingProposalCounts.data - openProposals.length
               : undefined,
         },
       ]}

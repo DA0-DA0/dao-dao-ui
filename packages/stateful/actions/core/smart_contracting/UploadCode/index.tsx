@@ -1,4 +1,4 @@
-import { fromBase64, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, fromBech32, toBase64 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { Trans } from 'react-i18next'
 
@@ -18,11 +18,13 @@ import {
 } from '@dao-dao/types/actions'
 import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
+import { MsgStoreCode as SecretMsgStoreCode } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   isGzipped,
+  isSecretNetwork,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
@@ -74,14 +76,19 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
           return
         }
 
+        const isSecret = isSecretNetwork(chainId)
+        const sender = getChainAddressForActionOptions(options, chainId) || ''
+
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
           makeStargateMessage({
             stargate: {
-              typeUrl: MsgStoreCode.typeUrl,
+              typeUrl: isSecret
+                ? SecretMsgStoreCode.typeUrl
+                : MsgStoreCode.typeUrl,
               value: {
-                sender: getChainAddressForActionOptions(options, chainId),
+                sender: isSecret ? fromBech32(sender).data : address,
                 wasmByteCode: fromBase64(data),
                 instantiatePermission: {
                   permission: accessType,
@@ -90,7 +97,7 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
                       ? allowedAddresses.map(({ address }) => address)
                       : [],
                 },
-              } as MsgStoreCode,
+              },
             },
           })
         )
@@ -110,7 +117,8 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
 
     if (
       !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== MsgStoreCode.typeUrl
+      (msg.stargate.typeUrl !== MsgStoreCode.typeUrl &&
+        msg.stargate.typeUrl !== SecretMsgStoreCode.typeUrl)
     ) {
       return {
         match: false,

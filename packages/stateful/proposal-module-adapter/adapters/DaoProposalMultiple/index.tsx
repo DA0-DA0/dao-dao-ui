@@ -49,17 +49,17 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   id: DaoProposalMultipleAdapterId,
   contractNames: DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
 
-  loadCommon: (options) => {
+  loadCommon: ({ proposalModule }) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
-      chainId: options.chain.chain_id,
-      proposalModuleAddress: options.proposalModule.address,
-      version: options.proposalModule.version,
-      preProposeAddress: options.proposalModule.prePropose?.address ?? null,
+      chainId: proposalModule.dao.chainId,
+      proposalModuleAddress: proposalModule.address,
+      version: proposalModule.version,
+      preProposeAddress: proposalModule.prePropose?.address ?? null,
     })
 
     const usePublishProposal = makeUsePublishProposal({
-      options,
+      proposalModule,
       depositInfoSelector,
     })
 
@@ -72,30 +72,29 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
           choices: [],
         }),
         newProposalFormTitleKey: 'title',
-        updateConfigActionMaker: makeUpdateProposalConfigActionMaker(
-          options.proposalModule
-        ),
+        updateConfigActionMaker:
+          makeUpdateProposalConfigActionMaker(proposalModule),
         updatePreProposeConfigActionMaker:
-          makeUpdatePreProposeConfigActionMaker(options.proposalModule),
+          makeUpdatePreProposeConfigActionMaker(proposalModule),
       },
 
       // Selectors
       selectors: {
         proposalCount: proposalCountSelector({
-          chainId: options.chain.chain_id,
-          proposalModuleAddress: options.proposalModule.address,
+          chainId: proposalModule.dao.chainId,
+          proposalModuleAddress: proposalModule.address,
         }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
-            chainId: options.chain.chain_id,
-            proposalModuleAddress: options.proposalModule.address,
-            proposalModulePrefix: options.proposalModule.prefix,
+            chainId: proposalModule.dao.chainId,
+            proposalModuleAddress: proposalModule.address,
+            proposalModulePrefix: proposalModule.prefix,
             ...props,
           }),
         depositInfo: depositInfoSelector,
         maxVotingPeriod: maxVotingPeriodSelector({
-          chainId: options.chain.chain_id,
-          proposalModuleAddress: options.proposalModule.address,
+          chainId: proposalModule.dao.chainId,
+          proposalModuleAddress: proposalModule.address,
         }),
       },
 
@@ -108,7 +107,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       components: {
         NewProposal: (props) => (
           <NewProposal
-            options={options}
+            proposalModule={proposalModule}
             usePublishProposal={usePublishProposal}
             {...props}
           />

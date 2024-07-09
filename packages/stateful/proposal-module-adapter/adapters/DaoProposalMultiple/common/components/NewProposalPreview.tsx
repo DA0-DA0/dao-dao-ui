@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalContentDisplay } from '@dao-dao/stateless'
-import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { convertActionsToMessages } from '@dao-dao/utils'
 
 import { useLoadedActionsAndCategories } from '../../../../../actions'
@@ -48,7 +47,7 @@ export const NewProposalPreview = () => {
                   index,
                   msgs: [],
                   title,
-                  option_type: MultipleChoiceOptionType.Standard,
+                  option_type: 'standard',
                   vote_count: '0',
                 },
                 actionData: [],
@@ -83,7 +82,7 @@ export const NewProposalPreview = () => {
                 index: choices.length,
                 msgs: [],
                 title: '',
-                option_type: MultipleChoiceOptionType.None,
+                option_type: 'none',
                 vote_count: '0',
               },
               actionData: [],

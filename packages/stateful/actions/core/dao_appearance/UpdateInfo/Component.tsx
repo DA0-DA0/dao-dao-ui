@@ -14,7 +14,7 @@ import {
 import { ChainId, ContractVersion } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/DaoCore.v2'
+import { Config as ConfigV2Response } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   validateRequired,
@@ -36,8 +36,8 @@ export const UpdateInfoComponent: ActionComponent<
 
   const isNeutronForkDao =
     context.type === ActionContextType.Dao &&
-    context.info.chainId === ChainId.NeutronMainnet &&
-    context.info.coreVersion === ContractVersion.V2AlphaNeutronFork
+    context.dao.chainId === ChainId.NeutronMainnet &&
+    context.dao.coreVersion === ContractVersion.V2AlphaNeutronFork
 
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-4">

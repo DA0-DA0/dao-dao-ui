@@ -1,6 +1,11 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
-import { GenericTokenSource, SkipAsset, TokenType } from '@dao-dao/types'
+import {
+  GenericTokenSource,
+  SkipAsset,
+  SkipChain,
+  TokenType,
+} from '@dao-dao/types'
 
 import { indexerQueries } from './indexer'
 
@@ -14,7 +19,7 @@ export const fetchSkipChain = async (
   }: {
     chainId: string
   }
-): Promise<SkipAsset> => {
+): Promise<SkipChain> => {
   const chain = await queryClient.fetchQuery(
     indexerQueries.snapper({
       query: 'skip-chain',

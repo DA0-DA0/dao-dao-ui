@@ -1,4 +1,4 @@
-import { CosmosMsgFor_Empty } from '@dao-dao/types'
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 
 export enum SurveyStatus {
   Inactive = 'inactive',
@@ -142,7 +142,7 @@ export interface ContributionWithCompensation extends Contribution {
 export interface CompleteRatings {
   contributions: ContributionWithCompensation[]
   ratings: Rating[]
-  cosmosMsgs: CosmosMsgFor_Empty[]
+  cosmosMsgs: UnifiedCosmosMsg[]
 }
 
 export type CompletedSurvey = Omit<Survey, 'status'> & {

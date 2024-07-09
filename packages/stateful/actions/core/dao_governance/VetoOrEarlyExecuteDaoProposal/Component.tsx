@@ -182,18 +182,12 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
                 required
                 value={manualProposalId}
               />
-            ) : chainId &&
-              coreAddress &&
-              selectedProposalModule &&
-              !selectedDaoInfo.loading &&
-              !selectedDaoInfo.errored &&
-              !selectedDaoInfo.updating ? (
+            ) : chainId && coreAddress && selectedProposalModule ? (
               <ProposalLine
                 chainId={chainId}
                 coreAddress={coreAddress}
                 isPreProposeProposal={false}
                 proposalId={`${selectedProposalModule.prefix}${proposalId}`}
-                proposalModules={selectedDaoInfo.data.proposalModules}
                 proposalViewUrl={getDaoProposalPath(
                   coreAddress,
                   `${selectedProposalModule.prefix}${proposalId}`
@@ -275,7 +269,6 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
                   coreAddress={coreAddress}
                   isPreProposeProposal={false}
                   proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
-                  proposalModules={selectedDaoInfo.data.proposalModules}
                   proposalViewUrl=""
                 />
               </div>

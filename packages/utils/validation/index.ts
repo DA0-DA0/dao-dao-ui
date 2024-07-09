@@ -7,8 +7,10 @@ import {
   isValidValidatorAddress,
 } from '../address'
 import { isValidNativeTokenDenom } from '../assets'
-import cosmosMsgSchema from '../cosmos_msg.json'
+import { isSecretNetwork } from '../chain'
 import { isValidUrl } from '../isValidUrl'
+import cosmosMsgSchema from './cosmos_msg.json'
+import secretCosmosMsgSchema from './cosmos_msg.secret.json'
 import { makeValidateMsg } from './makeValidateMsg'
 
 export * from './makeValidateMsg'
@@ -77,6 +79,15 @@ export const validateJSON = (v: string) => {
 }
 
 export const validateCosmosMsg = makeValidateMsg(cosmosMsgSchema)
+export const validateSecretCosmosMsg = makeValidateMsg(secretCosmosMsgSchema)
+
+export const validateCosmosMsgForChain = (
+  chainId: string,
+  obj: Record<string, any>
+) =>
+  isSecretNetwork(chainId)
+    ? validateSecretCosmosMsg(obj)
+    : validateCosmosMsg(obj)
 
 export const validateTokenSymbol = (v: string) =>
   /^[a-zA-Z\-]{3,12}$/.test(v) ||

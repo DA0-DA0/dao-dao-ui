@@ -11,9 +11,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
-  CosmosMsgFor_Empty,
   NestedActionsEditorFormData,
   StatefulEntityDisplayProps,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { isValidBech32Address, makeValidateAddress } from '@dao-dao/utils'
@@ -25,7 +25,7 @@ export type AuthzExecData = {
   // Once created, fill group adjacent messages by sender.
   _msgs?: {
     sender: string
-    msgs: CosmosMsgFor_Empty[]
+    msgs: UnifiedCosmosMsg[]
   }[]
 } & NestedActionsEditorFormData
 

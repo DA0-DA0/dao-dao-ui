@@ -25,13 +25,13 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
-  CosmosMsgFor_Empty,
   CrossChainPacketInfoState,
   CrossChainPacketInfoStatus,
   LoadingData,
   ProposalRelayState,
   ProposalStatus,
   ProposalStatusEnum,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import { ExecutionResponse } from '@dao-dao/types/contracts/PolytoneListener'
 import {
@@ -41,7 +41,7 @@ import {
 } from '@dao-dao/utils'
 
 export type UseProposalRelayStateOptions = {
-  msgs: CosmosMsgFor_Empty[]
+  msgs: UnifiedCosmosMsg[]
   status: ProposalStatus
   executedAt: Date | undefined
   proposalModuleAddress: string

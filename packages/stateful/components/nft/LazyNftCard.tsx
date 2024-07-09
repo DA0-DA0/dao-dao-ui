@@ -1,15 +1,17 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { forwardRef, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
+import { nftQueries } from '@dao-dao/state/query'
 import {
   nftCardInfoSelector,
   nftCardInfosForKeyAtom,
-  nftStakerOrOwnerSelector,
 } from '@dao-dao/state/recoil'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { LazyNftCardProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../hooks'
 import { NftCard, NftCardNoCollection, StakedNftCard } from './NftCard'
 
 export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
@@ -45,16 +47,17 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
       }
     }, [info, setNftCardInfoForKey])
 
-    const stakerOrOwner = useCachedLoadingWithError(
+    const queryClient = useQueryClient()
+    const stakerOrOwner = useQueryLoadingDataWithError(
       // If showing owner instead of showing collection, load staker or owner if
       // not staker. The owner in the `type` and the owner of the NFT are
       // unrelated. Sorry... I just confused myself and then re-learned this.
       type === 'owner'
-        ? nftStakerOrOwnerSelector({
-            collectionAddress,
+        ? nftQueries.ownerOrStaker(queryClient, {
+            chainId,
+            collection: collectionAddress,
             tokenId,
             stakingContractAddress,
-            chainId,
           })
         : undefined
     )
@@ -72,18 +75,19 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
 
     return info.loading ? (
       <NftCardToUse
+        {...props}
         chainId={chainId}
         className="animate-pulse"
         collectionAddress={collectionAddress}
         collectionName="Loading..."
         description={undefined}
         name="Loading..."
-        tokenId={tokenId}
-        {...props}
         ref={ref}
+        tokenId={tokenId}
       />
     ) : info.errored ? (
       <NftCardToUse
+        {...props}
         chainId={chainId}
         className="animate-pulse"
         collectionAddress={collectionAddress}
@@ -92,19 +96,18 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
         name={processError(info.error, {
           forceCapture: false,
         })}
-        tokenId={tokenId}
-        {...props}
         ref={ref}
+        tokenId={tokenId}
       />
     ) : (
       <NftCardToUse
+        {...props}
+        {...info.data}
         owner={
           stakerOrOwner.loading || stakerOrOwner.errored
             ? undefined
             : stakerOrOwner.data.address
         }
-        {...props}
-        {...info.data}
         ref={ref}
       />
     )

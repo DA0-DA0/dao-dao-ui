@@ -3,10 +3,6 @@ import { selectorFamily } from 'recoil'
 import { WithChainId } from '@dao-dao/types'
 import {
   ActiveThresholdResponse,
-  DaoResponse,
-  IsActiveResponse,
-  StakingContractResponse,
-  TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
@@ -39,7 +35,7 @@ const queryClient = selectorFamily<
 })
 
 export const stakingContractSelector = selectorFamily<
-  StakingContractResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw20StakedQueryClient['stakingContract']>
   }
@@ -64,7 +60,7 @@ export const stakingContractSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  DaoResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw20StakedQueryClient['dao']>
   }
@@ -126,10 +122,10 @@ export const votingPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
-      const votingPower = get(
+      const votingPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingCw20Staked/votingPower',
+          formula: 'daoVotingCw20Staked/votingPowerAtHeight',
           args: {
             address: params[0].address,
           },
@@ -137,11 +133,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
           id,
         })
       )
-      if (votingPower && !isNaN(votingPower)) {
-        return {
-          power: votingPower,
-          height: params[0].height,
-        }
+      if (votingPowerAtHeight) {
+        return votingPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.
@@ -163,19 +156,16 @@ export const totalPowerAtHeightSelector = selectorFamily<
         get(refreshWalletBalancesIdAtom(undefined)) +
         get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
-      const totalPower = get(
+      const totalPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingCw20Staked/totalPower',
+          formula: 'daoVotingCw20Staked/totalPowerAtHeight',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )
-      if (totalPower && !isNaN(totalPower)) {
-        return {
-          power: totalPower,
-          height: params[0].height,
-        }
+      if (totalPowerAtHeight) {
+        return totalPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.
@@ -185,7 +175,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
 })
 export const infoSelector = contractInfoSelector
 export const tokenContractSelector = selectorFamily<
-  TokenContractResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw20StakedQueryClient['tokenContract']>
   }
@@ -210,7 +200,7 @@ export const tokenContractSelector = selectorFamily<
     },
 })
 export const isActiveSelector = selectorFamily<
-  IsActiveResponse,
+  Boolean,
   QueryClientParams & {
     params: Parameters<DaoVotingCw20StakedQueryClient['isActive']>
   }

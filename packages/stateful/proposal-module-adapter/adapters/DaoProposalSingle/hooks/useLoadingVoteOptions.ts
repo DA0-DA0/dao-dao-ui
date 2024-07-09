@@ -31,19 +31,19 @@ export const useLoadingVoteOptions = (): LoadingData<
         label: isPreProposeApproverProposal
           ? t('button.approve')
           : t('info.yesVote'),
-        value: Vote.Yes,
+        value: 'yes',
       },
       {
         Icon: Close,
         label: isPreProposeApproverProposal
           ? t('button.reject')
           : t('info.noVote'),
-        value: Vote.No,
+        value: 'no',
       },
       {
         Icon: Texture,
         label: t('info.abstainVote'),
-        value: Vote.Abstain,
+        value: 'abstain',
       },
     ],
   }

@@ -1,7 +1,7 @@
 import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import { SenderInfo } from '@dao-dao/types/contracts/PolytoneVoice'
-import { cosmWasmClientRouter } from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { PolytoneVoiceQueryClient } from '../../../contracts/PolytoneVoice'
 import { indexerQueries } from '../indexer'
@@ -64,13 +64,15 @@ export const polytoneVoiceQueries = {
         console.error(error)
       }
 
+      // Contract throws error if instantiator not found, so we should too if
+      // the indexer query succeeds but the instantiator is not found.
       if (indexerNonExistent) {
         throw new Error('Sender info not found')
       }
 
       // If indexer query fails, fallback to contract query.
       return new PolytoneVoiceQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
+        await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).senderInfoForProxy(args)
     },

@@ -1,12 +1,12 @@
 import {
   ActionAndData,
   ActionKeyAndData,
-  CosmosMsgForEmpty,
   DepositInfoSelector,
-  IProposalModuleAdapterCommonOptions,
+  IProposalModuleBase,
   ProcessedTQ,
   ProposalTimestampInfo,
   ProposalVoteOption,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import {
   CheckedMultipleChoiceOption,
@@ -44,7 +44,7 @@ export interface PercentOrMajorityValue {
 export type ProcessedMultipleChoiceOption = {
   description: string
   index: number
-  msgs: CosmosMsgForEmpty[]
+  msgs: UnifiedCosmosMsg[]
   optionType: MultipleChoiceOptionType
   title: string
   turnoutVotePercentage: number
@@ -85,14 +85,18 @@ export type PublishProposal = (
 }>
 
 export interface MakeUsePublishProposalOptions {
-  options: IProposalModuleAdapterCommonOptions
+  proposalModule: IProposalModuleBase
   depositInfoSelector: DepositInfoSelector
 }
 
 export type UsePublishProposal = () => {
   simulateProposal: SimulateProposal
   publishProposal: PublishProposal
-  anyoneCanPropose: boolean
+  /**
+   * If defined, the current wallet cannot propose for this reason. If
+   * undefined, the current wallet can propose.
+   */
+  cannotProposeReason?: string
   depositUnsatisfied: boolean
   simulationBypassExpiration: Date | undefined
 }

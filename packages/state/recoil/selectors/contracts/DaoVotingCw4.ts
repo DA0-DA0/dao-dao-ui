@@ -2,8 +2,6 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import {
-  DaoResponse,
-  GroupContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
@@ -32,7 +30,7 @@ export const queryClient = selectorFamily<
 })
 
 export const groupContractSelector = selectorFamily<
-  GroupContractResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw4QueryClient['groupContract']>
   }
@@ -57,7 +55,7 @@ export const groupContractSelector = selectorFamily<
     },
 })
 export const daoSelector = selectorFamily<
-  DaoResponse,
+  string,
   QueryClientParams & {
     params: Parameters<DaoVotingCw4QueryClient['dao']>
   }
@@ -91,21 +89,18 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const votingPower = get(
+      const votingPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingCw4/votingPower',
+          formula: 'daoVotingCw4/votingPowerAtHeight',
           args: {
             address: params[0].address,
           },
           block: params[0].height ? { height: params[0].height } : undefined,
         })
       )
-      if (votingPower && !isNaN(votingPower)) {
-        return {
-          power: votingPower,
-          height: params[0].height,
-        }
+      if (votingPowerAtHeight) {
+        return votingPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.
@@ -123,18 +118,15 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const totalPower = get(
+      const totalPowerAtHeight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoVotingCw4/totalPower',
+          formula: 'daoVotingCw4/totalPowerAtHeight',
           block: params[0].height ? { height: params[0].height } : undefined,
         })
       )
-      if (totalPower && !isNaN(totalPower)) {
-        return {
-          power: totalPower,
-          height: params[0].height,
-        }
+      if (totalPowerAtHeight) {
+        return totalPowerAtHeight
       }
 
       // If indexer query fails, fallback to contract query.

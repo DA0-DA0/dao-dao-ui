@@ -41,7 +41,7 @@ export const IbcDestinationChainPicker = ({
   const chainIds = useMemo(() => {
     const sourceChain = getChainForChainId(sourceChainId)
 
-    return [
+    const allChainIds = [
       // Source chain.
       ...(includeSourceChain ? [sourceChain.chain_id] : []),
       // IBC destination chains.
@@ -70,6 +70,9 @@ export const IbcDestinationChainPicker = ({
         // Remove nonexistent osmosis testnet chain.
         .filter((chainId) => chainId !== 'osmo-test-4'),
     ].filter((chainId) => !excludeChainIds?.includes(chainId))
+
+    // Remove duplicates and sort.
+    return Array.from(new Set(allChainIds)).sort((a, b) => a.localeCompare(b))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, useDeepCompareMemoize([excludeChainIds, includeSourceChain, sourceChainId]))
 

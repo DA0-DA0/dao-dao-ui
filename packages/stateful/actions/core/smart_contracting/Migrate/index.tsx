@@ -9,6 +9,7 @@ import {
   DaoSupportedChainPickerInput,
   WhaleEmoji,
 } from '@dao-dao/stateless'
+import { makeStargateMessage } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -18,8 +19,16 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { MsgMigrateContract as SecretMsgMigrateContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
+  bech32AddressToBase64,
+  bech32DataToAddress,
+  decodeJsonFromBase64,
   decodePolytoneExecuteMsg,
+  encodeJsonToBase64,
+  getChainAddressForActionOptions,
+  isDecodedStargateMsg,
+  isSecretNetwork,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -49,15 +58,10 @@ const useDefaults: UseDefaults<MigrateData> = () => {
 }
 
 const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () => {
-  const currentChainId = useActionOptions().chain.chain_id
+  const options = useActionOptions()
 
   return useCallback(
-    ({
-      chainId,
-      contract: contract_addr,
-      codeId: new_code_id,
-      msg: msgString,
-    }: MigrateData) => {
+    ({ chainId, contract, codeId, msg: msgString }: MigrateData) => {
       let msg
       try {
         msg = JSON5.parse(msgString)
@@ -66,23 +70,35 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () => {
         return
       }
 
-      const migrateMsg = makeWasmMessage({
-        wasm: {
-          migrate: {
-            contract_addr,
-            new_code_id,
-            msg,
-          },
-        },
-      })
-
       return maybeMakePolytoneExecuteMessage(
-        currentChainId,
+        options.chain.chain_id,
         chainId,
-        migrateMsg
+        isSecretNetwork(chainId)
+          ? makeStargateMessage({
+              stargate: {
+                typeUrl: SecretMsgMigrateContract.typeUrl,
+                value: SecretMsgMigrateContract.fromAmino({
+                  sender: bech32AddressToBase64(
+                    getChainAddressForActionOptions(options, chainId) || ''
+                  ),
+                  contract: bech32AddressToBase64(contract),
+                  code_id: BigInt(codeId).toString(),
+                  msg: encodeJsonToBase64(msg),
+                }),
+              },
+            })
+          : makeWasmMessage({
+              wasm: {
+                migrate: {
+                  contract_addr: contract,
+                  new_code_id: codeId,
+                  msg,
+                },
+              },
+            })
       )
     },
-    [currentChainId]
+    [options]
   )
 }
 
@@ -112,6 +128,17 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
           contract: msg.wasm.migrate.contract_addr,
           codeId: msg.wasm.migrate.new_code_id,
           msg: JSON.stringify(msg.wasm.migrate.msg, undefined, 2),
+        },
+      }
+    : isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === SecretMsgMigrateContract.typeUrl
+    ? {
+        match: true,
+        data: {
+          chainId,
+          contract: bech32DataToAddress(chainId, msg.stargate.value.contract),
+          codeId: Number(msg.stargate.value.codeId),
+          msg: JSON.stringify(decodeJsonFromBase64(msg.stargate.value.msg)),
         },
       }
     : {

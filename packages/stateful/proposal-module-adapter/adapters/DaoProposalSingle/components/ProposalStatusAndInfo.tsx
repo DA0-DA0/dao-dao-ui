@@ -30,7 +30,6 @@ import {
 import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
-  ContractVersion,
   DepositRefundPolicy,
   PreProposeModuleType,
   ProposalStatusEnum,
@@ -45,13 +44,10 @@ import {
 import { ButtonLink, SuspenseLoader } from '../../../../components'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
-  CwProposalSingleV1Hooks,
-  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
   useProposalActionState,
   useProposalRelayState,
   useProposalVetoState,
-  useWallet,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -131,7 +127,6 @@ const InnerProposalStatusAndInfo = ({
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
     DaoProposalSingleCommonSelectors.configSelector({
@@ -176,23 +171,6 @@ const InnerProposalStatusAndInfo = ({
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
-  const executeProposal = (
-    proposalModule.version === ContractVersion.V1
-      ? CwProposalSingleV1Hooks.useExecute
-      : DaoProposalSingleV2Hooks.useExecute
-  )({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-  const closeProposal = (
-    proposalModule.version === ContractVersion.V1
-      ? CwProposalSingleV1Hooks.useClose
-      : DaoProposalSingleV2Hooks.useClose
-  )({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-
   const relayState = useProposalRelayState({
     msgs: proposal.msgs,
     status: proposal.status,
@@ -206,8 +184,6 @@ const InnerProposalStatusAndInfo = ({
     statusKey,
     relayState,
     loadingExecutionTxHash,
-    executeProposal,
-    closeProposal,
     onExecuteSuccess,
     onCloseSuccess,
   })

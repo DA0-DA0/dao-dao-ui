@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  DaoCoreV2Selectors,
+  DaoDaoCoreSelectors,
   DaoPreProposeApprovalSingleSelectors,
   DaoProposalSingleCommonSelectors,
 } from '@dao-dao/state/recoil'
@@ -153,7 +153,7 @@ const Component: ActionComponent = (props) => {
   }, [dao, props.fieldNamePrefix, props.isCreating, setValue])
 
   const options = useCachedLoading(
-    DaoCoreV2Selectors.approvalDaosSelector({
+    DaoDaoCoreSelectors.approvalDaosSelector({
       chainId,
       contractAddress: address,
     }),
@@ -180,7 +180,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.Approval] ||
+    !context.dao.info.supportedFeatures[Feature.Approval] ||
     // Type-check since we need code IDs, implied by DAO check.
     chainContext.type !== ActionChainContextType.Supported
   ) {
@@ -188,7 +188,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
   }
 
   const useTransformToCosmos: UseTransformToCosmos<SetUpApproverData> = () => {
-    const singleChoiceProposal = context.info.proposalModules.find(
+    const singleChoiceProposal = context.dao.proposalModules.find(
       ({ contractName }) =>
         DaoProposalSingleAdapter.contractNames.some((name) =>
           contractName.includes(name)
@@ -218,7 +218,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
         const info: ModuleInstantiateInfo = {
           admin: { core_module: {} },
           code_id: chainContext.config.codeIds.DaoProposalSingle,
-          label: `DAO_${context.info.name.trim()}_${DaoProposalSingleAdapterId}_approver`,
+          label: `DAO_${context.dao.name.trim()}_${DaoProposalSingleAdapterId}_approver`,
           msg: encodeJsonToBase64({
             threshold: config.threshold,
             allow_revoting: config.allow_revoting,
@@ -238,7 +238,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                 info: {
                   admin: { core_module: {} },
                   code_id: chainContext.config.codeIds.DaoPreProposeApprover,
-                  label: `DAO_${context.info.name.trim()}_pre-propose${DaoProposalSingleAdapterId}_approver`,
+                  label: `DAO_${context.dao.name.trim()}_pre-propose${DaoProposalSingleAdapterId}_approver`,
                   msg: encodeJsonToBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
                   } as DaoPreProposeApproverInstantiateMsg),

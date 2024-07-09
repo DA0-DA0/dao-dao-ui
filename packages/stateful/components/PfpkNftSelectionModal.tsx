@@ -30,6 +30,7 @@ import {
   getNftKey,
   getSupportedChainConfig,
   getSupportedChains,
+  isSecretNetwork,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
@@ -170,14 +171,17 @@ export const InnerPfpkNftSelectionModal = ({
   const [uploadingImage, setUploadingImage] = useState(false)
 
   // Upload profile photos to Juno mainnet when on a chain without the cw721
-  // code ID (like Stargaze). Otherwise, just use the currently connected chain.
-  // Stargaze uses sg721 instead of cw721 NFTs, and sg721 costs STARS to mint.
-  // We don't want to list user's profile photos on the Stargaze marketplace nor
-  // charge them for uploading a profile photo.
+  // code ID (like Stargaze) or on Secret Network (since it doesn't support
+  // instantiate2). Otherwise, just use the currently connected chain. Stargaze
+  // uses sg721 instead of cw721 NFTs, and sg721 costs STARS to mint. We don't
+  // want to list user's profile photos on the Stargaze marketplace nor charge
+  // them for uploading a profile photo.
   const uploadWallet = useWallet({
-    chainId: getSupportedChainConfig(chain.chain_id)?.codeIds?.Cw721Base
-      ? chain.chain_id
-      : ChainId.JunoMainnet,
+    chainId:
+      !isSecretNetwork(chain.chain_id) &&
+      getSupportedChainConfig(chain.chain_id)?.codeIds?.Cw721Base
+        ? chain.chain_id
+        : ChainId.JunoMainnet,
     // Attempt connection to upload wallet chain when image selector is visible.
     attemptConnection: showImageSelector,
   })

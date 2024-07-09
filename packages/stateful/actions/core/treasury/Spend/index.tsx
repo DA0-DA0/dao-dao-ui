@@ -21,13 +21,13 @@ import {
 import {
   AccountType,
   ChainId,
-  CosmosMsgForEmpty,
   DurationUnits,
   Entity,
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
   TokenType,
+  UnifiedCosmosMsg,
   UseDecodedCosmosMsg,
 } from '@dao-dao/types'
 import {
@@ -870,7 +870,7 @@ export const makeSpendAction: ActionMaker<
           })
         }
 
-        let msg: CosmosMsgForEmpty | undefined
+        let msg: UnifiedCosmosMsg | undefined
         // IBC transfer.
         if (token.type === TokenType.Native && toChainId !== fromChainId) {
           // Require that this loads before using IBC.

@@ -9,8 +9,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
-import { Coin, CosmosMsgFor_Empty, cwMsgToEncodeObject } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, makeWasmMessage } from '@dao-dao/utils'
+import { Coin, UnifiedCosmosMsg, cwMsgToEncodeObject } from '@dao-dao/types'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  isSecretNetwork,
+  makeWasmMessage,
+} from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
@@ -52,7 +56,7 @@ export const useInstantiateAndExecute = (
   codeId: number
 ): UseInstantiateAndExecuteResult => {
   const { t } = useTranslation()
-  const { getSigningCosmWasmClient, address, chain } = useWallet({
+  const { getSigningClient, address, chain } = useWallet({
     chainId,
   })
 
@@ -77,6 +81,11 @@ export const useInstantiateAndExecute = (
         throw new Error(t('error.logInToContinue'))
       }
 
+      // Ensure active chain is not Secret Network.
+      if (isSecretNetwork(chain.chain_id)) {
+        throw new Error('Secret Network does not support instantiate2.')
+      }
+
       // Random salt.
       const salt = uuidv4()
 
@@ -86,7 +95,7 @@ export const useInstantiateAndExecute = (
         toUtf8(salt),
         chain.bech32_prefix
       )
-      const messages: CosmosMsgFor_Empty[] = [
+      const messages: UnifiedCosmosMsg[] = [
         // Instantiate the contract.
         makeWasmMessage({
           wasm: {
@@ -111,10 +120,12 @@ export const useInstantiateAndExecute = (
         ),
       ]
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-      const response = (await signingCosmWasmClient.signAndBroadcast(
+      const signingClient = await getSigningClient()
+      const response = (await signingClient.signAndBroadcast(
         address,
-        messages.map((msg) => cwMsgToEncodeObject(msg, address)),
+        messages.map((msg) =>
+          cwMsgToEncodeObject(chain.chain_id, msg, address)
+        ),
         CHAIN_GAS_MULTIPLIER
         // cosmos-kit has an older version of the package. This is a workaround.
       )) as DeliverTxResponse
@@ -124,7 +135,7 @@ export const useInstantiateAndExecute = (
         response,
       }
     },
-    [address, chain, checksum, codeId, getSigningCosmWasmClient, t]
+    [address, chain, checksum, codeId, getSigningClient, t]
   )
 
   return {

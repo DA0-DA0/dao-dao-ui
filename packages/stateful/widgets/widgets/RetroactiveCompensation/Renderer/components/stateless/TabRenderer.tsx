@@ -12,9 +12,8 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { LoadingData } from '@dao-dao/types'
+import { LoadingData, LoadingDataWithError } from '@dao-dao/types'
 import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
-import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import {
   CompletedSurveyListing,
@@ -33,9 +32,7 @@ export interface TabRendererProps {
   >
   downloadCompletedSurvey: (pastSurvey: CompletedSurveyListing) => void
   loadingCompletedSurveyId: number | undefined
-  loadingMembershipDuringCompletedSurveys: LoadingData<
-    VotingPowerAtHeightResponse[]
-  >
+  loadingMembershipDuringCompletedSurveys: LoadingDataWithError<string[]>
   IconButtonLink: ComponentType<IconButtonLinkProps>
 }
 
@@ -132,9 +129,9 @@ export const TabRenderer = ({
               {loadingCompletedSurveys.data.map((survey, index) => {
                 const wasMemberDuringSurvey =
                   !loadingMembershipDuringCompletedSurveys.loading &&
-                  Number(
-                    loadingMembershipDuringCompletedSurveys.data[index].power
-                  ) > 0
+                  !loadingMembershipDuringCompletedSurveys.errored &&
+                  Number(loadingMembershipDuringCompletedSurveys.data[index]) >
+                    0
 
                 return (
                   <CompletedSurveyRow

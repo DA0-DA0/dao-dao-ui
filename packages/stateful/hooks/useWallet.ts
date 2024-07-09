@@ -2,6 +2,7 @@ import { Chain } from '@chain-registry/types'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
+import { SecretUtils } from '@keplr-wallet/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -11,13 +12,22 @@ import {
   walletChainIdAtom,
   walletHexPublicKeySelector,
 } from '@dao-dao/state/recoil'
+import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
   useCachedLoading,
   useChainContextIfAvailable,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
+import {
+  SecretSigningCosmWasmClient,
+  SupportedSigningCosmWasmClient,
+  getLcdForChainId,
+  getRpcForChainId,
+  getSupportedChains,
+  isSecretNetwork,
+  maybeGetChainForChainId,
+} from '@dao-dao/utils'
 
 export type UseWalletOptions = {
   /**
@@ -41,6 +51,18 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
   chain: Chain
   account: WalletAccount | undefined
   hexPublicKey: LoadingData<string>
+  /**
+   * Fetch the Secret Network signing client for the current wallet.
+   */
+  getSecretSigningCosmWasmClient: () => Promise<SecretSigningCosmWasmClient>
+  /**
+   * Fetch the relevant signing client for the current wallet.
+   */
+  getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
+  /**
+   * Fetch SecretUtils from the wallet if available
+   */
+  getSecretUtils: () => SecretUtils
 }
 
 export const useWallet = ({
@@ -181,27 +203,69 @@ export const useWallet = ({
   }, [queryClient, chain.chain_id])
 
   const response = useMemo(
-    (): UseWalletReturn => ({
-      ...walletChainRef.current,
-      chainWallet:
-        walletChainRef.current.chainWallet ||
-        // Fallback to getting chain wallet from repo if not set on walletChain.
-        // This won't be set if the walletChain is disconnected.
-        (mainWalletRef.current
-          ? getWalletRepo(chain.chain_name).getWallet(
-              mainWalletRef.current.walletName
-            )
-          : undefined),
-      connect,
-      // Use chain from our version of the chain-registry.
-      chain,
-      account,
-      hexPublicKey: hexPublicKeyData
-        ? { loading: false, data: hexPublicKeyData }
-        : !hexPublicKeyFromChain.loading && hexPublicKeyFromChain.data
-        ? { loading: false, data: hexPublicKeyFromChain.data }
-        : { loading: true },
-    }),
+    (): UseWalletReturn => {
+      // TODO(secret): support different enigma utils sources based on connected
+      // wallet
+      const getSecretUtils = () => {
+        const secretUtils = window.keplr?.getEnigmaUtils(chain.chain_id)
+        if (!secretUtils) {
+          throw new Error('No Secret utils found')
+        }
+        return secretUtils
+      }
+
+      // Get Secret Network signing client with Keplr's encryption utils.
+      const getSecretSigningCosmWasmClient = async () => {
+        if (!isSecretNetwork(chain.chain_id)) {
+          throw new Error('Not on Secret Network')
+        }
+
+        const signer = walletChainRef.current.getOfflineSignerAmino()
+
+        return await SecretSigningCosmWasmClient.secretConnectWithSigner(
+          getRpcForChainId(chain.chain_id),
+          signer,
+          makeGetSignerOptions(queryClient)(chain),
+          {
+            url: getLcdForChainId(chain.chain_id),
+            chainId: chain.chain_id,
+            wallet: signer,
+            walletAddress: walletChainRef.current.address,
+            encryptionUtils: getSecretUtils(),
+          }
+        )
+      }
+
+      // Get relevant signing client based on chain.
+      const getSigningClient = isSecretNetwork(chain.chain_id)
+        ? getSecretSigningCosmWasmClient
+        : walletChainRef.current.getSigningCosmWasmClient
+
+      return {
+        ...walletChainRef.current,
+        chainWallet:
+          walletChainRef.current.chainWallet ||
+          // Fallback to getting chain wallet from repo if not set on
+          // walletChain. This won't be set if the walletChain is disconnected.
+          (mainWalletRef.current
+            ? getWalletRepo(chain.chain_name).getWallet(
+                mainWalletRef.current.walletName
+              )
+            : undefined),
+        connect,
+        // Use chain from our version of the chain-registry.
+        chain,
+        account,
+        hexPublicKey: hexPublicKeyData
+          ? { loading: false, data: hexPublicKeyData }
+          : !hexPublicKeyFromChain.loading && hexPublicKeyFromChain.data
+          ? { loading: false, data: hexPublicKeyFromChain.data }
+          : { loading: true },
+        getSecretSigningCosmWasmClient,
+        getSigningClient,
+        getSecretUtils,
+      }
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       connect,
@@ -212,6 +276,7 @@ export const useWallet = ({
       walletChainRef.current?.chain.chain_id,
       walletChainRef.current?.status,
       hexPublicKeyFromChain,
+      queryClient,
     ]
   )
 

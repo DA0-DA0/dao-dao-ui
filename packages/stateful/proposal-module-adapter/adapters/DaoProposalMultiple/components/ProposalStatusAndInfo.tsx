@@ -43,12 +43,10 @@ import {
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import {
-  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useProposalActionState,
   useProposalRelayState,
   useProposalVetoState,
-  useWallet,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -114,7 +112,6 @@ const InnerProposalStatusAndInfo = ({
   } = useConfiguredChainContext()
   const { coreAddress } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
     DaoProposalMultipleSelectors.configSelector({
@@ -129,15 +126,6 @@ const InnerProposalStatusAndInfo = ({
 
   const statusKey = getProposalStatusKey(proposal.status)
 
-  const executeProposal = DaoProposalMultipleHooks.useExecute({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-  const closeProposal = DaoProposalMultipleHooks.useClose({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-
   const relayState = useProposalRelayState({
     msgs: winningChoice?.msgs || [],
     status: proposal.status,
@@ -151,8 +139,6 @@ const InnerProposalStatusAndInfo = ({
     statusKey,
     relayState,
     loadingExecutionTxHash,
-    executeProposal,
-    closeProposal,
     onExecuteSuccess,
     onCloseSuccess,
   })

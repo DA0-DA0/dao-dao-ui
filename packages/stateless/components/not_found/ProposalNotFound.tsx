@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoTabId, PageHeaderProps } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../hooks'
-import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
+import { useDaoInfoContext } from '../../contexts'
+import { useDaoNavHelpers } from '../../hooks'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
 

@@ -4,8 +4,8 @@ import { useFormContext } from 'react-hook-form'
 import {
   Action,
   ActionAndData,
-  CosmosMsgFor_Empty,
   SuspenseLoaderProps,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import { decodeMessages } from '@dao-dao/utils'
 
@@ -25,7 +25,7 @@ export const NestedActionsRenderer = ({
   SuspenseLoader,
 }: NestedActionsRendererProps) => {
   const { watch } = useFormContext<{
-    msgs: CosmosMsgFor_Empty[]
+    msgs: UnifiedCosmosMsg[]
   }>()
   const msgs = watch(msgsFieldName as 'msgs')
 

@@ -79,6 +79,9 @@ export enum ChainId {
   BitsongMainnet = 'bitsong-2b',
   BitsongTestnet = 'bobnet',
   OmniflixHubMainnet = 'omniflixhub-1',
+  OmniflixHubTestnet = 'flixnet-4',
+  SecretMainnet = 'secret-4',
+  SecretTestnet = 'pulsar-3',
 }
 
 export type BaseChainConfig = {
@@ -146,9 +149,17 @@ export type SupportedChainConfig = BaseChainConfig & {
     network: string
   }
   /**
+   * Version of the code IDs in the config below.
+   */
+  codeIdsVersion: ContractVersion
+  /**
    * Code IDs stored on this chain that are used throughout the UI.
    */
   codeIds: CodeIdConfig
+  /**
+   * Code hashes for IDs above. Only used by Secret Network.
+   */
+  codeHashes?: CodeHashConfig
   /**
    * Whether or not to create DAOs with CW20s. The alternative is to use token
    * factory native tokens. Defaults to false.
@@ -159,6 +170,11 @@ export type SupportedChainConfig = BaseChainConfig & {
    * token creation is under development. Defaults to false.
    */
   tokenCreationUnderDevelopment?: boolean
+  /**
+   * Disallow creating NFT DAOs and show an under development banner. Defaults
+   * to false.
+   */
+  nftDaosUnderDevelopment?: boolean
   /**
    * Whether or not to create a DAO through chain governance.
    */
@@ -233,6 +249,12 @@ export type CodeIdConfig = {
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
 
+  // For Secret Network
+  QueryAuth?: number
+
+  // For OmniFlix
+  DaoVotingOnftStaked?: number
+
   // For migrating Migaloo DAOs from cosmwasm to osmosis x/tokenfactory.
   CwTokenfactoryIssuerCosmWasm?: number
 
@@ -243,6 +265,10 @@ export type CodeIdConfig = {
 
   // Valence
   ValenceAccount?: number
+}
+
+export type CodeHashConfig = {
+  [K in keyof CodeIdConfig]: string
 }
 
 export type PolytoneConnection = {

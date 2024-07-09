@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { ReactNode, useEffect, useMemo } from 'react'
-import { RecoilRoot, useSetRecoilState } from 'recoil'
+import { MutableSnapshot, RecoilRoot, useSetRecoilState } from 'recoil'
 
 import { makeReactQueryClient, queryClientAtom } from '@dao-dao/state'
 
@@ -18,6 +18,10 @@ export type StateProviderProps = {
    * to initialize data.
    */
   dehyratedState?: DehydratedState
+  /**
+   * Optional RecoilRoot state initializer.
+   */
+  recoilStateInitializer?: (mutableSnapshot: MutableSnapshot) => void
 }
 
 /**
@@ -27,6 +31,7 @@ export type StateProviderProps = {
 export const StateProvider = ({
   children,
   dehyratedState,
+  recoilStateInitializer,
 }: StateProviderProps) => {
   const client = useMemo(
     () => makeReactQueryClient(dehyratedState),
@@ -36,10 +41,13 @@ export const StateProvider = ({
   return (
     <QueryClientProvider client={client}>
       <RecoilRoot
-        initializeState={
+        initializeState={(snapshot) => {
           // Give query client to Recoil so selectors can access queries.
-          ({ set }) => set(queryClientAtom, client)
-        }
+          snapshot.set(queryClientAtom, client)
+
+          // Call the recoil root state initializer if provided.
+          recoilStateInitializer?.(snapshot)
+        }}
       >
         <InnerStateProvider>{children}</InnerStateProvider>
       </RecoilRoot>

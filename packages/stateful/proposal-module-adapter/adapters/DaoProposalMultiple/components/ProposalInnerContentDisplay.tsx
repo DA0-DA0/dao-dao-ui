@@ -11,7 +11,6 @@ import {
   ProposalVoteOption,
 } from '@dao-dao/types'
 import {
-  MultipleChoiceOptionType,
   MultipleChoiceProposal,
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
@@ -120,9 +119,7 @@ export const InnerProposalInnerContentDisplay = ({
       title: proposal.title,
       description: proposal.description,
       choices: optionsData
-        .filter(
-          ({ choice }) => choice.option_type !== MultipleChoiceOptionType.None
-        )
+        .filter(({ choice }) => choice.option_type !== 'none')
         .map(({ choice, actionData }) => ({
           title: choice.title,
           description: choice.description,

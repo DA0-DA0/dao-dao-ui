@@ -72,7 +72,7 @@ export const makeEnableRetroactiveCompensationAction: ActionMaker = (
     // Do not allow using this action if the DAO already has retroactive
     // compensation enabled.
     hideFromPicker:
-      !!context.info.items[
+      !!context.dao.info.items[
         DAO_WIDGET_ITEM_NAMESPACE + RetroactiveCompensationWidget.id
       ],
   }

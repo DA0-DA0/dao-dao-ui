@@ -18,9 +18,7 @@ export const Renderer = ({
 }: WidgetRendererProps<PressData>) => {
   const { chainId: daoChainId, coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { isMember = false } = useMembership()
 
   // The chain that Press is set up on. If chain ID is undefined, default to
   // native DAO chain for backwards compatibility.

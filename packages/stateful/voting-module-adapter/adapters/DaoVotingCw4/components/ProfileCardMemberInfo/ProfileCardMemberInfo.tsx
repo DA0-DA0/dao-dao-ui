@@ -17,7 +17,13 @@ export const ProfileCardMemberInfo = ({
 }: ProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
 
-  return votingPower.loading || votingPower.data > 0 ? (
+  return cantVoteOnProposal ? (
+    <p className="caption-text">
+      {t('info.notMemberForProposal', {
+        daoName,
+      })}
+    </p>
+  ) : votingPower.loading || votingPower.data > 0 ? (
     <div className="body-text flex flex-row items-center justify-between">
       <p>{t('title.votingPower')}</p>
       <p
@@ -30,10 +36,9 @@ export const ProfileCardMemberInfo = ({
       </p>
     </div>
   ) : (
-    <p className={clsx(cantVoteOnProposal ? 'caption-text' : 'secondary-text')}>
+    <p className="secondary-text">
       {t('info.membershipDaoNotMemberInfo', {
         daoName,
-        context: cantVoteOnProposal ? 'proposal' : 'dao',
       })}
     </p>
   )

@@ -30,6 +30,8 @@ export const isFeatureSupportedByVersion = (
     case Feature.Approval:
     case Feature.Veto:
       return versionGte(version, ContractVersion.V240)
+    case Feature.GranularSubmissionPolicy:
+      return versionGte(version, ContractVersion.V250)
     default:
       return true
   }

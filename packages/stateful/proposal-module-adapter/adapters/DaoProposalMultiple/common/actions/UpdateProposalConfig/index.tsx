@@ -17,7 +17,7 @@ import {
   ActionKey,
   ActionMaker,
   Feature,
-  ProposalModule,
+  IProposalModuleBase,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -89,7 +89,7 @@ const typePercentageToPercentageThreshold = (
 export const makeUpdateProposalConfigActionMaker = ({
   version,
   address: proposalModuleAddress,
-}: ProposalModule): ActionMaker<UpdateProposalConfigData> => {
+}: IProposalModuleBase): ActionMaker<UpdateProposalConfigData> => {
   const Component: ActionComponent = (props) => {
     const { t } = useTranslation()
     const { setError, clearErrors, watch, trigger } =

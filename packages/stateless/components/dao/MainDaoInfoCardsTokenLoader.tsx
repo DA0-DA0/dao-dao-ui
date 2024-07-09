@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { formatDate } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../hooks'
+import { useDaoInfoContext } from '../../contexts'
 import { DaoInfoCards } from './DaoInfoCards'
 
 /**

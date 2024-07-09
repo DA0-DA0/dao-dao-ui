@@ -25,12 +25,8 @@ import {
   serializeTokenSource,
 } from '@dao-dao/utils'
 
-import {
-  useButtonPopupSorter,
-  useDaoInfoContext,
-  useSupportedChainContext,
-  useTokenSortOptions,
-} from '../../../hooks'
+import { useDaoInfoContext, useSupportedChainContext } from '../../../contexts'
+import { useButtonPopupSorter, useTokenSortOptions } from '../../../hooks'
 import { ErrorPage } from '../../error'
 import { LineLoaders } from '../../LineLoader'
 import { NftSection } from '../../nft/NftSection'
@@ -360,7 +356,10 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         />
       )}
 
-      <NftSection NftCard={NftCard} className="mt-10" nfts={allNfts} />
+      {/* OmniFlix Hub NFTs are not yet supported. */}
+      {currentChainId !== ChainId.OmniflixHubMainnet && (
+        <NftSection NftCard={NftCard} className="mt-10" nfts={allNfts} />
+      )}
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal

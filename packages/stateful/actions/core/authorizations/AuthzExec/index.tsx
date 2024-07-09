@@ -6,7 +6,6 @@ import { contractQueries } from '@dao-dao/state/query'
 import {
   ChainProvider,
   DaoSupportedChainPickerInput,
-  ErrorPage,
   LockWithKeyEmoji,
   useChain,
 } from '@dao-dao/stateless'
@@ -15,7 +14,7 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
-  CosmosMsgFor_Empty,
+  UnifiedCosmosMsg,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -27,7 +26,9 @@ import { MsgExec } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
+  getChainForChainId,
   isDecodedStargateMsg,
+  isValidBech32Address,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -38,11 +39,7 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
-import {
-  useQueryLoadingData,
-  useQueryLoadingDataWithError,
-} from '../../../../hooks'
-import { daoQueries } from '../../../../queries/dao'
+import { useQueryLoadingData } from '../../../../hooks'
 import {
   WalletActionsProvider,
   useActionOptions,
@@ -100,40 +97,31 @@ const InnerComponentWrapper: ActionComponent<
   const {
     options: { address },
   } = props
-  const { chain_id: chainId } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const queryClient = useQueryClient()
   const isDao = useQueryLoadingData(
-    contractQueries.isDao(queryClient, {
-      chainId,
-      address,
-    }),
-    false
-  )
-  const daoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
+    contractQueries.isDao(
       useQueryClient(),
-      !isDao.loading && isDao.data
+      address && isValidBech32Address(address, bech32Prefix)
         ? {
             chainId,
-            coreAddress: address,
+            address,
           }
         : undefined
-    )
+    ),
+    false
   )
 
-  return isDao.loading || (isDao.data && daoInfo.loading) ? (
+  return isDao.loading ? (
     <InnerComponentLoading {...props} />
-  ) : isDao.data && !daoInfo.loading ? (
-    daoInfo.errored ? (
-      <ErrorPage error={daoInfo.error} />
-    ) : (
-      <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
-        <DaoProviders info={daoInfo.data}>
-          <InnerComponent {...props} />
-        </DaoProviders>
-      </SuspenseLoader>
-    )
+  ) : isDao.data ? (
+    <DaoProviders
+      chainId={chainId}
+      coreAddress={address}
+      loaderFallback={<InnerComponentLoading {...props} />}
+    >
+      <InnerComponent {...props} />
+    </DaoProviders>
   ) : (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
@@ -233,7 +221,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = (options) => {
 
       // Group adjacent messages by sender, preserving message order.
       const msgsPerSender = execMsg.msgs
-        .map((msg) => protobufToCwMsg(msg))
+        .map((msg) => protobufToCwMsg(getChainForChainId(chainId), msg))
         .reduce(
           (acc, { msg, sender }) => {
             const last = acc[acc.length - 1]
@@ -246,7 +234,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = (options) => {
           },
           [] as {
             sender: string
-            msgs: CosmosMsgFor_Empty[]
+            msgs: UnifiedCosmosMsg[]
           }[]
         )
 
@@ -276,7 +264,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = (options) => {
               typeUrl: MsgExec.typeUrl,
               value: {
                 grantee: getChainAddressForActionOptions(options, chainId),
-                msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
+                msgs: msgs.map((msg) => cwMsgToProtobuf(chainId, msg, address)),
               } as MsgExec,
             },
           })

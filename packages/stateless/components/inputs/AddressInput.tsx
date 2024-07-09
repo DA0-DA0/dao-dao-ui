@@ -7,7 +7,7 @@ import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { AddressInputProps, EntityType } from '@dao-dao/types'
 import { getAccountAddress, isValidBech32Address } from '@dao-dao/utils'
 
-import { useChain } from '../../hooks/useChainContext'
+import { useChain } from '../../contexts/Chain'
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'

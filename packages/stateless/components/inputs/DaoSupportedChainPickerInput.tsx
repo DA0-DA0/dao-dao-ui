@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ChainPickerPopupProps } from '@dao-dao/types'
 
-import { useChainContext, useDaoInfoContextIfAvailable } from '../../hooks'
+import { useChainContext, useDaoInfoContextIfAvailable } from '../../contexts'
 import { ChainPickerPopup } from '../popup'
 import { InputLabel } from './InputLabel'
 

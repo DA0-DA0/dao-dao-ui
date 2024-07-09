@@ -21,10 +21,10 @@ import {
   AccountTxForm,
   AccountTxSave,
   ActionCategoryWithLabel,
-  CosmosMsgFor_Empty,
   LoadedActions,
   LoadingData,
   SuspenseLoaderProps,
+  UnifiedCosmosMsg,
   WalletChainSwitcherProps,
 } from '@dao-dao/types'
 import {
@@ -33,7 +33,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useChainContext, useHoldingKey } from '../../hooks'
+import { useChainContext } from '../../contexts'
+import { useHoldingKey } from '../../hooks'
 import { ActionsEditor, RawActionsRenderer } from '../actions'
 import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -51,7 +52,7 @@ export type ProfileActionsProps = {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   formMethods: UseFormReturn<AccountTxForm, object>
-  execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
+  execute: (messages: UnifiedCosmosMsg[]) => Promise<void>
   loading: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string

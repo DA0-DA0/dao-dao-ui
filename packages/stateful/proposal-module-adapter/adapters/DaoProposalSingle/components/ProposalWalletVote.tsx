@@ -48,15 +48,14 @@ export const ProposalWalletVote = ({
 }
 
 export const ProposalWalletVoteClassNameMap: Record<VoteOrKey, string> = {
-  [Vote.Yes]: 'text-text-body ring-2 ring-inset ring-component-badge-valid',
-  [Vote.No]: 'text-text-body ring-2 ring-inset ring-component-badge-error',
-  [Vote.Abstain]:
-    'text-text-body ring-2 ring-inset ring-component-badge-primary',
+  yes: 'text-text-body ring-2 ring-inset ring-component-badge-valid',
+  no: 'text-text-body ring-2 ring-inset ring-component-badge-error',
+  abstain: 'text-text-body ring-2 ring-inset ring-component-badge-primary',
   pending: 'text-text-body ring-2 ring-inset ring-component-badge-brand',
   hasNoVote: 'text-text-tertiary ring-2 ring-inset ring-border-secondary',
 }
 
 const APPROVER_VOTE_MAP: Partial<Record<VoteOrKey, string>> = {
-  [Vote.Yes]: 'approve',
-  [Vote.No]: 'reject',
+  yes: 'approve',
+  no: 'reject',
 }

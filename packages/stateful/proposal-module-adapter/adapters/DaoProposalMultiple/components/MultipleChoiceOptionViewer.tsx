@@ -13,7 +13,6 @@ import {
   Tooltip,
 } from '@dao-dao/stateless'
 import { SuspenseLoaderProps } from '@dao-dao/types'
-import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionData } from '../types'
@@ -42,13 +41,13 @@ export const MultipleChoiceOptionViewer = ({
 
   const [showRaw, setShowRaw] = useState(false)
 
-  const isNoneOption = choice.option_type === MultipleChoiceOptionType.None
+  const isNoneOption = choice.option_type === 'none'
   const noMessages = decodedMessages.length === 0
   const noContent = noMessages && !choice.description
 
   // Close none of the above and disallow expanding.
   const [expanded, setExpanded] = useState(
-    choice.option_type !== MultipleChoiceOptionType.None &&
+    choice.option_type !== 'none' &&
       // Default collapsed if there is a winner and it is not this one.
       (winner === undefined || winner) &&
       // Default collapsed if there are no messages and no description.

@@ -8,11 +8,9 @@ export const ProfileCardMemberInfo = ({
   maxGovernanceTokenDeposit: _,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
 
-  const { walletVotingWeight, totalVotingWeight } = useMembership({
-    coreAddress,
-  })
+  const { walletVotingWeight, totalVotingWeight } = useMembership()
 
   return (
     <StatelessProfileCardMemberInfo

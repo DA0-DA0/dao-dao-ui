@@ -5,6 +5,7 @@ import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { Action, ActionCategoryMaker, ActionMaker } from './actions'
+import { IProposalModuleBase } from './clients'
 import {
   DaoInfoCard,
   LinkWrapperProps,
@@ -147,15 +148,8 @@ export type ProposalModuleAdapter<
 }
 
 export type IProposalModuleAdapterCommonOptions = {
-  chain: Chain
-  coreAddress: string
-  proposalModule: ProposalModule
+  proposalModule: IProposalModuleBase
 }
-
-export type IProposalModuleAdapterCommonInitialOptions = Omit<
-  IProposalModuleAdapterCommonOptions,
-  'proposalModule'
->
 
 export type IProposalModuleAdapterOptions = {
   /**
@@ -206,6 +200,7 @@ export type IProposalModuleContext = {
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
   common: IProposalModuleAdapterCommon
+  proposalModule: IProposalModuleBase
 }
 
 /**

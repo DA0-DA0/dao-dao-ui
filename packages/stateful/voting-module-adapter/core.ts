@@ -9,10 +9,12 @@ import {
   DaoVotingCw4Adapter,
   DaoVotingCw721StakedAdapter,
   DaoVotingNativeStakedAdapter,
+  DaoVotingOnftStakedAdapter,
+  DaoVotingSgCommunityNftAdapter,
   DaoVotingTokenStakedAdapter,
   FallbackAdapter,
+  NeutronVotingRegistryAdapter,
 } from './adapters'
-import { NeutronVotingRegistryAdapter } from './adapters/NeutronVotingRegistry'
 
 // Adapters need to be loaded lazily like this, as opposed to just defining a
 // global array, due to cyclic dependencies. The adapter defintion files include
@@ -28,6 +30,8 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw20StakedAdapter,
   DaoVotingCw721StakedAdapter,
   DaoVotingNativeStakedAdapter,
+  DaoVotingOnftStakedAdapter,
+  DaoVotingSgCommunityNftAdapter,
   DaoVotingTokenStakedAdapter,
   NeutronVotingRegistryAdapter,
 ]

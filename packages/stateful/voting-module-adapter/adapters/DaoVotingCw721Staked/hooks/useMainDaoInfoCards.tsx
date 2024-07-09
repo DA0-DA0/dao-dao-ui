@@ -1,16 +1,15 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { DaoVotingCw721StakedSelectors } from '@dao-dao/state'
-import {
-  TokenAmountDisplay,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { daoVotingCw721StakedExtraQueries } from '@dao-dao/state'
+import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
   formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
@@ -31,10 +30,11 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     collectionInfo: { symbol, totalSupply },
   } = useGovernanceCollectionInfo()
 
-  const loadingMembers = useCachedLoadingWithError(
-    DaoVotingCw721StakedSelectors.topStakersSelector({
+  const queryClient = useQueryClient()
+  const loadingMembers = useQueryLoadingDataWithError(
+    daoVotingCw721StakedExtraQueries.topStakers(queryClient, {
       chainId,
-      contractAddress: votingModuleAddress,
+      address: votingModuleAddress,
     })
   )
 
@@ -47,7 +47,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
         ? undefined
         : loadingMembers.errored
         ? '<error>'
-        : loadingMembers.data?.length ?? '<error>',
+        : loadingMembers.data.length ?? '<error>',
     },
     {
       label: t('title.totalSupply'),
