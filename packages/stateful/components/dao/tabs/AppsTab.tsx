@@ -116,7 +116,7 @@ export const AppsTab = () => {
       throw new Error(
         t('error.daoMissingAccountsOnChains', {
           daoName: name,
-          chains: getDisplayNameForChainId(chainId),
+          chains: `${getDisplayNameForChainId(chainId)} (${chainId})`,
           count: 1,
         })
       )
@@ -186,7 +186,9 @@ export const AppsTab = () => {
             daoName: name,
             chains: [chainIds]
               .flat()
-              .map((chainId) => getDisplayNameForChainId(chainId))
+              .map(
+                (chainId) => `${getDisplayNameForChainId(chainId)} (${chainId})`
+              )
               .join(', '),
             count: [chainIds].flat().length,
           }),
