@@ -1124,7 +1124,6 @@
     "migrateMigalooV4TokenFactoryExplanation": "The token factory module on Migaloo has been migrated to a new version that is more actively maintained. Because this DAO created a new token before the migration, the DAO's token factory contract that interacts with the chain module must now be upgraded. This action upgrades the token factory contract to a version that supports the new token factory module.",
     "migrateSmartContractActionDescription": "Migrate a CosmWasm contract to a new code ID.",
     "migrateTokenFactoryModuleDescription": "Update the DAO to support the new token factory module.",
-    "minBalanceToCreateAccount": "A minimum balance of {{balance}} is required to create an account.",
     "minimumOutputRequiredDescription_dao": "Before the proposal is passed and executed, the swap price will fluctuate. If the price drops and no longer satisfies this minimum output required, the swap will not occur.",
     "minimumOutputRequiredDescription_gov": "Before the proposal is passed and executed, the swap price will fluctuate. If the price drops and no longer satisfies this minimum output required, the swap will not occur.",
     "minimumOutputRequiredDescription_wallet": "The exact swap price will fluctuate during the transaction, but the minimum output amount is guaranteed. If the price drops and no longer satisfies this minimum output required, the swap will not occur.",

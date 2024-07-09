@@ -27,7 +27,7 @@ export const CreateValenceAccountComponent: ActionComponent<
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
-  const { control, watch } = useFormContext<CreateValenceAccountData>()
+  const { control } = useFormContext<CreateValenceAccountData>()
   const {
     fields: coins,
     append: appendCoin,
@@ -42,45 +42,22 @@ export const CreateValenceAccountComponent: ActionComponent<
       <div className="flex flex-col gap-2">
         <InputLabel name={t('form.initialBalances')} primary />
 
-        {props.isCreating && (
-          <p className="secondary-text mb-1">
-            {t('info.minBalanceToCreateAccount', {
-              balance: t('format.token', {
-                amount: 10,
-                symbol: 'NTRN',
-              }),
-            })}
-          </p>
-        )}
-
-        {coins.map(({ id }, index) => {
-          const isNtrn =
-            watch(
-              (props.fieldNamePrefix +
-                `funds.${index}.denom`) as `funds.${number}.denom`
-            ) === 'untrn'
-
-          return (
-            <NativeCoinSelector
-              key={id + index}
-              {...({
-                ...props,
-                chainId,
-                onRemove:
-                  // Don't allow removing the first token.
-                  props.isCreating && coins.length > 1
-                    ? () => removeCoin(index)
-                    : undefined,
-              } as NativeCoinSelectorProps)}
-              errors={props.errors?.funds?.[index]}
-              fieldNamePrefix={props.fieldNamePrefix + `funds.${index}.`}
-              min={
-                // Minimum balance of 10 $NTRN.
-                isNtrn ? 10 : undefined
-              }
-            />
-          )
-        })}
+        {coins.map(({ id }, index) => (
+          <NativeCoinSelector
+            key={id + index}
+            {...({
+              ...props,
+              chainId,
+              onRemove:
+                // Don't allow removing the first token.
+                props.isCreating && coins.length > 1
+                  ? () => removeCoin(index)
+                  : undefined,
+            } as NativeCoinSelectorProps)}
+            errors={props.errors?.funds?.[index]}
+            fieldNamePrefix={props.fieldNamePrefix + `funds.${index}.`}
+          />
+        ))}
 
         {!props.isCreating && coins.length === 0 && (
           <p className="-mt-1 text-xs italic text-text-tertiary">

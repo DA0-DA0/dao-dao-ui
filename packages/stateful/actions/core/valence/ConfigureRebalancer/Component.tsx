@@ -179,6 +179,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
   }, [t, clearErrors, setError, totalPercent, fieldNamePrefix])
 
   const [projection, setProjection] = useState(isCreating)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   // Once per day for the next 180 days.
   const rebalanceTimestamps = new Array(180)
@@ -216,21 +217,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
                   )
             }
             tokens={baseDenomWhitelistTokens}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <InputLabel name={t('form.trustee')} optional primary />
-          <p className="body-text text-text-secondary -mt-1 text-sm">
-            {t('form.rebalancerTrusteeDescription')}
-          </p>
-
-          <AddressInput
-            disabled={!isCreating}
-            error={errors?.trustee}
-            fieldName={(fieldNamePrefix + 'trustee') as 'trustee'}
-            register={register}
-            validation={[makeValidateAddress(bech32Prefix, false)]}
           />
         </div>
 
@@ -334,36 +320,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
         </div>
 
         <div className="flex flex-col gap-2">
-          <InputLabel name={t('form.targetOverrideStrategy')} primary />
-          <MarkdownRenderer
-            className="body-text text-text-secondary -mt-1 text-sm"
-            markdown={t('form.targetOverrideStrategyDescription')}
-          />
-
-          <SegmentedControls<'proportional' | 'priority'>
-            disabled={!isCreating}
-            onSelect={(value) =>
-              setValue(
-                (fieldNamePrefix +
-                  'targetOverrideStrategy') as 'targetOverrideStrategy',
-                value
-              )
-            }
-            selected={targetOverrideStrategy}
-            tabs={[
-              {
-                label: t('form.proportional'),
-                value: 'proportional',
-              },
-              {
-                label: t('form.priority'),
-                value: 'priority',
-              },
-            ]}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
           <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
             <InputLabel name={t('form.minBalance')} primary />
 
@@ -429,47 +385,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     }
               }
             />
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
-            <InputLabel name={t('form.maximumSellablePerCycle')} primary />
-
-            <SwitchCard
-              enabled={maxLimitEnabled}
-              onClick={() =>
-                setValue(
-                  (fieldNamePrefix + 'maxLimit') as 'maxLimit',
-                  maxLimitEnabled ? undefined : 5
-                )
-              }
-              readOnly={!isCreating}
-              sizing="sm"
-            />
-          </div>
-
-          <p className="body-text text-text-secondary -mt-1 text-sm">
-            {t('form.maximumSellablePerCycleDescription')}
-          </p>
-
-          {maxLimitEnabled && (
-            <div className="flex flex-row gap-2 self-start">
-              <NumberInput
-                containerClassName="grow min-w-[min(8rem,50%)]"
-                error={errors?.maxLimit}
-                fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
-                max={100}
-                min={0.01}
-                register={register}
-                setValue={setValue}
-                sizing="auto"
-                step={0.01}
-                unit="%"
-                validation={[validatePositive, validateRequired]}
-                watch={watch}
-              />
-            </div>
           )}
         </div>
 
@@ -582,6 +497,104 @@ export const ConfigureRebalancerComponent: ActionComponent<
               </div>
             </div>
           </>
+        )}
+
+        <SwitchCard
+          containerClassName="self-start mt-2"
+          enabled={showAdvanced}
+          label={t('title.advancedConfiguration')}
+          onClick={() => setShowAdvanced((s) => !s)}
+          sizing="sm"
+        />
+
+        {showAdvanced && (
+          <div className="-mt-3 flex flex-col gap-5 p-5 bg-background-tertiary rounded-md animate-fade-in">
+            <div className="flex flex-col gap-2">
+              <InputLabel name={t('form.trustee')} optional primary />
+              <p className="body-text text-text-secondary -mt-1 text-sm">
+                {t('form.rebalancerTrusteeDescription')}
+              </p>
+
+              <AddressInput
+                disabled={!isCreating}
+                error={errors?.trustee}
+                fieldName={(fieldNamePrefix + 'trustee') as 'trustee'}
+                register={register}
+                validation={[makeValidateAddress(bech32Prefix, false)]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <InputLabel name={t('form.targetOverrideStrategy')} primary />
+              <MarkdownRenderer
+                className="body-text text-text-secondary -mt-1 text-sm"
+                markdown={t('form.targetOverrideStrategyDescription')}
+              />
+
+              <SegmentedControls<'proportional' | 'priority'>
+                disabled={!isCreating}
+                onSelect={(value) =>
+                  setValue(
+                    (fieldNamePrefix +
+                      'targetOverrideStrategy') as 'targetOverrideStrategy',
+                    value
+                  )
+                }
+                selected={targetOverrideStrategy}
+                tabs={[
+                  {
+                    label: t('form.proportional'),
+                    value: 'proportional',
+                  },
+                  {
+                    label: t('form.priority'),
+                    value: 'priority',
+                  },
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
+                <InputLabel name={t('form.maximumSellablePerCycle')} primary />
+
+                <SwitchCard
+                  enabled={maxLimitEnabled}
+                  onClick={() =>
+                    setValue(
+                      (fieldNamePrefix + 'maxLimit') as 'maxLimit',
+                      maxLimitEnabled ? undefined : 5
+                    )
+                  }
+                  readOnly={!isCreating}
+                  sizing="sm"
+                />
+              </div>
+
+              <p className="body-text text-text-secondary -mt-1 text-sm">
+                {t('form.maximumSellablePerCycleDescription')}
+              </p>
+
+              {maxLimitEnabled && (
+                <div className="flex flex-row gap-2 self-start">
+                  <NumberInput
+                    containerClassName="grow min-w-[min(8rem,50%)]"
+                    error={errors?.maxLimit}
+                    fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
+                    max={100}
+                    min={0.01}
+                    register={register}
+                    setValue={setValue}
+                    sizing="auto"
+                    step={0.01}
+                    unit="%"
+                    validation={[validatePositive, validateRequired]}
+                    watch={watch}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
 
