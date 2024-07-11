@@ -2164,7 +2164,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //   name: 'secret',
   //   mainnet: false,
   //   accentColor: '#000000',
-  //   factoryContractAddress: 'secret13dk93ms25qu8j06pxn2p9yphzmsskpejtmddh0',
+  //   factoryContractAddress: 'secret1tns0rehvxwggxqhnwe4s57g57d2ym70su8ta0g',
   //   noIndexer: true,
   //   createWithCw20: true,
   //   explorerUrlTemplates: {
@@ -2183,7 +2183,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     CwPayrollFactory: 8186,
   //     CwTokenSwap: 8187,
   //     CwVesting: 8189,
-  //     DaoCore: 9426,
+  //     DaoCore: 9430,
   //     DaoPreProposeApprovalSingle: 8180,
   //     DaoPreProposeApprover: 8181,
   //     DaoPreProposeMultiple: 9416,
@@ -2216,7 +2216,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     CwVesting:
   //       '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
   //     DaoCore:
-  //       '4b8a0809f9548934eef483e3a93ec1dcdcd98df7ba4798f0683c3cc1666930e1',
+  //       'e31dd725fac8537c5498f3f08efee522a6544ef0144a5c5176d02c2fe57c241e',
   //     DaoPreProposeApprovalSingle:
   //       '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
   //     DaoPreProposeApprover:
