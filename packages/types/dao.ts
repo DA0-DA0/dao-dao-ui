@@ -49,6 +49,7 @@ import {
 } from './proposal-module-adapter'
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
+import { Widget } from './widgets'
 
 /**
  * An object that represents a DAO across the app.
@@ -238,6 +239,7 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
+  availableWidgets: readonly Widget[]
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   makeDefaultNewDao: (chainId: string) => NewDao
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
@@ -262,6 +264,12 @@ export interface NewDao<
   }[]
   votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
+  /**
+   * Map widget ID to values for that widget. If null, it was added and then
+   * deleted. Make optional for backwards compatibility with saved forms in
+   * people's browsers.
+   */
+  widgets?: Record<string, Record<string, any> | null>
 }
 
 export interface NewDaoTier {

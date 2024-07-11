@@ -9,11 +9,10 @@ import {
   ChainLabel,
   ChainProvider,
   Tooltip,
-  useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
-  ActionComponentProps,
+  AccountType,
   ActionKey,
   LATEST_VESTING_CONTRACT_VERSION,
   VestingPaymentsWidgetData,
@@ -85,7 +84,9 @@ export const VestingPaymentsEditor = (
   return (
     <div className="mt-2 flex flex-col items-start gap-4">
       <p className="body-text max-w-prose break-words">
-        {t('info.vestingManagerExplanation')}
+        {t('info.vestingManagerExplanation', {
+          context: props.type,
+        })}
       </p>
 
       {possibleChainIds.map((chainId) => (
@@ -99,27 +100,25 @@ export const VestingPaymentsEditor = (
   )
 }
 
-type VestingFactoryChainProps = {
+type VestingFactoryChainProps = WidgetEditorProps<VestingPaymentsWidgetData> & {
   /**
    * Chain ID.
    */
   chainId: string
-} & Pick<
-  ActionComponentProps,
-  'isCreating' | 'fieldNamePrefix' | 'addAction' | 'allActionsWithData'
->
+}
 
 const VestingFactoryChain = ({
   chainId,
   isCreating,
   fieldNamePrefix,
-  addAction,
-  allActionsWithData,
+  ...props
 }: VestingFactoryChainProps) => {
   const { t } = useTranslation()
-  const { chainId: nativeChainId, accounts } = useDaoInfoContext()
+  const nativeChainId =
+    props.accounts.find((a) => a.type === AccountType.Native)?.chainId ||
+    props.accounts[0].chainId
   const daoChainAccountAddress = getAccountAddress({
-    accounts,
+    accounts: props.accounts,
     chainId,
   })
   const { codeIds } = mustGetSupportedChainConfig(chainId)
@@ -190,7 +189,7 @@ const VestingFactoryChain = ({
         getSigningClient,
         walletAddress,
         codeIds.CwPayrollFactory,
-        `DAOVestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`,
+        `VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`,
         {
           owner: daoChainAccountAddress,
           vesting_code_id: codeIds.CwVesting,
@@ -252,11 +251,13 @@ const VestingFactoryChain = ({
     return null
   }
 
-  const crossChainAccountActionExists = allActionsWithData.some(
-    (action) =>
-      action.actionKey === ActionKey.CreateCrossChainAccount &&
-      action.data?.chainId === chainId
-  )
+  const crossChainAccountActionExists =
+    props.type === 'action' &&
+    props.allActionsWithData.some(
+      (action) =>
+        action.actionKey === ActionKey.CreateCrossChainAccount &&
+        action.data?.chainId === chainId
+    )
 
   return (
     <div className="flex flex-col items-start gap-x-4 gap-y-2 xs:flex-row xs:items-center">
@@ -270,12 +271,12 @@ const VestingFactoryChain = ({
         chainFactory?.version === LATEST_VESTING_CONTRACT_VERSION ? (
           <Check className="!h-6 !w-6" />
         ) : // If DAO does not have cross-chain account, add button to create action.
-        !daoChainAccountAddress ? (
+        props.type === 'action' && !daoChainAccountAddress ? (
           <Tooltip title={t('info.vestingCrossChainAccountCreationTooltip')}>
             <Button
               disabled={crossChainAccountActionExists}
               onClick={() =>
-                addAction?.({
+                props.addAction?.({
                   actionKey: ActionKey.CreateCrossChainAccount,
                   data: {
                     chainId,

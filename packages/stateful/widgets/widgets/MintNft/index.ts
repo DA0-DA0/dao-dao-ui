@@ -1,3 +1,5 @@
+import { ImageOutlined, ImageRounded } from '@mui/icons-material'
+
 import {
   Widget,
   WidgetId,
@@ -11,6 +13,8 @@ import { MintNftData } from './types'
 
 export const MintNftWidget: Widget<MintNftData> = {
   id: WidgetId.MintNft,
+  Icon: ImageOutlined,
+  IconFilled: ImageRounded,
   location: WidgetLocation.Home,
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {

@@ -18,7 +18,10 @@ import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   Button,
   ChainProvider,
-  CreateDaoPages,
+  CreateDaoGovernance,
+  CreateDaoReview,
+  CreateDaoStart,
+  CreateDaoVoting,
   DaoHeader,
   ImageSelector,
   Loader,
@@ -43,7 +46,10 @@ import {
   ProposalModuleAdapter,
   SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
-import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
+import {
+  InstantiateMsg as DaoDaoCoreInstantiateMsg,
+  InitialItem,
+} from '@dao-dao/types/contracts/DaoDaoCore'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoDaoCore'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -61,6 +67,7 @@ import {
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
+  getWidgetStorageItemKey,
   instantiateSmartContract,
   isSecretNetwork,
   makeWasmMessage,
@@ -90,6 +97,7 @@ import {
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
+import { getWidgets } from '../../widgets'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -97,6 +105,7 @@ import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
 import { WalletChainSwitcher } from '../wallet'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
+import { CreateDaoExtensions } from './CreateDaoExtensions'
 import { ImportMultisigModal } from './ImportMultisigModal'
 
 // i18n keys
@@ -107,7 +116,15 @@ export enum CreateDaoSubmitValue {
   Create = 'button.createDAO',
 }
 
-export interface CreateDaoFormProps {
+const CreateDaoPages = [
+  CreateDaoStart,
+  CreateDaoGovernance,
+  CreateDaoVoting,
+  CreateDaoExtensions,
+  CreateDaoReview,
+]
+
+export type CreateDaoFormProps = {
   parentDao?: DaoParentInfo
 
   // Primarily for testing in storybook.
@@ -264,6 +281,7 @@ export const InnerCreateDaoForm = ({
     creator: { id: creatorId, data: creatorData },
     proposalModuleAdapters,
     votingConfig,
+    widgets,
   } = newDao
 
   // If chain ID changes, update form values.
@@ -356,6 +374,12 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
+  // Get available widgets.
+  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
+    () => getWidgets(chainId),
+    [chainId]
+  )
+
   let instantiateMsg:
     | DaoDaoCoreInstantiateMsg
     | SecretDaoDaoCoreInstantiateMsg
@@ -387,6 +411,16 @@ export const InnerCreateDaoForm = ({
       name: name.trim(),
       description,
       imageUrl,
+      // Add widgets if configured.
+      ...(widgets &&
+        Object.keys(widgets).length > 0 && {
+          initialItems: Object.entries(widgets).map(
+            ([id, values]): InitialItem => ({
+              key: getWidgetStorageItemKey(id),
+              value: JSON.stringify(values),
+            })
+          ),
+        }),
     }
 
     if (isSecretNetwork(chainId)) {
@@ -828,6 +862,7 @@ export const InnerCreateDaoForm = ({
     availableCreators,
     creator,
     proposalModuleDaoCreationAdapters,
+    availableWidgets,
     makeDefaultNewDao,
     SuspenseLoader,
     ImportMultisigModal,

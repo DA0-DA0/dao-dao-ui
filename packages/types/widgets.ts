@@ -1,6 +1,12 @@
 import { ComponentType } from 'react'
+import { FieldErrors } from 'react-hook-form'
 
-import { ActionCategoryMaker, ActionComponentProps } from './actions'
+import { Account } from './account'
+import {
+  ActionCategoryMaker,
+  ActionComponentProps,
+  ActionOptions,
+} from './actions'
 
 export enum WidgetId {
   MintNft = 'mint_nft',
@@ -31,16 +37,31 @@ export type WidgetRendererProps<Variables extends Record<string, unknown>> = {
 }
 
 export type WidgetEditorProps<Variables extends Record<string, unknown> = any> =
-  ActionComponentProps<undefined, Variables>
+  (
+    | ({
+        type: 'action'
+        options: ActionOptions
+      } & ActionComponentProps<undefined, Variables>)
+    | {
+        type: 'daoCreation'
+        // To match action props.
+        isCreating: true
+        fieldNamePrefix: string
+        errors: FieldErrors
+      }
+  ) & {
+    accounts: readonly Account[]
+  }
 
 export type Widget<Variables extends Record<string, unknown> = any> = {
   // A unique identifier for the widget.
   id: WidgetId
-  // An icon for the widget. Used when `location` is `WidgetLocation.Tab`.
-  Icon?: ComponentType<{ className: string }>
-  // A filled icon for the widget. Used when `location` is
-  // `WidgetLocation.Home`.
-  IconFilled?: ComponentType<{ className: string }>
+  // An icon for the widget. Used for display in the editor and when `location`
+  // is `WidgetLocation.Tab`.
+  Icon: ComponentType<{ className: string }>
+  // A filled icon for the widget. Used for display in the editor and when
+  // `location` is `WidgetLocation.Home`.
+  IconFilled: ComponentType<{ className: string }>
   // The location where the widget is displayed.
   location: WidgetLocation
   // The context in which the widget is visible.

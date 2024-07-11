@@ -82,6 +82,7 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
     veto: convertCosmosVetoConfigToVeto(null),
   },
   advancedVotingConfigEnabled: false,
+  widgets: {},
 })
 
 export const newDaoAtom = atomFamily<
