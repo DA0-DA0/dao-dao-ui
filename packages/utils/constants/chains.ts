@@ -2177,20 +2177,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //   codeIds: {
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: -1,
-  //     Cw4Group: 9161,
+  //     Cw4Group: 9422,
   //     Cw20Base: 8164, // snip20
   //     Cw721Base: 8172, // snip721
   //     CwPayrollFactory: 8186,
   //     CwTokenSwap: 8187,
   //     CwVesting: 8189,
-  //     DaoCore: 9155,
+  //     DaoCore: 9426,
   //     DaoPreProposeApprovalSingle: 8180,
   //     DaoPreProposeApprover: 8181,
-  //     DaoPreProposeMultiple: 8177,
-  //     DaoPreProposeSingle: 8175,
-  //     DaoProposalMultiple: 8178,
-  //     DaoProposalSingle: 8176,
-  //     DaoVotingCw4: 9160,
+  //     DaoPreProposeMultiple: 9416,
+  //     DaoPreProposeSingle: 9415,
+  //     DaoProposalMultiple: 9414,
+  //     DaoProposalSingle: 9413,
+  //     DaoVotingCw4: 9421,
   //     DaoVotingCw20Staked: 8170, // snip20
   //     DaoVotingCw721Staked: 8182, // snip721
   //     DaoVotingTokenStaked: 8174,
@@ -2204,7 +2204,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: '',
   //     Cw4Group:
-  //       '588d5b95d865df2b18d05fa32f93fc6d82864ec84cca87ef139390e6e0524e58',
+  //       '06882aeaecdd4bf6c364dca04acaa774eddfb5524efbb33a4e4c7b0ecd8e2939',
   //     Cw20Base:
   //       'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
   //     Cw721Base:
@@ -2216,7 +2216,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     CwVesting:
   //       '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
   //     DaoCore:
-  //       '24514b34e44eed3898400192d8744fdb0f89cb98cec0377127d364dc2e71ce6f',
+  //       '4b8a0809f9548934eef483e3a93ec1dcdcd98df7ba4798f0683c3cc1666930e1',
   //     DaoPreProposeApprovalSingle:
   //       '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
   //     DaoPreProposeApprover:
@@ -2226,9 +2226,9 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     DaoPreProposeSingle:
   //       'd5fde27c749424968f14a70f4383d3aa1df97ba9ab4933a7e648186ecf8afa1c',
   //     DaoProposalMultiple:
-  //       '78584b7acdbeae211e71b8711147985217999ab7cf146812df456c48a24835b9',
+  //       'dfc954ec00f93cb9b45930adcd0aa62ba273bc7d48e5a094b51cbba78b0ddbb5',
   //     DaoProposalSingle:
-  //       '0d412146fccc5936cacc463db54e7721eae03d13977e4c3c3ee570fdbba530c6',
+  //       'd617f9f97dbb13794292cb7da3f6b8bd20061ca8f51444456c1b2e0aff96d2b9',
   //     DaoVotingCw4:
   //       'f80641ebe9bf07ac2e44f6a7c33de7ece8d4706a709b3ea2ccad046384251009',
   //     DaoVotingCw20Staked:
