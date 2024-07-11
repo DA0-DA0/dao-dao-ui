@@ -2177,7 +2177,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //   codeIds: {
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: -1,
-  //     Cw4Group: 9158,
+  //     Cw4Group: 9161,
   //     Cw20Base: 8164, // snip20
   //     Cw721Base: 8172, // snip721
   //     CwPayrollFactory: 8186,
@@ -2194,7 +2194,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     DaoVotingCw20Staked: 8170, // snip20
   //     DaoVotingCw721Staked: 8182, // snip721
   //     DaoVotingTokenStaked: 8174,
-  //     QueryAuth: 8195,
+  //     QueryAuth: 9323,
 
   //     // unused
   //     CwTokenfactoryIssuerMain: -1,
@@ -2204,7 +2204,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     // TODO(secret-testnet)
   //     Cw1Whitelist: '',
   //     Cw4Group:
-  //       'dbf5ab79a2fee24347284fc1be79df2ff5506b8002e317426d3025060e6b782b',
+  //       '588d5b95d865df2b18d05fa32f93fc6d82864ec84cca87ef139390e6e0524e58',
   //     Cw20Base:
   //       'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
   //     Cw721Base:
@@ -2238,7 +2238,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   //     DaoVotingTokenStaked:
   //       '3bc835c9e0fdd0deea88202d3de32caa8125891eb0821973f1c5244f818f2d45',
   //     QueryAuth:
-  //       'dbedf461d93392c5f5e36e07feb46ac4ce0700069d1be6c0796980ef48d1aab4',
+  //       'a9e52a8f517de56ad7fb21a1d57c43e9442d425f91ba2f2a190bea90ee504f46',
 
   //     // unused
   //     CwTokenfactoryIssuerMain: '',
