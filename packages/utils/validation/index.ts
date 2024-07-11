@@ -1,5 +1,4 @@
 import JSON5 from 'json5'
-import { TFunction } from 'react-i18next'
 
 import {
   isValidBech32Address,
@@ -50,13 +49,6 @@ export const validateUrl = (v: string | undefined) =>
 export const validateUrlWithIpfs = (v: string | undefined) =>
   (v && isValidUrl(v, true)) ||
   'Invalid image URL: must start with https or ipfs.'
-
-export const makeValidateDate =
-  (t: TFunction, time = false, required = true) =>
-  (v: string | undefined) =>
-    (!required && !v) ||
-    (v && !isNaN(Date.parse(v))) ||
-    t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
 export const makeValidateTokenFactoryDenom =
   (bech32Prefix: string, required = true) =>

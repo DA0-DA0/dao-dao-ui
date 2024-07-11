@@ -1,22 +1,18 @@
 import { Add } from '@mui/icons-material'
-import clsx from 'clsx'
 import { useCallback } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  DateTimePicker,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import {
-  formatDateTimeTz,
-  makeValidateDate,
-  validateRequired,
-} from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
 import { NewSurveyFormData } from '../../types'
 import { NewAttribute, NewAttributeProps } from './NewAttribute'
@@ -57,7 +53,6 @@ export const NewSurveyForm = ({
   const contributionsCloseRatingsOpenAt = watch(
     'contributionsCloseRatingsOpenAt'
   )
-  const ratingsCloseAt = watch('ratingsCloseAt')
 
   const {
     append: appendAttribute,
@@ -80,7 +75,7 @@ export const NewSurveyForm = ({
   return (
     <FormProvider {...formMethods}>
       <form
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-5"
         onSubmit={handleSubmit(onCreate)}
         ref={onFormRef}
       >
@@ -90,7 +85,7 @@ export const NewSurveyForm = ({
 
         {/* Survey Name */}
         <div className="space-y-2">
-          <InputLabel name={t('form.compensationCycleName')} />
+          <InputLabel name={t('form.name')} />
 
           <div>
             <TextInput
@@ -104,214 +99,152 @@ export const NewSurveyForm = ({
           </div>
         </div>
 
-        <p className="primary-text -mb-2 text-text-body">
-          {t('title.publicSubmissions')}
-        </p>
-        <div className="space-y-4 rounded-lg bg-background-tertiary p-6">
-          {/* Contribution Dates */}
-          <div className="flex flex-col gap-4 sm:flex-row">
-            {/* Contribution Open Date */}
-            <div className="grow basis-0 space-y-2">
-              <div className="flex flex-row items-end gap-2">
+        <div className="flex flex-col gap-1">
+          <p className="primary-text text-text-body">
+            {t('title.publicSubmissions')}
+          </p>
+          <p className="secondary-text max-w-prose">
+            {t('info.publicSubmissionsDescription')}
+          </p>
+
+          <div className="mt-2 space-y-4 rounded-lg bg-background-tertiary p-6">
+            {/* Contribution Dates */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              {/* Contribution Open Date */}
+              <div className="grow basis-0 space-y-2">
                 <InputLabel name={t('form.openDate')} />
 
-                {/* Date Preview */}
-                {!!contributionsOpenAt &&
-                  !isNaN(Date.parse(contributionsOpenAt)) && (
-                    <p className="caption-text">
-                      {formatDateTimeTz(new Date(contributionsOpenAt))}
-                    </p>
-                  )}
+                <div>
+                  <DateTimePicker
+                    control={control}
+                    error={errors.contributionsOpenAt}
+                    fieldName="contributionsOpenAt"
+                    required
+                  />
+                  <InputErrorMessage error={errors.contributionsOpenAt} />
+                </div>
               </div>
 
-              <div>
-                <TextInput
-                  error={errors.contributionsOpenAt}
-                  fieldName="contributionsOpenAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
-                  validation={[validateRequired, makeValidateDate(t)]}
-                />
-                <InputErrorMessage error={errors.contributionsOpenAt} />
-              </div>
-            </div>
-
-            {/* Contribution Close Date */}
-            <div className="grow basis-0 space-y-2">
-              <div className="flex flex-row items-end gap-2">
+              {/* Contribution Close Date */}
+              <div className="grow basis-0 space-y-2">
                 <InputLabel name={t('form.closeDate')} />
 
-                {/* Date Preview */}
-                {!!contributionsCloseRatingsOpenAt &&
-                  !isNaN(Date.parse(contributionsCloseRatingsOpenAt)) && (
-                    <p className="caption-text">
-                      {formatDateTimeTz(
-                        new Date(contributionsCloseRatingsOpenAt)
-                      )}
-                    </p>
-                  )}
-              </div>
-
-              <div>
-                <TextInput
-                  error={errors.contributionsCloseRatingsOpenAt}
-                  fieldName="contributionsCloseRatingsOpenAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
-                  validation={[
-                    validateRequired,
-                    makeValidateDate(t),
-                    // Ensure close date is after open date.
-                    () =>
-                      // Valid if dates not yet available.
-                      !(
-                        contributionsOpenAt &&
-                        !isNaN(Date.parse(contributionsOpenAt)) &&
-                        contributionsCloseRatingsOpenAt &&
-                        !isNaN(Date.parse(contributionsCloseRatingsOpenAt))
-                      ) ||
-                      new Date(contributionsCloseRatingsOpenAt) >
-                        new Date(contributionsOpenAt) ||
-                      t('error.closeDateMustBeAfterOpenDate'),
-                  ]}
-                />
-                <InputErrorMessage
-                  error={errors.contributionsCloseRatingsOpenAt}
-                />
+                <div>
+                  <DateTimePicker
+                    control={control}
+                    error={errors.contributionsCloseRatingsOpenAt}
+                    fieldName="contributionsCloseRatingsOpenAt"
+                    minDate={
+                      // Ensure close date is after open date.
+                      contributionsOpenAt &&
+                      !isNaN(Date.parse(contributionsOpenAt))
+                        ? new Date(contributionsOpenAt)
+                        : undefined
+                    }
+                    required
+                  />
+                  <InputErrorMessage
+                    error={errors.contributionsCloseRatingsOpenAt}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Contribution Instructions */}
-          <div className="space-y-2">
-            <InputLabel>
-              {t('form.instructions')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdown')}
-              </span>
-            </InputLabel>
+            {/* Contribution Instructions */}
+            <div className="space-y-2">
+              <InputLabel>
+                {t('form.instructions')}
+                <span className="text-text-tertiary">
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
+                  {' – '}
+                  {t('info.supportsMarkdown')}
+                </span>
+              </InputLabel>
 
-            <div>
-              <TextAreaInput
-                error={errors.contributionInstructions}
-                fieldName="contributionInstructions"
-                placeholder={t('form.contributionInstructionsPlaceholder')}
-                register={register}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.contributionInstructions} />
+              <div>
+                <TextAreaInput
+                  error={errors.contributionInstructions}
+                  fieldName="contributionInstructions"
+                  placeholder={t('form.contributionInstructionsPlaceholder')}
+                  register={register}
+                  rows={5}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors.contributionInstructions} />
+              </div>
             </div>
           </div>
         </div>
 
-        <p className="primary-text -mb-2 text-text-body">
-          {t('title.daoRatings')}
-        </p>
-        <div className="space-y-4 rounded-lg bg-background-tertiary p-6">
-          {/* Rating Dates */}
-          <div className="flex flex-col gap-4 sm:flex-row">
-            {/* Rating Open Date, same as Contribution Close Date */}
-            <div className="grow basis-0 space-y-2">
-              <div className="flex flex-row items-end gap-2">
+        <div className="flex flex-col gap-1">
+          <p className="primary-text text-text-body">{t('title.daoRatings')}</p>
+          <p className="secondary-text max-w-prose">
+            {t('info.daoRatingsDescription')}
+          </p>
+
+          <div className="mt-2 space-y-4 rounded-lg bg-background-tertiary p-6">
+            {/* Rating Dates */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              {/* Rating Open Date, same as Contribution Close Date */}
+              <div className="grow basis-0 space-y-2">
                 <InputLabel name={t('form.openDate')} />
 
-                {/* Date Preview */}
-                {!!contributionsCloseRatingsOpenAt &&
-                  !isNaN(Date.parse(contributionsCloseRatingsOpenAt)) && (
-                    <p className="caption-text">
-                      {formatDateTimeTz(
-                        new Date(contributionsCloseRatingsOpenAt)
-                      )}
-                    </p>
-                  )}
+                {/* Set explicit height to match rating close date input */}
+                <InputThemedText className="h-11 text-text-tertiary">
+                  {t('form.sameAsPublicSubmissionCloseDate')}
+                </InputThemedText>
               </div>
 
-              {/* Copy from contribution close date. */}
-              <InputThemedText
-                className={clsx(
-                  // Explicitly set height so it doesn't shrink when empty.
-                  'h-10',
-                  !contributionsCloseRatingsOpenAt && 'text-text-tertiary'
-                )}
-              >
-                {contributionsCloseRatingsOpenAt ||
-                  t('form.sameAsPublicSubmissionCloseDate')}
-              </InputThemedText>
-            </div>
-
-            {/* Rating Close Date */}
-            <div className="grow basis-0 space-y-2">
-              <div className="flex flex-row items-end gap-2">
+              {/* Rating Close Date */}
+              <div className="grow basis-0 space-y-2">
                 <InputLabel name={t('form.closeDate')} />
 
-                {/* Date Preview */}
-                {!!ratingsCloseAt && !isNaN(Date.parse(ratingsCloseAt)) && (
-                  <p className="caption-text">
-                    {formatDateTimeTz(new Date(ratingsCloseAt))}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <TextInput
-                  error={errors.ratingsCloseAt}
-                  fieldName="ratingsCloseAt"
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
-                  validation={[
-                    validateRequired,
-                    makeValidateDate(t),
-                    // Ensure close date is after open date.
-                    () =>
-                      // Valid if dates not yet available.
-                      !(
-                        contributionsCloseRatingsOpenAt &&
-                        !isNaN(Date.parse(contributionsCloseRatingsOpenAt)) &&
-                        ratingsCloseAt &&
-                        !isNaN(Date.parse(ratingsCloseAt))
-                      ) ||
-                      new Date(ratingsCloseAt) >
-                        new Date(contributionsCloseRatingsOpenAt) ||
-                      t('error.closeDateMustBeAfterOpenDate'),
-                  ]}
-                />
-                <InputErrorMessage error={errors.ratingsCloseAt} />
+                <div>
+                  <DateTimePicker
+                    control={control}
+                    error={errors.ratingsCloseAt}
+                    fieldName="ratingsCloseAt"
+                    minDate={
+                      // Ensure close date is after open date.
+                      contributionsCloseRatingsOpenAt &&
+                      !isNaN(Date.parse(contributionsCloseRatingsOpenAt))
+                        ? new Date(contributionsCloseRatingsOpenAt)
+                        : undefined
+                    }
+                    required
+                  />
+                  <InputErrorMessage error={errors.ratingsCloseAt} />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Rating Instructions */}
-          <div className="space-y-2">
-            <InputLabel>
-              {t('form.instructions')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdown')}
-              </span>
-            </InputLabel>
+            {/* Rating Instructions */}
+            <div className="space-y-2">
+              <InputLabel>
+                {t('form.instructions')}
+                <span className="text-text-tertiary">
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
+                  {' – '}
+                  {t('info.supportsMarkdown')}
+                </span>
+              </InputLabel>
 
-            <div>
-              <TextAreaInput
-                error={errors.ratingInstructions}
-                fieldName="ratingInstructions"
-                placeholder={t('form.ratingInstructionsPlaceholder')}
-                register={register}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.ratingInstructions} />
+              <div>
+                <TextAreaInput
+                  error={errors.ratingInstructions}
+                  fieldName="ratingInstructions"
+                  placeholder={t('form.ratingInstructionsPlaceholder')}
+                  register={register}
+                  rows={5}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors.ratingInstructions} />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <p className="primary-text text-text-body">
             {t('form.contributionAttributes')}
           </p>
@@ -319,7 +252,7 @@ export const NewSurveyForm = ({
             {t('form.contributionAttributesDescription')}
           </p>
 
-          <div className="mt-4 space-y-2">
+          <div className="mt-3 space-y-2">
             {attributes.map((attribute, index) => (
               <NewAttribute
                 key={attribute.id}
@@ -331,7 +264,7 @@ export const NewSurveyForm = ({
           </div>
 
           <Button
-            className="self-start"
+            className="self-start mt-1"
             onClick={() =>
               appendAttribute({
                 name: '',
@@ -345,7 +278,7 @@ export const NewSurveyForm = ({
           </Button>
         </div>
 
-        <Button className="mb-10 self-end" loading={loading} type="submit">
+        <Button className="mb-6 self-end" loading={loading} type="submit">
           <Add className="!h-4 !w-4" />
           <p>{t('button.create')}</p>
         </Button>

@@ -1,6 +1,7 @@
 export * from './AddressInput'
 export * from './Checkbox'
 export * from './CodeMirrorInput'
+export * from './DateTimePicker'
 export * from './DaoSupportedChainPickerInput'
 export * from './Dropdown'
 export * from './FileDropInput'
