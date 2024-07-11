@@ -21,16 +21,34 @@
   display: flex;
   flex-grow: 1;
   flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  width: 100%;
 }
 
 .react-datetime-picker__wrapper input,
 .react-datetime-picker__wrapper select {
   outline: none !important;
+  cursor: text;
+}
+
+/* Hide AM/PM dropdown arrow icon */
+.react-datetime-picker__wrapper select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+}
+/* For IE10 */
+.react-datetime-picker__wrapper select::-ms-expand {
+  display: none;
 }
 
 .react-datetime-picker__inputGroup {
   min-width: calc(4px + (4px * 3) + 0.54em * 6 + 0.217em * 2);
-  flex-grow: 1;
+  flex-shrink: 0;
   padding: 0 2px;
 }
 
@@ -82,6 +100,10 @@
   -webkit-appearance: menulist;
   -moz-appearance: menulist;
   appearance: menulist;
+}
+
+.react-datetime-picker__calendar-button {
+  flex-grow: 1;
 }
 
 .react-datetime-picker__button {
@@ -234,7 +256,8 @@
 .react-calendar__year-view .react-calendar__tile,
 .react-calendar__decade-view .react-calendar__tile,
 .react-calendar__century-view .react-calendar__tile {
-  padding: 2rem 0.5rem;
+  padding: 1.25rem 0.75rem;
+  font-size: 0.9em;
 }
 
 .react-calendar__tile {

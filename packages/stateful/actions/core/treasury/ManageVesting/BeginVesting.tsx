@@ -15,10 +15,11 @@ import {
   Button,
   ChainProvider,
   CopyToClipboard,
+  DateTimePicker,
+  DateTimePickerNoForm,
   IconButton,
   InputErrorMessage,
   InputLabel,
-  InputThemedText,
   NumberInput,
   RadioInput,
   RadioInputOption,
@@ -55,7 +56,6 @@ import {
   getDisplayNameForChainId,
   getSupportedChainConfig,
   makeValidateAddress,
-  makeValidateDate,
   validateNonNegative,
   validatePositive,
   validateRequired,
@@ -227,9 +227,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     }
   }, [clearErrors, fieldNamePrefix, isCreating, setError, t, totalStepPercent])
 
-  const formattedStartDate = startDate && formatDateTimeTz(startDate)
-  const formattedFinishDate = stepPoints?.length
-    ? formatDateTimeTz(new Date(stepPoints[stepPoints.length - 1].timestamp))
+  const finishDate = stepPoints?.length
+    ? new Date(stepPoints[stepPoints.length - 1].timestamp)
     : undefined
 
   const selectedToken = tokens.find(
@@ -562,39 +561,25 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         <div className="flex flex-row flex-wrap gap-2">
           {/* Start Date */}
           <div className="flex max-w-xs flex-col gap-2">
-            <div className="flex flex-row items-end gap-2">
-              <InputLabel name={t('form.startDate')} />
+            <InputLabel name={t('form.startDate')} />
 
-              {/* Date Preview */}
-              {formattedStartDate && isCreating && (
-                <p className="caption-text">{formattedStartDate}</p>
-              )}
+            <div className="flex flex-col gap-1">
+              <DateTimePicker
+                control={control}
+                disabled={!isCreating}
+                error={errors?.startDate}
+                fieldName={(fieldNamePrefix + 'startDate') as 'startDate'}
+                required
+              />
+              <InputErrorMessage error={errors?.startDate} />
             </div>
-
-            {isCreating ? (
-              <div className="flex flex-col gap-1">
-                <TextInput
-                  error={errors?.startDate}
-                  fieldName={(fieldNamePrefix + 'startDate') as 'startDate'}
-                  // eslint-disable-next-line i18next/no-literal-string
-                  placeholder="YYYY-MM-DD HH:mm"
-                  register={register}
-                  validation={[validateRequired, makeValidateDate(t, true)]}
-                />
-                <InputErrorMessage error={errors?.startDate} />
-              </div>
-            ) : (
-              <InputThemedText>{formattedStartDate}</InputThemedText>
-            )}
           </div>
 
           {/* Finish Date, once created */}
-          {!isCreating && formattedFinishDate && (
+          {!isCreating && finishDate && (
             <div className="flex max-w-xs flex-col gap-2">
               <InputLabel name={t('form.finishDate')} />
-              <InputThemedText className="max-w-xs">
-                {formattedFinishDate}
-              </InputThemedText>
+              <DateTimePickerNoForm disabled value={finishDate} />
             </div>
           )}
         </div>

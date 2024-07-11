@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon'
+
 const secPerDay = 24 * 60 * 60
 export const secondsToWdhms = (
   seconds: string | number,
@@ -79,3 +81,8 @@ export const browserIs12Hour = () =>
   })
     .formatToParts()
     .some((part) => part.type === 'dayPeriod')
+
+/**
+ * Get current browser's time zone abbreviation.
+ */
+export const browserTimeZone = () => DateTime.local().toFormat('ZZZZ')
