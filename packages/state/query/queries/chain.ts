@@ -342,7 +342,13 @@ export const fetchDenomMetadata = async ({
               ? displayDenom.denom.split('/').pop()!
               : displayDenom.denom
             : metadata.symbol) || denom,
-        preferredDecimals: displayDenom?.exponent ?? 0,
+        preferredDecimals:
+          displayDenom?.exponent ||
+          (chainId === ChainId.KujiraMainnet ||
+          chainId === ChainId.KujiraTestnet
+            ? // Kujira does not let setting token metadata, so default to 6.
+              6
+            : 0),
       }
     }
   } catch (err) {

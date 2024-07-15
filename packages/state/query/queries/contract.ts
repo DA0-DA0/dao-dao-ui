@@ -11,6 +11,7 @@ import {
   isSecretNetwork,
   isValidBech32Address,
   objectMatchesStructure,
+  secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
@@ -188,6 +189,20 @@ export const fetchContractInstantiationTime = async (
   )
 }
 
+/**
+ * Get code hash for a Secret Network contract.
+ */
+export const fetchSecretContractCodeHash = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<string> => {
+  const client = await secretCosmWasmClientRouter.connect(chainId)
+  return client.queryCodeHashForContractAddress(address)
+}
+
 export const contractQueries = {
   /**
    * Fetch contract info stored in state, which contains its name and version.
@@ -270,5 +285,15 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'instantiationTime', options],
       queryFn: () => fetchContractInstantiationTime(queryClient, options),
+    }),
+  /**
+   * Fetch the code hash for a Secret Network contract.
+   */
+  secretCodeHash: (
+    options: Parameters<typeof fetchSecretContractCodeHash>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['contract', 'secretCodeHash', options],
+      queryFn: () => fetchSecretContractCodeHash(options),
     }),
 }

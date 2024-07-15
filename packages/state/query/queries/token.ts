@@ -7,9 +7,11 @@ import {
   getIbcTransferInfoFromChannel,
   getTokenForChainIdAndDenom,
   ibcProtoRpcClientRouter,
+  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
+import { contractQueries } from './contract'
 import { cw20BaseQueries } from './contracts'
 import { indexerQueries } from './indexer'
 import { skipQueries } from './skip'
@@ -22,13 +24,20 @@ export const fetchTokenInfo = async (
   { chainId, type, denomOrAddress }: GenericTokenSource
 ): Promise<GenericToken> => {
   const [source, asset] = await Promise.all([
-    queryClient.fetchQuery(
-      tokenQueries.source(queryClient, {
+    queryClient
+      .fetchQuery(
+        tokenQueries.source(queryClient, {
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      )
+      // On error, fallback to passed in params as the source.
+      .catch(() => ({
         chainId,
         type,
         denomOrAddress,
-      })
-    ),
+      })),
     queryClient
       .fetchQuery(
         skipQueries.asset(queryClient, {
@@ -49,6 +58,15 @@ export const fetchTokenInfo = async (
       decimals: asset.decimals || 0,
       imageUrl: asset.logo_uri || getFallbackImage(denomOrAddress),
       source,
+      snip20CodeHash:
+        isSecretNetwork(asset.chain_id) && asset.is_cw20 && asset.token_contract
+          ? await queryClient.fetchQuery(
+              contractQueries.secretCodeHash({
+                chainId: asset.chain_id,
+                address: asset.token_contract,
+              })
+            )
+          : null,
     }
   } else if (source.chainId !== chainId) {
     // If Skip API does not have the info, check if Skip API has the source
@@ -70,6 +88,15 @@ export const fetchTokenInfo = async (
         decimals: sourceAsset.decimals || 0,
         imageUrl: sourceAsset.logo_uri || getFallbackImage(denomOrAddress),
         source,
+        snip20CodeHash:
+          isSecretNetwork(chainId) && type === TokenType.Cw20
+            ? await queryClient.fetchQuery(
+                contractQueries.secretCodeHash({
+                  chainId,
+                  address: denomOrAddress,
+                })
+              )
+            : null,
       }
     }
   }
@@ -98,6 +125,14 @@ export const fetchTokenInfo = async (
       decimals: tokenInfo.decimals,
       imageUrl: imageUrl || getFallbackImage(denomOrAddress),
       source,
+      snip20CodeHash: isSecretNetwork(chainId)
+        ? await queryClient.fetchQuery(
+            contractQueries.secretCodeHash({
+              chainId,
+              address: denomOrAddress,
+            })
+          )
+        : null,
     }
   }
 
@@ -106,6 +141,14 @@ export const fetchTokenInfo = async (
     return {
       ...getTokenForChainIdAndDenom(chainId, denomOrAddress, false),
       source,
+      snip20CodeHash: isSecretNetwork(chainId)
+        ? await queryClient.fetchQuery(
+            contractQueries.secretCodeHash({
+              chainId,
+              address: denomOrAddress,
+            })
+          )
+        : null,
     }
   } catch (err) {
     console.error(err)
@@ -129,6 +172,14 @@ export const fetchTokenInfo = async (
         decimals: chainMetadata.preferredDecimals,
         imageUrl: getFallbackImage(denomOrAddress),
         source,
+        snip20CodeHash: isSecretNetwork(chainId)
+          ? await queryClient.fetchQuery(
+              contractQueries.secretCodeHash({
+                chainId,
+                address: denomOrAddress,
+              })
+            )
+          : null,
       }
     }
   } catch (err) {
@@ -144,6 +195,14 @@ export const fetchTokenInfo = async (
     decimals: 0,
     imageUrl: getFallbackImage(denomOrAddress),
     source,
+    snip20CodeHash: isSecretNetwork(chainId)
+      ? await queryClient.fetchQuery(
+          contractQueries.secretCodeHash({
+            chainId,
+            address: denomOrAddress,
+          })
+        )
+      : null,
   }
 }
 

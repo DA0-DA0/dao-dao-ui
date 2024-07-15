@@ -23,15 +23,13 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getChainForChainName,
-  getFallbackImage,
   getIbcTransferInfoFromChannel,
   getNativeTokenForChainId,
-  getTokenForChainIdAndDenom,
-  isSecretNetwork,
-  isValidTokenFactoryDenom,
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
+import { tokenQueries } from '../../query'
+import { queryClientAtom } from '../atoms'
 import { astroportUsdPriceSelector } from './astroport'
 import {
   denomMetadataSelector,
@@ -42,7 +40,7 @@ import {
   nativeDenomBalanceSelector,
   nativeUnstakingDurationSecondsSelector,
 } from './chain'
-import { isDaoSelector, secretContractCodeHashSelector } from './contract'
+import { isDaoSelector } from './contract'
 import {
   Cw20BaseSelectors,
   Cw20StakeSelectors,
@@ -57,174 +55,14 @@ import { whiteWhaleUsdPriceSelector } from './whale'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
-  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+  GenericTokenSource
 >({
   key: 'genericToken',
   get:
-    ({ type, denomOrAddress, chainId }) =>
-    ({ get }) => {
-      const source = get(
-        genericTokenSourceSelector({
-          type,
-          chainId,
-          denomOrAddress,
-        })
-      )
-
-      // Check if Skip API has the info.
-      const skipAsset = get(
-        skipAssetSelector({
-          chainId,
-          type,
-          denomOrAddress,
-        })
-      )
-
-      if (skipAsset) {
-        return {
-          chainId: skipAsset.chain_id,
-          type: skipAsset.is_cw20 ? TokenType.Cw20 : TokenType.Native,
-          denomOrAddress:
-            (skipAsset.is_cw20 && skipAsset.token_contract) || skipAsset.denom,
-          symbol:
-            skipAsset.recommended_symbol || skipAsset.symbol || skipAsset.denom,
-          decimals: skipAsset.decimals || 0,
-          imageUrl: skipAsset.logo_uri || getFallbackImage(denomOrAddress),
-          source,
-          snip20CodeHash:
-            isSecretNetwork(skipAsset.chain_id) &&
-            skipAsset.is_cw20 &&
-            skipAsset.token_contract
-              ? get(
-                  secretContractCodeHashSelector({
-                    chainId: skipAsset.chain_id,
-                    contractAddress: skipAsset.token_contract,
-                  })
-                )
-              : null,
-        }
-      } else if (source.chainId !== chainId) {
-        // If Skip API does not have the info, check if Skip API has the source
-        // if it's different. This has happened before when Skip does not have
-        // an IBC asset that we were able to reverse engineer the source for.
-        const skipSourceAsset = get(skipAssetSelector(source))
-
-        if (skipSourceAsset) {
-          return {
-            chainId,
-            type,
-            denomOrAddress,
-            symbol:
-              skipSourceAsset.recommended_symbol ||
-              skipSourceAsset.symbol ||
-              skipSourceAsset.denom,
-            decimals: skipSourceAsset.decimals || 0,
-            imageUrl:
-              skipSourceAsset.logo_uri || getFallbackImage(denomOrAddress),
-            source,
-            snip20CodeHash:
-              isSecretNetwork(skipSourceAsset.chain_id) &&
-              skipSourceAsset.is_cw20 &&
-              skipSourceAsset.token_contract
-                ? get(
-                    secretContractCodeHashSelector({
-                      chainId: skipSourceAsset.chain_id,
-                      contractAddress: skipSourceAsset.token_contract,
-                    })
-                  )
-                : null,
-          }
-        }
-      }
-
-      let tokenInfo =
-        type === TokenType.Cw20
-          ? get(
-              Cw20BaseSelectors.tokenInfoSelector({
-                contractAddress: denomOrAddress,
-                chainId,
-                params: [],
-              })
-            )
-          : // Native factory tokens.
-          type === TokenType.Native &&
-            isValidTokenFactoryDenom(
-              denomOrAddress,
-              getChainForChainId(chainId).bech32_prefix
-            )
-          ? get(
-              nativeDenomMetadataInfoSelector({
-                denom: denomOrAddress,
-                chainId,
-              })
-            )
-          : // Native token or invalid type.
-            undefined
-
-      // If native non-factory token, try to get the token from the asset list.
-      if (!tokenInfo) {
-        try {
-          return {
-            ...getTokenForChainIdAndDenom(chainId, denomOrAddress, false),
-            source,
-          }
-        } catch {
-          // If that fails, try to fetch from chain if not IBC asset.
-          try {
-            tokenInfo = denomOrAddress.startsWith('ibc/')
-              ? undefined
-              : get(
-                  nativeDenomMetadataInfoSelector({
-                    denom: denomOrAddress,
-                    chainId,
-                  })
-                )
-          } catch (err) {
-            // If not an error, rethrow. This may be a promise, which is how
-            // recoil waits for the `get` to resolve.
-            if (!(err instanceof Error)) {
-              throw err
-            }
-          }
-
-          // If that fails, return placeholder token.
-          if (!tokenInfo) {
-            return {
-              ...getTokenForChainIdAndDenom(chainId, denomOrAddress),
-              source,
-            }
-          }
-        }
-      }
-
-      const imageUrl =
-        type === TokenType.Cw20
-          ? get(
-              Cw20BaseSelectors.logoUrlSelector({
-                contractAddress: denomOrAddress,
-                chainId,
-              })
-            )
-          : getFallbackImage(denomOrAddress)
-
-      return {
-        chainId,
-        type,
-        denomOrAddress,
-        symbol: tokenInfo.symbol,
-        decimals: tokenInfo.decimals,
-        imageUrl,
-        source,
-        snip20CodeHash:
-          isSecretNetwork(chainId) && type === TokenType.Cw20
-            ? get(
-                secretContractCodeHashSelector({
-                  chainId,
-                  contractAddress: denomOrAddress,
-                })
-              )
-            : null,
-      }
+    (params) =>
+    async ({ get }) => {
+      const client = get(queryClientAtom)
+      return await client.fetchQuery(tokenQueries.info(client, params))
     },
 })
 

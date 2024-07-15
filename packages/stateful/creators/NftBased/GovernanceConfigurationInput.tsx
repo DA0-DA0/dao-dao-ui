@@ -1,12 +1,11 @@
 import { useQueries } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
+  contractQueries,
   cw721BaseQueries,
   omniflixQueries,
-  secretContractCodeHashSelector,
 } from '@dao-dao/state'
 import {
   InputErrorMessage,
@@ -22,6 +21,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../hooks'
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const GovernanceConfigurationInput = ({
@@ -76,20 +76,24 @@ export const GovernanceConfigurationInput = ({
       isOmniFlix ? omniflixResult : cw721Result,
   })
 
-  const secretCodeHashLoadable = useRecoilValueLoadable(
+  const secretCodeHash = useQueryLoadingDataWithError(
     existingAddressValid && isSecretNetwork(chainId)
-      ? secretContractCodeHashSelector({
+      ? contractQueries.secretCodeHash({
           chainId,
-          contractAddress: existingGovernanceNftCollectionAddress,
+          address: existingGovernanceNftCollectionAddress,
         })
-      : constSelector(undefined)
+      : undefined
   )
 
   useEffect(() => {
     if (isSecretNetwork(chainId)) {
       setValue(
         'creator.data.secretCodeHash',
-        secretCodeHashLoadable.valueMaybe()
+        secretCodeHash.loading ||
+          secretCodeHash.updating ||
+          secretCodeHash.errored
+          ? undefined
+          : secretCodeHash.data
       )
     }
 
@@ -121,7 +125,7 @@ export const GovernanceConfigurationInput = ({
     collectionInfoLoadable,
     errors?.creator?.data?.existingCollectionInfo,
     isOmniFlix,
-    secretCodeHashLoadable,
+    secretCodeHash,
     setError,
     setValue,
     t,

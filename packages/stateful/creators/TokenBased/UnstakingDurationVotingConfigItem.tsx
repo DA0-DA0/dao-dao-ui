@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
 import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { secretContractCodeHashSelector } from '@dao-dao/state/recoil'
+import { contractQueries } from '@dao-dao/state/query'
 import {
   ClockEmoji,
   InputErrorMessage,
@@ -29,6 +28,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../components/AddressInput'
+import { useQueryLoadingDataWithError } from '../../hooks'
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const UnstakingDurationInput = ({
@@ -52,15 +52,15 @@ export const UnstakingDurationInput = ({
     createWithCw20 && customStakingAddress !== undefined
 
   // Load custom staking contract code hash on Secret Network.
-  const customStakingCodeHashLoadable = useRecoilValueLoadable(
+  const customStakingCodeHash = useQueryLoadingDataWithError(
     isSecretNetwork(chainId) &&
       customStakingAddress &&
       isValidBech32Address(customStakingAddress, bech32Prefix)
-      ? secretContractCodeHashSelector({
+      ? contractQueries.secretCodeHash({
           chainId,
-          contractAddress: customStakingAddress,
+          address: customStakingAddress,
         })
-      : constSelector(undefined)
+      : undefined
   )
   useEffect(() => {
     if (!isSecretNetwork(chainId)) {
@@ -69,9 +69,13 @@ export const UnstakingDurationInput = ({
 
     setValue(
       'customStakingCodeHash',
-      customStakingCodeHashLoadable.valueMaybe()
+      customStakingCodeHash.loading ||
+        customStakingCodeHash.updating ||
+        customStakingCodeHash.errored
+        ? undefined
+        : customStakingCodeHash.data
     )
-  }, [setValue, chainId, customStakingCodeHashLoadable])
+  }, [setValue, chainId, customStakingCodeHash])
 
   return (
     <>
@@ -110,7 +114,9 @@ export const UnstakingDurationInput = ({
           <InputErrorMessage
             error={
               errors?.customStakingAddress ||
-              customStakingCodeHashLoadable.errorMaybe()
+              (customStakingCodeHash.errored
+                ? customStakingCodeHash.error
+                : undefined)
             }
           />
         </div>
