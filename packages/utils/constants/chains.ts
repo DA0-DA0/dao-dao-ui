@@ -1376,10 +1376,11 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     factoryContractAddress:
       'terra18d67ywrfwxq6924xdsg4ahrsjrtuvnu0q5v0ttj07fakw2thspps2fn9yy',
     explorerUrlTemplates: {
-      tx: 'https://finder.terra.money/classic/tx/REPLACE',
+      tx: 'https://finder.terra-classic.hexxagon.io/mainnet/tx/REPLACE',
       gov: 'https://ping.pub/terra-luna/gov',
       govProp: 'https://ping.pub/terra-luna/gov/REPLACE',
-      wallet: 'https://finder.terra.money/classic/address/REPLACE',
+      wallet:
+        'https://finder.terra-classic.hexxagon.io/mainnet/address/REPLACE',
     },
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
