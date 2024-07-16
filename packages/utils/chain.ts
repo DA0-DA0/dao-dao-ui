@@ -55,14 +55,15 @@ export const getRpcForChainId = (
       CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
     {}
   )?.rpc
-  if (rpc && offset === 0) {
+  // Try preferred RPC 3 times before falling back to chain registry.
+  if (rpc && offset < 3) {
     return rpc
   }
 
-  // If RPC was found but not used, offset > 0, and subtract 1 from offset so we
-  // try the first RPC in the chain registry list.
+  // If RPC was found but not used, offset > 3, so subtract 3 so we start trying
+  // the first RPC in the chain registry list.
   if (rpc) {
-    offset -= 1
+    offset -= 3
   }
 
   // Fallback to chain registry.
