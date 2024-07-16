@@ -9,6 +9,11 @@ export const DAO_APPS: DaoApp[] = [
     url: 'https://app.osmosis.zone',
   },
   {
+    name: 'Astroport',
+    imageUrl: 'https://app.astroport.fi/thumbnail.jpg',
+    url: 'https://app.astroport.fi/swap',
+  },
+  {
     name: 'Stargaze',
     imageUrl: 'https://stargaze.zone/TwitterCard.png',
     url: MAINNET
@@ -16,16 +21,16 @@ export const DAO_APPS: DaoApp[] = [
       : 'https://testnet.publicawesome.dev',
   },
   {
-    name: 'Calculated Finance',
-    imageUrl: '/apps/calcfi.jpg',
-    url: 'https://app.calculated.fi/?chain=osmosis-1',
-  },
-  {
     name: 'Stargaze Studio',
     imageUrl: 'https://studio.stargaze.zone/assets/android-chrome-256x256.png',
     url: MAINNET
       ? 'https://studio.stargaze.zone'
       : 'https://studio.publicawesome.dev',
+  },
+  {
+    name: 'Calculated Finance',
+    imageUrl: '/apps/calcfi.jpg',
+    url: 'https://app.calculated.fi/?chain=osmosis-1',
   },
   {
     name: 'FIN',
