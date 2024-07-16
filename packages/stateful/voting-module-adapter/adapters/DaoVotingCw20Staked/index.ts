@@ -11,7 +11,7 @@ import {
   DaoVotingCw20StakedAdapterId,
 } from '@dao-dao/utils'
 
-import { makeMintAction } from './actions'
+import { makeMintAction, makeUpdateStakingConfigAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
   useCommonGovernanceTokenInfo,
@@ -54,7 +54,7 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
         () => ({
           // Add to DAO Governance category.
           key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeMintAction],
+          actionMakers: [makeMintAction, makeUpdateStakingConfigAction],
         }),
       ],
     },
