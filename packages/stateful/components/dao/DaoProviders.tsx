@@ -112,7 +112,7 @@ const InitializedDaoProviders = ({
 }: InitializedDaoProvidersProps) => {
   // Don't wrap chain governance in voting module or DAO actions provider.
   const inner =
-    context instanceof ChainXGovDao ? (
+    context.dao instanceof ChainXGovDao ? (
       children
     ) : (
       <VotingModuleAdapterProvider
