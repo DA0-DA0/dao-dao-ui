@@ -33,7 +33,7 @@ import {
 import { useActionOptions } from '../../../react'
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from './Component'
 
-interface UpdateAdminData {
+export type UpdateAdminData = {
   chainId: string
   contract: string
   newAdmin: string

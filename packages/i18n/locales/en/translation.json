@@ -901,6 +901,7 @@
   "info": {
     "abstainVote": "Abstain",
     "acceptSubDaoActionDescription": "Accept a pending SubDAO's ownership transfer request. Be sure that the SubDAO-to-be has already requested to join your DAO through the \"Become SubDAO\" action.",
+    "acceptSubDaoActionOtherActionsAdded": "Other actions that are required to register a new SubDAO have been added to the proposal automatically.",
     "acceptSubDaoDescription": "Accept a DAO's request to become a SubDAO.",
     "acknowledgeServiceFee": "We acknowledge that {{fee}} will be charged from the treasury for registration to the rebalancer.",
     "acknowledgeServiceFee_none": "We acknowledge that there is no fee to register for the rebalancer.",
@@ -952,6 +953,7 @@
     "availableBalance": "Available balance",
     "availableHistoryLoaded": "All available history has been loaded.",
     "becomeSubDaoActionDescription": "Provide the address of a DAO to request to become its SubDAO. The DAO will then need to accept your request to complete the ownership transfer and become your parent. Once the transfer is complete, only your new parent DAO can transfer ownership in the future. Keep in mind that your parent DAO will have full authority to execute anything it wants to on behalf of this DAO.",
+    "becomeSubDaoActionDescription_created": "The parent DAO needs to accept this request to complete the ownership transfer and become your parent. Once the transfer is complete, only your new parent DAO can transfer ownership in the future. Keep in mind that your parent DAO will have full authority to execute anything it wants to on behalf of this DAO.",
     "becomeSubDaoDescription": "Request to become a SubDAO of a DAO.",
     "betterNonPfmIbcPathAvailable": "A better path exists that unwinds the IBC token properly, but it requires hops that cannot be performed in a single proposal due to the configuration of one or more of the chains involved. You may safely use the direct path above, though it likely results in an undesirable IBC token on the final chain that will eventually need to be unwound. If you wish to unwind it manually, follow the path below by creating an individual proposal for the first hop, then a second proposal once the first one is passed and executed, and so on.",
     "betterPfmIbcPathAvailable_one": "A better path exists that unwinds the IBC token properly, but it requires you to have an account on {{chains}}. An account must exist on each intermediary chain in a multi-hop transaction to act as a failsafe in the event of catastrophic failure (unlikely). Either a cross-chain or ICA account works and will be automatically detected once created. You may safely use the direct path above, though it likely results in an undesirable IBC token on the final chain that will eventually need to be unwound.",

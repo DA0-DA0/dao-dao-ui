@@ -33,7 +33,11 @@ export const BecomeSubDaoComponent: ActionComponent<
   return (
     <>
       <div className="space-y-3">
-        <p className="max-w-prose">{t('info.becomeSubDaoActionDescription')}</p>
+        <p className="max-w-prose">
+          {t('info.becomeSubDaoActionDescription', {
+            context: !isCreating ? 'created' : undefined,
+          })}
+        </p>
 
         <div className="space-y-1">
           <InputLabel name={t('form.becomeSubDaoAdminInputLabel')} />

@@ -20,7 +20,7 @@ import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
-export interface ManageSubDaosData {
+export type ManageSubDaosData = {
   toAdd: SubDao[]
   toRemove: { address: string }[]
 }
