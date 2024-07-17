@@ -1,4 +1,4 @@
-import { FamilyEmoji } from '@dao-dao/stateless'
+import { CheckEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -11,11 +11,9 @@ import { makeWasmMessage } from '@dao-dao/utils'
 import { AddressInput } from '../../../../components'
 import { AcceptSubDaoComponent, AcceptSubDaoData } from './Component'
 
-const defaultAcceptSubDaoData = {
+const useDefaults: UseDefaults<AcceptSubDaoData> = () => ({
   address: '',
-}
-
-const useDefaults: UseDefaults<AcceptSubDaoData> = () => defaultAcceptSubDaoData
+})
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AcceptSubDaoData> = (
   msg: Record<string, any>
@@ -62,13 +60,12 @@ export const makeAcceptSubDaoAction: ActionMaker<AcceptSubDaoData> = ({
 
   return {
     key: ActionKey.AcceptSubDao,
-    Icon: FamilyEmoji,
+    Icon: CheckEmoji,
     label: t('title.acceptSubDao'),
     description: t('info.acceptSubDaoDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    notReusable: true,
   }
 }

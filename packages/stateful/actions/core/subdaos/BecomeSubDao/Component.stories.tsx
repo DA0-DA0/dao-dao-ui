@@ -3,17 +3,17 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
 import { AddressInput } from '../../../../components'
-import { AcceptSubDaoComponent } from './Component'
+import { BecomeSubDaoComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / AcceptSubDao',
-  component: AcceptSubDaoComponent,
+    'DAO DAO / packages / stateful / actions / core / subdaos / BecomeSubDao',
+  component: BecomeSubDaoComponent,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof AcceptSubDaoComponent>
+} as ComponentMeta<typeof BecomeSubDaoComponent>
 
-const Template: ComponentStory<typeof AcceptSubDaoComponent> = (args) => (
-  <AcceptSubDaoComponent {...args} />
+const Template: ComponentStory<typeof BecomeSubDaoComponent> = (args) => (
+  <BecomeSubDaoComponent {...args} />
 )
 
 export const Default = Template.bind({})

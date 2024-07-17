@@ -276,3 +276,7 @@ export const PlayPauseEmoji = () => (
 export const PufferfishEmoji = () => (
   <EmojiWrapper emoji="🐡" labelI18nKey="emoji.pufferfish" />
 )
+
+export const CheckEmoji = () => (
+  <EmojiWrapper emoji="✅" labelI18nKey="emoji.check" />
+)

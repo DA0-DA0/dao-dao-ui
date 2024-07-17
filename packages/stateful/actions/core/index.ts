@@ -15,6 +15,7 @@ import { makeDaoAppearanceActionCategory } from './dao_appearance'
 import { makeDaoGovernanceActionCategory } from './dao_governance'
 import { makeManageNftsActionCategory } from './nfts'
 import { makeSmartContractingActionCategory } from './smart_contracting'
+import { makeSubDaosActionCategory } from './subdaos'
 import { makeTreasuryActionCategory } from './treasury'
 import { makeValenceActionCategory } from './valence'
 
@@ -23,6 +24,7 @@ export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
   makeCommonlyUsedCategory,
   makeTreasuryActionCategory,
   makeDaoGovernanceActionCategory,
+  makeSubDaosActionCategory,
   makeDaoAppearanceActionCategory,
   makeManageNftsActionCategory,
   makeSmartContractingActionCategory,

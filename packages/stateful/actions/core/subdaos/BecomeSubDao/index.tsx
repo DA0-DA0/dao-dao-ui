@@ -1,4 +1,4 @@
-import { FamilyEmoji } from '@dao-dao/stateless'
+import { BabyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -12,11 +12,9 @@ import { makeWasmMessage } from '@dao-dao/utils'
 import { AddressInput } from '../../../../components'
 import { BecomeSubDaoComponent, BecomeSubDaoData } from './Component'
 
-const defaultBecomeSubDaoData = {
+const useDefaults: UseDefaults<BecomeSubDaoData> = () => ({
   admin: '',
-}
-
-const useDefaults: UseDefaults<BecomeSubDaoData> = () => defaultBecomeSubDaoData
+})
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<BecomeSubDaoData> = (
   msg: Record<string, any>
@@ -61,7 +59,7 @@ export const makeBecomeSubDaoAction: ActionMaker<BecomeSubDaoData> = ({
 
   return {
     key: ActionKey.BecomeSubDao,
-    Icon: FamilyEmoji,
+    Icon: BabyEmoji,
     label: t('title.becomeSubDao'),
     description: t('info.becomeSubDaoDescription'),
     Component,
@@ -71,6 +69,7 @@ export const makeBecomeSubDaoAction: ActionMaker<BecomeSubDaoData> = ({
     notReusable: true,
     // If parent DAO exists, hide this action.
     hideFromPicker:
-      context.type === ActionContextType.Dao && context.info.parentDao !== null,
+      context.type === ActionContextType.Dao &&
+      context.dao.info.parentDao !== null,
   }
 }
