@@ -21,6 +21,7 @@ export enum ActionCategoryKey {
   ChainGovernance = 'chainGovernance',
   DaoAppearance = 'daoAppearance',
   DaoGovernance = 'daoGovernance',
+  SubDaos = 'subDaos',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
   Rebalancer = 'rebalancer',
@@ -102,6 +103,9 @@ export enum ActionKey {
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
+  // Become SubDAO
+  AcceptSubDao = 'acceptSubDao',
+  BecomeSubDao = 'becomeSubDao',
 }
 
 export type ActionAndData = {
