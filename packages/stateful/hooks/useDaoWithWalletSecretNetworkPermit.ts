@@ -37,8 +37,6 @@ export type UseWalletWithSecretNetworkPermitReturn = UseWalletReturn & {
 
 /**
  * Hook to help manage a wallet's Secret Network permits for a DAO.
- *
- * TODO(dao-client): refactor this into a more general wallet / DAO client hook
  */
 export const useDaoWithWalletSecretNetworkPermit = ({
   dao,
@@ -51,15 +49,13 @@ export const useDaoWithWalletSecretNetworkPermit = ({
 
   // Stabilize reference so callback doesn't change. This only needs to update
   // on wallet connection state change anyway.
-  const getOfflineSignerAminoRef = useUpdatingRef(wallet.getOfflineSignerAmino)
+  const signAminoRef = useUpdatingRef(wallet.signAmino)
   // Register for offline signer if Secret DAO.
   useEffect(() => {
     if (daoClient instanceof SecretCwDao && wallet.isWalletConnected) {
-      daoClient.registerOfflineSignerAminoGetter(
-        getOfflineSignerAminoRef.current
-      )
+      daoClient.registerSignAmino(signAminoRef.current)
     }
-  }, [daoClient, getOfflineSignerAminoRef, wallet.isWalletConnected])
+  }, [daoClient, signAminoRef, wallet.isWalletConnected])
 
   // Attempt to initialize with existing permit.
   const [permit, setPermit] = useState<PermitForPermitData | undefined>(() =>

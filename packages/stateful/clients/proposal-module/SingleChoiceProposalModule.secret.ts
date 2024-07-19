@@ -337,7 +337,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     options: Parameters<SecretSingleChoiceProposalModule['getVoteQuery']>[0],
     /**
      * Whether or not to prompt the wallet for a permit. If true,
-     * `dao.registerOfflineSignerAminoGetter` must be called first.
+     * `dao.registerSignAmino` must be called first.
      *
      * Defaults to false.
      */

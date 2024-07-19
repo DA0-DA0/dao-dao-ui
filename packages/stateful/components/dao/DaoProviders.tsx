@@ -60,18 +60,16 @@ export const DaoProviders = ({
   )
 
   // Register wallet offline signer if Secret DAO so it can request permits.
-  const { isWalletConnected, getOfflineSignerAmino } = useWallet()
+  const { isWalletConnected, signAmino } = useWallet()
   // Stabilize reference so callback doesn't change. This only needs to update
   // on wallet connection state change anyway.
-  const getOfflineSignerAminoRef = useUpdatingRef(getOfflineSignerAmino)
+  const signAminoRef = useUpdatingRef(signAmino)
 
   useEffect(() => {
     if (context.dao instanceof SecretCwDao && isWalletConnected) {
-      context.dao.registerOfflineSignerAminoGetter(
-        getOfflineSignerAminoRef.current
-      )
+      context.dao.registerSignAmino(signAminoRef.current)
     }
-  }, [context, isWalletConnected, getOfflineSignerAminoRef])
+  }, [context, isWalletConnected, signAminoRef])
 
   // Start loading only if client not initialized. If the data is already
   // cached, the DAO instance may be initialized on creation.

@@ -1,18 +1,22 @@
-import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
+import { AminoSignResponse, StdSignDoc, makeSignDoc } from '@cosmjs/amino'
 
 import { PermitForPermitData } from '@dao-dao/types'
 
 import { encodeJsonToBase64 } from '../messages'
+
+export type CreateSecretNetworkPermitSignAmino = (
+  signDoc: StdSignDoc,
+  signOptions: {
+    // Needed so that we can manually set gas and fees.
+    preferNoSetFee: true
+  }
+) => Promise<AminoSignResponse>
 
 export type CreateSecretNetworkPermitOptions = {
   /**
    * Chain ID.
    */
   chainId: string
-  /**
-   * Wallet address.
-   */
-  address: string
   /**
    * Arbitrary string.
    */
@@ -24,7 +28,7 @@ export type CreateSecretNetworkPermitOptions = {
   /**
    * Offline Amino signer that corresponds with chain ID and wallet address.
    */
-  offlineSignerAmino: OfflineAminoSigner
+  signAmino: CreateSecretNetworkPermitSignAmino
 }
 
 /**
@@ -32,10 +36,9 @@ export type CreateSecretNetworkPermitOptions = {
  */
 export const createSecretNetworkPermit = async ({
   chainId,
-  address,
   key,
   data = {},
-  offlineSignerAmino,
+  signAmino,
 }: CreateSecretNetworkPermitOptions): Promise<PermitForPermitData> => {
   const encodedData = encodeJsonToBase64(data)
 
@@ -65,10 +68,10 @@ export const createSecretNetworkPermit = async ({
     0
   )
 
-  const { signed, signature } = await offlineSignerAmino.signAmino(
-    address,
-    signDoc
-  )
+  const { signed, signature } = await signAmino(signDoc, {
+    // Needed so that we can manually set gas and fees.
+    preferNoSetFee: true,
+  })
 
   const permit: PermitForPermitData = {
     account_number: signed.account_number,

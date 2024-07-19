@@ -1,4 +1,4 @@
-import { OfflineAminoSigner } from '@cosmjs/amino'
+import { ChainWalletContext } from '@cosmos-kit/core'
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
@@ -56,10 +56,10 @@ export type SecretPermitUpdateEvent = {
 
 export class SecretCwDao extends CwDao {
   /**
-   * Function to retrieve the offline amino signer from the current wallet. Must
-   * be set before `getPermit` and `getVotingPower` can be used.
+   * Function to sign with amino as the current wallet. Must be set before
+   * `getPermit` and `getVotingPower` can be used.
    */
-  private getOfflineSignerAmino?: () => OfflineAminoSigner
+  private signAmino?: ChainWalletContext['signAmino']
 
   /**
    * Generate the DAO instantiate info. Use the voting module and proposal
@@ -154,13 +154,11 @@ export class SecretCwDao extends CwDao {
   }
 
   /**
-   * Register a function to retrieve the offline amino signer from the current
-   * wallet. Must be set before `getPermit` and `getVotingPower` can be used.
+   * Register a function to sign with amino as the current wallet. Must be set
+   * before `getPermit` and `getVotingPower` can be used.
    */
-  registerOfflineSignerAminoGetter(
-    getOfflineSignerAmino: () => OfflineAminoSigner
-  ) {
-    this.getOfflineSignerAmino = getOfflineSignerAmino
+  registerSignAmino(signAmino: ChainWalletContext['signAmino']) {
+    this.signAmino = signAmino
   }
 
   /**
@@ -193,18 +191,18 @@ export class SecretCwDao extends CwDao {
       return existing
     }
 
-    if (!this.getOfflineSignerAmino) {
+    if (!this.signAmino) {
       throw new Error(
-        'Offline amino signer getter not registered. Call registerOfflineSignerAminoGetter first.'
+        'Amino signer not registered. Call registerSignAmino first.'
       )
     }
 
     // Create a new permit.
     const permit = await createSecretNetworkPermit({
       chainId: this.options.chainId,
-      address,
       key: this.options.coreAddress,
-      offlineSignerAmino: this.getOfflineSignerAmino(),
+      signAmino: (signDoc, signOptions) =>
+        this.signAmino!(address, signDoc, signOptions),
     })
 
     // Save to local storage.
@@ -264,7 +262,7 @@ export class SecretCwDao extends CwDao {
     height?: number,
     /**
      * Whether or not to prompt the wallet for a permit. If true,
-     * `registerOfflineSignerAminoGetter` must be called first.
+     * `registerSignAmino` must be called first.
      *
      * Defaults to false.
      */
