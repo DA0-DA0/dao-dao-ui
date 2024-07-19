@@ -17,6 +17,7 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { SecretDaoPreProposeApprovalSingleQueryClient } from '../../../contracts/SecretDaoPreProposeApprovalSingle'
+import { contractQueries } from '../contract'
 
 export const secretDaoPreProposeApprovalSingleQueryKeys = {
   contract: [
@@ -217,6 +218,7 @@ export const secretDaoPreProposeApprovalSingleQueries = {
       }),
     ...options,
   }),
+  info: contractQueries.info,
 }
 export interface SecretDaoPreProposeApprovalSingleReactQuery<
   TResponse,

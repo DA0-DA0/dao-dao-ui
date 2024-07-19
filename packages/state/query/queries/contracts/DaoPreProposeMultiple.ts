@@ -18,6 +18,7 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoPreProposeMultipleQueryClient } from '../../../contracts/DaoPreProposeMultiple'
+import { contractQueries } from '../contract'
 import { indexerQueries } from '../indexer'
 
 export const daoPreProposeMultipleQueryKeys = {
@@ -282,6 +283,7 @@ export const daoPreProposeMultipleQueries = {
     },
     ...options,
   }),
+  info: contractQueries.info,
 }
 export interface DaoPreProposeMultipleReactQuery<TResponse, TData = TResponse> {
   chainId: string

@@ -17,6 +17,7 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { SecretDaoPreProposeMultipleQueryClient } from '../../../contracts/SecretDaoPreProposeMultiple'
+import { contractQueries } from '../contract'
 
 export const secretDaoPreProposeMultipleQueryKeys = {
   contract: [
@@ -202,6 +203,7 @@ export const secretDaoPreProposeMultipleQueries = {
       }),
     ...options,
   }),
+  info: contractQueries.info,
 }
 export interface SecretDaoPreProposeMultipleReactQuery<
   TResponse,

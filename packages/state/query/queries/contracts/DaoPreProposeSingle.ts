@@ -18,6 +18,7 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoPreProposeSingleQueryClient } from '../../../contracts/DaoPreProposeSingle'
+import { contractQueries } from '../contract'
 import { indexerQueries } from '../indexer'
 
 export const daoPreProposeSingleQueryKeys = {
@@ -278,6 +279,7 @@ export const daoPreProposeSingleQueries = {
     },
     ...options,
   }),
+  info: contractQueries.info,
 }
 export interface DaoPreProposeSingleReactQuery<TResponse, TData = TResponse> {
   chainId: string
