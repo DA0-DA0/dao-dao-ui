@@ -8,7 +8,7 @@ import {
   FilterableItemPopup,
   useChain,
 } from '@dao-dao/stateless'
-import { ChainId, PROTOBUF_TYPES } from '@dao-dao/types'
+import { ChainId, getProtobufTypes } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertJsonToCWCosmosMsg,
@@ -31,7 +31,7 @@ export const CustomComponent: ActionComponent = ({
 
   const types = useMemo(
     () =>
-      PROTOBUF_TYPES.filter(
+      getProtobufTypes().filter(
         ([type]) =>
           // Only show protobuf message types.
           type.split('.').pop()?.startsWith('Msg') &&

@@ -676,7 +676,7 @@ export const decodedStakingStargateMsgToCw = ({
   }
 }
 
-export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
+export const getProtobufTypes = (): ReadonlyArray<[string, GeneratedType]> => [
   ...cosmosProtoRegistry,
   ...cosmwasmProtoRegistry,
   ['/google.protobuf.Timestamp', google.protobuf.Timestamp as GeneratedType],
@@ -716,26 +716,27 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
     MsgDeleteAllianceProposal as GeneratedType,
   ],
 ]
-export const typesRegistry = new Registry(PROTOBUF_TYPES)
+export const getTypesRegistry = () => new Registry(getProtobufTypes())
 
-export const aminoTypes = new AminoTypes({
-  ...cosmosAminoConverters,
-  ...cosmwasmAminoConverters,
-  ...junoAminoConverters,
-  ...osmosisAminoConverters,
-  ...ibcAminoConverters,
-  ...stargazeAminoConverters,
-  ...gaiaAminoConverters,
-  ...neutronAminoConverters,
-  ...regenAminoConverters,
-  ...allianceAminoConverters,
-  ...circleAminoConverters,
-  ...kujiraAminoConverters,
-  ...pstakeAminoConverters,
-  ...bitsongAminoConverters,
-  ...secretAminoConverters,
-  ...omniFlixAminoConverters,
-})
+export const getAminoTypes = () =>
+  new AminoTypes({
+    ...cosmosAminoConverters,
+    ...cosmwasmAminoConverters,
+    ...junoAminoConverters,
+    ...osmosisAminoConverters,
+    ...ibcAminoConverters,
+    ...stargazeAminoConverters,
+    ...gaiaAminoConverters,
+    ...neutronAminoConverters,
+    ...regenAminoConverters,
+    ...allianceAminoConverters,
+    ...circleAminoConverters,
+    ...kujiraAminoConverters,
+    ...pstakeAminoConverters,
+    ...bitsongAminoConverters,
+    ...secretAminoConverters,
+    ...omniFlixAminoConverters,
+  })
 
 // Encodes a protobuf message value from its JSON representation into a byte
 // array.
@@ -743,7 +744,7 @@ export const encodeProtobufValue = (
   typeUrl: string,
   value: any
 ): Uint8Array => {
-  const type = typesRegistry.lookupType(typeUrl)
+  const type = getTypesRegistry().lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
@@ -760,7 +761,7 @@ export const decodeProtobufValue = (
   // decoding `Any` types where protobuf interfaces exist.
   recursive = true
 ): any => {
-  const type = typesRegistry.lookupType(typeUrl)
+  const type = getTypesRegistry().lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
@@ -789,11 +790,11 @@ export const decodeRawProtobufMsg = (
 // Convert protobuf Any into its Amino msg.
 export const rawProtobufMsgToAmino = (
   ...params: Parameters<typeof decodeRawProtobufMsg>
-): AminoMsg => aminoTypes.toAmino(decodeRawProtobufMsg(...params))
+): AminoMsg => getAminoTypes().toAmino(decodeRawProtobufMsg(...params))
 
 // Convert Amino msg into raw protobuf Any.
 export const aminoToRawProtobufMsg = (msg: AminoMsg): Any => {
-  const { typeUrl, value } = aminoTypes.fromAmino(msg)
+  const { typeUrl, value } = getAminoTypes().fromAmino(msg)
   return {
     typeUrl,
     value: encodeProtobufValue(typeUrl, value),

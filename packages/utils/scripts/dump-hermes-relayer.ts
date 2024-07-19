@@ -71,34 +71,24 @@ const dumpBidirectional = (chainIdA: string, chainIdB: string) => {
     ?.polytone?.[chainIdB]
   const chainB = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdB)
     ?.polytone?.[chainIdA]
-  if (!chainA && !chainB) {
+  if (!chainA || !chainB) {
     console.error('Invalid chain pair')
     return
   }
 
   console.log(chainIdA + ':')
-  if (chainA) {
-    console.log(`
+  console.log(`
   # polytone to ${chainIdB} (note)
-  ["wasm.${chainA.note}", "${chainA.localChannel}"],`)
-  }
-  if (chainB) {
-    console.log(`
+  ["wasm.${chainA.note}", "${chainA.localChannel}"],
   # polytone from ${chainIdB} (voice)
   ["wasm.${chainB.voice}", "${chainB.remoteChannel}"],`)
-  }
 
   console.log('\n\n' + chainIdB + ':')
-  if (chainB) {
-    console.log(`
+  console.log(`
   # polytone to ${chainIdA} (note)
-  ["wasm.${chainB.note}", "${chainB.localChannel}"],`)
-  }
-  if (chainA) {
-    console.log(`
+  ["wasm.${chainB.note}", "${chainB.localChannel}"],
   # polytone from ${chainIdA} (voice)
   ["wasm.${chainA.voice}", "${chainA.remoteChannel}"],`)
-  }
 }
 
 if (chainA && chainB) {

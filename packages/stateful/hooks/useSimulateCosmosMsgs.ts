@@ -6,7 +6,7 @@ import { useChain } from '@dao-dao/stateless'
 import {
   UnifiedCosmosMsg,
   cwMsgToEncodeObject,
-  typesRegistry,
+  getTypesRegistry,
 } from '@dao-dao/types'
 import { cosmos } from '@dao-dao/types/protobuf'
 import { SignMode } from '@dao-dao/types/protobuf/codegen/cosmos/tx/signing/v1beta1/signing'
@@ -105,6 +105,7 @@ const doSimulation = async (
 ) => {
   const cosmosRpcClient = await cosmosProtoRpcClientRouter.connect(chainId)
 
+  const typesRegistry = getTypesRegistry()
   const encodedMsgs = msgs.map((msg) => {
     const encoded = cwMsgToEncodeObject(chainId, msg, senderAddress)
     return typesRegistry.encodeAsAny(encoded)

@@ -2,7 +2,7 @@ import { Chain } from '@chain-registry/types'
 import { SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@tanstack/react-query'
 
-import { aminoTypes, typesRegistry } from '@dao-dao/types'
+import { getAminoTypes, getTypesRegistry } from '@dao-dao/types'
 import { getChainForChainName } from '@dao-dao/utils'
 
 import { DynamicGasPrice } from './DynamicGasPrice'
@@ -27,7 +27,7 @@ export const makeGetSignerOptions =
 
     return {
       gasPrice,
-      registry: typesRegistry,
-      aminoTypes,
+      registry: getTypesRegistry(),
+      aminoTypes: getAminoTypes(),
     }
   }

@@ -1,60 +1,60 @@
-import * as _148 from "./denom/authorityMetadata";
-import * as _149 from "./denom/genesis";
-import * as _150 from "./denom/params";
-import * as _151 from "./denom/query";
-import * as _152 from "./denom/tx";
-import * as _153 from "./oracle/genesis";
-import * as _154 from "./oracle/oracle";
-import * as _155 from "./oracle/query";
-import * as _156 from "./oracle/tx";
-import * as _157 from "./scheduler/genesis";
-import * as _158 from "./scheduler/hook";
-import * as _159 from "./scheduler/params";
-import * as _160 from "./scheduler/proposal";
-import * as _161 from "./scheduler/query";
-import * as _476 from "./denom/tx.amino";
-import * as _477 from "./oracle/tx.amino";
-import * as _478 from "./denom/tx.registry";
-import * as _479 from "./oracle/tx.registry";
-import * as _480 from "./denom/query.rpc.Query";
-import * as _481 from "./oracle/query.rpc.Query";
-import * as _482 from "./scheduler/query.rpc.Query";
-import * as _483 from "./denom/tx.rpc.msg";
-import * as _484 from "./oracle/tx.rpc.msg";
-import * as _650 from "./rpc.query";
-import * as _651 from "./rpc.tx";
+import * as _154 from "./denom/authorityMetadata";
+import * as _155 from "./denom/genesis";
+import * as _156 from "./denom/params";
+import * as _157 from "./denom/query";
+import * as _158 from "./denom/tx";
+import * as _159 from "./oracle/genesis";
+import * as _160 from "./oracle/oracle";
+import * as _161 from "./oracle/query";
+import * as _162 from "./oracle/tx";
+import * as _163 from "./scheduler/genesis";
+import * as _164 from "./scheduler/hook";
+import * as _165 from "./scheduler/params";
+import * as _166 from "./scheduler/proposal";
+import * as _167 from "./scheduler/query";
+import * as _486 from "./denom/tx.amino";
+import * as _487 from "./oracle/tx.amino";
+import * as _488 from "./denom/tx.registry";
+import * as _489 from "./oracle/tx.registry";
+import * as _490 from "./denom/query.rpc.Query";
+import * as _491 from "./oracle/query.rpc.Query";
+import * as _492 from "./scheduler/query.rpc.Query";
+import * as _493 from "./denom/tx.rpc.msg";
+import * as _494 from "./oracle/tx.rpc.msg";
+import * as _660 from "./rpc.query";
+import * as _661 from "./rpc.tx";
 export namespace kujira {
   export const denom = {
-    ..._148,
-    ..._149,
-    ..._150,
-    ..._151,
-    ..._152,
-    ..._476,
-    ..._478,
-    ..._480,
-    ..._483
-  };
-  export const oracle = {
-    ..._153,
     ..._154,
     ..._155,
     ..._156,
-    ..._477,
-    ..._479,
-    ..._481,
-    ..._484
-  };
-  export const scheduler = {
     ..._157,
     ..._158,
+    ..._486,
+    ..._488,
+    ..._490,
+    ..._493
+  };
+  export const oracle = {
     ..._159,
     ..._160,
     ..._161,
-    ..._482
+    ..._162,
+    ..._487,
+    ..._489,
+    ..._491,
+    ..._494
+  };
+  export const scheduler = {
+    ..._163,
+    ..._164,
+    ..._165,
+    ..._166,
+    ..._167,
+    ..._492
   };
   export const ClientFactory = {
-    ..._650,
-    ..._651
+    ..._660,
+    ..._661
   };
 }

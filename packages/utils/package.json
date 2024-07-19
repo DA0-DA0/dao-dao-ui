@@ -6,7 +6,8 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "jest",
-    "dump-relayer": "ts-node ./scripts/dump-relayer.ts",
+    "dump-go-relayer": "ts-node ./scripts/dump-go-relayer.ts",
+    "dump-hermes-relayer": "ts-node ./scripts/dump-hermes-relayer.ts",
     "log-code-ids": "ts-node ./scripts/log-code-ids.ts"
   },
   "dependencies": {

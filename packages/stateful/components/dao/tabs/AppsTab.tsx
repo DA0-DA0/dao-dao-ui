@@ -33,8 +33,8 @@ import {
   BaseNewProposalProps,
   ProposalDraft,
   UnifiedCosmosMsg,
-  aminoTypes,
   decodedStargateMsgToCw,
+  getAminoTypes,
   protobufToCwMsg,
 } from '@dao-dao/types'
 import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
@@ -159,7 +159,7 @@ export const AppsTab = () => {
         chainId,
         decodedStargateMsgToCw(
           getChainForChainId(chainId),
-          aminoTypes.fromAmino(msg)
+          getAminoTypes().fromAmino(msg)
         ).msg
       )
     )

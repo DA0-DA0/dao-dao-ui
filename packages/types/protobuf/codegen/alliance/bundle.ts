@@ -8,12 +8,12 @@ import * as _6 from "./alliance/query";
 import * as _7 from "./alliance/redelegations";
 import * as _8 from "./alliance/tx";
 import * as _9 from "./alliance/unbonding";
-import * as _374 from "./alliance/tx.amino";
-import * as _375 from "./alliance/tx.registry";
-import * as _376 from "./alliance/query.rpc.Query";
-import * as _377 from "./alliance/tx.rpc.msg";
-import * as _633 from "./rpc.query";
-import * as _634 from "./rpc.tx";
+import * as _380 from "./alliance/tx.amino";
+import * as _381 from "./alliance/tx.registry";
+import * as _382 from "./alliance/query.rpc.Query";
+import * as _383 from "./alliance/tx.rpc.msg";
+import * as _643 from "./rpc.query";
+import * as _644 from "./rpc.tx";
 export namespace alliance {
   export const alliance = {
     ..._0,
@@ -26,13 +26,13 @@ export namespace alliance {
     ..._7,
     ..._8,
     ..._9,
-    ..._374,
-    ..._375,
-    ..._376,
-    ..._377
+    ..._380,
+    ..._381,
+    ..._382,
+    ..._383
   };
   export const ClientFactory = {
-    ..._633,
-    ..._634
+    ..._643,
+    ..._644
   };
 }

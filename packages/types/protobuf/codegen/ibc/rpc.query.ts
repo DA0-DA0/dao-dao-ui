@@ -72,6 +72,9 @@ export const createRPCQueryClient = async ({
         },
         client: {
           v1: (await import("./core/client/v1/query.rpc.Query")).createRpcQueryExtension(client)
+        },
+        connection: {
+          v1: (await import("./core/connection/v1/query.rpc.Query")).createRpcQueryExtension(client)
         }
       }
     }

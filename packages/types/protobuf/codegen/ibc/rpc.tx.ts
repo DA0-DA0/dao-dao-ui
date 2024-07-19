@@ -57,6 +57,9 @@ export const createRPCMsgClient = async ({
       },
       client: {
         v1: new (await import("./core/client/v1/tx.rpc.msg")).MsgClientImpl(rpc)
+      },
+      connection: {
+        v1: new (await import("./core/connection/v1/tx.rpc.msg")).MsgClientImpl(rpc)
       }
     }
   }
