@@ -9,6 +9,7 @@ import {
 import {
   DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
   DaoVotingTokenStakedAdapterId,
+  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import {
@@ -24,7 +25,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
   contractNames: DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
 
-  load: () => ({
+  load: ({ chainId }) => ({
     // Hooks
     hooks: {
       useMainDaoInfoCards,
@@ -38,15 +39,18 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
       ProfileCardMemberInfo,
       StakingModal,
 
-      extraTabs: [
-        {
-          id: DaoTabId.Members,
-          labelI18nKey: 'title.members',
-          Component: MembersTab,
-          Icon: PeopleAltOutlined,
-          IconFilled: PeopleAltRounded,
-        },
-      ],
+      // Can't view members on Secret Network.
+      extraTabs: isSecretNetwork(chainId)
+        ? undefined
+        : [
+            {
+              id: DaoTabId.Members,
+              labelI18nKey: 'title.members',
+              Component: MembersTab,
+              Icon: PeopleAltOutlined,
+              IconFilled: PeopleAltRounded,
+            },
+          ],
     },
 
     // Functions

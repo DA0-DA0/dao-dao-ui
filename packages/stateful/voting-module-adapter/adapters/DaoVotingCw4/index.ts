@@ -8,6 +8,7 @@ import {
 import {
   DAO_VOTING_CW4_CONTRACT_NAMES,
   DaoVotingCw4AdapterId,
+  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { makeManageMembersAction } from './actions'
@@ -22,7 +23,7 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   id: DaoVotingCw4AdapterId,
   contractNames: DAO_VOTING_CW4_CONTRACT_NAMES,
 
-  load: () => ({
+  load: ({ chainId }) => ({
     // Hooks
     hooks: {
       useMainDaoInfoCards,
@@ -31,15 +32,18 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
 
     // Components
     components: {
-      extraTabs: [
-        {
-          id: DaoTabId.Members,
-          labelI18nKey: 'title.members',
-          Component: MembersTab,
-          Icon: PeopleAltOutlined,
-          IconFilled: PeopleAltRounded,
-        },
-      ],
+      // Can't view members on Secret Network.
+      extraTabs: isSecretNetwork(chainId)
+        ? undefined
+        : [
+            {
+              id: DaoTabId.Members,
+              labelI18nKey: 'title.members',
+              Component: MembersTab,
+              Icon: PeopleAltOutlined,
+              IconFilled: PeopleAltRounded,
+            },
+          ],
 
       MainDaoInfoCardsLoader,
       ProfileCardMemberInfo,

@@ -30,6 +30,7 @@ import {
   VoteResponse,
   VotingStrategy,
 } from '@dao-dao/types/contracts/SecretDaoProposalMultiple'
+import { SECRET_GAS } from '@dao-dao/utils'
 
 export interface SecretDaoProposalMultipleReadOnlyInterface {
   contractAddress: string
@@ -425,7 +426,7 @@ export class SecretDaoProposalMultipleClient
       proposer?: string
       title: string
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.PROPOSE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -457,7 +458,7 @@ export class SecretDaoProposalMultipleClient
       rationale?: string
       vote: MultipleChoiceVote
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.VOTE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -485,7 +486,7 @@ export class SecretDaoProposalMultipleClient
       auth: Auth
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.EXECUTE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -509,7 +510,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.VETO,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -532,7 +533,7 @@ export class SecretDaoProposalMultipleClient
     }: {
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.CLOSE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

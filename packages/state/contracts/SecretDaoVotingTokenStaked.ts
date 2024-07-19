@@ -29,6 +29,7 @@ import {
   Uint128,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoVotingTokenStaked'
+import { SECRET_GAS } from '@dao-dao/utils'
 
 export interface SecretDaoVotingTokenStakedReadOnlyInterface {
   contractAddress: string
@@ -263,7 +264,7 @@ export class SecretDaoVotingTokenStakedClient
     this.removeHook = this.removeHook.bind(this)
   }
   stake = async (
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.STAKE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -284,7 +285,7 @@ export class SecretDaoVotingTokenStakedClient
     }: {
       amount: Uint128
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.UNSTAKE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -325,7 +326,7 @@ export class SecretDaoVotingTokenStakedClient
     )
   }
   claim = async (
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.CLAIM,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

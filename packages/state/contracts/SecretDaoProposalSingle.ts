@@ -30,6 +30,7 @@ import {
   VoteListResponse,
   VoteResponse,
 } from '@dao-dao/types/contracts/SecretDaoProposalSingle'
+import { SECRET_GAS } from '@dao-dao/utils'
 
 export interface SecretDaoProposalSingleReadOnlyInterface {
   contractAddress: string
@@ -425,7 +426,7 @@ export class SecretDaoProposalSingleClient
       proposer?: string
       title: string
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.PROPOSE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -457,7 +458,7 @@ export class SecretDaoProposalSingleClient
       rationale?: string
       vote: Vote
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.VOTE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -511,7 +512,7 @@ export class SecretDaoProposalSingleClient
       auth: Auth
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.EXECUTE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -535,7 +536,7 @@ export class SecretDaoProposalSingleClient
     }: {
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.VETO,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -558,7 +559,7 @@ export class SecretDaoProposalSingleClient
     }: {
       proposalId: number
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.CLOSE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

@@ -9,6 +9,7 @@ import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
   convertMicroDenomToDenomWithDecimals,
+  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -39,16 +40,21 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   )
 
   return [
-    {
-      label: t('title.members'),
-      tooltip: t('info.membersTooltip'),
-      loading: loadingMembers.loading,
-      value: loadingMembers.loading
-        ? undefined
-        : loadingMembers.errored
-        ? '<error>'
-        : loadingMembers.data?.length ?? '<error>',
-    },
+    // Can't view members on Secret Network.
+    ...(isSecretNetwork(chainId)
+      ? []
+      : [
+          {
+            label: t('title.members'),
+            tooltip: t('info.membersTooltip'),
+            loading: loadingMembers.loading,
+            value: loadingMembers.loading
+              ? undefined
+              : loadingMembers.errored
+              ? '<error>'
+              : loadingMembers.data?.length ?? '<error>',
+          },
+        ]),
     {
       label: t('title.totalSupply'),
       tooltip: t('info.totalSupplyTooltip', {

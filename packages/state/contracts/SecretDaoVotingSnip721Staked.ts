@@ -28,6 +28,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/SecretDaoVotingSnip721Staked'
+import { SECRET_GAS } from '@dao-dao/utils'
 
 export interface SecretDaoVotingSnip721StakedReadOnlyInterface {
   contractAddress: string
@@ -278,7 +279,7 @@ export class SecretDaoVotingSnip721StakedClient
     }: {
       tokenIds: string[]
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.UNSTAKE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -296,7 +297,7 @@ export class SecretDaoVotingSnip721StakedClient
     )
   }
   claimNfts = async (
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.CLAIM,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

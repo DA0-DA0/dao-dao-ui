@@ -25,6 +25,7 @@ import {
   UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
+import { SECRET_GAS } from '@dao-dao/utils'
 
 export interface SecretDaoPreProposeApprovalSingleReadOnlyInterface {
   contractAddress: string
@@ -213,7 +214,7 @@ export class SecretDaoPreProposeApprovalSingleClient
       auth: Auth
       msg: ProposeMessage
     },
-    fee: number = 1_000_000,
+    fee: number = SECRET_GAS.PROPOSE,
     memo?: string,
     _funds?: Coin[]
   ): Promise<ExecuteResult> => {

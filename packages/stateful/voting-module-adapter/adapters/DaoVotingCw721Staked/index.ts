@@ -10,7 +10,10 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DAO_VOTING_CW721_STAKED_CONTRACT_NAMES } from '@dao-dao/utils'
+import {
+  DAO_VOTING_CW721_STAKED_CONTRACT_NAMES,
+  isSecretNetwork,
+} from '@dao-dao/utils'
 
 import { makeUpdateStakingConfigAction } from './actions'
 import {
@@ -28,7 +31,7 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingCw721Staked',
   contractNames: DAO_VOTING_CW721_STAKED_CONTRACT_NAMES,
 
-  load: () => ({
+  load: ({ chainId }) => ({
     // Hooks
     hooks: {
       useMainDaoInfoCards,
@@ -39,13 +42,18 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
     // Components
     components: {
       extraTabs: [
-        {
-          id: DaoTabId.Members,
-          labelI18nKey: 'title.members',
-          Component: MembersTab,
-          Icon: PeopleAltOutlined,
-          IconFilled: PeopleAltRounded,
-        },
+        // Can't view members on Secret Network.
+        ...(isSecretNetwork(chainId)
+          ? []
+          : [
+              {
+                id: DaoTabId.Members,
+                labelI18nKey: 'title.members',
+                Component: MembersTab,
+                Icon: PeopleAltOutlined,
+                IconFilled: PeopleAltRounded,
+              },
+            ]),
         {
           id: DaoTabId.Collection,
           labelI18nKey: 'title.nftCollection',
