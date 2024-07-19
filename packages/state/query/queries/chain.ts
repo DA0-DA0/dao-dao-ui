@@ -23,8 +23,10 @@ import {
   getAllRpcResponse,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
+  isSecretNetwork,
   isValidBech32Address,
   osmosisProtoRpcClientRouter,
+  secretCosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -288,6 +290,11 @@ export const fetchWasmContractAdmin = async ({
   chainId: string
   address: string
 }): Promise<string | null> => {
+  if (isSecretNetwork(chainId)) {
+    const client = await secretCosmWasmClientRouter.connect(chainId)
+    return (await client.getContract(address))?.admin ?? null
+  }
+
   // CosmWasmClient.getContract is not compatible with Terra Classic for some
   // reason, so use protobuf query directly.
   const client = await cosmwasmProtoRpcClientRouter.connect(chainId)

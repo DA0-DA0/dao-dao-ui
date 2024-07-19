@@ -329,6 +329,7 @@ export const getCosmWasmClientForChainId = async (
  * key for a given contract address.
  */
 export const findWasmAttributeValue = (
+  chainId: string,
   events: readonly Event[],
   contractAddress: string,
   attributeKey: string
@@ -338,7 +339,10 @@ export const findWasmAttributeValue = (
       type === 'wasm' &&
       attributes.some(
         ({ key, value }) =>
-          key === '_contract_address' && value === contractAddress
+          key ===
+            (isSecretNetwork(chainId)
+              ? 'contract_address'
+              : '_contract_address') && value === contractAddress
       ) &&
       attributes.some(({ key }) => key === attributeKey)
   )

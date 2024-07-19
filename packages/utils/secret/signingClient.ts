@@ -1,13 +1,14 @@
 import {
-  ChangeAdminResult,
   Code,
   CodeDetails,
   Contract,
   ContractCodeHistoryEntry,
   ExecuteInstruction,
+  ExecuteResult,
   InstantiateOptions,
   InstantiateResult,
   JsonObject,
+  MigrateResult,
   SigningCosmWasmClient,
   SigningCosmWasmClientOptions,
   UploadResult,
@@ -137,11 +138,11 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     this.secretNetworkClient = new SecretNetworkClient(secretOptions)
   }
 
-  protected getSecretNetworkClient(): SecretNetworkClient | undefined {
+  public getSecretNetworkClient(): SecretNetworkClient | undefined {
     return this.secretNetworkClient
   }
 
-  protected forceGetSecretNetworkClient(): SecretNetworkClient {
+  public forceGetSecretNetworkClient(): SecretNetworkClient {
     if (!this.secretNetworkClient) {
       throw new Error(
         'Secret network client not available. You cannot use online functionality in offline mode.'
@@ -471,7 +472,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     newAdmin: string,
     fee: StdFee | 'auto' | number,
     memo = ''
-  ): Promise<ChangeAdminResult> {
+  ): Promise<ExecuteResult> {
     if (typeof fee !== 'number') {
       throw new Error(
         'Secret Network signing client requires a numeric fee to use as the gasLimit.'
@@ -514,7 +515,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     contractAddress: string,
     fee: StdFee | 'auto' | number,
     memo = ''
-  ): Promise<ChangeAdminResult> {
+  ): Promise<ExecuteResult> {
     if (typeof fee !== 'number') {
       throw new Error(
         'Secret Network signing client requires a numeric fee to use as the gasLimit.'
@@ -558,7 +559,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     migrateMsg: JsonObject,
     fee: StdFee | 'auto' | number,
     memo = ''
-  ): Promise<ChangeAdminResult> {
+  ): Promise<MigrateResult> {
     if (typeof fee !== 'number') {
       throw new Error(
         'Secret Network signing client requires a numeric fee to use as the gasLimit.'
@@ -605,7 +606,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     instructions: readonly ExecuteInstruction[],
     fee: StdFee | 'auto' | number,
     memo = ''
-  ): Promise<ChangeAdminResult> {
+  ): Promise<ExecuteResult> {
     if (typeof fee !== 'number') {
       throw new Error(
         'Secret Network signing client requires a numeric fee to use as the gasLimit.'

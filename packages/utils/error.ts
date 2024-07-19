@@ -118,6 +118,7 @@ export enum CommonError {
   ContractExecutionFailed = 'Contract execution failed.',
   ContractMigrationFailed = 'Contract migration failed.',
   InsufficientGas = 'Insufficient gas.',
+  ContractNameExists = 'Name already taken.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -210,6 +211,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     // wasm code format from polytone listener callback error
     'codespace: wasm, code: 6',
   ],
+  [CommonError.ContractNameExists]: ['contract account already exists'],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

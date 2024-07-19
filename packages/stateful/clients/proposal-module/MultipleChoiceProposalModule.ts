@@ -201,7 +201,12 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       )
 
       proposalNumber = Number(
-        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+        findWasmAttributeValue(
+          this.dao.chainId,
+          events,
+          this.address,
+          'proposal_id'
+        ) ?? -1
       )
     } else {
       const { events } = await new DaoProposalMultipleClient(
@@ -220,7 +225,12 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       )
 
       proposalNumber = Number(
-        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+        findWasmAttributeValue(
+          this.dao.chainId,
+          events,
+          this.address,
+          'proposal_id'
+        ) ?? -1
       )
     }
 

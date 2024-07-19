@@ -478,20 +478,17 @@ export const InnerCreateDaoForm = ({
         const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
         const { events } = await secretInstantiateWithSelfAdmin(
           {
-            moduleInfo: {
-              code_id: codeIds.DaoCore,
-              code_hash: codeHashes.DaoCore,
-              msg: encodeJsonToBase64(instantiateMsg),
-              admin: { core_module: {} },
-              funds: instantiateFunds,
-              label: instantiateMsg.name,
-            },
+            instantiateMsg: encodeJsonToBase64(instantiateMsg),
+            codeId: codeIds.DaoCore,
+            codeHash: codeHashes.DaoCore,
+            label: instantiateMsg.name,
           },
           SECRET_GAS.DAO_CREATION,
           undefined,
           instantiateFunds
         )
         return findWasmAttributeValue(
+          chainId,
           events,
           factoryContractAddress,
           'set contract admin as itself'
@@ -508,6 +505,7 @@ export const InnerCreateDaoForm = ({
           getFundsFromDaoInstantiateMsg(instantiateMsg)
         )
         return findWasmAttributeValue(
+          chainId,
           events,
           factoryContractAddress,
           'set contract admin as itself'

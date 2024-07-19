@@ -152,7 +152,12 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       })
 
       proposalNumber = Number(
-        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+        findWasmAttributeValue(
+          this.dao.chainId,
+          events,
+          this.address,
+          'proposal_id'
+        ) ?? -1
       )
     } else {
       const { events } = await new SecretDaoProposalMultipleClient(
@@ -171,7 +176,12 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       )
 
       proposalNumber = Number(
-        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+        findWasmAttributeValue(
+          this.dao.chainId,
+          events,
+          this.address,
+          'proposal_id'
+        ) ?? -1
       )
     }
 

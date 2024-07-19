@@ -80,13 +80,7 @@ export class SecretCwDao extends CwDao {
     proposalModules: ModuleInstantiateInfo[]
   ): SecretInstantiateInfo {
     const { codeIds, codeHashes } = mustGetSupportedChainConfig(chainId)
-    if (
-      !codeHashes ||
-      !codeHashes.QueryAuth ||
-      !codeIds.QueryAuth ||
-      !codeHashes.Cw20Base ||
-      !codeHashes.Cw721Base
-    ) {
+    if (!codeHashes || !codeHashes.QueryAuth || !codeIds.QueryAuth) {
       throw new Error('Codes not properly configured for chain ' + chainId)
     }
 
@@ -106,6 +100,7 @@ export class SecretCwDao extends CwDao {
         proposal_modules_instantiate_info: proposalModules,
         query_auth_code_hash: codeHashes.QueryAuth,
         query_auth_code_id: codeIds.QueryAuth,
+        // TODO(secret-testnet): remove
         snip20_code_hash: codeHashes.Cw20Base,
         snip721_code_hash: codeHashes.Cw721Base,
         voting_module_instantiate_info: votingModule,

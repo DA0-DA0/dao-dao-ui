@@ -4,10 +4,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import {
-  Coin,
-  ModuleInstantiateInfo,
-} from '@dao-dao/types/contracts/SecretCwAdminFactory'
+import { Binary, Coin } from '@dao-dao/types/contracts/SecretCwAdminFactory'
 
 export interface SecretCwAdminFactoryReadOnlyInterface {
   contractAddress: string
@@ -28,9 +25,15 @@ export interface SecretCwAdminFactoryInterface
   sender: string
   instantiateContractWithSelfAdmin: (
     {
-      moduleInfo,
+      instantiateMsg,
+      codeId,
+      codeHash,
+      label,
     }: {
-      moduleInfo: ModuleInstantiateInfo
+      instantiateMsg: Binary
+      codeId: number
+      codeHash: string
+      label: string
     },
     fee?: number,
     memo?: string,
@@ -58,9 +61,15 @@ export class SecretCwAdminFactoryClient
   }
   instantiateContractWithSelfAdmin = async (
     {
-      moduleInfo,
+      instantiateMsg,
+      codeId,
+      codeHash,
+      label,
     }: {
-      moduleInfo: ModuleInstantiateInfo
+      instantiateMsg: Binary
+      codeId: number
+      codeHash: string
+      label: string
     },
     fee: number = 1_000_000,
     memo?: string,
@@ -71,7 +80,10 @@ export class SecretCwAdminFactoryClient
       this.contractAddress,
       {
         instantiate_contract_with_self_admin: {
-          module_info: moduleInfo,
+          instantiate_msg: instantiateMsg,
+          code_id: codeId,
+          code_hash: codeHash,
+          label,
         },
       },
       fee,

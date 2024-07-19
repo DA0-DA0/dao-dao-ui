@@ -176,11 +176,20 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         // pre-propose-approval proposals have a different event
         isPreProposeApprovalProposal
           ? Number(
-              findWasmAttributeValue(events, this.prePropose.address, 'id') ??
-                -1
+              findWasmAttributeValue(
+                this.dao.chainId,
+                events,
+                this.prePropose.address,
+                'id'
+              ) ?? -1
             )
           : Number(
-              findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+              findWasmAttributeValue(
+                this.dao.chainId,
+                events,
+                this.address,
+                'proposal_id'
+              ) ?? -1
             )
     } else {
       const { events } = await new SecretDaoProposalSingleClient(
@@ -199,7 +208,12 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       )
 
       proposalNumber = Number(
-        findWasmAttributeValue(events, this.address, 'proposal_id') ?? -1
+        findWasmAttributeValue(
+          this.dao.chainId,
+          events,
+          this.address,
+          'proposal_id'
+        ) ?? -1
       )
     }
 

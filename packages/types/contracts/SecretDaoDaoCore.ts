@@ -25,8 +25,6 @@ export interface InstantiateMsg {
   proposal_modules_instantiate_info: ModuleInstantiateInfo[]
   query_auth_code_hash: string
   query_auth_code_id: number
-  snip20_code_hash: string
-  snip721_code_hash: string
   voting_module_instantiate_info: ModuleInstantiateInfo
 }
 export interface InitialItem {
@@ -299,8 +297,6 @@ export interface Config {
   description: string
   image_url?: string | null
   name: string
-  snip20_code_hash: string
-  snip721_code_hash: string
 }
 export interface SubDao {
   addr: string
