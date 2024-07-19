@@ -169,6 +169,11 @@ export const SelfRelayExecuteModal = ({
   // true.
   const [canceling, setCanceling] = useState(false)
 
+  // If relay fails due to insufficient funds, this multiplier is applied to the
+  // funds needed that is defined at the top.
+  const [fundsNeededRetryMultiplier, setFundsNeededRetryMultiplier] =
+    useState(1)
+
   // When the modal is closed, reset state.
   useEffect(() => {
     if (visible) {
@@ -230,9 +235,11 @@ export const SelfRelayExecuteModal = ({
   // adjusting for number of packets.
   const getRelayerFundsRef = useUpdatingRef(
     (chainId: string): number =>
-      // Use relayer funds as base and increase by 5% per packet
+      // Use relayer funds as base, increase by 5% per packet, and apply retry
+      // multiplier.
       (RELAYER_FUNDS_NEEDED[chainId] ?? 0) *
-      (1 + crossChainPackets.length * 0.05)
+      (1 + crossChainPackets.length * 0.05) *
+      fundsNeededRetryMultiplier
   )
 
   const walletFunds = useCachedLoadingWithError(
@@ -777,6 +784,9 @@ export const SelfRelayExecuteModal = ({
                 // Refresh all balances.
                 relayers.map(refreshBalances)
                 console.error(err)
+                // Increase multipler by 25% so we retry with more funds than
+                // before.
+                setFundsNeededRetryMultiplier((m) => m + 0.25)
                 throw new Error(t('error.relayerWalletNeedsFunds'))
               }
 
@@ -881,6 +891,9 @@ export const SelfRelayExecuteModal = ({
                 // Refresh all balances.
                 relayers.map(refreshBalances)
                 console.error(err)
+                // Increase multipler by 25% so we retry with more funds than
+                // before.
+                setFundsNeededRetryMultiplier((m) => m + 0.25)
                 throw new Error(t('error.relayerWalletNeedsFunds'))
               }
 
