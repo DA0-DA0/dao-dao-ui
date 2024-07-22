@@ -7,12 +7,13 @@ import {
   ContractVersion,
   DaoInfo,
   Feature,
-  LoadingData,
+  LoadingDataWithError,
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 
 import { useDaoInfoContext } from '../../../contexts'
 import { useDaoNavHelpers } from '../../../hooks'
+import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
 import { NoContent } from '../../NoContent'
 import { Tooltip } from '../../tooltip'
@@ -20,7 +21,7 @@ import { DaoCardLoader } from '../DaoCard'
 
 export interface SubDaosTabProps {
   DaoCard: ComponentType<StatefulDaoCardProps>
-  subDaos: LoadingData<DaoInfo[]>
+  subDaos: LoadingDataWithError<DaoInfo[]>
   isMember: boolean
   createSubDaoHref?: string
   upgradeToV2Href?: string
@@ -87,6 +88,8 @@ export const SubDaosTab = ({
           buttonLabel={t('button.proposeUpgrade')}
           href={isMember ? upgradeToV2Href : undefined}
         />
+      ) : subDaos.errored ? (
+        <ErrorPage error={subDaos.error} />
       ) : subDaos.loading || subDaos.data.length > 0 ? (
         <>
           <p className="title-text mb-6 border-t border-border-secondary pt-6 text-text-body">

@@ -370,7 +370,7 @@ export const fetchSubDaoInfos = async (
   )
 
   return await Promise.all(
-    subDaos.map(({ addr }) =>
+    subDaos.map(({ chainId, addr }) =>
       queryClient.fetchQuery(
         daoQueries.info(queryClient, { chainId, coreAddress: addr })
       )

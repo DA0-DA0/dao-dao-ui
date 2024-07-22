@@ -48,6 +48,7 @@ Default.args = {
   isMember: true,
   subDaos: {
     loading: false,
+    errored: false,
     data: [
       {
         ...makeDaoCardProps(1).info,
@@ -79,5 +80,5 @@ Default.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
-  subDaos: { loading: true },
+  subDaos: { loading: true, errored: false },
 }

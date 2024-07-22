@@ -9,7 +9,7 @@ import { ActionKey, Feature } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
-import { useMembership, useQueryLoadingData } from '../../../hooks'
+import { useMembership, useQueryLoadingDataWithError } from '../../../hooks'
 import { daoQueries } from '../../../queries'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
@@ -21,16 +21,13 @@ export const SubDaosTab = () => {
   const { isMember = false } = useMembership()
 
   const queryClient = useQueryClient()
-  const subDaos = useQueryLoadingData(
-    {
-      ...daoQueries.subDaoInfos(queryClient, {
-        chainId,
-        coreAddress,
-      }),
-      enabled: !!supportedFeatures[Feature.SubDaos],
-    },
-    []
-  )
+  const subDaos = useQueryLoadingDataWithError({
+    ...daoQueries.subDaoInfos(queryClient, {
+      chainId,
+      coreAddress,
+    }),
+    enabled: !!supportedFeatures[Feature.SubDaos],
+  })
 
   const upgradeToV2Action = useActionForKey(ActionKey.UpgradeV1ToV2)
   const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
