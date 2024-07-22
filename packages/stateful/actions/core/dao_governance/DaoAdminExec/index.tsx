@@ -130,6 +130,11 @@ const Component: ActionComponent = (props) => {
 
   return (
     <DaoProviders
+      key={
+        // Make sure to re-render (reset state inside the contexts) when the
+        // selected SubDAO changes.
+        coreAddress || '_'
+      }
       chainId={chainId}
       coreAddress={
         // Loading state if invalid address.

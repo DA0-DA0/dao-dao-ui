@@ -116,6 +116,11 @@ const InnerComponentWrapper: ActionComponent<
     <InnerComponentLoading {...props} />
   ) : isDao.data ? (
     <DaoProviders
+      key={
+        // Make sure to re-render (reset state inside the contexts) when the
+        // address changes.
+        address
+      }
       chainId={chainId}
       coreAddress={address}
       loaderFallback={<InnerComponentLoading {...props} />}
