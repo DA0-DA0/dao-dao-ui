@@ -11,10 +11,10 @@ import {
 import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
 import { formatDate } from '@dao-dao/utils'
 
-import { CompletedSurveyListing } from '../../types'
+import { CompletedSurveyStatus } from '../../types'
 
 export interface CompletedSurveyRowProps {
-  survey: CompletedSurveyListing
+  survey: CompletedSurveyStatus
   onClick: () => void
   IconButtonLink: ComponentType<IconButtonLinkProps>
   className?: string

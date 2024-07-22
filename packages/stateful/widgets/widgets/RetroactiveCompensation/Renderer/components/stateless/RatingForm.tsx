@@ -27,12 +27,12 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  ActiveSurveyStatus,
   Contribution,
   ContributionCompensation,
   ContributionFormData,
   ContributionRating,
   RatingsFormData,
-  Status,
 } from '../../types'
 import { computeCompensation } from '../../utils'
 import { ContributionFormInput } from './ContributionFormInput'
@@ -47,7 +47,7 @@ export type NominationForm = ContributionFormData & {
 }
 
 export interface RatingFormProps {
-  status: Status
+  status: ActiveSurveyStatus
   data: ContributionRatingData
   onSubmit: (data: RatingsFormData) => Promise<void>
   loadingSubmit: boolean

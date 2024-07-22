@@ -37,8 +37,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { NewProposalData } from '../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
-import { CompleteRatings, Status } from '../../types'
+import { NewProposalData } from '../../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
+import { ActiveSurveyStatus, CompleteRatings } from '../../../types'
 
 export type ProposalCreationFormData = {
   type: 'new' | 'existing' | 'none'
@@ -46,8 +46,8 @@ export type ProposalCreationFormData = {
   existing: string
 }
 
-export interface ProposalCreationFormProps {
-  status: Status
+export type CompleteProps = {
+  survey: ActiveSurveyStatus
   completeRatings: CompleteRatings
   onComplete: (data: ProposalCreationFormData) => Promise<void>
   loading: boolean
@@ -60,8 +60,8 @@ export interface ProposalCreationFormProps {
   ProposalList: ComponentType<StatefulProposalListProps>
 }
 
-export const ProposalCreationForm = ({
-  status: { survey },
+export const Complete = ({
+  survey: { survey },
   completeRatings,
   onComplete,
   loading,
@@ -72,7 +72,7 @@ export const ProposalCreationForm = ({
   weightByVotingPower,
   setWeightByVotingPower,
   ProposalList,
-}: ProposalCreationFormProps) => {
+}: CompleteProps) => {
   const { t } = useTranslation()
 
   // Map token denom to price info.

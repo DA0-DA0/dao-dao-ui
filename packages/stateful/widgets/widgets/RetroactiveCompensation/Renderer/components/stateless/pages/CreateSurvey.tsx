@@ -14,20 +14,20 @@ import {
 } from '@dao-dao/stateless'
 import { validateRequired } from '@dao-dao/utils'
 
-import { NewSurveyFormData } from '../../types'
-import { NewAttribute, NewAttributeProps } from './NewAttribute'
+import { NewSurveyFormData } from '../../../types'
+import { NewAttribute, NewAttributeProps } from '../NewAttribute'
 
-export interface NewSurveyFormProps
+export interface CreateSurveyProps
   extends Pick<NewAttributeProps, 'availableTokens'> {
   onCreate: (newCompensationCycle: NewSurveyFormData) => Promise<void>
   loading: boolean
 }
 
-export const NewSurveyForm = ({
+export const CreateSurvey = ({
   onCreate,
   loading,
   ...newAttributeProps
-}: NewSurveyFormProps) => {
+}: CreateSurveyProps) => {
   const { t } = useTranslation()
 
   const formMethods = useForm<NewSurveyFormData>({

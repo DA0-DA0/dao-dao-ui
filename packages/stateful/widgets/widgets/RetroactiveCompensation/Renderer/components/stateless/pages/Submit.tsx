@@ -4,32 +4,30 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Loader, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
-import {
-  Entity,
-  GenericTokenWithUsdPrice,
-  LoadingData,
-  TransProps,
-} from '@dao-dao/types'
+import { Entity, LoadingData, TransProps } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { ContributionFormData, Status, SurveyStatus } from '../../types'
-import { ContributionFormInput } from './ContributionFormInput'
+import {
+  ActiveSurveyStatus,
+  ContributionFormData,
+  SurveyStatus,
+} from '../../../types'
+import { ContributionFormInput } from '../ContributionFormInput'
 
-export interface ContributionFormProps {
+export type SubmitProps = {
   connected: boolean
-  status: Status
+  survey: ActiveSurveyStatus
   onSubmit: (data: ContributionFormData) => Promise<void>
   loading: boolean
   loadingEntity: LoadingData<Entity>
-  tokenPrices: GenericTokenWithUsdPrice[]
   EntityDisplay: ComponentType
   ConnectWallet: ComponentType
   Trans: ComponentType<TransProps>
 }
 
-export const ContributionForm = ({
+export const Submit = ({
   connected,
-  status: {
+  survey: {
     survey,
     contribution: existingContribution,
     contributionSelfRatings,
@@ -40,7 +38,7 @@ export const ContributionForm = ({
   EntityDisplay,
   ConnectWallet,
   Trans,
-}: ContributionFormProps) => {
+}: SubmitProps) => {
   const { t } = useTranslation()
 
   let defaultContribution = existingContribution || ''

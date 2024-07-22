@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
 
 import {
   useChain,
@@ -17,6 +16,7 @@ import {
 import { useMembership, useWallet } from '../../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
+  ActiveSurveyProps,
   CompleteRatings,
   Contribution,
   ContributionRating,
@@ -25,20 +25,16 @@ import {
   Rating,
   RatingsResponse,
   RatingsResponseWithIdentities,
-  StatefulOpenSurveySectionProps,
   SurveyStatus,
 } from '../../types'
 import { computeCompensation } from '../../utils'
 import { OpenSurveySection as StatelessOpenSurveySection } from '../stateless/OpenSurveySection'
 import { ContributionRatingData } from '../stateless/RatingForm'
 import { ContributionForm } from './ContributionForm'
-import { ProposalCreationForm } from './ProposalCreationForm'
+import { ProposalCreationForm } from './Complete'
 import { RatingForm } from './RatingForm'
 
-export const OpenSurveySection = ({
-  status,
-}: StatefulOpenSurveySectionProps) => {
-  const { t } = useTranslation()
+export const ActiveSurvey = ({ activeSurveys }: ActiveSurveyProps) => {
   const { coreAddress } = useDaoInfoContext()
   const { bech32_prefix: bech32Prefix } = useChain()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
@@ -325,13 +321,6 @@ export const OpenSurveySection = ({
         : undefined
       : undefined
 
-  const tooltip = isMember
-    ? undefined
-    : status.survey.status === SurveyStatus.AcceptingRatings ||
-      status.survey.status === SurveyStatus.AwaitingCompletion
-    ? t('info.submissionsBeingRated')
-    : undefined
-
   return (status.survey.status === SurveyStatus.Inactive ||
     status.survey.status === SurveyStatus.AcceptingContributions) &&
     showContributionForm ? (
@@ -361,7 +350,6 @@ export const OpenSurveySection = ({
       loading={loading}
       onClick={onClick}
       status={status}
-      tooltip={tooltip}
     />
   )
 }

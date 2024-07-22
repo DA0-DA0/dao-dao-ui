@@ -13,19 +13,19 @@ import {
 import { TokenType } from '@dao-dao/types'
 import { convertDenomToMicroDenomStringWithDecimals } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../../components'
-import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
-import { refreshStatusAtom } from '../../atoms'
-import { usePostRequest } from '../../hooks/usePostRequest'
+import { SuspenseLoader } from '../../../../../../../components'
+import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
+import { refreshStatusAtom } from '../../../atoms'
+import { usePostRequest } from '../../../hooks/usePostRequest'
 import {
   Cw20Token,
   NativeToken,
   NewSurveyFormData,
   NewSurveyRequest,
-} from '../../types'
-import { NewSurveyForm as StatelessNewSurveyForm } from '../stateless/NewSurveyForm'
+} from '../../../types'
+import { CreateSurvey as StatelessCreateSurvey } from '../../stateless/pages/CreateSurvey'
 
-export const NewSurveyForm = () => {
+export const CreateSurvey = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
@@ -159,7 +159,7 @@ export const NewSurveyForm = () => {
         availableTokensLoading.loading
       }
     >
-      <StatelessNewSurveyForm
+      <StatelessCreateSurvey
         availableTokens={
           availableTokensLoading.loading
             ? []

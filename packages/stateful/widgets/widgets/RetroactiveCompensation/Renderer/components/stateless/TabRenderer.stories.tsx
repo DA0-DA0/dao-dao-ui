@@ -22,7 +22,7 @@ const Template: ComponentStory<typeof TabRenderer> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  loadingStatus: { loading: false, data: undefined },
+  loadingActiveSurveys: { loading: false, data: [] },
   loadingCompletedSurveys: {
     loading: false,
     data: [

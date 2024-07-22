@@ -7,7 +7,7 @@ import { CompletedSurveyRow } from './CompletedSurveyRow'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / CompletedSurveyRow',
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / CompletedSurveyRow',
   component: CompletedSurveyRow,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof CompletedSurveyRow>

@@ -4,13 +4,13 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType, TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../../../../components'
-import { makeSurvey } from './ContributionForm.stories'
-import { ProposalCreationForm } from './ProposalCreationForm'
+import { EntityDisplay } from '../../../../../../../components'
+import { ProposalCreationForm } from './Complete'
+import { makeSurvey } from './Submit.stories'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / ProposalCreationForm',
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / pages / ProposalCreationForm',
   component: ProposalCreationForm,
 } as ComponentMeta<typeof ProposalCreationForm>
 

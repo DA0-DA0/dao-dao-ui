@@ -9,12 +9,12 @@ import {
   EntityDisplay,
   Trans,
 } from '../../../../../../components'
-import { makeSurvey } from './ContributionForm.stories'
+import { makeSurvey } from './Submit.stories'
 import { RatingForm } from './RatingForm'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / RatingForm',
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / RatingForm',
   component: RatingForm,
 } as ComponentMeta<typeof RatingForm>
 

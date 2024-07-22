@@ -30,6 +30,7 @@ export interface AnyToken {
 }
 
 export interface Survey {
+  surveyId: number
   status: string
   name: string
   contributionsOpenAt: string
@@ -52,14 +53,14 @@ export interface NewSurveyFormData
   }[]
 }
 
-export interface Status {
+export interface ActiveSurveyStatus {
   survey: Survey
   contribution: string | null
   contributionSelfRatings: (number | null)[] | null
   rated: boolean
 }
 
-export interface CompletedSurveyListing {
+export type CompletedSurveyStatus = {
   id: number
   name: string
   contributionCount: number
@@ -151,8 +152,8 @@ export type CompletedSurvey = Omit<Survey, 'status'> & {
   ratings: RatingResponse[]
 }
 
-export interface StatefulOpenSurveySectionProps {
-  status: Status
+export type ActiveSurveyProps = {
+  activeSurveys: ActiveSurveyStatus[]
 }
 
 export type ContributionFormData = {
@@ -161,4 +162,12 @@ export type ContributionFormData = {
     url?: string
   }[]
   ratings: (number | null)[]
+}
+
+export enum PagePath {
+  Home = '',
+  Create = 'create',
+  Submit = 'submit',
+  Rate = 'rate',
+  Complete = 'complete',
 }
