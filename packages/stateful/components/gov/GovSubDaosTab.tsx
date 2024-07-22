@@ -39,9 +39,13 @@ export const GovSubDaosTab = () => {
         isMember={true}
         subDaos={
           subDaos.loading
-            ? subDaos
+            ? {
+                loading: true,
+                errored: false,
+              }
             : {
                 loading: false,
+                errored: false,
                 updating: subDaos.updating,
                 data: subDaos.data.flatMap((subDao) => subDao || []),
               }
