@@ -13,22 +13,19 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
-import {
-  ContractVersion,
-  SupportedChainConfig,
-  cwMsgToEncodeObject,
-} from '@dao-dao/types'
+import { ContractVersion, SupportedChainConfig } from '@dao-dao/types'
 import { MsgExec } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { MsgStoreCode } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  encodeJsonToBase64,
   findEventsAttributeValue,
   getRpcForChainId,
   gzipCompress,
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
+
+import { instantiateContract } from './utils'
 
 const { parsed: { MNEMONIC, DAO_CONTRACTS_DIR, POLYTONE_CONTRACTS_DIR } = {} } =
   dotenv.config()
@@ -221,77 +218,6 @@ const main = async () => {
     return Number(codeId)
   }
 
-  const instantiateContract = async ({
-    id,
-    codeId,
-    msg,
-    label,
-    prefixLength,
-  }: {
-    id: string
-    codeId: number
-    msg: Record<string, unknown>
-    label: string
-    prefixLength: number
-  }) => {
-    const { events, transactionHash } = await client.signAndBroadcast(
-      sender,
-      [
-        cwMsgToEncodeObject(
-          chainId,
-          {
-            wasm: {
-              instantiate: {
-                code_id: codeId,
-                msg: encodeJsonToBase64(msg),
-                funds: [],
-                label,
-                admin: undefined,
-              },
-            },
-          },
-          sender
-        ),
-      ],
-      CHAIN_GAS_MULTIPLIER
-    )
-
-    const contractAddress = findEventsAttributeValue(
-      events,
-      'instantiate',
-      '_contract_address'
-    )
-
-    log(
-      chalk.greenBright(
-        `[${id}.TX]${' '.repeat(
-          prefixLength - id.length - 5
-        )}${transactionHash}`
-      )
-    )
-
-    if (!contractAddress) {
-      log(
-        chalk.red(
-          `[${id}.CONTRACT]${' '.repeat(
-            prefixLength - id.length - 11
-          )}not found`
-        )
-      )
-      process.exit(1)
-    }
-
-    log(
-      chalk.green(
-        `[${id}.CONTRACT]${' '.repeat(
-          prefixLength - id.length - 11
-        )}${contractAddress}`
-      )
-    )
-
-    return contractAddress
-  }
-
   log()
 
   // Upload polytone contracts only.
@@ -365,6 +291,9 @@ const main = async () => {
   }
 
   const adminFactoryAddress = await instantiateContract({
+    client,
+    sender,
+    chainId,
     id: 'cw_admin_factory',
     codeId: cwAdminFactoryCodeId,
     msg: {},

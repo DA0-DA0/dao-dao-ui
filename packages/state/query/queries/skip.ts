@@ -61,6 +61,40 @@ export const fetchSkipAsset = async (
   return asset
 }
 
+/**
+ * Fetch Skip recommended asset.
+ */
+export const fetchSkipRecommendedAsset = async (
+  queryClient: QueryClient,
+  {
+    fromChainId,
+    denom,
+    toChainId,
+  }: {
+    fromChainId: string
+    denom: string
+    toChainId: string
+  }
+): Promise<SkipAsset> => {
+  const { asset } =
+    (await queryClient.fetchQuery(
+      indexerQueries.snapper({
+        query: 'skip-recommended-asset',
+        parameters: {
+          sourceAssetChainId: fromChainId,
+          sourceAssetDenom: denom,
+          destChainId: toChainId,
+        },
+      })
+    )) ?? {}
+
+  if (!asset) {
+    throw new Error('No Skip recommended asset found')
+  }
+
+  return asset
+}
+
 export const skipQueries = {
   /**
    * Fetch Skip chain.
@@ -83,5 +117,16 @@ export const skipQueries = {
     queryOptions({
       queryKey: ['skip', 'asset', options],
       queryFn: () => fetchSkipAsset(queryClient, options),
+    }),
+  /**
+   * Fetch Skip recommended asset.
+   */
+  recommendedAsset: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchSkipRecommendedAsset>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['skip', 'recommendedAsset', options],
+      queryFn: () => fetchSkipRecommendedAsset(queryClient, options),
     }),
 }
