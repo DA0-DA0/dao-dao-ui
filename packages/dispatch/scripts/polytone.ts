@@ -1,8 +1,6 @@
 import { IbcClient, Link, Logger } from '@confio/relayer'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
-import { QueryClient, setupStakingExtension } from '@cosmjs/stargate'
-import { connectComet } from '@cosmjs/tendermint-rpc'
 import chalk from 'chalk'
 import { Command } from 'commander'
 import dotenv from 'dotenv'
@@ -19,6 +17,7 @@ import {
   getNativeTokenForChainId,
   getRpcForChainId,
   ibcProtoRpcClientRouter,
+  interchainSecurityProtoRpcClientRouter,
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
@@ -399,8 +398,10 @@ const main = async () => {
   let link: Link
 
   if (newConnection) {
-    // For Neutron, which does not have staking, use its parent chain's (Cosmos
-    // Hub's) unbonding time instead. This is needed to create a new
+    // For Neutron, which is a consumer chain, fetch unbonding period from
+    // consumer chain params so we can compute trust period manually instead of
+    // letting @confio/relayer fail attempting to query staking params which do
+    // not exist on consumer chains. This is needed to create a new
     // connection/clients.
     const neutronIbcClient =
       srcChainId === ChainId.NeutronMainnet
@@ -409,20 +410,27 @@ const main = async () => {
         ? destIbcClient
         : undefined
     if (neutronIbcClient) {
-      const cosmosHubStakingQueryClient = QueryClient.withExtensions(
-        await connectComet(getRpcForChainId(ChainId.CosmosHubMainnet)),
-        setupStakingExtension
-      )
       neutronIbcClient.query.staking.params = async () => {
-        const { params } = await cosmosHubStakingQueryClient.staking.params()
+        const interchainSecurityClient =
+          await interchainSecurityProtoRpcClientRouter.connect(
+            ChainId.NeutronMainnet
+          )
+        const ccvUnbondingPeriod = (
+          await interchainSecurityClient.ccv.consumer.v1.queryParams()
+        ).params?.unbondingPeriod
+        if (!ccvUnbondingPeriod) {
+          throw new Error('No CCV unbonding period found')
+        }
+
         return {
           params: {
-            ...params,
-            unbondingTime: {
-              // Subtract one day.
-              seconds: params.unbondingTime.seconds - BigInt(24 * 3600),
-              nanos: params.unbondingTime.nanos,
-            },
+            unbondingTime: ccvUnbondingPeriod,
+            // Not used.
+            maxValidators: -1,
+            maxEntries: -1,
+            historicalEntries: -1,
+            bondDenom: '',
+            minCommissionRate: '',
           },
         }
       }

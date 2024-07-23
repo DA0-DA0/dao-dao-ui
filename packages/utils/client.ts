@@ -14,6 +14,7 @@ import {
   cosmwasm,
   feemarket,
   ibc,
+  interchain_security,
   juno,
   kujira,
   neutron,
@@ -151,164 +152,115 @@ export const stargateClientRouter = new ChainClientRouter({
 })
 
 /*
+ * Factory function to make routers that connect to an RPC client with specific
+ * protobufs loaded.
+ */
+const makeProtoRpcClientRouter = <T, K extends keyof T>(
+  protoBundle: {
+    ClientFactory: {
+      createRPCQueryClient: ({
+        rpcEndpoint,
+      }: {
+        rpcEndpoint: string
+      }) => Promise<T>
+    }
+  },
+  key: K
+): ChainClientRouter<T[K], never> =>
+  new ChainClientRouter({
+    handleConnect: async (chainId: string) =>
+      retry(
+        10,
+        async (attempt) =>
+          (
+            await protoBundle.ClientFactory.createRPCQueryClient({
+              rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+            })
+          )[key]
+      ),
+  })
+
+/*
  * Router for connecting to an RPC client with Cosmos protobufs.
  */
-export const cosmosProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await cosmos.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).cosmos
-    ),
-})
+export const cosmosProtoRpcClientRouter = makeProtoRpcClientRouter(
+  cosmos,
+  'cosmos'
+)
 
 /*
  * Router for connecting to an RPC client with IBC protobufs.
  */
-export const ibcProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await ibc.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).ibc
-    ),
-})
+export const ibcProtoRpcClientRouter = makeProtoRpcClientRouter(ibc, 'ibc')
+
+/*
+ * Router for connecting to an RPC client with interchain security protobufs.
+ */
+export const interchainSecurityProtoRpcClientRouter = makeProtoRpcClientRouter(
+  interchain_security,
+  'interchain_security'
+)
 
 /*
  * Router for connecting to an RPC client with CosmWasm protobufs.
  */
-export const cosmwasmProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await cosmwasm.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).cosmwasm
-    ),
-})
+export const cosmwasmProtoRpcClientRouter = makeProtoRpcClientRouter(
+  cosmwasm,
+  'cosmwasm'
+)
 
 /*
  * Router for connecting to an RPC client with Osmosis protobufs.
  */
-export const osmosisProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await osmosis.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).osmosis
-    ),
-})
+export const osmosisProtoRpcClientRouter = makeProtoRpcClientRouter(
+  osmosis,
+  'osmosis'
+)
 
 /*
  * Router for connecting to an RPC client with Noble protobufs.
  */
-export const nobleProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await noble.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).noble
-    ),
-})
+export const nobleProtoRpcClientRouter = makeProtoRpcClientRouter(
+  noble,
+  'noble'
+)
 
 /*
  * Router for connecting to an RPC client with Neutron protobufs.
  */
-export const neutronProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await neutron.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).neutron
-    ),
-})
+export const neutronProtoRpcClientRouter = makeProtoRpcClientRouter(
+  neutron,
+  'neutron'
+)
 
 /*
  * Router for connecting to an RPC client with Juno protobufs.
  */
-export const junoProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await juno.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).juno
-    ),
-})
+export const junoProtoRpcClientRouter = makeProtoRpcClientRouter(juno, 'juno')
 
 /*
  * Router for connecting to an RPC client with Kujira protobufs.
  */
-export const kujiraProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await kujira.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).kujira
-    ),
-})
+export const kujiraProtoRpcClientRouter = makeProtoRpcClientRouter(
+  kujira,
+  'kujira'
+)
 
 /*
  * Router for connecting to an RPC client with OmniFlix protobufs.
  */
-export const omniflixProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await OmniFlix.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).OmniFlix
-    ),
-})
+export const omniflixProtoRpcClientRouter = makeProtoRpcClientRouter(
+  OmniFlix,
+  'OmniFlix'
+)
 
 /*
  * Router for connecting to an RPC client with feemarket protobufs.
  */
-export const feemarketProtoRpcClientRouter = new ChainClientRouter({
-  handleConnect: async (chainId: string) =>
-    retry(
-      10,
-      async (attempt) =>
-        (
-          await feemarket.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
-          })
-        ).feemarket
-    ),
-})
+export const feemarketProtoRpcClientRouter = makeProtoRpcClientRouter(
+  feemarket,
+  'feemarket'
+)
 
 /**
  * Get CosmWasmClient for the appropriate chain.
