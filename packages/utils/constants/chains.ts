@@ -681,9 +681,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       rebalancer:
         'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
-    // There is no IBC connection with:
-    // - Juno
-    // - Migaloo
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // neutron
@@ -803,6 +800,42 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-4498',
         // injective
         remoteChannel: 'channel-304',
+      },
+      [ChainId.MigalooMainnet]: {
+        // neutron
+        note: 'neutron1454e3h2ajqa986lwg63hrc3lqdzrcqfn2zxkzrleq9kw342jyndqp0393j',
+        // neutron
+        listener:
+          'neutron1ml36whejpprr2ndcd7d3ll8k0p5et2lxmxqpjw4l2zz40f4h08uqvxwz7j',
+        // migaloo
+        voice:
+          'migaloo1zq0zp52lquys72jl49j7vs3jck2et2pjdj874s8sgdwez4rp3p2sjy6kk6',
+        // neutron
+        localConnection: 'connection-93',
+        // migaloo
+        remoteConnection: 'connection-105',
+        // neutron
+        localChannel: 'channel-4720',
+        // migaloo
+        remoteChannel: 'channel-134',
+      },
+      [ChainId.JunoMainnet]: {
+        // neutron
+        note: 'neutron174ne8p7zh539sht8sfjsa9r6uwe3pzlvqedr0yquml9crfzsfnlshvlse8',
+        // neutron
+        listener:
+          'neutron16n92xe0336c3tr5fjy42uff39vh2xpdk9zlz24vq0vnuhnu7882q8x5fr6',
+        // juno
+        voice:
+          'juno1c9hx3q7sd2d0xgknc52ft6qsqxemkuxh3nt8d4rmdtdua25x5h0sdd2zm5',
+        // neutron
+        localConnection: 'connection-95',
+        // juno
+        remoteConnection: 'connection-530',
+        // neutron
+        localChannel: 'channel-4721',
+        // juno
+        remoteChannel: 'channel-593',
       },
     },
   },
