@@ -124,6 +124,7 @@ telescope({
           'secret.intertx.v1beta1',
           'secret.registration.v1beta1',
           'OmniFlix.onft.v1beta1',
+          'interchain_security.ccv.consumer.v1',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

@@ -24,6 +24,8 @@ export * from "./gogoproto/bundle";
 export * from "./google/bundle";
 export * from "./ibc/bundle";
 export * from "./ibc/client";
+export * from "./interchain_security/bundle";
+export * from "./interchain_security/client";
 export * from "./juno/bundle";
 export * from "./juno/client";
 export * from "./kujira/bundle";
