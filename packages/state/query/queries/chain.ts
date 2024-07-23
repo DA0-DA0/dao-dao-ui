@@ -340,15 +340,21 @@ export const fetchDenomMetadata = async ({
         denomUnits.find(({ exponent }) => exponent > 0) ??
         denomUnits[0]
 
+      const extractedSymbol = displayDenom
+        ? displayDenom.denom.startsWith('factory/')
+          ? displayDenom.denom.split('/').pop()!
+          : displayDenom.denom
+        : metadata.symbol
+
       return {
         metadata,
         // If factory denom, extract symbol at the end.
         preferredSymbol:
-          (displayDenom
-            ? displayDenom.denom.startsWith('factory/')
-              ? displayDenom.denom.split('/').pop()!
-              : displayDenom.denom
-            : metadata.symbol) || denom,
+          // convert `utoken` to `TOKEN`
+          (extractedSymbol.startsWith('u') &&
+          extractedSymbol.toLowerCase() === extractedSymbol
+            ? extractedSymbol.substring(1).toUpperCase()
+            : extractedSymbol) || denom,
         preferredDecimals:
           displayDenom?.exponent ||
           (chainId === ChainId.KujiraMainnet ||
