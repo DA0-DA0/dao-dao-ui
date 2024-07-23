@@ -1,6 +1,8 @@
 import { IbcClient, Link, Logger } from '@confio/relayer'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
+import { QueryClient, setupStakingExtension } from '@cosmjs/stargate'
+import { connectComet } from '@cosmjs/tendermint-rpc'
 import chalk from 'chalk'
 import { Command } from 'commander'
 import dotenv from 'dotenv'
@@ -11,7 +13,7 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
-import { PolytoneConnection } from '@dao-dao/types'
+import { ChainId, PolytoneConnection } from '@dao-dao/types'
 import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   getNativeTokenForChainId,
@@ -286,7 +288,7 @@ const main = async () => {
         clientId: srcConnection.clientId,
       })
     ).status
-    if (srcClientStatus !== 'ACTIVE') {
+    if (srcClientStatus !== 'Active') {
       throw new Error(
         `Source connection client ${srcConnection.clientId} is not active: ${srcClientStatus}`
       )
@@ -320,7 +322,7 @@ const main = async () => {
         clientId: destConnection.clientId,
       })
     ).status
-    if (destClientStatus !== 'ACTIVE') {
+    if (destClientStatus !== 'Active') {
       throw new Error(
         `Destination connection client ${destConnection.clientId} is not active: ${destClientStatus}`
       )
@@ -397,6 +399,70 @@ const main = async () => {
   let link: Link
 
   if (newConnection) {
+    // For Neutron, which does not have staking, use its parent chain's (Cosmos
+    // Hub's) unbonding time instead. This is needed to create a new
+    // connection/clients.
+    const neutronIbcClient =
+      srcChainId === ChainId.NeutronMainnet
+        ? srcIbcClient
+        : destChainId === ChainId.NeutronMainnet
+        ? destIbcClient
+        : undefined
+    if (neutronIbcClient) {
+      const cosmosHubStakingQueryClient = QueryClient.withExtensions(
+        await connectComet(getRpcForChainId(ChainId.CosmosHubMainnet)),
+        setupStakingExtension
+      )
+      neutronIbcClient.query.staking.params = async () => {
+        const { params } = await cosmosHubStakingQueryClient.staking.params()
+        return {
+          params: {
+            ...params,
+            unbondingTime: {
+              // Subtract one day.
+              seconds: params.unbondingTime.seconds - BigInt(24 * 3600),
+              nanos: params.unbondingTime.nanos,
+            },
+          },
+        }
+      }
+    }
+
+    // replace auto fee with larger chain multiplier to cover gas
+    const srcOriginalSignAndBroadcast = srcIbcClient.sign.signAndBroadcast.bind(
+      srcIbcClient.sign
+    )
+    srcIbcClient.sign.signAndBroadcast = (
+      signerAddress,
+      messages,
+      fee,
+      memo,
+      timeoutHeight
+    ) =>
+      srcOriginalSignAndBroadcast(
+        signerAddress,
+        messages,
+        fee === 'auto' ? 2 : fee,
+        memo,
+        timeoutHeight
+      )
+    const destOriginalSignAndBroadcast =
+      destIbcClient.sign.signAndBroadcast.bind(destIbcClient.sign)
+    destIbcClient.sign.signAndBroadcast = (
+      signerAddress,
+      messages,
+      fee,
+      memo,
+      timeoutHeight
+    ) =>
+      destOriginalSignAndBroadcast(
+        signerAddress,
+        messages,
+        fee === 'auto' ? 2 : fee,
+        memo,
+        timeoutHeight
+      )
+
     link = await Link.createWithNewConnections(
       srcIbcClient,
       destIbcClient,
