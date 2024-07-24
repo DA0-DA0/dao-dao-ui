@@ -1526,7 +1526,10 @@ export const MsgInstantiateContract = {
   toAmino(message: MsgInstantiateContract, useInterfaces: boolean = false): MsgInstantiateContractAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.admin = message.admin;
+    // Replace empty string with undefined.
+    if (message.admin) {
+      obj.admin = message.admin;
+    }
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
     obj.label = message.label;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;

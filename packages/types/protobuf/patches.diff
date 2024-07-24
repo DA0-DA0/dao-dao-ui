@@ -135,10 +135,22 @@ index 3a2a34091..cced669c2 100644
      return message;
    },
 diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-index 11d5dba92..e5ef23ea1 100644
+index 11d5dba92..6ee5c2e5a 100644
 --- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-@@ -1770,7 +1770,9 @@ export const MsgInstantiateContract2 = {
+@@ -1526,7 +1526,10 @@ export const MsgInstantiateContract = {
+   toAmino(message: MsgInstantiateContract, useInterfaces: boolean = false): MsgInstantiateContractAmino {
+     const obj: any = {};
+     obj.sender = message.sender;
+-    obj.admin = message.admin;
++    // Replace empty string with undefined.
++    if (message.admin) {
++      obj.admin = message.admin;
++    }
+     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+     obj.label = message.label;
+     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
+@@ -1770,7 +1773,9 @@ export const MsgInstantiateContract2 = {
        obj.funds = [];
      }
      obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
