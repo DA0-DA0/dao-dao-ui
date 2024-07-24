@@ -1339,7 +1339,7 @@
     "socialLoginWarning": "Social logins may be less secure than a self-managed wallet. We recommend the self-managed wallets, above, if you plan on storing large amounts of money.",
     "socialLoginWarning_onlySocial": "Social logins may be less secure than a self-managed wallet. We recommend a self-managed wallet if you plan on storing large amounts of money.",
     "socialLoginsPoweredByWeb3Auth": "Social logins powered by web3auth",
-    "spendActionCustomTokenDecimalsFound": "Automatic decimal conversion for ${{tokenSymbol}} with {{decimals}} decimals is enabled. Be sure to input the amount with {{decimals}} decimal places, as you normally would.",
+    "spendActionCustomTokenDecimalsFound": "Automatic decimal conversion for ${{tokenSymbol}} with {{decimals}} decimals is enabled. Be sure to input the amount with {{decimals}} decimal places.",
     "spendActionDescription_dao": "Spend native or CW20 tokens from the treasury.",
     "spendActionDescription_gov": "Spend tokens from the community pool.",
     "spendActionDescription_wallet": "Spend native tokens from your wallet.",
