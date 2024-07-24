@@ -1,4 +1,5 @@
 export * from './AddressInput'
+export * from './AccountSelector'
 export * from './Checkbox'
 export * from './CodeMirrorInput'
 export * from './DateTimePicker'

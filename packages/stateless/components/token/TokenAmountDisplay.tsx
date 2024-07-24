@@ -2,8 +2,14 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplayProps } from '@dao-dao/types'
-import { formatTime, toAccessibleImageUrl, toFixedDown } from '@dao-dao/utils'
+import {
+  formatTime,
+  getDisplayNameForChainId,
+  toAccessibleImageUrl,
+  toFixedDown,
+} from '@dao-dao/utils'
 
+import { ChainLogo } from '../chain/ChainLogo'
 import { Tooltip } from '../tooltip/Tooltip'
 
 // Standardized display for token amounts, with support for displaying compact
@@ -40,6 +46,7 @@ export const TokenAmountDisplay = ({
   showFullAmount,
   iconUrl,
   iconClassName,
+  showChainId,
   symbol,
   hideSymbol,
   estimatedUsdValue,
@@ -194,15 +201,35 @@ export const TokenAmountDisplay = ({
       >
         {/* Icon */}
         {!!iconUrl && (
-          <div
-            className={clsx(
-              'h-5 w-5 shrink-0 rounded-full bg-cover bg-center',
-              iconClassName
-            )}
-            style={{
-              backgroundImage: `url(${toAccessibleImageUrl(iconUrl)})`,
-            }}
-          ></div>
+          <Tooltip
+            title={
+              showChainId
+                ? t('info.tokenOnChain', {
+                    token: symbol,
+                    chain: getDisplayNameForChainId(showChainId),
+                  })
+                : undefined
+            }
+          >
+            <div
+              className={clsx(
+                'h-5 w-5 shrink-0 rounded-full bg-cover bg-center',
+                showChainId && 'relative',
+                iconClassName
+              )}
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(iconUrl)})`,
+              }}
+            >
+              {showChainId && (
+                <ChainLogo
+                  chainId={showChainId}
+                  className="absolute -bottom-1 -right-1"
+                  size={14}
+                />
+              )}
+            </div>
+          </Tooltip>
         )}
 
         {/* Amount Display */}

@@ -146,7 +146,7 @@ export const ChainPickerPopup = ({
 
                   <p
                     className={clsx(
-                      !selectedChain && 'text-text-tertiary',
+                      selectedChain ? 'text-text-body' : 'text-text-tertiary',
                       selectedLabelClassName
                     )}
                   >

@@ -21,12 +21,20 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "to": "<RECIPIENT ADDRESS>",
   "amount": "<AMOUNT>",
   "denom": "<DENOM>",
+  "cw20": "<true | false>",
+  "decimals": "<DECIMALS",
   "ibcTimeout": {
     "value": <SECONDS>,
     "units": "seconds"
   }
 }
 ```
+
+You must set `decimals` correctly for the specified amount. The final message
+gets generated with `amount * 10^(decimals)` microunits of the specified denom.
+For example: `amount = 5`, `decimals = 6`, and `denom = "untrn"` =>
+`5000000untrn` or `5 * 10^6 untrn`, where `untrn` is the microdenom/true
+denomination of `NTRN`.
 
 If used in a DAO, `fromChainId` and `from` determine which account has the
 tokens being sent, which can be the native chain or any supported Polytone or

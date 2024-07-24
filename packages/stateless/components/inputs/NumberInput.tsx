@@ -1,18 +1,13 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentPropsWithoutRef } from 'react'
-import {
-  FieldPathValue,
-  FieldValues,
-  Path,
-  UseFormRegister,
-  Validate,
-} from 'react-hook-form'
+import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { NumberInputProps } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
@@ -22,56 +17,6 @@ import { IconButton } from '../icon_buttons'
 // form, `setValue`, `watch`, and `fieldName` already exist. When not using a
 // react-hook-form form, the `setValue` function can easily be mocked, and the
 // first fieldName argument (which will be an empty string) can be ignored.
-
-export interface NumberInputProps<
-  FV extends FieldValues,
-  FieldName extends Path<FV>
-> extends Omit<
-    ComponentPropsWithoutRef<'input'>,
-    'type' | 'required' | 'value'
-  > {
-  // The field name for the form.
-  fieldName?: FieldName
-  // Register function returned by `useForm`/`useFormContext`.
-  register?: UseFormRegister<FV>
-  // Validations to apply when registering this input.
-  validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  // Applies to the input when registering with a form.
-  required?: boolean
-  // Transform the value displayed in the input by these decimals.
-  transformDecimals?: number
-  // If error present, outline input in red.
-  error?: any
-  // Hide plus/minus buttons
-  hidePlusMinus?: boolean
-  // Value passed to the input.
-  value?: number
-  // Used to get the value when the plus/minus buttons are clicked. Accepts the
-  // react-hook-form `watch` function, or any custom function.
-  watch?: (fieldName: any) => number | undefined
-  // Used to set the value when the plus/minus buttons are clicked. Accepts the
-  // react-hook-form `watch` function, or any custom function.
-  setValue?: (
-    fieldName: any,
-    value: number,
-    options?: { shouldValidate: boolean }
-  ) => void
-  // Applies to the outer-most container, which contains the plus/minus buttons,
-  // the input, and the unit.
-  containerClassName?: string
-  // Size of the container.
-  sizing?: 'sm' | 'md' | 'lg' | 'auto' | 'fill' | 'none'
-  // Remove padding, rounded corners, and outline.
-  ghost?: boolean
-  // A unit to display to the right of the number.
-  unit?: string
-  // Applies to both the input text and the unit.
-  textClassName?: string
-  // Applies to the unit only.
-  unitClassName?: string
-  // Size of the plus/minus buttons. Defaults to 'sm'.
-  plusMinusButtonSize?: 'sm' | 'lg'
-}
 
 export const NumberInput = <
   FV extends FieldValues,
@@ -93,8 +38,11 @@ export const NumberInput = <
   transformDecimals,
   ghost,
   unit,
+  unitIconUrl,
   textClassName,
   unitClassName,
+  unitIconClassName,
+  unitContainerClassName,
   plusMinusButtonSize = 'sm',
   ...props
 }: NumberInputProps<FV, FieldName>) => {
@@ -241,16 +189,35 @@ export const NumberInput = <
           }))}
       />
 
-      {unit && (
-        <p
+      {(unit || unitIconUrl) && (
+        <div
           className={clsx(
-            'secondary-text max-w-[10rem] shrink-0 truncate text-right text-text-tertiary',
-            textClassName,
-            unitClassName
+            'flex flex-row items-center gap-1.5 max-w-[10rem] shrink-0 min-w-0',
+            unitContainerClassName
           )}
         >
-          {unit}
-        </p>
+          {unitIconUrl && (
+            <div
+              className={clsx(
+                'h-5 w-5 shrink-0 bg-cover bg-center rounded-full ml-1',
+                unitIconClassName
+              )}
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(unitIconUrl)})`,
+              }}
+            />
+          )}
+
+          <p
+            className={clsx(
+              'secondary-text max-w-[10rem] shrink-0 truncate text-right text-text-tertiary',
+              textClassName,
+              unitClassName
+            )}
+          >
+            {unit}
+          </p>
+        </div>
       )}
     </div>
   )

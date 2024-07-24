@@ -19,18 +19,17 @@ import {
 } from '@dao-dao/types'
 import {
   NEUTRON_GOVERNANCE_DAO,
-  concatAddressStartEnd,
   getDisplayNameForChainId,
-  getImageUrlForChainId,
   serializeTokenSource,
 } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../contexts'
 import { useButtonPopupSorter, useTokenSortOptions } from '../../../hooks'
 import { ErrorPage } from '../../error'
+import { AccountSelector } from '../../inputs'
 import { LineLoaders } from '../../LineLoader'
 import { NftSection } from '../../nft/NftSection'
-import { ButtonPopup, FilterableItemPopup } from '../../popup'
+import { ButtonPopup } from '../../popup'
 import { StatusCard } from '../../StatusCard'
 import { TokenLineHeader } from '../../token'
 import { Tooltip, TooltipInfoIcon } from '../../tooltip'
@@ -203,23 +202,8 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
       <div className="mb-6 flex min-h-[3.5rem] flex-row items-center justify-between gap-8 border-b border-border-secondary pb-6">
         <p className="title-text text-text-body">{t('title.treasury')}</p>
 
-        <FilterableItemPopup
-          filterableItemKeys={FILTERABLE_KEYS}
-          items={accounts.map(({ chainId, address, type }) => ({
-            key: chainId + address,
-            label: getDisplayNameForChainId(chainId),
-            iconUrl: getImageUrlForChainId(chainId),
-            description: concatAddressStartEnd(address, 10, 6),
-            rightNode: (
-              <p className="caption-text self-end md:self-center">
-                {t(`accountTypeLabel.${type}`)}
-              </p>
-            ),
-            iconClassName: '!h-8 !w-8',
-            contentContainerClassName: '!gap-4',
-            chainId,
-            address,
-          }))}
+        <AccountSelector
+          accounts={accounts}
           onSelect={({ chainId, address }) => {
             navigator.clipboard.writeText(address)
             toast.success(
@@ -228,7 +212,6 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
               })
             )
           }}
-          searchPlaceholder={t('info.searchForAccount')}
           trigger={{
             type: 'button',
             props: {
@@ -376,5 +359,3 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
     </>
   )
 }
-
-const FILTERABLE_KEYS = ['label', 'chainId', 'address']

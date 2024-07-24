@@ -4,6 +4,7 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { tokenQueries } from '@dao-dao/state/query'
 import {
   accountsSelector,
   genericTokenSelector,
@@ -61,6 +62,7 @@ import {
   isValidBech32Address,
   makeBankMessage,
   makeWasmMessage,
+  maybeGetChainForChainId,
   maybeGetNativeTokenForChainId,
   maybeMakeIcaExecuteMessage,
   maybeMakePolytoneExecuteMessage,
@@ -122,13 +124,17 @@ const useDefaults: UseDefaults<SpendData> = () => {
     return proposalModuleMaxVotingPeriod.error
   }
 
+  const nativeToken = maybeGetNativeTokenForChainId(chainId)
+
   return {
     fromChainId: chainId,
     toChainId: chainId,
     from: address,
     to: walletAddress,
     amount: 1,
-    denom: maybeGetNativeTokenForChainId(chainId)?.denomOrAddress || '',
+    denom: nativeToken?.denomOrAddress || '',
+    decimals: nativeToken?.decimals || 0,
+    cw20: nativeToken?.type === TokenType.Cw20,
     ibcTimeout:
       'time' in proposalModuleMaxVotingPeriod.data
         ? // 1 week if voting period is a time since we can append it after.
@@ -163,7 +169,8 @@ export const StatefulSpendComponent: ComponentType<
     address,
     chain: { chain_id: currentChainId },
   } = useActionOptions()
-  const { watch, setValue } = useFormContext<SpendData>()
+  const { watch, setValue, getValues } = useFormContext<SpendData>()
+  const queryClient = useQueryClient()
 
   const fromChainId = watch(
     (props.fieldNamePrefix + 'fromChainId') as 'fromChainId'
@@ -173,6 +180,7 @@ export const StatefulSpendComponent: ComponentType<
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
   const amount = watch((props.fieldNamePrefix + 'amount') as 'amount')
+  const isCw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
   const useDirectIbcPath = watch(
     (props.fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
   )
@@ -199,19 +207,58 @@ export const StatefulSpendComponent: ComponentType<
       : [
           {
             chainId: fromChainId,
-            // Cw20 denoms are contract addresses, native denoms are not.
-            type: isValidBech32Address(
-              denom,
-              getChainForChainId(fromChainId).bech32_prefix
-            )
-              ? TokenType.Cw20
-              : TokenType.Native,
+            type: isCw20 ? TokenType.Cw20 : TokenType.Native,
             denomOrAddress: denom,
           },
         ],
     includeAccountTypes: props.fromValence ? [AccountType.Valence] : undefined,
     excludeAccountTypes: props.fromValence ? [] : undefined,
   })
+
+  // Load token for component and ensure fields are up to date in case using
+  // custom token input.
+  const loadingToken = useQueryLoadingDataWithError(
+    fromChainId && denom
+      ? tokenQueries.info(queryClient, {
+          chainId: fromChainId,
+          denomOrAddress: denom,
+          // isCw20 not immediately updated for custom tokens.
+          type: (
+            props.isCreating
+              ? isValidBech32Address(
+                  denom,
+                  maybeGetChainForChainId(fromChainId)?.bech32_prefix
+                )
+              : isCw20
+          )
+            ? TokenType.Cw20
+            : TokenType.Native,
+        })
+      : undefined
+  )
+  useEffect(() => {
+    if (loadingToken.loading || loadingToken.errored) {
+      return
+    }
+
+    const decimals = getValues(
+      (props.fieldNamePrefix + 'decimals') as 'decimals'
+    )
+    const isCw20 = getValues((props.fieldNamePrefix + 'cw20') as 'cw20')
+
+    if (decimals !== loadingToken.data.decimals) {
+      setValue(
+        (props.fieldNamePrefix + 'decimals') as 'decimals',
+        loadingToken.data.decimals
+      )
+    }
+    if (isCw20 !== (loadingToken.data.type === TokenType.Cw20)) {
+      setValue(
+        (props.fieldNamePrefix + 'cw20') as 'cw20',
+        loadingToken.data.type === TokenType.Cw20
+      )
+    }
+  }, [getValues, loadingToken, props.fieldNamePrefix, setValue])
 
   // Should always be defined if in a DAO proposal. Even for a DAO, it may not
   // be defined if being authz executed or something similar.
@@ -520,7 +567,6 @@ export const StatefulSpendComponent: ComponentType<
   ])
 
   const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
-  const queryClient = useQueryClient()
   const loadingEntity = useQueryLoadingDataWithError(
     entityQueries.info(
       queryClient,
@@ -546,6 +592,7 @@ export const StatefulSpendComponent: ComponentType<
       {...props}
       options={{
         tokens: loadingTokens,
+        token: loadingToken,
         currentEntity,
         ibcPath,
         ibcAmountOut,
@@ -585,6 +632,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 ) => {
   const options = useActionOptions()
   const defaults = useDefaults()
+  const queryClient = useQueryClient()
 
   let chainId = options.chain.chain_id
   let from = options.address
@@ -645,9 +693,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     }) &&
     msg.stargate.value.sourcePort === 'transfer'
 
-  const token = useCachedLoadingWithError(
+  const token = useQueryLoadingDataWithError(
     isNative || isCw20 || isIbcTransfer
-      ? genericTokenSelector({
+      ? tokenQueries.info(queryClient, {
           chainId,
           type: isNative || isIbcTransfer ? TokenType.Native : TokenType.Cw20,
           denomOrAddress: isIbcTransfer
@@ -723,6 +771,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
           token.data.decimals
         ),
         denom: token.data.denomOrAddress,
+        decimals: token.data.decimals,
+        // Should always be false.
+        cw20: token.data.type === TokenType.Cw20,
 
         // Nanoseconds to milliseconds.
         _absoluteIbcTimeout: Number(
@@ -750,6 +801,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
           token.data.decimals
         ),
         denom: token.data.denomOrAddress,
+        decimals: token.data.decimals,
+        cw20: false,
       },
     }
   } else if (token.data.type === TokenType.Cw20) {
@@ -767,6 +820,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
           token.data.decimals
         ),
         denom: msg.wasm.execute.contract_addr,
+        decimals: token.data.decimals,
+        cw20: true,
       },
     }
   }
@@ -783,14 +838,9 @@ export const makeSpendAction: ActionMaker<
      */
     fromValence?: boolean
   }
-> = ({ t, context, fromValence }) => {
+> = ({ t, context }) => {
   const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     const options = useActionOptions()
-
-    const loadingTokenBalances = useTokenBalances({
-      includeAccountTypes: fromValence ? [AccountType.Valence] : undefined,
-      excludeAccountTypes: fromValence ? [] : undefined,
-    })
 
     const neutronTransferFee = useCachedLoading(
       neutronIbcTransferFeeSelector,
@@ -832,29 +882,24 @@ export const makeSpendAction: ActionMaker<
         to,
         amount: _amount,
         denom,
+        decimals,
+        cw20,
         ibcTimeout,
         useDirectIbcPath,
         _skipIbcTransferMsg,
       }: SpendData) => {
-        if (loadingTokenBalances.loading) {
-          return
-        }
-
-        const { token, owner } =
-          loadingTokenBalances.data.find(
-            ({ owner, token }) =>
-              owner.address === from &&
-              token.chainId === fromChainId &&
-              token.denomOrAddress === denom
-          ) || {}
-        if (!token || !owner) {
-          throw new Error(`Unknown token: ${denom}`)
-        }
-
         const amount = convertDenomToMicroDenomStringWithDecimals(
           _amount,
-          token.decimals
+          decimals
         )
+
+        const spendAccount = context.accounts.find(
+          (a) => a.chainId === fromChainId && a.address === from
+        )
+        // Should never happen.
+        if (!spendAccount) {
+          throw new Error(t('error.failedToFindSpendingAccount'))
+        }
 
         // Gov module community pool spend.
         if (options.context.type === ActionContextType.Gov) {
@@ -871,8 +916,8 @@ export const makeSpendAction: ActionMaker<
         }
 
         let msg: UnifiedCosmosMsg | undefined
-        // IBC transfer.
-        if (token.type === TokenType.Native && toChainId !== fromChainId) {
+        // IBC transfer of native token.
+        if (!cw20 && toChainId !== fromChainId) {
           // Require that this loads before using IBC.
           if (
             proposalModuleMaxVotingPeriod.loading ||
@@ -986,11 +1031,11 @@ export const makeSpendAction: ActionMaker<
               },
             })
           }
-        } else if (token.type === TokenType.Native) {
+        } else if (!cw20) {
           msg = {
             bank: makeBankMessage(amount, to, denom),
           }
-        } else if (token.type === TokenType.Cw20) {
+        } else {
           msg = makeWasmMessage({
             wasm: {
               execute: {
@@ -1007,16 +1052,12 @@ export const makeSpendAction: ActionMaker<
           })
         }
 
-        if (!msg) {
-          throw new Error(`Unknown token type: ${token.type}`)
-        }
-
-        return owner.type === AccountType.Ica
+        return spendAccount.type === AccountType.Ica
           ? maybeMakeIcaExecuteMessage(
               options.chain.chain_id,
               fromChainId,
               options.address,
-              owner.address,
+              spendAccount.address,
               msg
             )
           : maybeMakePolytoneExecuteMessage(
@@ -1025,12 +1066,7 @@ export const makeSpendAction: ActionMaker<
               msg
             )
       },
-      [
-        loadingTokenBalances,
-        options,
-        neutronTransferFee,
-        proposalModuleMaxVotingPeriod,
-      ]
+      [options, neutronTransferFee, proposalModuleMaxVotingPeriod]
     )
   }
 

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboardProps } from '@dao-dao/types/components/CopyToClipboard'
-import { concatAddressBoth, concatAddressStartEnd } from '@dao-dao/utils'
+import { abbreviateString } from '@dao-dao/utils'
 
 import { Tooltip } from './tooltip/Tooltip'
 
@@ -77,14 +77,10 @@ export const CopyToClipboard = ({
         >
           {label ??
             (takeStartEnd
-              ? concatAddressStartEnd(
-                  value,
-                  takeStartEnd.start,
-                  takeStartEnd.end
-                )
+              ? abbreviateString(value, takeStartEnd.start, takeStartEnd.end)
               : takeAll
               ? value
-              : concatAddressBoth(value, takeN))}
+              : abbreviateString(value, takeN ?? 7))}
         </span>
       </button>
     </Tooltip>
@@ -127,10 +123,10 @@ export const CopyToClipboardUnderline = ({
       >
         {label ??
           (takeStartEnd
-            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+            ? abbreviateString(value, takeStartEnd.start, takeStartEnd.end)
             : takeAll
             ? value
-            : concatAddressBoth(value, takeN))}
+            : abbreviateString(value, takeN ?? 7))}
       </p>
     </Tooltip>
   )

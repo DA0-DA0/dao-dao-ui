@@ -34,6 +34,11 @@ export type TokenAmountDisplayProps = Omit<
   iconUrl?: string
   iconClassName?: string
   /**
+   * Overlay the chain logo over the bottom right corner of the token icon and
+   * add a tooltip.
+   */
+  showChainId?: string
+  /**
    * Optionally specify a callback when clicked and make the pointer a cursor.
    */
   onClick?: () => void

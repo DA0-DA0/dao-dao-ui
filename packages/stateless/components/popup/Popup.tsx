@@ -196,21 +196,27 @@ export const TriggerRenderer = ({ trigger, options }: TriggerRendererProps) => (
     {trigger.type === 'button' ? (
       <Tooltip title={trigger.tooltip}>
         <Button
-          {...(typeof trigger.props === 'function'
-            ? trigger.props(options)
-            : trigger.props)}
-          onClick={options.onClick}
-          pressed={options.open}
+          {...{
+            // Let props override these if desired.
+            onClick: options.onClick,
+            pressed: options.open,
+            ...(typeof trigger.props === 'function'
+              ? trigger.props(options)
+              : trigger.props),
+          }}
         />
       </Tooltip>
     ) : trigger.type === 'icon_button' ? (
       <Tooltip title={trigger.tooltip}>
         <IconButton
-          {...(typeof trigger.props === 'function'
-            ? trigger.props(options)
-            : trigger.props)}
-          focused={options.open}
-          onClick={options.onClick}
+          {...{
+            // Let props override these if desired.
+            onClick: options.onClick,
+            focused: options.open,
+            ...(typeof trigger.props === 'function'
+              ? trigger.props(options)
+              : trigger.props),
+          }}
         />
       </Tooltip>
     ) : trigger.type === 'custom' ? (

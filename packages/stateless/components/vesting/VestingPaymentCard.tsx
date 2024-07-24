@@ -23,7 +23,7 @@ import {
   VestingStep,
 } from '@dao-dao/types'
 import {
-  concatAddressStartEnd,
+  abbreviateString,
   formatDateTimeTz,
   isNativeIbcUsdc,
   secondsToWdhms,
@@ -257,7 +257,7 @@ export const VestingPaymentCard = ({
   if (token.symbol.toLowerCase().startsWith('ibc')) {
     token = {
       ...token,
-      symbol: concatAddressStartEnd(token.symbol, 3, 2),
+      symbol: abbreviateString(token.symbol, 3, 2),
     }
   }
 

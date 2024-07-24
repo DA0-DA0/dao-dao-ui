@@ -1,10 +1,8 @@
-import { fromBech32 } from '@cosmjs/encoding'
-
 import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { getChainForChainId } from './chain'
 import { assets } from './constants'
-import { concatAddressStartEnd } from './conversion'
+import { abbreviateAddress, abbreviateString } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
 // Cache once loaded.
@@ -93,25 +91,14 @@ export const shortenTokenSymbol = (
   const isIbc = symbol.toLowerCase().startsWith('ibc')
   const isFactory = symbol.toLowerCase().startsWith('factory')
 
-  // Get the bech32 prefix length of the factory token's creator address.
-  let factoryCreatorAddressPrefixLength = 5
-  if (isFactory) {
-    try {
-      factoryCreatorAddressPrefixLength = fromBech32(symbol.split('/')[1])
-        .prefix.length
-    } catch {}
-  }
-
   // Truncate denominations to prevent overflow.
   const tokenSymbol = isIbc
-    ? concatAddressStartEnd(symbol, 7, 3)
+    ? abbreviateString(symbol, 7, 3)
     : isFactory
     ? // Truncate address in middle.
-      `factory/${concatAddressStartEnd(
-        symbol.split('/')[1],
-        factoryCreatorAddressPrefixLength + 3,
-        3
-      )}/${symbol.split('/')[2]}`
+      `factory/${abbreviateAddress(symbol.split('/')[1], 3)}/${
+        symbol.split('/')[2]
+      }`
     : symbol
 
   return {

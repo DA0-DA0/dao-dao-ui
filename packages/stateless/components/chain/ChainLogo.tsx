@@ -12,7 +12,10 @@ export const ChainLogo = forwardRef<HTMLDivElement, ChainLogoProps>(
   function ChainLogo({ chainId, className, style, size = 20, ...props }, ref) {
     return (
       <div
-        className={clsx('bg-contain bg-center bg-no-repeat', className)}
+        className={clsx(
+          'bg-contain bg-center bg-no-repeat shrink-0',
+          className
+        )}
         ref={ref}
         style={{
           ...style,

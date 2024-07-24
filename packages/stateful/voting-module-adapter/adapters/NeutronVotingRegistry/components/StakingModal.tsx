@@ -18,7 +18,7 @@ import {
   StakingModal as StatelessStakingModal,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { BaseStakingModalProps } from '@dao-dao/types'
+import { BaseStakingModalProps, TokenInputOption } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
@@ -299,7 +299,7 @@ const InnerStakingModal = ({
                       loading: false,
                       data: realVaults.map(({ bondToken }) => bondToken),
                     },
-              onSelectToken: (token) => {
+              onSelectToken: (token: TokenInputOption) => {
                 const index =
                   loadingVaults.loading || loadingVaults.errored
                     ? -1

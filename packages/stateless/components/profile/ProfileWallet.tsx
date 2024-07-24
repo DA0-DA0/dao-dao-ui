@@ -11,8 +11,8 @@ import {
   ValenceAccount,
 } from '@dao-dao/types'
 import {
+  abbreviateAddress,
   areAccountsEqual,
-  concatAddressStartEnd,
   getDisplayNameForChainId,
   getImageUrlForChainId,
   sortTokensValueDescending,
@@ -91,7 +91,7 @@ export const ProfileWallet = <T extends TokenCardInfo>({
                   key: chainId + address,
                   label: getDisplayNameForChainId(chainId),
                   iconUrl: getImageUrlForChainId(chainId),
-                  description: concatAddressStartEnd(address, 10, 6),
+                  description: abbreviateAddress(address),
                   rightNode: (
                     <p className="caption-text self-end md:self-center">
                       {t(`accountTypeLabel.${type}`)}

@@ -5,6 +5,12 @@ export type ParametersExceptFirst<F> = F extends (
   ? R
   : never
 
+/**
+ * Fix Omit for types with unions.
+ * https://stackoverflow.com/a/72790170
+ */
+export type DOmit<T, K extends string> = T extends unknown ? Omit<T, K> : never
+
 export type CachedLoadable<T> =
   | {
       state: 'loading'

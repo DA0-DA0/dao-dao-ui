@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 
 export interface InputLabelProps
-  extends Omit<ComponentProps<'span'>, 'children' | 'title'> {
+  extends Omit<ComponentProps<'p'>, 'children' | 'title'> {
   mono?: boolean
   name?: string
   tooltip?: ReactNode
-  containerProps?: Omit<ComponentProps<'label'>, 'children'>
+  containerProps?: Omit<ComponentProps<'div'>, 'children'>
   children?: ReactNode | ReactNode[]
   optional?: boolean
   primary?: boolean
@@ -31,11 +31,11 @@ export const InputLabel = ({
   const { t } = useTranslation()
 
   return (
-    <label
+    <div
       className={clsx('flex flex-row items-center space-x-1', labelClassName)}
       {...containerProps}
     >
-      <span
+      <p
         className={clsx(
           title ? 'title-text' : primary ? 'primary-text' : 'secondary-text',
           mono && 'font-mono',
@@ -46,9 +46,9 @@ export const InputLabel = ({
         {name}
         {children}
         {optional && ` (${t('form.optional')})`}
-      </span>
+      </p>
 
       {tooltip && <TooltipInfoIcon size="sm" title={tooltip} />}
-    </label>
+    </div>
   )
 }

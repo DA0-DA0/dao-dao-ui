@@ -23,7 +23,7 @@ const Template: ComponentStory<typeof TokenInput> = (args) => {
   return (
     <div className="max-w-sm">
       <TokenInput
-        {...args}
+        {...(args as any)}
         amount={{
           watch,
           setValue,

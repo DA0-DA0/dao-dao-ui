@@ -22,6 +22,8 @@ export default {
       from: '',
       to: '',
       amount: 1,
+      decimals: 6,
+      cw20: false,
       denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
@@ -38,6 +40,10 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
+    token: {
+      loading: true,
+      errored: false,
+    },
     tokens: {
       loading: false,
       data: [

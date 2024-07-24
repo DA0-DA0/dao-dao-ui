@@ -45,20 +45,14 @@ export type PopupTrigger =
   | {
       type: 'button'
       tooltip?: string
-      props:
-        | Omit<ButtonProps, 'onClick' | 'pressed'>
-        | ((
-            options: PopupTriggerOptions
-          ) => Omit<ButtonProps, 'onClick' | 'pressed'>)
+      props: ButtonProps | ((options: PopupTriggerOptions) => ButtonProps)
     }
   | {
       type: 'icon_button'
       tooltip?: string
       props:
-        | Omit<IconButtonProps, 'onClick' | 'focused'>
-        | ((
-            options: PopupTriggerOptions
-          ) => Omit<IconButtonProps, 'onClick' | 'focused'>)
+        | IconButtonProps
+        | ((options: PopupTriggerOptions) => IconButtonProps)
     }
   | {
       type: 'custom'

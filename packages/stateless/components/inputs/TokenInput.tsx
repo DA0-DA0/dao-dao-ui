@@ -1,10 +1,14 @@
-import { ArrowDropDown } from '@mui/icons-material'
+import { ArrowDropDown, Edit } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { TokenInputOption, TokenInputProps } from '@dao-dao/types'
+import {
+  PopupTriggerCustomComponent,
+  TokenInputOption,
+  TokenInputProps,
+} from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getDisplayNameForChainId,
@@ -17,10 +21,13 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useUpdatingRef } from '../../hooks'
 import { ChainLogo } from '../chain/ChainLogo'
-import { FilterableItemPopup } from '../popup'
+import { IconButton } from '../icon_buttons'
+import { FilterableItem, FilterableItemPopup } from '../popup'
 import { Tooltip } from '../tooltip'
 import { NumberInput } from './NumberInput'
+import { TextInput } from './TextInput'
 
 /**
  * A component for specifying an amount and a token. This should be used
@@ -32,30 +39,20 @@ export const TokenInput = <
   FV extends FieldValues = FieldValues,
   FieldName extends Path<FV> = Path<FV>
 >({
-  // The fields that control the amount input.
   amount: amountField,
-  // The available tokens and selection handlers for the token. Various
-  // use-cases exist for this component, so the token selection is left up to
-  // the caller instead of being handled internally like the amount field.
   tokens,
   hideTokens,
   onSelectToken,
   selectedToken: _selectedToken,
-  // Fallback when no token is selected. If nothing is provided, a placeholder
-  // text will be shown instead ("Select token").
   tokenFallback,
-  // Whether or not the inputs are editable. This is different from read-only
-  // below. Disabled is a more temporary input state, potentially due to a
-  // dependency on some other field, for example.
   disabled,
-  // If read-only, the inputs will be replaced with a nice display of the
-  // selected token and amount.
   readOnly,
-  // This only applies to the amount field.
   required = true,
-  // Optional additional class names for the container.
   containerClassName,
   showChainImage,
+  containerRef,
+  allowCustomToken,
+  onCustomTokenChange,
 }: TokenInputProps<T, FV, FieldName>) => {
   const { t } = useTranslation()
 
@@ -154,12 +151,98 @@ export const TokenInput = <
       selectedToken &&
       tokensEqual(tokens.data[0], selectedToken))
 
+  const [customSelected, setCustomSelected] = useState(false)
+
+  const items: (
+    | (FilterableItem &
+        T & {
+          _custom?: false
+        })
+    | (FilterableItem & {
+        _custom: true
+      })
+  )[] = tokens.loading
+    ? []
+    : [
+        ...(allowCustomToken
+          ? [
+              {
+                key: '_custom',
+                label: t('info.enterCustomToken'),
+                Icon: Edit,
+                _custom: true as const,
+                iconClassName: 'ml-1 mb-1',
+                contentContainerClassName: '!gap-3',
+              },
+            ]
+          : []),
+        ...tokens.data
+          .filter(
+            (token) => !hideTokens?.some((hidden) => tokensEqual(hidden, token))
+          )
+          .map((token, index) => ({
+            key: index + token.denomOrAddress,
+            label: token.symbol,
+            iconUrl: transformIpfsUrlToHttpsIfNecessary(
+              token.imageUrl || getFallbackImage(token.denomOrAddress)
+            ),
+            ...token,
+            rightNode: (
+              <p className="caption-text max-w-[5rem] truncate">
+                {allTokensOnSameChain
+                  ? token.denomOrAddress
+                  : getDisplayNameForChainId(token.chainId)}
+              </p>
+            ),
+            iconClassName: '!h-8 !w-8',
+            contentContainerClassName: '!gap-3',
+          })),
+      ]
+
+  // Memoize reference so renderer never changes.
+  const onCustomTokenChangeRef = useUpdatingRef(onCustomTokenChange)
+  const CustomInputRenderer: PopupTriggerCustomComponent = useCallback(
+    ({ onClick }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [customInput, setCustomInput] = useState('')
+
+      return (
+        <div className="flex flex-row gap-3 items-center justify-between bg-transparent rounded-md py-3 pl-4 pr-2 transition ring-1 focus-within:ring-2 ring-border-primary focus-within:ring-border-interactive-focus min-w-[10rem] grow basis-[10rem]">
+          <TextInput
+            autoComplete="off"
+            autoCorrect="off"
+            autoFocus
+            ghost
+            onInput={(event) => {
+              const { value } = event.target as HTMLInputElement
+              setCustomInput(value)
+              onCustomTokenChangeRef.current?.(value)
+            }}
+            // eslint-disable-next-line i18next/no-literal-string
+            placeholder="udenom..."
+            spellCheck={false}
+            value={customInput}
+          />
+
+          <IconButton
+            Icon={ArrowDropDown}
+            onClick={onClick}
+            size="sm"
+            variant="ghost"
+          />
+        </div>
+      )
+    },
+    [onCustomTokenChangeRef]
+  )
+
   return (
     <div
       className={clsx(
         'flex max-w-md flex-row flex-wrap items-stretch gap-1',
         containerClassName
       )}
+      ref={containerRef}
     >
       {readOnly ? (
         selectedTokenDisplay
@@ -167,84 +250,73 @@ export const TokenInput = <
         <>
           {amountField && (
             <NumberInput
+              {...amountField}
               containerClassName="min-w-[12rem] grow basis-[12rem]"
-              disabled={disabled || !selectedToken}
-              error={amountField.error}
-              fieldName={amountField.fieldName}
-              max={amountField.max}
-              min={amountField.min}
-              register={amountField.register}
+              disabled={disabled || (!selectedToken && !customSelected)}
               setValue={(fieldName, value, options) =>
                 amountField.setValue(fieldName, value as any, options)
               }
-              step={amountField.step}
               transformDecimals={
                 amountField.convertMicroDenom
                   ? selectedToken?.decimals
                   : undefined
               }
-              unit={amountField.unit}
               validation={[
                 amountField.min ? validatePositive : validateNonNegative,
-
                 ...(required ? [validateRequired] : []),
                 ...(amountField.validations ?? []),
               ]}
-              watch={amountField.watch}
             />
           )}
 
           <FilterableItemPopup
             filterableItemKeys={FILTERABLE_KEYS}
-            items={
-              tokens.loading
-                ? []
-                : tokens.data
-                    .filter(
-                      (token) =>
-                        !hideTokens?.some((hidden) =>
-                          tokensEqual(hidden, token)
-                        )
-                    )
-                    .map((token, index) => ({
-                      key: index + token.denomOrAddress,
-                      label: token.symbol,
-                      iconUrl: transformIpfsUrlToHttpsIfNecessary(
-                        token.imageUrl || getFallbackImage(token.denomOrAddress)
-                      ),
-                      ...token,
-                      rightNode: (
-                        <p className="caption-text max-w-[5rem] truncate">
-                          {allTokensOnSameChain
-                            ? token.denomOrAddress
-                            : getDisplayNameForChainId(token.chainId)}
-                        </p>
-                      ),
-                      iconClassName: '!h-8 !w-8',
-                      contentContainerClassName: '!gap-3',
-                    }))
-            }
-            onSelect={(token) => onSelectToken(token as T)}
-            searchPlaceholder={t('info.searchForToken')}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'min-w-[10rem] grow basis-[10rem]',
-                contentContainerClassName:
-                  'justify-between text-icon-primary !gap-4',
-                disabled: selectDisabled,
-                loading: tokens.loading,
-                size: 'lg',
-                variant: 'ghost_outline',
-                children: (
-                  <>
-                    {selectedTokenDisplay}
+            items={items}
+            onSelect={(token) => {
+              if (allowCustomToken) {
+                onSelectToken(token._custom ? undefined : token)
 
-                    {!selectDisabled && <ArrowDropDown className="!h-6 !w-6" />}
-                  </>
-                ),
-              },
+                setCustomSelected(!!token._custom)
+                if (token._custom) {
+                  onCustomTokenChange('')
+                }
+
+                // Type-check. It shouldn't be possible to select a custom token
+                // if `allowCustomToken` is false, but just in case. Do nothing
+                // if a custom token is somehow selected when not allowed.
+              } else if (!token._custom) {
+                onSelectToken(token)
+              }
             }}
+            searchPlaceholder={t('info.searchForToken')}
+            trigger={
+              allowCustomToken && customSelected
+                ? {
+                    type: 'custom',
+                    Renderer: CustomInputRenderer,
+                  }
+                : {
+                    type: 'button',
+                    props: {
+                      className: 'min-w-[10rem] grow basis-[10rem]',
+                      contentContainerClassName:
+                        'justify-between text-icon-primary !gap-4',
+                      disabled: selectDisabled,
+                      loading: tokens.loading,
+                      size: 'lg',
+                      variant: 'ghost_outline',
+                      children: (
+                        <>
+                          {selectedTokenDisplay}
+
+                          {!selectDisabled && (
+                            <ArrowDropDown className="!h-6 !w-6" />
+                          )}
+                        </>
+                      ),
+                    },
+                  }
+            }
           />
         </>
       )}

@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, forwardRef } from 'react'
 
-import { concatAddressBoth } from '@dao-dao/utils'
+import { abbreviateString } from '@dao-dao/utils'
 
 import { Tooltip } from './Tooltip'
 
@@ -21,7 +21,7 @@ export const TooltipTruncatedText = forwardRef<
   return (
     <Tooltip title={truncating ? text : undefined}>
       <p {...props} ref={ref}>
-        {truncating ? concatAddressBoth(text, Math.floor(maxLength / 2)) : text}
+        {truncating ? abbreviateString(text, Math.floor(maxLength / 2)) : text}
       </p>
     </Tooltip>
   )

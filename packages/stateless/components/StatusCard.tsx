@@ -42,7 +42,7 @@ export const StatusCard = ({
       ? WarningRounded
       : undefined
   const iconColor =
-    style === 'info' || style === 'success'
+    style === 'info'
       ? 'text-icon-secondary'
       : style === 'warning'
       ? 'text-icon-interactive-warning'
@@ -91,7 +91,7 @@ export const StatusCard = ({
           <p
             className={clsx(
               textColor,
-              size === 'xs' ? 'secondary-text' : 'primary-text',
+              size === 'xs' ? 'secondary-text' : 'body-text',
               size === 'sm' && 'text-xs',
               textClassName
             )}

@@ -1,5 +1,5 @@
 import { Duration } from '../contracts/common'
-import { LoadingData } from '../misc'
+import { DOmit, LoadingData } from '../misc'
 import { GenericToken } from '../token'
 import { TokenInputOption, TokenInputProps } from './TokenInput'
 import { ValidatorPickerProps } from './ValidatorPicker'
@@ -61,5 +61,5 @@ export interface StakingModalProps {
   // Enable restaking. Validator picker must be present as well.
   enableRestaking?: boolean
   // If present, a token picker will be shown in the header.
-  tokenPicker?: Omit<TokenInputProps<TokenInputOption>, 'amount'>
+  tokenPicker?: DOmit<TokenInputProps<TokenInputOption>, 'amount'>
 }

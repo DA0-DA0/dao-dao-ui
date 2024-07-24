@@ -15,7 +15,7 @@ import {
   PopupTriggerCustomComponent,
 } from '@dao-dao/types'
 import {
-  concatAddressStartEnd,
+  abbreviateAddress,
   getDisplayNameForChainId,
   getImageUrlForChainId,
 } from '@dao-dao/utils'
@@ -101,7 +101,7 @@ export const NavWalletConnected = ({
               iconUrl: getImageUrlForChainId(chainId),
               rightNode: (
                 <p className="caption-text self-end md:self-center">
-                  {concatAddressStartEnd(address, 10, 6)}
+                  {abbreviateAddress(address, 6)}
                 </p>
               ),
               iconClassName: '!h-8 !w-8',
@@ -143,12 +143,12 @@ export const NavWalletConnected = ({
                 size: 'sm',
                 // Show badge when notifications exist.
                 children: !inbox.loading && inbox.items.length > 0 && (
-                  <div className="absolute top-[0.2rem] right-[0.2rem] h-1 w-1 animate-fade-in rounded-full bg-icon-interactive-active"></div>
+                  <div className="animate-fade-in bg-icon-interactive-active absolute top-[0.2rem] right-[0.2rem] h-1 w-1 rounded-full"></div>
                 ),
               },
             }}
           >
-            <div className="flex flex-row items-center justify-between border-b border-border-base p-4">
+            <div className="border-border-base flex flex-row items-center justify-between border-b p-4">
               <p className="header-text">{t('title.notifications')}</p>
 
               <div className="flex flex-row items-center gap-1 md:gap-2">

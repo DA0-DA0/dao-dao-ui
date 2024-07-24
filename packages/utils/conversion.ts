@@ -521,33 +521,51 @@ export const toBech32Hash = (address: string) => {
   }
 }
 
-export const concatAddressStartEnd = (
-  address: string,
-  takeStart: number,
-  takeEnd: number
-) => {
-  const first = address.substring(0, takeStart)
-  const last = address.substring(address.length - takeEnd, address.length)
+/**
+ * Shrinks a string by slicing off the start and end and joining them with
+ * ellipses. Useful for displaying addresses more compactly.
+ */
+export const abbreviateString = (
+  str: string,
+  /**
+   * The number of characters at the beginning to keep. If `takeEnd` is
+   * undefined, this applies to the end as well.
+   */
+  takeStartOrBoth: number,
+  /**
+   * The number of characters at the end to keep. If undefined,
+   * `takeStartOrBoth` is used.
+   */
+  takeEnd?: number
+): string => {
+  takeEnd ??= takeStartOrBoth
+
+  // Nothing to abbreviate if the string is as short as or shorter than the
+  // abbreviated length, which is the start, end, and 2 periods.
+  if (str.length <= takeStartOrBoth + takeEnd + 2) {
+    return str
+  }
+
+  const first = str.substring(0, takeStartOrBoth)
+  const last = str.substring(str.length - takeEnd, str.length)
   return [first, last].filter(Boolean).join('..')
 }
 
-export const concatAddressBoth = (address: string, takeN = 7): string =>
-  address && concatAddressStartEnd(address, takeN, takeN)
-
-export const intelligentAddressConcat = (
-  address: string,
-  takeN = 4
-): string => {
+/**
+ * Shrinks an address by slicing off the start and end and joining them with
+ * ellipses. Preserves the bech32 prefix in full.
+ */
+export const abbreviateAddress = (address: string, takeN = 4): string => {
   // Use bech32 prefix length to determine how much to truncate from beginning.
   let prefixLength
   try {
     prefixLength = fromBech32(address).prefix.length
   } catch (e) {
     // Conservative estimate.
-    prefixLength = 6
+    prefixLength = 8
   }
 
-  return concatAddressStartEnd(address, prefixLength + takeN, takeN)
+  return abbreviateString(address, prefixLength + takeN, takeN)
 }
 
 /**

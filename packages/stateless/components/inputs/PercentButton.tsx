@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { LoadingData } from '@dao-dao/types'
+import { ButtonProps, LoadingData } from '@dao-dao/types'
 
 import { Button } from '../buttons'
 
@@ -13,6 +13,7 @@ export interface PercentButtonProps {
   decimals: number
   className?: string
   absoluteOffset?: number
+  size?: ButtonProps['size']
 }
 
 export const PercentButton = ({
@@ -24,6 +25,7 @@ export const PercentButton = ({
   decimals,
   className,
   absoluteOffset,
+  size,
 }: PercentButtonProps) => (
   <Button
     center
@@ -55,6 +57,7 @@ export const PercentButton = ({
       (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(decimals) ===
         amount.toFixed(decimals)
     }
+    size={size}
     variant="secondary"
   >
     {label}

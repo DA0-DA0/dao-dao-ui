@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { EntityType } from '@dao-dao/types'
 import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
-import { formatPercentOf100, intelligentAddressConcat } from '@dao-dao/utils'
+import { abbreviateAddress, formatPercentOf100 } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { ButtonLink } from '../buttons'
@@ -40,7 +40,7 @@ export const DaoMemberCard = ({
     </p>
   ) : (
     <p className="title-text text-text-tertiary !text-base truncate">
-      {intelligentAddressConcat(address)}
+      {abbreviateAddress(address)}
     </p>
   )
 
