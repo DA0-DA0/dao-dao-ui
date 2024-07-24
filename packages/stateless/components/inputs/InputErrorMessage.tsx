@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next'
 
 export interface InputErrorMessageProps {
   error?: FieldError | string | Error | unknown
+  warning?: boolean
   className?: string
 }
 
 export const InputErrorMessage = ({
   error,
+  warning,
   className,
 }: InputErrorMessageProps) => {
   const { t } = useTranslation()
@@ -26,7 +28,10 @@ export const InputErrorMessage = ({
   return message ? (
     <span
       className={clsx(
-        'mt-1 ml-1 inline-block max-w-prose break-words text-xs text-text-interactive-error',
+        'mt-1 ml-1 inline-block max-w-prose break-words text-xs',
+        warning
+          ? 'text-text-interactive-warning-body'
+          : 'text-text-interactive-error',
         className
       )}
     >

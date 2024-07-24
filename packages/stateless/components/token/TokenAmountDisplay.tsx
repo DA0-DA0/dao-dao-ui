@@ -43,6 +43,7 @@ export const TokenAmountDisplay = ({
   symbol,
   hideSymbol,
   estimatedUsdValue,
+  onClick,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
@@ -155,19 +156,8 @@ export const TokenAmountDisplay = ({
       : '') +
     translateOrOmitSymbol(tokenTranslation, showFullAmount ? full : compact)
 
-  const content = (
-    <p
-      {...props}
-      className={clsx('min-w-0 max-w-full truncate', props.className)}
-    >
-      <span className={prefixClassName}>{prefix}</span>
-      {display}
-      <span className={suffixClassName}>{suffix}</span>
-    </p>
-  )
-
-  // Show full value in tooltip if different from compact and not an
-  // estimated USD value.
+  // Show full value in tooltip if different from compact and not an estimated
+  // USD value.
   const shouldShowFullTooltip =
     !showFullAmount && wasCompacted && !estimatedUsdValue
 
@@ -194,9 +184,16 @@ export const TokenAmountDisplay = ({
         ) : undefined
       }
     >
-      {iconUrl ? (
-        <div className="flex min-w-0 flex-row items-center gap-2">
-          {/* Icon */}
+      <div
+        className={clsx(
+          'flex min-w-0 flex-row items-center gap-2',
+          onClick &&
+            'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70'
+        )}
+        onClick={onClick}
+      >
+        {/* Icon */}
+        {!!iconUrl && (
           <div
             className={clsx(
               'h-5 w-5 shrink-0 rounded-full bg-cover bg-center',
@@ -206,14 +203,22 @@ export const TokenAmountDisplay = ({
               backgroundImage: `url(${toAccessibleImageUrl(iconUrl)})`,
             }}
           ></div>
+        )}
 
-          {/* Amount Display */}
-          {content}
-        </div>
-      ) : (
-        // Amount Display
-        content
-      )}
+        {/* Amount Display */}
+        <p
+          {...props}
+          className={clsx(
+            'min-w-0 max-w-full truncate',
+            onClick && 'underline',
+            props.className
+          )}
+        >
+          <span className={prefixClassName}>{prefix}</span>
+          {display}
+          <span className={suffixClassName}>{suffix}</span>
+        </p>
+      </div>
     </Tooltip>
   )
 }

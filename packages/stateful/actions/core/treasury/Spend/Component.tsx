@@ -3,7 +3,7 @@ import {
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, RefAttributes, useCallback, useEffect } from 'react'
+import { ComponentType, RefAttributes, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -83,8 +83,6 @@ export interface SpendData {
   // If true, will not use the PFM optimized path from Skip.
   useDirectIbcPath?: boolean
 
-  _error?: string
-
   // Defined once loaded for IBC transfers. Needed for transforming.
   _skipIbcTransferMsg?: LoadingDataWithError<SkipMultiChainMsg>
 
@@ -150,8 +148,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     chain: { chain_id: mainChainId },
   } = useActionOptions()
 
-  const { register, watch, setValue, setError, clearErrors } =
-    useFormContext<SpendData>()
+  const { register, watch, setValue } = useFormContext<SpendData>()
 
   const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
@@ -223,99 +220,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     }
   }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])
 
-  const validatePossibleSpend = useCallback(
-    (
-      from: string,
-      chainId: string,
-      denom: string,
-      amount: number
-    ): string | boolean => {
-      if (tokens.loading) {
-        return true
-      }
-
-      const insufficientBalanceI18nKey =
-        context.type === ActionContextType.Wallet
-          ? 'error.insufficientWalletBalance'
-          : 'error.cantSpendMoreThanTreasury'
-
-      const tokenBalance = tokens.data.find(
-        ({ owner, token }) =>
-          owner.address === from &&
-          token.chainId === chainId &&
-          token.denomOrAddress === denom
-      )
-      if (tokenBalance) {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          tokenBalance.token.decimals
-        )
-
-        return (
-          microAmount <= Number(tokenBalance.balance) ||
-          t(insufficientBalanceI18nKey, {
-            amount: convertMicroDenomToDenomWithDecimals(
-              tokenBalance.balance,
-              tokenBalance.token.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: tokenBalance.token.decimals,
-            }),
-            tokenSymbol: tokenBalance.token.symbol,
-          })
-        )
-      }
-
-      return t('error.unknownDenom', { denom })
-    },
-    [context.type, t, tokens]
-  )
-
-  // Update amount+denom combo error each time either field is updated instead
-  // of setting errors individually on each field. Since we only show one or the
-  // other and can't detect which error is newer, this would lead to the error
-  // not updating if amount set an error and then denom was changed.
-  useEffect(() => {
-    // Prevent infinite loops by not setting errors if already set, and only
-    // clearing errors unless already set.
-    const currentError = errors?._error
-
-    if (!spendDenom || !spendAmount) {
-      if (currentError) {
-        clearErrors((fieldNamePrefix + '_error') as '_error')
-      }
-      return
-    }
-
-    const validation = validatePossibleSpend(
-      from,
-      spendChainId,
-      spendDenom,
-      spendAmount
-    )
-    if (validation === true) {
-      if (currentError) {
-        clearErrors((fieldNamePrefix + '_error') as '_error')
-      }
-    } else if (typeof validation === 'string') {
-      if (!currentError || currentError.message !== validation) {
-        setError((fieldNamePrefix + '_error') as '_error', {
-          type: 'custom',
-          message: validation,
-        })
-      }
-    }
-  }, [
-    spendAmount,
-    spendDenom,
-    setError,
-    clearErrors,
-    validatePossibleSpend,
-    fieldNamePrefix,
-    errors?._error,
-    spendChainId,
-    from,
-  ])
-
   const selectedToken = tokens.loading
     ? undefined
     : tokens.data.find(
@@ -328,6 +232,37 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     selectedToken?.balance ?? 0,
     selectedToken?.token.decimals ?? 0
   )
+
+  // A warning if the denom was not found in the treasury or the amount is too
+  // high. We don't want to make this an error because often people want to
+  // spend funds that a previous action makes available, so just show a warning.
+  const warning = useMemo(() => {
+    if (tokens.loading) {
+      return
+    }
+    if (!selectedToken) {
+      return t('error.unknownDenom', { denom: spendDenom })
+    }
+
+    const microAmount = convertDenomToMicroDenomWithDecimals(
+      spendAmount,
+      selectedToken.token.decimals
+    )
+
+    if (microAmount <= Number(selectedToken.balance)) {
+      return
+    }
+
+    return t('error.spendActionInsufficientWarning', {
+      amount: convertMicroDenomToDenomWithDecimals(
+        selectedToken.balance,
+        selectedToken.token.decimals
+      ).toLocaleString(undefined, {
+        maximumFractionDigits: selectedToken.token.decimals,
+      }),
+      tokenSymbol: selectedToken.token.symbol,
+    })
+  }, [selectedToken, spendAmount, spendDenom, t, tokens.loading])
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
@@ -355,7 +290,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               1,
               selectedToken?.token.decimals ?? 0
             ),
-            max: balance,
             step: convertMicroDenomToDenomWithDecimals(
               1,
               selectedToken?.token.decimals ?? 0
@@ -469,12 +403,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
       </div>
 
-      {(errors?.amount || errors?.denom || errors?.to || errors?._error) && (
+      {!!(
+        errors?.amount ||
+        errors?.denom ||
+        errors?.to ||
+        errors?._error ||
+        warning
+      ) && (
         <div className="-mt-4 flex flex-col gap-1">
           <InputErrorMessage error={errors?.amount} />
           <InputErrorMessage error={errors?.denom} />
           <InputErrorMessage error={errors?.to} />
-          <InputErrorMessage error={errors?._error} />
+          <InputErrorMessage error={warning} warning />
         </div>
       )}
 
@@ -486,6 +426,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             amount={balance}
             decimals={selectedToken.token.decimals}
             iconUrl={selectedToken.token.imageUrl}
+            onClick={() =>
+              setValue((fieldNamePrefix + 'amount') as 'amount', balance)
+            }
             showFullAmount
             symbol={selectedToken.token.symbol}
           />
