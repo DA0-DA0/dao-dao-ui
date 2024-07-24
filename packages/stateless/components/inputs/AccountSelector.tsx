@@ -146,14 +146,14 @@ export const AccountSelector = ({
             // Disable click entirely if not turning into copy button below.
             disabled: disabled && !selectedAccount,
             // Override trigger and make it copy on click when disabled.
-            onClick:
-              disabled && selectedAccount
-                ? () => {
-                    navigator.clipboard.writeText(selectedAccount.address)
-                    setCopied(true)
-                    toast.success(t('info.copiedToClipboard'))
-                  }
-                : undefined,
+            ...(disabled &&
+              selectedAccount && {
+                onClick: () => {
+                  navigator.clipboard.writeText(selectedAccount.address)
+                  setCopied(true)
+                  toast.success(t('info.copiedToClipboard'))
+                },
+              }),
             children: (
               <>
                 {selectedAccount ? (
