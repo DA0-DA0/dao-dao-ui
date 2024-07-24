@@ -61,7 +61,9 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
           minter,
           name: instantiateData.name,
           symbol: instantiateData.symbol,
-        }
+        },
+        undefined,
+        minter
       )
 
       // Update action form data with address.

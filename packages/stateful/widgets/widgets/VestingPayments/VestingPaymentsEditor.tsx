@@ -194,7 +194,9 @@ const VestingFactoryChain = ({
         {
           owner: daoChainAccountAddress,
           vesting_code_id: codeIds.CwVesting,
-        } as VestingFactoryInstantiateMsg
+        } as VestingFactoryInstantiateMsg,
+        undefined,
+        daoChainAccountAddress
       )
 
       // If factory already set, add to list of old factories.

@@ -98,7 +98,9 @@ export const PressEditor = ({
               minter,
               name: name,
               symbol: 'PRESS',
-            } as Cw721InstantiateMsg
+            } as Cw721InstantiateMsg,
+            undefined,
+            minter
           )
         : undefined
 
