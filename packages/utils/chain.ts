@@ -716,3 +716,13 @@ export const getDaoInfoForChainId = (
  */
 export const isSecretNetwork = (chainId: string): boolean =>
   chainId === ChainId.SecretMainnet || chainId === ChainId.SecretTestnet
+
+/**
+ * Get the null wallet address to use as a placeholder when the wallet isn't
+ * connected.
+ */
+export const getNullWalletForChain = (chainId: string): string =>
+  toBech32(
+    getChainForChainId(chainId).bech32_prefix,
+    new Uint8Array([...Array(20)].fill(0))
+  )

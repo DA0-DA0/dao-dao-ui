@@ -84,6 +84,7 @@ import {
   formatTime,
   getDisplayNameForChainId,
   getImageUrlForChainId,
+  getNullWalletForChain,
   getRpcForChainId,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
@@ -221,7 +222,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     loadFromPrefill()
   }, [router.query.prefill, router.query.pi, router.isReady, prefillChecked, t])
 
-  return !defaults || accounts.loading || !prefillChecked ? (
+  return !defaults || (walletAddress && accounts.loading) || !prefillChecked ? (
     <PageLoader />
   ) : defaults instanceof Error ? (
     <ErrorPage error={defaults} />
@@ -697,7 +698,13 @@ const InnerNewGovProposal = ({
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
         <div className="flex flex-col gap-4">
-          <WalletActionsProvider address={walletAddress}>
+          <WalletActionsProvider
+            address={
+              // If wallet not connected, use placeholder wallet so it still
+              // loads.
+              walletAddress || getNullWalletForChain(chain.chain_id)
+            }
+          >
             <action.Component
               addAction={() => {}}
               allActionsWithData={[]}
