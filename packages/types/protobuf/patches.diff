@@ -162,7 +162,7 @@ index 11d5dba92..6ee5c2e5a 100644
    },
    fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
 diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
-index d2a323eb5..2ede42783 100644
+index d2a323eb5..2038d7725 100644
 --- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
 +++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
 @@ -19,16 +19,16 @@ export const AccessTypeAmino = AccessType;
@@ -218,6 +218,15 @@ index d2a323eb5..2ede42783 100644
      }
      return obj;
    },
+@@ -571,7 +569,7 @@ export const Params = {
+   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
+     const obj: any = {};
+     obj.code_upload_access = message.codeUploadAccess ? AccessConfig.toAmino(message.codeUploadAccess, useInterfaces) : AccessConfig.fromPartial({});
+-    obj.instantiate_default_permission = message.instantiateDefaultPermission;
++    obj.instantiate_default_permission = accessTypeToJSON(message.instantiateDefaultPermission);
+     return obj;
+   },
+   fromAminoMsg(object: ParamsAminoMsg): Params {
 diff --git b/packages/types/protobuf/codegen/neutron/client.ts a/packages/types/protobuf/codegen/neutron/client.ts
 index 1caf8781d..9d864d753 100644
 --- b/packages/types/protobuf/codegen/neutron/client.ts
