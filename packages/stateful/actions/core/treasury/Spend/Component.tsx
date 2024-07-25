@@ -464,7 +464,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ) : (
                   <StatusCard
                     className="-mt-2"
-                    content={t('error.spendActionCustomTokenNoDecimals')}
+                    content={t('error.customTokenNoDecimals')}
                     size="xs"
                     style="warning"
                   />

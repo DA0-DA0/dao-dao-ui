@@ -113,11 +113,11 @@ export const NativeCoinSelector = ({
   // spend funds that a previous action makes available, so just show a warning.
   const symbol = selectedToken?.token.symbol || watchDenom
   const warning =
-    noBalanceWarning ||
-    customToken ||
-    !isCreating ||
-    tokens.loading ||
-    !watchDenom
+    !isCreating || tokens.loading || !watchDenom
+      ? undefined
+      : customToken
+      ? t('error.customTokenNoDecimals')
+      : noBalanceWarning
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: watchDenom })
