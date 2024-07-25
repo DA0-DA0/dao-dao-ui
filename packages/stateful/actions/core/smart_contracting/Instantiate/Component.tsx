@@ -4,6 +4,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AccountSelector,
   AddressInput,
   Button,
   CodeMirrorInput,
@@ -11,13 +12,16 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NativeCoinSelectorProps,
   NumberInput,
   TextInput,
   useChain,
 } from '@dao-dao/stateless'
-import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
+import {
+  GenericTokenBalance,
+  LoadingData,
+  PolytoneConnection,
+} from '@dao-dao/types'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   getNativeTokenForChainId,
   makeValidateAddress,
@@ -27,26 +31,47 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-export interface InstantiateOptions {
+import { useActionOptions } from '../../../react'
+
+export type InstantiateData = {
+  chainId: string
+  sender: string
+  admin: string
+  codeId: number
+  label: string
+  message: string
+  funds: {
+    denom: string
+    amount: number
+    // Will multiply `amount` by 10^decimals when generating the message.
+    decimals: number
+  }[]
+
+  // Loaded on transform once created if this is a polytone message.
+  _polytone?: {
+    chainId: string
+    note: PolytoneConnection
+    initiatorMsg: string
+  }
+}
+
+export type InstantiateOptions = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
   // Only present once executed.
   instantiatedAddress?: string
 }
 
-export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
-  props
-) => {
-  const {
-    fieldNamePrefix,
-    errors,
-    isCreating,
-    options: { instantiatedAddress },
-  } = props
-
+export const InstantiateComponent: ActionComponent<InstantiateOptions> = ({
+  fieldNamePrefix,
+  errors,
+  isCreating,
+  options: { instantiatedAddress, nativeBalances },
+}) => {
   const { t } = useTranslation()
+  const { context } = useActionOptions()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const { register, control } = useFormContext()
+  const { watch, setValue, register, control } = useFormContext()
   const {
     fields: coins,
     append: appendCoin,
@@ -56,8 +81,45 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     name: fieldNamePrefix + 'funds',
   })
 
+  const nativeToken = getNativeTokenForChainId(chainId)
+
+  const sender = watch((fieldNamePrefix + 'sender') as 'sender')
+  const chainAccounts = context.accounts.filter((a) => a.chainId === chainId)
+  const selectedAccount = context.accounts.find(
+    (a) => a.chainId === chainId && a.address === sender
+  )
+
   return (
     <>
+      {context.type === ActionContextType.Dao && (
+        // Show accounts on the selected chain in case there are more than one
+        // to choose from.
+        <div className="flex flex-col items-stretch gap-1">
+          <InputLabel
+            name={t('title.account')}
+            tooltip={t('info.instantiatorAccountTooltip')}
+          />
+
+          <AccountSelector
+            accounts={chainAccounts}
+            disabled={
+              !isCreating ||
+              // If only one chain account to select and it's selected, disable
+              // input since there's nothing to change. If more than one
+              // potential account, or the only account isn't selected, let them
+              // change the account.
+              (chainAccounts.length === 1 &&
+                selectedAccount === chainAccounts[0])
+            }
+            hideChainImage
+            onSelect={({ address }) =>
+              setValue((fieldNamePrefix + 'sender') as 'sender', address)
+            }
+            selectedAccount={selectedAccount}
+          />
+        </div>
+      )}
+
       {instantiatedAddress && (
         <div className="flex flex-row items-center gap-6 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
@@ -151,16 +213,12 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <div className="flex flex-col items-stretch gap-2">
           {coins.map(({ id }, index) => (
             <NativeCoinSelector
-              key={id}
-              {...({
-                ...props,
-                chainId,
-                onRemove: props.isCreating
-                  ? () => removeCoin(index)
-                  : undefined,
-              } as NativeCoinSelectorProps)}
+              key={id + index}
               errors={errors?.funds?.[index]}
               fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+              isCreating={isCreating}
+              onRemove={isCreating ? () => removeCoin(index) : undefined}
+              tokens={nativeBalances}
             />
           ))}
           {!isCreating && coins.length === 0 && (
@@ -174,7 +232,8 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
               onClick={() =>
                 appendCoin({
                   amount: 1,
-                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                  denom: nativeToken.denomOrAddress,
+                  decimals: nativeToken.decimals,
                 })
               }
               variant="secondary"

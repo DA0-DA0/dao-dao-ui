@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Loader,
+  InputLabel,
   NestedActionsEditor,
   NestedActionsEditorOptions,
   NestedActionsRenderer,
@@ -52,38 +52,40 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
 
   return (
     <>
-      <p className="title-text">{t('title.dao')}</p>
-      <div className="mb-2">
-        {childDaos.loading ? (
-          <Loader />
-        ) : isCreating ? (
-          childDaos.data.length > 0 ? (
-            <RadioInput
-              fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
-              options={childDaos.data.map((childDao) => ({
-                display: <EntityDisplay address={childDao} hideImage noCopy />,
-                value: childDao,
-              }))}
-              setValue={setValue}
-              watch={watch}
-            />
-          ) : (
-            <AddressInput
-              error={errors?.coreAddress}
-              fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
-              register={register}
-              type="contract"
-              validation={[makeValidateAddress(bech32Prefix)]}
-            />
-          )
-        ) : (
-          <EntityDisplay address={coreAddress} />
-        )}
-      </div>
+      <InputLabel className="-mb-2" name={t('title.dao')} />
+
+      {!isCreating ? (
+        <EntityDisplay address={coreAddress} />
+      ) : childDaos.loading || childDaos.data.length > 0 ? (
+        <RadioInput
+          fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+          loading={childDaos.loading}
+          options={
+            childDaos.loading
+              ? []
+              : childDaos.data.map((childDao) => ({
+                  display: (
+                    <EntityDisplay address={childDao} hideImage noCopy />
+                  ),
+                  value: childDao,
+                }))
+          }
+          setValue={setValue}
+          watch={watch}
+        />
+      ) : (
+        <AddressInput
+          error={errors?.coreAddress}
+          fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+          register={register}
+          type="contract"
+          validation={[makeValidateAddress(bech32Prefix)]}
+        />
+      )}
 
       {isValidBech32Address(coreAddress, bech32Prefix) && (
         <>
-          <p className="title-text">{t('title.actions')}</p>
+          <InputLabel className="-mb-2" name={t('title.actions')} />
 
           {isCreating ? (
             <NestedActionsEditor {...props} />

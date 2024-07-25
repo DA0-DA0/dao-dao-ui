@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/utils'
 
 import { entityQueries } from '../queries/entity'
-import { useQueryLoadingData } from './useQueryLoadingData'
+import { useQueryLoadingData } from './query/useQueryLoadingData'
 
 export type UseEntityReturn = {
   /**

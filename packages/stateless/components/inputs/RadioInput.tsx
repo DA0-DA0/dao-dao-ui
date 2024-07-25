@@ -19,6 +19,7 @@ export type RadioInputNoFormProps<Value extends unknown = any> = {
   onChange: (value: Value) => void
   className?: string
   disabled?: boolean
+  loading?: boolean
 }
 
 export const RadioInputNoForm = <Value extends unknown = any>({
@@ -27,17 +28,27 @@ export const RadioInputNoForm = <Value extends unknown = any>({
   onChange,
   className,
   disabled,
+  loading,
 }: RadioInputNoFormProps<Value>) => (
   <div
     className={clsx('flex flex-row flex-wrap items-stretch gap-2', className)}
   >
-    {options.map(({ value, ...labelOrDisplay }, index) => (
+    {(loading
+      ? [...new Array(3)].map(() => ({
+          // value won't be used when loading
+          // eslint-disable-next-line i18next/no-literal-string
+          value: '' as any,
+          display: <div className="w-20 h-full"></div>,
+        }))
+      : options
+    ).map(({ value, ...labelOrDisplay }, index) => (
       <RadioButton
         key={index}
         background
-        disabled={disabled}
-        onClick={() => onChange(value)}
-        selected={selected === value}
+        className={clsx(loading && 'animate-pulse bg-background-tertiary')}
+        disabled={disabled || loading}
+        onClick={loading ? undefined : () => onChange(value)}
+        selected={!loading && selected === value}
         {...labelOrDisplay}
       />
     ))}

@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  InputLabel,
   NestedActionsEditor,
   NestedActionsEditorOptions,
   NestedActionsRenderer,
@@ -60,7 +61,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
       {/* When creating, show common address field for all messages. When not creating, msgs will be grouped by sender and displayed in order, which if created via this action, will look the same with one address at the top and many actions below it. */}
       {isCreating && (
         <>
-          <p className="title-text -mb-1">{t('title.account')}</p>
+          <InputLabel className="-mb-3" name={t('title.account')} />
 
           <AddressInput
             autoFocus
@@ -76,18 +77,18 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           {isCreating ? (
             <>
-              <p className="title-text -mb-1 mt-3">{t('title.actions')}</p>
+              <InputLabel className="-mb-2" name={t('title.actions')} />
 
               <NestedActionsEditor {...props} />
             </>
           ) : (
             <div className="flex flex-col gap-4">
-              <p className="title-text -mb-1">{t('title.account')}</p>
+              <InputLabel className="-mb-2" name={t('title.account')} />
               <EntityDisplay
                 address={msgsPerSender[msgPerSenderIndex!].sender}
               />
 
-              <p className="title-text -mb-1 mt-4">{t('title.actions')}</p>
+              <InputLabel className="-mb-2" name={t('title.actions')} />
               <NestedActionsRenderer
                 {...options}
                 msgsFieldName={

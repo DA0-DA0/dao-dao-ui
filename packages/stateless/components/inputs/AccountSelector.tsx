@@ -40,7 +40,7 @@ export type AccountSelectorProps = {
    * selected account address when abbreviating it in the trigger button. Set to
    * -1 to show the whole address.
    *
-   * Defaults to 3.
+   * Defaults to 8.
    */
   addressAbbreviationLength?: number
 } & (
@@ -94,7 +94,7 @@ export const AccountSelector = ({
   onSelect,
   selectedAccount,
   hideChainImage,
-  addressAbbreviationLength = 3,
+  addressAbbreviationLength = 8,
   className,
   loading,
   disabled,

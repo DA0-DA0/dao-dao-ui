@@ -1,9 +1,9 @@
 import { DaoSource } from '@dao-dao/types'
 
+import { useQueryLoadingDataWithError } from './query/useQueryLoadingDataWithError'
 import { useDaoClient } from './useDaoClient'
 import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
 import { useProfile } from './useProfile'
-import { useQueryLoadingDataWithError } from './useQueryLoadingDataWithError'
 import { useWallet } from './useWallet'
 
 interface UseMembershipOptions {

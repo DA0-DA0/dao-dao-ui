@@ -2,15 +2,12 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { waitForAll } from 'recoil'
 
 import { valenceRebalancerExtraQueries } from '@dao-dao/state/query'
-import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   AtomEmoji,
   ChainProvider,
   DaoSupportedChainPickerInput,
-  useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenType, makeStargateMessage } from '@dao-dao/types'
 import {
@@ -29,6 +26,7 @@ import {
   VALENCE_SUPPORTED_CHAINS,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodeIcaExecuteMsg,
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   getDisplayNameForChainId,
@@ -39,7 +37,7 @@ import {
   tokensEqual,
 } from '@dao-dao/utils'
 
-import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { useQueryLoadingDataWithError, useQueryTokens } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react/context'
 import {
@@ -158,6 +156,7 @@ const useDefaults: UseDefaults<CreateValenceAccountData> = () => ({
     {
       denom: 'untrn',
       amount: 10,
+      decimals: 6,
     },
   ],
 })
@@ -178,6 +177,12 @@ export const makeCreateValenceAccountAction: ActionMaker<
     if (decodedPolytone.match) {
       chainId = decodedPolytone.chainId
       msg = decodedPolytone.msg
+    } else {
+      const decodedIca = decodeIcaExecuteMsg(chainId, msg)
+      if (decodedIca.match) {
+        chainId = decodedIca.chainId
+        msg = decodedIca.msgWithSender?.msg || {}
+      }
     }
 
     const typedMsg =
@@ -190,38 +195,31 @@ export const makeCreateValenceAccountAction: ActionMaker<
     const valenceAccountCodeId =
       getSupportedChainConfig(chainId)?.codeIds?.ValenceAccount
 
-    const fundTokens = useCachedLoading(
-      typedMsg
-        ? waitForAll(
-            typedMsg.funds.map(({ denom }) =>
-              genericTokenSelector({
-                chainId,
-                type: TokenType.Native,
-                denomOrAddress: denom,
-              })
-            )
-          )
-        : undefined,
-      []
+    const fundsTokens = useQueryTokens(
+      typedMsg?.funds.map(({ denom }) => ({
+        chainId,
+        type: TokenType.Native,
+        denomOrAddress: denom,
+      }))
     )
+
+    // Can't match until we have the token info.
+    if (fundsTokens.loading || fundsTokens.errored) {
+      return { match: false }
+    }
 
     return valenceAccountCodeId !== undefined && typedMsg
       ? {
           match: true,
           data: {
             chainId,
-            funds: typedMsg.funds.map(({ denom, amount }) => ({
+            funds: typedMsg.funds.map(({ denom, amount }, index) => ({
               denom,
               amount: convertMicroDenomToDenomWithDecimals(
                 amount,
-                (!fundTokens.loading &&
-                  fundTokens.data.find(
-                    (token) =>
-                      token.chainId === chainId &&
-                      token.denomOrAddress === denom
-                  )?.decimals) ||
-                  0
+                fundsTokens.data[index].decimals
               ),
+              decimals: fundsTokens.data[index].decimals,
             })),
           },
         }
@@ -232,86 +230,71 @@ export const makeCreateValenceAccountAction: ActionMaker<
 
   const useTransformToCosmos: UseTransformToCosmos<
     CreateValenceAccountData
-  > = () => {
-    const nativeBalances = useTokenBalances({
-      filter: TokenType.Native,
-    })
+  > = () =>
+    useCallback(({ chainId, funds, serviceFee }) => {
+      const config = getSupportedChainConfig(chainId)
+      if (!config?.codeIds?.ValenceAccount || !config?.valence) {
+        throw new Error(t('error.unsupportedValenceChain'))
+      }
 
-    return useCallback(
-      ({ chainId, funds, serviceFee }) => {
-        const config = getSupportedChainConfig(chainId)
-        if (!config?.codeIds?.ValenceAccount || !config?.valence) {
-          throw new Error(t('error.unsupportedValenceChain'))
-        }
-
-        const sender = getChainAddressForActionOptions(options, chainId)
-        if (!sender) {
-          throw new Error(
-            t('error.failedToFindChainAccount', {
-              chain: getDisplayNameForChainId(chainId),
-            })
-          )
-        }
-
-        const convertedFunds = funds.map(({ denom, amount }) => ({
-          denom,
-          amount: convertDenomToMicroDenomStringWithDecimals(
-            amount,
-            (!nativeBalances.loading &&
-              nativeBalances.data.find(
-                ({ token }) =>
-                  token.chainId === chainId && token.denomOrAddress === denom
-              )?.token.decimals) ||
-              0
-          ),
-        }))
-        // Add service fee to funds.
-        if (serviceFee && serviceFee.amount !== '0') {
-          const existing = convertedFunds.find(
-            (f) => f.denom === serviceFee.denom
-          )
-          if (existing) {
-            existing.amount = (
-              BigInt(existing.amount) + BigInt(serviceFee.amount)
-            ).toString()
-          } else {
-            convertedFunds.push({
-              denom: serviceFee.denom,
-              amount: serviceFee.amount,
-            })
-          }
-        }
-
-        return maybeMakePolytoneExecuteMessage(
-          currentChainId,
-          chainId,
-          makeStargateMessage({
-            stargate: {
-              typeUrl: MsgInstantiateContract2.typeUrl,
-              value: {
-                sender,
-                admin: sender,
-                codeId: BigInt(config.codeIds.ValenceAccount),
-                label: 'Valence Account',
-                msg: toUtf8(
-                  JSON.stringify({
-                    services_manager: config.valence.servicesManager,
-                  } as ValenceAccountInstantiateMsg)
-                ),
-                funds: convertedFunds
-                  // Neutron errors with `invalid coins` if the funds list is
-                  // not alphabetized.
-                  .sort((a, b) => a.denom.localeCompare(b.denom)),
-                salt: toUtf8(VALENCE_INSTANTIATE2_SALT),
-                fixMsg: false,
-              } as MsgInstantiateContract2,
-            },
+      const sender = getChainAddressForActionOptions(options, chainId)
+      if (!sender) {
+        throw new Error(
+          t('error.failedToFindChainAccount', {
+            chain: getDisplayNameForChainId(chainId),
           })
         )
-      },
-      [nativeBalances]
-    )
-  }
+      }
+
+      const convertedFunds = funds.map(({ denom, amount, decimals }) => ({
+        denom,
+        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+      }))
+
+      // Add service fee to funds.
+      if (serviceFee && serviceFee.amount !== '0') {
+        const existing = convertedFunds.find(
+          (f) => f.denom === serviceFee.denom
+        )
+        if (existing) {
+          existing.amount = (
+            BigInt(existing.amount) + BigInt(serviceFee.amount)
+          ).toString()
+        } else {
+          convertedFunds.push({
+            denom: serviceFee.denom,
+            amount: serviceFee.amount,
+          })
+        }
+      }
+
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeStargateMessage({
+          stargate: {
+            typeUrl: MsgInstantiateContract2.typeUrl,
+            value: {
+              sender,
+              admin: sender,
+              codeId: BigInt(config.codeIds.ValenceAccount),
+              label: 'Valence Account',
+              msg: toUtf8(
+                JSON.stringify({
+                  services_manager: config.valence.servicesManager,
+                } as ValenceAccountInstantiateMsg)
+              ),
+              funds: convertedFunds
+                // Neutron errors with `invalid coins` if the funds list is
+                // not alphabetized.
+                .sort((a, b) => a.denom.localeCompare(b.denom)),
+              salt: toUtf8(VALENCE_INSTANTIATE2_SALT),
+              fixMsg: false,
+            } as MsgInstantiateContract2,
+          },
+        })
+      )
+    }, [])
 
   return {
     key: ActionKey.CreateValenceAccount,

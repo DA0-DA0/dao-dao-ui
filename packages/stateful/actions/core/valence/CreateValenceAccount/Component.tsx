@@ -8,7 +8,6 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NativeCoinSelectorProps,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -25,7 +24,12 @@ import {
 
 export type CreateValenceAccountData = {
   chainId: string
-  funds: { denom: string; amount: number }[]
+  funds: {
+    denom: string
+    amount: number
+    // Will multiply `amount` by 10^decimals when generating the message.
+    decimals: number
+  }[]
   acknowledgedServiceFee?: boolean
   serviceFee?: Coin
 }
@@ -37,14 +41,12 @@ export type CreateValenceAccountOptions = {
 
 export const CreateValenceAccountComponent: ActionComponent<
   CreateValenceAccountOptions
-> = (props) => {
-  const {
-    fieldNamePrefix,
-    isCreating,
-    errors,
-    options: { serviceFee },
-  } = props
-
+> = ({
+  fieldNamePrefix,
+  isCreating,
+  errors,
+  options: { serviceFee, nativeBalances },
+}) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
@@ -97,6 +99,8 @@ export const CreateValenceAccountComponent: ActionComponent<
     errors?.acknowledgedServiceFee,
   ])
 
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -105,17 +109,17 @@ export const CreateValenceAccountComponent: ActionComponent<
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id + index}
-            {...({
-              ...props,
-              chainId,
-              onRemove:
-                // Don't allow removing the first token.
-                isCreating && coins.length > 1
-                  ? () => removeCoin(index)
-                  : undefined,
-            } as NativeCoinSelectorProps)}
+            chainId={chainId}
             errors={errors?.funds?.[index]}
             fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+            isCreating={isCreating}
+            onRemove={
+              // Don't allow removing the first token.
+              isCreating && coins.length > 1
+                ? () => removeCoin(index)
+                : undefined
+            }
+            tokens={nativeBalances}
           />
         ))}
 
@@ -132,7 +136,8 @@ export const CreateValenceAccountComponent: ActionComponent<
               onClick={() =>
                 appendCoin({
                   amount: 1,
-                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                  denom: nativeToken.denomOrAddress,
+                  decimals: nativeToken.decimals,
                 })
               }
               variant="secondary"

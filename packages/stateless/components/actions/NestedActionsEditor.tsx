@@ -66,6 +66,7 @@ export const NestedActionsEditor: ActionComponent<
         actionDataErrors={errors?._actionData}
         actionDataFieldName={fieldNamePrefix + '_actionData'}
         categories={categories}
+        hideEmptyPlaceholder
         loadedActions={loadedActions}
       />
 

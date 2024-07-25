@@ -11,7 +11,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useQueryLoadingData } from './useQueryLoadingData'
+import { useQueryLoadingData } from './query/useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 

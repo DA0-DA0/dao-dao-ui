@@ -432,9 +432,13 @@ export const decodePolytoneExecuteMsg = (
 export const maybeMakeIcaExecuteMessage = (
   srcChainId: string,
   destChainId: string,
-  // The ICA host address (owner) on the source chain (i.e. the src sender).
+  /**
+   * The ICA host address (owner) on the source chain (i.e. the src sender).
+   */
   icaHostAddress: string,
-  // The ICA remote address on the destination chain (i.e. the dest sender).
+  /**
+   * The ICA remote address on the destination chain (i.e. the dest sender).
+   */
   icaRemoteAddress: string,
   msg: UnifiedCosmosMsg | UnifiedCosmosMsg[]
 ): UnifiedCosmosMsg => {

@@ -4,6 +4,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AccountSelector,
   AddressInput,
   Button,
   CodeMirrorInput,
@@ -11,12 +12,11 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NativeCoinSelectorProps,
   TokenInput,
   useChain,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -26,30 +26,37 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-export interface ExecuteData {
+import { useActionOptions } from '../../../react'
+
+export type ExecuteData = {
   chainId: string
+  sender: string
   address: string
   message: string
-  funds: { denom: string; amount: number }[]
+  funds: {
+    denom: string
+    amount: number
+    // Will multiply `amount` by 10^decimals when generating the message.
+    decimals: number
+  }[]
   // Whether or not we're executing via a CW20 send.
   cw20: boolean
 }
 
-export interface ExecuteOptions {
-  balances: LoadingData<GenericTokenBalance[]>
+export type ExecuteOptions = {
+  tokens: LoadingData<GenericTokenBalance[]>
   // Only present once executed.
   instantiatedAddress?: string
 }
 
-export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
-  const {
-    fieldNamePrefix,
-    errors,
-    isCreating,
-    options: { balances },
-  } = props
-
+export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
+  fieldNamePrefix,
+  errors,
+  isCreating,
+  options: { tokens },
+}) => {
   const { t } = useTranslation()
+  const { context } = useActionOptions()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   const { register, control, watch, setValue } = useFormContext()
@@ -62,9 +69,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     name: fieldNamePrefix + 'funds',
   })
 
-  const cw20Tokens = balances.loading
+  const cw20Tokens = tokens.loading
     ? []
-    : balances.data.filter(
+    : tokens.data.filter(
         ({ token }) =>
           token.chainId === chainId && token.type === TokenType.Cw20
       )
@@ -76,8 +83,45 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     ({ token }) => token.denomOrAddress === firstDenom
   )
 
+  const nativeToken = getNativeTokenForChainId(chainId)
+
+  const sender = watch((fieldNamePrefix + 'sender') as 'sender')
+  const chainAccounts = context.accounts.filter((a) => a.chainId === chainId)
+  const selectedAccount = context.accounts.find(
+    (a) => a.chainId === chainId && a.address === sender
+  )
+
   return (
     <>
+      {context.type === ActionContextType.Dao && (
+        // Show accounts on the selected chain in case there are more than one
+        // to choose from.
+        <div className="flex flex-col items-stretch gap-1">
+          <InputLabel
+            name={t('title.account')}
+            tooltip={t('info.executorAccountTooltip')}
+          />
+
+          <AccountSelector
+            accounts={chainAccounts}
+            disabled={
+              !isCreating ||
+              // If only one chain account to select and it's selected, disable
+              // input since there's nothing to change. If more than one
+              // potential account, or the only account isn't selected, let them
+              // change the account.
+              (chainAccounts.length === 1 &&
+                selectedAccount === chainAccounts[0])
+            }
+            hideChainImage
+            onSelect={({ address }) =>
+              setValue((fieldNamePrefix + 'sender') as 'sender', address)
+            }
+            selectedAccount={selectedAccount}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={t('form.smartContractAddress')} />
         <AddressInput
@@ -171,7 +215,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                 readOnly={!isCreating}
                 selectedToken={selectedCw20?.token}
                 tokens={
-                  balances.loading
+                  tokens.loading
                     ? { loading: true }
                     : {
                         loading: false,
@@ -185,19 +229,12 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
               <div className="flex flex-col items-stretch gap-2">
                 {coins.map(({ id }, index) => (
                   <NativeCoinSelector
-                    key={id}
-                    {...({
-                      ...props,
-                      chainId,
-                      options: {
-                        nativeBalances: balances,
-                      },
-                      onRemove: props.isCreating
-                        ? () => removeCoin(index)
-                        : undefined,
-                    } as NativeCoinSelectorProps)}
+                    key={id + index}
                     errors={errors?.funds?.[index]}
                     fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                    isCreating={isCreating}
+                    onRemove={isCreating ? () => removeCoin(index) : undefined}
+                    tokens={tokens}
                   />
                 ))}
                 {!isCreating && coins.length === 0 && (
@@ -211,7 +248,8 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     onClick={() =>
                       appendCoin({
                         amount: 1,
-                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                        denom: nativeToken.denomOrAddress,
+                        decimals: nativeToken.decimals,
                       })
                     }
                     variant="secondary"

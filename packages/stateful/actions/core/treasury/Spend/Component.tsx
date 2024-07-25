@@ -1,12 +1,6 @@
 import { ArrowRightAltRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import {
-  ComponentType,
-  RefAttributes,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { ComponentType, RefAttributes, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -282,43 +276,27 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     selectedToken?.token.decimals ?? 0
   )
 
+  const decimals = loadedCustomToken
+    ? token.data.decimals
+    : selectedToken?.token.decimals || 0
+
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
   // spend funds that a previous action makes available, so just show a warning.
-  const warning = useMemo(() => {
-    if (customToken) {
-      return
-    }
-    if (!isCreating || tokens.loading || !spendDenom) {
-      return
-    }
-    if (!selectedToken) {
-      return t('error.unknownDenom', { denom: spendDenom })
-    }
-
-    const decimals = selectedToken?.token.decimals || 0
-    const symbol = selectedToken?.token.symbol || spendDenom
-
-    if (spendAmount <= balance) {
-      return
-    }
-
-    return t('error.spendActionInsufficientWarning', {
-      amount: balance.toLocaleString(undefined, {
-        maximumFractionDigits: decimals,
-      }),
-      tokenSymbol: symbol,
-    })
-  }, [
-    balance,
-    customToken,
-    isCreating,
-    selectedToken,
-    spendAmount,
-    spendDenom,
-    t,
-    tokens.loading,
-  ])
+  const symbol = selectedToken?.token.symbol || spendDenom
+  const warning =
+    customToken || !isCreating || tokens.loading || !spendDenom
+      ? undefined
+      : !selectedToken
+      ? t('error.unknownDenom', { denom: spendDenom })
+      : spendAmount > balance
+      ? t('error.spendActionInsufficientWarning', {
+          amount: balance.toLocaleString(undefined, {
+            maximumFractionDigits: decimals,
+          }),
+          tokenSymbol: symbol,
+        })
+      : undefined
 
   const {
     containerRef: toContainerRef,
@@ -335,7 +313,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           <div className="flex min-w-0 flex-row flex-wrap items-stretch gap-1">
             <AccountSelector
               accounts={context.accounts}
-              addressAbbreviationLength={8}
               className="w-auto grow"
               disabled={
                 // Enable account picker if entering custom token since we can't
@@ -362,14 +339,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
-                min: convertMicroDenomToDenomWithDecimals(
-                  1,
-                  selectedToken?.token.decimals ?? 0
-                ),
-                step: convertMicroDenomToDenomWithDecimals(
-                  1,
-                  selectedToken?.token.decimals ?? 0
-                ),
+                min: convertMicroDenomToDenomWithDecimals(1, decimals),
+                step: convertMicroDenomToDenomWithDecimals(1, decimals),
                 // For custom token, show unit if loaded successfully.
                 unit: loadedCustomToken ? token.data.symbol : undefined,
                 unitIconUrl: loadedCustomToken
@@ -466,21 +437,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             />
           </div>
 
-          {isCreating &&
-            !!(
-              errors?.amount ||
-              errors?.denom ||
-              errors?.to ||
-              errors?._error ||
-              warning
-            ) && (
-              <div className="-mt-4 -ml-1 flex flex-col gap-1">
-                <InputErrorMessage error={errors?.amount} />
-                <InputErrorMessage error={errors?.denom} />
-                <InputErrorMessage error={errors?.to} />
-                <InputErrorMessage error={warning} warning />
-              </div>
-            )}
+          {isCreating && !!(errors?.amount || warning) && (
+            <div className="-mt-4 -ml-1 flex flex-col gap-1">
+              <InputErrorMessage error={errors?.amount} />
+              <InputErrorMessage error={warning} warning />
+            </div>
+          )}
 
           {
             // Show custom token load status and decimal conversion info once a
@@ -605,6 +567,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               </ChainProvider>
             </div>
           </div>
+
+          <InputErrorMessage className="-mt-4 -ml-1" error={errors?.to} />
         </>
       ) : (
         <div className="flex flex-row gap-3 items-center">

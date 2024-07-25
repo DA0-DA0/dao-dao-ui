@@ -26,7 +26,7 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    balances: {
+    tokens: {
       loading: false,
       data: [
         {

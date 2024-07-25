@@ -11,7 +11,6 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NativeCoinSelectorProps,
   NumberInput,
   RadioInput,
   SegmentedControlsTitle,
@@ -61,15 +60,14 @@ export type AuthzGrantRevokeOptions = {
 
 export const AuthzGrantRevokeComponent: ActionComponent<
   AuthzGrantRevokeOptions
-> = (props) => {
+> = ({
+  fieldNamePrefix,
+  errors,
+  isCreating,
+  options: { AddressInput, balances },
+}) => {
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const {
-    fieldNamePrefix,
-    errors,
-    isCreating,
-    options: { AddressInput, balances },
-  } = props
 
   const { control, register, setValue, watch } =
     useFormContext<AuthzGrantRevokeData>()
@@ -96,6 +94,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   const limitTypeUrl = watch(
     (fieldNamePrefix + 'limitTypeUrl') as 'limitTypeUrl'
   )
+
+  const nativeToken = getNativeTokenForChainId(chainId)
 
   return (
     <>
@@ -233,18 +233,14 @@ export const AuthzGrantRevokeComponent: ActionComponent<
             <div className="flex flex-col items-stretch gap-1">
               {coins.map(({ id }, index) => (
                 <NativeCoinSelector
-                  key={id}
-                  {...({
-                    ...props,
-                    chainId,
-                    options: {
-                      nativeBalances: balances,
-                    },
-                    onRemove: isCreating ? () => removeCoin(index) : undefined,
-                  } as NativeCoinSelectorProps)}
-                  dontValidate
+                  key={id + index}
+                  chainId={chainId}
                   errors={errors?.funds?.[index]}
                   fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                  isCreating={isCreating}
+                  noBalanceWarning
+                  onRemove={isCreating ? () => removeCoin(index) : undefined}
+                  tokens={balances}
                 />
               ))}
             </div>
@@ -260,7 +256,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               onClick={() =>
                 appendCoin({
                   amount: 1,
-                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                  denom: nativeToken.denomOrAddress,
+                  decimals: nativeToken.decimals,
                 })
               }
               variant="secondary"
@@ -444,20 +441,16 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   <div className="flex flex-col gap-1">
                     {coins.map(({ id }, index) => (
                       <NativeCoinSelector
-                        key={id}
-                        {...({
-                          ...props,
-                          chainId,
-                          options: {
-                            nativeBalances: balances,
-                          },
-                          onRemove: isCreating
-                            ? () => removeCoin(index)
-                            : undefined,
-                        } as NativeCoinSelectorProps)}
-                        dontValidate
+                        key={id + index}
+                        chainId={chainId}
                         errors={errors?.funds?.[index]}
                         fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                        isCreating={isCreating}
+                        noBalanceWarning
+                        onRemove={
+                          isCreating ? () => removeCoin(index) : undefined
+                        }
+                        tokens={balances}
                       />
                     ))}
                   </div>
@@ -473,7 +466,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     onClick={() =>
                       appendCoin({
                         amount: 1,
-                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                        denom: nativeToken.denomOrAddress,
+                        decimals: nativeToken.decimals,
                       })
                     }
                     variant="secondary"

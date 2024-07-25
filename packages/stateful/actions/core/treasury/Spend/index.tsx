@@ -7,7 +7,6 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   accountsSelector,
-  genericTokenSelector,
   neutronIbcTransferFeeSelector,
   nobleTariffTransferFeeSelector,
   skipAllChainsPfmEnabledSelector,
@@ -215,8 +214,8 @@ export const StatefulSpendComponent: ComponentType<
     excludeAccountTypes: props.fromValence ? [] : undefined,
   })
 
-  // Load token for component and ensure fields are up to date in case using
-  // custom token input.
+  // Load selected token and ensure fields are up to date when creating in case
+  // using custom token input.
   const loadingToken = useQueryLoadingDataWithError(
     fromChainId && denom
       ? tokenQueries.info(queryClient, {
@@ -237,7 +236,7 @@ export const StatefulSpendComponent: ComponentType<
       : undefined
   )
   useEffect(() => {
-    if (loadingToken.loading || loadingToken.errored) {
+    if (!props.isCreating || loadingToken.loading || loadingToken.errored) {
       return
     }
 
@@ -258,7 +257,13 @@ export const StatefulSpendComponent: ComponentType<
         loadingToken.data.type === TokenType.Cw20
       )
     }
-  }, [getValues, loadingToken, props.fieldNamePrefix, setValue])
+  }, [
+    getValues,
+    loadingToken,
+    props.fieldNamePrefix,
+    props.isCreating,
+    setValue,
+  ])
 
   // Should always be defined if in a DAO proposal. Even for a DAO, it may not
   // be defined if being authz executed or something similar.
@@ -287,41 +292,20 @@ export const StatefulSpendComponent: ComponentType<
       : constSelector(undefined)
   )
 
-  // Once already created, load selected token info (which should already be
-  // loaded in the decoder), so this data is available right away. This removes
-  // the need to wait for all the token balances to load just to show the
-  // selected token.
-  const loadingSelectedToken = useCachedLoading(
-    props.isCreating
-      ? undefined
-      : genericTokenSelector({
-          chainId: fromChainId,
-          // Cw20 denoms are contract addresses, native denoms are not.
-          type: isValidBech32Address(
-            denom,
-            getChainForChainId(fromChainId).bech32_prefix
-          )
-            ? TokenType.Cw20
-            : TokenType.Native,
-          denomOrAddress: denom,
-        }),
-    undefined
-  )
-
   // If creating, use all token balances since they need to choose among them,
   // but once already created, we only need to load the selected token.
   const loadingTokens: LoadingData<GenericTokenBalanceWithOwner[]> =
     props.isCreating
       ? loadingAllTokenBalances
-      : loadingSelectedToken.loading
-      ? loadingSelectedToken
+      : loadingToken.loading
+      ? loadingToken
       : {
           loading: false,
-          updating: loadingSelectedToken.updating,
-          data: loadingSelectedToken.data
+          updating: loadingToken.updating,
+          data: !loadingToken.errored
             ? [
                 {
-                  token: loadingSelectedToken.data,
+                  token: loadingToken.data,
                   // Not used once already created.
                   balance: '0',
                   // Only address is checked so the specific account type is not

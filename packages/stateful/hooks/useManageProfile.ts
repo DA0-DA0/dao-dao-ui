@@ -23,8 +23,8 @@ import {
   signOffChainAuth,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingData } from './query/useQueryLoadingData'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
-import { useQueryLoadingData } from './useQueryLoadingData'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 

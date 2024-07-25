@@ -21,6 +21,7 @@ import {
 import {
   MsgExecuteContract,
   MsgMigrateContract,
+  MsgStoreCode,
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 export type AuthzGrantRevokeData = {
@@ -30,7 +31,12 @@ export type AuthzGrantRevokeData = {
   customTypeUrl: boolean
   grantee: string
   contract: string
-  funds: { denom: string; amount: number }[]
+  funds: {
+    denom: string
+    amount: number
+    // Will multiply `amount` by 10^decimals when generating the message.
+    decimals: number
+  }[]
   msgTypeUrl: string
   filterTypeUrl: string
   filterKeys: string
@@ -71,6 +77,10 @@ export const ACTION_TYPES = [
   {
     type: MsgMigrateContract,
     i18nKey: 'title.migrateSmartContract',
+  },
+  {
+    type: MsgStoreCode,
+    i18nKey: 'title.uploadSmartContractCode',
   },
 ]
 

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import {
+  InputLabel,
   NestedActionsEditor,
   NestedActionsEditorOptions,
   NestedActionsRenderer,
@@ -24,7 +25,7 @@ export const CrossChainExecuteComponent: ActionComponent<
 
   return (
     <>
-      <p className="title-text -mb-1">{t('title.actions')}</p>
+      <InputLabel className="-mb-2" name={t('title.actions')} />
 
       {isCreating ? (
         <NestedActionsEditor {...props} />

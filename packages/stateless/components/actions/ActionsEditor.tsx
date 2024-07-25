@@ -37,6 +37,7 @@ export type ActionsEditorProps = {
   actionDataFieldName: string
   actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
   className?: string
+  hideEmptyPlaceholder?: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -57,6 +58,7 @@ export const ActionsEditor = ({
   actionDataFieldName,
   actionDataErrors,
   className,
+  hideEmptyPlaceholder,
   SuspenseLoader,
 }: ActionsEditorProps) => {
   const { t } = useTranslation()
@@ -142,11 +144,13 @@ export const ActionsEditor = ({
           ))}
         </div>
       ) : (
-        <p className="secondary-text -mt-3 max-w-prose italic">
-          {t('info.noActionsAdded', {
-            context: isDao ? 'dao' : undefined,
-          })}
-        </p>
+        !hideEmptyPlaceholder && (
+          <p className="secondary-text -mt-3 max-w-prose italic">
+            {t('info.noActionsAdded', {
+              context: isDao ? 'dao' : undefined,
+            })}
+          </p>
+        )
       )}
 
       <ActionLibrary

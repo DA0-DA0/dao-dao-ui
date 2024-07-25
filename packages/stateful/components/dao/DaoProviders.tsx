@@ -73,9 +73,8 @@ export const DaoProviders = ({
 
   // Start loading only if client not initialized. If the data is already
   // cached, the DAO instance may be initialized on creation.
-  const [loading, setLoading] = useState(
-    !context.dao.initialized || !coreAddress
-  )
+  const forceLoading = !context.dao.initialized || !coreAddress
+  const [loading, setLoading] = useState(forceLoading)
   const [error, setError] = useState<Error>()
 
   // Initialize client if not already initialized.
@@ -89,7 +88,7 @@ export const DaoProviders = ({
     }
   }, [context, coreAddress])
 
-  return loading ? (
+  return loading || forceLoading ? (
     loaderFallback ? (
       <>{loaderFallback}</>
     ) : (
