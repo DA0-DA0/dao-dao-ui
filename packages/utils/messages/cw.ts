@@ -617,20 +617,24 @@ export const decodeCrossChainMessages = (
 /**
  * Wrap the message in a cw1-whitelist execution message.
  */
-export const makeCw1WhitelistExecuteMessage = (
-  cw1WhitelistContract: string,
+export const makeCw1WhitelistExecuteMessage = ({
+  chainId,
+  sender,
+  cw1WhitelistContract,
+  msg,
+}: {
+  chainId: string
+  sender: string
+  cw1WhitelistContract: string
   msg: UnifiedCosmosMsg | UnifiedCosmosMsg[]
-): UnifiedCosmosMsg =>
-  makeWasmMessage({
-    wasm: {
+}): UnifiedCosmosMsg =>
+  makeExecuteSmartContractMessage({
+    chainId,
+    sender,
+    contractAddress: cw1WhitelistContract,
+    msg: {
       execute: {
-        contract_addr: cw1WhitelistContract,
-        funds: [],
-        msg: {
-          execute: {
-            msgs: [msg].flat(),
-          },
-        },
+        msgs: [msg].flat(),
       },
     },
   })
