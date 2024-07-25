@@ -14,7 +14,6 @@ import {
   queryIndexer,
 } from '@dao-dao/state'
 import {
-  ChainId,
   CommonProposalInfo,
   DaoPageMode,
   GovProposalVersion,
@@ -28,13 +27,12 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
-  MAINNET,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   decodeGovProposal,
   getChainForChainId,
-  getChainIdForAddress,
+  getChainIdsForAddress,
   getConfiguredGovChainByName,
   getDaoPath,
   processError,
@@ -302,15 +300,15 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     if (configuredGovChain) {
       result = await getForChainId(configuredGovChain.chainId)
     } else {
-      // Get chain ID for address based on prefix.
-      let decodedChainId: string
+      // Get chain IDs for address based on prefix.
+      let decodedChainIds: string[]
       try {
         // If invalid address, display not found.
         if (!coreAddress || typeof coreAddress !== 'string') {
           throw new Error('Invalid address')
         }
 
-        decodedChainId = getChainIdForAddress(coreAddress)
+        decodedChainIds = getChainIdsForAddress(coreAddress)
 
         // Validation throws error if address prefix not recognized. Display not
         // found in this case.
@@ -328,22 +326,28 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         }
       }
 
-      result = await getForChainId(decodedChainId)
+      const results = await Promise.allSettled(
+        decodedChainIds.map((c) => getForChainId(c))
+      )
 
-      // If not found on Terra, try Terra Classic. Let redirects and errors
-      // through.
-      if (
-        MAINNET &&
-        'props' in result &&
-        // If no info, no DAO found.
-        !result.props.info &&
-        // Don't try Terra Classic if unexpected error occurred.
-        !result.props.error &&
-        // Only try Terra Classic if Terra failed.
-        decodedChainId === ChainId.TerraMainnet
-      ) {
-        result = await getForChainId(ChainId.TerraClassicMainnet)
+      // If all errored, throw first error.
+      if (results.every((p) => p.status === 'rejected')) {
+        throw new Error(
+          results[0].status === 'rejected'
+            ? results[0].reason
+            : 'Failed to find chain'
+        )
       }
+
+      const fulfilledResults = results.flatMap((p) =>
+        p.status === 'fulfilled' ? p.value : []
+      )
+
+      // Get first result that found DAO info successfully. Otherwise, use first
+      // result (probably DAO not found).
+      result =
+        fulfilledResults.find((r) => 'props' in r && r.props.info) ||
+        fulfilledResults[0]
     }
 
     return result

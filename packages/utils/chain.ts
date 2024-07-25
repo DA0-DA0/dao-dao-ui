@@ -635,24 +635,25 @@ export const chainIsIndexed = (chainId: string): boolean =>
   )
 
 /**
- * Returns the chain ID for the given address based on the prefix.
+ * Returns the supported chain IDs for the given address based on the prefix.
+ * Throws error if none found.
  */
-export const getChainIdForAddress = (address: string): string => {
+export const getChainIdsForAddress = (address: string): string[] => {
   const supportedChains = getSupportedChains()
 
   // Match supported chain from address prefix. Hopefully there is only one. Use
   // the first.
   const { prefix } = fromBech32(address)
-  const chainForAddress = supportedChains.find(
+  const chainsForAddress = supportedChains.filter(
     ({ chain, mainnet }) =>
       chain.bech32_prefix === prefix && mainnet === MAINNET
   )
 
-  if (!chainForAddress) {
+  if (!chainsForAddress.length) {
     throw new Error(`Unsupported chain: unrecognized prefix "${prefix}"`)
   }
 
-  return chainForAddress.chain.chain_id
+  return chainsForAddress.map((c) => c.chainId)
 }
 
 /**
