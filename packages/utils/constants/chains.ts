@@ -79,6 +79,11 @@ assets.push({
 const chainsToRemove = ['thorchain', 'althea']
 chains = chains.filter((chain) => !chainsToRemove.includes(chain.chain_name))
 
+// Shrink Cosmos Hub ICS provider testnet name since Keplr thinks it's too long.
+chains.find(
+  (c) => c.chain_id === ChainId.CosmosHubProviderTestnet
+)!.pretty_name = 'Cosmos ICS Provider Testnet'
+
 export { chains, assets }
 //! ----- Modified chain-registry -----
 
