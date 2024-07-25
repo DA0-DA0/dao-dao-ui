@@ -2409,6 +2409,14 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://cosmos-rpc.polkachu.com',
     rest: 'https://cosmos-api.polkachu.com',
   },
+  [ChainId.CosmosHubThetaTestnet]: {
+    rpc: 'https://rpc.sentry-01.theta-testnet.polypore.xyz',
+    rest: 'https://rest.sentry-01.theta-testnet.polypore.xyz',
+  },
+  [ChainId.CosmosHubProviderTestnet]: {
+    rpc: 'https://rpc.provider-sentry-01.rs-testnet.polypore.xyz',
+    rest: 'https://rest.provider-sentry-01.rs-testnet.polypore.xyz',
+  },
   [ChainId.TerraMainnet]: {
     rpc: 'https://terra-rpc.polkachu.com',
     rest: 'https://terra-api.polkachu.com',
