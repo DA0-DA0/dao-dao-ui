@@ -56,7 +56,8 @@ export interface NativeDelegationInfo {
 
 export enum ChainId {
   CosmosHubMainnet = 'cosmoshub-4',
-  CosmosHubTestnet = 'theta-testnet-001',
+  CosmosHubThetaTestnet = 'theta-testnet-001',
+  CosmosHubProviderTestnet = 'provider',
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',
   OsmosisMainnet = 'osmosis-1',

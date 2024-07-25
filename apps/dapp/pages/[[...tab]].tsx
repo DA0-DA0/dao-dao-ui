@@ -47,8 +47,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       : [getDaoInfoForChainId(chainId, [])]
     : // Get chain x/gov DAOs if not on a chain-specific home.
       [
-        // Start with Cosmos Hub.
-        MAINNET ? ChainId.CosmosHubMainnet : ChainId.CosmosHubTestnet,
+        // Start with Cosmos Hub on mainnet.
+        ...(MAINNET ? [ChainId.CosmosHubMainnet] : []),
         // Add DAO DAO-supported chains.
         ...getSupportedChains().flatMap(({ chainId, noGov }) =>
           noGov ? [] : chainId
@@ -72,12 +72,14 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
 
     // Get all or chain-specific stats and TVL.
     !chainId || chainIsIndexed(chainId)
-      ? queryClient.fetchQuery(
-          indexerQueries.snapper<number>({
-            query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
-            parameters: chainId ? { chainId } : undefined,
-          })
-        )
+      ? queryClient
+          .fetchQuery(
+            indexerQueries.snapper<number>({
+              query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
+              parameters: chainId ? { chainId } : undefined,
+            })
+          )
+          .catch(() => 0)
       : null,
     !chainId || chainIsIndexed(chainId)
       ? queryClient.fetchQuery(
