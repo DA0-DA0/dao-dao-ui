@@ -23,6 +23,10 @@ export const ProposalVoter = <Vote extends unknown = unknown>({
   const [selectedVote, setSelectedVote] = useState<Vote | undefined>(
     currentVote
   )
+  // If currentVote changes, reset selected vote to it.
+  useEffect(() => {
+    setSelectedVote(currentVote)
+  }, [currentVote])
 
   const currentVoteOption = currentVote
     ? options.find((option) => option.value === currentVote)
@@ -105,3 +109,7 @@ export const ProposalVoter = <Vote extends unknown = unknown>({
     </div>
   )
 }
+
+export const ProposalVoterLoading = (
+  props: Omit<ProposalVoterProps<any>, 'loading' | 'currentVote' | 'onCastVote'>
+) => <ProposalVoter loading onCastVote={() => {}} {...props} />

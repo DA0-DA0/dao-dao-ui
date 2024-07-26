@@ -20,6 +20,7 @@ import {
   Proposal,
   ProposalNotFound,
   ProposalProps,
+  ProposalVotesPrivate,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -29,6 +30,7 @@ import {
   ProposalStatusEnum,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
+import { isSecretNetwork } from '@dao-dao/utils'
 
 import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
@@ -288,7 +290,13 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             ? PreProposeApprovalProposalStatusAndInfo
             : CachedProposalStatusAndInfo
         }
-        VotesCast={isPreProposeApprovalProposal ? undefined : ProposalVotes}
+        VotesCast={
+          isPreProposeApprovalProposal
+            ? undefined
+            : isSecretNetwork(daoInfo.chainId)
+            ? ProposalVotesPrivate
+            : ProposalVotes
+        }
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
             <DaoApproverProposalContentDisplay

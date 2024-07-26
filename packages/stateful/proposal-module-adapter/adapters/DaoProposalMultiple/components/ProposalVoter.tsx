@@ -1,5 +1,6 @@
 import {
   Loader,
+  ProposalVoterLoading,
   ProposalVoter as StatelessProposalVoter,
 } from '@dao-dao/stateless'
 import {
@@ -7,7 +8,6 @@ import {
   ProposalStatus,
   ProposalStatusEnum,
   ProposalVoteOption,
-  WalletVoteInfo,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
@@ -22,28 +22,21 @@ import {
 export const ProposalVoter = (props: BaseProposalVoterProps) => {
   const loadingProposalStatus = useLoadingProposalStatus()
   const loadingVoteOptions = useLoadingVoteOptions()
-  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
       forceFallback={
-        loadingProposalStatus.loading ||
-        loadingVoteOptions.loading ||
-        loadingWalletVoteInfo?.loading
+        loadingProposalStatus.loading || loadingVoteOptions.loading
       }
     >
-      {!loadingProposalStatus.loading &&
-        !loadingVoteOptions.loading &&
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading && (
-          <InnerProposalVoter
-            {...props}
-            status={loadingProposalStatus.data}
-            voteOptions={loadingVoteOptions.data}
-            walletVoteInfo={loadingWalletVoteInfo.data}
-          />
-        )}
+      {!loadingProposalStatus.loading && !loadingVoteOptions.loading && (
+        <InnerProposalVoter
+          {...props}
+          status={loadingProposalStatus.data}
+          voteOptions={loadingVoteOptions.data}
+        />
+      )}
     </SuspenseLoader>
   )
 }
@@ -51,25 +44,38 @@ export const ProposalVoter = (props: BaseProposalVoterProps) => {
 const InnerProposalVoter = ({
   status,
   voteOptions,
-  walletVoteInfo,
   onVoteSuccess,
   ...props
 }: BaseProposalVoterProps & {
   status: ProposalStatus
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
-  walletVoteInfo: WalletVoteInfo<MultipleChoiceVote>
 }) => {
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
-  // Should not be shown if canVote is false.
-  if (!walletVoteInfo.canVote) {
+  if (!loadingWalletVoteInfo) {
+    return null
+  }
+
+  if (loadingWalletVoteInfo.loading) {
+    return (
+      <ProposalVoterLoading
+        {...props}
+        options={voteOptions}
+        proposalOpen={status === ProposalStatusEnum.Open}
+      />
+    )
+  }
+
+  // Should not be shown if wallet cannot vote.
+  if (!loadingWalletVoteInfo.data.canVote) {
     return null
   }
 
   return (
     <StatelessProposalVoter
       {...props}
-      currentVote={walletVoteInfo.vote}
+      currentVote={loadingWalletVoteInfo.data.vote}
       loading={castingVote}
       onCastVote={castVote}
       options={voteOptions}

@@ -1465,6 +1465,7 @@
     "virtualVotingVaultTooltip": "Virtual voting vaults do not support bonding tokens manually, instead deriving voting power from other sources.",
     "voteOnGovernanceProposalDescription": "Vote on an open chain governance proposal, as an individual or as a validator.",
     "voteUntilExpirationExplanation": "Although the proposal outcome is determined, you may cast a vote until the proposal expires to be included in the final tally.",
+    "votesPrivateOnSecretNetwork": "Votes are private on Secret Network.",
     "votesRefreshAutomatically": "Votes refresh automatically.",
     "votingDurationTooltip": "The maximum amount of time proposals are open for voting.",
     "votingDurationTooltip_noRevoting": "The maximum amount of time proposals are open for voting. Because you are not allowed to change your vote, proposals can finalize early if sufficient votes are cast to guarantee an outcome.",

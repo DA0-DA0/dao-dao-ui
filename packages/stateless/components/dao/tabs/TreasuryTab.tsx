@@ -74,6 +74,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
   const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
+    config: { noIndexer },
   } = useSupportedChainContext()
   const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
 
@@ -230,11 +231,12 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
       </div>
 
       {
-        // Don't show the treasury history graph for the Neutron DAO for
-        // performance reasons.
+        // Don't show the treasury history graph if the DAO's chain doesn't
+        // support indexing or for the Neutron DAO for performance reasons.
         !(
-          daoChainId === ChainId.NeutronMainnet &&
-          coreAddress === NEUTRON_GOVERNANCE_DAO
+          noIndexer ||
+          (daoChainId === ChainId.NeutronMainnet &&
+            coreAddress === NEUTRON_GOVERNANCE_DAO)
         ) && (
           <TreasuryHistoryGraph
             address={coreAddress}
