@@ -31,11 +31,13 @@ export const getChainAssets = (chainId: string) => {
             name,
             display,
             denom_units,
+            type_asset,
           }) => ({
             chainId,
             id: display,
-            type: TokenType.Native,
-            denomOrAddress: base,
+            type: type_asset === 'cw20' ? TokenType.Cw20 : TokenType.Native,
+            denomOrAddress:
+              type_asset === 'cw20' ? base.replace('cw20:', '') : base,
             denomAliases:
               denom_units.find(({ denom }) => denom === base)?.aliases ?? [],
             symbol,
@@ -49,8 +51,9 @@ export const getChainAssets = (chainId: string) => {
             // This will be wrong when this is an IBC asset.
             source: {
               chainId,
-              type: TokenType.Native,
-              denomOrAddress: base,
+              type: type_asset === 'cw20' ? TokenType.Cw20 : TokenType.Native,
+              denomOrAddress:
+                type_asset === 'cw20' ? base.replace('cw20:', '') : base,
             },
           })
         )

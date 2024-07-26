@@ -138,17 +138,19 @@ export const fetchTokenInfo = async (
 
   // Attempt to fetch from local asset list, erroring if not found.
   try {
+    const token = getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
     return {
-      ...getTokenForChainIdAndDenom(chainId, denomOrAddress, false),
+      ...token,
       source,
-      snip20CodeHash: isSecretNetwork(chainId)
-        ? await queryClient.fetchQuery(
-            contractQueries.secretCodeHash({
-              chainId,
-              address: denomOrAddress,
-            })
-          )
-        : null,
+      snip20CodeHash:
+        isSecretNetwork(chainId) && token.type === TokenType.Cw20
+          ? await queryClient.fetchQuery(
+              contractQueries.secretCodeHash({
+                chainId,
+                address: denomOrAddress,
+              })
+            )
+          : null,
     }
   } catch (err) {
     console.error(err)
@@ -172,14 +174,6 @@ export const fetchTokenInfo = async (
         decimals: chainMetadata.preferredDecimals,
         imageUrl: getFallbackImage(denomOrAddress),
         source,
-        snip20CodeHash: isSecretNetwork(chainId)
-          ? await queryClient.fetchQuery(
-              contractQueries.secretCodeHash({
-                chainId,
-                address: denomOrAddress,
-              })
-            )
-          : null,
       }
     }
   } catch (err) {
@@ -195,14 +189,6 @@ export const fetchTokenInfo = async (
     decimals: 0,
     imageUrl: getFallbackImage(denomOrAddress),
     source,
-    snip20CodeHash: isSecretNetwork(chainId)
-      ? await queryClient.fetchQuery(
-          contractQueries.secretCodeHash({
-            chainId,
-            address: denomOrAddress,
-          })
-        )
-      : null,
   }
 }
 
