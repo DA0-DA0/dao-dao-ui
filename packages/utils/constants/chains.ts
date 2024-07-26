@@ -2287,70 +2287,69 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
-      // TODO(secret-testnet)
-      Cw1Whitelist: -1,
-      Cw4Group: 9604,
-      Cw20Base: 8164, // snip20
-      Cw721Base: 8172, // snip721
-      CwPayrollFactory: 8186,
-      CwTokenSwap: 8187,
-      CwVesting: 8189,
-      DaoCore: 9605,
-      DaoPreProposeApprovalSingle: 8180,
-      DaoPreProposeApprover: 8181,
-      DaoPreProposeMultiple: 9416,
-      DaoPreProposeSingle: 9603,
-      DaoProposalMultiple: 9414,
-      DaoProposalSingle: 9602,
-      DaoVotingCw4: 9601,
-      DaoVotingCw20Staked: 8170, // snip20
-      DaoVotingCw721Staked: 8182, // snip721
-      DaoVotingTokenStaked: 8174,
-      QueryAuth: 9606,
+      Cw1Whitelist: 9801,
+      Cw4Group: 9789,
+      Cw20Base: 9799, // snip20
+      Cw721Base: 9800, // snip721
+      CwPayrollFactory: 9778,
+      CwTokenSwap: 9780,
+      CwVesting: 9781,
+      DaoCore: 9769,
+      DaoPreProposeApprovalSingle: 9762,
+      DaoPreProposeApprover: 9764,
+      DaoPreProposeMultiple: 9748,
+      DaoPreProposeSingle: 9798,
+      DaoProposalMultiple: 9749,
+      DaoProposalSingle: 9747,
+      DaoVotingCw4: 9790,
+      DaoVotingCw20Staked: 9793, // snip20
+      DaoVotingCw721Staked: 9767, // snip721
+      DaoVotingTokenStaked: 9797,
+      QueryAuth: 9783,
 
       // unused
       CwTokenfactoryIssuerMain: -1,
       DaoMigrator: -1,
     },
     codeHashes: {
-      // TODO(secret-testnet)
-      Cw1Whitelist: '',
+      Cw1Whitelist:
+        'f3d79871d3d1dd903128e547b3d9e43d41f8542f67940e06263a533c92b94c92',
       Cw4Group:
-        '2b2d733412552485adb842831da10efe3e63b9902f734d12167a3ec0f30e1dba',
+        'e00df9f492e26fc9eaf012f3f10ab53cf0fd170540992bcd0952ffb5e7f32824',
       Cw20Base:
-        'c2508a75824974eeaa578a5d1af07006b1c3911b5c2909813d74672797264775', // snip20
+        '925eec0afad12c7ad4dab53b453dd03851b80f0bf2825da68ca926c6d0402944', // snip20
       Cw721Base:
-        'ab0f16b065e766eee7181c4357d29bc6f947d73dbd48943fc0e501b2147a492e', // snip721
+        'e52847e3bc8aceb7944437b13330c2d39462145b9762703f478c9113fcd68cc9', // snip721
       CwPayrollFactory:
-        'f6f0bd62757f19c513fd2e0bccea1aa4d6bc57ff65c2cdd1f5c849a397eea9fd',
+        '41491613086efe906bc6d2c15a9668d39f8a0d2fb9010050223b656b14ad96ea',
       CwTokenSwap:
-        '26f2ce755019de01c65a5742ac3c8e704130a2feaa92bd69d161e76030998f2c',
+        '00d535cd1c19c61cf79cfe953c2ebb9cdecafeda79f7ac375f1698dd767c4f68',
       CwVesting:
-        '0dae83b3616c066d0cdbf061b977707f99d6b91bdc7b44a81285a688e37552b0',
+        'b3ef0438a09cb5808a4b0c9cfcb7963c1d405bfb18576cf9f73ec938581fd962',
       DaoCore:
-        '39bc1c500e8245698e56a03fd913943c70786eee6f16f947207f11aef0b39fde',
+        '35179a7efd2c8f58de91857f84d267f1105acaa1cffd1ebd6702b48db5816c0f',
       DaoPreProposeApprovalSingle:
-        '88410e9c96687c01af289c59730d90a425a974c81abf20a76597f076959cb7fc',
+        'cf662d78a21a3bd1bf71ce1e0dd60b0bc70fc81ca1df736916561ca6f9a1778f',
       DaoPreProposeApprover:
-        '5fc6a014fd017a62bbfea437322857e952eac7572c901a0a6ca23ef7598f971f',
+        'c3f243bcfecf8dcfc627893d121fa4e7cf18448bbc56f9bd2567f2f1c4291882',
       DaoPreProposeMultiple:
-        '24e2a494b9450e6747bdf2b00b01e0f9afb54d455121c58b3857396af74d298f',
+        '612c77da536f67edadde8d132d7e8e255dee0fcb5a52155163215809b4ac683c',
       DaoPreProposeSingle:
-        '97aad664a9a3da63b5694e13f539f37984d2b520ffc66f833d98fb1e51d06ea4',
+        'e10ae1c3c1ffd3fb3102ed12b6daf0a854885257cca1ad0051ef0dbf992d50fc',
       DaoProposalMultiple:
-        'dfc954ec00f93cb9b45930adcd0aa62ba273bc7d48e5a094b51cbba78b0ddbb5',
+        'ee0fa42d0b33670494252f3c50219fe0076a96542a5c9ac66b2fa91c0ad6c41f',
       DaoProposalSingle:
-        'b1720ab4cb55893c285618e8150cfe1d9a7b9ae12913909e254a750b12e23827',
+        '7896d4dafad43984d0fda4f0ed54135e71280c5f89ae9977d8d2e2d872412cdf',
       DaoVotingCw4:
-        '87813dd42fc186ea286f14c5bfd050b43995d8af81b626c3261188acca5aa0b1',
+        'a0f4f3069d8bb0789d90829052c32ec93d16eb1113feb4063f5265c3bda3f6f7',
       DaoVotingCw20Staked:
-        '715b7aa5925b46a7fcff277f4ad3763016429daec8ddedd568f892dad2eb88d0', // snip20
+        '7c3c071ba1b50504a16d17b111e258ea00bb8b90cc9e449e9890a6006a5188fc', // snip20
       DaoVotingCw721Staked:
-        '90f91337256cb3db1b44567ced0457b51271263f67e5df3590de77d22c04a3b3', // snip721
+        'dde8034f510703cb22e4c0de0290467ee79d720e43da92fa34f60da9ee19e0b9', // snip721
       DaoVotingTokenStaked:
-        '3bc835c9e0fdd0deea88202d3de32caa8125891eb0821973f1c5244f818f2d45',
+        'ce95e42541ee0153654e3e222832885560633410e375092380a6d434b3e71db9',
       QueryAuth:
-        '3a6c30fa077ba8b8d665e46d215bd0ed7448c8fe0ae3da3d28e81dd4ca0380e3',
+        'f9aeabaaeb830992285330cb96af8f74e797117fb8c49966f43cbc5298ca70bb',
 
       // unused
       CwTokenfactoryIssuerMain: '',
