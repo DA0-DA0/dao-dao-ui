@@ -267,7 +267,7 @@ export const fetchDynamicGasPrice = async ({
     }
   }
 
-  // Neutron (and maybe others) uses Skip's feemarket module.
+  // Neutron, Cosmos Hub, and probably others use Skip's feemarket module.
   const client = await feemarketProtoRpcClientRouter.connect(chainId)
   const { price } = await client.feemarket.v1.gasPrice({
     denom: getNativeTokenForChainId(chainId).denomOrAddress,
