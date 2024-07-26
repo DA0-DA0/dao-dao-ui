@@ -3,6 +3,8 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Tooltip } from '../../tooltip'
+
 export type DaoCreatorCardProps = {
   Icon: ComponentType
   name: string
@@ -12,6 +14,7 @@ export type DaoCreatorCardProps = {
   selected: boolean
   onSelect: () => void
   underDevelopment?: boolean
+  unsupported?: boolean
 }
 
 export const DaoCreatorCard = ({
@@ -23,25 +26,36 @@ export const DaoCreatorCard = ({
   selected,
   onSelect,
   underDevelopment,
+  unsupported,
 }: DaoCreatorCardProps) => {
   const { t } = useTranslation()
+
+  const disabled = underDevelopment || unsupported
 
   return (
     <div
       className={clsx(
         'relative overflow-hidden rounded-lg border-2 transition',
-        underDevelopment ? 'opacity-70' : 'cursor-pointer',
+        disabled ? 'opacity-70' : 'cursor-pointer',
         selected
           ? 'border-border-interactive-focus bg-background-interactive-hover'
           : 'border-[transparent] bg-background-secondary'
       )}
-      onClick={underDevelopment ? undefined : onSelect}
+      onClick={disabled ? undefined : onSelect}
     >
       {underDevelopment ? (
-        <div className="absolute top-[1rem] left-[-6.5rem] flex w-60 -rotate-45 items-center justify-center bg-background-primary py-2 px-36">
+        <div className="absolute top-[1.25rem] left-[-6.75rem] flex w-60 -rotate-45 items-center justify-center bg-background-primary py-2 px-36">
           <p className="primary-text grow text-center text-xs font-bold text-text-primary">
             {t('title.underDevelopment')}
           </p>
+        </div>
+      ) : unsupported ? (
+        <div className="absolute top-[1.5rem] left-[-6.5rem] flex w-60 -rotate-45 items-center justify-center bg-background-primary py-2 px-36">
+          <Tooltip title={t('info.daoStructureUnsupportedTooltip')}>
+            <p className="primary-text grow text-center text-xs font-bold text-text-primary">
+              {t('title.unsupported')}
+            </p>
+          </Tooltip>
         </div>
       ) : (
         <div

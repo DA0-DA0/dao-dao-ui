@@ -459,10 +459,7 @@ export const InnerCreateDaoForm = ({
 
     const isSecret = isSecretNetwork(chainId)
     const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
-    // Secret Network enforces unique contract labels, so add the current
-    // timestamp to the DAO name to ensure DAO names don't have to be unique.
-    const contractLabel =
-      instantiateMsg.name + (isSecret ? ` (${Date.now()})` : '')
+    const contractLabel = `DAO DAO DAO (${Date.now()})`
 
     // If admin is set, use it as the contract-level admin as well (for creating
     // SubDAOs). Otherwise, instantiate with self as admin via factory.
@@ -563,6 +560,8 @@ export const InnerCreateDaoForm = ({
 
         setCreating(true)
 
+        const contractLabel = `DAO DAO DAO (${Date.now()})`
+
         // Redirect to prefilled chain governance prop page.
         goToDaoProposal(chainGovName, 'create', {
           prefill: encodeJsonToBase64({
@@ -586,7 +585,7 @@ export const InnerCreateDaoForm = ({
                               code_id: codeIds.DaoCore,
                               funds:
                                 getFundsFromDaoInstantiateMsg(instantiateMsg),
-                              label: instantiateMsg.name,
+                              label: contractLabel,
                               msg: instantiateMsg,
                             },
                           },
@@ -614,7 +613,7 @@ export const InnerCreateDaoForm = ({
                                   code_id: codeIds.DaoCore,
                                   instantiate_msg:
                                     encodeJsonToBase64(instantiateMsg),
-                                  label: instantiateMsg.name,
+                                  label: contractLabel,
                                 },
                               },
                             },

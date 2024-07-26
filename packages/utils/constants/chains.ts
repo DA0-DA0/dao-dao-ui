@@ -13,6 +13,7 @@ import {
   SupportedChainConfig,
 } from '@dao-dao/types'
 
+import { NftBasedCreatorId } from './adapters'
 import { NEUTRON_GOVERNANCE_DAO } from './env'
 
 //! ----- Modified chain-registry -----
@@ -1841,8 +1842,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'omniflixhub',
     mainnet: true,
     accentColor: '#d71d6a',
-    // NFT DAOs not yet ready.
-    nftDaosUnderDevelopment: true,
     factoryContractAddress:
       'omniflix13ehuhysn5mqjeaheeuew2gjs785f6k7jm8vfsqg3jhtpkwppcmzqjrdywp',
     explorerUrlTemplates: {
@@ -1850,6 +1849,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       gov: 'https://ping.pub/omniflixhub/gov',
       govProp: 'https://ping.pub/omniflixhub/gov/REPLACE',
       wallet: 'https://ping.pub/omniflixhub/account/REPLACE',
+    },
+    daoCreatorDisabled: {
+      // NFT DAOs not yet ready.
+      [NftBasedCreatorId]: 'underDevelopment',
     },
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
@@ -1879,36 +1882,40 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'cosmos',
     mainnet: false,
     accentColor: '#5064fb',
-    // TODO
-    factoryContractAddress: '',
+    factoryContractAddress:
+      'cosmos18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3q795n8y',
     explorerUrlTemplates: {
       tx: 'https://explorer.polypore.xyz/theta-testnet-001/tx/REPLACE',
       gov: 'https://explorer.polypore.xyz/theta-testnet-001/gov',
       govProp: 'https://explorer.polypore.xyz/theta-testnet-001/gov/REPLACE',
       wallet: 'https://explorer.polypore.xyz/theta-testnet-001/account/REPLACE',
     },
+    daoCreatorDisabled: {
+      // No NFTs on the Hub.
+      [NftBasedCreatorId]: 'unsupported',
+    },
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
-      // TODO
-      Cw1Whitelist: -1,
-      Cw4Group: -1,
-      CwPayrollFactory: -1,
-      CwTokenSwap: -1,
-      CwTokenfactoryIssuerMain: -1,
-      CwVesting: -1,
-      DaoCore: -1,
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: -1,
-      DaoPreProposeSingle: -1,
-      DaoProposalMultiple: -1,
-      DaoProposalSingle: -1,
-      DaoVotingCw4: -1,
-      DaoVotingCw721Staked: -1,
-      DaoVotingTokenStaked: -1,
+      Cw1Whitelist: 2,
+      Cw4Group: 3,
+      CwPayrollFactory: 5,
+      CwTokenSwap: 6,
+      CwVesting: 7,
+      DaoCore: 1,
+      DaoPreProposeApprovalSingle: 8,
+      DaoPreProposeApprover: 9,
+      DaoPreProposeMultiple: 10,
+      DaoPreProposeSingle: 11,
+      DaoProposalMultiple: 12,
+      DaoProposalSingle: 13,
+      DaoVotingCw4: 14,
+      DaoVotingTokenStaked: 15,
 
       // unused
+      Cw721Base: -1,
+      CwTokenfactoryIssuerMain: -1,
       DaoMigrator: -1,
+      DaoVotingCw721Staked: -1,
     },
   },
   {
@@ -1916,36 +1923,40 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'cosmosprovider',
     mainnet: false,
     accentColor: '#5064fb',
-    // TODO
-    factoryContractAddress: '',
+    factoryContractAddress:
+      'cosmos1yvgh8xeju5dyr0zxlkvq09htvhjj20fncp5g58np4u25g8rkpgjst8ghg8',
     explorerUrlTemplates: {
       tx: 'https://explorer.polypore.xyz/provider/tx/REPLACE',
       gov: 'https://explorer.polypore.xyz/provider/gov',
       govProp: 'https://explorer.polypore.xyz/provider/gov/REPLACE',
       wallet: 'https://explorer.polypore.xyz/provider/account/REPLACE',
     },
+    daoCreatorDisabled: {
+      // No NFTs on the Hub.
+      [NftBasedCreatorId]: 'unsupported',
+    },
     codeIdsVersion: ContractVersion.V242,
     codeIds: {
-      // TODO
-      Cw1Whitelist: -1,
-      Cw4Group: -1,
-      CwPayrollFactory: -1,
-      CwTokenSwap: -1,
-      CwTokenfactoryIssuerMain: -1,
-      CwVesting: -1,
-      DaoCore: -1,
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: -1,
-      DaoPreProposeSingle: -1,
-      DaoProposalMultiple: -1,
-      DaoProposalSingle: -1,
-      DaoVotingCw4: -1,
-      DaoVotingCw721Staked: -1,
-      DaoVotingTokenStaked: -1,
+      Cw1Whitelist: 3,
+      Cw4Group: 4,
+      CwPayrollFactory: 6,
+      CwTokenSwap: 7,
+      CwVesting: 8,
+      DaoCore: 2,
+      DaoPreProposeApprovalSingle: 9,
+      DaoPreProposeApprover: 10,
+      DaoPreProposeMultiple: 11,
+      DaoPreProposeSingle: 12,
+      DaoProposalMultiple: 13,
+      DaoProposalSingle: 14,
+      DaoVotingCw4: 15,
+      DaoVotingTokenStaked: 16,
 
       // unused
+      Cw721Base: -1,
+      CwTokenfactoryIssuerMain: -1,
       DaoMigrator: -1,
+      DaoVotingCw721Staked: -1,
     },
   },
   {

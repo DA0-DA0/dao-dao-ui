@@ -150,6 +150,13 @@ export type SupportedChainConfig = BaseChainConfig & {
     network: string
   }
   /**
+   * Map DAO creator ID to whether or not it's disabled and for what reason. If
+   * not present, enabled.
+   */
+  daoCreatorDisabled?: Partial<
+    Record<string, 'underDevelopment' | 'unsupported'>
+  >
+  /**
    * Version of the code IDs in the config below.
    */
   codeIdsVersion: ContractVersion
@@ -171,11 +178,6 @@ export type SupportedChainConfig = BaseChainConfig & {
    * token creation is under development. Defaults to false.
    */
   tokenCreationUnderDevelopment?: boolean
-  /**
-   * Disallow creating NFT DAOs and show an under development banner. Defaults
-   * to false.
-   */
-  nftDaosUnderDevelopment?: boolean
   /**
    * Whether or not to create a DAO through chain governance.
    */
