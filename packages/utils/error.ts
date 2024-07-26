@@ -119,6 +119,8 @@ export enum CommonError {
   ContractMigrationFailed = 'Contract migration failed.',
   InsufficientGas = 'Insufficient gas.',
   ContractNameExists = 'Name already taken.',
+  OutOfGas = 'Out of gas.',
+  InvalidCoins = 'Invalid coins.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -133,10 +135,18 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     // Provided non-DAO address where a DAO address was expected.
     'unknown variant `get_config`',
   ],
-  [CommonError.InsufficientFees]: ['insufficient fees'],
+  [CommonError.InsufficientFees]: [
+    'insufficient fees',
+    // sdk code format from polytone listener callback error
+    // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
+    'codespace: sdk, code: 13',
+  ],
   [CommonError.InsufficientFunds]: [
     'insufficient funds',
     ['fee payer address', 'does not exist'],
+    // sdk code format from polytone listener callback error
+    // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
+    'codespace: sdk, code: 5',
   ],
   [CommonError.GetClientFailed]: [
     'Bad status on response: 403',
@@ -153,7 +163,12 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     'Load failed',
     'fetch failed',
   ],
-  [CommonError.Unauthorized]: ['Unauthorized'],
+  [CommonError.Unauthorized]: [
+    'Unauthorized',
+    // sdk code format from polytone listener callback error
+    // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
+    'codespace: sdk, code: 4',
+  ],
   [CommonError.InsufficientForProposalDeposit]: ['Overflow: Cannot Sub with'],
   [CommonError.PendingTransaction]: ['account sequence mismatch'],
   [CommonError.TextEncodingDecodingError]: ['out of printable ASCII range'],
@@ -193,25 +208,41 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.NoSuchContract]: [
     'no such contract',
     // wasm code format from polytone listener callback error
+    // https://github.com/CosmWasm/wasmd/blob/main/x/wasm/types/errors.go
     'codespace: wasm, code: 22',
   ],
   [CommonError.ContractInstantiationFailed]: [
     // wasm code format from polytone listener callback error
+    // https://github.com/CosmWasm/wasmd/blob/main/x/wasm/types/errors.go
     'codespace: wasm, code: 4',
   ],
   [CommonError.ContractExecutionFailed]: [
     // wasm code format from polytone listener callback error
+    // https://github.com/CosmWasm/wasmd/blob/main/x/wasm/types/errors.go
     'codespace: wasm, code: 5',
   ],
   [CommonError.ContractMigrationFailed]: [
     // wasm code format from polytone listener callback error
+    // https://github.com/CosmWasm/wasmd/blob/main/x/wasm/types/errors.go
     'codespace: wasm, code: 11',
   ],
   [CommonError.InsufficientGas]: [
     // wasm code format from polytone listener callback error
+    // https://github.com/CosmWasm/wasmd/blob/main/x/wasm/types/errors.go
     'codespace: wasm, code: 6',
   ],
   [CommonError.ContractNameExists]: ['contract account already exists'],
+  [CommonError.OutOfGas]: [
+    // sdk code format from polytone listener callback error
+    // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
+    'codespace: sdk, code: 11',
+  ],
+  [CommonError.InvalidCoins]: [
+    'invalid coins',
+    // sdk code format from polytone listener callback error
+    // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
+    'codespace: sdk, code: 10',
+  ],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

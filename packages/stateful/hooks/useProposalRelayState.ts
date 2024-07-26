@@ -259,6 +259,19 @@ export const useProposalRelayState = ({
                           error: (result.contents as any).callback.result
                             .execute.Err,
                         }
+                    : objectMatchesStructure(result.contents, {
+                        callback: {
+                          result: {
+                            fatal_error: {},
+                          },
+                        },
+                      })
+                    ? {
+                        packet,
+                        status: CrossChainPacketInfoStatus.Errored,
+                        error: (result.contents as any).callback.result
+                          .fatal_error,
+                      }
                     : []
                   : []
               }
