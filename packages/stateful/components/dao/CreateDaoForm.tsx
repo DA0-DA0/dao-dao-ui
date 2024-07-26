@@ -457,6 +457,13 @@ export const InnerCreateDaoForm = ({
       throw new Error(t('error.logInToContinue'))
     }
 
+    const isSecret = isSecretNetwork(chainId)
+    const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
+    // Secret Network enforces unique contract labels, so add the current
+    // timestamp to the DAO name to ensure DAO names don't have to be unique.
+    const contractLabel =
+      instantiateMsg.name + (isSecret ? ` (${Date.now()})` : '')
+
     // If admin is set, use it as the contract-level admin as well (for creating
     // SubDAOs). Otherwise, instantiate with self as admin via factory.
     if (instantiateMsg.admin) {
@@ -464,53 +471,50 @@ export const InnerCreateDaoForm = ({
         getSigningClient,
         walletAddress,
         codeIds.DaoCore,
-        instantiateMsg.name,
+        contractLabel,
         instantiateMsg,
-        getFundsFromDaoInstantiateMsg(instantiateMsg),
+        instantiateFunds,
         instantiateMsg.admin
       )
-    } else {
-      if (isSecretNetwork(chainId)) {
-        if (!codeHashes?.DaoCore) {
-          throw new Error('Code hash not found for DAO core contract')
-        }
-
-        const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
-        const { events } = await secretInstantiateWithSelfAdmin(
-          {
-            instantiateMsg: encodeJsonToBase64(instantiateMsg),
-            codeId: codeIds.DaoCore,
-            codeHash: codeHashes.DaoCore,
-            label: instantiateMsg.name,
-          },
-          SECRET_GAS.DAO_CREATION,
-          undefined,
-          instantiateFunds
-        )
-        return findWasmAttributeValue(
-          chainId,
-          events,
-          factoryContractAddress,
-          'set contract admin as itself'
-        )!
-      } else {
-        const { events } = await instantiateWithSelfAdmin(
-          {
-            codeId: codeIds.DaoCore,
-            instantiateMsg: encodeJsonToBase64(instantiateMsg),
-            label: instantiateMsg.name,
-          },
-          CHAIN_GAS_MULTIPLIER,
-          undefined,
-          getFundsFromDaoInstantiateMsg(instantiateMsg)
-        )
-        return findWasmAttributeValue(
-          chainId,
-          events,
-          factoryContractAddress,
-          'set contract admin as itself'
-        )!
+    } else if (isSecret) {
+      if (!codeHashes?.DaoCore) {
+        throw new Error('Code hash not found for DAO core contract')
       }
+
+      const { events } = await secretInstantiateWithSelfAdmin(
+        {
+          instantiateMsg: encodeJsonToBase64(instantiateMsg),
+          codeId: codeIds.DaoCore,
+          codeHash: codeHashes.DaoCore,
+          label: contractLabel,
+        },
+        SECRET_GAS.DAO_CREATION,
+        undefined,
+        instantiateFunds
+      )
+      return findWasmAttributeValue(
+        chainId,
+        events,
+        factoryContractAddress,
+        'set contract admin as itself'
+      )!
+    } else {
+      const { events } = await instantiateWithSelfAdmin(
+        {
+          codeId: codeIds.DaoCore,
+          instantiateMsg: encodeJsonToBase64(instantiateMsg),
+          label: contractLabel,
+        },
+        CHAIN_GAS_MULTIPLIER,
+        undefined,
+        instantiateFunds
+      )
+      return findWasmAttributeValue(
+        chainId,
+        events,
+        factoryContractAddress,
+        'set contract admin as itself'
+      )!
     }
   }
 
