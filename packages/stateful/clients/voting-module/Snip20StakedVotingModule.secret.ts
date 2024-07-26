@@ -29,7 +29,6 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       token:
@@ -93,7 +92,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw20Staked,
       code_hash: codeHashes.DaoVotingCw20Staked,
-      label: `DAO_${daoName.trim()}_snip20-staked`,
+      label: `dao-voting-snip20-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,
@@ -117,7 +116,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
                         }
                       : {
                           new: {
-                            label: `DAO_${daoName.trim()}_snip20-stake`,
+                            label: `snip20-stake_${Date.now()}`,
                             // Type-checked above.
                             staking_code_hash: codeHashes.Cw20Stake!,
                             // Type-checked above.
@@ -138,7 +137,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
                   decimals: config.token.new.decimals,
                   initial_balances: config.token.new.initialBalances,
                   initial_dao_balance: config.token.new.initialDaoBalance,
-                  label: config.token.new.name,
+                  label: `snip20_${config.token.new.symbol}_${Date.now()}`,
                   name: config.token.new.name,
                   // Type-checked above.
                   staking_code_hash: codeHashes.Cw20Stake!,

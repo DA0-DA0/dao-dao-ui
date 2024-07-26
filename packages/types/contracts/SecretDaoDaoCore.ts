@@ -22,6 +22,7 @@ export interface InstantiateMsg {
   image_url?: string | null
   initial_items?: InitialItem[] | null
   name: string
+  prng_seed: string
   proposal_modules_instantiate_info: ModuleInstantiateInfo[]
   query_auth_code_hash: string
   query_auth_code_id: number

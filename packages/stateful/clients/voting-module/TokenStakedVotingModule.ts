@@ -29,7 +29,6 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       unstakingDuration?: Duration | null
@@ -76,7 +75,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingTokenStaked,
-      label: `DAO_${daoName.trim()}_token-staked`,
+      label: `dao-voting-token-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         token_info:
@@ -99,7 +98,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
                         exponent: config.token.new.decimals.toString(),
                       },
                     ],
-                    description: `${daoName}'s Governance Token`,
+                    description: 'Governance Token',
                     display: config.token.new.symbol,
                     name: config.token.new.name,
                     symbol: config.token.new.symbol,

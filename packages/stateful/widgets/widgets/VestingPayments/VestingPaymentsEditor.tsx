@@ -117,7 +117,7 @@ const VestingFactoryChain = ({
   allActionsWithData,
 }: VestingFactoryChainProps) => {
   const { t } = useTranslation()
-  const { name, chainId: nativeChainId, accounts } = useDaoInfoContext()
+  const { chainId: nativeChainId, accounts } = useDaoInfoContext()
   const daoChainAccountAddress = getAccountAddress({
     accounts,
     chainId,
@@ -190,7 +190,7 @@ const VestingFactoryChain = ({
         getSigningClient,
         walletAddress,
         codeIds.CwPayrollFactory,
-        `DAO_${name}_VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}`,
+        `DAOVestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`,
         {
           owner: daoChainAccountAddress,
           vesting_code_id: codeIds.CwVesting,

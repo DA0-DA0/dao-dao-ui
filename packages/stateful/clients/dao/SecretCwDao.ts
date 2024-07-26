@@ -1,5 +1,6 @@
 import { ChainWalletContext } from '@cosmos-kit/core'
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { v4 as uuidv4 } from 'uuid'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import {
@@ -88,7 +89,7 @@ export class SecretCwDao extends CwDao {
       admin: config.admin || null,
       codeId: codeIds.DaoCore,
       codeHash: codeHashes.DaoCore,
-      label: config.name,
+      label: `DAO DAO DAO (${Date.now()})`,
       msg: encodeJsonToBase64({
         admin: config.admin,
         dao_uri: config.uri,
@@ -97,12 +98,10 @@ export class SecretCwDao extends CwDao {
         image_url: config.imageUrl?.trim() || null,
         initial_items: config.initialItems,
         name: config.name,
+        prng_seed: uuidv4(),
         proposal_modules_instantiate_info: proposalModules,
         query_auth_code_hash: codeHashes.QueryAuth,
         query_auth_code_id: codeIds.QueryAuth,
-        // TODO(secret-testnet): remove
-        snip20_code_hash: codeHashes.Cw20Base,
-        snip721_code_hash: codeHashes.Cw721Base,
         voting_module_instantiate_info: votingModule,
       } as InstantiateMsg),
       funds: getFundsFromDaoInstantiateMsg({

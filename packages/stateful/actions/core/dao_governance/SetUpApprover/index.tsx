@@ -218,7 +218,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
         const info: ModuleInstantiateInfo = {
           admin: { core_module: {} },
           code_id: chainContext.config.codeIds.DaoProposalSingle,
-          label: `DAO_${context.dao.name.trim()}_${DaoProposalSingleAdapterId}_approver`,
+          label: `dao-proposal-single_approver_${Date.now()}`,
           msg: encodeJsonToBase64({
             threshold: config.threshold,
             allow_revoting: config.allow_revoting,
@@ -238,7 +238,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                 info: {
                   admin: { core_module: {} },
                   code_id: chainContext.config.codeIds.DaoPreProposeApprover,
-                  label: `DAO_${context.dao.name.trim()}_pre-propose${DaoProposalSingleAdapterId}_approver`,
+                  label: `dao-pre-propose-approver_${Date.now()}`,
                   msg: encodeJsonToBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
                   } as DaoPreProposeApproverInstantiateMsg),

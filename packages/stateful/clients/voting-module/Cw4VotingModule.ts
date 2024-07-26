@@ -26,7 +26,6 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config:
       | {
           /**
@@ -48,7 +47,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw4,
-      label: `DAO_${daoName.trim()}_cw4`,
+      label: `dao-voting-cw4_${Date.now()}`,
       msg: encodeJsonToBase64({
         group_contract:
           'existingCw4GroupContract' in config

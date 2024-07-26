@@ -59,7 +59,6 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       threshold: Threshold
       maxVotingPeriod: Duration
@@ -111,9 +110,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           code_id: config.approver
             ? codeIds.DaoPreProposeApprovalSingle
             : codeIds.DaoPreProposeSingle,
-          label: `DAO_${daoName.trim()}_pre-propose${
+          label: `dao-pre-propose${
             config.approver ? '-approval' : ''
-          }-single`,
+          }-single_${Date.now()}`,
           msg: encodeJsonToBase64(
             config.approver
               ? ({
@@ -135,7 +134,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoProposalSingle,
-      label: `DAO_${daoName.trim()}_proposal-single`,
+      label: `dao-proposal-single_${Date.now()}`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:

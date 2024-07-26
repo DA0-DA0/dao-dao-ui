@@ -26,7 +26,6 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config:
       | {
           /**
@@ -55,7 +54,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw4,
       code_hash: codeHashes.DaoVotingCw4,
-      label: `DAO_${daoName.trim()}_cw4`,
+      label: `dao-voting-cw4_${Date.now()}`,
       msg: encodeJsonToBase64({
         dao_code_hash: codeHashes.DaoCore,
         group_contract:

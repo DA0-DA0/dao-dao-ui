@@ -8,13 +8,12 @@ import { CreatorData } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   chainConfig: { chainId },
-  newDao: { name },
   data: { tiers },
 }) =>
   (isSecretNetwork(chainId)
     ? SecretCw4VotingModule
     : Cw4VotingModule
-  ).generateModuleInstantiateInfo(chainId, name, {
+  ).generateModuleInstantiateInfo(chainId, {
     new: {
       members: tiers.flatMap(({ weight, members }) =>
         members.map(

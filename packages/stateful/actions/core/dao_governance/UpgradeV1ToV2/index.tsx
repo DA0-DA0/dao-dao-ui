@@ -33,10 +33,7 @@ import {
 
 import { getDao } from '../../../../clients'
 import { AddressInput, EntityDisplay } from '../../../../components'
-import {
-  DaoProposalSingleAdapter,
-  matchAndLoadCommon,
-} from '../../../../proposal-module-adapter'
+import { matchAndLoadCommon } from '../../../../proposal-module-adapter'
 import { useActionOptions } from '../../../react'
 import { UpgradeV1ToV2Component, UpgradeV1ToV2Data } from './Component'
 
@@ -211,7 +208,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
           throw new Error(t('error.loadingData'))
         }
 
-        const { name, proposalModules } = v1SubDaos.data[targetDaoIndex].info
+        const { proposalModules } = v1SubDaos.data[targetDaoIndex].info
         const proposalModuleDepositInfos =
           proposalModuleDepositInfosLoadable.contents[targetDaoIndex]
 
@@ -226,9 +223,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                   info: {
                     admin: { core_module: {} },
                     code_id: codeIds.DaoPreProposeSingle,
-                    label: `DAO_${name.trim()}_pre-propose-${
-                      DaoProposalSingleAdapter.id
-                    }`,
+                    label: `dao-pre-propose-single_${index}_${Date.now()}`,
                     funds: [],
                     msg: encodeJsonToBase64({
                       deposit_info: depositInfo

@@ -10,7 +10,6 @@ import { CreatorData } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   chainConfig: { chainId },
-  newDao: { name },
   data: {
     existingGovernanceNftCollectionAddress,
     secretCodeHash,
@@ -43,7 +42,6 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
 
     return SecretSnip721StakedVotingModule.generateModuleInstantiateInfo(
       chainId,
-      name,
       {
         ...commonConfig,
         nft: {
@@ -58,7 +56,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
     chainId === ChainId.OmniflixHubMainnet ||
     chainId === ChainId.OmniflixHubTestnet
   ) {
-    return OnftStakedVotingModule.generateModuleInstantiateInfo(chainId, name, {
+    return OnftStakedVotingModule.generateModuleInstantiateInfo(chainId, {
       ...commonConfig,
       onft: {
         existing: {
@@ -67,17 +65,13 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       },
     })
   } else {
-    return Cw721StakedVotingModule.generateModuleInstantiateInfo(
-      chainId,
-      name,
-      {
-        ...commonConfig,
-        nft: {
-          existing: {
-            address: existingGovernanceNftCollectionAddress,
-          },
+    return Cw721StakedVotingModule.generateModuleInstantiateInfo(chainId, {
+      ...commonConfig,
+      nft: {
+        existing: {
+          address: existingGovernanceNftCollectionAddress,
         },
-      }
-    )
+      },
+    })
   }
 }

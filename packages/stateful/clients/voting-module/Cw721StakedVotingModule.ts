@@ -32,7 +32,6 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       unstakingDuration?: Duration | null
@@ -79,7 +78,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw721Staked,
-      label: `DAO_${daoName.trim()}_cw721-staked`,
+      label: `dao-voting-cw721-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         nft_contract:

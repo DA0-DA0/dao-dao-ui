@@ -47,7 +47,6 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       quorum: PercentageThreshold
       maxVotingPeriod: Duration
@@ -77,7 +76,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
           admin: { core_module: {} },
           code_id: codeIds.DaoPreProposeMultiple,
           code_hash: codeHashes.DaoPreProposeMultiple,
-          label: `DAO_${daoName.trim()}_pre-propose-multiple`,
+          label: `dao-pre-propose-multiple_${Date.now()}`,
           msg: encodeJsonToBase64({
             deposit_info: config.deposit,
             extension: {},
@@ -93,7 +92,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       admin: { core_module: {} },
       code_id: codeIds.DaoProposalMultiple,
       code_hash: codeHashes.DaoProposalMultiple,
-      label: `DAO_${daoName.trim()}_proposal-multiple`,
+      label: `dao-proposal-multiple_${Date.now()}`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:

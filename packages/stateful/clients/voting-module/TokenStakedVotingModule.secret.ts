@@ -28,7 +28,6 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       unstakingDuration?: Duration | null
@@ -52,7 +51,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingTokenStaked,
       code_hash: codeHashes.DaoVotingTokenStaked,
-      label: `DAO_${daoName.trim()}_token-staked`,
+      label: `dao-voting-token-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,

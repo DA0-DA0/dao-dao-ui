@@ -16,7 +16,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 > = (
   { chainId, createWithCw20 },
   {
-    name,
     votingConfig: {
       quorum,
       votingDuration,
@@ -49,7 +48,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
     return SecretMultipleChoiceProposalModule.generateModuleInstantiateInfo(
       chainId,
-      name,
       {
         ...commonConfig,
         deposit: proposalDeposit.enabled
@@ -90,7 +88,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   } else {
     return MultipleChoiceProposalModule.generateModuleInstantiateInfo(
       chainId,
-      name,
       {
         ...commonConfig,
         deposit: proposalDeposit.enabled

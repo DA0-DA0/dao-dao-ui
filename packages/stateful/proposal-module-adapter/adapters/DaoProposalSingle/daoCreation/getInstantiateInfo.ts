@@ -19,7 +19,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 > = (
   { chainId, createWithCw20 },
   {
-    name,
     votingConfig: {
       quorum,
       votingDuration,
@@ -67,7 +66,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
     return SecretSingleChoiceProposalModule.generateModuleInstantiateInfo(
       chainId,
-      name,
       {
         ...commonConfig,
         deposit: proposalDeposit.enabled
@@ -106,42 +104,38 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       }
     )
   } else {
-    return SingleChoiceProposalModule.generateModuleInstantiateInfo(
-      chainId,
-      name,
-      {
-        ...commonConfig,
-        deposit: proposalDeposit.enabled
-          ? {
-              amount: convertDenomToMicroDenomStringWithDecimals(
-                proposalDeposit.amount,
-                proposalDeposit.token?.decimals ?? 0
-              ),
-              denom:
-                proposalDeposit.type === 'voting_module_token'
-                  ? {
-                      voting_module_token: {
-                        token_type: createWithCw20 ? 'cw20' : 'native',
-                      },
-                    }
-                  : {
-                      token: {
-                        denom:
-                          proposalDeposit.type === 'native'
-                            ? {
-                                native: proposalDeposit.denomOrAddress,
-                              }
-                            : // proposalDeposit.type === 'cw20'
-                              {
-                                cw20: proposalDeposit.denomOrAddress,
-                              },
-                      },
+    return SingleChoiceProposalModule.generateModuleInstantiateInfo(chainId, {
+      ...commonConfig,
+      deposit: proposalDeposit.enabled
+        ? {
+            amount: convertDenomToMicroDenomStringWithDecimals(
+              proposalDeposit.amount,
+              proposalDeposit.token?.decimals ?? 0
+            ),
+            denom:
+              proposalDeposit.type === 'voting_module_token'
+                ? {
+                    voting_module_token: {
+                      token_type: createWithCw20 ? 'cw20' : 'native',
                     },
-              refund_policy: proposalDeposit.refundPolicy,
-            }
-          : null,
-      }
-    )
+                  }
+                : {
+                    token: {
+                      denom:
+                        proposalDeposit.type === 'native'
+                          ? {
+                              native: proposalDeposit.denomOrAddress,
+                            }
+                          : // proposalDeposit.type === 'cw20'
+                            {
+                              cw20: proposalDeposit.denomOrAddress,
+                            },
+                    },
+                  },
+            refund_policy: proposalDeposit.refundPolicy,
+          }
+        : null,
+    })
   }
 }
 

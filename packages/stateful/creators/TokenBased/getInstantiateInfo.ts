@@ -16,7 +16,7 @@ import { CreatorData, GovernanceTokenType } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   chainConfig: { createWithCw20 },
-  newDao: { chainId, name: daoName },
+  newDao: { chainId },
   data: {
     tiers,
     tokenType,
@@ -90,28 +90,24 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
     }
 
     return isNative
-      ? TokenStakedVotingModule.generateModuleInstantiateInfo(
-          chainId,
-          daoName,
-          {
-            ...commonConfig,
-            unstakingDuration,
-            token: {
-              new: {
-                symbol,
-                decimals: NEW_DAO_TOKEN_DECIMALS,
-                name,
-                initialBalances: microInitialBalances,
-                initialDaoBalance: microInitialTreasuryBalance,
-                funds: tokenFactoryDenomCreationFee,
-              },
+      ? TokenStakedVotingModule.generateModuleInstantiateInfo(chainId, {
+          ...commonConfig,
+          unstakingDuration,
+          token: {
+            new: {
+              symbol,
+              decimals: NEW_DAO_TOKEN_DECIMALS,
+              name,
+              initialBalances: microInitialBalances,
+              initialDaoBalance: microInitialTreasuryBalance,
+              funds: tokenFactoryDenomCreationFee,
             },
-          }
-        )
+          },
+        })
       : (isSecret
           ? SecretSnip20StakedVotingModule
           : Cw20StakedVotingModule
-        ).generateModuleInstantiateInfo(chainId, daoName, {
+        ).generateModuleInstantiateInfo(chainId, {
           ...commonConfig,
           token: {
             new: {
@@ -141,7 +137,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ? (isSecret
           ? SecretTokenStakedVotingModule
           : TokenStakedVotingModule
-        ).generateModuleInstantiateInfo(chainId, daoName, {
+        ).generateModuleInstantiateInfo(chainId, {
           ...commonConfig,
           unstakingDuration,
           token: {
@@ -151,35 +147,31 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           },
         })
       : isSecret
-      ? SecretSnip20StakedVotingModule.generateModuleInstantiateInfo(
-          chainId,
-          daoName,
-          {
-            ...commonConfig,
-            token: {
-              existing: {
-                address: existingTokenDenomOrAddress,
-                // Type-checked above.
-                codeHash: existingToken!.snip20CodeHash!,
-                stakingContract:
-                  customStakingAddress !== undefined
-                    ? {
-                        existing: {
-                          address: customStakingAddress,
-                          // Type-checked above.
-                          codeHash: customStakingCodeHash!,
-                        },
-                      }
-                    : {
-                        new: {
-                          unstakingDuration,
-                        },
+      ? SecretSnip20StakedVotingModule.generateModuleInstantiateInfo(chainId, {
+          ...commonConfig,
+          token: {
+            existing: {
+              address: existingTokenDenomOrAddress,
+              // Type-checked above.
+              codeHash: existingToken!.snip20CodeHash!,
+              stakingContract:
+                customStakingAddress !== undefined
+                  ? {
+                      existing: {
+                        address: customStakingAddress,
+                        // Type-checked above.
+                        codeHash: customStakingCodeHash!,
                       },
-              },
+                    }
+                  : {
+                      new: {
+                        unstakingDuration,
+                      },
+                    },
             },
-          }
-        )
-      : Cw20StakedVotingModule.generateModuleInstantiateInfo(chainId, daoName, {
+          },
+        })
+      : Cw20StakedVotingModule.generateModuleInstantiateInfo(chainId, {
           ...commonConfig,
           token: {
             existing: {

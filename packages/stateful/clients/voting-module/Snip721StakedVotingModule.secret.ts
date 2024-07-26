@@ -28,7 +28,6 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       unstakingDuration?: Duration | null
@@ -52,7 +51,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingCw721Staked,
       code_hash: codeHashes.DaoVotingCw721Staked,
-      label: `DAO_${daoName.trim()}_snip721-staked`,
+      label: `dao-voting-snip721-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         dao_code_hash: codeHashes.DaoCore,

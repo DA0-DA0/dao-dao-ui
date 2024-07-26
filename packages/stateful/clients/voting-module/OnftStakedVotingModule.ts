@@ -28,7 +28,6 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
    */
   static generateModuleInstantiateInfo(
     chainId: string,
-    daoName: string,
     config: {
       activeThreshold?: ActiveThreshold | null
       unstakingDuration?: Duration | null
@@ -50,7 +49,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     return {
       admin: { core_module: {} },
       code_id: codeIds.DaoVotingOnftStaked,
-      label: `DAO_${daoName.trim()}_onft-staked`,
+      label: `dao-voting-onft-staked_${Date.now()}`,
       msg: encodeJsonToBase64({
         active_threshold: config.activeThreshold,
         onft_collection: {
