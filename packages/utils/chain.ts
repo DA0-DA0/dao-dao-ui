@@ -729,7 +729,7 @@ export const getNullWalletForChain = (chainId: string): string =>
 
 /**
  * Get the public key type used for wallets on a given chain.
- * 
+ *
  * TODO(public key): can we locate this somehow?
  */
 export const getPublicKeyTypeForChain = (chainId: string): string => {

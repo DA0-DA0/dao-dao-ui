@@ -1,6 +1,10 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 
-import { getChainForChainId, getNativeTokenForChainId, getPublicKeyTypeForChain } from './chain'
+import {
+  getChainForChainId,
+  getNativeTokenForChainId,
+  getPublicKeyTypeForChain,
+} from './chain'
 
 export type SignatureOptions<
   Data extends Record<string, unknown> | undefined = Record<string, any>

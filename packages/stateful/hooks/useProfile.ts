@@ -1,12 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 
 import { profileQueries } from '@dao-dao/state'
-import {
-  ChainId,
-  LoadingData,
-  ProfileChain,
-  UnifiedProfile,
-} from '@dao-dao/types'
+import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
   MAINNET,
   getDisplayNameForChainId,

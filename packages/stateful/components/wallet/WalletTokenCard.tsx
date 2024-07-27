@@ -108,7 +108,9 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     temporaryHiddenBalancesAtom(profileChain?.publicKey.hex || '')
   )
   const hiddenBalancesLoadable = useCachedLoadable(
-    profileChain ? hiddenBalancesSelector(profileChain.publicKey.hex) : undefined
+    profileChain
+      ? hiddenBalancesSelector(profileChain.publicKey.hex)
+      : undefined
   )
   const isHidden =
     hiddenBalancesLoadable.state === 'hasValue'
