@@ -105,10 +105,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   )
 
   const setTemporaryHiddenBalances = useSetRecoilState(
-    temporaryHiddenBalancesAtom(profileChain?.publicKey || '')
+    temporaryHiddenBalancesAtom(profileChain?.publicKey.hex || '')
   )
   const hiddenBalancesLoadable = useCachedLoadable(
-    profileChain ? hiddenBalancesSelector(profileChain.publicKey) : undefined
+    profileChain ? hiddenBalancesSelector(profileChain.publicKey.hex) : undefined
   )
   const isHidden =
     hiddenBalancesLoadable.state === 'hasValue'

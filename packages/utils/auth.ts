@@ -1,6 +1,6 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 
-import { getChainForChainId, getNativeTokenForChainId } from './chain'
+import { getChainForChainId, getNativeTokenForChainId, getPublicKeyTypeForChain } from './chain'
 
 export type SignatureOptions<
   Data extends Record<string, unknown> | undefined = Record<string, any>
@@ -25,6 +25,9 @@ export type Auth = {
   chainId: string
   chainFeeDenom: string
   chainBech32Prefix: string
+  publicKeyType: string
+  publicKeyHex: string
+  // Backwards compatible.
   publicKey: string
 }
 
@@ -63,6 +66,9 @@ export const signOffChainAuth = async <
       chainId,
       chainFeeDenom: getNativeTokenForChainId(chainId).denomOrAddress,
       chainBech32Prefix: chain.bech32_prefix,
+      publicKeyType: getPublicKeyTypeForChain(chainId),
+      publicKeyHex: hexPublicKey,
+      // Backwards compatible.
       publicKey: hexPublicKey,
     },
   }

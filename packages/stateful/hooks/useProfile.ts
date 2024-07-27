@@ -1,10 +1,16 @@
 import { useQueryClient } from '@tanstack/react-query'
 
 import { profileQueries } from '@dao-dao/state'
-import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
+import {
+  ChainId,
+  LoadingData,
+  ProfileChain,
+  UnifiedProfile,
+} from '@dao-dao/types'
 import {
   MAINNET,
   getDisplayNameForChainId,
+  getPublicKeyTypeForChain,
   isSupportedChain,
   makeEmptyUnifiedProfile,
   maybeGetChainForChainId,
@@ -130,7 +136,10 @@ export const useProfile = ({
             profileAddress
               ? {
                   [walletChainId]: {
-                    publicKey: hexPublicKey.data,
+                    publicKey: {
+                      type: getPublicKeyTypeForChain(walletChainId),
+                      hex: hexPublicKey.data,
+                    },
                     address: profileAddress,
                   },
                 }
@@ -177,12 +186,14 @@ export const useProfile = ({
         // All addresses for the same public key have the same bech32 hash, so
         // it doesn't matter which address is used for that conversion.
         data: Object.entries(
-          Object.fromEntries(chains.data.map((c) => [c.publicKey, c.address]))
+          Object.fromEntries(
+            chains.data.map((c) => [c.publicKey.hex, c.address])
+          )
         ).map(([publicKey, address]) => ({
           publicKey,
           bech32Hash: toBech32Hash(address),
           chains: chains.data.flatMap((c) =>
-            c.publicKey === publicKey ? [c] : c
+            c.publicKey.hex === publicKey ? [c] : c
           ),
         })),
       }

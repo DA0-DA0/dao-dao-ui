@@ -1,5 +1,16 @@
 import { Chain } from '@chain-registry/types'
 
+export type PfpkPublicKey = {
+  /**
+   * Type of public key.
+   */
+  type: string
+  /**
+   * Public key data hexstring.
+   */
+  hex: string
+}
+
 export type PfpkProfile = {
   /**
    * Unique ID for this profile. Will be null if no profile has been created.
@@ -19,7 +30,7 @@ export type PfpkProfile = {
   chains: Record<
     string,
     {
-      publicKey: string
+      publicKey: PfpkPublicKey
       address: string
     }
   >
@@ -90,7 +101,7 @@ export type KeplrWalletProfile = {
 }
 
 export type ResolvedProfile = {
-  publicKey: string
+  publicKey: PfpkPublicKey
   address: string
   name: string | null
   nft: {
@@ -119,9 +130,9 @@ export type ProfileChain = {
    */
   address: string
   /**
-   * The hex public key for the profile on this chain.
+   * The public key for the profile on this chain.
    */
-  publicKey: string
+  publicKey: PfpkPublicKey
 }
 
 export type AddChainsStatus = 'idle' | 'chains' | 'registering'

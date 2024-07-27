@@ -726,3 +726,17 @@ export const getNullWalletForChain = (chainId: string): string =>
     getChainForChainId(chainId).bech32_prefix,
     new Uint8Array([...Array(20)].fill(0))
   )
+
+/**
+ * Get the public key type used for wallets on a given chain.
+ * 
+ * TODO(public key): can we locate this somehow?
+ */
+export const getPublicKeyTypeForChain = (chainId: string): string => {
+  switch (chainId) {
+    case ChainId.InjectiveMainnet:
+      return '/injective.crypto.v1beta1.ethsecp256k1.PubKey'
+    default:
+      return '/cosmos.crypto.secp256k1.PubKey'
+  }
+}
