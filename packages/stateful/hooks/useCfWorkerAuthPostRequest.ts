@@ -136,7 +136,7 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       // Fetch nonce.
-      const nonce = await getNonce()
+      const nonce = await getNonce(overrideChainId)
 
       const body = await signOffChainAuth({
         type: signatureType,
