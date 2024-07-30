@@ -32,7 +32,12 @@ export const decodeGovProposalV1Messages = (
       return protobufToCwMsg(getChainForChainId(chainId), msg).msg
     } catch (err) {
       // If protobuf not found, return raw stargate message.
-      console.error(err)
+
+      // Don't error on server.
+      if (typeof window !== 'undefined') {
+        console.error(err)
+      }
+
       return {
         stargate: {
           type_url: msg.typeUrl,
