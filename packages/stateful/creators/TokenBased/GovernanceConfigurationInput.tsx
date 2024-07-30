@@ -27,6 +27,7 @@ import {
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
   TokenType,
@@ -35,7 +36,7 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
-  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   isValidBech32Address,
   isValidNativeTokenDenom,
@@ -406,9 +407,61 @@ export const GovernanceConfigurationInput = ({
               </div>
             </div>
 
-            <div className="flex flex-row items-center gap-6 border-y border-border-secondary py-7 px-6">
+            {/* Max token supply for BitSong fantokens */}
+            {(chainId === ChainId.BitsongMainnet ||
+              chainId === ChainId.BitsongTestnet) && (
+              <div className="flex flex-col gap-6 border-t border-border-secondary py-7 px-6">
+                <div className="flex flex-row items-center gap-6">
+                  <p className="primary-text text-text-body">
+                    {t('form.maxTokenSupply')}
+                  </p>
+
+                  <div className="flex grow flex-col">
+                    <div className="flex grow flex-row items-center gap-2">
+                      <NumberInput
+                        className="symbol-small-body-text font-mono leading-5 text-text-secondary"
+                        containerClassName="grow"
+                        error={errors.creator?.data?.newInfo?.maxSupply}
+                        fieldName="creator.data.newInfo.maxSupply"
+                        ghost
+                        min={data.newInfo.initialSupply}
+                        register={register}
+                        step={convertMicroDenomToDenomWithDecimals(
+                          1,
+                          NEW_DAO_TOKEN_DECIMALS
+                        )}
+                        validation={[
+                          validatePositive,
+                          validateRequired,
+                          (maxSupply) =>
+                            (typeof maxSupply === 'number' &&
+                              maxSupply >= data.newInfo.initialSupply) ||
+                            t('error.maxSupplyMustBeAtLeastInitialSupply'),
+                        ]}
+                      />
+                      <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
+                        $
+                        {data.newInfo.symbol.trim() ||
+                          t('info.token').toLocaleUpperCase()}
+                      </p>
+                    </div>
+
+                    <InputErrorMessage
+                      className="self-end"
+                      error={errors.creator?.data?.newInfo?.maxSupply}
+                    />
+                  </div>
+                </div>
+
+                <p className="secondary-text">
+                  {t('info.maxTokenSupplyDescription')}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-row items-center gap-6 border-t border-border-secondary py-7 px-6">
               <p className="primary-text text-text-body">
-                {t('form.initialSupply')}
+                {t('form.initialTokenSupply')}
               </p>
 
               <div className="flex grow flex-col">
@@ -420,7 +473,7 @@ export const GovernanceConfigurationInput = ({
                     fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
-                    step={convertDenomToMicroDenomWithDecimals(
+                    step={convertMicroDenomToDenomWithDecimals(
                       1,
                       NEW_DAO_TOKEN_DECIMALS
                     )}
@@ -440,7 +493,7 @@ export const GovernanceConfigurationInput = ({
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 py-7 px-6">
+            <div className="flex flex-col gap-6 py-7 px-6 border-t border-border-secondary">
               <div className="flex flex-row items-center gap-6">
                 <p className="primary-text text-text-body">
                   {t('info.treasuryPercent')}

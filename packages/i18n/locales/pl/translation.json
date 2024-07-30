@@ -138,7 +138,7 @@
     "governanceTokenSymbolTitle": "Symbol tokenu",
     "imageURLTitle": "URL zdjęcia",
     "imageUrlTooltip": "Link do zdjęcia. Na przykład: https://moonphase.is/image.svg",
-    "initialSupply": "Całkowite zasoby tokenu",
+    "initialTokenSupply": "Całkowite zasoby tokenu",
     "instantiatedAddress": "Utworzony adres",
     "membersAddress": "Adres członka",
     "membersToAddOrUpdate": "Członkowie do dodania/uaktualnienia",

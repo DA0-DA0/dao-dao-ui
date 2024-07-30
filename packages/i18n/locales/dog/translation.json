@@ -195,7 +195,7 @@
     "image": "imaj",
     "imageURLTitle": "imaj url",
     "imageUrlTooltip": "a link 2 an imaj. 4 exampul: https://moonphase.is/image.svg",
-    "initialSupply": "tottal tokenn suplie",
+    "initialTokenSupply": "tottal tokenn suplie",
     "instantiatedAddress": "instanshie8d adres",
     "maxCharacters": "maxx ov {{max}} charakterz",
     "membersAddress": "membberz adres",

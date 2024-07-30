@@ -21,7 +21,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   data: {
     tiers,
     tokenType,
-    newInfo: { initialSupply, imageUrl, symbol, name },
+    newInfo: { initialSupply, maxSupply, imageUrl, symbol, name },
     existingTokenDenomOrAddress,
     existingToken,
     unstakingDuration: unstakingDurationWithUnits,
@@ -100,17 +100,18 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           throw new Error('tokenCreationFactoryAddress not set')
         }
 
+        if (!maxSupply) {
+          throw new Error('Max supply not set')
+        }
+
         const fantokenExecute: BtsgFtFactoryExecuteMsg = {
           issue: {
             symbol,
             name,
-            // TODO(bitsong-fantoken-factory)
-            max_supply: (
-              microInitialBalances.reduce(
-                (acc, { amount }) => acc + BigInt(amount),
-                0n
-              ) + BigInt(microInitialTreasuryBalance)
-            ).toString(),
+            max_supply: convertDenomToMicroDenomStringWithDecimals(
+              maxSupply,
+              NEW_DAO_TOKEN_DECIMALS
+            ),
             // TODO(bitsong-fantoken-factory)
             uri: '',
             initial_balances: microInitialBalances,

@@ -21,6 +21,8 @@ export type CreatorData = {
   newInfo: {
     initialSupply: number
     initialTreasuryPercent: number
+    // For BitSong which needs an up front max.
+    maxSupply?: number
     imageUrl?: string
     symbol: string
     name: string

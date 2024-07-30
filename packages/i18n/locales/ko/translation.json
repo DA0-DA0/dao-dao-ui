@@ -135,7 +135,7 @@
     "governanceTokenSymbolTitle": "토큰 심볼",
     "imageURLTitle": "이미지 주소",
     "imageUrlTooltip": "이미지 링크를 삽입하시오. 예: https://moonphase.is/image.svg",
-    "initialSupply": "총 토큰 공급량",
+    "initialTokenSupply": "총 토큰 공급량",
     "instantiatedAddress": "활성화된 주소",
     "membersAddress": "회원의 주소",
     "membersToAddOrUpdate": "추가/변경할 회원",
