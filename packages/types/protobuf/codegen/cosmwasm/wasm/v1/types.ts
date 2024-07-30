@@ -474,7 +474,7 @@ export const AccessConfig = {
   fromAmino(object: AccessConfigAmino): AccessConfig {
     const message = createBaseAccessConfig();
     if (object.permission !== undefined && object.permission !== null) {
-      message.permission = object.permission;
+      message.permission = accessTypeFromJSON(object.permission);
     }
     message.addresses = object.addresses?.map(e => e) || [];
     return message;

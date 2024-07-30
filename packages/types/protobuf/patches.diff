@@ -59,10 +59,18 @@ index 71df399d6..4ebbe5742 100644
      if (message.initialDeposit) {
        obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
 diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
-index 2a9a61c38..d4c011859 100644
+index 2a9a61c38..2643bcdc4 100644
 --- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
 +++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
-@@ -481,11 +481,9 @@ export const AccessConfig = {
+@@ -474,18 +474,16 @@ export const AccessConfig = {
+   fromAmino(object: AccessConfigAmino): AccessConfig {
+     const message = createBaseAccessConfig();
+     if (object.permission !== undefined && object.permission !== null) {
+-      message.permission = object.permission;
++      message.permission = accessTypeFromJSON(object.permission);
+     }
+     message.addresses = object.addresses?.map(e => e) || [];
+     return message;
    },
    toAmino(message: AccessConfig, useInterfaces: boolean = false): AccessConfigAmino {
      const obj: any = {};
