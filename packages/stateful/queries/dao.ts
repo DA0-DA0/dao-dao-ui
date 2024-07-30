@@ -298,15 +298,6 @@ export const fetchDaoParentInfo = async (
     }
   }
 
-  console.log('PARENT', {
-    isDao,
-    isPolytoneProxy,
-    chainId,
-    parentAddress,
-    parentChainId,
-    parentDaoAddress,
-  })
-
   if (isDao) {
     const [parentVersion, parentAdmin, { name, image_url }] = await Promise.all(
       [
