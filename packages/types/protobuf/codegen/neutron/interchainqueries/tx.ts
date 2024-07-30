@@ -3,6 +3,7 @@ import { KVKey, KVKeyAmino, KVKeySDKType } from "./genesis";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { ProofOps, ProofOpsAmino, ProofOpsSDKType, Proof, ProofAmino, ProofSDKType } from "../../tendermint/crypto/proof";
 import { Any, AnyAmino, AnySDKType } from "../../google/protobuf/any";
+import { ExecTxResult, ExecTxResultAmino, ExecTxResultSDKType } from "../../tendermint/abci/types";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes } from "../../helpers";
 export interface MsgRegisterInterchainQuery {
@@ -211,6 +212,7 @@ export interface BlockSDKType {
   tx?: TxValueSDKType | undefined;
 }
 export interface TxValue {
+  response?: ExecTxResult | undefined;
   /**
    * is the Merkle Proof which proves existence of response in block with height
    * next_block_header.Height
@@ -229,6 +231,7 @@ export interface TxValueProtoMsg {
   value: Uint8Array;
 }
 export interface TxValueAmino {
+  response?: ExecTxResultAmino | undefined;
   /**
    * is the Merkle Proof which proves existence of response in block with height
    * next_block_header.Height
@@ -247,6 +250,7 @@ export interface TxValueAminoMsg {
   value: TxValueAmino;
 }
 export interface TxValueSDKType {
+  response?: ExecTxResultSDKType | undefined;
   delivery_proof?: ProofSDKType | undefined;
   inclusion_proof?: ProofSDKType | undefined;
   data: Uint8Array;
@@ -1001,6 +1005,7 @@ export const Block = {
 };
 function createBaseTxValue(): TxValue {
   return {
+    response: undefined,
     deliveryProof: undefined,
     inclusionProof: undefined,
     data: new Uint8Array()
@@ -1009,6 +1014,9 @@ function createBaseTxValue(): TxValue {
 export const TxValue = {
   typeUrl: "/neutron.interchainqueries.TxValue",
   encode(message: TxValue, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.response !== undefined) {
+      ExecTxResult.encode(message.response, writer.uint32(10).fork()).ldelim();
+    }
     if (message.deliveryProof !== undefined) {
       Proof.encode(message.deliveryProof, writer.uint32(18).fork()).ldelim();
     }
@@ -1027,6 +1035,9 @@ export const TxValue = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.response = ExecTxResult.decode(reader, reader.uint32(), useInterfaces);
+          break;
         case 2:
           message.deliveryProof = Proof.decode(reader, reader.uint32(), useInterfaces);
           break;
@@ -1045,6 +1056,7 @@ export const TxValue = {
   },
   fromPartial(object: Partial<TxValue>): TxValue {
     const message = createBaseTxValue();
+    message.response = object.response !== undefined && object.response !== null ? ExecTxResult.fromPartial(object.response) : undefined;
     message.deliveryProof = object.deliveryProof !== undefined && object.deliveryProof !== null ? Proof.fromPartial(object.deliveryProof) : undefined;
     message.inclusionProof = object.inclusionProof !== undefined && object.inclusionProof !== null ? Proof.fromPartial(object.inclusionProof) : undefined;
     message.data = object.data ?? new Uint8Array();
@@ -1052,6 +1064,9 @@ export const TxValue = {
   },
   fromAmino(object: TxValueAmino): TxValue {
     const message = createBaseTxValue();
+    if (object.response !== undefined && object.response !== null) {
+      message.response = ExecTxResult.fromAmino(object.response);
+    }
     if (object.delivery_proof !== undefined && object.delivery_proof !== null) {
       message.deliveryProof = Proof.fromAmino(object.delivery_proof);
     }
@@ -1065,6 +1080,7 @@ export const TxValue = {
   },
   toAmino(message: TxValue, useInterfaces: boolean = false): TxValueAmino {
     const obj: any = {};
+    obj.response = message.response ? ExecTxResult.toAmino(message.response, useInterfaces) : undefined;
     obj.delivery_proof = message.deliveryProof ? Proof.toAmino(message.deliveryProof, useInterfaces) : undefined;
     obj.inclusion_proof = message.inclusionProof ? Proof.toAmino(message.inclusionProof, useInterfaces) : undefined;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
