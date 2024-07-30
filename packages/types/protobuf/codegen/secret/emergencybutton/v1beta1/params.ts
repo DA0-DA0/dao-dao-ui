@@ -77,8 +77,8 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.switch_status = message.switchStatus;
-    obj.pauser_address = message.pauserAddress;
+    obj.switch_status = message.switchStatus === "" ? undefined : message.switchStatus;
+    obj.pauser_address = message.pauserAddress === "" ? undefined : message.pauserAddress;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

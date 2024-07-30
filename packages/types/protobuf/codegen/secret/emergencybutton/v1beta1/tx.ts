@@ -78,7 +78,7 @@ export const MsgToggleIbcSwitch = {
   },
   toAmino(message: MsgToggleIbcSwitch, useInterfaces: boolean = false): MsgToggleIbcSwitchAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgToggleIbcSwitchAminoMsg): MsgToggleIbcSwitch {

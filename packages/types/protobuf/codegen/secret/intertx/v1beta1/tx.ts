@@ -148,9 +148,9 @@ export const MsgRegisterAccount = {
   },
   toAmino(message: MsgRegisterAccount, useInterfaces: boolean = false): MsgRegisterAccountAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.connection_id = message.connectionId;
-    obj.version = message.version;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.version = message.version === "" ? undefined : message.version;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterAccountAminoMsg): MsgRegisterAccount {
@@ -286,7 +286,7 @@ export const MsgSubmitTx = {
   toAmino(message: MsgSubmitTx, useInterfaces: boolean = false): MsgSubmitTxAmino {
     const obj: any = {};
     obj.owner = message.owner ? base64FromBytes(message.owner) : undefined;
-    obj.connection_id = message.connectionId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.msg = message.msg ? Any.toAmino(message.msg, useInterfaces) : undefined;
     return obj;
   },

@@ -262,9 +262,9 @@ export interface AbsoluteTxPositionSDKType {
 /** Model is a struct that holds a KV pair */
 export interface Model {
   /** hex-encode key to read it better (this is often ascii) */
-  Key: Uint8Array;
+  key: Uint8Array;
   /** base64-encode raw value */
-  Value: Uint8Array;
+  value: Uint8Array;
 }
 export interface ModelProtoMsg {
   typeUrl: "/secret.compute.v1beta1.Model";
@@ -357,13 +357,13 @@ export const AccessTypeParam = {
   fromAmino(object: AccessTypeParamAmino): AccessTypeParam {
     const message = createBaseAccessTypeParam();
     if (object.value !== undefined && object.value !== null) {
-      message.value = accessTypeFromJSON(object.value);
+      message.value = object.value;
     }
     return message;
   },
   toAmino(message: AccessTypeParam, useInterfaces: boolean = false): AccessTypeParamAmino {
     const obj: any = {};
-    obj.value = message.value;
+    obj.value = message.value === 0 ? undefined : message.value;
     return obj;
   },
   fromAminoMsg(object: AccessTypeParamAminoMsg): AccessTypeParam {
@@ -461,8 +461,8 @@ export const CodeInfo = {
     const obj: any = {};
     obj.code_hash = message.codeHash ? base64FromBytes(message.codeHash) : undefined;
     obj.creator = message.creator ? base64FromBytes(message.creator) : undefined;
-    obj.source = message.source;
-    obj.builder = message.builder;
+    obj.source = message.source === "" ? undefined : message.source;
+    obj.builder = message.builder === "" ? undefined : message.builder;
     return obj;
   },
   fromAminoMsg(object: CodeInfoAminoMsg): CodeInfo {
@@ -624,7 +624,7 @@ export const ContractCustomInfo = {
   toAmino(message: ContractCustomInfo, useInterfaces: boolean = false): ContractCustomInfoAmino {
     const obj: any = {};
     obj.enclave_key = message.enclaveKey ? ContractKey.toAmino(message.enclaveKey, useInterfaces) : undefined;
-    obj.label = message.label;
+    obj.label = message.label === "" ? undefined : message.label;
     return obj;
   },
   fromAminoMsg(object: ContractCustomInfoAminoMsg): ContractCustomInfo {
@@ -753,12 +753,12 @@ export const ContractInfo = {
   },
   toAmino(message: ContractInfo, useInterfaces: boolean = false): ContractInfoAmino {
     const obj: any = {};
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     obj.creator = message.creator ? base64FromBytes(message.creator) : undefined;
-    obj.label = message.label;
+    obj.label = message.label === "" ? undefined : message.label;
     obj.created = message.created ? AbsoluteTxPosition.toAmino(message.created, useInterfaces) : undefined;
-    obj.ibc_port_id = message.ibcPortId;
-    obj.admin = message.admin;
+    obj.ibc_port_id = message.ibcPortId === "" ? undefined : message.ibcPortId;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     obj.admin_proof = message.adminProof ? base64FromBytes(message.adminProof) : undefined;
     return obj;
   },
@@ -833,8 +833,8 @@ export const AbsoluteTxPosition = {
   },
   toAmino(message: AbsoluteTxPosition, useInterfaces: boolean = false): AbsoluteTxPositionAmino {
     const obj: any = {};
-    obj.block_height = message.blockHeight ? message.blockHeight.toString() : undefined;
-    obj.tx_index = message.txIndex ? message.txIndex.toString() : undefined;
+    obj.block_height = message.blockHeight !== BigInt(0) ? message.blockHeight.toString() : undefined;
+    obj.tx_index = message.txIndex !== BigInt(0) ? message.txIndex.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: AbsoluteTxPositionAminoMsg): AbsoluteTxPosition {
@@ -855,18 +855,18 @@ export const AbsoluteTxPosition = {
 };
 function createBaseModel(): Model {
   return {
-    Key: new Uint8Array(),
-    Value: new Uint8Array()
+    key: new Uint8Array(),
+    value: new Uint8Array()
   };
 }
 export const Model = {
   typeUrl: "/secret.compute.v1beta1.Model",
   encode(message: Model, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.Key.length !== 0) {
-      writer.uint32(10).bytes(message.Key);
+    if (message.key.length !== 0) {
+      writer.uint32(10).bytes(message.key);
     }
-    if (message.Value.length !== 0) {
-      writer.uint32(18).bytes(message.Value);
+    if (message.value.length !== 0) {
+      writer.uint32(18).bytes(message.value);
     }
     return writer;
   },
@@ -878,10 +878,10 @@ export const Model = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Key = reader.bytes();
+          message.key = reader.bytes();
           break;
         case 2:
-          message.Value = reader.bytes();
+          message.value = reader.bytes();
           break;
         default:
           reader.skipType(tag & 7);
@@ -892,24 +892,24 @@ export const Model = {
   },
   fromPartial(object: Partial<Model>): Model {
     const message = createBaseModel();
-    message.Key = object.Key ?? new Uint8Array();
-    message.Value = object.Value ?? new Uint8Array();
+    message.key = object.key ?? new Uint8Array();
+    message.value = object.value ?? new Uint8Array();
     return message;
   },
   fromAmino(object: ModelAmino): Model {
     const message = createBaseModel();
     if (object.Key !== undefined && object.Key !== null) {
-      message.Key = bytesFromBase64(object.Key);
+      message.key = bytesFromBase64(object.Key);
     }
     if (object.Value !== undefined && object.Value !== null) {
-      message.Value = bytesFromBase64(object.Value);
+      message.value = bytesFromBase64(object.Value);
     }
     return message;
   },
   toAmino(message: Model, useInterfaces: boolean = false): ModelAmino {
     const obj: any = {};
-    obj.Key = message.Key ? base64FromBytes(message.Key) : undefined;
-    obj.Value = message.Value ? base64FromBytes(message.Value) : undefined;
+    obj.Key = message.key ? base64FromBytes(message.key) : undefined;
+    obj.Value = message.value ? base64FromBytes(message.value) : undefined;
     return obj;
   },
   fromAminoMsg(object: ModelAminoMsg): Model {
@@ -990,7 +990,7 @@ export const ContractCodeHistoryEntry = {
   fromAmino(object: ContractCodeHistoryEntryAmino): ContractCodeHistoryEntry {
     const message = createBaseContractCodeHistoryEntry();
     if (object.operation !== undefined && object.operation !== null) {
-      message.operation = contractCodeHistoryOperationTypeFromJSON(object.operation);
+      message.operation = object.operation;
     }
     if (object.code_id !== undefined && object.code_id !== null) {
       message.codeId = BigInt(object.code_id);
@@ -1005,8 +1005,8 @@ export const ContractCodeHistoryEntry = {
   },
   toAmino(message: ContractCodeHistoryEntry, useInterfaces: boolean = false): ContractCodeHistoryEntryAmino {
     const obj: any = {};
-    obj.operation = message.operation;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.operation = message.operation === 0 ? undefined : message.operation;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     obj.updated = message.updated ? AbsoluteTxPosition.toAmino(message.updated, useInterfaces) : undefined;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
     return obj;

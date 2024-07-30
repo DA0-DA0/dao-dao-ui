@@ -171,17 +171,17 @@ export const GenesisState = {
     if (message.codes) {
       obj.codes = message.codes.map(e => e ? Code.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.codes = [];
+      obj.codes = message.codes;
     }
     if (message.contracts) {
       obj.contracts = message.contracts.map(e => e ? Contract.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.contracts = [];
+      obj.contracts = message.contracts;
     }
     if (message.sequences) {
       obj.sequences = message.sequences.map(e => e ? Sequence.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.sequences = [];
+      obj.sequences = message.sequences;
     }
     return obj;
   },
@@ -267,7 +267,7 @@ export const Code = {
   },
   toAmino(message: Code, useInterfaces: boolean = false): CodeAmino {
     const obj: any = {};
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     obj.code_info = message.codeInfo ? CodeInfo.toAmino(message.codeInfo, useInterfaces) : undefined;
     obj.code_bytes = message.codeBytes ? base64FromBytes(message.codeBytes) : undefined;
     return obj;
@@ -368,7 +368,7 @@ export const Contract = {
     if (message.contractState) {
       obj.contract_state = message.contractState.map(e => e ? Model.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.contract_state = [];
+      obj.contract_state = message.contractState;
     }
     obj.contract_custom_info = message.contractCustomInfo ? ContractCustomInfo.toAmino(message.contractCustomInfo, useInterfaces) : undefined;
     return obj;
@@ -445,7 +445,7 @@ export const Sequence = {
   toAmino(message: Sequence, useInterfaces: boolean = false): SequenceAmino {
     const obj: any = {};
     obj.id_key = message.idKey ? base64FromBytes(message.idKey) : undefined;
-    obj.value = message.value ? message.value.toString() : undefined;
+    obj.value = message.value !== BigInt(0) ? message.value.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: SequenceAminoMsg): Sequence {

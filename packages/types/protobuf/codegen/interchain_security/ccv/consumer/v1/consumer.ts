@@ -186,9 +186,9 @@ export const CrossChainValidator = {
   toAmino(message: CrossChainValidator, useInterfaces: boolean = false): CrossChainValidatorAmino {
     const obj: any = {};
     obj.address = message.address ? base64FromBytes(message.address) : undefined;
-    obj.power = message.power ? message.power.toString() : undefined;
+    obj.power = message.power !== BigInt(0) ? message.power.toString() : undefined;
     obj.pubkey = message.pubkey ? decodePubkey(message.pubkey) : undefined;
-    obj.opted_out = message.optedOut;
+    obj.opted_out = message.optedOut === false ? undefined : message.optedOut;
     return obj;
   },
   fromAminoMsg(object: CrossChainValidatorAminoMsg): CrossChainValidator {
@@ -262,7 +262,7 @@ export const SlashRecord = {
   },
   toAmino(message: SlashRecord, useInterfaces: boolean = false): SlashRecordAmino {
     const obj: any = {};
-    obj.waiting_on_reply = message.waitingOnReply;
+    obj.waiting_on_reply = message.waitingOnReply === false ? undefined : message.waitingOnReply;
     obj.send_time = message.sendTime ? Timestamp.toAmino(toTimestamp(message.sendTime)) : undefined;
     return obj;
   },
@@ -290,7 +290,7 @@ export const Cosmos_cryptoPubKey_InterfaceDecoder = (input: BinaryReader | Uint8
       return data;
   }
 };
-export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino) => {
+export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino): Any => {
   return encodePubkey(content);
 };
 export const Cosmos_cryptoPubKey_ToAmino = (content: Any, useInterfaces: boolean = false): Pubkey | null => {

@@ -446,8 +446,8 @@ export const MsgStoreCode = {
     const obj: any = {};
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
     obj.wasm_byte_code = message.wasmByteCode ? toBase64(message.wasmByteCode) : undefined;
-    obj.source = message.source;
-    obj.builder = message.builder;
+    obj.source = message.source === "" ? undefined : message.source;
+    obj.builder = message.builder === "" ? undefined : message.builder;
     return obj;
   },
   fromAminoMsg(object: MsgStoreCodeAminoMsg): MsgStoreCode {
@@ -510,7 +510,7 @@ export const MsgStoreCodeResponse = {
   },
   toAmino(message: MsgStoreCodeResponse, useInterfaces: boolean = false): MsgStoreCodeResponseAmino {
     const obj: any = {};
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgStoreCodeResponseAminoMsg): MsgStoreCodeResponse {
@@ -649,17 +649,17 @@ export const MsgInstantiateContract = {
   toAmino(message: MsgInstantiateContract, useInterfaces: boolean = false): MsgInstantiateContractAmino {
     const obj: any = {};
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
-    obj.callback_code_hash = message.callbackCodeHash;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.label = message.label;
+    obj.callback_code_hash = message.callbackCodeHash === "" ? undefined : message.callbackCodeHash;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+    obj.label = message.label === "" ? undefined : message.label;
     obj.init_msg = message.initMsg ? base64FromBytes(message.initMsg) : undefined;
     if (message.initFunds) {
       obj.init_funds = message.initFunds.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.init_funds = [];
+      obj.init_funds = message.initFunds;
     }
     obj.callback_sig = message.callbackSig ? base64FromBytes(message.callbackSig) : undefined;
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     return obj;
   },
   fromAminoMsg(object: MsgInstantiateContractAminoMsg): MsgInstantiateContract {
@@ -733,7 +733,7 @@ export const MsgInstantiateContractResponse = {
   },
   toAmino(message: MsgInstantiateContractResponse, useInterfaces: boolean = false): MsgInstantiateContractResponseAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
@@ -853,11 +853,11 @@ export const MsgExecuteContract = {
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
     obj.contract = message.contract ? base64FromBytes(message.contract) : undefined;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
-    obj.callback_code_hash = message.callbackCodeHash;
+    obj.callback_code_hash = message.callbackCodeHash === "" ? undefined : message.callbackCodeHash;
     if (message.sentFunds) {
       obj.sent_funds = message.sentFunds.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.sent_funds = [];
+      obj.sent_funds = message.sentFunds;
     }
     obj.callback_sig = message.callbackSig ? base64FromBytes(message.callbackSig) : undefined;
     return obj;
@@ -1040,12 +1040,12 @@ export const MsgMigrateContract = {
   },
   toAmino(message: MsgMigrateContract, useInterfaces: boolean = false): MsgMigrateContractAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.contract = message.contract;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.contract = message.contract === "" ? undefined : message.contract;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     obj.msg = message.msg ? base64FromBytes(message.msg) : undefined;
     obj.callback_sig = message.callbackSig ? base64FromBytes(message.callbackSig) : undefined;
-    obj.callback_code_hash = message.callbackCodeHash;
+    obj.callback_code_hash = message.callbackCodeHash === "" ? undefined : message.callbackCodeHash;
     return obj;
   },
   fromAminoMsg(object: MsgMigrateContractAminoMsg): MsgMigrateContract {
@@ -1204,9 +1204,9 @@ export const MsgUpdateAdmin = {
   },
   toAmino(message: MsgUpdateAdmin, useInterfaces: boolean = false): MsgUpdateAdminAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.new_admin = message.newAdmin;
-    obj.contract = message.contract;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.new_admin = message.newAdmin === "" ? undefined : message.newAdmin;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     obj.callback_sig = message.callbackSig ? base64FromBytes(message.callbackSig) : undefined;
     return obj;
   },
@@ -1342,8 +1342,8 @@ export const MsgClearAdmin = {
   },
   toAmino(message: MsgClearAdmin, useInterfaces: boolean = false): MsgClearAdminAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.contract = message.contract;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     obj.callback_sig = message.callbackSig ? base64FromBytes(message.callbackSig) : undefined;
     return obj;
   },

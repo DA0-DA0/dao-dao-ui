@@ -341,7 +341,7 @@ export const Collection = {
     if (message.onfts) {
       obj.onfts = message.onfts.map(e => e ? ONFT.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.onfts = [];
+      obj.onfts = message.onfts;
     }
     return obj;
   },
@@ -414,11 +414,11 @@ export const IDCollection = {
   },
   toAmino(message: IDCollection, useInterfaces: boolean = false): IDCollectionAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
     if (message.onftIds) {
       obj.onft_ids = message.onftIds.map(e => e);
     } else {
-      obj.onft_ids = [];
+      obj.onft_ids = message.onftIds;
     }
     return obj;
   },
@@ -590,20 +590,20 @@ export const Denom = {
   },
   toAmino(message: Denom, useInterfaces: boolean = false): DenomAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.symbol = message.symbol;
-    obj.name = message.name;
-    obj.schema = message.schema;
-    obj.creator = message.creator;
-    obj.description = message.description;
-    obj.preview_uri = message.previewUri;
-    obj.uri = message.uri;
-    obj.uri_hash = message.uriHash;
-    obj.data = message.data;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.symbol = message.symbol === "" ? undefined : message.symbol;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.schema = message.schema === "" ? undefined : message.schema;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.uri = message.uri === "" ? undefined : message.uri;
+    obj.uri_hash = message.uriHash === "" ? undefined : message.uriHash;
+    obj.data = message.data === "" ? undefined : message.data;
     if (message.royaltyReceivers) {
       obj.royalty_receivers = message.royaltyReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.royalty_receivers = [];
+      obj.royalty_receivers = message.royaltyReceivers;
     }
     return obj;
   },
@@ -731,16 +731,16 @@ export const DenomMetadata = {
   },
   toAmino(message: DenomMetadata, useInterfaces: boolean = false): DenomMetadataAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.schema = message.schema;
-    obj.description = message.description;
-    obj.preview_uri = message.previewUri;
-    obj.data = message.data;
-    obj.uri_hash = message.uriHash;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.schema = message.schema === "" ? undefined : message.schema;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.data = message.data === "" ? undefined : message.data;
+    obj.uri_hash = message.uriHash === "" ? undefined : message.uriHash;
     if (message.royaltyReceivers) {
       obj.royalty_receivers = message.royaltyReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.royalty_receivers = [];
+      obj.royalty_receivers = message.royaltyReceivers;
     }
     return obj;
   },
@@ -892,15 +892,15 @@ export const ONFT = {
   },
   toAmino(message: ONFT, useInterfaces: boolean = false): ONFTAmino {
     const obj: any = {};
-    obj.id = message.id;
+    obj.id = message.id === "" ? undefined : message.id;
     obj.metadata = message.metadata ? Metadata.toAmino(message.metadata, useInterfaces) : undefined;
-    obj.data = message.data;
-    obj.owner = message.owner;
-    obj.transferable = message.transferable;
-    obj.extensible = message.extensible;
+    obj.data = message.data === "" ? undefined : message.data;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.transferable = message.transferable === false ? undefined : message.transferable;
+    obj.extensible = message.extensible === false ? undefined : message.extensible;
     obj.created_at = message.createdAt ? Timestamp.toAmino(toTimestamp(message.createdAt)) : undefined;
-    obj.nsfw = message.nsfw;
-    obj.royalty_share = message.royaltyShare;
+    obj.nsfw = message.nsfw === false ? undefined : message.nsfw;
+    obj.royalty_share = message.royaltyShare === "" ? undefined : message.royaltyShare;
     return obj;
   },
   fromAminoMsg(object: ONFTAminoMsg): ONFT {
@@ -1007,11 +1007,11 @@ export const Metadata = {
   },
   toAmino(message: Metadata, useInterfaces: boolean = false): MetadataAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.description = message.description;
-    obj.media_uri = message.mediaUri;
-    obj.preview_uri = message.previewUri;
-    obj.uri_hash = message.uriHash;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.media_uri = message.mediaUri === "" ? undefined : message.mediaUri;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.uri_hash = message.uriHash === "" ? undefined : message.uriHash;
     return obj;
   },
   fromAminoMsg(object: MetadataAminoMsg): Metadata {
@@ -1173,16 +1173,16 @@ export const ONFTMetadata = {
   },
   toAmino(message: ONFTMetadata, useInterfaces: boolean = false): ONFTMetadataAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.description = message.description;
-    obj.preview_uri = message.previewUri;
-    obj.data = message.data;
-    obj.transferable = message.transferable;
-    obj.extensible = message.extensible;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.data = message.data === "" ? undefined : message.data;
+    obj.transferable = message.transferable === false ? undefined : message.transferable;
+    obj.extensible = message.extensible === false ? undefined : message.extensible;
     obj.created_at = message.createdAt ? Timestamp.toAmino(toTimestamp(message.createdAt)) : undefined;
-    obj.nsfw = message.nsfw;
-    obj.royalty_share = message.royaltyShare;
-    obj.uri_hash = message.uriHash;
+    obj.nsfw = message.nsfw === false ? undefined : message.nsfw;
+    obj.royalty_share = message.royaltyShare === "" ? undefined : message.royaltyShare;
+    obj.uri_hash = message.uriHash === "" ? undefined : message.uriHash;
     return obj;
   },
   fromAminoMsg(object: ONFTMetadataAminoMsg): ONFTMetadata {
@@ -1254,11 +1254,11 @@ export const Owner = {
   },
   toAmino(message: Owner, useInterfaces: boolean = false): OwnerAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.idCollections) {
       obj.id_collections = message.idCollections.map(e => e ? IDCollection.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.id_collections = [];
+      obj.id_collections = message.idCollections;
     }
     return obj;
   },
@@ -1333,8 +1333,8 @@ export const WeightedAddress = {
   },
   toAmino(message: WeightedAddress, useInterfaces: boolean = false): WeightedAddressAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.weight = message.weight;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.weight = message.weight === "" ? undefined : message.weight;
     return obj;
   },
   fromAminoMsg(object: WeightedAddressAminoMsg): WeightedAddress {

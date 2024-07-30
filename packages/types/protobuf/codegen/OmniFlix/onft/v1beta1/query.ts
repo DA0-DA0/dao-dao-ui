@@ -447,7 +447,7 @@ export const QueryCollectionRequest = {
   },
   toAmino(message: QueryCollectionRequest, useInterfaces: boolean = false): QueryCollectionRequestAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -597,7 +597,7 @@ export const QueryIBCCollectionRequest = {
   },
   toAmino(message: QueryIBCCollectionRequest, useInterfaces: boolean = false): QueryIBCCollectionRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -661,7 +661,7 @@ export const QueryDenomRequest = {
   },
   toAmino(message: QueryDenomRequest, useInterfaces: boolean = false): QueryDenomRequestAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
     return obj;
   },
   fromAminoMsg(object: QueryDenomRequestAminoMsg): QueryDenomRequest {
@@ -787,7 +787,7 @@ export const QueryIBCDenomRequest = {
   },
   toAmino(message: QueryIBCDenomRequest, useInterfaces: boolean = false): QueryIBCDenomRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     return obj;
   },
   fromAminoMsg(object: QueryIBCDenomRequestAminoMsg): QueryIBCDenomRequest {
@@ -862,7 +862,7 @@ export const QueryDenomsRequest = {
   toAmino(message: QueryDenomsRequest, useInterfaces: boolean = false): QueryDenomsRequestAmino {
     const obj: any = {};
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
-    obj.owner = message.owner;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     return obj;
   },
   fromAminoMsg(object: QueryDenomsRequestAminoMsg): QueryDenomsRequest {
@@ -937,7 +937,7 @@ export const QueryDenomsResponse = {
     if (message.denoms) {
       obj.denoms = message.denoms.map(e => e ? Denom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.denoms = [];
+      obj.denoms = message.denoms;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1013,8 +1013,8 @@ export const QueryONFTRequest = {
   },
   toAmino(message: QueryONFTRequest, useInterfaces: boolean = false): QueryONFTRequestAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
-    obj.id = message.id;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
+    obj.id = message.id === "" ? undefined : message.id;
     return obj;
   },
   fromAminoMsg(object: QueryONFTRequestAminoMsg): QueryONFTRequest {
@@ -1151,8 +1151,8 @@ export const QueryIBCDenomONFTRequest = {
   },
   toAmino(message: QueryIBCDenomONFTRequest, useInterfaces: boolean = false): QueryIBCDenomONFTRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
-    obj.id = message.id;
+    obj.hash = message.hash === "" ? undefined : message.hash;
+    obj.id = message.id === "" ? undefined : message.id;
     return obj;
   },
   fromAminoMsg(object: QueryIBCDenomONFTRequestAminoMsg): QueryIBCDenomONFTRequest {
@@ -1237,8 +1237,8 @@ export const QueryOwnerONFTsRequest = {
   },
   toAmino(message: QueryOwnerONFTsRequest, useInterfaces: boolean = false): QueryOwnerONFTsRequestAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
-    obj.owner = message.owner;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1399,8 +1399,8 @@ export const QueryOwnerIBCDenomONFTsRequest = {
   },
   toAmino(message: QueryOwnerIBCDenomONFTsRequest, useInterfaces: boolean = false): QueryOwnerIBCDenomONFTsRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
-    obj.owner = message.owner;
+    obj.hash = message.hash === "" ? undefined : message.hash;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1475,8 +1475,8 @@ export const QuerySupplyRequest = {
   },
   toAmino(message: QuerySupplyRequest, useInterfaces: boolean = false): QuerySupplyRequestAmino {
     const obj: any = {};
-    obj.denom_id = message.denomId;
-    obj.owner = message.owner;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     return obj;
   },
   fromAminoMsg(object: QuerySupplyRequestAminoMsg): QuerySupplyRequest {
@@ -1539,7 +1539,7 @@ export const QuerySupplyResponse = {
   },
   toAmino(message: QuerySupplyResponse, useInterfaces: boolean = false): QuerySupplyResponseAmino {
     const obj: any = {};
-    obj.amount = message.amount ? message.amount.toString() : undefined;
+    obj.amount = message.amount !== BigInt(0) ? message.amount.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QuerySupplyResponseAminoMsg): QuerySupplyResponse {
@@ -1613,8 +1613,8 @@ export const QueryIBCDenomSupplyRequest = {
   },
   toAmino(message: QueryIBCDenomSupplyRequest, useInterfaces: boolean = false): QueryIBCDenomSupplyRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
-    obj.owner = message.owner;
+    obj.hash = message.hash === "" ? undefined : message.hash;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     return obj;
   },
   fromAminoMsg(object: QueryIBCDenomSupplyRequestAminoMsg): QueryIBCDenomSupplyRequest {
@@ -1690,7 +1690,7 @@ export const OwnerONFTCollection = {
     if (message.onfts) {
       obj.onfts = message.onfts.map(e => e ? ONFT.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.onfts = [];
+      obj.onfts = message.onfts;
     }
     return obj;
   },

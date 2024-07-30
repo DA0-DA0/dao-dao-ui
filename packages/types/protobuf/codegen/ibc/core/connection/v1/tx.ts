@@ -453,11 +453,11 @@ export const MsgConnectionOpenInit = {
   },
   toAmino(message: MsgConnectionOpenInit, useInterfaces: boolean = false): MsgConnectionOpenInitAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.counterparty = message.counterparty ? Counterparty.toAmino(message.counterparty, useInterfaces) : undefined;
     obj.version = message.version ? Version.toAmino(message.version, useInterfaces) : undefined;
-    obj.delay_period = message.delayPeriod ? message.delayPeriod.toString() : undefined;
-    obj.signer = message.signer;
+    obj.delay_period = message.delayPeriod !== BigInt(0) ? message.delayPeriod.toString() : undefined;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgConnectionOpenInitAminoMsg): MsgConnectionOpenInit {
@@ -712,22 +712,22 @@ export const MsgConnectionOpenTry = {
   },
   toAmino(message: MsgConnectionOpenTry, useInterfaces: boolean = false): MsgConnectionOpenTryAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
-    obj.previous_connection_id = message.previousConnectionId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
+    obj.previous_connection_id = message.previousConnectionId === "" ? undefined : message.previousConnectionId;
     obj.client_state = message.clientState ? Any.toAmino(message.clientState, useInterfaces) : undefined;
     obj.counterparty = message.counterparty ? Counterparty.toAmino(message.counterparty, useInterfaces) : undefined;
-    obj.delay_period = message.delayPeriod ? message.delayPeriod.toString() : undefined;
+    obj.delay_period = message.delayPeriod !== BigInt(0) ? message.delayPeriod.toString() : undefined;
     if (message.counterpartyVersions) {
       obj.counterparty_versions = message.counterpartyVersions.map(e => e ? Version.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.counterparty_versions = [];
+      obj.counterparty_versions = message.counterpartyVersions;
     }
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
     obj.proof_init = message.proofInit ? base64FromBytes(message.proofInit) : undefined;
     obj.proof_client = message.proofClient ? base64FromBytes(message.proofClient) : undefined;
     obj.proof_consensus = message.proofConsensus ? base64FromBytes(message.proofConsensus) : undefined;
     obj.consensus_height = message.consensusHeight ? Height.toAmino(message.consensusHeight, useInterfaces) : {};
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     obj.host_consensus_state_proof = message.hostConsensusStateProof ? base64FromBytes(message.hostConsensusStateProof) : undefined;
     return obj;
   },
@@ -963,8 +963,8 @@ export const MsgConnectionOpenAck = {
   },
   toAmino(message: MsgConnectionOpenAck, useInterfaces: boolean = false): MsgConnectionOpenAckAmino {
     const obj: any = {};
-    obj.connection_id = message.connectionId;
-    obj.counterparty_connection_id = message.counterpartyConnectionId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.counterparty_connection_id = message.counterpartyConnectionId === "" ? undefined : message.counterpartyConnectionId;
     obj.version = message.version ? Version.toAmino(message.version, useInterfaces) : undefined;
     obj.client_state = message.clientState ? Any.toAmino(message.clientState, useInterfaces) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
@@ -972,7 +972,7 @@ export const MsgConnectionOpenAck = {
     obj.proof_client = message.proofClient ? base64FromBytes(message.proofClient) : undefined;
     obj.proof_consensus = message.proofConsensus ? base64FromBytes(message.proofConsensus) : undefined;
     obj.consensus_height = message.consensusHeight ? Height.toAmino(message.consensusHeight, useInterfaces) : {};
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     obj.host_consensus_state_proof = message.hostConsensusStateProof ? base64FromBytes(message.hostConsensusStateProof) : undefined;
     return obj;
   },
@@ -1131,10 +1131,10 @@ export const MsgConnectionOpenConfirm = {
   },
   toAmino(message: MsgConnectionOpenConfirm, useInterfaces: boolean = false): MsgConnectionOpenConfirmAmino {
     const obj: any = {};
-    obj.connection_id = message.connectionId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.proof_ack = message.proofAck ? base64FromBytes(message.proofAck) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgConnectionOpenConfirmAminoMsg): MsgConnectionOpenConfirm {
@@ -1270,7 +1270,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

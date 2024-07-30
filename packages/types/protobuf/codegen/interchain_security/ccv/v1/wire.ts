@@ -1,5 +1,5 @@
 import { ValidatorUpdate, ValidatorUpdateAmino, ValidatorUpdateSDKType, Validator, ValidatorAmino, ValidatorSDKType } from "../../../tendermint/abci/types";
-import { Infraction, infractionFromJSON } from "../../../cosmos/staking/v1beta1/staking";
+import { Infraction } from "../../../cosmos/staking/v1beta1/staking";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** ConsumerPacketType indicates interchain security specific packet types. */
 export enum ConsumerPacketDataType {
@@ -402,13 +402,13 @@ export const ValidatorSetChangePacketData = {
     if (message.validatorUpdates) {
       obj.validator_updates = message.validatorUpdates.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_updates = [];
+      obj.validator_updates = message.validatorUpdates;
     }
-    obj.valset_update_id = message.valsetUpdateId ? message.valsetUpdateId.toString() : undefined;
+    obj.valset_update_id = message.valsetUpdateId !== BigInt(0) ? message.valsetUpdateId.toString() : undefined;
     if (message.slashAcks) {
       obj.slash_acks = message.slashAcks.map(e => e);
     } else {
-      obj.slash_acks = [];
+      obj.slash_acks = message.slashAcks;
     }
     return obj;
   },
@@ -472,7 +472,7 @@ export const VSCMaturedPacketData = {
   },
   toAmino(message: VSCMaturedPacketData, useInterfaces: boolean = false): VSCMaturedPacketDataAmino {
     const obj: any = {};
-    obj.valset_update_id = message.valsetUpdateId ? message.valsetUpdateId.toString() : undefined;
+    obj.valset_update_id = message.valsetUpdateId !== BigInt(0) ? message.valsetUpdateId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: VSCMaturedPacketDataAminoMsg): VSCMaturedPacketData {
@@ -551,15 +551,15 @@ export const SlashPacketData = {
       message.valsetUpdateId = BigInt(object.valset_update_id);
     }
     if (object.infraction !== undefined && object.infraction !== null) {
-      message.infraction = infractionFromJSON(object.infraction);
+      message.infraction = object.infraction;
     }
     return message;
   },
   toAmino(message: SlashPacketData, useInterfaces: boolean = false): SlashPacketDataAmino {
     const obj: any = {};
     obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
-    obj.valset_update_id = message.valsetUpdateId ? message.valsetUpdateId.toString() : undefined;
-    obj.infraction = message.infraction;
+    obj.valset_update_id = message.valsetUpdateId !== BigInt(0) ? message.valsetUpdateId.toString() : undefined;
+    obj.infraction = message.infraction === 0 ? undefined : message.infraction;
     return obj;
   },
   fromAminoMsg(object: SlashPacketDataAminoMsg): SlashPacketData {
@@ -632,7 +632,7 @@ export const ConsumerPacketData = {
   fromAmino(object: ConsumerPacketDataAmino): ConsumerPacketData {
     const message = createBaseConsumerPacketData();
     if (object.type !== undefined && object.type !== null) {
-      message.type = consumerPacketDataTypeFromJSON(object.type);
+      message.type = object.type;
     }
     if (object.slashPacketData !== undefined && object.slashPacketData !== null) {
       message.slashPacketData = SlashPacketData.fromAmino(object.slashPacketData);
@@ -644,7 +644,7 @@ export const ConsumerPacketData = {
   },
   toAmino(message: ConsumerPacketData, useInterfaces: boolean = false): ConsumerPacketDataAmino {
     const obj: any = {};
-    obj.type = message.type;
+    obj.type = message.type === 0 ? undefined : message.type;
     obj.slashPacketData = message.slashPacketData ? SlashPacketData.toAmino(message.slashPacketData, useInterfaces) : undefined;
     obj.vscMaturedPacketData = message.vscMaturedPacketData ? VSCMaturedPacketData.toAmino(message.vscMaturedPacketData, useInterfaces) : undefined;
     return obj;
@@ -720,8 +720,8 @@ export const HandshakeMetadata = {
   },
   toAmino(message: HandshakeMetadata, useInterfaces: boolean = false): HandshakeMetadataAmino {
     const obj: any = {};
-    obj.provider_fee_pool_addr = message.providerFeePoolAddr;
-    obj.version = message.version;
+    obj.provider_fee_pool_addr = message.providerFeePoolAddr === "" ? undefined : message.providerFeePoolAddr;
+    obj.version = message.version === "" ? undefined : message.version;
     return obj;
   },
   fromAminoMsg(object: HandshakeMetadataAminoMsg): HandshakeMetadata {
@@ -794,7 +794,7 @@ export const ConsumerPacketDataV1 = {
   fromAmino(object: ConsumerPacketDataV1Amino): ConsumerPacketDataV1 {
     const message = createBaseConsumerPacketDataV1();
     if (object.type !== undefined && object.type !== null) {
-      message.type = consumerPacketDataTypeFromJSON(object.type);
+      message.type = object.type;
     }
     if (object.slashPacketData !== undefined && object.slashPacketData !== null) {
       message.slashPacketData = SlashPacketDataV1.fromAmino(object.slashPacketData);
@@ -806,7 +806,7 @@ export const ConsumerPacketDataV1 = {
   },
   toAmino(message: ConsumerPacketDataV1, useInterfaces: boolean = false): ConsumerPacketDataV1Amino {
     const obj: any = {};
-    obj.type = message.type;
+    obj.type = message.type === 0 ? undefined : message.type;
     obj.slashPacketData = message.slashPacketData ? SlashPacketDataV1.toAmino(message.slashPacketData, useInterfaces) : undefined;
     obj.vscMaturedPacketData = message.vscMaturedPacketData ? VSCMaturedPacketData.toAmino(message.vscMaturedPacketData, useInterfaces) : undefined;
     return obj;
@@ -887,15 +887,15 @@ export const SlashPacketDataV1 = {
       message.valsetUpdateId = BigInt(object.valset_update_id);
     }
     if (object.infraction !== undefined && object.infraction !== null) {
-      message.infraction = infractionTypeFromJSON(object.infraction);
+      message.infraction = object.infraction;
     }
     return message;
   },
   toAmino(message: SlashPacketDataV1, useInterfaces: boolean = false): SlashPacketDataV1Amino {
     const obj: any = {};
     obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
-    obj.valset_update_id = message.valsetUpdateId ? message.valsetUpdateId.toString() : undefined;
-    obj.infraction = message.infraction;
+    obj.valset_update_id = message.valsetUpdateId !== BigInt(0) ? message.valsetUpdateId.toString() : undefined;
+    obj.infraction = message.infraction === 0 ? undefined : message.infraction;
     return obj;
   },
   fromAminoMsg(object: SlashPacketDataV1AminoMsg): SlashPacketDataV1 {

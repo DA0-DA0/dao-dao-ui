@@ -94,7 +94,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? ConsumerParams.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

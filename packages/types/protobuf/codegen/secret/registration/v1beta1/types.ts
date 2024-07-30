@@ -10,9 +10,9 @@ export interface SeedConfigProtoMsg {
   value: Uint8Array;
 }
 export interface SeedConfigAmino {
-  master_key?: string;
-  encrypted_key?: string;
-  version?: number;
+  master_key: string;
+  encrypted_key: string;
+  version: number;
 }
 export interface SeedConfigAminoMsg {
   type: "/secret.registration.v1beta1.SeedConfig";
@@ -32,8 +32,8 @@ export interface LegacySeedConfigProtoMsg {
   value: Uint8Array;
 }
 export interface LegacySeedConfigAmino {
-  master_cert?: string;
-  encrypted_key?: string;
+  master_cert: string;
+  encrypted_key: string;
 }
 export interface LegacySeedConfigAminoMsg {
   type: "/secret.registration.v1beta1.LegacySeedConfig";
@@ -129,9 +129,9 @@ export const SeedConfig = {
   },
   toAmino(message: SeedConfig, useInterfaces: boolean = false): SeedConfigAmino {
     const obj: any = {};
-    obj.master_key = message.masterKey;
-    obj.encrypted_key = message.encryptedKey;
-    obj.version = message.version;
+    obj.master_key = message.masterKey ?? "";
+    obj.encrypted_key = message.encryptedKey ?? "";
+    obj.version = message.version ?? 0;
     return obj;
   },
   fromAminoMsg(object: SeedConfigAminoMsg): SeedConfig {
@@ -205,8 +205,8 @@ export const LegacySeedConfig = {
   },
   toAmino(message: LegacySeedConfig, useInterfaces: boolean = false): LegacySeedConfigAmino {
     const obj: any = {};
-    obj.master_cert = message.masterCert;
-    obj.encrypted_key = message.encryptedKey;
+    obj.master_cert = message.masterCert ?? "";
+    obj.encrypted_key = message.encryptedKey ?? "";
     return obj;
   },
   fromAminoMsg(object: LegacySeedConfigAminoMsg): LegacySeedConfig {

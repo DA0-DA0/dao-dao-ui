@@ -538,21 +538,21 @@ export const MsgCreateDenom = {
   },
   toAmino(message: MsgCreateDenom, useInterfaces: boolean = false): MsgCreateDenomAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.symbol = message.symbol;
-    obj.name = message.name;
-    obj.description = message.description;
-    obj.preview_uri = message.previewUri;
-    obj.schema = message.schema;
-    obj.sender = message.sender;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.symbol = message.symbol === "" ? undefined : message.symbol;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.schema = message.schema === "" ? undefined : message.schema;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.creation_fee = message.creationFee ? Coin.toAmino(message.creationFee, useInterfaces) : undefined;
-    obj.uri = message.uri;
-    obj.uri_hash = message.uriHash;
-    obj.data = message.data;
+    obj.uri = message.uri === "" ? undefined : message.uri;
+    obj.uri_hash = message.uriHash === "" ? undefined : message.uriHash;
+    obj.data = message.data === "" ? undefined : message.data;
     if (message.royaltyReceivers) {
       obj.royalty_receivers = message.royaltyReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.royalty_receivers = [];
+      obj.royalty_receivers = message.royaltyReceivers;
     }
     return obj;
   },
@@ -725,15 +725,15 @@ export const MsgUpdateDenom = {
   },
   toAmino(message: MsgUpdateDenom, useInterfaces: boolean = false): MsgUpdateDenomAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.name = message.name;
-    obj.description = message.description;
-    obj.preview_uri = message.previewUri;
-    obj.sender = message.sender;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.preview_uri = message.previewUri === "" ? undefined : message.previewUri;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.royaltyReceivers) {
       obj.royalty_receivers = message.royaltyReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.royalty_receivers = [];
+      obj.royalty_receivers = message.royaltyReceivers;
     }
     return obj;
   },
@@ -864,8 +864,8 @@ export const MsgPurgeDenom = {
   },
   toAmino(message: MsgPurgeDenom, useInterfaces: boolean = false): MsgPurgeDenomAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.sender = message.sender;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgPurgeDenomAminoMsg): MsgPurgeDenom {
@@ -1006,9 +1006,9 @@ export const MsgTransferDenom = {
   },
   toAmino(message: MsgTransferDenom, useInterfaces: boolean = false): MsgTransferDenomAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     return obj;
   },
   fromAminoMsg(object: MsgTransferDenomAminoMsg): MsgTransferDenom {
@@ -1226,16 +1226,16 @@ export const MsgMintONFT = {
   },
   toAmino(message: MsgMintONFT, useInterfaces: boolean = false): MsgMintONFTAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.denom_id = message.denomId;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
     obj.metadata = message.metadata ? Metadata.toAmino(message.metadata, useInterfaces) : undefined;
-    obj.data = message.data;
-    obj.transferable = message.transferable;
-    obj.extensible = message.extensible;
-    obj.nsfw = message.nsfw;
-    obj.royalty_share = message.royaltyShare;
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
+    obj.data = message.data === "" ? undefined : message.data;
+    obj.transferable = message.transferable === false ? undefined : message.transferable;
+    obj.extensible = message.extensible === false ? undefined : message.extensible;
+    obj.nsfw = message.nsfw === false ? undefined : message.nsfw;
+    obj.royalty_share = message.royaltyShare === "" ? undefined : message.royaltyShare;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     return obj;
   },
   fromAminoMsg(object: MsgMintONFTAminoMsg): MsgMintONFT {
@@ -1387,10 +1387,10 @@ export const MsgTransferONFT = {
   },
   toAmino(message: MsgTransferONFT, useInterfaces: boolean = false): MsgTransferONFTAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.denom_id = message.denomId;
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
     return obj;
   },
   fromAminoMsg(object: MsgTransferONFTAminoMsg): MsgTransferONFT {
@@ -1531,9 +1531,9 @@ export const MsgBurnONFT = {
   },
   toAmino(message: MsgBurnONFT, useInterfaces: boolean = false): MsgBurnONFTAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.denom_id = message.denomId;
-    obj.sender = message.sender;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.denom_id = message.denomId === "" ? undefined : message.denomId;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgBurnONFTAminoMsg): MsgBurnONFT {
@@ -1663,7 +1663,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
