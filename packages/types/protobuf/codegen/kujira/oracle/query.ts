@@ -579,7 +579,7 @@ export const QueryExchangeRateRequest = {
   },
   toAmino(message: QueryExchangeRateRequest, useInterfaces: boolean = false): QueryExchangeRateRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryExchangeRateRequestAminoMsg): QueryExchangeRateRequest {
@@ -642,7 +642,7 @@ export const QueryExchangeRateResponse = {
   },
   toAmino(message: QueryExchangeRateResponse, useInterfaces: boolean = false): QueryExchangeRateResponseAmino {
     const obj: any = {};
-    obj.exchange_rate = message.exchangeRate;
+    obj.exchange_rate = message.exchangeRate === "" ? undefined : message.exchangeRate;
     return obj;
   },
   fromAminoMsg(object: QueryExchangeRateResponseAminoMsg): QueryExchangeRateResponse {
@@ -756,7 +756,7 @@ export const QueryExchangeRatesResponse = {
     if (message.exchangeRates) {
       obj.exchange_rates = message.exchangeRates.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.exchange_rates = [];
+      obj.exchange_rates = message.exchangeRates;
     }
     return obj;
   },
@@ -871,7 +871,7 @@ export const QueryActivesResponse = {
     if (message.actives) {
       obj.actives = message.actives.map(e => e);
     } else {
-      obj.actives = [];
+      obj.actives = message.actives;
     }
     return obj;
   },
@@ -986,7 +986,7 @@ export const QueryVoteTargetsResponse = {
     if (message.voteTargets) {
       obj.vote_targets = message.voteTargets.map(e => e);
     } else {
-      obj.vote_targets = [];
+      obj.vote_targets = message.voteTargets;
     }
     return obj;
   },
@@ -1050,7 +1050,7 @@ export const QueryFeederDelegationRequest = {
   },
   toAmino(message: QueryFeederDelegationRequest, useInterfaces: boolean = false): QueryFeederDelegationRequestAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     return obj;
   },
   fromAminoMsg(object: QueryFeederDelegationRequestAminoMsg): QueryFeederDelegationRequest {
@@ -1113,7 +1113,7 @@ export const QueryFeederDelegationResponse = {
   },
   toAmino(message: QueryFeederDelegationResponse, useInterfaces: boolean = false): QueryFeederDelegationResponseAmino {
     const obj: any = {};
-    obj.feeder_addr = message.feederAddr;
+    obj.feeder_addr = message.feederAddr === "" ? undefined : message.feederAddr;
     return obj;
   },
   fromAminoMsg(object: QueryFeederDelegationResponseAminoMsg): QueryFeederDelegationResponse {
@@ -1176,7 +1176,7 @@ export const QueryMissCounterRequest = {
   },
   toAmino(message: QueryMissCounterRequest, useInterfaces: boolean = false): QueryMissCounterRequestAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     return obj;
   },
   fromAminoMsg(object: QueryMissCounterRequestAminoMsg): QueryMissCounterRequest {
@@ -1239,7 +1239,7 @@ export const QueryMissCounterResponse = {
   },
   toAmino(message: QueryMissCounterResponse, useInterfaces: boolean = false): QueryMissCounterResponseAmino {
     const obj: any = {};
-    obj.miss_counter = message.missCounter ? message.missCounter.toString() : undefined;
+    obj.miss_counter = message.missCounter !== BigInt(0) ? message.missCounter.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryMissCounterResponseAminoMsg): QueryMissCounterResponse {
@@ -1302,7 +1302,7 @@ export const QueryAggregatePrevoteRequest = {
   },
   toAmino(message: QueryAggregatePrevoteRequest, useInterfaces: boolean = false): QueryAggregatePrevoteRequestAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     return obj;
   },
   fromAminoMsg(object: QueryAggregatePrevoteRequestAminoMsg): QueryAggregatePrevoteRequest {
@@ -1479,7 +1479,7 @@ export const QueryAggregatePrevotesResponse = {
     if (message.aggregatePrevotes) {
       obj.aggregate_prevotes = message.aggregatePrevotes.map(e => e ? AggregateExchangeRatePrevote.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.aggregate_prevotes = [];
+      obj.aggregate_prevotes = message.aggregatePrevotes;
     }
     return obj;
   },
@@ -1543,7 +1543,7 @@ export const QueryAggregateVoteRequest = {
   },
   toAmino(message: QueryAggregateVoteRequest, useInterfaces: boolean = false): QueryAggregateVoteRequestAmino {
     const obj: any = {};
-    obj.validator_addr = message.validatorAddr;
+    obj.validator_addr = message.validatorAddr === "" ? undefined : message.validatorAddr;
     return obj;
   },
   fromAminoMsg(object: QueryAggregateVoteRequestAminoMsg): QueryAggregateVoteRequest {
@@ -1720,7 +1720,7 @@ export const QueryAggregateVotesResponse = {
     if (message.aggregateVotes) {
       obj.aggregate_votes = message.aggregateVotes.map(e => e ? AggregateExchangeRateVote.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.aggregate_votes = [];
+      obj.aggregate_votes = message.aggregateVotes;
     }
     return obj;
   },

@@ -1,5 +1,5 @@
 diff --git b/packages/types/protobuf/codegen/cosmos/authz/v1beta1/tx.ts a/packages/types/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
-index c04740c22..63b9a7cb8 100644
+index 1dc291f1a..a90db9057 100644
 --- b/packages/types/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/authz/v1beta1/tx.ts
 @@ -1,4 +1,5 @@
@@ -18,211 +18,85 @@ index c04740c22..63b9a7cb8 100644
    },
    toAmino(message: MsgExec, useInterfaces: boolean = false): MsgExecAmino {
      const obj: any = {};
-     obj.grantee = message.grantee;
+     obj.grantee = message.grantee === "" ? undefined : message.grantee;
      if (message.msgs) {
 -      obj.msgs = message.msgs.map(e => e ? Cosmos_basev1beta1Msg_ToAmino((e as Any), useInterfaces) : undefined);
 +      obj.msgs = message.msgs.map(e => e ? rawProtobufMsgToAmino((e as Any), useInterfaces) : undefined);
      } else {
-       obj.msgs = [];
+       obj.msgs = message.msgs;
      }
-diff --git b/packages/types/protobuf/codegen/cosmos/bank/v1beta1/bank.ts a/packages/types/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
-index 9eb780900..70b01f2fc 100644
---- b/packages/types/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
-+++ a/packages/types/protobuf/codegen/cosmos/bank/v1beta1/bank.ts
-@@ -930,7 +930,9 @@ export const Metadata = {
-   },
-   toAmino(message: Metadata, useInterfaces: boolean = false): MetadataAmino {
-     const obj: any = {};
--    obj.description = message.description;
-+    if (message.description) {
-+      obj.description = message.description;
-+    }
-     if (message.denomUnits) {
-       obj.denom_units = message.denomUnits.map(e => e ? DenomUnit.toAmino(e, useInterfaces) : undefined);
-     } else {
-@@ -940,8 +942,12 @@ export const Metadata = {
-     obj.display = message.display;
-     obj.name = message.name;
-     obj.symbol = message.symbol;
--    obj.uri = message.uri;
--    obj.uri_hash = message.uriHash;
-+    if (message.uri) {
-+      obj.uri = message.uri;
-+    }
-+    if (message.uriHash) {
-+      obj.uri_hash = message.uriHash;
-+    }
-     return obj;
-   },
-   fromAminoMsg(object: MetadataAminoMsg): Metadata {
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-index d46b64a0f..fd09961b2 100644
+index 71df399d6..4ebbe5742 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-@@ -1,7 +1,8 @@
--//@ts-nocheck
-+// @ts-nocheck
+@@ -1,4 +1,5 @@
+ //@ts-nocheck
 +import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from "../../../../utils";
  import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
  import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
--import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType, voteOptionFromJSON } from "./gov";
-+import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
- import { Timestamp } from "../../../google/protobuf/timestamp";
- import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
- import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
-@@ -578,7 +579,7 @@ export const MsgSubmitProposal = {
+ import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
+@@ -578,7 +579,8 @@ export const MsgSubmitProposal = {
    },
    fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
      const message = createBaseMsgSubmitProposal();
 -    message.messages = object.messages?.map(e => Any.fromAmino(e)) || [];
-+    message.messages = object.messages?.map(e => aminoToRawProtobufMsg(e)) || [];
++    message.messages =
++      object.messages?.map(e => aminoToRawProtobufMsg(e)) || [];
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -599,10 +600,8 @@ export const MsgSubmitProposal = {
+@@ -599,10 +601,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};
 -    if (message.messages) {
 -      obj.messages = message.messages.map(e => e ? Any.toAmino(e, useInterfaces) : undefined);
 -    } else {
--      obj.messages = [];
+-      obj.messages = message.messages;
 +    if (message.messages.length) {
 +      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
      }
      if (message.initialDeposit) {
        obj.initial_deposit = message.initialDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
-@@ -613,7 +612,9 @@ export const MsgSubmitProposal = {
-     obj.metadata = message.metadata;
-     obj.title = message.title;
-     obj.summary = message.summary;
--    obj.expedited = message.expedited;
-+    if (message.expedited) {
-+      obj.expedited = message.expedited;
-+    }
-     return obj;
-   },
-   fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
-@@ -912,7 +913,7 @@ export const MsgVote = {
-       message.voter = object.voter;
-     }
-     if (object.option !== undefined && object.option !== null) {
--      message.option = voteOptionFromJSON(object.option);
-+      message.option = object.option;
-     }
-     if (object.metadata !== undefined && object.metadata !== null) {
-       message.metadata = object.metadata;
-diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-index 3a2a34091..cced669c2 100644
---- b/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-+++ a/packages/types/protobuf/codegen/cosmos/gov/v1beta1/tx.ts
-@@ -1,7 +1,7 @@
- //@ts-nocheck
- import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
- import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
--import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType, voteOptionFromJSON } from "./gov";
-+import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, TextProposal, TextProposalProtoMsg, TextProposalSDKType } from "./gov";
- import { MsgCreateAllianceProposal, MsgCreateAllianceProposalProtoMsg, MsgCreateAllianceProposalSDKType, MsgUpdateAllianceProposal, MsgUpdateAllianceProposalProtoMsg, MsgUpdateAllianceProposalSDKType, MsgDeleteAllianceProposal, MsgDeleteAllianceProposalProtoMsg, MsgDeleteAllianceProposalSDKType } from "../../../alliance/alliance/gov";
- import { CommunityPoolSpendProposal, CommunityPoolSpendProposalProtoMsg, CommunityPoolSpendProposalSDKType, CommunityPoolSpendProposalWithDeposit, CommunityPoolSpendProposalWithDepositProtoMsg, CommunityPoolSpendProposalWithDepositSDKType } from "../../distribution/v1beta1/distribution";
- import { ParameterChangeProposal, ParameterChangeProposalProtoMsg, ParameterChangeProposalSDKType } from "../../params/v1beta1/params";
-@@ -472,7 +472,7 @@ export const MsgVote = {
-       message.voter = object.voter;
-     }
-     if (object.option !== undefined && object.option !== null) {
--      message.option = voteOptionFromJSON(object.option);
-+      message.option = object.option;
-     }
-     return message;
-   },
-diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-index 11d5dba92..6ee5c2e5a 100644
---- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-+++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/tx.ts
-@@ -1526,7 +1526,10 @@ export const MsgInstantiateContract = {
-   toAmino(message: MsgInstantiateContract, useInterfaces: boolean = false): MsgInstantiateContractAmino {
-     const obj: any = {};
-     obj.sender = message.sender;
--    obj.admin = message.admin;
-+    // Replace empty string with undefined.
-+    if (message.admin) {
-+      obj.admin = message.admin;
-+    }
-     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-     obj.label = message.label;
-     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
-@@ -1770,7 +1773,9 @@ export const MsgInstantiateContract2 = {
-       obj.funds = [];
-     }
-     obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
--    obj.fix_msg = message.fixMsg;
-+    if (message.fixMsg) {
-+      obj.fix_msg = message.fixMsg;
-+    }
-     return obj;
-   },
-   fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
 diff --git b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
-index d2a323eb5..2038d7725 100644
+index 2a9a61c38..2643bcdc4 100644
 --- b/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
 +++ a/packages/types/protobuf/codegen/cosmwasm/wasm/v1/types.ts
-@@ -19,16 +19,16 @@ export const AccessTypeAmino = AccessType;
- export function accessTypeFromJSON(object: any): AccessType {
-   switch (object) {
-     case 0:
--    case "ACCESS_TYPE_UNSPECIFIED":
-+    case "Unspecified":
-       return AccessType.ACCESS_TYPE_UNSPECIFIED;
-     case 1:
--    case "ACCESS_TYPE_NOBODY":
-+    case "Nobody":
-       return AccessType.ACCESS_TYPE_NOBODY;
-     case 3:
--    case "ACCESS_TYPE_EVERYBODY":
-+    case "Everybody":
-       return AccessType.ACCESS_TYPE_EVERYBODY;
-     case 4:
--    case "ACCESS_TYPE_ANY_OF_ADDRESSES":
-+    case "AnyOfAddresses":
-       return AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES;
-     case -1:
-     case "UNRECOGNIZED":
-@@ -39,13 +39,13 @@ export function accessTypeFromJSON(object: any): AccessType {
- export function accessTypeToJSON(object: AccessType): string {
-   switch (object) {
-     case AccessType.ACCESS_TYPE_UNSPECIFIED:
--      return "ACCESS_TYPE_UNSPECIFIED";
-+      return "Unspecified";
-     case AccessType.ACCESS_TYPE_NOBODY:
--      return "ACCESS_TYPE_NOBODY";
-+      return "Nobody";
-     case AccessType.ACCESS_TYPE_EVERYBODY:
--      return "ACCESS_TYPE_EVERYBODY";
-+      return "Everybody";
-     case AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES:
--      return "ACCESS_TYPE_ANY_OF_ADDRESSES";
-+      return "AnyOfAddresses";
-     case AccessType.UNRECOGNIZED:
-     default:
-       return "UNRECOGNIZED";
-@@ -485,11 +485,9 @@ export const AccessConfig = {
+@@ -474,18 +474,16 @@ export const AccessConfig = {
+   fromAmino(object: AccessConfigAmino): AccessConfig {
+     const message = createBaseAccessConfig();
+     if (object.permission !== undefined && object.permission !== null) {
+-      message.permission = object.permission;
++      message.permission = accessTypeFromJSON(object.permission);
+     }
+     message.addresses = object.addresses?.map(e => e) || [];
+     return message;
    },
    toAmino(message: AccessConfig, useInterfaces: boolean = false): AccessConfigAmino {
      const obj: any = {};
--    obj.permission = message.permission;
+-    obj.permission = message.permission === 0 ? undefined : message.permission;
 -    if (message.addresses) {
 +    obj.permission = accessTypeToJSON(message.permission);
-+    if (message.addresses?.length) {
++    if (message.addresses.length) {
        obj.addresses = message.addresses.map(e => e);
 -    } else {
--      obj.addresses = [];
+-      obj.addresses = message.addresses;
      }
      return obj;
    },
-@@ -571,7 +569,7 @@ export const Params = {
+@@ -560,14 +558,14 @@ export const Params = {
+       message.codeUploadAccess = AccessConfig.fromAmino(object.code_upload_access);
+     }
+     if (object.instantiate_default_permission !== undefined && object.instantiate_default_permission !== null) {
+-      message.instantiateDefaultPermission = object.instantiate_default_permission;
++      message.instantiateDefaultPermission = accessTypeFromJSON(object.instantiate_default_permission);
+     }
+     return message;
+   },
    toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
      const obj: any = {};
-     obj.code_upload_access = message.codeUploadAccess ? AccessConfig.toAmino(message.codeUploadAccess, useInterfaces) : AccessConfig.fromPartial({});
--    obj.instantiate_default_permission = message.instantiateDefaultPermission;
+     obj.code_upload_access = message.codeUploadAccess ? AccessConfig.toAmino(message.codeUploadAccess, useInterfaces) : AccessConfig.toAmino(AccessConfig.fromPartial({}));
+-    obj.instantiate_default_permission = message.instantiateDefaultPermission === 0 ? undefined : message.instantiateDefaultPermission;
 +    obj.instantiate_default_permission = accessTypeToJSON(message.instantiateDefaultPermission);
      return obj;
    },
@@ -258,8 +132,34 @@ index 1caf8781d..9d864d753 100644
  export const getSigningNeutronClientOptions = ({
    defaultTypes = defaultRegistryTypes
  }: {
+diff --git b/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts a/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
+index a644c0f74..9bce95dea 100644
+--- b/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
++++ a/packages/types/protobuf/codegen/osmosis/poolmanager/v1beta1/module_route.ts
+@@ -153,7 +153,7 @@ export const ModuleRoute = {
+   toAmino(message: ModuleRoute, useInterfaces: boolean = false): ModuleRouteAmino {
+     const obj: any = {};
+     obj.pool_type = message.poolType === 0 ? undefined : message.poolType;
+-    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
++    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId?.toString() : undefined;
+     return obj;
+   },
+   fromAminoMsg(object: ModuleRouteAminoMsg): ModuleRoute {
+diff --git b/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts a/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
+index 213d94f0e..55b9e2ee2 100644
+--- b/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
++++ a/packages/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/params.ts
+@@ -103,7 +103,7 @@ export const Params = {
+     } else {
+       obj.denom_creation_fee = message.denomCreationFee;
+     }
+-    obj.denom_creation_gas_consume = message.denomCreationGasConsume !== BigInt(0) ? message.denomCreationGasConsume.toString() : undefined;
++    obj.denom_creation_gas_consume = message.denomCreationGasConsume !== BigInt(0) ? message.denomCreationGasConsume?.toString() : undefined;
+     return obj;
+   },
+   fromAminoMsg(object: ParamsAminoMsg): Params {
 diff --git b/packages/types/protobuf/codegen/regen/data/v1/tx.ts a/packages/types/protobuf/codegen/regen/data/v1/tx.ts
-index 640c2bcef..5bd95374c 100644
+index eb4e14ba3..af83becfe 100644
 --- b/packages/types/protobuf/codegen/regen/data/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/regen/data/v1/tx.ts
 @@ -1,5 +1,5 @@
@@ -270,7 +170,7 @@ index 640c2bcef..5bd95374c 100644
  import { BinaryReader, BinaryWriter } from "../../../binary";
  import { toTimestamp, fromTimestamp } from "../../../helpers";
 diff --git b/packages/types/protobuf/codegen/regen/data/v2/tx.ts a/packages/types/protobuf/codegen/regen/data/v2/tx.ts
-index fe58afb74..f0e94453b 100644
+index 4199e50b5..fd7785125 100644
 --- b/packages/types/protobuf/codegen/regen/data/v2/tx.ts
 +++ a/packages/types/protobuf/codegen/regen/data/v2/tx.ts
 @@ -1,5 +1,5 @@

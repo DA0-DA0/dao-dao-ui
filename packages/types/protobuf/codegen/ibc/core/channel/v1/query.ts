@@ -1159,8 +1159,8 @@ export const QueryChannelRequest = {
   },
   toAmino(message: QueryChannelRequest, useInterfaces: boolean = false): QueryChannelRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     return obj;
   },
   fromAminoMsg(object: QueryChannelRequestAminoMsg): QueryChannelRequest {
@@ -1414,7 +1414,7 @@ export const QueryChannelsResponse = {
     if (message.channels) {
       obj.channels = message.channels.map(e => e ? IdentifiedChannel.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.channels = [];
+      obj.channels = message.channels;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
@@ -1497,7 +1497,7 @@ export const QueryConnectionChannelsRequest = {
   },
   toAmino(message: QueryConnectionChannelsRequest, useInterfaces: boolean = false): QueryConnectionChannelsRequestAmino {
     const obj: any = {};
-    obj.connection = message.connection;
+    obj.connection = message.connection === "" ? undefined : message.connection;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1590,7 +1590,7 @@ export const QueryConnectionChannelsResponse = {
     if (message.channels) {
       obj.channels = message.channels.map(e => e ? IdentifiedChannel.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.channels = [];
+      obj.channels = message.channels;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
@@ -1673,8 +1673,8 @@ export const QueryChannelClientStateRequest = {
   },
   toAmino(message: QueryChannelClientStateRequest, useInterfaces: boolean = false): QueryChannelClientStateRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     return obj;
   },
   fromAminoMsg(object: QueryChannelClientStateRequestAminoMsg): QueryChannelClientStateRequest {
@@ -1869,10 +1869,10 @@ export const QueryChannelConsensusStateRequest = {
   },
   toAmino(message: QueryChannelConsensusStateRequest, useInterfaces: boolean = false): QueryChannelConsensusStateRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
-    obj.revision_number = message.revisionNumber ? message.revisionNumber.toString() : undefined;
-    obj.revision_height = message.revisionHeight ? message.revisionHeight.toString() : undefined;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.revision_number = message.revisionNumber !== BigInt(0) ? message.revisionNumber.toString() : undefined;
+    obj.revision_height = message.revisionHeight !== BigInt(0) ? message.revisionHeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryChannelConsensusStateRequestAminoMsg): QueryChannelConsensusStateRequest {
@@ -1975,7 +1975,7 @@ export const QueryChannelConsensusStateResponse = {
   toAmino(message: QueryChannelConsensusStateResponse, useInterfaces: boolean = false): QueryChannelConsensusStateResponseAmino {
     const obj: any = {};
     obj.consensus_state = message.consensusState ? Any.toAmino(message.consensusState, useInterfaces) : undefined;
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.proof = message.proof ? base64FromBytes(message.proof) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
     return obj;
@@ -2068,9 +2068,9 @@ export const QueryPacketCommitmentRequest = {
   },
   toAmino(message: QueryPacketCommitmentRequest, useInterfaces: boolean = false): QueryPacketCommitmentRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryPacketCommitmentRequestAminoMsg): QueryPacketCommitmentRequest {
@@ -2254,8 +2254,8 @@ export const QueryPacketCommitmentsRequest = {
   },
   toAmino(message: QueryPacketCommitmentsRequest, useInterfaces: boolean = false): QueryPacketCommitmentsRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2348,7 +2348,7 @@ export const QueryPacketCommitmentsResponse = {
     if (message.commitments) {
       obj.commitments = message.commitments.map(e => e ? PacketState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.commitments = [];
+      obj.commitments = message.commitments;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
@@ -2442,9 +2442,9 @@ export const QueryPacketReceiptRequest = {
   },
   toAmino(message: QueryPacketReceiptRequest, useInterfaces: boolean = false): QueryPacketReceiptRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryPacketReceiptRequestAminoMsg): QueryPacketReceiptRequest {
@@ -2535,7 +2535,7 @@ export const QueryPacketReceiptResponse = {
   },
   toAmino(message: QueryPacketReceiptResponse, useInterfaces: boolean = false): QueryPacketReceiptResponseAmino {
     const obj: any = {};
-    obj.received = message.received;
+    obj.received = message.received === false ? undefined : message.received;
     obj.proof = message.proof ? base64FromBytes(message.proof) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
     return obj;
@@ -2628,9 +2628,9 @@ export const QueryPacketAcknowledgementRequest = {
   },
   toAmino(message: QueryPacketAcknowledgementRequest, useInterfaces: boolean = false): QueryPacketAcknowledgementRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
-    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.sequence = message.sequence !== BigInt(0) ? message.sequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryPacketAcknowledgementRequestAminoMsg): QueryPacketAcknowledgementRequest {
@@ -2832,13 +2832,13 @@ export const QueryPacketAcknowledgementsRequest = {
   },
   toAmino(message: QueryPacketAcknowledgementsRequest, useInterfaces: boolean = false): QueryPacketAcknowledgementsRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     if (message.packetCommitmentSequences) {
       obj.packet_commitment_sequences = message.packetCommitmentSequences.map(e => e.toString());
     } else {
-      obj.packet_commitment_sequences = [];
+      obj.packet_commitment_sequences = message.packetCommitmentSequences;
     }
     return obj;
   },
@@ -2931,7 +2931,7 @@ export const QueryPacketAcknowledgementsResponse = {
     if (message.acknowledgements) {
       obj.acknowledgements = message.acknowledgements.map(e => e ? PacketState.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.acknowledgements = [];
+      obj.acknowledgements = message.acknowledgements;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
@@ -3032,12 +3032,12 @@ export const QueryUnreceivedPacketsRequest = {
   },
   toAmino(message: QueryUnreceivedPacketsRequest, useInterfaces: boolean = false): QueryUnreceivedPacketsRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     if (message.packetCommitmentSequences) {
       obj.packet_commitment_sequences = message.packetCommitmentSequences.map(e => e.toString());
     } else {
-      obj.packet_commitment_sequences = [];
+      obj.packet_commitment_sequences = message.packetCommitmentSequences;
     }
     return obj;
   },
@@ -3128,7 +3128,7 @@ export const QueryUnreceivedPacketsResponse = {
     if (message.sequences) {
       obj.sequences = message.sequences.map(e => e.toString());
     } else {
-      obj.sequences = [];
+      obj.sequences = message.sequences;
     }
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
     return obj;
@@ -3228,12 +3228,12 @@ export const QueryUnreceivedAcksRequest = {
   },
   toAmino(message: QueryUnreceivedAcksRequest, useInterfaces: boolean = false): QueryUnreceivedAcksRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     if (message.packetAckSequences) {
       obj.packet_ack_sequences = message.packetAckSequences.map(e => e.toString());
     } else {
-      obj.packet_ack_sequences = [];
+      obj.packet_ack_sequences = message.packetAckSequences;
     }
     return obj;
   },
@@ -3324,7 +3324,7 @@ export const QueryUnreceivedAcksResponse = {
     if (message.sequences) {
       obj.sequences = message.sequences.map(e => e.toString());
     } else {
-      obj.sequences = [];
+      obj.sequences = message.sequences;
     }
     obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : {};
     return obj;
@@ -3406,8 +3406,8 @@ export const QueryNextSequenceReceiveRequest = {
   },
   toAmino(message: QueryNextSequenceReceiveRequest, useInterfaces: boolean = false): QueryNextSequenceReceiveRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     return obj;
   },
   fromAminoMsg(object: QueryNextSequenceReceiveRequestAminoMsg): QueryNextSequenceReceiveRequest {
@@ -3498,7 +3498,7 @@ export const QueryNextSequenceReceiveResponse = {
   },
   toAmino(message: QueryNextSequenceReceiveResponse, useInterfaces: boolean = false): QueryNextSequenceReceiveResponseAmino {
     const obj: any = {};
-    obj.next_sequence_receive = message.nextSequenceReceive ? message.nextSequenceReceive.toString() : undefined;
+    obj.next_sequence_receive = message.nextSequenceReceive !== BigInt(0) ? message.nextSequenceReceive.toString() : undefined;
     obj.proof = message.proof ? base64FromBytes(message.proof) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
     return obj;
@@ -3580,8 +3580,8 @@ export const QueryNextSequenceSendRequest = {
   },
   toAmino(message: QueryNextSequenceSendRequest, useInterfaces: boolean = false): QueryNextSequenceSendRequestAmino {
     const obj: any = {};
-    obj.port_id = message.portId;
-    obj.channel_id = message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
     return obj;
   },
   fromAminoMsg(object: QueryNextSequenceSendRequestAminoMsg): QueryNextSequenceSendRequest {
@@ -3672,7 +3672,7 @@ export const QueryNextSequenceSendResponse = {
   },
   toAmino(message: QueryNextSequenceSendResponse, useInterfaces: boolean = false): QueryNextSequenceSendResponseAmino {
     const obj: any = {};
-    obj.next_sequence_send = message.nextSequenceSend ? message.nextSequenceSend.toString() : undefined;
+    obj.next_sequence_send = message.nextSequenceSend !== BigInt(0) ? message.nextSequenceSend.toString() : undefined;
     obj.proof = message.proof ? base64FromBytes(message.proof) : undefined;
     obj.proof_height = message.proofHeight ? Height.toAmino(message.proofHeight, useInterfaces) : {};
     return obj;

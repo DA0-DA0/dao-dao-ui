@@ -12,9 +12,9 @@ export interface GenesisStateProtoMsg {
   value: Uint8Array;
 }
 export interface GenesisStateAmino {
-  registration?: RegistrationNodeInfoAmino[];
-  node_exch_master_key?: MasterKeyAmino | undefined;
-  io_master_key?: MasterKeyAmino | undefined;
+  registration: RegistrationNodeInfoAmino[];
+  node_exch_master_key: MasterKeyAmino | undefined;
+  io_master_key: MasterKeyAmino | undefined;
 }
 export interface GenesisStateAminoMsg {
   type: "/secret.registration.v1beta1.GenesisState";
@@ -92,10 +92,10 @@ export const GenesisState = {
     if (message.registration) {
       obj.registration = message.registration.map(e => e ? RegistrationNodeInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.registration = [];
+      obj.registration = message.registration;
     }
-    obj.node_exch_master_key = message.nodeExchMasterKey ? MasterKey.toAmino(message.nodeExchMasterKey, useInterfaces) : undefined;
-    obj.io_master_key = message.ioMasterKey ? MasterKey.toAmino(message.ioMasterKey, useInterfaces) : undefined;
+    obj.node_exch_master_key = message.nodeExchMasterKey ? MasterKey.toAmino(message.nodeExchMasterKey, useInterfaces) : MasterKey.toAmino(MasterKey.fromPartial({}));
+    obj.io_master_key = message.ioMasterKey ? MasterKey.toAmino(message.ioMasterKey, useInterfaces) : MasterKey.toAmino(MasterKey.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

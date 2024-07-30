@@ -469,13 +469,13 @@ export const MsgJoinPool = {
   },
   toAmino(message: MsgJoinPool, useInterfaces: boolean = false): MsgJoinPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.share_out_amount = message.shareOutAmount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.share_out_amount = message.shareOutAmount === "" ? undefined : message.shareOutAmount;
     if (message.tokenInMaxs) {
       obj.token_in_maxs = message.tokenInMaxs.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_in_maxs = [];
+      obj.token_in_maxs = message.tokenInMaxs;
     }
     return obj;
   },
@@ -554,11 +554,11 @@ export const MsgJoinPoolResponse = {
   },
   toAmino(message: MsgJoinPoolResponse, useInterfaces: boolean = false): MsgJoinPoolResponseAmino {
     const obj: any = {};
-    obj.share_out_amount = message.shareOutAmount;
+    obj.share_out_amount = message.shareOutAmount === "" ? undefined : message.shareOutAmount;
     if (message.tokenIn) {
       obj.token_in = message.tokenIn.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_in = [];
+      obj.token_in = message.tokenIn;
     }
     return obj;
   },
@@ -659,13 +659,13 @@ export const MsgExitPool = {
   },
   toAmino(message: MsgExitPool, useInterfaces: boolean = false): MsgExitPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.share_in_amount = message.shareInAmount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.share_in_amount = message.shareInAmount === "" ? undefined : message.shareInAmount;
     if (message.tokenOutMins) {
       obj.token_out_mins = message.tokenOutMins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_out_mins = [];
+      obj.token_out_mins = message.tokenOutMins;
     }
     return obj;
   },
@@ -736,7 +736,7 @@ export const MsgExitPoolResponse = {
     if (message.tokenOut) {
       obj.token_out = message.tokenOut.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_out = [];
+      obj.token_out = message.tokenOut;
     }
     return obj;
   },
@@ -837,14 +837,14 @@ export const MsgSwapExactAmountIn = {
   },
   toAmino(message: MsgSwapExactAmountIn, useInterfaces: boolean = false): MsgSwapExactAmountInAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? SwapAmountInRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
     obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
-    obj.token_out_min_amount = message.tokenOutMinAmount;
+    obj.token_out_min_amount = message.tokenOutMinAmount === "" ? undefined : message.tokenOutMinAmount;
     return obj;
   },
   fromAminoMsg(object: MsgSwapExactAmountInAminoMsg): MsgSwapExactAmountIn {
@@ -913,7 +913,7 @@ export const MsgSwapExactAmountInResponse = {
   },
   toAmino(message: MsgSwapExactAmountInResponse, useInterfaces: boolean = false): MsgSwapExactAmountInResponseAmino {
     const obj: any = {};
-    obj.token_out_amount = message.tokenOutAmount;
+    obj.token_out_amount = message.tokenOutAmount === "" ? undefined : message.tokenOutAmount;
     return obj;
   },
   fromAminoMsg(object: MsgSwapExactAmountInResponseAminoMsg): MsgSwapExactAmountInResponse {
@@ -1013,13 +1013,13 @@ export const MsgSwapExactAmountOut = {
   },
   toAmino(message: MsgSwapExactAmountOut, useInterfaces: boolean = false): MsgSwapExactAmountOutAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? SwapAmountOutRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.token_in_max_amount = message.tokenInMaxAmount;
+    obj.token_in_max_amount = message.tokenInMaxAmount === "" ? undefined : message.tokenInMaxAmount;
     obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
     return obj;
   },
@@ -1089,7 +1089,7 @@ export const MsgSwapExactAmountOutResponse = {
   },
   toAmino(message: MsgSwapExactAmountOutResponse, useInterfaces: boolean = false): MsgSwapExactAmountOutResponseAmino {
     const obj: any = {};
-    obj.token_in_amount = message.tokenInAmount;
+    obj.token_in_amount = message.tokenInAmount === "" ? undefined : message.tokenInAmount;
     return obj;
   },
   fromAminoMsg(object: MsgSwapExactAmountOutResponseAminoMsg): MsgSwapExactAmountOutResponse {
@@ -1191,10 +1191,10 @@ export const MsgJoinSwapExternAmountIn = {
   },
   toAmino(message: MsgJoinSwapExternAmountIn, useInterfaces: boolean = false): MsgJoinSwapExternAmountInAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
-    obj.share_out_min_amount = message.shareOutMinAmount;
+    obj.share_out_min_amount = message.shareOutMinAmount === "" ? undefined : message.shareOutMinAmount;
     return obj;
   },
   fromAminoMsg(object: MsgJoinSwapExternAmountInAminoMsg): MsgJoinSwapExternAmountIn {
@@ -1263,7 +1263,7 @@ export const MsgJoinSwapExternAmountInResponse = {
   },
   toAmino(message: MsgJoinSwapExternAmountInResponse, useInterfaces: boolean = false): MsgJoinSwapExternAmountInResponseAmino {
     const obj: any = {};
-    obj.share_out_amount = message.shareOutAmount;
+    obj.share_out_amount = message.shareOutAmount === "" ? undefined : message.shareOutAmount;
     return obj;
   },
   fromAminoMsg(object: MsgJoinSwapExternAmountInResponseAminoMsg): MsgJoinSwapExternAmountInResponse {
@@ -1376,11 +1376,11 @@ export const MsgJoinSwapShareAmountOut = {
   },
   toAmino(message: MsgJoinSwapShareAmountOut, useInterfaces: boolean = false): MsgJoinSwapShareAmountOutAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_in_denom = message.tokenInDenom;
-    obj.share_out_amount = message.shareOutAmount;
-    obj.token_in_max_amount = message.tokenInMaxAmount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_in_denom = message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.share_out_amount = message.shareOutAmount === "" ? undefined : message.shareOutAmount;
+    obj.token_in_max_amount = message.tokenInMaxAmount === "" ? undefined : message.tokenInMaxAmount;
     return obj;
   },
   fromAminoMsg(object: MsgJoinSwapShareAmountOutAminoMsg): MsgJoinSwapShareAmountOut {
@@ -1449,7 +1449,7 @@ export const MsgJoinSwapShareAmountOutResponse = {
   },
   toAmino(message: MsgJoinSwapShareAmountOutResponse, useInterfaces: boolean = false): MsgJoinSwapShareAmountOutResponseAmino {
     const obj: any = {};
-    obj.token_in_amount = message.tokenInAmount;
+    obj.token_in_amount = message.tokenInAmount === "" ? undefined : message.tokenInAmount;
     return obj;
   },
   fromAminoMsg(object: MsgJoinSwapShareAmountOutResponseAminoMsg): MsgJoinSwapShareAmountOutResponse {
@@ -1562,11 +1562,11 @@ export const MsgExitSwapShareAmountIn = {
   },
   toAmino(message: MsgExitSwapShareAmountIn, useInterfaces: boolean = false): MsgExitSwapShareAmountInAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.token_out_denom = message.tokenOutDenom;
-    obj.share_in_amount = message.shareInAmount;
-    obj.token_out_min_amount = message.tokenOutMinAmount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.token_out_denom = message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
+    obj.share_in_amount = message.shareInAmount === "" ? undefined : message.shareInAmount;
+    obj.token_out_min_amount = message.tokenOutMinAmount === "" ? undefined : message.tokenOutMinAmount;
     return obj;
   },
   fromAminoMsg(object: MsgExitSwapShareAmountInAminoMsg): MsgExitSwapShareAmountIn {
@@ -1635,7 +1635,7 @@ export const MsgExitSwapShareAmountInResponse = {
   },
   toAmino(message: MsgExitSwapShareAmountInResponse, useInterfaces: boolean = false): MsgExitSwapShareAmountInResponseAmino {
     const obj: any = {};
-    obj.token_out_amount = message.tokenOutAmount;
+    obj.token_out_amount = message.tokenOutAmount === "" ? undefined : message.tokenOutAmount;
     return obj;
   },
   fromAminoMsg(object: MsgExitSwapShareAmountInResponseAminoMsg): MsgExitSwapShareAmountInResponse {
@@ -1737,10 +1737,10 @@ export const MsgExitSwapExternAmountOut = {
   },
   toAmino(message: MsgExitSwapExternAmountOut, useInterfaces: boolean = false): MsgExitSwapExternAmountOutAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
-    obj.share_in_max_amount = message.shareInMaxAmount;
+    obj.share_in_max_amount = message.shareInMaxAmount === "" ? undefined : message.shareInMaxAmount;
     return obj;
   },
   fromAminoMsg(object: MsgExitSwapExternAmountOutAminoMsg): MsgExitSwapExternAmountOut {
@@ -1809,7 +1809,7 @@ export const MsgExitSwapExternAmountOutResponse = {
   },
   toAmino(message: MsgExitSwapExternAmountOutResponse, useInterfaces: boolean = false): MsgExitSwapExternAmountOutResponseAmino {
     const obj: any = {};
-    obj.share_in_amount = message.shareInAmount;
+    obj.share_in_amount = message.shareInAmount === "" ? undefined : message.shareInAmount;
     return obj;
   },
   fromAminoMsg(object: MsgExitSwapExternAmountOutResponseAminoMsg): MsgExitSwapExternAmountOutResponse {

@@ -96,9 +96,9 @@ export const GenesisState = {
     if (message.hookList) {
       obj.hookList = message.hookList.map(e => e ? Hook.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.hookList = [];
+      obj.hookList = message.hookList;
     }
-    obj.hookCount = message.hookCount ? message.hookCount.toString() : undefined;
+    obj.hookCount = message.hookCount !== BigInt(0) ? message.hookCount.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

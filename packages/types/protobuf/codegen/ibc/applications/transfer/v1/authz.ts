@@ -144,17 +144,17 @@ export const Allocation = {
   },
   toAmino(message: Allocation, useInterfaces: boolean = false): AllocationAmino {
     const obj: any = {};
-    obj.source_port = message.sourcePort;
-    obj.source_channel = message.sourceChannel;
+    obj.source_port = message.sourcePort === "" ? undefined : message.sourcePort;
+    obj.source_channel = message.sourceChannel === "" ? undefined : message.sourceChannel;
     if (message.spendLimit) {
       obj.spend_limit = message.spendLimit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.spend_limit = [];
+      obj.spend_limit = message.spendLimit;
     }
     if (message.allowList) {
       obj.allow_list = message.allowList.map(e => e);
     } else {
-      obj.allow_list = [];
+      obj.allow_list = message.allowList;
     }
     return obj;
   },
@@ -226,7 +226,7 @@ export const TransferAuthorization = {
     if (message.allocations) {
       obj.allocations = message.allocations.map(e => e ? Allocation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.allocations = [];
+      obj.allocations = message.allocations;
     }
     return obj;
   },

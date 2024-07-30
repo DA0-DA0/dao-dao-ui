@@ -153,11 +153,6 @@ export interface HeightToValsetUpdateIDSDKType {
  * the same downtime infraction.
  */
 export interface OutstandingDowntime {
-  /**
-   * OutstandingDowntime defines the type used internally to the consumer CCV
-   * module and is used in order to not send multiple slashing requests for
-   * the same downtime infraction.
-   */
   validatorConsensusAddress: string;
 }
 export interface OutstandingDowntimeProtoMsg {
@@ -170,11 +165,6 @@ export interface OutstandingDowntimeProtoMsg {
  * the same downtime infraction.
  */
 export interface OutstandingDowntimeAmino {
-  /**
-   * OutstandingDowntime defines the type used internally to the consumer CCV
-   * module and is used in order to not send multiple slashing requests for
-   * the same downtime infraction.
-   */
   validator_consensus_address?: string;
 }
 export interface OutstandingDowntimeAminoMsg {
@@ -195,11 +185,6 @@ export interface OutstandingDowntimeSDKType {
  * to the consumer CCV module.
  */
 export interface LastTransmissionBlockHeight {
-  /**
-   * LastTransmissionBlockHeight is the last time validator holding
-   * pools were transmitted to the provider chain. This type is used internally
-   * to the consumer CCV module.
-   */
   height: bigint;
 }
 export interface LastTransmissionBlockHeightProtoMsg {
@@ -212,11 +197,6 @@ export interface LastTransmissionBlockHeightProtoMsg {
  * to the consumer CCV module.
  */
 export interface LastTransmissionBlockHeightAmino {
-  /**
-   * LastTransmissionBlockHeight is the last time validator holding
-   * pools were transmitted to the provider chain. This type is used internally
-   * to the consumer CCV module.
-   */
   height?: string;
 }
 export interface LastTransmissionBlockHeightAminoMsg {
@@ -481,34 +461,34 @@ export const GenesisState = {
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.params = message.params ? ConsumerParams.toAmino(message.params, useInterfaces) : undefined;
-    obj.provider_client_id = message.providerClientId;
-    obj.provider_channel_id = message.providerChannelId;
-    obj.new_chain = message.newChain;
+    obj.provider_client_id = message.providerClientId === "" ? undefined : message.providerClientId;
+    obj.provider_channel_id = message.providerChannelId === "" ? undefined : message.providerChannelId;
+    obj.new_chain = message.newChain === false ? undefined : message.newChain;
     obj.provider_client_state = message.providerClientState ? ClientState.toAmino(message.providerClientState, useInterfaces) : undefined;
     obj.provider_consensus_state = message.providerConsensusState ? ConsensusState.toAmino(message.providerConsensusState, useInterfaces) : undefined;
     if (message.maturingPackets) {
       obj.maturing_packets = message.maturingPackets.map(e => e ? MaturingVSCPacket.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.maturing_packets = [];
+      obj.maturing_packets = message.maturingPackets;
     }
     if (message.initialValSet) {
       obj.initial_val_set = message.initialValSet.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.initial_val_set = [];
+      obj.initial_val_set = message.initialValSet;
     }
     if (message.heightToValsetUpdateId) {
       obj.height_to_valset_update_id = message.heightToValsetUpdateId.map(e => e ? HeightToValsetUpdateID.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.height_to_valset_update_id = [];
+      obj.height_to_valset_update_id = message.heightToValsetUpdateId;
     }
     if (message.outstandingDowntimeSlashing) {
       obj.outstanding_downtime_slashing = message.outstandingDowntimeSlashing.map(e => e ? OutstandingDowntime.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.outstanding_downtime_slashing = [];
+      obj.outstanding_downtime_slashing = message.outstandingDowntimeSlashing;
     }
     obj.pending_consumer_packets = message.pendingConsumerPackets ? ConsumerPacketDataList.toAmino(message.pendingConsumerPackets, useInterfaces) : undefined;
     obj.last_transmission_block_height = message.lastTransmissionBlockHeight ? LastTransmissionBlockHeight.toAmino(message.lastTransmissionBlockHeight, useInterfaces) : undefined;
-    obj.preCCV = message.preCCV;
+    obj.preCCV = message.preCCV === false ? undefined : message.preCCV;
     obj.provider = message.provider ? ProviderInfo.toAmino(message.provider, useInterfaces) : undefined;
     return obj;
   },
@@ -583,8 +563,8 @@ export const HeightToValsetUpdateID = {
   },
   toAmino(message: HeightToValsetUpdateID, useInterfaces: boolean = false): HeightToValsetUpdateIDAmino {
     const obj: any = {};
-    obj.height = message.height ? message.height.toString() : undefined;
-    obj.valset_update_id = message.valsetUpdateId ? message.valsetUpdateId.toString() : undefined;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.valset_update_id = message.valsetUpdateId !== BigInt(0) ? message.valsetUpdateId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: HeightToValsetUpdateIDAminoMsg): HeightToValsetUpdateID {
@@ -647,7 +627,7 @@ export const OutstandingDowntime = {
   },
   toAmino(message: OutstandingDowntime, useInterfaces: boolean = false): OutstandingDowntimeAmino {
     const obj: any = {};
-    obj.validator_consensus_address = message.validatorConsensusAddress;
+    obj.validator_consensus_address = message.validatorConsensusAddress === "" ? undefined : message.validatorConsensusAddress;
     return obj;
   },
   fromAminoMsg(object: OutstandingDowntimeAminoMsg): OutstandingDowntime {
@@ -710,7 +690,7 @@ export const LastTransmissionBlockHeight = {
   },
   toAmino(message: LastTransmissionBlockHeight, useInterfaces: boolean = false): LastTransmissionBlockHeightAmino {
     const obj: any = {};
-    obj.height = message.height ? message.height.toString() : undefined;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: LastTransmissionBlockHeightAminoMsg): LastTransmissionBlockHeight {
@@ -784,7 +764,7 @@ export const MaturingVSCPacket = {
   },
   toAmino(message: MaturingVSCPacket, useInterfaces: boolean = false): MaturingVSCPacketAmino {
     const obj: any = {};
-    obj.vscId = message.vscId ? message.vscId.toString() : undefined;
+    obj.vscId = message.vscId !== BigInt(0) ? message.vscId.toString() : undefined;
     obj.maturity_time = message.maturityTime ? Timestamp.toAmino(toTimestamp(message.maturityTime)) : undefined;
     return obj;
   },
@@ -849,7 +829,7 @@ export const ConsumerPacketDataList = {
     if (message.list) {
       obj.list = message.list.map(e => e ? ConsumerPacketData.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.list = [];
+      obj.list = message.list;
     }
     return obj;
   },

@@ -151,11 +151,11 @@ export const Minter = {
   },
   toAmino(message: Minter, useInterfaces: boolean = false): MinterAmino {
     const obj: any = {};
-    obj.inflation = message.inflation;
-    obj.phase = message.phase ? message.phase.toString() : undefined;
-    obj.start_phase_block = message.startPhaseBlock ? message.startPhaseBlock.toString() : undefined;
-    obj.annual_provisions = message.annualProvisions;
-    obj.target_supply = message.targetSupply;
+    obj.inflation = message.inflation === "" ? undefined : message.inflation;
+    obj.phase = message.phase !== BigInt(0) ? message.phase.toString() : undefined;
+    obj.start_phase_block = message.startPhaseBlock !== BigInt(0) ? message.startPhaseBlock.toString() : undefined;
+    obj.annual_provisions = message.annualProvisions === "" ? undefined : message.annualProvisions;
+    obj.target_supply = message.targetSupply === "" ? undefined : message.targetSupply;
     return obj;
   },
   fromAminoMsg(object: MinterAminoMsg): Minter {
@@ -229,8 +229,8 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.mint_denom = message.mintDenom;
-    obj.blocks_per_year = message.blocksPerYear ? message.blocksPerYear.toString() : undefined;
+    obj.mint_denom = message.mintDenom === "" ? undefined : message.mintDenom;
+    obj.blocks_per_year = message.blocksPerYear !== BigInt(0) ? message.blocksPerYear.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

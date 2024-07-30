@@ -315,9 +315,9 @@ export const MsgRegisterFeeShare = {
   },
   toAmino(message: MsgRegisterFeeShare, useInterfaces: boolean = false): MsgRegisterFeeShareAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
-    obj.deployer_address = message.deployerAddress;
-    obj.withdrawer_address = message.withdrawerAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
+    obj.deployer_address = message.deployerAddress === "" ? undefined : message.deployerAddress;
+    obj.withdrawer_address = message.withdrawerAddress === "" ? undefined : message.withdrawerAddress;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterFeeShareAminoMsg): MsgRegisterFeeShare {
@@ -452,9 +452,9 @@ export const MsgUpdateFeeShare = {
   },
   toAmino(message: MsgUpdateFeeShare, useInterfaces: boolean = false): MsgUpdateFeeShareAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
-    obj.deployer_address = message.deployerAddress;
-    obj.withdrawer_address = message.withdrawerAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
+    obj.deployer_address = message.deployerAddress === "" ? undefined : message.deployerAddress;
+    obj.withdrawer_address = message.withdrawerAddress === "" ? undefined : message.withdrawerAddress;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateFeeShareAminoMsg): MsgUpdateFeeShare {
@@ -578,8 +578,8 @@ export const MsgCancelFeeShare = {
   },
   toAmino(message: MsgCancelFeeShare, useInterfaces: boolean = false): MsgCancelFeeShareAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
-    obj.deployer_address = message.deployerAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
+    obj.deployer_address = message.deployerAddress === "" ? undefined : message.deployerAddress;
     return obj;
   },
   fromAminoMsg(object: MsgCancelFeeShareAminoMsg): MsgCancelFeeShare {
@@ -703,7 +703,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

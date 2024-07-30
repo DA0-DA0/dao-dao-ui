@@ -173,8 +173,8 @@ export const MsgPromoteToPrivilegedContract = {
   },
   toAmino(message: MsgPromoteToPrivilegedContract, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.contract = message.contract;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     return obj;
   },
   fromAminoMsg(object: MsgPromoteToPrivilegedContractAminoMsg): MsgPromoteToPrivilegedContract {
@@ -298,8 +298,8 @@ export const MsgDemoteFromPrivilegedContract = {
   },
   toAmino(message: MsgDemoteFromPrivilegedContract, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.contract = message.contract;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     return obj;
   },
   fromAminoMsg(object: MsgDemoteFromPrivilegedContractAminoMsg): MsgDemoteFromPrivilegedContract {
@@ -423,7 +423,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

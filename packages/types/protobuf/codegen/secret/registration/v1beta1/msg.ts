@@ -10,7 +10,7 @@ export interface RaAuthenticateProtoMsg {
 }
 export interface RaAuthenticateAmino {
   sender?: string;
-  certificate?: string;
+  certificate: string;
 }
 export interface RaAuthenticateAminoMsg {
   type: "/secret.registration.v1beta1.RaAuthenticate";
@@ -45,7 +45,7 @@ export interface KeyProtoMsg {
   value: Uint8Array;
 }
 export interface KeyAmino {
-  key?: string;
+  key: string;
 }
 export interface KeyAminoMsg {
   type: "/secret.registration.v1beta1.Key";
@@ -110,7 +110,7 @@ export const RaAuthenticate = {
   toAmino(message: RaAuthenticate, useInterfaces: boolean = false): RaAuthenticateAmino {
     const obj: any = {};
     obj.sender = message.sender ? base64FromBytes(message.sender) : undefined;
-    obj.certificate = message.certificate ? base64FromBytes(message.certificate) : undefined;
+    obj.certificate = message.certificate ? base64FromBytes(message.certificate) : "";
     return obj;
   },
   fromAminoMsg(object: RaAuthenticateAminoMsg): RaAuthenticate {
@@ -236,7 +236,7 @@ export const Key = {
   },
   toAmino(message: Key, useInterfaces: boolean = false): KeyAmino {
     const obj: any = {};
-    obj.key = message.key ? base64FromBytes(message.key) : undefined;
+    obj.key = message.key ? base64FromBytes(message.key) : "";
     return obj;
   },
   fromAminoMsg(object: KeyAminoMsg): Key {

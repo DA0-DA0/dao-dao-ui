@@ -174,26 +174,26 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     if (message.balances) {
       obj.balances = message.balances.map(e => e ? Balance.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.balances = [];
+      obj.balances = message.balances;
     }
     if (message.supply) {
       obj.supply = message.supply.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.supply = [];
+      obj.supply = message.supply;
     }
     if (message.denomMetadata) {
       obj.denom_metadata = message.denomMetadata.map(e => e ? Metadata.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.denom_metadata = [];
+      obj.denom_metadata = message.denomMetadata;
     }
     if (message.sendEnabled) {
       obj.send_enabled = message.sendEnabled.map(e => e ? SendEnabled.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.send_enabled = [];
+      obj.send_enabled = message.sendEnabled;
     }
     return obj;
   },
@@ -272,11 +272,11 @@ export const Balance = {
   },
   toAmino(message: Balance, useInterfaces: boolean = false): BalanceAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },

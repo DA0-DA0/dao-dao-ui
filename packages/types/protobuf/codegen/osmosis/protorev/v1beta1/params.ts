@@ -81,8 +81,8 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.enabled = message.enabled;
-    obj.admin = message.admin;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

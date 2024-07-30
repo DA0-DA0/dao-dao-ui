@@ -513,28 +513,28 @@ export const Params = {
     if (message.creditClassFee) {
       obj.credit_class_fee = message.creditClassFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credit_class_fee = [];
+      obj.credit_class_fee = message.creditClassFee;
     }
     if (message.basketFee) {
       obj.basket_fee = message.basketFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.basket_fee = [];
+      obj.basket_fee = message.basketFee;
     }
     if (message.allowedClassCreators) {
       obj.allowed_class_creators = message.allowedClassCreators.map(e => e);
     } else {
-      obj.allowed_class_creators = [];
+      obj.allowed_class_creators = message.allowedClassCreators;
     }
-    obj.allowlist_enabled = message.allowlistEnabled;
+    obj.allowlist_enabled = message.allowlistEnabled === false ? undefined : message.allowlistEnabled;
     if (message.allowedDenoms) {
       obj.allowed_denoms = message.allowedDenoms.map(e => e ? AllowedDenom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.allowed_denoms = [];
+      obj.allowed_denoms = message.allowedDenoms;
     }
     if (message.allowedBridgeChains) {
       obj.allowed_bridge_chains = message.allowedBridgeChains.map(e => e);
     } else {
-      obj.allowed_bridge_chains = [];
+      obj.allowed_bridge_chains = message.allowedBridgeChains;
     }
     return obj;
   },
@@ -609,8 +609,8 @@ export const Credits = {
   },
   toAmino(message: Credits, useInterfaces: boolean = false): CreditsAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: CreditsAminoMsg): Credits {
@@ -717,11 +717,11 @@ export const BatchIssuance = {
   },
   toAmino(message: BatchIssuance, useInterfaces: boolean = false): BatchIssuanceAmino {
     const obj: any = {};
-    obj.recipient = message.recipient;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
-    obj.retirement_jurisdiction = message.retirementJurisdiction;
-    obj.retirement_reason = message.retirementReason;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
+    obj.retirement_jurisdiction = message.retirementJurisdiction === "" ? undefined : message.retirementJurisdiction;
+    obj.retirement_reason = message.retirementReason === "" ? undefined : message.retirementReason;
     return obj;
   },
   fromAminoMsg(object: BatchIssuanceAminoMsg): BatchIssuance {
@@ -817,10 +817,10 @@ export const OriginTx = {
   },
   toAmino(message: OriginTx, useInterfaces: boolean = false): OriginTxAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.source = message.source;
-    obj.contract = message.contract;
-    obj.note = message.note;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.source = message.source === "" ? undefined : message.source;
+    obj.contract = message.contract === "" ? undefined : message.contract;
+    obj.note = message.note === "" ? undefined : message.note;
     return obj;
   },
   fromAminoMsg(object: OriginTxAminoMsg): OriginTx {
@@ -906,8 +906,8 @@ export const CreditTypeProposal = {
   },
   toAmino(message: CreditTypeProposal, useInterfaces: boolean = false): CreditTypeProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.credit_type = message.creditType ? CreditType.toAmino(message.creditType, useInterfaces) : undefined;
     return obj;
   },
@@ -993,9 +993,9 @@ export const AllowedDenom = {
   },
   toAmino(message: AllowedDenom, useInterfaces: boolean = false): AllowedDenomAmino {
     const obj: any = {};
-    obj.bank_denom = message.bankDenom;
-    obj.display_denom = message.displayDenom;
-    obj.exponent = message.exponent;
+    obj.bank_denom = message.bankDenom === "" ? undefined : message.bankDenom;
+    obj.display_denom = message.displayDenom === "" ? undefined : message.displayDenom;
+    obj.exponent = message.exponent === 0 ? undefined : message.exponent;
     return obj;
   },
   fromAminoMsg(object: AllowedDenomAminoMsg): AllowedDenom {

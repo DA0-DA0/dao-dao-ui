@@ -391,9 +391,9 @@ export const QueryRegisteredQueriesRequest = {
     if (message.owners) {
       obj.owners = message.owners.map(e => e);
     } else {
-      obj.owners = [];
+      obj.owners = message.owners;
     }
-    obj.connection_id = message.connectionId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -469,7 +469,7 @@ export const QueryRegisteredQueriesResponse = {
     if (message.registeredQueries) {
       obj.registered_queries = message.registeredQueries.map(e => e ? RegisteredQuery.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.registered_queries = [];
+      obj.registered_queries = message.registeredQueries;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -534,7 +534,7 @@ export const QueryRegisteredQueryRequest = {
   },
   toAmino(message: QueryRegisteredQueryRequest, useInterfaces: boolean = false): QueryRegisteredQueryRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryRegisteredQueryRequestAminoMsg): QueryRegisteredQueryRequest {
@@ -660,7 +660,7 @@ export const QueryRegisteredQueryResultRequest = {
   },
   toAmino(message: QueryRegisteredQueryResultRequest, useInterfaces: boolean = false): QueryRegisteredQueryResultRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryRegisteredQueryResultRequestAminoMsg): QueryRegisteredQueryResultRequest {
@@ -808,8 +808,8 @@ export const Transaction = {
   },
   toAmino(message: Transaction, useInterfaces: boolean = false): TransactionAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.height = message.height ? message.height.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
@@ -873,7 +873,7 @@ export const QueryLastRemoteHeight = {
   },
   toAmino(message: QueryLastRemoteHeight, useInterfaces: boolean = false): QueryLastRemoteHeightAmino {
     const obj: any = {};
-    obj.connection_id = message.connectionId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     return obj;
   },
   fromAminoMsg(object: QueryLastRemoteHeightAminoMsg): QueryLastRemoteHeight {
@@ -936,7 +936,7 @@ export const QueryLastRemoteHeightResponse = {
   },
   toAmino(message: QueryLastRemoteHeightResponse, useInterfaces: boolean = false): QueryLastRemoteHeightResponseAmino {
     const obj: any = {};
-    obj.height = message.height ? message.height.toString() : undefined;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryLastRemoteHeightResponseAminoMsg): QueryLastRemoteHeightResponse {

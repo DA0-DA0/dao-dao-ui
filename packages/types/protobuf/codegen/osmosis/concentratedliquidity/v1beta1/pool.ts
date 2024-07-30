@@ -260,18 +260,18 @@ export const Pool = {
   },
   toAmino(message: Pool, useInterfaces: boolean = false): PoolAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.incentives_address = message.incentivesAddress;
-    obj.spread_rewards_address = message.spreadRewardsAddress;
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.current_tick_liquidity = message.currentTickLiquidity;
-    obj.token0 = message.token0;
-    obj.token1 = message.token1;
-    obj.current_sqrt_price = message.currentSqrtPrice;
-    obj.current_tick = message.currentTick ? message.currentTick.toString() : undefined;
-    obj.tick_spacing = message.tickSpacing ? message.tickSpacing.toString() : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne ? message.exponentAtPriceOne.toString() : undefined;
-    obj.spread_factor = message.spreadFactor;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.incentives_address = message.incentivesAddress === "" ? undefined : message.incentivesAddress;
+    obj.spread_rewards_address = message.spreadRewardsAddress === "" ? undefined : message.spreadRewardsAddress;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.current_tick_liquidity = message.currentTickLiquidity === "" ? undefined : message.currentTickLiquidity;
+    obj.token0 = message.token0 === "" ? undefined : message.token0;
+    obj.token1 = message.token1 === "" ? undefined : message.token1;
+    obj.current_sqrt_price = message.currentSqrtPrice === "" ? undefined : message.currentSqrtPrice;
+    obj.current_tick = message.currentTick !== BigInt(0) ? message.currentTick.toString() : undefined;
+    obj.tick_spacing = message.tickSpacing !== BigInt(0) ? message.tickSpacing.toString() : undefined;
+    obj.exponent_at_price_one = message.exponentAtPriceOne !== BigInt(0) ? message.exponentAtPriceOne.toString() : undefined;
+    obj.spread_factor = message.spreadFactor === "" ? undefined : message.spreadFactor;
     obj.last_liquidity_update = message.lastLiquidityUpdate ? Timestamp.toAmino(toTimestamp(message.lastLiquidityUpdate)) : undefined;
     return obj;
   },

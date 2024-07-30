@@ -261,7 +261,7 @@ export const QueryGetScheduleRequest = {
   },
   toAmino(message: QueryGetScheduleRequest, useInterfaces: boolean = false): QueryGetScheduleRequestAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     return obj;
   },
   fromAminoMsg(object: QueryGetScheduleRequestAminoMsg): QueryGetScheduleRequest {
@@ -462,7 +462,7 @@ export const QuerySchedulesResponse = {
     if (message.schedules) {
       obj.schedules = message.schedules.map(e => e ? Schedule.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.schedules = [];
+      obj.schedules = message.schedules;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

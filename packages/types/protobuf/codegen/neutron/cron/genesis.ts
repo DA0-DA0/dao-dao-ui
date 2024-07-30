@@ -81,7 +81,7 @@ export const GenesisState = {
     if (message.scheduleList) {
       obj.scheduleList = message.scheduleList.map(e => e ? Schedule.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.scheduleList = [];
+      obj.scheduleList = message.scheduleList;
     }
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;

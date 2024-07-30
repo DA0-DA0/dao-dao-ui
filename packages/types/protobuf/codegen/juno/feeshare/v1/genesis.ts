@@ -134,7 +134,7 @@ export const GenesisState = {
     if (message.feeShare) {
       obj.fee_share = message.feeShare.map(e => e ? FeeShare.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.fee_share = [];
+      obj.fee_share = message.feeShare;
     }
     return obj;
   },
@@ -218,12 +218,12 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.enable_fee_share = message.enableFeeShare;
-    obj.developer_shares = message.developerShares;
+    obj.enable_fee_share = message.enableFeeShare === false ? undefined : message.enableFeeShare;
+    obj.developer_shares = message.developerShares === "" ? undefined : message.developerShares;
     if (message.allowedDenoms) {
       obj.allowed_denoms = message.allowedDenoms.map(e => e);
     } else {
-      obj.allowed_denoms = [];
+      obj.allowed_denoms = message.allowedDenoms;
     }
     return obj;
   },

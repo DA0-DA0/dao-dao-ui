@@ -103,9 +103,9 @@ export const PoolMetadata = {
   },
   toAmino(message: PoolMetadata, useInterfaces: boolean = false): PoolMetadataAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.tick = message.tick ? message.tick.toString() : undefined;
-    obj.fee = message.fee ? message.fee.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.tick = message.tick !== BigInt(0) ? message.tick.toString() : undefined;
+    obj.fee = message.fee !== BigInt(0) ? message.fee.toString() : undefined;
     obj.pair_id = message.pairId ? PairID.toAmino(message.pairId, useInterfaces) : undefined;
     return obj;
   },

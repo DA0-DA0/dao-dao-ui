@@ -125,8 +125,8 @@ export const AllowDenomProposal = {
   },
   toAmino(message: AllowDenomProposal, useInterfaces: boolean = false): AllowDenomProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     obj.denom = message.denom ? AllowedDenom.toAmino(message.denom, useInterfaces) : undefined;
     return obj;
   },

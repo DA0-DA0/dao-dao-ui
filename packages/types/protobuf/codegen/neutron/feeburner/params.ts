@@ -103,9 +103,9 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.neutron_denom = message.neutronDenom;
-    obj.reserve_address = message.reserveAddress;
-    obj.treasury_address = message.treasuryAddress;
+    obj.neutron_denom = message.neutronDenom === "" ? undefined : message.neutronDenom;
+    obj.reserve_address = message.reserveAddress === "" ? undefined : message.reserveAddress;
+    obj.treasury_address = message.treasuryAddress === "" ? undefined : message.treasuryAddress;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

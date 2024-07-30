@@ -223,7 +223,7 @@ export const DataID = {
   toAmino(message: DataID, useInterfaces: boolean = false): DataIDAmino {
     const obj: any = {};
     obj.id = message.id ? base64FromBytes(message.id) : undefined;
-    obj.iri = message.iri;
+    obj.iri = message.iri === "" ? undefined : message.iri;
     return obj;
   },
   fromAminoMsg(object: DataIDAminoMsg): DataID {
@@ -470,8 +470,8 @@ export const Resolver = {
   },
   toAmino(message: Resolver, useInterfaces: boolean = false): ResolverAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.url = message.url;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.url = message.url === "" ? undefined : message.url;
     obj.manager = message.manager ? base64FromBytes(message.manager) : undefined;
     return obj;
   },
@@ -547,7 +547,7 @@ export const DataResolver = {
   toAmino(message: DataResolver, useInterfaces: boolean = false): DataResolverAmino {
     const obj: any = {};
     obj.id = message.id ? base64FromBytes(message.id) : undefined;
-    obj.resolver_id = message.resolverId ? message.resolverId.toString() : undefined;
+    obj.resolver_id = message.resolverId !== BigInt(0) ? message.resolverId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: DataResolverAminoMsg): DataResolver {

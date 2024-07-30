@@ -208,7 +208,7 @@ export const QueryListPrivilegedResponse = {
     if (message.contractAddresses) {
       obj.contract_addresses = message.contractAddresses.map(e => e);
     } else {
-      obj.contract_addresses = [];
+      obj.contract_addresses = message.contractAddresses;
     }
     return obj;
   },

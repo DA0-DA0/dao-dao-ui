@@ -74,8 +74,8 @@ export const TradePairID = {
   },
   toAmino(message: TradePairID, useInterfaces: boolean = false): TradePairIDAmino {
     const obj: any = {};
-    obj.maker_denom = message.makerDenom;
-    obj.taker_denom = message.takerDenom;
+    obj.maker_denom = message.makerDenom === "" ? undefined : message.makerDenom;
+    obj.taker_denom = message.takerDenom === "" ? undefined : message.takerDenom;
     return obj;
   },
   fromAminoMsg(object: TradePairIDAminoMsg): TradePairID {

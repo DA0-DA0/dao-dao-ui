@@ -95,8 +95,8 @@ export const PerMessageBurnLimit = {
   },
   toAmino(message: PerMessageBurnLimit, useInterfaces: boolean = false): PerMessageBurnLimitAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.amount = message.amount;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: PerMessageBurnLimitAminoMsg): PerMessageBurnLimit {

@@ -213,9 +213,9 @@ export const MsgAggregateExchangeRatePrevote = {
   },
   toAmino(message: MsgAggregateExchangeRatePrevote, useInterfaces: boolean = false): MsgAggregateExchangeRatePrevoteAmino {
     const obj: any = {};
-    obj.hash = message.hash;
-    obj.feeder = message.feeder;
-    obj.validator = message.validator;
+    obj.hash = message.hash === "" ? undefined : message.hash;
+    obj.feeder = message.feeder === "" ? undefined : message.feeder;
+    obj.validator = message.validator === "" ? undefined : message.validator;
     return obj;
   },
   fromAminoMsg(object: MsgAggregateExchangeRatePrevoteAminoMsg): MsgAggregateExchangeRatePrevote {
@@ -361,10 +361,10 @@ export const MsgAggregateExchangeRateVote = {
   },
   toAmino(message: MsgAggregateExchangeRateVote, useInterfaces: boolean = false): MsgAggregateExchangeRateVoteAmino {
     const obj: any = {};
-    obj.salt = message.salt;
-    obj.exchange_rates = message.exchangeRates;
-    obj.feeder = message.feeder;
-    obj.validator = message.validator;
+    obj.salt = message.salt === "" ? undefined : message.salt;
+    obj.exchange_rates = message.exchangeRates === "" ? undefined : message.exchangeRates;
+    obj.feeder = message.feeder === "" ? undefined : message.feeder;
+    obj.validator = message.validator === "" ? undefined : message.validator;
     return obj;
   },
   fromAminoMsg(object: MsgAggregateExchangeRateVoteAminoMsg): MsgAggregateExchangeRateVote {
@@ -488,8 +488,8 @@ export const MsgDelegateFeedConsent = {
   },
   toAmino(message: MsgDelegateFeedConsent, useInterfaces: boolean = false): MsgDelegateFeedConsentAmino {
     const obj: any = {};
-    obj.operator = message.operator;
-    obj.delegate = message.delegate;
+    obj.operator = message.operator === "" ? undefined : message.operator;
+    obj.delegate = message.delegate === "" ? undefined : message.delegate;
     return obj;
   },
   fromAminoMsg(object: MsgDelegateFeedConsentAminoMsg): MsgDelegateFeedConsent {

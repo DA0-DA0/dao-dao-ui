@@ -393,7 +393,7 @@ export const PoolsResponse = {
     if (message.pools) {
       obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -464,7 +464,7 @@ export const ContractInfoByPoolIdRequest = {
   },
   toAmino(message: ContractInfoByPoolIdRequest, useInterfaces: boolean = false): ContractInfoByPoolIdRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ContractInfoByPoolIdRequestAminoMsg): ContractInfoByPoolIdRequest {
@@ -544,8 +544,8 @@ export const ContractInfoByPoolIdResponse = {
   },
   toAmino(message: ContractInfoByPoolIdResponse, useInterfaces: boolean = false): ContractInfoByPoolIdResponseAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
-    obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
+    obj.code_id = message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ContractInfoByPoolIdResponseAminoMsg): ContractInfoByPoolIdResponse {
@@ -586,7 +586,7 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return data;
   }
 };
-export const PoolI_FromAmino = (content: AnyAmino) => {
+export const PoolI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "osmosis/concentratedliquidity/pool":
       return Any.fromPartial({

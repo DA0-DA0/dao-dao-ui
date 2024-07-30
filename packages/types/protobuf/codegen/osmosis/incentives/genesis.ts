@@ -173,23 +173,23 @@ export const GenesisState = {
     if (message.gauges) {
       obj.gauges = message.gauges.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.gauges = [];
+      obj.gauges = message.gauges;
     }
     if (message.lockableDurations) {
       obj.lockable_durations = message.lockableDurations.map(e => e ? Duration.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.lockable_durations = [];
+      obj.lockable_durations = message.lockableDurations;
     }
-    obj.last_gauge_id = message.lastGaugeId ? message.lastGaugeId.toString() : undefined;
+    obj.last_gauge_id = message.lastGaugeId !== BigInt(0) ? message.lastGaugeId.toString() : undefined;
     if (message.groupGauges) {
       obj.group_gauges = message.groupGauges.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.group_gauges = [];
+      obj.group_gauges = message.groupGauges;
     }
     if (message.groups) {
       obj.groups = message.groups.map(e => e ? Group.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.groups = [];
+      obj.groups = message.groups;
     }
     return obj;
   },

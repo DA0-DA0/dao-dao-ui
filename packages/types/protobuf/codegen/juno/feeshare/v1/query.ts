@@ -416,7 +416,7 @@ export const QueryFeeSharesResponse = {
     if (message.feeshare) {
       obj.feeshare = message.feeshare.map(e => e ? FeeShare.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.feeshare = [];
+      obj.feeshare = message.feeshare;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -481,7 +481,7 @@ export const QueryFeeShareRequest = {
   },
   toAmino(message: QueryFeeShareRequest, useInterfaces: boolean = false): QueryFeeShareRequestAmino {
     const obj: any = {};
-    obj.contract_address = message.contractAddress;
+    obj.contract_address = message.contractAddress === "" ? undefined : message.contractAddress;
     return obj;
   },
   fromAminoMsg(object: QueryFeeShareRequestAminoMsg): QueryFeeShareRequest {
@@ -731,7 +731,7 @@ export const QueryDeployerFeeSharesRequest = {
   },
   toAmino(message: QueryDeployerFeeSharesRequest, useInterfaces: boolean = false): QueryDeployerFeeSharesRequestAmino {
     const obj: any = {};
-    obj.deployer_address = message.deployerAddress;
+    obj.deployer_address = message.deployerAddress === "" ? undefined : message.deployerAddress;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -807,7 +807,7 @@ export const QueryDeployerFeeSharesResponse = {
     if (message.contractAddresses) {
       obj.contract_addresses = message.contractAddresses.map(e => e);
     } else {
-      obj.contract_addresses = [];
+      obj.contract_addresses = message.contractAddresses;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -883,7 +883,7 @@ export const QueryWithdrawerFeeSharesRequest = {
   },
   toAmino(message: QueryWithdrawerFeeSharesRequest, useInterfaces: boolean = false): QueryWithdrawerFeeSharesRequestAmino {
     const obj: any = {};
-    obj.withdrawer_address = message.withdrawerAddress;
+    obj.withdrawer_address = message.withdrawerAddress === "" ? undefined : message.withdrawerAddress;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -959,7 +959,7 @@ export const QueryWithdrawerFeeSharesResponse = {
     if (message.contractAddresses) {
       obj.contract_addresses = message.contractAddresses.map(e => e);
     } else {
-      obj.contract_addresses = [];
+      obj.contract_addresses = message.contractAddresses;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

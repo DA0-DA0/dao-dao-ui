@@ -422,18 +422,18 @@ export const MsgRegisterHostChain = {
   },
   toAmino(message: MsgRegisterHostChain, useInterfaces: boolean = false): MsgRegisterHostChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.connection_id = message.connectionId;
-    obj.deposit_fee = message.depositFee;
-    obj.restake_fee = message.restakeFee;
-    obj.unstake_fee = message.unstakeFee;
-    obj.redemption_fee = message.redemptionFee;
-    obj.channel_id = message.channelId;
-    obj.port_id = message.portId;
-    obj.host_denom = message.hostDenom;
-    obj.minimum_deposit = message.minimumDeposit;
-    obj.unbonding_factor = message.unbondingFactor ? message.unbondingFactor.toString() : undefined;
-    obj.auto_compound_factor = message.autoCompoundFactor ? message.autoCompoundFactor.toString() : undefined;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.deposit_fee = message.depositFee === "" ? undefined : message.depositFee;
+    obj.restake_fee = message.restakeFee === "" ? undefined : message.restakeFee;
+    obj.unstake_fee = message.unstakeFee === "" ? undefined : message.unstakeFee;
+    obj.redemption_fee = message.redemptionFee === "" ? undefined : message.redemptionFee;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.host_denom = message.hostDenom === "" ? undefined : message.hostDenom;
+    obj.minimum_deposit = message.minimumDeposit === "" ? undefined : message.minimumDeposit;
+    obj.unbonding_factor = message.unbondingFactor !== BigInt(0) ? message.unbondingFactor.toString() : undefined;
+    obj.auto_compound_factor = message.autoCompoundFactor !== BigInt(0) ? message.autoCompoundFactor.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterHostChainAminoMsg): MsgRegisterHostChain {
@@ -572,12 +572,12 @@ export const MsgUpdateHostChain = {
   },
   toAmino(message: MsgUpdateHostChain, useInterfaces: boolean = false): MsgUpdateHostChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.chain_id = message.chainId;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     if (message.updates) {
       obj.updates = message.updates.map(e => e ? KVUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.updates = [];
+      obj.updates = message.updates;
     }
     return obj;
   },
@@ -708,7 +708,7 @@ export const MsgLiquidStake = {
   },
   toAmino(message: MsgLiquidStake, useInterfaces: boolean = false): MsgLiquidStakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -837,11 +837,11 @@ export const MsgLiquidStakeLSM = {
   },
   toAmino(message: MsgLiquidStakeLSM, useInterfaces: boolean = false): MsgLiquidStakeLSMAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     if (message.delegations) {
       obj.delegations = message.delegations.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.delegations = [];
+      obj.delegations = message.delegations;
     }
     return obj;
   },
@@ -972,7 +972,7 @@ export const MsgLiquidUnstake = {
   },
   toAmino(message: MsgLiquidUnstake, useInterfaces: boolean = false): MsgLiquidUnstakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -1103,7 +1103,7 @@ export const MsgRedeem = {
   },
   toAmino(message: MsgRedeem, useInterfaces: boolean = false): MsgRedeemAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -1234,8 +1234,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

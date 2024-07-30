@@ -262,11 +262,11 @@ export const BuyOrderSellOrderMatch = {
   },
   toAmino(message: BuyOrderSellOrderMatch, useInterfaces: boolean = false): BuyOrderSellOrderMatchAmino {
     const obj: any = {};
-    obj.market_id = message.marketId ? message.marketId.toString() : undefined;
-    obj.buy_order_id = message.buyOrderId ? message.buyOrderId.toString() : undefined;
-    obj.sell_order_id = message.sellOrderId ? message.sellOrderId.toString() : undefined;
-    obj.bid_price_complement = message.bidPriceComplement;
-    obj.ask_price = message.askPrice;
+    obj.market_id = message.marketId !== BigInt(0) ? message.marketId.toString() : undefined;
+    obj.buy_order_id = message.buyOrderId !== BigInt(0) ? message.buyOrderId.toString() : undefined;
+    obj.sell_order_id = message.sellOrderId !== BigInt(0) ? message.sellOrderId.toString() : undefined;
+    obj.bid_price_complement = message.bidPriceComplement === 0 ? undefined : message.bidPriceComplement;
+    obj.ask_price = message.askPrice === 0 ? undefined : message.askPrice;
     return obj;
   },
   fromAminoMsg(object: BuyOrderSellOrderMatchAminoMsg): BuyOrderSellOrderMatch {
@@ -373,9 +373,9 @@ export const BuyOrderClassSelector = {
   },
   toAmino(message: BuyOrderClassSelector, useInterfaces: boolean = false): BuyOrderClassSelectorAmino {
     const obj: any = {};
-    obj.buy_order_id = message.buyOrderId ? message.buyOrderId.toString() : undefined;
-    obj.class_id = message.classId ? message.classId.toString() : undefined;
-    obj.project_location = message.projectLocation;
+    obj.buy_order_id = message.buyOrderId !== BigInt(0) ? message.buyOrderId.toString() : undefined;
+    obj.class_id = message.classId !== BigInt(0) ? message.classId.toString() : undefined;
+    obj.project_location = message.projectLocation === "" ? undefined : message.projectLocation;
     obj.min_start_date = message.minStartDate ? Timestamp.toAmino(toTimestamp(message.minStartDate)) : undefined;
     obj.max_end_date = message.maxEndDate ? Timestamp.toAmino(toTimestamp(message.maxEndDate)) : undefined;
     return obj;
@@ -473,8 +473,8 @@ export const BuyOrderProjectSelector = {
   },
   toAmino(message: BuyOrderProjectSelector, useInterfaces: boolean = false): BuyOrderProjectSelectorAmino {
     const obj: any = {};
-    obj.buy_order_id = message.buyOrderId ? message.buyOrderId.toString() : undefined;
-    obj.project_id = message.projectId ? message.projectId.toString() : undefined;
+    obj.buy_order_id = message.buyOrderId !== BigInt(0) ? message.buyOrderId.toString() : undefined;
+    obj.project_id = message.projectId !== BigInt(0) ? message.projectId.toString() : undefined;
     obj.min_start_date = message.minStartDate ? Timestamp.toAmino(toTimestamp(message.minStartDate)) : undefined;
     obj.max_end_date = message.maxEndDate ? Timestamp.toAmino(toTimestamp(message.maxEndDate)) : undefined;
     return obj;
@@ -550,8 +550,8 @@ export const BuyOrderBatchSelector = {
   },
   toAmino(message: BuyOrderBatchSelector, useInterfaces: boolean = false): BuyOrderBatchSelectorAmino {
     const obj: any = {};
-    obj.buy_order_id = message.buyOrderId ? message.buyOrderId.toString() : undefined;
-    obj.batch_id = message.batchId ? message.batchId.toString() : undefined;
+    obj.buy_order_id = message.buyOrderId !== BigInt(0) ? message.buyOrderId.toString() : undefined;
+    obj.batch_id = message.batchId !== BigInt(0) ? message.batchId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: BuyOrderBatchSelectorAminoMsg): BuyOrderBatchSelector {

@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageResponseAmino, PageResponseSDKType } from "../../cosmos/base/query/v1beta1/pagination";
-import { MultiHopRoute, MultiHopRouteAmino, MultiHopRouteSDKType, LimitOrderType, limitOrderTypeFromJSON } from "./tx";
+import { MultiHopRoute, MultiHopRouteAmino, MultiHopRouteSDKType, LimitOrderType } from "./tx";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { LimitOrderTrancheUser, LimitOrderTrancheUserAmino, LimitOrderTrancheUserSDKType } from "./limit_order_tranche_user";
@@ -518,8 +518,8 @@ export interface QueryEstimateMultiHopSwapRequestAmino {
   creator?: string;
   receiver?: string;
   routes?: MultiHopRouteAmino[];
-  amount_in?: string;
-  exit_limit_price?: string;
+  amount_in: string;
+  exit_limit_price: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
    * best price is chosen otherwise, the first succesful route is used.
@@ -546,7 +546,7 @@ export interface QueryEstimateMultiHopSwapResponseProtoMsg {
   value: Uint8Array;
 }
 export interface QueryEstimateMultiHopSwapResponseAmino {
-  coin_out?: CoinAmino | undefined;
+  coin_out: CoinAmino | undefined;
 }
 export interface QueryEstimateMultiHopSwapResponseAminoMsg {
   type: "/neutron.dex.QueryEstimateMultiHopSwapResponse";
@@ -577,11 +577,11 @@ export interface QueryEstimatePlaceLimitOrderRequestAmino {
   token_in?: string;
   token_out?: string;
   tick_index_in_to_out?: string;
-  amount_in?: string;
+  amount_in: string;
   order_type?: LimitOrderType;
   /** expirationTime is only valid iff orderType == GOOD_TIL_TIME. */
   expiration_time?: string | undefined;
-  maxAmount_out?: string;
+  maxAmount_out: string;
 }
 export interface QueryEstimatePlaceLimitOrderRequestAminoMsg {
   type: "/neutron.dex.QueryEstimatePlaceLimitOrderRequest";
@@ -625,16 +625,16 @@ export interface QueryEstimatePlaceLimitOrderResponseAmino {
    * You can derive makerLimitInCoin using the equation: totalInCoin =
    * swapInCoin + makerLimitInCoin
    */
-  total_in_coin?: CoinAmino | undefined;
+  total_in_coin: CoinAmino | undefined;
   /** Total amount of the token in that was immediately swapped for swapOutCoin */
-  swap_in_coin?: CoinAmino | undefined;
+  swap_in_coin: CoinAmino | undefined;
   /**
    * Total amount of coin received from the taker portion of the limit order
    * This is the amount of coin immediately available in the users account after
    * executing the limit order. It does not include any future proceeds from the
    * maker portion which will have withdrawn in the future
    */
-  swap_out_coin?: CoinAmino | undefined;
+  swap_out_coin: CoinAmino | undefined;
 }
 export interface QueryEstimatePlaceLimitOrderResponseAminoMsg {
   type: "/neutron.dex.QueryEstimatePlaceLimitOrderResponse";
@@ -720,7 +720,7 @@ export interface QueryGetPoolMetadataRequestSDKType {
   id: bigint;
 }
 export interface QueryGetPoolMetadataResponse {
-  PoolMetadata: PoolMetadata | undefined;
+  poolMetadata: PoolMetadata | undefined;
 }
 export interface QueryGetPoolMetadataResponseProtoMsg {
   typeUrl: "/neutron.dex.QueryGetPoolMetadataResponse";
@@ -941,8 +941,8 @@ export const QueryGetLimitOrderTrancheUserRequest = {
   },
   toAmino(message: QueryGetLimitOrderTrancheUserRequest, useInterfaces: boolean = false): QueryGetLimitOrderTrancheUserRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.tranche_key = message.trancheKey;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: QueryGetLimitOrderTrancheUserRequestAminoMsg): QueryGetLimitOrderTrancheUserRequest {
@@ -1143,7 +1143,7 @@ export const QueryAllLimitOrderTrancheUserResponse = {
     if (message.limitOrderTrancheUser) {
       obj.limit_order_tranche_user = message.limitOrderTrancheUser.map(e => e ? LimitOrderTrancheUser.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.limit_order_tranche_user = [];
+      obj.limit_order_tranche_user = message.limitOrderTrancheUser;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1241,10 +1241,10 @@ export const QueryGetLimitOrderTrancheRequest = {
   },
   toAmino(message: QueryGetLimitOrderTrancheRequest, useInterfaces: boolean = false): QueryGetLimitOrderTrancheRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
-    obj.token_in = message.tokenIn;
-    obj.tranche_key = message.trancheKey;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: QueryGetLimitOrderTrancheRequestAminoMsg): QueryGetLimitOrderTrancheRequest {
@@ -1392,8 +1392,8 @@ export const QueryAllLimitOrderTrancheRequest = {
   },
   toAmino(message: QueryAllLimitOrderTrancheRequest, useInterfaces: boolean = false): QueryAllLimitOrderTrancheRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.token_in = message.tokenIn;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1469,7 +1469,7 @@ export const QueryAllLimitOrderTrancheResponse = {
     if (message.limitOrderTranche) {
       obj.limit_order_tranche = message.limitOrderTranche.map(e => e ? LimitOrderTranche.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.limit_order_tranche = [];
+      obj.limit_order_tranche = message.limitOrderTranche;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1545,7 +1545,7 @@ export const QueryAllUserDepositsRequest = {
   },
   toAmino(message: QueryAllUserDepositsRequest, useInterfaces: boolean = false): QueryAllUserDepositsRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1621,7 +1621,7 @@ export const QueryAllUserDepositsResponse = {
     if (message.deposits) {
       obj.deposits = message.deposits.map(e => e ? DepositRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposits = [];
+      obj.deposits = message.deposits;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1697,7 +1697,7 @@ export const QueryAllUserLimitOrdersRequest = {
   },
   toAmino(message: QueryAllUserLimitOrdersRequest, useInterfaces: boolean = false): QueryAllUserLimitOrdersRequestAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1773,7 +1773,7 @@ export const QueryAllUserLimitOrdersResponse = {
     if (message.limitOrders) {
       obj.limit_orders = message.limitOrders.map(e => e ? LimitOrderTrancheUser.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.limit_orders = [];
+      obj.limit_orders = message.limitOrders;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1860,8 +1860,8 @@ export const QueryAllTickLiquidityRequest = {
   },
   toAmino(message: QueryAllTickLiquidityRequest, useInterfaces: boolean = false): QueryAllTickLiquidityRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.token_in = message.tokenIn;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1937,7 +1937,7 @@ export const QueryAllTickLiquidityResponse = {
     if (message.tickLiquidity) {
       obj.tick_liquidity = message.tickLiquidity.map(e => e ? TickLiquidity.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.tick_liquidity = [];
+      obj.tick_liquidity = message.tickLiquidity;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2035,10 +2035,10 @@ export const QueryGetInactiveLimitOrderTrancheRequest = {
   },
   toAmino(message: QueryGetInactiveLimitOrderTrancheRequest, useInterfaces: boolean = false): QueryGetInactiveLimitOrderTrancheRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.token_in = message.tokenIn;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
-    obj.tranche_key = message.trancheKey;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
+    obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
     return obj;
   },
   fromAminoMsg(object: QueryGetInactiveLimitOrderTrancheRequestAminoMsg): QueryGetInactiveLimitOrderTrancheRequest {
@@ -2239,7 +2239,7 @@ export const QueryAllInactiveLimitOrderTrancheResponse = {
     if (message.inactiveLimitOrderTranche) {
       obj.inactive_limit_order_tranche = message.inactiveLimitOrderTranche.map(e => e ? LimitOrderTranche.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.inactive_limit_order_tranche = [];
+      obj.inactive_limit_order_tranche = message.inactiveLimitOrderTranche;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2326,8 +2326,8 @@ export const QueryAllPoolReservesRequest = {
   },
   toAmino(message: QueryAllPoolReservesRequest, useInterfaces: boolean = false): QueryAllPoolReservesRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.token_in = message.tokenIn;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -2403,7 +2403,7 @@ export const QueryAllPoolReservesResponse = {
     if (message.poolReserves) {
       obj.pool_reserves = message.poolReserves.map(e => e ? PoolReserves.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_reserves = [];
+      obj.pool_reserves = message.poolReserves;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2501,10 +2501,10 @@ export const QueryGetPoolReservesRequest = {
   },
   toAmino(message: QueryGetPoolReservesRequest, useInterfaces: boolean = false): QueryGetPoolReservesRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.token_in = message.tokenIn;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
-    obj.fee = message.fee ? message.fee.toString() : undefined;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
+    obj.fee = message.fee !== BigInt(0) ? message.fee.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetPoolReservesRequestAminoMsg): QueryGetPoolReservesRequest {
@@ -2683,16 +2683,16 @@ export const QueryEstimateMultiHopSwapRequest = {
   },
   toAmino(message: QueryEstimateMultiHopSwapRequest, useInterfaces: boolean = false): QueryEstimateMultiHopSwapRequestAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? MultiHopRoute.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.amount_in = message.amountIn;
-    obj.exit_limit_price = message.exitLimitPrice;
-    obj.pick_best_route = message.pickBestRoute;
+    obj.amount_in = message.amountIn ?? "";
+    obj.exit_limit_price = message.exitLimitPrice ?? "";
+    obj.pick_best_route = message.pickBestRoute === false ? undefined : message.pickBestRoute;
     return obj;
   },
   fromAminoMsg(object: QueryEstimateMultiHopSwapRequestAminoMsg): QueryEstimateMultiHopSwapRequest {
@@ -2755,7 +2755,7 @@ export const QueryEstimateMultiHopSwapResponse = {
   },
   toAmino(message: QueryEstimateMultiHopSwapResponse, useInterfaces: boolean = false): QueryEstimateMultiHopSwapResponseAmino {
     const obj: any = {};
-    obj.coin_out = message.coinOut ? Coin.toAmino(message.coinOut, useInterfaces) : undefined;
+    obj.coin_out = message.coinOut ? Coin.toAmino(message.coinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryEstimateMultiHopSwapResponseAminoMsg): QueryEstimateMultiHopSwapResponse {
@@ -2894,7 +2894,7 @@ export const QueryEstimatePlaceLimitOrderRequest = {
       message.amountIn = object.amount_in;
     }
     if (object.order_type !== undefined && object.order_type !== null) {
-      message.orderType = limitOrderTypeFromJSON(object.order_type);
+      message.orderType = object.order_type;
     }
     if (object.expiration_time !== undefined && object.expiration_time !== null) {
       message.expirationTime = fromTimestamp(Timestamp.fromAmino(object.expiration_time));
@@ -2906,15 +2906,15 @@ export const QueryEstimatePlaceLimitOrderRequest = {
   },
   toAmino(message: QueryEstimatePlaceLimitOrderRequest, useInterfaces: boolean = false): QueryEstimatePlaceLimitOrderRequestAmino {
     const obj: any = {};
-    obj.creator = message.creator;
-    obj.receiver = message.receiver;
-    obj.token_in = message.tokenIn;
-    obj.token_out = message.tokenOut;
-    obj.tick_index_in_to_out = message.tickIndexInToOut ? message.tickIndexInToOut.toString() : undefined;
-    obj.amount_in = message.amountIn;
-    obj.order_type = message.orderType;
+    obj.creator = message.creator === "" ? undefined : message.creator;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
+    obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
+    obj.token_out = message.tokenOut === "" ? undefined : message.tokenOut;
+    obj.tick_index_in_to_out = message.tickIndexInToOut !== BigInt(0) ? message.tickIndexInToOut.toString() : undefined;
+    obj.amount_in = message.amountIn ?? "";
+    obj.order_type = message.orderType === 0 ? undefined : message.orderType;
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
-    obj.maxAmount_out = message.maxAmountOut;
+    obj.maxAmount_out = message.maxAmountOut ?? null;
     return obj;
   },
   fromAminoMsg(object: QueryEstimatePlaceLimitOrderRequestAminoMsg): QueryEstimatePlaceLimitOrderRequest {
@@ -2999,9 +2999,9 @@ export const QueryEstimatePlaceLimitOrderResponse = {
   },
   toAmino(message: QueryEstimatePlaceLimitOrderResponse, useInterfaces: boolean = false): QueryEstimatePlaceLimitOrderResponseAmino {
     const obj: any = {};
-    obj.total_in_coin = message.totalInCoin ? Coin.toAmino(message.totalInCoin, useInterfaces) : undefined;
-    obj.swap_in_coin = message.swapInCoin ? Coin.toAmino(message.swapInCoin, useInterfaces) : undefined;
-    obj.swap_out_coin = message.swapOutCoin ? Coin.toAmino(message.swapOutCoin, useInterfaces) : undefined;
+    obj.total_in_coin = message.totalInCoin ? Coin.toAmino(message.totalInCoin, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.swap_in_coin = message.swapInCoin ? Coin.toAmino(message.swapInCoin, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.swap_out_coin = message.swapOutCoin ? Coin.toAmino(message.swapOutCoin, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryEstimatePlaceLimitOrderResponseAminoMsg): QueryEstimatePlaceLimitOrderResponse {
@@ -3086,9 +3086,9 @@ export const QueryPoolRequest = {
   },
   toAmino(message: QueryPoolRequest, useInterfaces: boolean = false): QueryPoolRequestAmino {
     const obj: any = {};
-    obj.pair_id = message.pairId;
-    obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
-    obj.fee = message.fee ? message.fee.toString() : undefined;
+    obj.pair_id = message.pairId === "" ? undefined : message.pairId;
+    obj.tick_index = message.tickIndex !== BigInt(0) ? message.tickIndex.toString() : undefined;
+    obj.fee = message.fee !== BigInt(0) ? message.fee.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryPoolRequestAminoMsg): QueryPoolRequest {
@@ -3151,7 +3151,7 @@ export const QueryPoolByIDRequest = {
   },
   toAmino(message: QueryPoolByIDRequest, useInterfaces: boolean = false): QueryPoolByIDRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryPoolByIDRequestAminoMsg): QueryPoolByIDRequest {
@@ -3277,7 +3277,7 @@ export const QueryGetPoolMetadataRequest = {
   },
   toAmino(message: QueryGetPoolMetadataRequest, useInterfaces: boolean = false): QueryGetPoolMetadataRequestAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetPoolMetadataRequestAminoMsg): QueryGetPoolMetadataRequest {
@@ -3298,14 +3298,14 @@ export const QueryGetPoolMetadataRequest = {
 };
 function createBaseQueryGetPoolMetadataResponse(): QueryGetPoolMetadataResponse {
   return {
-    PoolMetadata: PoolMetadata.fromPartial({})
+    poolMetadata: PoolMetadata.fromPartial({})
   };
 }
 export const QueryGetPoolMetadataResponse = {
   typeUrl: "/neutron.dex.QueryGetPoolMetadataResponse",
   encode(message: QueryGetPoolMetadataResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.PoolMetadata !== undefined) {
-      PoolMetadata.encode(message.PoolMetadata, writer.uint32(10).fork()).ldelim();
+    if (message.poolMetadata !== undefined) {
+      PoolMetadata.encode(message.poolMetadata, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -3317,7 +3317,7 @@ export const QueryGetPoolMetadataResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.PoolMetadata = PoolMetadata.decode(reader, reader.uint32(), useInterfaces);
+          message.poolMetadata = PoolMetadata.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -3328,19 +3328,19 @@ export const QueryGetPoolMetadataResponse = {
   },
   fromPartial(object: Partial<QueryGetPoolMetadataResponse>): QueryGetPoolMetadataResponse {
     const message = createBaseQueryGetPoolMetadataResponse();
-    message.PoolMetadata = object.PoolMetadata !== undefined && object.PoolMetadata !== null ? PoolMetadata.fromPartial(object.PoolMetadata) : undefined;
+    message.poolMetadata = object.poolMetadata !== undefined && object.poolMetadata !== null ? PoolMetadata.fromPartial(object.poolMetadata) : undefined;
     return message;
   },
   fromAmino(object: QueryGetPoolMetadataResponseAmino): QueryGetPoolMetadataResponse {
     const message = createBaseQueryGetPoolMetadataResponse();
     if (object.Pool_metadata !== undefined && object.Pool_metadata !== null) {
-      message.PoolMetadata = PoolMetadata.fromAmino(object.Pool_metadata);
+      message.poolMetadata = PoolMetadata.fromAmino(object.Pool_metadata);
     }
     return message;
   },
   toAmino(message: QueryGetPoolMetadataResponse, useInterfaces: boolean = false): QueryGetPoolMetadataResponseAmino {
     const obj: any = {};
-    obj.Pool_metadata = message.PoolMetadata ? PoolMetadata.toAmino(message.PoolMetadata, useInterfaces) : undefined;
+    obj.Pool_metadata = message.poolMetadata ? PoolMetadata.toAmino(message.poolMetadata, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetPoolMetadataResponseAminoMsg): QueryGetPoolMetadataResponse {
@@ -3478,7 +3478,7 @@ export const QueryAllPoolMetadataResponse = {
     if (message.poolMetadata) {
       obj.pool_metadata = message.poolMetadata.map(e => e ? PoolMetadata.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_metadata = [];
+      obj.pool_metadata = message.poolMetadata;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

@@ -58,7 +58,7 @@ export interface PeriodLock {
    * The ID of the lock is decided upon lock creation, incrementing by 1 for
    * every lock.
    */
-  ID: bigint;
+  iD: bigint;
   /**
    * Owner is the account address of the lock owner.
    * Only the owner can modify the state of the lock.
@@ -289,7 +289,7 @@ export interface SyntheticLockSDKType {
 }
 function createBasePeriodLock(): PeriodLock {
   return {
-    ID: BigInt(0),
+    iD: BigInt(0),
     owner: "",
     duration: Duration.fromPartial({}),
     endTime: new Date(),
@@ -300,8 +300,8 @@ function createBasePeriodLock(): PeriodLock {
 export const PeriodLock = {
   typeUrl: "/osmosis.lockup.PeriodLock",
   encode(message: PeriodLock, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.ID !== BigInt(0)) {
-      writer.uint32(8).uint64(message.ID);
+    if (message.iD !== BigInt(0)) {
+      writer.uint32(8).uint64(message.iD);
     }
     if (message.owner !== "") {
       writer.uint32(18).string(message.owner);
@@ -328,7 +328,7 @@ export const PeriodLock = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.ID = reader.uint64();
+          message.iD = reader.uint64();
           break;
         case 2:
           message.owner = reader.string();
@@ -354,7 +354,7 @@ export const PeriodLock = {
   },
   fromPartial(object: Partial<PeriodLock>): PeriodLock {
     const message = createBasePeriodLock();
-    message.ID = object.ID !== undefined && object.ID !== null ? BigInt(object.ID.toString()) : BigInt(0);
+    message.iD = object.iD !== undefined && object.iD !== null ? BigInt(object.iD.toString()) : BigInt(0);
     message.owner = object.owner ?? "";
     message.duration = object.duration !== undefined && object.duration !== null ? Duration.fromPartial(object.duration) : undefined;
     message.endTime = object.endTime ?? undefined;
@@ -365,7 +365,7 @@ export const PeriodLock = {
   fromAmino(object: PeriodLockAmino): PeriodLock {
     const message = createBasePeriodLock();
     if (object.ID !== undefined && object.ID !== null) {
-      message.ID = BigInt(object.ID);
+      message.iD = BigInt(object.ID);
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
@@ -384,16 +384,16 @@ export const PeriodLock = {
   },
   toAmino(message: PeriodLock, useInterfaces: boolean = false): PeriodLockAmino {
     const obj: any = {};
-    obj.ID = message.ID ? message.ID.toString() : undefined;
-    obj.owner = message.owner;
+    obj.ID = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     obj.duration = message.duration ? Duration.toAmino(message.duration, useInterfaces) : undefined;
     obj.end_time = message.endTime ? Timestamp.toAmino(toTimestamp(message.endTime)) : undefined;
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
-    obj.reward_receiver_address = message.rewardReceiverAddress;
+    obj.reward_receiver_address = message.rewardReceiverAddress === "" ? undefined : message.rewardReceiverAddress;
     return obj;
   },
   fromAminoMsg(object: PeriodLockAminoMsg): PeriodLock {
@@ -480,7 +480,7 @@ export const QueryCondition = {
   fromAmino(object: QueryConditionAmino): QueryCondition {
     const message = createBaseQueryCondition();
     if (object.lock_query_type !== undefined && object.lock_query_type !== null) {
-      message.lockQueryType = lockQueryTypeFromJSON(object.lock_query_type);
+      message.lockQueryType = object.lock_query_type;
     }
     if (object.denom !== undefined && object.denom !== null) {
       message.denom = object.denom;
@@ -495,8 +495,8 @@ export const QueryCondition = {
   },
   toAmino(message: QueryCondition, useInterfaces: boolean = false): QueryConditionAmino {
     const obj: any = {};
-    obj.lock_query_type = message.lockQueryType;
-    obj.denom = message.denom;
+    obj.lock_query_type = message.lockQueryType === 0 ? undefined : message.lockQueryType;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.duration = message.duration ? Duration.toAmino(message.duration, useInterfaces) : undefined;
     obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     return obj;
@@ -600,8 +600,8 @@ export const SyntheticLock = {
   },
   toAmino(message: SyntheticLock, useInterfaces: boolean = false): SyntheticLockAmino {
     const obj: any = {};
-    obj.underlying_lock_id = message.underlyingLockId ? message.underlyingLockId.toString() : undefined;
-    obj.synth_denom = message.synthDenom;
+    obj.underlying_lock_id = message.underlyingLockId !== BigInt(0) ? message.underlyingLockId.toString() : undefined;
+    obj.synth_denom = message.synthDenom === "" ? undefined : message.synthDenom;
     obj.end_time = message.endTime ? Timestamp.toAmino(toTimestamp(message.endTime)) : undefined;
     obj.duration = message.duration ? Duration.toAmino(message.duration, useInterfaces) : undefined;
     return obj;

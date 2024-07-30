@@ -319,12 +319,12 @@ export const MsgSend = {
   },
   toAmino(message: MsgSend, useInterfaces: boolean = false): MsgSendAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
-    obj.to_address = message.toAddress;
+    obj.from_address = message.fromAddress === "" ? undefined : message.fromAddress;
+    obj.to_address = message.toAddress === "" ? undefined : message.toAddress;
     if (message.amount) {
       obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
@@ -460,12 +460,12 @@ export const MsgMultiSend = {
     if (message.inputs) {
       obj.inputs = message.inputs.map(e => e ? Input.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.inputs = [];
+      obj.inputs = message.inputs;
     }
     if (message.outputs) {
       obj.outputs = message.outputs.map(e => e ? Output.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.outputs = [];
+      obj.outputs = message.outputs;
     }
     return obj;
   },
@@ -602,8 +602,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
@@ -746,16 +746,16 @@ export const MsgSetSendEnabled = {
   },
   toAmino(message: MsgSetSendEnabled, useInterfaces: boolean = false): MsgSetSendEnabledAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     if (message.sendEnabled) {
       obj.send_enabled = message.sendEnabled.map(e => e ? SendEnabled.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.send_enabled = [];
+      obj.send_enabled = message.sendEnabled;
     }
     if (message.useDefaultFor) {
       obj.use_default_for = message.useDefaultFor.map(e => e);
     } else {
-      obj.use_default_for = [];
+      obj.use_default_for = message.useDefaultFor;
     }
     return obj;
   },

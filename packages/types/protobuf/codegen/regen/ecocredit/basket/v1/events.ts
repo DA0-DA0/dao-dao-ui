@@ -312,8 +312,8 @@ export const EventCreate = {
   },
   toAmino(message: EventCreate, useInterfaces: boolean = false): EventCreateAmino {
     const obj: any = {};
-    obj.basket_denom = message.basketDenom;
-    obj.curator = message.curator;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
+    obj.curator = message.curator === "" ? undefined : message.curator;
     return obj;
   },
   fromAminoMsg(object: EventCreateAminoMsg): EventCreate {
@@ -407,14 +407,14 @@ export const EventPut = {
   },
   toAmino(message: EventPut, useInterfaces: boolean = false): EventPutAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.basket_denom = message.basketDenom;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? BasketCredit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
-    obj.amount = message.amount;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: EventPutAminoMsg): EventPut {
@@ -508,14 +508,14 @@ export const EventTake = {
   },
   toAmino(message: EventTake, useInterfaces: boolean = false): EventTakeAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.basket_denom = message.basketDenom;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? BasketCredit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
-    obj.amount = message.amount;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: EventTakeAminoMsg): EventTake {
@@ -578,7 +578,7 @@ export const EventUpdateCurator = {
   },
   toAmino(message: EventUpdateCurator, useInterfaces: boolean = false): EventUpdateCuratorAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: EventUpdateCuratorAminoMsg): EventUpdateCurator {
@@ -641,7 +641,7 @@ export const EventUpdateDateCriteria = {
   },
   toAmino(message: EventUpdateDateCriteria, useInterfaces: boolean = false): EventUpdateDateCriteriaAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: EventUpdateDateCriteriaAminoMsg): EventUpdateDateCriteria {

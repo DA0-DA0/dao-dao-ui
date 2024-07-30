@@ -65,7 +65,7 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
 
   const useDefaults: UseDefaults<UploadCodeData> = () => ({
     chainId: currentChainId,
-    accessType: AccessType.ACCESS_TYPE_EVERYBODY,
+    accessType: AccessType.Everybody,
     allowedAddresses: [{ address }],
   })
 
@@ -93,7 +93,7 @@ export const makeUploadCodeAction: ActionMaker<UploadCodeData> = (options) => {
                 instantiatePermission: {
                   permission: accessType,
                   addresses:
-                    accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES
+                    accessType === AccessType.AnyOfAddresses
                       ? allowedAddresses.map(({ address }) => address)
                       : [],
                 },

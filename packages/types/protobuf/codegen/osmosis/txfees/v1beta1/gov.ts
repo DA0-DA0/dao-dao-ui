@@ -112,12 +112,12 @@ export const UpdateFeeTokenProposal = {
   },
   toAmino(message: UpdateFeeTokenProposal, useInterfaces: boolean = false): UpdateFeeTokenProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
     if (message.feetokens) {
       obj.feetokens = message.feetokens.map(e => e ? FeeToken.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.feetokens = [];
+      obj.feetokens = message.feetokens;
     }
     return obj;
   },

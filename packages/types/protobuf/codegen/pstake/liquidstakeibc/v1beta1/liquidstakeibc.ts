@@ -375,6 +375,10 @@ export interface HostChainLSParams {
   restakeFee: string;
   unstakeFee: string;
   redemptionFee: string;
+  /**
+   * LSM validator cap
+   *  Should be used only when HostChainFlag.Lsm == true, orelse default
+   */
   lsmValidatorCap: string;
   /**
    * LSM bond factor
@@ -397,6 +401,10 @@ export interface HostChainLSParamsAmino {
   restake_fee?: string;
   unstake_fee?: string;
   redemption_fee?: string;
+  /**
+   * LSM validator cap
+   *  Should be used only when HostChainFlag.Lsm == true, orelse default
+   */
   lsm_validator_cap?: string;
   /**
    * LSM bond factor
@@ -1039,25 +1047,25 @@ export const HostChain = {
   },
   toAmino(message: HostChain, useInterfaces: boolean = false): HostChainAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.connection_id = message.connectionId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.params = message.params ? HostChainLSParams.toAmino(message.params, useInterfaces) : undefined;
-    obj.host_denom = message.hostDenom;
-    obj.channel_id = message.channelId;
-    obj.port_id = message.portId;
+    obj.host_denom = message.hostDenom === "" ? undefined : message.hostDenom;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
     obj.delegation_account = message.delegationAccount ? ICAAccount.toAmino(message.delegationAccount, useInterfaces) : undefined;
     obj.rewards_account = message.rewardsAccount ? ICAAccount.toAmino(message.rewardsAccount, useInterfaces) : undefined;
     if (message.validators) {
       obj.validators = message.validators.map(e => e ? Validator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validators = [];
+      obj.validators = message.validators;
     }
-    obj.minimum_deposit = message.minimumDeposit;
-    obj.c_value = message.cValue;
-    obj.last_c_value = message.lastCValue;
-    obj.unbonding_factor = message.unbondingFactor ? message.unbondingFactor.toString() : undefined;
-    obj.active = message.active;
-    obj.auto_compound_factor = message.autoCompoundFactor;
+    obj.minimum_deposit = message.minimumDeposit === "" ? undefined : message.minimumDeposit;
+    obj.c_value = message.cValue === "" ? undefined : message.cValue;
+    obj.last_c_value = message.lastCValue === "" ? undefined : message.lastCValue;
+    obj.unbonding_factor = message.unbondingFactor !== BigInt(0) ? message.unbondingFactor.toString() : undefined;
+    obj.active = message.active === false ? undefined : message.active;
+    obj.auto_compound_factor = message.autoCompoundFactor === "" ? undefined : message.autoCompoundFactor;
     obj.flags = message.flags ? HostChainFlags.toAmino(message.flags, useInterfaces) : undefined;
     obj.reward_params = message.rewardParams ? RewardParams.toAmino(message.rewardParams, useInterfaces) : undefined;
     return obj;
@@ -1122,7 +1130,7 @@ export const HostChainFlags = {
   },
   toAmino(message: HostChainFlags, useInterfaces: boolean = false): HostChainFlagsAmino {
     const obj: any = {};
-    obj.lsm = message.lsm;
+    obj.lsm = message.lsm === false ? undefined : message.lsm;
     return obj;
   },
   fromAminoMsg(object: HostChainFlagsAminoMsg): HostChainFlags {
@@ -1196,8 +1204,8 @@ export const RewardParams = {
   },
   toAmino(message: RewardParams, useInterfaces: boolean = false): RewardParamsAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.destination = message.destination;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.destination = message.destination === "" ? undefined : message.destination;
     return obj;
   },
   fromAminoMsg(object: RewardParamsAminoMsg): RewardParams {
@@ -1359,16 +1367,16 @@ export const HostChainLSParams = {
   },
   toAmino(message: HostChainLSParams, useInterfaces: boolean = false): HostChainLSParamsAmino {
     const obj: any = {};
-    obj.deposit_fee = message.depositFee;
-    obj.restake_fee = message.restakeFee;
-    obj.unstake_fee = message.unstakeFee;
-    obj.redemption_fee = message.redemptionFee;
-    obj.lsm_validator_cap = message.lsmValidatorCap;
-    obj.lsm_bond_factor = message.lsmBondFactor;
-    obj.max_entries = message.maxEntries;
-    obj.redelegation_acceptable_delta = message.redelegationAcceptableDelta;
-    obj.upper_c_value_limit = message.upperCValueLimit;
-    obj.lower_c_value_limit = message.lowerCValueLimit;
+    obj.deposit_fee = message.depositFee === "" ? undefined : message.depositFee;
+    obj.restake_fee = message.restakeFee === "" ? undefined : message.restakeFee;
+    obj.unstake_fee = message.unstakeFee === "" ? undefined : message.unstakeFee;
+    obj.redemption_fee = message.redemptionFee === "" ? undefined : message.redemptionFee;
+    obj.lsm_validator_cap = message.lsmValidatorCap === "" ? undefined : message.lsmValidatorCap;
+    obj.lsm_bond_factor = message.lsmBondFactor === "" ? undefined : message.lsmBondFactor;
+    obj.max_entries = message.maxEntries === 0 ? undefined : message.maxEntries;
+    obj.redelegation_acceptable_delta = message.redelegationAcceptableDelta === "" ? undefined : message.redelegationAcceptableDelta;
+    obj.upper_c_value_limit = message.upperCValueLimit === "" ? undefined : message.upperCValueLimit;
+    obj.lower_c_value_limit = message.lowerCValueLimit === "" ? undefined : message.lowerCValueLimit;
     return obj;
   },
   fromAminoMsg(object: HostChainLSParamsAminoMsg): HostChainLSParams {
@@ -1458,16 +1466,16 @@ export const ICAAccount = {
       message.owner = object.owner;
     }
     if (object.channel_state !== undefined && object.channel_state !== null) {
-      message.channelState = iCAAccount_ChannelStateFromJSON(object.channel_state);
+      message.channelState = object.channel_state;
     }
     return message;
   },
   toAmino(message: ICAAccount, useInterfaces: boolean = false): ICAAccountAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     obj.balance = message.balance ? Coin.toAmino(message.balance, useInterfaces) : undefined;
-    obj.owner = message.owner;
-    obj.channel_state = message.channelState;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.channel_state = message.channelState === 0 ? undefined : message.channelState;
     return obj;
   },
   fromAminoMsg(object: ICAAccountAminoMsg): ICAAccount {
@@ -1596,13 +1604,13 @@ export const Validator = {
   },
   toAmino(message: Validator, useInterfaces: boolean = false): ValidatorAmino {
     const obj: any = {};
-    obj.operator_address = message.operatorAddress;
-    obj.status = message.status;
-    obj.weight = message.weight;
-    obj.delegated_amount = message.delegatedAmount;
-    obj.exchange_rate = message.exchangeRate;
-    obj.unbonding_epoch = message.unbondingEpoch ? message.unbondingEpoch.toString() : undefined;
-    obj.delegable = message.delegable;
+    obj.operator_address = message.operatorAddress === "" ? undefined : message.operatorAddress;
+    obj.status = message.status === "" ? undefined : message.status;
+    obj.weight = message.weight === "" ? undefined : message.weight;
+    obj.delegated_amount = message.delegatedAmount === "" ? undefined : message.delegatedAmount;
+    obj.exchange_rate = message.exchangeRate === "" ? undefined : message.exchangeRate;
+    obj.unbonding_epoch = message.unbondingEpoch !== BigInt(0) ? message.unbondingEpoch.toString() : undefined;
+    obj.delegable = message.delegable === false ? undefined : message.delegable;
     return obj;
   },
   fromAminoMsg(object: ValidatorAminoMsg): Validator {
@@ -1700,7 +1708,7 @@ export const Deposit = {
       message.epoch = BigInt(object.epoch);
     }
     if (object.state !== undefined && object.state !== null) {
-      message.state = deposit_DepositStateFromJSON(object.state);
+      message.state = object.state;
     }
     if (object.ibc_sequence_id !== undefined && object.ibc_sequence_id !== null) {
       message.ibcSequenceId = object.ibc_sequence_id;
@@ -1709,11 +1717,11 @@ export const Deposit = {
   },
   toAmino(message: Deposit, useInterfaces: boolean = false): DepositAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
-    obj.epoch = message.epoch ? message.epoch.toString() : undefined;
-    obj.state = message.state;
-    obj.ibc_sequence_id = message.ibcSequenceId;
+    obj.epoch = message.epoch !== BigInt(0) ? message.epoch.toString() : undefined;
+    obj.state = message.state === 0 ? undefined : message.state;
+    obj.ibc_sequence_id = message.ibcSequenceId === "" ? undefined : message.ibcSequenceId;
     return obj;
   },
   fromAminoMsg(object: DepositAminoMsg): Deposit {
@@ -1844,7 +1852,7 @@ export const LSMDeposit = {
       message.delegatorAddress = object.delegator_address;
     }
     if (object.state !== undefined && object.state !== null) {
-      message.state = lSMDeposit_LSMDepositStateFromJSON(object.state);
+      message.state = object.state;
     }
     if (object.ibc_sequence_id !== undefined && object.ibc_sequence_id !== null) {
       message.ibcSequenceId = object.ibc_sequence_id;
@@ -1853,14 +1861,14 @@ export const LSMDeposit = {
   },
   toAmino(message: LSMDeposit, useInterfaces: boolean = false): LSMDepositAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.amount = message.amount;
-    obj.shares = message.shares;
-    obj.denom = message.denom;
-    obj.ibc_denom = message.ibcDenom;
-    obj.delegator_address = message.delegatorAddress;
-    obj.state = message.state;
-    obj.ibc_sequence_id = message.ibcSequenceId;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.shares = message.shares === "" ? undefined : message.shares;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.ibc_denom = message.ibcDenom === "" ? undefined : message.ibcDenom;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.state = message.state === 0 ? undefined : message.state;
+    obj.ibc_sequence_id = message.ibcSequenceId === "" ? undefined : message.ibcSequenceId;
     return obj;
   },
   fromAminoMsg(object: LSMDepositAminoMsg): LSMDeposit {
@@ -1983,19 +1991,19 @@ export const Unbonding = {
       message.ibcSequenceId = object.ibc_sequence_id;
     }
     if (object.state !== undefined && object.state !== null) {
-      message.state = unbonding_UnbondingStateFromJSON(object.state);
+      message.state = object.state;
     }
     return message;
   },
   toAmino(message: Unbonding, useInterfaces: boolean = false): UnbondingAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.mature_time = message.matureTime ? Timestamp.toAmino(toTimestamp(message.matureTime)) : undefined;
     obj.burn_amount = message.burnAmount ? Coin.toAmino(message.burnAmount, useInterfaces) : undefined;
     obj.unbond_amount = message.unbondAmount ? Coin.toAmino(message.unbondAmount, useInterfaces) : undefined;
-    obj.ibc_sequence_id = message.ibcSequenceId;
-    obj.state = message.state;
+    obj.ibc_sequence_id = message.ibcSequenceId === "" ? undefined : message.ibcSequenceId;
+    obj.state = message.state === 0 ? undefined : message.state;
     return obj;
   },
   fromAminoMsg(object: UnbondingAminoMsg): Unbonding {
@@ -2102,9 +2110,9 @@ export const UserUnbonding = {
   },
   toAmino(message: UserUnbonding, useInterfaces: boolean = false): UserUnbondingAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
-    obj.address = message.address;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
+    obj.address = message.address === "" ? undefined : message.address;
     obj.stk_amount = message.stkAmount ? Coin.toAmino(message.stkAmount, useInterfaces) : undefined;
     obj.unbond_amount = message.unbondAmount ? Coin.toAmino(message.unbondAmount, useInterfaces) : undefined;
     return obj;
@@ -2224,12 +2232,12 @@ export const ValidatorUnbonding = {
   },
   toAmino(message: ValidatorUnbonding, useInterfaces: boolean = false): ValidatorUnbondingAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.mature_time = message.matureTime ? Timestamp.toAmino(toTimestamp(message.matureTime)) : undefined;
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
-    obj.ibc_sequence_id = message.ibcSequenceId;
+    obj.ibc_sequence_id = message.ibcSequenceId === "" ? undefined : message.ibcSequenceId;
     return obj;
   },
   fromAminoMsg(object: ValidatorUnbondingAminoMsg): ValidatorUnbonding {
@@ -2303,8 +2311,8 @@ export const KVUpdate = {
   },
   toAmino(message: KVUpdate, useInterfaces: boolean = false): KVUpdateAmino {
     const obj: any = {};
-    obj.key = message.key;
-    obj.value = message.value;
+    obj.key = message.key === "" ? undefined : message.key;
+    obj.value = message.value === "" ? undefined : message.value;
     return obj;
   },
   fromAminoMsg(object: KVUpdateAminoMsg): KVUpdate {
@@ -2376,11 +2384,11 @@ export const Redelegations = {
   },
   toAmino(message: Redelegations, useInterfaces: boolean = false): RedelegationsAmino {
     const obj: any = {};
-    obj.chain_i_d = message.chainID;
+    obj.chain_i_d = message.chainID === "" ? undefined : message.chainID;
     if (message.redelegations) {
       obj.redelegations = message.redelegations.map(e => e ? Redelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.redelegations = [];
+      obj.redelegations = message.redelegations;
     }
     return obj;
   },
@@ -2460,15 +2468,15 @@ export const RedelegateTx = {
       message.ibcSequenceId = object.ibc_sequence_id;
     }
     if (object.state !== undefined && object.state !== null) {
-      message.state = redelegateTx_RedelegateTxStateFromJSON(object.state);
+      message.state = object.state;
     }
     return message;
   },
   toAmino(message: RedelegateTx, useInterfaces: boolean = false): RedelegateTxAmino {
     const obj: any = {};
-    obj.chain_id = message.chainId;
-    obj.ibc_sequence_id = message.ibcSequenceId;
-    obj.state = message.state;
+    obj.chain_id = message.chainId === "" ? undefined : message.chainId;
+    obj.ibc_sequence_id = message.ibcSequenceId === "" ? undefined : message.ibcSequenceId;
+    obj.state = message.state === 0 ? undefined : message.state;
     return obj;
   },
   fromAminoMsg(object: RedelegateTxAminoMsg): RedelegateTx {

@@ -324,11 +324,11 @@ export const MsgSetValidatorSetPreference = {
   },
   toAmino(message: MsgSetValidatorSetPreference, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
     if (message.preferences) {
       obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.preferences = [];
+      obj.preferences = message.preferences;
     }
     return obj;
   },
@@ -465,7 +465,7 @@ export const MsgDelegateToValidatorSet = {
   },
   toAmino(message: MsgDelegateToValidatorSet, useInterfaces: boolean = false): MsgDelegateToValidatorSetAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     return obj;
   },
@@ -602,7 +602,7 @@ export const MsgUndelegateFromValidatorSet = {
   },
   toAmino(message: MsgUndelegateFromValidatorSet, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     return obj;
   },
@@ -737,11 +737,11 @@ export const MsgRedelegateValidatorSet = {
   },
   toAmino(message: MsgRedelegateValidatorSet, useInterfaces: boolean = false): MsgRedelegateValidatorSetAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
     if (message.preferences) {
       obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.preferences = [];
+      obj.preferences = message.preferences;
     }
     return obj;
   },
@@ -867,7 +867,7 @@ export const MsgWithdrawDelegationRewards = {
   },
   toAmino(message: MsgWithdrawDelegationRewards, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawDelegationRewardsAminoMsg): MsgWithdrawDelegationRewards {
@@ -1003,8 +1003,8 @@ export const MsgDelegateBondedTokens = {
   },
   toAmino(message: MsgDelegateBondedTokens, useInterfaces: boolean = false): MsgDelegateBondedTokensAmino {
     const obj: any = {};
-    obj.delegator = message.delegator;
-    obj.lockID = message.lockID ? message.lockID.toString() : undefined;
+    obj.delegator = message.delegator === "" ? undefined : message.delegator;
+    obj.lockID = message.lockID !== BigInt(0) ? message.lockID.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgDelegateBondedTokensAminoMsg): MsgDelegateBondedTokens {

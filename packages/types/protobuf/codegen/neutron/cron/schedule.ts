@@ -151,14 +151,14 @@ export const Schedule = {
   },
   toAmino(message: Schedule, useInterfaces: boolean = false): ScheduleAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.period = message.period ? message.period.toString() : undefined;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.period = message.period !== BigInt(0) ? message.period.toString() : undefined;
     if (message.msgs) {
       obj.msgs = message.msgs.map(e => e ? MsgExecuteContract.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.msgs = [];
+      obj.msgs = message.msgs;
     }
-    obj.last_execute_height = message.lastExecuteHeight ? message.lastExecuteHeight.toString() : undefined;
+    obj.last_execute_height = message.lastExecuteHeight !== BigInt(0) ? message.lastExecuteHeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ScheduleAminoMsg): Schedule {
@@ -232,8 +232,8 @@ export const MsgExecuteContract = {
   },
   toAmino(message: MsgExecuteContract, useInterfaces: boolean = false): MsgExecuteContractAmino {
     const obj: any = {};
-    obj.contract = message.contract;
-    obj.msg = message.msg;
+    obj.contract = message.contract === "" ? undefined : message.contract;
+    obj.msg = message.msg === "" ? undefined : message.msg;
     return obj;
   },
   fromAminoMsg(object: MsgExecuteContractAminoMsg): MsgExecuteContract {
@@ -296,7 +296,7 @@ export const ScheduleCount = {
   },
   toAmino(message: ScheduleCount, useInterfaces: boolean = false): ScheduleCountAmino {
     const obj: any = {};
-    obj.count = message.count;
+    obj.count = message.count === 0 ? undefined : message.count;
     return obj;
   },
   fromAminoMsg(object: ScheduleCountAminoMsg): ScheduleCount {

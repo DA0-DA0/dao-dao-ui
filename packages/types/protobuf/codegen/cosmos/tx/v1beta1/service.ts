@@ -934,7 +934,7 @@ export const GetTxsEventRequest = {
       message.pagination = PageRequest.fromAmino(object.pagination);
     }
     if (object.order_by !== undefined && object.order_by !== null) {
-      message.orderBy = orderByFromJSON(object.order_by);
+      message.orderBy = object.order_by;
     }
     if (object.page !== undefined && object.page !== null) {
       message.page = BigInt(object.page);
@@ -952,13 +952,13 @@ export const GetTxsEventRequest = {
     if (message.events) {
       obj.events = message.events.map(e => e);
     } else {
-      obj.events = [];
+      obj.events = message.events;
     }
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
-    obj.order_by = message.orderBy;
-    obj.page = message.page ? message.page.toString() : undefined;
-    obj.limit = message.limit ? message.limit.toString() : undefined;
-    obj.query = message.query;
+    obj.order_by = message.orderBy === 0 ? undefined : message.orderBy;
+    obj.page = message.page !== BigInt(0) ? message.page.toString() : undefined;
+    obj.limit = message.limit !== BigInt(0) ? message.limit.toString() : undefined;
+    obj.query = message.query === "" ? undefined : message.query;
     return obj;
   },
   fromAminoMsg(object: GetTxsEventRequestAminoMsg): GetTxsEventRequest {
@@ -1059,15 +1059,15 @@ export const GetTxsEventResponse = {
     if (message.txs) {
       obj.txs = message.txs.map(e => e ? Tx.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.txs = [];
+      obj.txs = message.txs;
     }
     if (message.txResponses) {
       obj.tx_responses = message.txResponses.map(e => e ? TxResponse.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.tx_responses = [];
+      obj.tx_responses = message.txResponses;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
-    obj.total = message.total ? message.total.toString() : undefined;
+    obj.total = message.total !== BigInt(0) ? message.total.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GetTxsEventResponseAminoMsg): GetTxsEventResponse {
@@ -1141,14 +1141,14 @@ export const BroadcastTxRequest = {
       message.txBytes = bytesFromBase64(object.tx_bytes);
     }
     if (object.mode !== undefined && object.mode !== null) {
-      message.mode = broadcastModeFromJSON(object.mode);
+      message.mode = object.mode;
     }
     return message;
   },
   toAmino(message: BroadcastTxRequest, useInterfaces: boolean = false): BroadcastTxRequestAmino {
     const obj: any = {};
     obj.tx_bytes = message.txBytes ? base64FromBytes(message.txBytes) : undefined;
-    obj.mode = message.mode;
+    obj.mode = message.mode === 0 ? undefined : message.mode;
     return obj;
   },
   fromAminoMsg(object: BroadcastTxRequestAminoMsg): BroadcastTxRequest {
@@ -1448,7 +1448,7 @@ export const GetTxRequest = {
   },
   toAmino(message: GetTxRequest, useInterfaces: boolean = false): GetTxRequestAmino {
     const obj: any = {};
-    obj.hash = message.hash;
+    obj.hash = message.hash === "" ? undefined : message.hash;
     return obj;
   },
   fromAminoMsg(object: GetTxRequestAminoMsg): GetTxRequest {
@@ -1609,7 +1609,7 @@ export const GetBlockWithTxsRequest = {
   },
   toAmino(message: GetBlockWithTxsRequest, useInterfaces: boolean = false): GetBlockWithTxsRequestAmino {
     const obj: any = {};
-    obj.height = message.height ? message.height.toString() : undefined;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1713,7 +1713,7 @@ export const GetBlockWithTxsResponse = {
     if (message.txs) {
       obj.txs = message.txs.map(e => e ? Tx.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.txs = [];
+      obj.txs = message.txs;
     }
     obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
     obj.block = message.block ? Block.toAmino(message.block, useInterfaces) : undefined;
@@ -2062,7 +2062,7 @@ export const TxEncodeAminoRequest = {
   },
   toAmino(message: TxEncodeAminoRequest, useInterfaces: boolean = false): TxEncodeAminoRequestAmino {
     const obj: any = {};
-    obj.amino_json = message.aminoJson;
+    obj.amino_json = message.aminoJson === "" ? undefined : message.aminoJson;
     return obj;
   },
   fromAminoMsg(object: TxEncodeAminoRequestAminoMsg): TxEncodeAminoRequest {
@@ -2269,7 +2269,7 @@ export const TxDecodeAminoResponse = {
   },
   toAmino(message: TxDecodeAminoResponse, useInterfaces: boolean = false): TxDecodeAminoResponseAmino {
     const obj: any = {};
-    obj.amino_json = message.aminoJson;
+    obj.amino_json = message.aminoJson === "" ? undefined : message.aminoJson;
     return obj;
   },
   fromAminoMsg(object: TxDecodeAminoResponseAminoMsg): TxDecodeAminoResponse {

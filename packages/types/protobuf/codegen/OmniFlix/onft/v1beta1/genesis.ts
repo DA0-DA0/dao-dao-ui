@@ -81,7 +81,7 @@ export const GenesisState = {
     if (message.collections) {
       obj.collections = message.collections.map(e => e ? Collection.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.collections = [];
+      obj.collections = message.collections;
     }
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;

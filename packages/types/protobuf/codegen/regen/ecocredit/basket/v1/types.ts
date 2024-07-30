@@ -173,8 +173,8 @@ export const BasketCredit = {
   },
   toAmino(message: BasketCredit, useInterfaces: boolean = false): BasketCreditAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: BasketCreditAminoMsg): BasketCredit {
@@ -261,7 +261,7 @@ export const DateCriteria = {
     const obj: any = {};
     obj.min_start_date = message.minStartDate ? Timestamp.toAmino(toTimestamp(message.minStartDate)) : undefined;
     obj.start_date_window = message.startDateWindow ? Duration.toAmino(message.startDateWindow, useInterfaces) : undefined;
-    obj.years_in_the_past = message.yearsInThePast;
+    obj.years_in_the_past = message.yearsInThePast === 0 ? undefined : message.yearsInThePast;
     return obj;
   },
   fromAminoMsg(object: DateCriteriaAminoMsg): DateCriteria {

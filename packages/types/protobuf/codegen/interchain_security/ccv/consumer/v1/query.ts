@@ -314,13 +314,13 @@ export const NextFeeDistributionEstimate = {
   },
   toAmino(message: NextFeeDistributionEstimate, useInterfaces: boolean = false): NextFeeDistributionEstimateAmino {
     const obj: any = {};
-    obj.currentHeight = message.currentHeight ? message.currentHeight.toString() : undefined;
-    obj.lastHeight = message.lastHeight ? message.lastHeight.toString() : undefined;
-    obj.nextHeight = message.nextHeight ? message.nextHeight.toString() : undefined;
-    obj.distribution_fraction = message.distributionFraction;
-    obj.total = message.total;
-    obj.toProvider = message.toProvider;
-    obj.toConsumer = message.toConsumer;
+    obj.currentHeight = message.currentHeight !== BigInt(0) ? message.currentHeight.toString() : undefined;
+    obj.lastHeight = message.lastHeight !== BigInt(0) ? message.lastHeight.toString() : undefined;
+    obj.nextHeight = message.nextHeight !== BigInt(0) ? message.nextHeight.toString() : undefined;
+    obj.distribution_fraction = message.distributionFraction === "" ? undefined : message.distributionFraction;
+    obj.total = message.total === "" ? undefined : message.total;
+    obj.toProvider = message.toProvider === "" ? undefined : message.toProvider;
+    obj.toConsumer = message.toConsumer === "" ? undefined : message.toConsumer;
     return obj;
   },
   fromAminoMsg(object: NextFeeDistributionEstimateAminoMsg): NextFeeDistributionEstimate {
@@ -797,7 +797,7 @@ export const QueryThrottleStateResponse = {
     if (message.packetDataQueue) {
       obj.packet_data_queue = message.packetDataQueue.map(e => e ? ConsumerPacketData.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.packet_data_queue = [];
+      obj.packet_data_queue = message.packetDataQueue;
     }
     return obj;
   },
@@ -894,10 +894,10 @@ export const ChainInfo = {
   },
   toAmino(message: ChainInfo, useInterfaces: boolean = false): ChainInfoAmino {
     const obj: any = {};
-    obj.chainID = message.chainID;
-    obj.clientID = message.clientID;
-    obj.connectionID = message.connectionID;
-    obj.channelID = message.channelID;
+    obj.chainID = message.chainID === "" ? undefined : message.chainID;
+    obj.clientID = message.clientID === "" ? undefined : message.clientID;
+    obj.connectionID = message.connectionID === "" ? undefined : message.connectionID;
+    obj.channelID = message.channelID === "" ? undefined : message.channelID;
     return obj;
   },
   fromAminoMsg(object: ChainInfoAminoMsg): ChainInfo {

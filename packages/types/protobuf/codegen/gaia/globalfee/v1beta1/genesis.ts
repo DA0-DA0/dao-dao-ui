@@ -165,7 +165,7 @@ export const Params = {
     if (message.minimumGasPrices) {
       obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.minimum_gas_prices = [];
+      obj.minimum_gas_prices = message.minimumGasPrices;
     }
     return obj;
   },

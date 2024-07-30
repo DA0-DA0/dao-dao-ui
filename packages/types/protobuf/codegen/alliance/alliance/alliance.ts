@@ -173,8 +173,8 @@ export const RewardWeightRange = {
   },
   toAmino(message: RewardWeightRange, useInterfaces: boolean = false): RewardWeightRangeAmino {
     const obj: any = {};
-    obj.min = message.min;
-    obj.max = message.max;
+    obj.min = message.min === "" ? undefined : message.min;
+    obj.max = message.max === "" ? undefined : message.max;
     return obj;
   },
   fromAminoMsg(object: RewardWeightRangeAminoMsg): RewardWeightRange {
@@ -347,17 +347,17 @@ export const AllianceAsset = {
   },
   toAmino(message: AllianceAsset, useInterfaces: boolean = false): AllianceAssetAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.reward_weight = message.rewardWeight;
-    obj.take_rate = message.takeRate;
-    obj.total_tokens = message.totalTokens;
-    obj.total_validator_shares = message.totalValidatorShares;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.reward_weight = message.rewardWeight === "" ? undefined : message.rewardWeight;
+    obj.take_rate = message.takeRate === "" ? undefined : message.takeRate;
+    obj.total_tokens = message.totalTokens === "" ? undefined : message.totalTokens;
+    obj.total_validator_shares = message.totalValidatorShares === "" ? undefined : message.totalValidatorShares;
     obj.reward_start_time = message.rewardStartTime ? Timestamp.toAmino(toTimestamp(message.rewardStartTime)) : undefined;
-    obj.reward_change_rate = message.rewardChangeRate;
+    obj.reward_change_rate = message.rewardChangeRate === "" ? undefined : message.rewardChangeRate;
     obj.reward_change_interval = message.rewardChangeInterval ? Duration.toAmino(message.rewardChangeInterval, useInterfaces) : undefined;
     obj.last_reward_change_time = message.lastRewardChangeTime ? Timestamp.toAmino(toTimestamp(message.lastRewardChangeTime)) : undefined;
     obj.reward_weight_range = message.rewardWeightRange ? RewardWeightRange.toAmino(message.rewardWeightRange, useInterfaces) : undefined;
-    obj.is_initialized = message.isInitialized;
+    obj.is_initialized = message.isInitialized === false ? undefined : message.isInitialized;
     return obj;
   },
   fromAminoMsg(object: AllianceAssetAminoMsg): AllianceAsset {
@@ -429,11 +429,11 @@ export const RewardWeightChangeSnapshot = {
   },
   toAmino(message: RewardWeightChangeSnapshot, useInterfaces: boolean = false): RewardWeightChangeSnapshotAmino {
     const obj: any = {};
-    obj.prev_reward_weight = message.prevRewardWeight;
+    obj.prev_reward_weight = message.prevRewardWeight === "" ? undefined : message.prevRewardWeight;
     if (message.rewardHistories) {
       obj.reward_histories = message.rewardHistories.map(e => e ? RewardHistory.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.reward_histories = [];
+      obj.reward_histories = message.rewardHistories;
     }
     return obj;
   },

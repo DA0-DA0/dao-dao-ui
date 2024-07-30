@@ -170,9 +170,9 @@ export const NetAddress = {
   },
   toAmino(message: NetAddress, useInterfaces: boolean = false): NetAddressAmino {
     const obj: any = {};
-    obj.id = message.id;
-    obj.ip = message.ip;
-    obj.port = message.port;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.ip = message.ip === "" ? undefined : message.ip;
+    obj.port = message.port === 0 ? undefined : message.port;
     return obj;
   },
   fromAminoMsg(object: NetAddressAminoMsg): NetAddress {
@@ -257,9 +257,9 @@ export const ProtocolVersion = {
   },
   toAmino(message: ProtocolVersion, useInterfaces: boolean = false): ProtocolVersionAmino {
     const obj: any = {};
-    obj.p2p = message.p2p ? message.p2p.toString() : undefined;
-    obj.block = message.block ? message.block.toString() : undefined;
-    obj.app = message.app ? message.app.toString() : undefined;
+    obj.p2p = message.p2p !== BigInt(0) ? message.p2p.toString() : undefined;
+    obj.block = message.block !== BigInt(0) ? message.block.toString() : undefined;
+    obj.app = message.app !== BigInt(0) ? message.app.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ProtocolVersionAminoMsg): ProtocolVersion {
@@ -400,12 +400,12 @@ export const DefaultNodeInfo = {
   toAmino(message: DefaultNodeInfo, useInterfaces: boolean = false): DefaultNodeInfoAmino {
     const obj: any = {};
     obj.protocol_version = message.protocolVersion ? ProtocolVersion.toAmino(message.protocolVersion, useInterfaces) : undefined;
-    obj.default_node_id = message.defaultNodeId;
-    obj.listen_addr = message.listenAddr;
-    obj.network = message.network;
-    obj.version = message.version;
+    obj.default_node_id = message.defaultNodeId === "" ? undefined : message.defaultNodeId;
+    obj.listen_addr = message.listenAddr === "" ? undefined : message.listenAddr;
+    obj.network = message.network === "" ? undefined : message.network;
+    obj.version = message.version === "" ? undefined : message.version;
     obj.channels = message.channels ? base64FromBytes(message.channels) : undefined;
-    obj.moniker = message.moniker;
+    obj.moniker = message.moniker === "" ? undefined : message.moniker;
     obj.other = message.other ? DefaultNodeInfoOther.toAmino(message.other, useInterfaces) : undefined;
     return obj;
   },
@@ -480,8 +480,8 @@ export const DefaultNodeInfoOther = {
   },
   toAmino(message: DefaultNodeInfoOther, useInterfaces: boolean = false): DefaultNodeInfoOtherAmino {
     const obj: any = {};
-    obj.tx_index = message.txIndex;
-    obj.rpc_address = message.rpcAddress;
+    obj.tx_index = message.txIndex === "" ? undefined : message.txIndex;
+    obj.rpc_address = message.rpcAddress === "" ? undefined : message.rpcAddress;
     return obj;
   },
   fromAminoMsg(object: DefaultNodeInfoOtherAminoMsg): DefaultNodeInfoOther {

@@ -241,9 +241,9 @@ export const MsgGrant = {
   },
   toAmino(message: MsgGrant, useInterfaces: boolean = false): MsgGrantAmino {
     const obj: any = {};
-    obj.granter = message.granter;
-    obj.grantee = message.grantee;
-    obj.grant = message.grant ? Grant.toAmino(message.grant, useInterfaces) : Grant.fromPartial({});
+    obj.granter = message.granter === "" ? undefined : message.granter;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
+    obj.grant = message.grant ? Grant.toAmino(message.grant, useInterfaces) : Grant.toAmino(Grant.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgGrantAminoMsg): MsgGrant {
@@ -377,11 +377,11 @@ export const MsgExec = {
   },
   toAmino(message: MsgExec, useInterfaces: boolean = false): MsgExecAmino {
     const obj: any = {};
-    obj.grantee = message.grantee;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
     if (message.msgs) {
       obj.msgs = message.msgs.map(e => e ? rawProtobufMsgToAmino((e as Any), useInterfaces) : undefined);
     } else {
-      obj.msgs = [];
+      obj.msgs = message.msgs;
     }
     return obj;
   },
@@ -452,7 +452,7 @@ export const MsgExecResponse = {
     if (message.results) {
       obj.results = message.results.map(e => base64FromBytes(e));
     } else {
-      obj.results = [];
+      obj.results = message.results;
     }
     return obj;
   },
@@ -544,9 +544,9 @@ export const MsgRevoke = {
   },
   toAmino(message: MsgRevoke, useInterfaces: boolean = false): MsgRevokeAmino {
     const obj: any = {};
-    obj.granter = message.granter;
-    obj.grantee = message.grantee;
-    obj.msg_type_url = message.msgTypeUrl;
+    obj.granter = message.granter === "" ? undefined : message.granter;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
+    obj.msg_type_url = message.msgTypeUrl === "" ? undefined : message.msgTypeUrl;
     return obj;
   },
   fromAminoMsg(object: MsgRevokeAminoMsg): MsgRevoke {
@@ -635,7 +635,7 @@ export const Cosmos_basev1beta1Msg_InterfaceDecoder = (input: BinaryReader | Uin
       return data;
   }
 };
-export const Cosmos_basev1beta1Msg_FromAmino = (content: AnyAmino) => {
+export const Cosmos_basev1beta1Msg_FromAmino = (content: AnyAmino): Any => {
   return Any.fromAmino(content);
 };
 export const Cosmos_basev1beta1Msg_ToAmino = (content: Any, useInterfaces: boolean = false) => {

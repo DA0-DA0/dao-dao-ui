@@ -141,10 +141,10 @@ export const BurnMessage = {
   },
   toAmino(message: BurnMessage, useInterfaces: boolean = false): BurnMessageAmino {
     const obj: any = {};
-    obj.version = message.version;
+    obj.version = message.version === 0 ? undefined : message.version;
     obj.burn_token = message.burnToken ? base64FromBytes(message.burnToken) : undefined;
     obj.mint_recipient = message.mintRecipient ? base64FromBytes(message.mintRecipient) : undefined;
-    obj.amount = message.amount;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     obj.message_sender = message.messageSender ? base64FromBytes(message.messageSender) : undefined;
     return obj;
   },

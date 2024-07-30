@@ -317,18 +317,18 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.alpha = message.alpha;
-    obj.beta = message.beta;
-    obj.gamma = message.gamma;
-    obj.delta = message.delta;
-    obj.min_base_gas_price = message.minBaseGasPrice;
-    obj.min_learning_rate = message.minLearningRate;
-    obj.max_learning_rate = message.maxLearningRate;
-    obj.max_block_utilization = message.maxBlockUtilization ? message.maxBlockUtilization.toString() : undefined;
-    obj.window = message.window ? message.window.toString() : undefined;
-    obj.fee_denom = message.feeDenom;
-    obj.enabled = message.enabled;
-    obj.distribute_fees = message.distributeFees;
+    obj.alpha = message.alpha === "" ? undefined : message.alpha;
+    obj.beta = message.beta === "" ? undefined : message.beta;
+    obj.gamma = message.gamma === "" ? undefined : message.gamma;
+    obj.delta = message.delta === "" ? undefined : message.delta;
+    obj.min_base_gas_price = message.minBaseGasPrice === "" ? undefined : message.minBaseGasPrice;
+    obj.min_learning_rate = message.minLearningRate === "" ? undefined : message.minLearningRate;
+    obj.max_learning_rate = message.maxLearningRate === "" ? undefined : message.maxLearningRate;
+    obj.max_block_utilization = message.maxBlockUtilization !== BigInt(0) ? message.maxBlockUtilization.toString() : undefined;
+    obj.window = message.window !== BigInt(0) ? message.window.toString() : undefined;
+    obj.fee_denom = message.feeDenom === "" ? undefined : message.feeDenom;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
+    obj.distribute_fees = message.distributeFees === false ? undefined : message.distributeFees;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

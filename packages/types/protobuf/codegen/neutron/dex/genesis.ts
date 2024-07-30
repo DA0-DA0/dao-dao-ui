@@ -135,24 +135,24 @@ export const GenesisState = {
     if (message.tickLiquidityList) {
       obj.tick_liquidity_list = message.tickLiquidityList.map(e => e ? TickLiquidity.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.tick_liquidity_list = [];
+      obj.tick_liquidity_list = message.tickLiquidityList;
     }
     if (message.inactiveLimitOrderTrancheList) {
       obj.inactive_limit_order_tranche_list = message.inactiveLimitOrderTrancheList.map(e => e ? LimitOrderTranche.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.inactive_limit_order_tranche_list = [];
+      obj.inactive_limit_order_tranche_list = message.inactiveLimitOrderTrancheList;
     }
     if (message.limitOrderTrancheUserList) {
       obj.limit_order_tranche_user_list = message.limitOrderTrancheUserList.map(e => e ? LimitOrderTrancheUser.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.limit_order_tranche_user_list = [];
+      obj.limit_order_tranche_user_list = message.limitOrderTrancheUserList;
     }
     if (message.poolMetadataList) {
       obj.pool_metadata_list = message.poolMetadataList.map(e => e ? PoolMetadata.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_metadata_list = [];
+      obj.pool_metadata_list = message.poolMetadataList;
     }
-    obj.pool_count = message.poolCount ? message.poolCount.toString() : undefined;
+    obj.pool_count = message.poolCount !== BigInt(0) ? message.poolCount.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

@@ -325,7 +325,7 @@ export const MsgLiquidStake = {
   },
   toAmino(message: MsgLiquidStake, useInterfaces: boolean = false): MsgLiquidStakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -450,7 +450,7 @@ export const MsgLiquidUnstake = {
   },
   toAmino(message: MsgLiquidUnstake, useInterfaces: boolean = false): MsgLiquidUnstakeAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -575,7 +575,7 @@ export const MsgRedeem = {
   },
   toAmino(message: MsgRedeem, useInterfaces: boolean = false): MsgRedeemAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -689,7 +689,7 @@ export const MsgClaim = {
   },
   toAmino(message: MsgClaim, useInterfaces: boolean = false): MsgClaimAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
     return obj;
   },
   fromAminoMsg(object: MsgClaimAminoMsg): MsgClaim {
@@ -802,7 +802,7 @@ export const MsgRecreateICA = {
   },
   toAmino(message: MsgRecreateICA, useInterfaces: boolean = false): MsgRecreateICAAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
+    obj.from_address = message.fromAddress === "" ? undefined : message.fromAddress;
     return obj;
   },
   fromAminoMsg(object: MsgRecreateICAAminoMsg): MsgRecreateICA {
@@ -1025,14 +1025,14 @@ export const MsgJumpStart = {
   },
   toAmino(message: MsgJumpStart, useInterfaces: boolean = false): MsgJumpStartAmino {
     const obj: any = {};
-    obj.pstake_address = message.pstakeAddress;
-    obj.chain_i_d = message.chainID;
-    obj.connection_i_d = message.connectionID;
-    obj.transfer_channel = message.transferChannel;
-    obj.transfer_port = message.transferPort;
-    obj.base_denom = message.baseDenom;
-    obj.mint_denom = message.mintDenom;
-    obj.min_deposit = message.minDeposit;
+    obj.pstake_address = message.pstakeAddress === "" ? undefined : message.pstakeAddress;
+    obj.chain_i_d = message.chainID === "" ? undefined : message.chainID;
+    obj.connection_i_d = message.connectionID === "" ? undefined : message.connectionID;
+    obj.transfer_channel = message.transferChannel === "" ? undefined : message.transferChannel;
+    obj.transfer_port = message.transferPort === "" ? undefined : message.transferPort;
+    obj.base_denom = message.baseDenom === "" ? undefined : message.baseDenom;
+    obj.mint_denom = message.mintDenom === "" ? undefined : message.mintDenom;
+    obj.min_deposit = message.minDeposit === "" ? undefined : message.minDeposit;
     obj.allow_listed_validators = message.allowListedValidators ? AllowListedValidators.toAmino(message.allowListedValidators, useInterfaces) : undefined;
     obj.pstake_params = message.pstakeParams ? PstakeParams.toAmino(message.pstakeParams, useInterfaces) : undefined;
     obj.host_accounts = message.hostAccounts ? HostAccounts.toAmino(message.hostAccounts, useInterfaces) : undefined;
@@ -1159,8 +1159,8 @@ export const MsgChangeModuleState = {
   },
   toAmino(message: MsgChangeModuleState, useInterfaces: boolean = false): MsgChangeModuleStateAmino {
     const obj: any = {};
-    obj.pstake_address = message.pstakeAddress;
-    obj.module_state = message.moduleState;
+    obj.pstake_address = message.pstakeAddress === "" ? undefined : message.pstakeAddress;
+    obj.module_state = message.moduleState === false ? undefined : message.moduleState;
     return obj;
   },
   fromAminoMsg(object: MsgChangeModuleStateAminoMsg): MsgChangeModuleState {
@@ -1284,8 +1284,8 @@ export const MsgReportSlashing = {
   },
   toAmino(message: MsgReportSlashing, useInterfaces: boolean = false): MsgReportSlashingAmino {
     const obj: any = {};
-    obj.pstake_address = message.pstakeAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.pstake_address = message.pstakeAddress === "" ? undefined : message.pstakeAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     return obj;
   },
   fromAminoMsg(object: MsgReportSlashingAminoMsg): MsgReportSlashing {

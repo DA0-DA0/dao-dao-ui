@@ -11,7 +11,7 @@ export interface ParamsProtoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
   fee_tiers?: string[];
-  max_true_taker_spread?: string;
+  max_true_taker_spread: string;
 }
 export interface ParamsAminoMsg {
   type: "/neutron.dex.Params";
@@ -87,9 +87,9 @@ export const Params = {
     if (message.feeTiers) {
       obj.fee_tiers = message.feeTiers.map(e => e.toString());
     } else {
-      obj.fee_tiers = [];
+      obj.fee_tiers = message.feeTiers;
     }
-    obj.max_true_taker_spread = message.maxTrueTakerSpread;
+    obj.max_true_taker_spread = message.maxTrueTakerSpread ?? "";
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

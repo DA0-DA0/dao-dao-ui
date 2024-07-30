@@ -413,25 +413,25 @@ export const ConsumerParams = {
   },
   toAmino(message: ConsumerParams, useInterfaces: boolean = false): ConsumerParamsAmino {
     const obj: any = {};
-    obj.enabled = message.enabled;
-    obj.blocks_per_distribution_transmission = message.blocksPerDistributionTransmission ? message.blocksPerDistributionTransmission.toString() : undefined;
-    obj.distribution_transmission_channel = message.distributionTransmissionChannel;
-    obj.provider_fee_pool_addr_str = message.providerFeePoolAddrStr;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
+    obj.blocks_per_distribution_transmission = message.blocksPerDistributionTransmission !== BigInt(0) ? message.blocksPerDistributionTransmission.toString() : undefined;
+    obj.distribution_transmission_channel = message.distributionTransmissionChannel === "" ? undefined : message.distributionTransmissionChannel;
+    obj.provider_fee_pool_addr_str = message.providerFeePoolAddrStr === "" ? undefined : message.providerFeePoolAddrStr;
     obj.ccv_timeout_period = message.ccvTimeoutPeriod ? Duration.toAmino(message.ccvTimeoutPeriod, useInterfaces) : undefined;
     obj.transfer_timeout_period = message.transferTimeoutPeriod ? Duration.toAmino(message.transferTimeoutPeriod, useInterfaces) : undefined;
-    obj.consumer_redistribution_fraction = message.consumerRedistributionFraction;
-    obj.historical_entries = message.historicalEntries ? message.historicalEntries.toString() : undefined;
+    obj.consumer_redistribution_fraction = message.consumerRedistributionFraction === "" ? undefined : message.consumerRedistributionFraction;
+    obj.historical_entries = message.historicalEntries !== BigInt(0) ? message.historicalEntries.toString() : undefined;
     obj.unbonding_period = message.unbondingPeriod ? Duration.toAmino(message.unbondingPeriod, useInterfaces) : undefined;
-    obj.soft_opt_out_threshold = message.softOptOutThreshold;
+    obj.soft_opt_out_threshold = message.softOptOutThreshold === "" ? undefined : message.softOptOutThreshold;
     if (message.rewardDenoms) {
       obj.reward_denoms = message.rewardDenoms.map(e => e);
     } else {
-      obj.reward_denoms = [];
+      obj.reward_denoms = message.rewardDenoms;
     }
     if (message.providerRewardDenoms) {
       obj.provider_reward_denoms = message.providerRewardDenoms.map(e => e);
     } else {
-      obj.provider_reward_denoms = [];
+      obj.provider_reward_denoms = message.providerRewardDenoms;
     }
     obj.retry_delay_period = message.retryDelayPeriod ? Duration.toAmino(message.retryDelayPeriod, useInterfaces) : undefined;
     return obj;
@@ -520,7 +520,7 @@ export const ConsumerGenesisState = {
     const obj: any = {};
     obj.params = message.params ? ConsumerParams.toAmino(message.params, useInterfaces) : undefined;
     obj.provider = message.provider ? ProviderInfo.toAmino(message.provider, useInterfaces) : undefined;
-    obj.new_chain = message.newChain;
+    obj.new_chain = message.newChain === false ? undefined : message.newChain;
     return obj;
   },
   fromAminoMsg(object: ConsumerGenesisStateAminoMsg): ConsumerGenesisState {
@@ -608,7 +608,7 @@ export const ProviderInfo = {
     if (message.initialValSet) {
       obj.initial_val_set = message.initialValSet.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.initial_val_set = [];
+      obj.initial_val_set = message.initialValSet;
     }
     return obj;
   },

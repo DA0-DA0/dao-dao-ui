@@ -83,7 +83,7 @@ export const GenesisState = {
     if (message.liquidValidators) {
       obj.liquid_validators = message.liquidValidators.map(e => e ? LiquidValidator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.liquid_validators = [];
+      obj.liquid_validators = message.liquidValidators;
     }
     return obj;
   },

@@ -139,8 +139,8 @@ export const WeightedAddress = {
   },
   toAmino(message: WeightedAddress, useInterfaces: boolean = false): WeightedAddressAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.weight = message.weight;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.weight = message.weight === "" ? undefined : message.weight;
     return obj;
   },
   fromAminoMsg(object: WeightedAddressAminoMsg): WeightedAddress {
@@ -225,9 +225,9 @@ export const DistributionProportions = {
   },
   toAmino(message: DistributionProportions, useInterfaces: boolean = false): DistributionProportionsAmino {
     const obj: any = {};
-    obj.nft_incentives = message.nftIncentives;
-    obj.developer_rewards = message.developerRewards;
-    obj.community_pool = message.communityPool;
+    obj.nft_incentives = message.nftIncentives === "" ? undefined : message.nftIncentives;
+    obj.developer_rewards = message.developerRewards === "" ? undefined : message.developerRewards;
+    obj.community_pool = message.communityPool === "" ? undefined : message.communityPool;
     return obj;
   },
   fromAminoMsg(object: DistributionProportionsAminoMsg): DistributionProportions {
@@ -321,17 +321,17 @@ export const Params = {
     if (message.weightedDeveloperRewardsReceivers) {
       obj.weighted_developer_rewards_receivers = message.weightedDeveloperRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.weighted_developer_rewards_receivers = [];
+      obj.weighted_developer_rewards_receivers = message.weightedDeveloperRewardsReceivers;
     }
     if (message.weightedIncentivesRewardsReceivers) {
       obj.weighted_incentives_rewards_receivers = message.weightedIncentivesRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.weighted_incentives_rewards_receivers = [];
+      obj.weighted_incentives_rewards_receivers = message.weightedIncentivesRewardsReceivers;
     }
     if (message.supplementAmount) {
       obj.supplement_amount = message.supplementAmount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.supplement_amount = [];
+      obj.supplement_amount = message.supplementAmount;
     }
     return obj;
   },

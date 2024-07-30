@@ -360,11 +360,11 @@ export const MsgSetHotRoutes = {
   },
   toAmino(message: MsgSetHotRoutes, useInterfaces: boolean = false): MsgSetHotRoutesAmino {
     const obj: any = {};
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     if (message.hotRoutes) {
       obj.hot_routes = message.hotRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.hot_routes = [];
+      obj.hot_routes = message.hotRoutes;
     }
     return obj;
   },
@@ -501,8 +501,8 @@ export const MsgSetDeveloperAccount = {
   },
   toAmino(message: MsgSetDeveloperAccount, useInterfaces: boolean = false): MsgSetDeveloperAccountAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.developer_account = message.developerAccount;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.developer_account = message.developerAccount === "" ? undefined : message.developerAccount;
     return obj;
   },
   fromAminoMsg(object: MsgSetDeveloperAccountAminoMsg): MsgSetDeveloperAccount {
@@ -638,7 +638,7 @@ export const MsgSetInfoByPoolType = {
   },
   toAmino(message: MsgSetInfoByPoolType, useInterfaces: boolean = false): MsgSetInfoByPoolTypeAmino {
     const obj: any = {};
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
     return obj;
   },
@@ -775,8 +775,8 @@ export const MsgSetMaxPoolPointsPerTx = {
   },
   toAmino(message: MsgSetMaxPoolPointsPerTx, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.max_pool_points_per_tx = message.maxPoolPointsPerTx !== BigInt(0) ? message.maxPoolPointsPerTx.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSetMaxPoolPointsPerTxAminoMsg): MsgSetMaxPoolPointsPerTx {
@@ -912,8 +912,8 @@ export const MsgSetMaxPoolPointsPerBlock = {
   },
   toAmino(message: MsgSetMaxPoolPointsPerBlock, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockAmino {
     const obj: any = {};
-    obj.admin = message.admin;
-    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock ? message.maxPoolPointsPerBlock.toString() : undefined;
+    obj.admin = message.admin === "" ? undefined : message.admin;
+    obj.max_pool_points_per_block = message.maxPoolPointsPerBlock !== BigInt(0) ? message.maxPoolPointsPerBlock.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSetMaxPoolPointsPerBlockAminoMsg): MsgSetMaxPoolPointsPerBlock {
@@ -1047,11 +1047,11 @@ export const MsgSetBaseDenoms = {
   },
   toAmino(message: MsgSetBaseDenoms, useInterfaces: boolean = false): MsgSetBaseDenomsAmino {
     const obj: any = {};
-    obj.admin = message.admin;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     if (message.baseDenoms) {
       obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.base_denoms = [];
+      obj.base_denoms = message.baseDenoms;
     }
     return obj;
   },

@@ -405,16 +405,16 @@ export const ClassInfo = {
   },
   toAmino(message: ClassInfo, useInterfaces: boolean = false): ClassInfoAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
-    obj.admin = message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     if (message.issuers) {
       obj.issuers = message.issuers.map(e => e);
     } else {
-      obj.issuers = [];
+      obj.issuers = message.issuers;
     }
     obj.metadata = message.metadata ? base64FromBytes(message.metadata) : undefined;
     obj.credit_type = message.creditType ? CreditType.toAmino(message.creditType, useInterfaces) : undefined;
-    obj.num_batches = message.numBatches ? message.numBatches.toString() : undefined;
+    obj.num_batches = message.numBatches !== BigInt(0) ? message.numBatches.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ClassInfoAminoMsg): ClassInfo {
@@ -565,15 +565,15 @@ export const BatchInfo = {
   },
   toAmino(message: BatchInfo, useInterfaces: boolean = false): BatchInfoAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
-    obj.batch_denom = message.batchDenom;
-    obj.issuer = message.issuer;
-    obj.total_amount = message.totalAmount;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.total_amount = message.totalAmount === "" ? undefined : message.totalAmount;
     obj.metadata = message.metadata ? base64FromBytes(message.metadata) : undefined;
-    obj.amount_cancelled = message.amountCancelled;
+    obj.amount_cancelled = message.amountCancelled === "" ? undefined : message.amountCancelled;
     obj.start_date = message.startDate ? Timestamp.toAmino(toTimestamp(message.startDate)) : undefined;
     obj.end_date = message.endDate ? Timestamp.toAmino(toTimestamp(message.endDate)) : undefined;
-    obj.project_location = message.projectLocation;
+    obj.project_location = message.projectLocation === "" ? undefined : message.projectLocation;
     return obj;
   },
   fromAminoMsg(object: BatchInfoAminoMsg): BatchInfo {
@@ -675,23 +675,23 @@ export const Params = {
     if (message.creditClassFee) {
       obj.credit_class_fee = message.creditClassFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credit_class_fee = [];
+      obj.credit_class_fee = message.creditClassFee;
     }
     if (message.allowedClassCreators) {
       obj.allowed_class_creators = message.allowedClassCreators.map(e => e);
     } else {
-      obj.allowed_class_creators = [];
+      obj.allowed_class_creators = message.allowedClassCreators;
     }
-    obj.allowlist_enabled = message.allowlistEnabled;
+    obj.allowlist_enabled = message.allowlistEnabled === false ? undefined : message.allowlistEnabled;
     if (message.creditTypes) {
       obj.credit_types = message.creditTypes.map(e => e ? CreditType.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credit_types = [];
+      obj.credit_types = message.creditTypes;
     }
     if (message.basketCreationFee) {
       obj.basket_creation_fee = message.basketCreationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.basket_creation_fee = [];
+      obj.basket_creation_fee = message.basketCreationFee;
     }
     return obj;
   },
@@ -788,10 +788,10 @@ export const CreditType = {
   },
   toAmino(message: CreditType, useInterfaces: boolean = false): CreditTypeAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.abbreviation = message.abbreviation;
-    obj.unit = message.unit;
-    obj.precision = message.precision;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.abbreviation = message.abbreviation === "" ? undefined : message.abbreviation;
+    obj.unit = message.unit === "" ? undefined : message.unit;
+    obj.precision = message.precision === 0 ? undefined : message.precision;
     return obj;
   },
   fromAminoMsg(object: CreditTypeAminoMsg): CreditType {
@@ -865,8 +865,8 @@ export const CreditTypeSeq = {
   },
   toAmino(message: CreditTypeSeq, useInterfaces: boolean = false): CreditTypeSeqAmino {
     const obj: any = {};
-    obj.abbreviation = message.abbreviation;
-    obj.seq_number = message.seqNumber ? message.seqNumber.toString() : undefined;
+    obj.abbreviation = message.abbreviation === "" ? undefined : message.abbreviation;
+    obj.seq_number = message.seqNumber !== BigInt(0) ? message.seqNumber.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: CreditTypeSeqAminoMsg): CreditTypeSeq {

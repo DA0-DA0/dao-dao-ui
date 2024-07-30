@@ -140,27 +140,27 @@ export const GenesisState = {
     if (message.hostChains) {
       obj.host_chains = message.hostChains.map(e => e ? HostChain.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_chains = [];
+      obj.host_chains = message.hostChains;
     }
     if (message.deposits) {
       obj.deposits = message.deposits.map(e => e ? Deposit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposits = [];
+      obj.deposits = message.deposits;
     }
     if (message.unbondings) {
       obj.unbondings = message.unbondings.map(e => e ? Unbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.unbondings = [];
+      obj.unbondings = message.unbondings;
     }
     if (message.userUnbondings) {
       obj.user_unbondings = message.userUnbondings.map(e => e ? UserUnbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.user_unbondings = [];
+      obj.user_unbondings = message.userUnbondings;
     }
     if (message.validatorUnbondings) {
       obj.validator_unbondings = message.validatorUnbondings.map(e => e ? ValidatorUnbonding.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_unbondings = [];
+      obj.validator_unbondings = message.validatorUnbondings;
     }
     return obj;
   },

@@ -261,7 +261,7 @@ export const QueryParamsResponse = {
   },
   toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
@@ -330,7 +330,7 @@ export const QuerySigningInfoRequest = {
   },
   toAmino(message: QuerySigningInfoRequest, useInterfaces: boolean = false): QuerySigningInfoRequestAmino {
     const obj: any = {};
-    obj.cons_address = message.consAddress;
+    obj.cons_address = message.consAddress === "" ? undefined : message.consAddress;
     return obj;
   },
   fromAminoMsg(object: QuerySigningInfoRequestAminoMsg): QuerySigningInfoRequest {
@@ -399,7 +399,7 @@ export const QuerySigningInfoResponse = {
   },
   toAmino(message: QuerySigningInfoResponse, useInterfaces: boolean = false): QuerySigningInfoResponseAmino {
     const obj: any = {};
-    obj.val_signing_info = message.valSigningInfo ? ValidatorSigningInfo.toAmino(message.valSigningInfo, useInterfaces) : ValidatorSigningInfo.fromPartial({});
+    obj.val_signing_info = message.valSigningInfo ? ValidatorSigningInfo.toAmino(message.valSigningInfo, useInterfaces) : ValidatorSigningInfo.toAmino(ValidatorSigningInfo.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QuerySigningInfoResponseAminoMsg): QuerySigningInfoResponse {
@@ -549,7 +549,7 @@ export const QuerySigningInfosResponse = {
     if (message.info) {
       obj.info = message.info.map(e => e ? ValidatorSigningInfo.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.info = [];
+      obj.info = message.info;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

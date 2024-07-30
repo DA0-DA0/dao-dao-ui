@@ -187,8 +187,8 @@ export const MsgCreateHostChain = {
   },
   toAmino(message: MsgCreateHostChain, useInterfaces: boolean = false): MsgCreateHostChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.host_chain = message.hostChain ? HostChain.toAmino(message.hostChain, useInterfaces) : HostChain.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.host_chain = message.hostChain ? HostChain.toAmino(message.hostChain, useInterfaces) : HostChain.toAmino(HostChain.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgCreateHostChainAminoMsg): MsgCreateHostChain {
@@ -257,7 +257,7 @@ export const MsgCreateHostChainResponse = {
   },
   toAmino(message: MsgCreateHostChainResponse, useInterfaces: boolean = false): MsgCreateHostChainResponseAmino {
     const obj: any = {};
-    obj.i_d = message.iD ? message.iD.toString() : undefined;
+    obj.i_d = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreateHostChainResponseAminoMsg): MsgCreateHostChainResponse {
@@ -331,8 +331,8 @@ export const MsgUpdateHostChain = {
   },
   toAmino(message: MsgUpdateHostChain, useInterfaces: boolean = false): MsgUpdateHostChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.host_chain = message.hostChain ? HostChain.toAmino(message.hostChain, useInterfaces) : HostChain.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.host_chain = message.hostChain ? HostChain.toAmino(message.hostChain, useInterfaces) : HostChain.toAmino(HostChain.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateHostChainAminoMsg): MsgUpdateHostChain {
@@ -462,8 +462,8 @@ export const MsgDeleteHostChain = {
   },
   toAmino(message: MsgDeleteHostChain, useInterfaces: boolean = false): MsgDeleteHostChainAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.i_d = message.iD ? message.iD.toString() : undefined;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.i_d = message.iD !== BigInt(0) ? message.iD.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgDeleteHostChainAminoMsg): MsgDeleteHostChain {
@@ -593,8 +593,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

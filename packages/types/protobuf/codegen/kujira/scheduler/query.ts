@@ -57,7 +57,7 @@ export interface QueryGetHookRequestSDKType {
   id: bigint;
 }
 export interface QueryGetHookResponse {
-  Hook: Hook | undefined;
+  hook: Hook | undefined;
 }
 export interface QueryGetHookResponseProtoMsg {
   typeUrl: "/kujira.scheduler.QueryGetHookResponse";
@@ -91,7 +91,7 @@ export interface QueryAllHookRequestSDKType {
   pagination?: PageRequestSDKType | undefined;
 }
 export interface QueryAllHookResponse {
-  Hook: Hook[];
+  hook: Hook[];
   pagination?: PageResponse | undefined;
 }
 export interface QueryAllHookResponseProtoMsg {
@@ -267,7 +267,7 @@ export const QueryGetHookRequest = {
   },
   toAmino(message: QueryGetHookRequest, useInterfaces: boolean = false): QueryGetHookRequestAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetHookRequestAminoMsg): QueryGetHookRequest {
@@ -288,14 +288,14 @@ export const QueryGetHookRequest = {
 };
 function createBaseQueryGetHookResponse(): QueryGetHookResponse {
   return {
-    Hook: Hook.fromPartial({})
+    hook: Hook.fromPartial({})
   };
 }
 export const QueryGetHookResponse = {
   typeUrl: "/kujira.scheduler.QueryGetHookResponse",
   encode(message: QueryGetHookResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.Hook !== undefined) {
-      Hook.encode(message.Hook, writer.uint32(10).fork()).ldelim();
+    if (message.hook !== undefined) {
+      Hook.encode(message.hook, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -307,7 +307,7 @@ export const QueryGetHookResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Hook = Hook.decode(reader, reader.uint32(), useInterfaces);
+          message.hook = Hook.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -318,19 +318,19 @@ export const QueryGetHookResponse = {
   },
   fromPartial(object: Partial<QueryGetHookResponse>): QueryGetHookResponse {
     const message = createBaseQueryGetHookResponse();
-    message.Hook = object.Hook !== undefined && object.Hook !== null ? Hook.fromPartial(object.Hook) : undefined;
+    message.hook = object.hook !== undefined && object.hook !== null ? Hook.fromPartial(object.hook) : undefined;
     return message;
   },
   fromAmino(object: QueryGetHookResponseAmino): QueryGetHookResponse {
     const message = createBaseQueryGetHookResponse();
     if (object.Hook !== undefined && object.Hook !== null) {
-      message.Hook = Hook.fromAmino(object.Hook);
+      message.hook = Hook.fromAmino(object.Hook);
     }
     return message;
   },
   toAmino(message: QueryGetHookResponse, useInterfaces: boolean = false): QueryGetHookResponseAmino {
     const obj: any = {};
-    obj.Hook = message.Hook ? Hook.toAmino(message.Hook, useInterfaces) : undefined;
+    obj.Hook = message.hook ? Hook.toAmino(message.hook, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetHookResponseAminoMsg): QueryGetHookResponse {
@@ -414,14 +414,14 @@ export const QueryAllHookRequest = {
 };
 function createBaseQueryAllHookResponse(): QueryAllHookResponse {
   return {
-    Hook: [],
+    hook: [],
     pagination: undefined
   };
 }
 export const QueryAllHookResponse = {
   typeUrl: "/kujira.scheduler.QueryAllHookResponse",
   encode(message: QueryAllHookResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    for (const v of message.Hook) {
+    for (const v of message.hook) {
       Hook.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.pagination !== undefined) {
@@ -437,7 +437,7 @@ export const QueryAllHookResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Hook.push(Hook.decode(reader, reader.uint32(), useInterfaces));
+          message.hook.push(Hook.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
@@ -451,13 +451,13 @@ export const QueryAllHookResponse = {
   },
   fromPartial(object: Partial<QueryAllHookResponse>): QueryAllHookResponse {
     const message = createBaseQueryAllHookResponse();
-    message.Hook = object.Hook?.map(e => Hook.fromPartial(e)) || [];
+    message.hook = object.hook?.map(e => Hook.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   },
   fromAmino(object: QueryAllHookResponseAmino): QueryAllHookResponse {
     const message = createBaseQueryAllHookResponse();
-    message.Hook = object.Hook?.map(e => Hook.fromAmino(e)) || [];
+    message.hook = object.Hook?.map(e => Hook.fromAmino(e)) || [];
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageResponse.fromAmino(object.pagination);
     }
@@ -465,10 +465,10 @@ export const QueryAllHookResponse = {
   },
   toAmino(message: QueryAllHookResponse, useInterfaces: boolean = false): QueryAllHookResponseAmino {
     const obj: any = {};
-    if (message.Hook) {
-      obj.Hook = message.Hook.map(e => e ? Hook.toAmino(e, useInterfaces) : undefined);
+    if (message.hook) {
+      obj.Hook = message.hook.map(e => e ? Hook.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.Hook = [];
+      obj.Hook = message.hook;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;

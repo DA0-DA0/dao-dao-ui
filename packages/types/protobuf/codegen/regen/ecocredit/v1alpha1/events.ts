@@ -350,8 +350,8 @@ export const EventCreateClass = {
   },
   toAmino(message: EventCreateClass, useInterfaces: boolean = false): EventCreateClassAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
-    obj.admin = message.admin;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.admin = message.admin === "" ? undefined : message.admin;
     return obj;
   },
   fromAminoMsg(object: EventCreateClassAminoMsg): EventCreateClass {
@@ -480,13 +480,13 @@ export const EventCreateBatch = {
   },
   toAmino(message: EventCreateBatch, useInterfaces: boolean = false): EventCreateBatchAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
-    obj.batch_denom = message.batchDenom;
-    obj.issuer = message.issuer;
-    obj.total_amount = message.totalAmount;
-    obj.start_date = message.startDate;
-    obj.end_date = message.endDate;
-    obj.project_location = message.projectLocation;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.issuer = message.issuer === "" ? undefined : message.issuer;
+    obj.total_amount = message.totalAmount === "" ? undefined : message.totalAmount;
+    obj.start_date = message.startDate === "" ? undefined : message.startDate;
+    obj.end_date = message.endDate === "" ? undefined : message.endDate;
+    obj.project_location = message.projectLocation === "" ? undefined : message.projectLocation;
     return obj;
   },
   fromAminoMsg(object: EventCreateBatchAminoMsg): EventCreateBatch {
@@ -604,12 +604,12 @@ export const EventReceive = {
   },
   toAmino(message: EventReceive, useInterfaces: boolean = false): EventReceiveAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
-    obj.basket_denom = message.basketDenom;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
     return obj;
   },
   fromAminoMsg(object: EventReceiveAminoMsg): EventReceive {
@@ -705,10 +705,10 @@ export const EventRetire = {
   },
   toAmino(message: EventRetire, useInterfaces: boolean = false): EventRetireAmino {
     const obj: any = {};
-    obj.retirer = message.retirer;
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
-    obj.location = message.location;
+    obj.retirer = message.retirer === "" ? undefined : message.retirer;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.location = message.location === "" ? undefined : message.location;
     return obj;
   },
   fromAminoMsg(object: EventRetireAminoMsg): EventRetire {
@@ -793,9 +793,9 @@ export const EventCancel = {
   },
   toAmino(message: EventCancel, useInterfaces: boolean = false): EventCancelAmino {
     const obj: any = {};
-    obj.canceller = message.canceller;
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
+    obj.canceller = message.canceller === "" ? undefined : message.canceller;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: EventCancelAminoMsg): EventCancel {

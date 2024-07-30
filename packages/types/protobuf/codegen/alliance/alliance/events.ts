@@ -201,10 +201,10 @@ export const DelegateAllianceEvent = {
   },
   toAmino(message: DelegateAllianceEvent, useInterfaces: boolean = false): DelegateAllianceEventAmino {
     const obj: any = {};
-    obj.allianceSender = message.allianceSender;
-    obj.validator = message.validator;
+    obj.allianceSender = message.allianceSender === "" ? undefined : message.allianceSender;
+    obj.validator = message.validator === "" ? undefined : message.validator;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
-    obj.newShares = message.newShares;
+    obj.newShares = message.newShares === "" ? undefined : message.newShares;
     return obj;
   },
   fromAminoMsg(object: DelegateAllianceEventAminoMsg): DelegateAllianceEvent {
@@ -300,8 +300,8 @@ export const UndelegateAllianceEvent = {
   },
   toAmino(message: UndelegateAllianceEvent, useInterfaces: boolean = false): UndelegateAllianceEventAmino {
     const obj: any = {};
-    obj.allianceSender = message.allianceSender;
-    obj.validator = message.validator;
+    obj.allianceSender = message.allianceSender === "" ? undefined : message.allianceSender;
+    obj.validator = message.validator === "" ? undefined : message.validator;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     obj.completionTime = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : undefined;
     return obj;
@@ -410,9 +410,9 @@ export const RedelegateAllianceEvent = {
   },
   toAmino(message: RedelegateAllianceEvent, useInterfaces: boolean = false): RedelegateAllianceEventAmino {
     const obj: any = {};
-    obj.allianceSender = message.allianceSender;
-    obj.sourceValidator = message.sourceValidator;
-    obj.destinationValidator = message.destinationValidator;
+    obj.allianceSender = message.allianceSender === "" ? undefined : message.allianceSender;
+    obj.sourceValidator = message.sourceValidator === "" ? undefined : message.sourceValidator;
+    obj.destinationValidator = message.destinationValidator === "" ? undefined : message.destinationValidator;
     obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     obj.completionTime = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : undefined;
     return obj;
@@ -497,12 +497,12 @@ export const ClaimAllianceRewardsEvent = {
   },
   toAmino(message: ClaimAllianceRewardsEvent, useInterfaces: boolean = false): ClaimAllianceRewardsEventAmino {
     const obj: any = {};
-    obj.allianceSender = message.allianceSender;
-    obj.validator = message.validator;
+    obj.allianceSender = message.allianceSender === "" ? undefined : message.allianceSender;
+    obj.validator = message.validator === "" ? undefined : message.validator;
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },
@@ -567,7 +567,7 @@ export const DeductAllianceAssetsEvent = {
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },

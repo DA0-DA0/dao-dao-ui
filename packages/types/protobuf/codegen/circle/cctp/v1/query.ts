@@ -1344,10 +1344,10 @@ export const QueryRolesResponse = {
   },
   toAmino(message: QueryRolesResponse, useInterfaces: boolean = false): QueryRolesResponseAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.attester_manager = message.attesterManager;
-    obj.pauser = message.pauser;
-    obj.token_controller = message.tokenController;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.attester_manager = message.attesterManager === "" ? undefined : message.attesterManager;
+    obj.pauser = message.pauser === "" ? undefined : message.pauser;
+    obj.token_controller = message.tokenController === "" ? undefined : message.tokenController;
     return obj;
   },
   fromAminoMsg(object: QueryRolesResponseAminoMsg): QueryRolesResponse {
@@ -1410,7 +1410,7 @@ export const QueryGetAttesterRequest = {
   },
   toAmino(message: QueryGetAttesterRequest, useInterfaces: boolean = false): QueryGetAttesterRequestAmino {
     const obj: any = {};
-    obj.attester = message.attester;
+    obj.attester = message.attester === "" ? undefined : message.attester;
     return obj;
   },
   fromAminoMsg(object: QueryGetAttesterRequestAminoMsg): QueryGetAttesterRequest {
@@ -1611,7 +1611,7 @@ export const QueryAllAttestersResponse = {
     if (message.attesters) {
       obj.attesters = message.attesters.map(e => e ? Attester.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.attesters = [];
+      obj.attesters = message.attesters;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1676,7 +1676,7 @@ export const QueryGetPerMessageBurnLimitRequest = {
   },
   toAmino(message: QueryGetPerMessageBurnLimitRequest, useInterfaces: boolean = false): QueryGetPerMessageBurnLimitRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryGetPerMessageBurnLimitRequestAminoMsg): QueryGetPerMessageBurnLimitRequest {
@@ -1877,7 +1877,7 @@ export const QueryAllPerMessageBurnLimitsResponse = {
     if (message.burnLimits) {
       obj.burn_limits = message.burnLimits.map(e => e ? PerMessageBurnLimit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.burn_limits = [];
+      obj.burn_limits = message.burnLimits;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2518,8 +2518,8 @@ export const QueryGetTokenPairRequest = {
   },
   toAmino(message: QueryGetTokenPairRequest, useInterfaces: boolean = false): QueryGetTokenPairRequestAmino {
     const obj: any = {};
-    obj.remote_domain = message.remoteDomain;
-    obj.remote_token = message.remoteToken;
+    obj.remote_domain = message.remoteDomain === 0 ? undefined : message.remoteDomain;
+    obj.remote_token = message.remoteToken === "" ? undefined : message.remoteToken;
     return obj;
   },
   fromAminoMsg(object: QueryGetTokenPairRequestAminoMsg): QueryGetTokenPairRequest {
@@ -2720,7 +2720,7 @@ export const QueryAllTokenPairsResponse = {
     if (message.tokenPairs) {
       obj.token_pairs = message.tokenPairs.map(e => e ? TokenPair.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.token_pairs = [];
+      obj.token_pairs = message.tokenPairs;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -2796,8 +2796,8 @@ export const QueryGetUsedNonceRequest = {
   },
   toAmino(message: QueryGetUsedNonceRequest, useInterfaces: boolean = false): QueryGetUsedNonceRequestAmino {
     const obj: any = {};
-    obj.source_domain = message.sourceDomain;
-    obj.nonce = message.nonce ? message.nonce.toString() : undefined;
+    obj.source_domain = message.sourceDomain === 0 ? undefined : message.sourceDomain;
+    obj.nonce = message.nonce !== BigInt(0) ? message.nonce.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetUsedNonceRequestAminoMsg): QueryGetUsedNonceRequest {
@@ -2998,7 +2998,7 @@ export const QueryAllUsedNoncesResponse = {
     if (message.usedNonces) {
       obj.used_nonces = message.usedNonces.map(e => e ? Nonce.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.used_nonces = [];
+      obj.used_nonces = message.usedNonces;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -3063,7 +3063,7 @@ export const QueryRemoteTokenMessengerRequest = {
   },
   toAmino(message: QueryRemoteTokenMessengerRequest, useInterfaces: boolean = false): QueryRemoteTokenMessengerRequestAmino {
     const obj: any = {};
-    obj.domain_id = message.domainId;
+    obj.domain_id = message.domainId === 0 ? undefined : message.domainId;
     return obj;
   },
   fromAminoMsg(object: QueryRemoteTokenMessengerRequestAminoMsg): QueryRemoteTokenMessengerRequest {
@@ -3264,7 +3264,7 @@ export const QueryRemoteTokenMessengersResponse = {
     if (message.remoteTokenMessengers) {
       obj.remote_token_messengers = message.remoteTokenMessengers.map(e => e ? RemoteTokenMessenger.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.remote_token_messengers = [];
+      obj.remote_token_messengers = message.remoteTokenMessengers;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -3379,7 +3379,7 @@ export const QueryBurnMessageVersionResponse = {
   },
   toAmino(message: QueryBurnMessageVersionResponse, useInterfaces: boolean = false): QueryBurnMessageVersionResponseAmino {
     const obj: any = {};
-    obj.version = message.version;
+    obj.version = message.version === 0 ? undefined : message.version;
     return obj;
   },
   fromAminoMsg(object: QueryBurnMessageVersionResponseAminoMsg): QueryBurnMessageVersionResponse {
@@ -3492,7 +3492,7 @@ export const QueryLocalMessageVersionResponse = {
   },
   toAmino(message: QueryLocalMessageVersionResponse, useInterfaces: boolean = false): QueryLocalMessageVersionResponseAmino {
     const obj: any = {};
-    obj.version = message.version;
+    obj.version = message.version === 0 ? undefined : message.version;
     return obj;
   },
   fromAminoMsg(object: QueryLocalMessageVersionResponseAminoMsg): QueryLocalMessageVersionResponse {
@@ -3605,7 +3605,7 @@ export const QueryLocalDomainResponse = {
   },
   toAmino(message: QueryLocalDomainResponse, useInterfaces: boolean = false): QueryLocalDomainResponseAmino {
     const obj: any = {};
-    obj.domain_id = message.domainId;
+    obj.domain_id = message.domainId === 0 ? undefined : message.domainId;
     return obj;
   },
   fromAminoMsg(object: QueryLocalDomainResponseAminoMsg): QueryLocalDomainResponse {

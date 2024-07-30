@@ -563,13 +563,13 @@ export const MsgCreateValidator = {
   },
   toAmino(message: MsgCreateValidator, useInterfaces: boolean = false): MsgCreateValidatorAmino {
     const obj: any = {};
-    obj.description = message.description ? Description.toAmino(message.description, useInterfaces) : Description.fromPartial({});
-    obj.commission = message.commission ? CommissionRates.toAmino(message.commission, useInterfaces) : CommissionRates.fromPartial({});
+    obj.description = message.description ? Description.toAmino(message.description, useInterfaces) : Description.toAmino(Description.fromPartial({}));
+    obj.commission = message.commission ? CommissionRates.toAmino(message.commission, useInterfaces) : CommissionRates.toAmino(CommissionRates.fromPartial({}));
     obj.min_self_delegation = message.minSelfDelegation ?? "";
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.pubkey = message.pubkey ? decodePubkey(message.pubkey) : undefined;
-    obj.value = message.value ? Coin.toAmino(message.value, useInterfaces) : Coin.fromPartial({});
+    obj.value = message.value ? Coin.toAmino(message.value, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgCreateValidatorAminoMsg): MsgCreateValidator {
@@ -727,10 +727,10 @@ export const MsgEditValidator = {
   },
   toAmino(message: MsgEditValidator, useInterfaces: boolean = false): MsgEditValidatorAmino {
     const obj: any = {};
-    obj.description = message.description ? Description.toAmino(message.description, useInterfaces) : Description.fromPartial({});
-    obj.validator_address = message.validatorAddress;
-    obj.commission_rate = message.commissionRate;
-    obj.min_self_delegation = message.minSelfDelegation;
+    obj.description = message.description ? Description.toAmino(message.description, useInterfaces) : Description.toAmino(Description.fromPartial({}));
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.commission_rate = message.commissionRate === "" ? undefined : message.commissionRate;
+    obj.min_self_delegation = message.minSelfDelegation === "" ? undefined : message.minSelfDelegation;
     return obj;
   },
   fromAminoMsg(object: MsgEditValidatorAminoMsg): MsgEditValidator {
@@ -877,9 +877,9 @@ export const MsgDelegate = {
   },
   toAmino(message: MsgDelegate, useInterfaces: boolean = false): MsgDelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.fromPartial({});
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgDelegateAminoMsg): MsgDelegate {
@@ -1037,10 +1037,10 @@ export const MsgBeginRedelegate = {
   },
   toAmino(message: MsgBeginRedelegate, useInterfaces: boolean = false): MsgBeginRedelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_src_address = message.validatorSrcAddress;
-    obj.validator_dst_address = message.validatorDstAddress;
-    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.fromPartial({});
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_src_address = message.validatorSrcAddress === "" ? undefined : message.validatorSrcAddress;
+    obj.validator_dst_address = message.validatorDstAddress === "" ? undefined : message.validatorDstAddress;
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgBeginRedelegateAminoMsg): MsgBeginRedelegate {
@@ -1200,9 +1200,9 @@ export const MsgUndelegate = {
   },
   toAmino(message: MsgUndelegate, useInterfaces: boolean = false): MsgUndelegateAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.fromPartial({});
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUndelegateAminoMsg): MsgUndelegate {
@@ -1283,7 +1283,7 @@ export const MsgUndelegateResponse = {
   toAmino(message: MsgUndelegateResponse, useInterfaces: boolean = false): MsgUndelegateResponseAmino {
     const obj: any = {};
     obj.completion_time = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : new Date();
-    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.fromPartial({});
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUndelegateResponseAminoMsg): MsgUndelegateResponse {
@@ -1385,10 +1385,10 @@ export const MsgCancelUnbondingDelegation = {
   },
   toAmino(message: MsgCancelUnbondingDelegation, useInterfaces: boolean = false): MsgCancelUnbondingDelegationAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.fromPartial({});
-    obj.creation_height = message.creationHeight ? message.creationHeight.toString() : undefined;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.creation_height = message.creationHeight !== BigInt(0) ? message.creationHeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCancelUnbondingDelegationAminoMsg): MsgCancelUnbondingDelegation {
@@ -1524,8 +1524,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
@@ -1614,7 +1614,7 @@ export const Cosmos_cryptoPubKey_InterfaceDecoder = (input: BinaryReader | Uint8
       return data;
   }
 };
-export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino) => {
+export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino): Any => {
   return encodePubkey(content);
 };
 export const Cosmos_cryptoPubKey_ToAmino = (content: Any, useInterfaces: boolean = false): Pubkey | null => {

@@ -662,7 +662,7 @@ export const ModuleToDistributeCoinsResponse = {
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },
@@ -732,7 +732,7 @@ export const GaugeByIDRequest = {
   },
   toAmino(message: GaugeByIDRequest, useInterfaces: boolean = false): GaugeByIDRequestAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GaugeByIDRequestAminoMsg): GaugeByIDRequest {
@@ -951,7 +951,7 @@ export const GaugesResponse = {
     if (message.data) {
       obj.data = message.data.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.data = [];
+      obj.data = message.data;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1103,7 +1103,7 @@ export const ActiveGaugesResponse = {
     if (message.data) {
       obj.data = message.data.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.data = [];
+      obj.data = message.data;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1185,7 +1185,7 @@ export const ActiveGaugesPerDenomRequest = {
   },
   toAmino(message: ActiveGaugesPerDenomRequest, useInterfaces: boolean = false): ActiveGaugesPerDenomRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1267,7 +1267,7 @@ export const ActiveGaugesPerDenomResponse = {
     if (message.data) {
       obj.data = message.data.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.data = [];
+      obj.data = message.data;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1419,7 +1419,7 @@ export const UpcomingGaugesResponse = {
     if (message.data) {
       obj.data = message.data.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.data = [];
+      obj.data = message.data;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1501,7 +1501,7 @@ export const UpcomingGaugesPerDenomRequest = {
   },
   toAmino(message: UpcomingGaugesPerDenomRequest, useInterfaces: boolean = false): UpcomingGaugesPerDenomRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1583,7 +1583,7 @@ export const UpcomingGaugesPerDenomResponse = {
     if (message.upcomingGauges) {
       obj.upcoming_gauges = message.upcomingGauges.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.upcoming_gauges = [];
+      obj.upcoming_gauges = message.upcomingGauges;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1683,13 +1683,13 @@ export const RewardsEstRequest = {
   },
   toAmino(message: RewardsEstRequest, useInterfaces: boolean = false): RewardsEstRequestAmino {
     const obj: any = {};
-    obj.owner = message.owner;
+    obj.owner = message.owner === "" ? undefined : message.owner;
     if (message.lockIds) {
       obj.lock_ids = message.lockIds.map(e => e.toString());
     } else {
-      obj.lock_ids = [];
+      obj.lock_ids = message.lockIds;
     }
-    obj.end_epoch = message.endEpoch ? message.endEpoch.toString() : undefined;
+    obj.end_epoch = message.endEpoch !== BigInt(0) ? message.endEpoch.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: RewardsEstRequestAminoMsg): RewardsEstRequest {
@@ -1759,7 +1759,7 @@ export const RewardsEstResponse = {
     if (message.coins) {
       obj.coins = message.coins.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },
@@ -1886,7 +1886,7 @@ export const QueryLockableDurationsResponse = {
     if (message.lockableDurations) {
       obj.lockable_durations = message.lockableDurations.map(e => e ? Duration.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.lockable_durations = [];
+      obj.lockable_durations = message.lockableDurations;
     }
     return obj;
   },
@@ -2013,7 +2013,7 @@ export const QueryAllGroupsResponse = {
     if (message.groups) {
       obj.groups = message.groups.map(e => e ? Group.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.groups = [];
+      obj.groups = message.groups;
     }
     return obj;
   },
@@ -2140,7 +2140,7 @@ export const QueryAllGroupsGaugesResponse = {
     if (message.gauges) {
       obj.gauges = message.gauges.map(e => e ? Gauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.gauges = [];
+      obj.gauges = message.gauges;
     }
     return obj;
   },
@@ -2267,7 +2267,7 @@ export const QueryAllGroupsWithGaugeResponse = {
     if (message.groupsWithGauge) {
       obj.groups_with_gauge = message.groupsWithGauge.map(e => e ? GroupsWithGauge.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.groups_with_gauge = [];
+      obj.groups_with_gauge = message.groupsWithGauge;
     }
     return obj;
   },
@@ -2337,7 +2337,7 @@ export const QueryGroupByGroupGaugeIDRequest = {
   },
   toAmino(message: QueryGroupByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryGroupByGroupGaugeIDRequestAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGroupByGroupGaugeIDRequestAminoMsg): QueryGroupByGroupGaugeIDRequest {
@@ -2475,7 +2475,7 @@ export const QueryCurrentWeightByGroupGaugeIDRequest = {
   },
   toAmino(message: QueryCurrentWeightByGroupGaugeIDRequest, useInterfaces: boolean = false): QueryCurrentWeightByGroupGaugeIDRequestAmino {
     const obj: any = {};
-    obj.group_gauge_id = message.groupGaugeId ? message.groupGaugeId.toString() : undefined;
+    obj.group_gauge_id = message.groupGaugeId !== BigInt(0) ? message.groupGaugeId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryCurrentWeightByGroupGaugeIDRequestAminoMsg): QueryCurrentWeightByGroupGaugeIDRequest {
@@ -2545,7 +2545,7 @@ export const QueryCurrentWeightByGroupGaugeIDResponse = {
     if (message.gaugeWeight) {
       obj.gauge_weight = message.gaugeWeight.map(e => e ? GaugeWeight.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.gauge_weight = [];
+      obj.gauge_weight = message.gaugeWeight;
     }
     return obj;
   },
@@ -2626,8 +2626,8 @@ export const GaugeWeight = {
   },
   toAmino(message: GaugeWeight, useInterfaces: boolean = false): GaugeWeightAmino {
     const obj: any = {};
-    obj.gauge_id = message.gaugeId ? message.gaugeId.toString() : undefined;
-    obj.weight_ratio = message.weightRatio;
+    obj.gauge_id = message.gaugeId !== BigInt(0) ? message.gaugeId.toString() : undefined;
+    obj.weight_ratio = message.weightRatio === "" ? undefined : message.weightRatio;
     return obj;
   },
   fromAminoMsg(object: GaugeWeightAminoMsg): GaugeWeight {

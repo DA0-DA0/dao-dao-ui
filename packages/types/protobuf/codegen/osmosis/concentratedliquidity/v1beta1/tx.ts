@@ -496,17 +496,17 @@ export const MsgCreatePosition = {
   },
   toAmino(message: MsgCreatePosition, useInterfaces: boolean = false): MsgCreatePositionAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
-    obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lower_tick = message.lowerTick !== BigInt(0) ? message.lowerTick.toString() : undefined;
+    obj.upper_tick = message.upperTick !== BigInt(0) ? message.upperTick.toString() : undefined;
     if (message.tokensProvided) {
       obj.tokens_provided = message.tokensProvided.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.tokens_provided = [];
+      obj.tokens_provided = message.tokensProvided;
     }
-    obj.token_min_amount0 = message.tokenMinAmount0;
-    obj.token_min_amount1 = message.tokenMinAmount1;
+    obj.token_min_amount0 = message.tokenMinAmount0 === "" ? undefined : message.tokenMinAmount0;
+    obj.token_min_amount1 = message.tokenMinAmount1 === "" ? undefined : message.tokenMinAmount1;
     return obj;
   },
   fromAminoMsg(object: MsgCreatePositionAminoMsg): MsgCreatePosition {
@@ -630,12 +630,12 @@ export const MsgCreatePositionResponse = {
   },
   toAmino(message: MsgCreatePositionResponse, useInterfaces: boolean = false): MsgCreatePositionResponseAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
-    obj.liquidity_created = message.liquidityCreated;
-    obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
-    obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+    obj.liquidity_created = message.liquidityCreated === "" ? undefined : message.liquidityCreated;
+    obj.lower_tick = message.lowerTick !== BigInt(0) ? message.lowerTick.toString() : undefined;
+    obj.upper_tick = message.upperTick !== BigInt(0) ? message.upperTick.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreatePositionResponseAminoMsg): MsgCreatePositionResponse {
@@ -759,12 +759,12 @@ export const MsgAddToPosition = {
   },
   toAmino(message: MsgAddToPosition, useInterfaces: boolean = false): MsgAddToPositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
-    obj.token_min_amount0 = message.tokenMinAmount0;
-    obj.token_min_amount1 = message.tokenMinAmount1;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+    obj.token_min_amount0 = message.tokenMinAmount0 === "" ? undefined : message.tokenMinAmount0;
+    obj.token_min_amount1 = message.tokenMinAmount1 === "" ? undefined : message.tokenMinAmount1;
     return obj;
   },
   fromAminoMsg(object: MsgAddToPositionAminoMsg): MsgAddToPosition {
@@ -855,9 +855,9 @@ export const MsgAddToPositionResponse = {
   },
   toAmino(message: MsgAddToPositionResponse, useInterfaces: boolean = false): MsgAddToPositionResponseAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
     return obj;
   },
   fromAminoMsg(object: MsgAddToPositionResponseAminoMsg): MsgAddToPositionResponse {
@@ -948,9 +948,9 @@ export const MsgWithdrawPosition = {
   },
   toAmino(message: MsgWithdrawPosition, useInterfaces: boolean = false): MsgWithdrawPositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.liquidity_amount = message.liquidityAmount;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.liquidity_amount = message.liquidityAmount === "" ? undefined : message.liquidityAmount;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawPositionAminoMsg): MsgWithdrawPosition {
@@ -1030,8 +1030,8 @@ export const MsgWithdrawPositionResponse = {
   },
   toAmino(message: MsgWithdrawPositionResponse, useInterfaces: boolean = false): MsgWithdrawPositionResponseAmino {
     const obj: any = {};
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawPositionResponseAminoMsg): MsgWithdrawPositionResponse {
@@ -1121,9 +1121,9 @@ export const MsgCollectSpreadRewards = {
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgCollectSpreadRewardsAminoMsg): MsgCollectSpreadRewards {
@@ -1193,7 +1193,7 @@ export const MsgCollectSpreadRewardsResponse = {
     if (message.collectedSpreadRewards) {
       obj.collected_spread_rewards = message.collectedSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.collected_spread_rewards = [];
+      obj.collected_spread_rewards = message.collectedSpreadRewards;
     }
     return obj;
   },
@@ -1284,9 +1284,9 @@ export const MsgCollectIncentives = {
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgCollectIncentivesAminoMsg): MsgCollectIncentives {
@@ -1365,12 +1365,12 @@ export const MsgCollectIncentivesResponse = {
     if (message.collectedIncentives) {
       obj.collected_incentives = message.collectedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.collected_incentives = [];
+      obj.collected_incentives = message.collectedIncentives;
     }
     if (message.forfeitedIncentives) {
       obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.forfeited_incentives = [];
+      obj.forfeited_incentives = message.forfeitedIncentives;
     }
     return obj;
   },
@@ -1461,9 +1461,9 @@ export const MsgFungifyChargedPositions = {
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgFungifyChargedPositionsAminoMsg): MsgFungifyChargedPositions {
@@ -1532,7 +1532,7 @@ export const MsgFungifyChargedPositionsResponse = {
   },
   toAmino(message: MsgFungifyChargedPositionsResponse, useInterfaces: boolean = false): MsgFungifyChargedPositionsResponseAmino {
     const obj: any = {};
-    obj.new_position_id = message.newPositionId ? message.newPositionId.toString() : undefined;
+    obj.new_position_id = message.newPositionId !== BigInt(0) ? message.newPositionId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgFungifyChargedPositionsResponseAminoMsg): MsgFungifyChargedPositionsResponse {
@@ -1633,10 +1633,10 @@ export const MsgTransferPositions = {
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
-    obj.new_owner = message.newOwner;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.new_owner = message.newOwner === "" ? undefined : message.newOwner;
     return obj;
   },
   fromAminoMsg(object: MsgTransferPositionsAminoMsg): MsgTransferPositions {

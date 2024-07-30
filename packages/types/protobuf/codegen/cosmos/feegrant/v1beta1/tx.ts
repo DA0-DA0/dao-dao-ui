@@ -203,8 +203,8 @@ export const MsgGrantAllowance = {
   },
   toAmino(message: MsgGrantAllowance, useInterfaces: boolean = false): MsgGrantAllowanceAmino {
     const obj: any = {};
-    obj.granter = message.granter;
-    obj.grantee = message.grantee;
+    obj.granter = message.granter === "" ? undefined : message.granter;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
     obj.allowance = message.allowance ? Cosmos_feegrantv1beta1FeeAllowanceI_ToAmino((message.allowance as Any), useInterfaces) : undefined;
     return obj;
   },
@@ -341,8 +341,8 @@ export const MsgRevokeAllowance = {
   },
   toAmino(message: MsgRevokeAllowance, useInterfaces: boolean = false): MsgRevokeAllowanceAmino {
     const obj: any = {};
-    obj.granter = message.granter;
-    obj.grantee = message.grantee;
+    obj.granter = message.granter === "" ? undefined : message.granter;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
     return obj;
   },
   fromAminoMsg(object: MsgRevokeAllowanceAminoMsg): MsgRevokeAllowance {
@@ -467,7 +467,7 @@ export const MsgPruneAllowances = {
   },
   toAmino(message: MsgPruneAllowances, useInterfaces: boolean = false): MsgPruneAllowancesAmino {
     const obj: any = {};
-    obj.pruner = message.pruner;
+    obj.pruner = message.pruner === "" ? undefined : message.pruner;
     return obj;
   },
   fromAminoMsg(object: MsgPruneAllowancesAminoMsg): MsgPruneAllowances {
@@ -562,7 +562,7 @@ export const Cosmos_feegrantv1beta1FeeAllowanceI_InterfaceDecoder = (input: Bina
       return data;
   }
 };
-export const Cosmos_feegrantv1beta1FeeAllowanceI_FromAmino = (content: AnyAmino) => {
+export const Cosmos_feegrantv1beta1FeeAllowanceI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "cosmos-sdk/BasicAllowance":
       return Any.fromPartial({

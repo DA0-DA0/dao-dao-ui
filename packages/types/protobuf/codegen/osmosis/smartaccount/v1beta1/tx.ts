@@ -29,7 +29,6 @@ export interface MsgAddAuthenticatorSDKType {
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponse {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success: boolean;
 }
 export interface MsgAddAuthenticatorResponseProtoMsg {
@@ -38,7 +37,6 @@ export interface MsgAddAuthenticatorResponseProtoMsg {
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponseAmino {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success?: boolean;
 }
 export interface MsgAddAuthenticatorResponseAminoMsg {
@@ -86,10 +84,6 @@ export interface MsgRemoveAuthenticatorSDKType {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponse {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseProtoMsg {
@@ -101,10 +95,6 @@ export interface MsgRemoveAuthenticatorResponseProtoMsg {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponseAmino {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success?: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseAminoMsg {
@@ -252,8 +242,8 @@ export const MsgAddAuthenticator = {
   },
   toAmino(message: MsgAddAuthenticator, useInterfaces: boolean = false): MsgAddAuthenticatorAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.type = message.type;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.type = message.type === "" ? undefined : message.type;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
@@ -323,7 +313,7 @@ export const MsgAddAuthenticatorResponse = {
   },
   toAmino(message: MsgAddAuthenticatorResponse, useInterfaces: boolean = false): MsgAddAuthenticatorResponseAmino {
     const obj: any = {};
-    obj.success = message.success;
+    obj.success = message.success === false ? undefined : message.success;
     return obj;
   },
   fromAminoMsg(object: MsgAddAuthenticatorResponseAminoMsg): MsgAddAuthenticatorResponse {
@@ -403,8 +393,8 @@ export const MsgRemoveAuthenticator = {
   },
   toAmino(message: MsgRemoveAuthenticator, useInterfaces: boolean = false): MsgRemoveAuthenticatorAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAuthenticatorAminoMsg): MsgRemoveAuthenticator {
@@ -473,7 +463,7 @@ export const MsgRemoveAuthenticatorResponse = {
   },
   toAmino(message: MsgRemoveAuthenticatorResponse, useInterfaces: boolean = false): MsgRemoveAuthenticatorResponseAmino {
     const obj: any = {};
-    obj.success = message.success;
+    obj.success = message.success === false ? undefined : message.success;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAuthenticatorResponseAminoMsg): MsgRemoveAuthenticatorResponse {
@@ -553,8 +543,8 @@ export const MsgSetActiveState = {
   },
   toAmino(message: MsgSetActiveState, useInterfaces: boolean = false): MsgSetActiveStateAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.active = message.active;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.active = message.active === false ? undefined : message.active;
     return obj;
   },
   fromAminoMsg(object: MsgSetActiveStateAminoMsg): MsgSetActiveState {
@@ -689,7 +679,7 @@ export const TxExtension = {
     if (message.selectedAuthenticators) {
       obj.selected_authenticators = message.selectedAuthenticators.map(e => e.toString());
     } else {
-      obj.selected_authenticators = [];
+      obj.selected_authenticators = message.selectedAuthenticators;
     }
     return obj;
   },

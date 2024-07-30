@@ -83,8 +83,8 @@ export const GenesisState = {
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.minter = message.minter ? Minter.toAmino(message.minter, useInterfaces) : Minter.fromPartial({});
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.minter = message.minter ? Minter.toAmino(message.minter, useInterfaces) : Minter.toAmino(Minter.fromPartial({}));
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

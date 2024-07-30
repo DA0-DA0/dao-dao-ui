@@ -240,13 +240,13 @@ export const Position = {
   },
   toAmino(message: Position, useInterfaces: boolean = false): PositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId ? message.positionId.toString() : undefined;
-    obj.address = message.address;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
-    obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
+    obj.position_id = message.positionId !== BigInt(0) ? message.positionId.toString() : undefined;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.lower_tick = message.lowerTick !== BigInt(0) ? message.lowerTick.toString() : undefined;
+    obj.upper_tick = message.upperTick !== BigInt(0) ? message.upperTick.toString() : undefined;
     obj.join_time = message.joinTime ? Timestamp.toAmino(toTimestamp(message.joinTime)) : undefined;
-    obj.liquidity = message.liquidity;
+    obj.liquidity = message.liquidity === "" ? undefined : message.liquidity;
     return obj;
   },
   fromAminoMsg(object: PositionAminoMsg): Position {
@@ -370,17 +370,17 @@ export const FullPositionBreakdown = {
     if (message.claimableSpreadRewards) {
       obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.claimable_spread_rewards = [];
+      obj.claimable_spread_rewards = message.claimableSpreadRewards;
     }
     if (message.claimableIncentives) {
       obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.claimable_incentives = [];
+      obj.claimable_incentives = message.claimableIncentives;
     }
     if (message.forfeitedIncentives) {
       obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.forfeited_incentives = [];
+      obj.forfeited_incentives = message.forfeitedIncentives;
     }
     return obj;
   },

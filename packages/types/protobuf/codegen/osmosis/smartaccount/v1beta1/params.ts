@@ -117,12 +117,12 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.maximum_unauthenticated_gas = message.maximumUnauthenticatedGas ? message.maximumUnauthenticatedGas.toString() : undefined;
-    obj.is_smart_account_active = message.isSmartAccountActive;
+    obj.maximum_unauthenticated_gas = message.maximumUnauthenticatedGas !== BigInt(0) ? message.maximumUnauthenticatedGas.toString() : undefined;
+    obj.is_smart_account_active = message.isSmartAccountActive === false ? undefined : message.isSmartAccountActive;
     if (message.circuitBreakerControllers) {
       obj.circuit_breaker_controllers = message.circuitBreakerControllers.map(e => e);
     } else {
-      obj.circuit_breaker_controllers = [];
+      obj.circuit_breaker_controllers = message.circuitBreakerControllers;
     }
     return obj;
   },

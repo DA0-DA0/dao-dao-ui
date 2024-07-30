@@ -202,16 +202,16 @@ export const Delegation = {
   },
   toAmino(message: Delegation, useInterfaces: boolean = false): DelegationAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
-    obj.denom = message.denom;
-    obj.shares = message.shares;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.shares = message.shares === "" ? undefined : message.shares;
     if (message.rewardHistory) {
       obj.reward_history = message.rewardHistory.map(e => e ? RewardHistory.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.reward_history = [];
+      obj.reward_history = message.rewardHistory;
     }
-    obj.last_reward_claim_height = message.lastRewardClaimHeight ? message.lastRewardClaimHeight.toString() : undefined;
+    obj.last_reward_claim_height = message.lastRewardClaimHeight !== BigInt(0) ? message.lastRewardClaimHeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: DelegationAminoMsg): Delegation {
@@ -296,8 +296,8 @@ export const Undelegation = {
   },
   toAmino(message: Undelegation, useInterfaces: boolean = false): UndelegationAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.validator_address = message.validatorAddress;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.balance = message.balance ? Coin.toAmino(message.balance, useInterfaces) : undefined;
     return obj;
   },
@@ -362,7 +362,7 @@ export const QueuedUndelegation = {
     if (message.entries) {
       obj.entries = message.entries.map(e => e ? Undelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.entries = [];
+      obj.entries = message.entries;
     }
     return obj;
   },
@@ -445,17 +445,17 @@ export const AllianceValidatorInfo = {
     if (message.globalRewardHistory) {
       obj.global_reward_history = message.globalRewardHistory.map(e => e ? RewardHistory.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.global_reward_history = [];
+      obj.global_reward_history = message.globalRewardHistory;
     }
     if (message.totalDelegatorShares) {
       obj.total_delegator_shares = message.totalDelegatorShares.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.total_delegator_shares = [];
+      obj.total_delegator_shares = message.totalDelegatorShares;
     }
     if (message.validatorShares) {
       obj.validator_shares = message.validatorShares.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.validator_shares = [];
+      obj.validator_shares = message.validatorShares;
     }
     return obj;
   },

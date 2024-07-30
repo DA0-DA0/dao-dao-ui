@@ -160,10 +160,6 @@ export interface GroupSDKType {
  * It takes an array of pool IDs to split the incentives across.
  */
 export interface CreateGroup {
-  /**
-   * CreateGroup is called via governance to create a new group.
-   * It takes an array of pool IDs to split the incentives across.
-   */
   poolIds: bigint[];
 }
 export interface CreateGroupProtoMsg {
@@ -175,10 +171,6 @@ export interface CreateGroupProtoMsg {
  * It takes an array of pool IDs to split the incentives across.
  */
 export interface CreateGroupAmino {
-  /**
-   * CreateGroup is called via governance to create a new group.
-   * It takes an array of pool IDs to split the incentives across.
-   */
   pool_ids?: string[];
 }
 export interface CreateGroupAminoMsg {
@@ -277,11 +269,11 @@ export const InternalGaugeInfo = {
   },
   toAmino(message: InternalGaugeInfo, useInterfaces: boolean = false): InternalGaugeInfoAmino {
     const obj: any = {};
-    obj.total_weight = message.totalWeight;
+    obj.total_weight = message.totalWeight === "" ? undefined : message.totalWeight;
     if (message.gaugeRecords) {
       obj.gauge_records = message.gaugeRecords.map(e => e ? InternalGaugeRecord.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.gauge_records = [];
+      obj.gauge_records = message.gaugeRecords;
     }
     return obj;
   },
@@ -373,9 +365,9 @@ export const InternalGaugeRecord = {
   },
   toAmino(message: InternalGaugeRecord, useInterfaces: boolean = false): InternalGaugeRecordAmino {
     const obj: any = {};
-    obj.gauge_id = message.gaugeId ? message.gaugeId.toString() : undefined;
-    obj.current_weight = message.currentWeight;
-    obj.cumulative_weight = message.cumulativeWeight;
+    obj.gauge_id = message.gaugeId !== BigInt(0) ? message.gaugeId.toString() : undefined;
+    obj.current_weight = message.currentWeight === "" ? undefined : message.currentWeight;
+    obj.cumulative_weight = message.cumulativeWeight === "" ? undefined : message.cumulativeWeight;
     return obj;
   },
   fromAminoMsg(object: InternalGaugeRecordAminoMsg): InternalGaugeRecord {
@@ -460,15 +452,15 @@ export const Group = {
       message.internalGaugeInfo = InternalGaugeInfo.fromAmino(object.internal_gauge_info);
     }
     if (object.splitting_policy !== undefined && object.splitting_policy !== null) {
-      message.splittingPolicy = splittingPolicyFromJSON(object.splitting_policy);
+      message.splittingPolicy = object.splitting_policy;
     }
     return message;
   },
   toAmino(message: Group, useInterfaces: boolean = false): GroupAmino {
     const obj: any = {};
-    obj.group_gauge_id = message.groupGaugeId ? message.groupGaugeId.toString() : undefined;
+    obj.group_gauge_id = message.groupGaugeId !== BigInt(0) ? message.groupGaugeId.toString() : undefined;
     obj.internal_gauge_info = message.internalGaugeInfo ? InternalGaugeInfo.toAmino(message.internalGaugeInfo, useInterfaces) : undefined;
-    obj.splitting_policy = message.splittingPolicy;
+    obj.splitting_policy = message.splittingPolicy === 0 ? undefined : message.splittingPolicy;
     return obj;
   },
   fromAminoMsg(object: GroupAminoMsg): Group {
@@ -547,7 +539,7 @@ export const CreateGroup = {
     if (message.poolIds) {
       obj.pool_ids = message.poolIds.map(e => e.toString());
     } else {
-      obj.pool_ids = [];
+      obj.pool_ids = message.poolIds;
     }
     return obj;
   },

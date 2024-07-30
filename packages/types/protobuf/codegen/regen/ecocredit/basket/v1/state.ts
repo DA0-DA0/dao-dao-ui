@@ -381,13 +381,13 @@ export const Basket = {
   },
   toAmino(message: Basket, useInterfaces: boolean = false): BasketAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.basket_denom = message.basketDenom;
-    obj.name = message.name;
-    obj.disable_auto_retire = message.disableAutoRetire;
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
     obj.date_criteria = message.dateCriteria ? DateCriteria.toAmino(message.dateCriteria, useInterfaces) : undefined;
-    obj.exponent = message.exponent;
+    obj.exponent = message.exponent === 0 ? undefined : message.exponent;
     obj.curator = message.curator ? base64FromBytes(message.curator) : undefined;
     return obj;
   },
@@ -462,8 +462,8 @@ export const BasketClass = {
   },
   toAmino(message: BasketClass, useInterfaces: boolean = false): BasketClassAmino {
     const obj: any = {};
-    obj.basket_id = message.basketId ? message.basketId.toString() : undefined;
-    obj.class_id = message.classId;
+    obj.basket_id = message.basketId !== BigInt(0) ? message.basketId.toString() : undefined;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: BasketClassAminoMsg): BasketClass {
@@ -559,9 +559,9 @@ export const BasketBalance = {
   },
   toAmino(message: BasketBalance, useInterfaces: boolean = false): BasketBalanceAmino {
     const obj: any = {};
-    obj.basket_id = message.basketId ? message.basketId.toString() : undefined;
-    obj.batch_denom = message.batchDenom;
-    obj.balance = message.balance;
+    obj.basket_id = message.basketId !== BigInt(0) ? message.basketId.toString() : undefined;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.balance = message.balance === "" ? undefined : message.balance;
     obj.batch_start_date = message.batchStartDate ? Timestamp.toAmino(toTimestamp(message.batchStartDate)) : undefined;
     return obj;
   },

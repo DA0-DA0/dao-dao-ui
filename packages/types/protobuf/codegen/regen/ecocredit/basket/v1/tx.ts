@@ -709,22 +709,22 @@ export const MsgCreate = {
   },
   toAmino(message: MsgCreate, useInterfaces: boolean = false): MsgCreateAmino {
     const obj: any = {};
-    obj.curator = message.curator;
-    obj.name = message.name;
-    obj.description = message.description;
-    obj.exponent = message.exponent;
-    obj.disable_auto_retire = message.disableAutoRetire;
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
+    obj.curator = message.curator === "" ? undefined : message.curator;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.exponent = message.exponent === 0 ? undefined : message.exponent;
+    obj.disable_auto_retire = message.disableAutoRetire === false ? undefined : message.disableAutoRetire;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
     if (message.allowedClasses) {
       obj.allowed_classes = message.allowedClasses.map(e => e);
     } else {
-      obj.allowed_classes = [];
+      obj.allowed_classes = message.allowedClasses;
     }
     obj.date_criteria = message.dateCriteria ? DateCriteria.toAmino(message.dateCriteria, useInterfaces) : undefined;
     if (message.fee) {
       obj.fee = message.fee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.fee = [];
+      obj.fee = message.fee;
     }
     return obj;
   },
@@ -788,7 +788,7 @@ export const MsgCreateResponse = {
   },
   toAmino(message: MsgCreateResponse, useInterfaces: boolean = false): MsgCreateResponseAmino {
     const obj: any = {};
-    obj.basket_denom = message.basketDenom;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
     return obj;
   },
   fromAminoMsg(object: MsgCreateResponseAminoMsg): MsgCreateResponse {
@@ -871,12 +871,12 @@ export const MsgPut = {
   },
   toAmino(message: MsgPut, useInterfaces: boolean = false): MsgPutAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.basket_denom = message.basketDenom;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? BasketCredit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
     return obj;
   },
@@ -940,7 +940,7 @@ export const MsgPutResponse = {
   },
   toAmino(message: MsgPutResponse, useInterfaces: boolean = false): MsgPutResponseAmino {
     const obj: any = {};
-    obj.amount_received = message.amountReceived;
+    obj.amount_received = message.amountReceived === "" ? undefined : message.amountReceived;
     return obj;
   },
   fromAminoMsg(object: MsgPutResponseAminoMsg): MsgPutResponse {
@@ -1069,13 +1069,13 @@ export const MsgTake = {
   },
   toAmino(message: MsgTake, useInterfaces: boolean = false): MsgTakeAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.basket_denom = message.basketDenom;
-    obj.amount = message.amount;
-    obj.retirement_location = message.retirementLocation;
-    obj.retire_on_take = message.retireOnTake;
-    obj.retirement_jurisdiction = message.retirementJurisdiction;
-    obj.retirement_reason = message.retirementReason;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.basket_denom = message.basketDenom === "" ? undefined : message.basketDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.retirement_location = message.retirementLocation === "" ? undefined : message.retirementLocation;
+    obj.retire_on_take = message.retireOnTake === false ? undefined : message.retireOnTake;
+    obj.retirement_jurisdiction = message.retirementJurisdiction === "" ? undefined : message.retirementJurisdiction;
+    obj.retirement_reason = message.retirementReason === "" ? undefined : message.retirementReason;
     return obj;
   },
   fromAminoMsg(object: MsgTakeAminoMsg): MsgTake {
@@ -1139,7 +1139,7 @@ export const MsgTakeResponse = {
     if (message.credits) {
       obj.credits = message.credits.map(e => e ? BasketCredit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.credits = [];
+      obj.credits = message.credits;
     }
     return obj;
   },
@@ -1214,7 +1214,7 @@ export const MsgUpdateBasketFee = {
   },
   toAmino(message: MsgUpdateBasketFee, useInterfaces: boolean = false): MsgUpdateBasketFeeAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.fee = message.fee ? Coin.toAmino(message.fee, useInterfaces) : undefined;
     return obj;
   },
@@ -1350,9 +1350,9 @@ export const MsgUpdateCurator = {
   },
   toAmino(message: MsgUpdateCurator, useInterfaces: boolean = false): MsgUpdateCuratorAmino {
     const obj: any = {};
-    obj.curator = message.curator;
-    obj.denom = message.denom;
-    obj.new_curator = message.newCurator;
+    obj.curator = message.curator === "" ? undefined : message.curator;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.new_curator = message.newCurator === "" ? undefined : message.newCurator;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateCuratorAminoMsg): MsgUpdateCurator {
@@ -1487,8 +1487,8 @@ export const MsgUpdateDateCriteria = {
   },
   toAmino(message: MsgUpdateDateCriteria, useInterfaces: boolean = false): MsgUpdateDateCriteriaAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.denom = message.denom;
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     obj.new_date_criteria = message.newDateCriteria ? DateCriteria.toAmino(message.newDateCriteria, useInterfaces) : undefined;
     return obj;
   },

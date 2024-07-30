@@ -74,8 +74,8 @@ export const PairID = {
   },
   toAmino(message: PairID, useInterfaces: boolean = false): PairIDAmino {
     const obj: any = {};
-    obj.token0 = message.token0;
-    obj.token1 = message.token1;
+    obj.token0 = message.token0 === "" ? undefined : message.token0;
+    obj.token1 = message.token1 === "" ? undefined : message.token1;
     return obj;
   },
   fromAminoMsg(object: PairIDAminoMsg): PairID {

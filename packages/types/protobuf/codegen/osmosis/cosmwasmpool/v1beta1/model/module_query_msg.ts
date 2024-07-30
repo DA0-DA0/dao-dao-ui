@@ -220,8 +220,8 @@ export const CalcOutAmtGivenIn = {
   toAmino(message: CalcOutAmtGivenIn, useInterfaces: boolean = false): CalcOutAmtGivenInAmino {
     const obj: any = {};
     obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
-    obj.token_out_denom = message.tokenOutDenom;
-    obj.swap_fee = message.swapFee;
+    obj.token_out_denom = message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
+    obj.swap_fee = message.swapFee === "" ? undefined : message.swapFee;
     return obj;
   },
   fromAminoMsg(object: CalcOutAmtGivenInAminoMsg): CalcOutAmtGivenIn {
@@ -451,8 +451,8 @@ export const CalcInAmtGivenOut = {
   toAmino(message: CalcInAmtGivenOut, useInterfaces: boolean = false): CalcInAmtGivenOutAmino {
     const obj: any = {};
     obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
-    obj.token_in_denom = message.tokenInDenom;
-    obj.swap_fee = message.swapFee;
+    obj.token_in_denom = message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.swap_fee = message.swapFee === "" ? undefined : message.swapFee;
     return obj;
   },
   fromAminoMsg(object: CalcInAmtGivenOutAminoMsg): CalcInAmtGivenOut {

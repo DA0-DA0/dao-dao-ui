@@ -3,6 +3,7 @@ import { KVKey, KVKeyAmino, KVKeySDKType } from "./genesis";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { ProofOps, ProofOpsAmino, ProofOpsSDKType, Proof, ProofAmino, ProofSDKType } from "../../tendermint/crypto/proof";
 import { Any, AnyAmino, AnySDKType } from "../../google/protobuf/any";
+import { ExecTxResult, ExecTxResultAmino, ExecTxResultSDKType } from "../../tendermint/abci/types";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes } from "../../helpers";
 export interface MsgRegisterInterchainQuery {
@@ -146,7 +147,7 @@ export interface StorageValue {
    * is the Merkle Proof which proves existence of key-value pair in IAVL
    * storage
    */
-  Proof?: ProofOps | undefined;
+  proof?: ProofOps | undefined;
 }
 export interface StorageValueProtoMsg {
   typeUrl: "/neutron.interchainqueries.StorageValue";
@@ -211,6 +212,7 @@ export interface BlockSDKType {
   tx?: TxValueSDKType | undefined;
 }
 export interface TxValue {
+  response?: ExecTxResult | undefined;
   /**
    * is the Merkle Proof which proves existence of response in block with height
    * next_block_header.Height
@@ -229,6 +231,7 @@ export interface TxValueProtoMsg {
   value: Uint8Array;
 }
 export interface TxValueAmino {
+  response?: ExecTxResultAmino | undefined;
   /**
    * is the Merkle Proof which proves existence of response in block with height
    * next_block_header.Height
@@ -247,6 +250,7 @@ export interface TxValueAminoMsg {
   value: TxValueAmino;
 }
 export interface TxValueSDKType {
+  response?: ExecTxResultSDKType | undefined;
   delivery_proof?: ProofSDKType | undefined;
   inclusion_proof?: ProofSDKType | undefined;
   data: Uint8Array;
@@ -510,16 +514,16 @@ export const MsgRegisterInterchainQuery = {
   },
   toAmino(message: MsgRegisterInterchainQuery, useInterfaces: boolean = false): MsgRegisterInterchainQueryAmino {
     const obj: any = {};
-    obj.query_type = message.queryType;
+    obj.query_type = message.queryType === "" ? undefined : message.queryType;
     if (message.keys) {
       obj.keys = message.keys.map(e => e ? KVKey.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.keys = [];
+      obj.keys = message.keys;
     }
-    obj.transactions_filter = message.transactionsFilter;
-    obj.connection_id = message.connectionId;
-    obj.update_period = message.updatePeriod ? message.updatePeriod.toString() : undefined;
-    obj.sender = message.sender;
+    obj.transactions_filter = message.transactionsFilter === "" ? undefined : message.transactionsFilter;
+    obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
+    obj.update_period = message.updatePeriod !== BigInt(0) ? message.updatePeriod.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainQueryAminoMsg): MsgRegisterInterchainQuery {
@@ -582,7 +586,7 @@ export const MsgRegisterInterchainQueryResponse = {
   },
   toAmino(message: MsgRegisterInterchainQueryResponse, useInterfaces: boolean = false): MsgRegisterInterchainQueryResponseAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainQueryResponseAminoMsg): MsgRegisterInterchainQueryResponse {
@@ -678,9 +682,9 @@ export const MsgSubmitQueryResult = {
   },
   toAmino(message: MsgSubmitQueryResult, useInterfaces: boolean = false): MsgSubmitQueryResultAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.client_id = message.clientId;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.result = message.result ? QueryResult.toAmino(message.result, useInterfaces) : undefined;
     return obj;
   },
@@ -789,12 +793,12 @@ export const QueryResult = {
     if (message.kvResults) {
       obj.kv_results = message.kvResults.map(e => e ? StorageValue.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.kv_results = [];
+      obj.kv_results = message.kvResults;
     }
     obj.block = message.block ? Block.toAmino(message.block, useInterfaces) : undefined;
-    obj.height = message.height ? message.height.toString() : undefined;
-    obj.revision = message.revision ? message.revision.toString() : undefined;
-    obj.allow_kv_callbacks = message.allowKvCallbacks;
+    obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.revision = message.revision !== BigInt(0) ? message.revision.toString() : undefined;
+    obj.allow_kv_callbacks = message.allowKvCallbacks === false ? undefined : message.allowKvCallbacks;
     return obj;
   },
   fromAminoMsg(object: QueryResultAminoMsg): QueryResult {
@@ -818,7 +822,7 @@ function createBaseStorageValue(): StorageValue {
     storagePrefix: "",
     key: new Uint8Array(),
     value: new Uint8Array(),
-    Proof: undefined
+    proof: undefined
   };
 }
 export const StorageValue = {
@@ -833,8 +837,8 @@ export const StorageValue = {
     if (message.value.length !== 0) {
       writer.uint32(26).bytes(message.value);
     }
-    if (message.Proof !== undefined) {
-      ProofOps.encode(message.Proof, writer.uint32(34).fork()).ldelim();
+    if (message.proof !== undefined) {
+      ProofOps.encode(message.proof, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -855,7 +859,7 @@ export const StorageValue = {
           message.value = reader.bytes();
           break;
         case 4:
-          message.Proof = ProofOps.decode(reader, reader.uint32(), useInterfaces);
+          message.proof = ProofOps.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -869,7 +873,7 @@ export const StorageValue = {
     message.storagePrefix = object.storagePrefix ?? "";
     message.key = object.key ?? new Uint8Array();
     message.value = object.value ?? new Uint8Array();
-    message.Proof = object.Proof !== undefined && object.Proof !== null ? ProofOps.fromPartial(object.Proof) : undefined;
+    message.proof = object.proof !== undefined && object.proof !== null ? ProofOps.fromPartial(object.proof) : undefined;
     return message;
   },
   fromAmino(object: StorageValueAmino): StorageValue {
@@ -884,16 +888,16 @@ export const StorageValue = {
       message.value = bytesFromBase64(object.value);
     }
     if (object.Proof !== undefined && object.Proof !== null) {
-      message.Proof = ProofOps.fromAmino(object.Proof);
+      message.proof = ProofOps.fromAmino(object.Proof);
     }
     return message;
   },
   toAmino(message: StorageValue, useInterfaces: boolean = false): StorageValueAmino {
     const obj: any = {};
-    obj.storage_prefix = message.storagePrefix;
+    obj.storage_prefix = message.storagePrefix === "" ? undefined : message.storagePrefix;
     obj.key = message.key ? base64FromBytes(message.key) : undefined;
     obj.value = message.value ? base64FromBytes(message.value) : undefined;
-    obj.Proof = message.Proof ? ProofOps.toAmino(message.Proof, useInterfaces) : undefined;
+    obj.Proof = message.proof ? ProofOps.toAmino(message.proof, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: StorageValueAminoMsg): StorageValue {
@@ -1001,6 +1005,7 @@ export const Block = {
 };
 function createBaseTxValue(): TxValue {
   return {
+    response: undefined,
     deliveryProof: undefined,
     inclusionProof: undefined,
     data: new Uint8Array()
@@ -1009,6 +1014,9 @@ function createBaseTxValue(): TxValue {
 export const TxValue = {
   typeUrl: "/neutron.interchainqueries.TxValue",
   encode(message: TxValue, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.response !== undefined) {
+      ExecTxResult.encode(message.response, writer.uint32(10).fork()).ldelim();
+    }
     if (message.deliveryProof !== undefined) {
       Proof.encode(message.deliveryProof, writer.uint32(18).fork()).ldelim();
     }
@@ -1027,6 +1035,9 @@ export const TxValue = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.response = ExecTxResult.decode(reader, reader.uint32(), useInterfaces);
+          break;
         case 2:
           message.deliveryProof = Proof.decode(reader, reader.uint32(), useInterfaces);
           break;
@@ -1045,6 +1056,7 @@ export const TxValue = {
   },
   fromPartial(object: Partial<TxValue>): TxValue {
     const message = createBaseTxValue();
+    message.response = object.response !== undefined && object.response !== null ? ExecTxResult.fromPartial(object.response) : undefined;
     message.deliveryProof = object.deliveryProof !== undefined && object.deliveryProof !== null ? Proof.fromPartial(object.deliveryProof) : undefined;
     message.inclusionProof = object.inclusionProof !== undefined && object.inclusionProof !== null ? Proof.fromPartial(object.inclusionProof) : undefined;
     message.data = object.data ?? new Uint8Array();
@@ -1052,6 +1064,9 @@ export const TxValue = {
   },
   fromAmino(object: TxValueAmino): TxValue {
     const message = createBaseTxValue();
+    if (object.response !== undefined && object.response !== null) {
+      message.response = ExecTxResult.fromAmino(object.response);
+    }
     if (object.delivery_proof !== undefined && object.delivery_proof !== null) {
       message.deliveryProof = Proof.fromAmino(object.delivery_proof);
     }
@@ -1065,6 +1080,7 @@ export const TxValue = {
   },
   toAmino(message: TxValue, useInterfaces: boolean = false): TxValueAmino {
     const obj: any = {};
+    obj.response = message.response ? ExecTxResult.toAmino(message.response, useInterfaces) : undefined;
     obj.delivery_proof = message.deliveryProof ? Proof.toAmino(message.deliveryProof, useInterfaces) : undefined;
     obj.inclusion_proof = message.inclusionProof ? Proof.toAmino(message.inclusionProof, useInterfaces) : undefined;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
@@ -1191,8 +1207,8 @@ export const MsgRemoveInterchainQueryRequest = {
   },
   toAmino(message: MsgRemoveInterchainQueryRequest, useInterfaces: boolean = false): MsgRemoveInterchainQueryRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
-    obj.sender = message.sender;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveInterchainQueryRequestAminoMsg): MsgRemoveInterchainQueryRequest {
@@ -1347,15 +1363,15 @@ export const MsgUpdateInterchainQueryRequest = {
   },
   toAmino(message: MsgUpdateInterchainQueryRequest, useInterfaces: boolean = false): MsgUpdateInterchainQueryRequestAmino {
     const obj: any = {};
-    obj.query_id = message.queryId ? message.queryId.toString() : undefined;
+    obj.query_id = message.queryId !== BigInt(0) ? message.queryId.toString() : undefined;
     if (message.newKeys) {
       obj.new_keys = message.newKeys.map(e => e ? KVKey.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.new_keys = [];
+      obj.new_keys = message.newKeys;
     }
-    obj.new_update_period = message.newUpdatePeriod ? message.newUpdatePeriod.toString() : undefined;
-    obj.new_transactions_filter = message.newTransactionsFilter;
-    obj.sender = message.sender;
+    obj.new_update_period = message.newUpdatePeriod !== BigInt(0) ? message.newUpdatePeriod.toString() : undefined;
+    obj.new_transactions_filter = message.newTransactionsFilter === "" ? undefined : message.newTransactionsFilter;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateInterchainQueryRequestAminoMsg): MsgUpdateInterchainQueryRequest {
@@ -1479,8 +1495,8 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
+    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.toAmino(Params.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {

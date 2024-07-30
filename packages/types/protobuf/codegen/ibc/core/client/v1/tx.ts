@@ -373,7 +373,7 @@ export const MsgCreateClient = {
     const obj: any = {};
     obj.client_state = message.clientState ? Any.toAmino(message.clientState, useInterfaces) : undefined;
     obj.consensus_state = message.consensusState ? Any.toAmino(message.consensusState, useInterfaces) : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgCreateClientAminoMsg): MsgCreateClient {
@@ -520,9 +520,9 @@ export const MsgUpdateClient = {
   },
   toAmino(message: MsgUpdateClient, useInterfaces: boolean = false): MsgUpdateClientAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.client_message = message.clientMessage ? Any.toAmino(message.clientMessage, useInterfaces) : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateClientAminoMsg): MsgUpdateClient {
@@ -702,12 +702,12 @@ export const MsgUpgradeClient = {
   },
   toAmino(message: MsgUpgradeClient, useInterfaces: boolean = false): MsgUpgradeClientAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.client_state = message.clientState ? Any.toAmino(message.clientState, useInterfaces) : undefined;
     obj.consensus_state = message.consensusState ? Any.toAmino(message.consensusState, useInterfaces) : undefined;
     obj.proof_upgrade_client = message.proofUpgradeClient ? base64FromBytes(message.proofUpgradeClient) : undefined;
     obj.proof_upgrade_consensus_state = message.proofUpgradeConsensusState ? base64FromBytes(message.proofUpgradeConsensusState) : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgUpgradeClientAminoMsg): MsgUpgradeClient {
@@ -854,9 +854,9 @@ export const MsgSubmitMisbehaviour = {
   },
   toAmino(message: MsgSubmitMisbehaviour, useInterfaces: boolean = false): MsgSubmitMisbehaviourAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.misbehaviour = message.misbehaviour ? Any.toAmino(message.misbehaviour, useInterfaces) : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgSubmitMisbehaviourAminoMsg): MsgSubmitMisbehaviour {
@@ -992,7 +992,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority;
+    obj.authority = message.authority === "" ? undefined : message.authority;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

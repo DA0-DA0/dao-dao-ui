@@ -193,7 +193,7 @@ export const GenericAuthorization = {
   },
   toAmino(message: GenericAuthorization, useInterfaces: boolean = false): GenericAuthorizationAmino {
     const obj: any = {};
-    obj.msg = message.msg;
+    obj.msg = message.msg === "" ? undefined : message.msg;
     return obj;
   },
   fromAminoMsg(object: GenericAuthorizationAminoMsg): GenericAuthorization {
@@ -376,8 +376,8 @@ export const GrantAuthorization = {
   },
   toAmino(message: GrantAuthorization, useInterfaces: boolean = false): GrantAuthorizationAmino {
     const obj: any = {};
-    obj.granter = message.granter;
-    obj.grantee = message.grantee;
+    obj.granter = message.granter === "" ? undefined : message.granter;
+    obj.grantee = message.grantee === "" ? undefined : message.grantee;
     obj.authorization = message.authorization ? Cosmos_authzv1beta1Authorization_ToAmino((message.authorization as Any), useInterfaces) : undefined;
     obj.expiration = message.expiration ? Timestamp.toAmino(toTimestamp(message.expiration)) : undefined;
     return obj;
@@ -449,7 +449,7 @@ export const GrantQueueItem = {
     if (message.msgTypeUrls) {
       obj.msg_type_urls = message.msgTypeUrls.map(e => e);
     } else {
-      obj.msg_type_urls = [];
+      obj.msg_type_urls = message.msgTypeUrls;
     }
     return obj;
   },
@@ -497,7 +497,7 @@ export const Cosmos_authzv1beta1Authorization_InterfaceDecoder = (input: BinaryR
       return data;
   }
 };
-export const Cosmos_authzv1beta1Authorization_FromAmino = (content: AnyAmino) => {
+export const Cosmos_authzv1beta1Authorization_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "cosmos-sdk/GenericAuthorization":
       return Any.fromPartial({

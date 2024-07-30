@@ -72,7 +72,7 @@ export const Params = {
     if (message.adminAddresses) {
       obj.admin_addresses = message.adminAddresses.map(e => e);
     } else {
-      obj.admin_addresses = [];
+      obj.admin_addresses = message.adminAddresses;
     }
     return obj;
   },

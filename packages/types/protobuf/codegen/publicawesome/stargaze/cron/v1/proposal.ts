@@ -164,9 +164,9 @@ export const PromoteToPrivilegedContractProposal = {
   },
   toAmino(message: PromoteToPrivilegedContractProposal, useInterfaces: boolean = false): PromoteToPrivilegedContractProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.contract = message.contract;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     return obj;
   },
   fromAminoMsg(object: PromoteToPrivilegedContractProposalAminoMsg): PromoteToPrivilegedContractProposal {
@@ -252,9 +252,9 @@ export const DemotePrivilegedContractProposal = {
   },
   toAmino(message: DemotePrivilegedContractProposal, useInterfaces: boolean = false): DemotePrivilegedContractProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
-    obj.contract = message.contract;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description = message.description === "" ? undefined : message.description;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     return obj;
   },
   fromAminoMsg(object: DemotePrivilegedContractProposalAminoMsg): DemotePrivilegedContractProposal {

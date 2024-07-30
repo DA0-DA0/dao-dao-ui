@@ -423,7 +423,7 @@ export const AllowListedValidators = {
     if (message.allowListedValidators) {
       obj.allow_listed_validators = message.allowListedValidators.map(e => e ? AllowListedValidator.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.allow_listed_validators = [];
+      obj.allow_listed_validators = message.allowListedValidators;
     }
     return obj;
   },
@@ -498,8 +498,8 @@ export const AllowListedValidator = {
   },
   toAmino(message: AllowListedValidator, useInterfaces: boolean = false): AllowListedValidatorAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
-    obj.target_weight = message.targetWeight;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
+    obj.target_weight = message.targetWeight === "" ? undefined : message.targetWeight;
     return obj;
   },
   fromAminoMsg(object: AllowListedValidatorAminoMsg): AllowListedValidator {
@@ -606,11 +606,11 @@ export const PstakeParams = {
   },
   toAmino(message: PstakeParams, useInterfaces: boolean = false): PstakeParamsAmino {
     const obj: any = {};
-    obj.pstake_deposit_fee = message.pstakeDepositFee;
-    obj.pstake_restake_fee = message.pstakeRestakeFee;
-    obj.pstake_unstake_fee = message.pstakeUnstakeFee;
-    obj.pstake_redemption_fee = message.pstakeRedemptionFee;
-    obj.pstake_fee_address = message.pstakeFeeAddress;
+    obj.pstake_deposit_fee = message.pstakeDepositFee === "" ? undefined : message.pstakeDepositFee;
+    obj.pstake_restake_fee = message.pstakeRestakeFee === "" ? undefined : message.pstakeRestakeFee;
+    obj.pstake_unstake_fee = message.pstakeUnstakeFee === "" ? undefined : message.pstakeUnstakeFee;
+    obj.pstake_redemption_fee = message.pstakeRedemptionFee === "" ? undefined : message.pstakeRedemptionFee;
+    obj.pstake_fee_address = message.pstakeFeeAddress === "" ? undefined : message.pstakeFeeAddress;
     return obj;
   },
   fromAminoMsg(object: PstakeParamsAminoMsg): PstakeParams {
@@ -750,13 +750,13 @@ export const HostChainParams = {
   },
   toAmino(message: HostChainParams, useInterfaces: boolean = false): HostChainParamsAmino {
     const obj: any = {};
-    obj.chain_i_d = message.chainID;
-    obj.connection_i_d = message.connectionID;
-    obj.transfer_channel = message.transferChannel;
-    obj.transfer_port = message.transferPort;
-    obj.base_denom = message.baseDenom;
-    obj.mint_denom = message.mintDenom;
-    obj.min_deposit = message.minDeposit;
+    obj.chain_i_d = message.chainID === "" ? undefined : message.chainID;
+    obj.connection_i_d = message.connectionID === "" ? undefined : message.connectionID;
+    obj.transfer_channel = message.transferChannel === "" ? undefined : message.transferChannel;
+    obj.transfer_port = message.transferPort === "" ? undefined : message.transferPort;
+    obj.base_denom = message.baseDenom === "" ? undefined : message.baseDenom;
+    obj.mint_denom = message.mintDenom === "" ? undefined : message.mintDenom;
+    obj.min_deposit = message.minDeposit === "" ? undefined : message.minDeposit;
     obj.pstake_params = message.pstakeParams ? PstakeParams.toAmino(message.pstakeParams, useInterfaces) : undefined;
     return obj;
   },
@@ -850,18 +850,18 @@ export const DelegationState = {
     if (message.hostDelegationAccountBalance) {
       obj.host_delegation_account_balance = message.hostDelegationAccountBalance.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_delegation_account_balance = [];
+      obj.host_delegation_account_balance = message.hostDelegationAccountBalance;
     }
-    obj.host_chain_delegation_address = message.hostChainDelegationAddress;
+    obj.host_chain_delegation_address = message.hostChainDelegationAddress === "" ? undefined : message.hostChainDelegationAddress;
     if (message.hostAccountDelegations) {
       obj.host_account_delegations = message.hostAccountDelegations.map(e => e ? HostAccountDelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_account_delegations = [];
+      obj.host_account_delegations = message.hostAccountDelegations;
     }
     if (message.hostAccountUndelegations) {
       obj.host_account_undelegations = message.hostAccountUndelegations.map(e => e ? HostAccountUndelegation.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.host_account_undelegations = [];
+      obj.host_account_undelegations = message.hostAccountUndelegations;
     }
     return obj;
   },
@@ -936,7 +936,7 @@ export const HostAccountDelegation = {
   },
   toAmino(message: HostAccountDelegation, useInterfaces: boolean = false): HostAccountDelegationAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -1031,13 +1031,13 @@ export const HostAccountUndelegation = {
   },
   toAmino(message: HostAccountUndelegation, useInterfaces: boolean = false): HostAccountUndelegationAmino {
     const obj: any = {};
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.total_undelegation_amount = message.totalUndelegationAmount ? Coin.toAmino(message.totalUndelegationAmount, useInterfaces) : undefined;
     obj.completion_time = message.completionTime ? Timestamp.toAmino(toTimestamp(message.completionTime)) : undefined;
     if (message.undelegationEntries) {
       obj.undelegation_entries = message.undelegationEntries.map(e => e ? UndelegationEntry.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.undelegation_entries = [];
+      obj.undelegation_entries = message.undelegationEntries;
     }
     return obj;
   },
@@ -1112,7 +1112,7 @@ export const UndelegationEntry = {
   },
   toAmino(message: UndelegationEntry, useInterfaces: boolean = false): UndelegationEntryAmino {
     const obj: any = {};
-    obj.validator_address = message.validatorAddress;
+    obj.validator_address = message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -1176,7 +1176,7 @@ export const HostChainRewardAddress = {
   },
   toAmino(message: HostChainRewardAddress, useInterfaces: boolean = false): HostChainRewardAddressAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     return obj;
   },
   fromAminoMsg(object: HostChainRewardAddressAminoMsg): HostChainRewardAddress {
@@ -1260,13 +1260,13 @@ export const IBCAmountTransientStore = {
     if (message.iBCTransfer) {
       obj.i_b_c_transfer = message.iBCTransfer.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.i_b_c_transfer = [];
+      obj.i_b_c_transfer = message.iBCTransfer;
     }
     obj.i_c_a_delegate = message.iCADelegate ? Coin.toAmino(message.iCADelegate, useInterfaces) : undefined;
     if (message.undelegatonCompleteIBCTransfer) {
       obj.undelegaton_complete_i_b_c_transfer = message.undelegatonCompleteIBCTransfer.map(e => e ? TransientUndelegationTransfer.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.undelegaton_complete_i_b_c_transfer = [];
+      obj.undelegaton_complete_i_b_c_transfer = message.undelegatonCompleteIBCTransfer;
     }
     return obj;
   },
@@ -1341,7 +1341,7 @@ export const TransientUndelegationTransfer = {
   },
   toAmino(message: TransientUndelegationTransfer, useInterfaces: boolean = false): TransientUndelegationTransferAmino {
     const obj: any = {};
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.amount_unbonded = message.amountUnbonded ? Coin.toAmino(message.amountUnbonded, useInterfaces) : undefined;
     return obj;
   },
@@ -1449,11 +1449,11 @@ export const UnbondingEpochCValue = {
   },
   toAmino(message: UnbondingEpochCValue, useInterfaces: boolean = false): UnbondingEpochCValueAmino {
     const obj: any = {};
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.s_t_k_burn = message.sTKBurn ? Coin.toAmino(message.sTKBurn, useInterfaces) : undefined;
     obj.amount_unbonded = message.amountUnbonded ? Coin.toAmino(message.amountUnbonded, useInterfaces) : undefined;
-    obj.is_matured = message.isMatured;
-    obj.is_failed = message.isFailed;
+    obj.is_matured = message.isMatured === false ? undefined : message.isMatured;
+    obj.is_failed = message.isFailed === false ? undefined : message.isFailed;
     return obj;
   },
   fromAminoMsg(object: UnbondingEpochCValueAminoMsg): UnbondingEpochCValue {
@@ -1538,8 +1538,8 @@ export const DelegatorUnbondingEpochEntry = {
   },
   toAmino(message: DelegatorUnbondingEpochEntry, useInterfaces: boolean = false): DelegatorUnbondingEpochEntryAmino {
     const obj: any = {};
-    obj.delegator_address = message.delegatorAddress;
-    obj.epoch_number = message.epochNumber ? message.epochNumber.toString() : undefined;
+    obj.delegator_address = message.delegatorAddress === "" ? undefined : message.delegatorAddress;
+    obj.epoch_number = message.epochNumber !== BigInt(0) ? message.epochNumber.toString() : undefined;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
     return obj;
   },
@@ -1614,8 +1614,8 @@ export const HostAccounts = {
   },
   toAmino(message: HostAccounts, useInterfaces: boolean = false): HostAccountsAmino {
     const obj: any = {};
-    obj.delegator_account_owner_i_d = message.delegatorAccountOwnerID;
-    obj.rewards_account_owner_i_d = message.rewardsAccountOwnerID;
+    obj.delegator_account_owner_i_d = message.delegatorAccountOwnerID === "" ? undefined : message.delegatorAccountOwnerID;
+    obj.rewards_account_owner_i_d = message.rewardsAccountOwnerID === "" ? undefined : message.rewardsAccountOwnerID;
     return obj;
   },
   fromAminoMsg(object: HostAccountsAminoMsg): HostAccounts {

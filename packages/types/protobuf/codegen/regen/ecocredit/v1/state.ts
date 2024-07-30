@@ -995,10 +995,10 @@ export const CreditType = {
   },
   toAmino(message: CreditType, useInterfaces: boolean = false): CreditTypeAmino {
     const obj: any = {};
-    obj.abbreviation = message.abbreviation;
-    obj.name = message.name;
-    obj.unit = message.unit;
-    obj.precision = message.precision;
+    obj.abbreviation = message.abbreviation === "" ? undefined : message.abbreviation;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.unit = message.unit === "" ? undefined : message.unit;
+    obj.precision = message.precision === 0 ? undefined : message.precision;
     return obj;
   },
   fromAminoMsg(object: CreditTypeAminoMsg): CreditType {
@@ -1105,11 +1105,11 @@ export const Class = {
   },
   toAmino(message: Class, useInterfaces: boolean = false): ClassAmino {
     const obj: any = {};
-    obj.key = message.key ? message.key.toString() : undefined;
-    obj.id = message.id;
+    obj.key = message.key !== BigInt(0) ? message.key.toString() : undefined;
+    obj.id = message.id === "" ? undefined : message.id;
     obj.admin = message.admin ? base64FromBytes(message.admin) : undefined;
-    obj.metadata = message.metadata;
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
     return obj;
   },
   fromAminoMsg(object: ClassAminoMsg): Class {
@@ -1183,7 +1183,7 @@ export const ClassIssuer = {
   },
   toAmino(message: ClassIssuer, useInterfaces: boolean = false): ClassIssuerAmino {
     const obj: any = {};
-    obj.class_key = message.classKey ? message.classKey.toString() : undefined;
+    obj.class_key = message.classKey !== BigInt(0) ? message.classKey.toString() : undefined;
     obj.issuer = message.issuer ? base64FromBytes(message.issuer) : undefined;
     return obj;
   },
@@ -1313,13 +1313,13 @@ export const Project = {
   },
   toAmino(message: Project, useInterfaces: boolean = false): ProjectAmino {
     const obj: any = {};
-    obj.key = message.key ? message.key.toString() : undefined;
-    obj.id = message.id;
+    obj.key = message.key !== BigInt(0) ? message.key.toString() : undefined;
+    obj.id = message.id === "" ? undefined : message.id;
     obj.admin = message.admin ? base64FromBytes(message.admin) : undefined;
-    obj.class_key = message.classKey ? message.classKey.toString() : undefined;
-    obj.jurisdiction = message.jurisdiction;
-    obj.metadata = message.metadata;
-    obj.reference_id = message.referenceId;
+    obj.class_key = message.classKey !== BigInt(0) ? message.classKey.toString() : undefined;
+    obj.jurisdiction = message.jurisdiction === "" ? undefined : message.jurisdiction;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
+    obj.reference_id = message.referenceId === "" ? undefined : message.referenceId;
     return obj;
   },
   fromAminoMsg(object: ProjectAminoMsg): Project {
@@ -1470,15 +1470,15 @@ export const Batch = {
   },
   toAmino(message: Batch, useInterfaces: boolean = false): BatchAmino {
     const obj: any = {};
-    obj.key = message.key ? message.key.toString() : undefined;
+    obj.key = message.key !== BigInt(0) ? message.key.toString() : undefined;
     obj.issuer = message.issuer ? base64FromBytes(message.issuer) : undefined;
-    obj.project_key = message.projectKey ? message.projectKey.toString() : undefined;
-    obj.denom = message.denom;
-    obj.metadata = message.metadata;
+    obj.project_key = message.projectKey !== BigInt(0) ? message.projectKey.toString() : undefined;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.metadata = message.metadata === "" ? undefined : message.metadata;
     obj.start_date = message.startDate ? Timestamp.toAmino(toTimestamp(message.startDate)) : undefined;
     obj.end_date = message.endDate ? Timestamp.toAmino(toTimestamp(message.endDate)) : undefined;
     obj.issuance_date = message.issuanceDate ? Timestamp.toAmino(toTimestamp(message.issuanceDate)) : undefined;
-    obj.open = message.open;
+    obj.open = message.open === false ? undefined : message.open;
     return obj;
   },
   fromAminoMsg(object: BatchAminoMsg): Batch {
@@ -1552,8 +1552,8 @@ export const ClassSequence = {
   },
   toAmino(message: ClassSequence, useInterfaces: boolean = false): ClassSequenceAmino {
     const obj: any = {};
-    obj.credit_type_abbrev = message.creditTypeAbbrev;
-    obj.next_sequence = message.nextSequence ? message.nextSequence.toString() : undefined;
+    obj.credit_type_abbrev = message.creditTypeAbbrev === "" ? undefined : message.creditTypeAbbrev;
+    obj.next_sequence = message.nextSequence !== BigInt(0) ? message.nextSequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ClassSequenceAminoMsg): ClassSequence {
@@ -1627,8 +1627,8 @@ export const ProjectSequence = {
   },
   toAmino(message: ProjectSequence, useInterfaces: boolean = false): ProjectSequenceAmino {
     const obj: any = {};
-    obj.class_key = message.classKey ? message.classKey.toString() : undefined;
-    obj.next_sequence = message.nextSequence ? message.nextSequence.toString() : undefined;
+    obj.class_key = message.classKey !== BigInt(0) ? message.classKey.toString() : undefined;
+    obj.next_sequence = message.nextSequence !== BigInt(0) ? message.nextSequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ProjectSequenceAminoMsg): ProjectSequence {
@@ -1702,8 +1702,8 @@ export const BatchSequence = {
   },
   toAmino(message: BatchSequence, useInterfaces: boolean = false): BatchSequenceAmino {
     const obj: any = {};
-    obj.project_key = message.projectKey ? message.projectKey.toString() : undefined;
-    obj.next_sequence = message.nextSequence ? message.nextSequence.toString() : undefined;
+    obj.project_key = message.projectKey !== BigInt(0) ? message.projectKey.toString() : undefined;
+    obj.next_sequence = message.nextSequence !== BigInt(0) ? message.nextSequence.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: BatchSequenceAminoMsg): BatchSequence {
@@ -1810,11 +1810,11 @@ export const BatchBalance = {
   },
   toAmino(message: BatchBalance, useInterfaces: boolean = false): BatchBalanceAmino {
     const obj: any = {};
-    obj.batch_key = message.batchKey ? message.batchKey.toString() : undefined;
+    obj.batch_key = message.batchKey !== BigInt(0) ? message.batchKey.toString() : undefined;
     obj.address = message.address ? base64FromBytes(message.address) : undefined;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
-    obj.escrowed_amount = message.escrowedAmount;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
+    obj.escrowed_amount = message.escrowedAmount === "" ? undefined : message.escrowedAmount;
     return obj;
   },
   fromAminoMsg(object: BatchBalanceAminoMsg): BatchBalance {
@@ -1910,10 +1910,10 @@ export const BatchSupply = {
   },
   toAmino(message: BatchSupply, useInterfaces: boolean = false): BatchSupplyAmino {
     const obj: any = {};
-    obj.batch_key = message.batchKey ? message.batchKey.toString() : undefined;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
-    obj.cancelled_amount = message.cancelledAmount;
+    obj.batch_key = message.batchKey !== BigInt(0) ? message.batchKey.toString() : undefined;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
+    obj.cancelled_amount = message.cancelledAmount === "" ? undefined : message.cancelledAmount;
     return obj;
   },
   fromAminoMsg(object: BatchSupplyAminoMsg): BatchSupply {
@@ -1998,9 +1998,9 @@ export const OriginTxIndex = {
   },
   toAmino(message: OriginTxIndex, useInterfaces: boolean = false): OriginTxIndexAmino {
     const obj: any = {};
-    obj.class_key = message.classKey ? message.classKey.toString() : undefined;
-    obj.id = message.id;
-    obj.source = message.source;
+    obj.class_key = message.classKey !== BigInt(0) ? message.classKey.toString() : undefined;
+    obj.id = message.id === "" ? undefined : message.id;
+    obj.source = message.source === "" ? undefined : message.source;
     return obj;
   },
   fromAminoMsg(object: OriginTxIndexAminoMsg): OriginTxIndex {
@@ -2085,9 +2085,9 @@ export const BatchContract = {
   },
   toAmino(message: BatchContract, useInterfaces: boolean = false): BatchContractAmino {
     const obj: any = {};
-    obj.batch_key = message.batchKey ? message.batchKey.toString() : undefined;
-    obj.class_key = message.classKey ? message.classKey.toString() : undefined;
-    obj.contract = message.contract;
+    obj.batch_key = message.batchKey !== BigInt(0) ? message.batchKey.toString() : undefined;
+    obj.class_key = message.classKey !== BigInt(0) ? message.classKey.toString() : undefined;
+    obj.contract = message.contract === "" ? undefined : message.contract;
     return obj;
   },
   fromAminoMsg(object: BatchContractAminoMsg): BatchContract {
@@ -2150,7 +2150,7 @@ export const ClassCreatorAllowlist = {
   },
   toAmino(message: ClassCreatorAllowlist, useInterfaces: boolean = false): ClassCreatorAllowlistAmino {
     const obj: any = {};
-    obj.enabled = message.enabled;
+    obj.enabled = message.enabled === false ? undefined : message.enabled;
     return obj;
   },
   fromAminoMsg(object: ClassCreatorAllowlistAminoMsg): ClassCreatorAllowlist {
@@ -2339,7 +2339,7 @@ export const AllowedBridgeChain = {
   },
   toAmino(message: AllowedBridgeChain, useInterfaces: boolean = false): AllowedBridgeChainAmino {
     const obj: any = {};
-    obj.chain_name = message.chainName;
+    obj.chain_name = message.chainName === "" ? undefined : message.chainName;
     return obj;
   },
   fromAminoMsg(object: AllowedBridgeChainAminoMsg): AllowedBridgeChain {

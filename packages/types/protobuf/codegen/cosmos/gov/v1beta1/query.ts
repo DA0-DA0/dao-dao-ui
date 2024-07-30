@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { ProposalStatus, Proposal, ProposalAmino, ProposalSDKType, Vote, VoteAmino, VoteSDKType, VotingParams, VotingParamsAmino, VotingParamsSDKType, DepositParams, DepositParamsAmino, DepositParamsSDKType, TallyParams, TallyParamsAmino, TallyParamsSDKType, Deposit, DepositAmino, DepositSDKType, TallyResult, TallyResultAmino, TallyResultSDKType, proposalStatusFromJSON } from "./gov";
+import { ProposalStatus, Proposal, ProposalAmino, ProposalSDKType, Vote, VoteAmino, VoteSDKType, VotingParams, VotingParamsAmino, VotingParamsSDKType, DepositParams, DepositParamsAmino, DepositParamsSDKType, TallyParams, TallyParamsAmino, TallyParamsSDKType, Deposit, DepositAmino, DepositSDKType, TallyResult, TallyResultAmino, TallyResultSDKType } from "./gov";
 import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageResponseAmino, PageResponseSDKType } from "../../base/query/v1beta1/pagination";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** QueryProposalRequest is the request type for the Query/Proposal RPC method. */
@@ -471,7 +471,7 @@ export const QueryProposalRequest = {
   },
   toAmino(message: QueryProposalRequest, useInterfaces: boolean = false): QueryProposalRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryProposalRequestAminoMsg): QueryProposalRequest {
@@ -540,7 +540,7 @@ export const QueryProposalResponse = {
   },
   toAmino(message: QueryProposalResponse, useInterfaces: boolean = false): QueryProposalResponseAmino {
     const obj: any = {};
-    obj.proposal = message.proposal ? Proposal.toAmino(message.proposal, useInterfaces) : Proposal.fromPartial({});
+    obj.proposal = message.proposal ? Proposal.toAmino(message.proposal, useInterfaces) : Proposal.toAmino(Proposal.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryProposalResponseAminoMsg): QueryProposalResponse {
@@ -627,7 +627,7 @@ export const QueryProposalsRequest = {
   fromAmino(object: QueryProposalsRequestAmino): QueryProposalsRequest {
     const message = createBaseQueryProposalsRequest();
     if (object.proposal_status !== undefined && object.proposal_status !== null) {
-      message.proposalStatus = proposalStatusFromJSON(object.proposal_status);
+      message.proposalStatus = object.proposal_status;
     }
     if (object.voter !== undefined && object.voter !== null) {
       message.voter = object.voter;
@@ -642,9 +642,9 @@ export const QueryProposalsRequest = {
   },
   toAmino(message: QueryProposalsRequest, useInterfaces: boolean = false): QueryProposalsRequestAmino {
     const obj: any = {};
-    obj.proposal_status = message.proposalStatus;
-    obj.voter = message.voter;
-    obj.depositor = message.depositor;
+    obj.proposal_status = message.proposalStatus === 0 ? undefined : message.proposalStatus;
+    obj.voter = message.voter === "" ? undefined : message.voter;
+    obj.depositor = message.depositor === "" ? undefined : message.depositor;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -726,7 +726,7 @@ export const QueryProposalsResponse = {
     if (message.proposals) {
       obj.proposals = message.proposals.map(e => e ? Proposal.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.proposals = [];
+      obj.proposals = message.proposals;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -808,8 +808,8 @@ export const QueryVoteRequest = {
   },
   toAmino(message: QueryVoteRequest, useInterfaces: boolean = false): QueryVoteRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
-    obj.voter = message.voter;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
+    obj.voter = message.voter === "" ? undefined : message.voter;
     return obj;
   },
   fromAminoMsg(object: QueryVoteRequestAminoMsg): QueryVoteRequest {
@@ -878,7 +878,7 @@ export const QueryVoteResponse = {
   },
   toAmino(message: QueryVoteResponse, useInterfaces: boolean = false): QueryVoteResponseAmino {
     const obj: any = {};
-    obj.vote = message.vote ? Vote.toAmino(message.vote, useInterfaces) : Vote.fromPartial({});
+    obj.vote = message.vote ? Vote.toAmino(message.vote, useInterfaces) : Vote.toAmino(Vote.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryVoteResponseAminoMsg): QueryVoteResponse {
@@ -958,7 +958,7 @@ export const QueryVotesRequest = {
   },
   toAmino(message: QueryVotesRequest, useInterfaces: boolean = false): QueryVotesRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1040,7 +1040,7 @@ export const QueryVotesResponse = {
     if (message.votes) {
       obj.votes = message.votes.map(e => e ? Vote.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.votes = [];
+      obj.votes = message.votes;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1111,7 +1111,7 @@ export const QueryParamsRequest = {
   },
   toAmino(message: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
-    obj.params_type = message.paramsType;
+    obj.params_type = message.paramsType === "" ? undefined : message.paramsType;
     return obj;
   },
   fromAminoMsg(object: QueryParamsRequestAminoMsg): QueryParamsRequest {
@@ -1202,9 +1202,9 @@ export const QueryParamsResponse = {
   },
   toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.voting_params = message.votingParams ? VotingParams.toAmino(message.votingParams, useInterfaces) : VotingParams.fromPartial({});
-    obj.deposit_params = message.depositParams ? DepositParams.toAmino(message.depositParams, useInterfaces) : DepositParams.fromPartial({});
-    obj.tally_params = message.tallyParams ? TallyParams.toAmino(message.tallyParams, useInterfaces) : TallyParams.fromPartial({});
+    obj.voting_params = message.votingParams ? VotingParams.toAmino(message.votingParams, useInterfaces) : VotingParams.toAmino(VotingParams.fromPartial({}));
+    obj.deposit_params = message.depositParams ? DepositParams.toAmino(message.depositParams, useInterfaces) : DepositParams.toAmino(DepositParams.fromPartial({}));
+    obj.tally_params = message.tallyParams ? TallyParams.toAmino(message.tallyParams, useInterfaces) : TallyParams.toAmino(TallyParams.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
@@ -1284,8 +1284,8 @@ export const QueryDepositRequest = {
   },
   toAmino(message: QueryDepositRequest, useInterfaces: boolean = false): QueryDepositRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
-    obj.depositor = message.depositor;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
+    obj.depositor = message.depositor === "" ? undefined : message.depositor;
     return obj;
   },
   fromAminoMsg(object: QueryDepositRequestAminoMsg): QueryDepositRequest {
@@ -1354,7 +1354,7 @@ export const QueryDepositResponse = {
   },
   toAmino(message: QueryDepositResponse, useInterfaces: boolean = false): QueryDepositResponseAmino {
     const obj: any = {};
-    obj.deposit = message.deposit ? Deposit.toAmino(message.deposit, useInterfaces) : Deposit.fromPartial({});
+    obj.deposit = message.deposit ? Deposit.toAmino(message.deposit, useInterfaces) : Deposit.toAmino(Deposit.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryDepositResponseAminoMsg): QueryDepositResponse {
@@ -1434,7 +1434,7 @@ export const QueryDepositsRequest = {
   },
   toAmino(message: QueryDepositsRequest, useInterfaces: boolean = false): QueryDepositsRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
@@ -1516,7 +1516,7 @@ export const QueryDepositsResponse = {
     if (message.deposits) {
       obj.deposits = message.deposits.map(e => e ? Deposit.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.deposits = [];
+      obj.deposits = message.deposits;
     }
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
@@ -1587,7 +1587,7 @@ export const QueryTallyResultRequest = {
   },
   toAmino(message: QueryTallyResultRequest, useInterfaces: boolean = false): QueryTallyResultRequestAmino {
     const obj: any = {};
-    obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
+    obj.proposal_id = message.proposalId !== BigInt(0) ? message.proposalId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryTallyResultRequestAminoMsg): QueryTallyResultRequest {
@@ -1656,7 +1656,7 @@ export const QueryTallyResultResponse = {
   },
   toAmino(message: QueryTallyResultResponse, useInterfaces: boolean = false): QueryTallyResultResponseAmino {
     const obj: any = {};
-    obj.tally = message.tally ? TallyResult.toAmino(message.tally, useInterfaces) : TallyResult.fromPartial({});
+    obj.tally = message.tally ? TallyResult.toAmino(message.tally, useInterfaces) : TallyResult.toAmino(TallyResult.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: QueryTallyResultResponseAminoMsg): QueryTallyResultResponse {

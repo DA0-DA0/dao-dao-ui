@@ -110,7 +110,7 @@ export const Minter = {
   },
   toAmino(message: Minter, useInterfaces: boolean = false): MinterAmino {
     const obj: any = {};
-    obj.annual_provisions = message.annualProvisions;
+    obj.annual_provisions = message.annualProvisions === "" ? undefined : message.annualProvisions;
     return obj;
   },
   fromAminoMsg(object: MinterAminoMsg): Minter {
@@ -217,11 +217,11 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.mint_denom = message.mintDenom;
+    obj.mint_denom = message.mintDenom === "" ? undefined : message.mintDenom;
     obj.start_time = message.startTime ? Timestamp.toAmino(toTimestamp(message.startTime)) : undefined;
-    obj.initial_annual_provisions = message.initialAnnualProvisions;
-    obj.reduction_factor = message.reductionFactor;
-    obj.blocks_per_year = message.blocksPerYear ? message.blocksPerYear.toString() : undefined;
+    obj.initial_annual_provisions = message.initialAnnualProvisions === "" ? undefined : message.initialAnnualProvisions;
+    obj.reduction_factor = message.reductionFactor === "" ? undefined : message.reductionFactor;
+    obj.blocks_per_year = message.blocksPerYear !== BigInt(0) ? message.blocksPerYear.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

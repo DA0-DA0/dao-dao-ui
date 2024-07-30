@@ -125,14 +125,14 @@ export const MsgCreateBalancerPool = {
   },
   toAmino(message: MsgCreateBalancerPool, useInterfaces: boolean = false): MsgCreateBalancerPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.pool_params = message.poolParams ? PoolParams.toAmino(message.poolParams, useInterfaces) : undefined;
     if (message.poolAssets) {
       obj.pool_assets = message.poolAssets.map(e => e ? PoolAsset.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.pool_assets = [];
+      obj.pool_assets = message.poolAssets;
     }
-    obj.future_pool_governor = message.futurePoolGovernor;
+    obj.future_pool_governor = message.futurePoolGovernor === "" ? undefined : message.futurePoolGovernor;
     return obj;
   },
   fromAminoMsg(object: MsgCreateBalancerPoolAminoMsg): MsgCreateBalancerPool {
@@ -201,7 +201,7 @@ export const MsgCreateBalancerPoolResponse = {
   },
   toAmino(message: MsgCreateBalancerPoolResponse, useInterfaces: boolean = false): MsgCreateBalancerPoolResponseAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgCreateBalancerPoolResponseAminoMsg): MsgCreateBalancerPoolResponse {

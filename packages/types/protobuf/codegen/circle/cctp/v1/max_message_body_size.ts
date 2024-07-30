@@ -72,7 +72,7 @@ export const MaxMessageBodySize = {
   },
   toAmino(message: MaxMessageBodySize, useInterfaces: boolean = false): MaxMessageBodySizeAmino {
     const obj: any = {};
-    obj.amount = message.amount ? message.amount.toString() : undefined;
+    obj.amount = message.amount !== BigInt(0) ? message.amount.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MaxMessageBodySizeAminoMsg): MaxMessageBodySize {

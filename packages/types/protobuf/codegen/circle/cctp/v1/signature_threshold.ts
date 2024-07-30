@@ -75,7 +75,7 @@ export const SignatureThreshold = {
   },
   toAmino(message: SignatureThreshold, useInterfaces: boolean = false): SignatureThresholdAmino {
     const obj: any = {};
-    obj.amount = message.amount;
+    obj.amount = message.amount === 0 ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: SignatureThresholdAminoMsg): SignatureThreshold {

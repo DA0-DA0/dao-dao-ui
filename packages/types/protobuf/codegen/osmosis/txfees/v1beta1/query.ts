@@ -282,7 +282,7 @@ export const QueryFeeTokensResponse = {
     if (message.feeTokens) {
       obj.fee_tokens = message.feeTokens.map(e => e ? FeeToken.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.fee_tokens = [];
+      obj.fee_tokens = message.feeTokens;
     }
     return obj;
   },
@@ -352,7 +352,7 @@ export const QueryDenomSpotPriceRequest = {
   },
   toAmino(message: QueryDenomSpotPriceRequest, useInterfaces: boolean = false): QueryDenomSpotPriceRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryDenomSpotPriceRequestAminoMsg): QueryDenomSpotPriceRequest {
@@ -432,8 +432,8 @@ export const QueryDenomSpotPriceResponse = {
   },
   toAmino(message: QueryDenomSpotPriceResponse, useInterfaces: boolean = false): QueryDenomSpotPriceResponseAmino {
     const obj: any = {};
-    obj.poolID = message.poolID ? message.poolID.toString() : undefined;
-    obj.spot_price = message.spotPrice;
+    obj.poolID = message.poolID !== BigInt(0) ? message.poolID.toString() : undefined;
+    obj.spot_price = message.spotPrice === "" ? undefined : message.spotPrice;
     return obj;
   },
   fromAminoMsg(object: QueryDenomSpotPriceResponseAminoMsg): QueryDenomSpotPriceResponse {
@@ -502,7 +502,7 @@ export const QueryDenomPoolIdRequest = {
   },
   toAmino(message: QueryDenomPoolIdRequest, useInterfaces: boolean = false): QueryDenomPoolIdRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: QueryDenomPoolIdRequestAminoMsg): QueryDenomPoolIdRequest {
@@ -571,7 +571,7 @@ export const QueryDenomPoolIdResponse = {
   },
   toAmino(message: QueryDenomPoolIdResponse, useInterfaces: boolean = false): QueryDenomPoolIdResponseAmino {
     const obj: any = {};
-    obj.poolID = message.poolID ? message.poolID.toString() : undefined;
+    obj.poolID = message.poolID !== BigInt(0) ? message.poolID.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryDenomPoolIdResponseAminoMsg): QueryDenomPoolIdResponse {
@@ -696,7 +696,7 @@ export const QueryBaseDenomResponse = {
   },
   toAmino(message: QueryBaseDenomResponse, useInterfaces: boolean = false): QueryBaseDenomResponseAmino {
     const obj: any = {};
-    obj.base_denom = message.baseDenom;
+    obj.base_denom = message.baseDenom === "" ? undefined : message.baseDenom;
     return obj;
   },
   fromAminoMsg(object: QueryBaseDenomResponseAminoMsg): QueryBaseDenomResponse {
@@ -821,7 +821,7 @@ export const QueryEipBaseFeeResponse = {
   },
   toAmino(message: QueryEipBaseFeeResponse, useInterfaces: boolean = false): QueryEipBaseFeeResponseAmino {
     const obj: any = {};
-    obj.base_fee = message.baseFee;
+    obj.base_fee = message.baseFee === "" ? undefined : message.baseFee;
     return obj;
   },
   fromAminoMsg(object: QueryEipBaseFeeResponseAminoMsg): QueryEipBaseFeeResponse {

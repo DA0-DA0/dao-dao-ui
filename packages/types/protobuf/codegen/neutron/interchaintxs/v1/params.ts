@@ -80,11 +80,11 @@ export const Params = {
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.msg_submit_tx_max_messages = message.msgSubmitTxMaxMessages ? message.msgSubmitTxMaxMessages.toString() : undefined;
+    obj.msg_submit_tx_max_messages = message.msgSubmitTxMaxMessages !== BigInt(0) ? message.msgSubmitTxMaxMessages.toString() : undefined;
     if (message.registerFee) {
       obj.register_fee = message.registerFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.register_fee = [];
+      obj.register_fee = message.registerFee;
     }
     return obj;
   },

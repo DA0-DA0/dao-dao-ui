@@ -19,7 +19,6 @@ export interface ParamsRequestAminoMsg {
 export interface ParamsRequestSDKType {}
 /** ParamsResponse is the response type for the Query/Params RPC method. */
 export interface ParamsResponse {
-  /** ParamsResponse is the response type for the Query/Params RPC method. */
   params: Params | undefined;
 }
 export interface ParamsResponseProtoMsg {
@@ -28,7 +27,6 @@ export interface ParamsResponseProtoMsg {
 }
 /** ParamsResponse is the response type for the Query/Params RPC method. */
 export interface ParamsResponseAmino {
-  /** ParamsResponse is the response type for the Query/Params RPC method. */
   params?: ParamsAmino | undefined;
 }
 export interface ParamsResponseAminoMsg {
@@ -55,7 +53,6 @@ export interface StateRequestAminoMsg {
 export interface StateRequestSDKType {}
 /** StateResponse is the response type for the Query/State RPC method. */
 export interface StateResponse {
-  /** StateResponse is the response type for the Query/State RPC method. */
   state: State | undefined;
 }
 export interface StateResponseProtoMsg {
@@ -64,7 +61,6 @@ export interface StateResponseProtoMsg {
 }
 /** StateResponse is the response type for the Query/State RPC method. */
 export interface StateResponseAmino {
-  /** StateResponse is the response type for the Query/State RPC method. */
   state?: StateAmino | undefined;
 }
 export interface StateResponseAminoMsg {
@@ -439,7 +435,7 @@ export const GasPriceRequest = {
   },
   toAmino(message: GasPriceRequest, useInterfaces: boolean = false): GasPriceRequestAmino {
     const obj: any = {};
-    obj.denom = message.denom;
+    obj.denom = message.denom === "" ? undefined : message.denom;
     return obj;
   },
   fromAminoMsg(object: GasPriceRequestAminoMsg): GasPriceRequest {
@@ -502,7 +498,7 @@ export const GasPriceResponse = {
   },
   toAmino(message: GasPriceResponse, useInterfaces: boolean = false): GasPriceResponseAmino {
     const obj: any = {};
-    obj.price = message.price ? DecCoin.toAmino(message.price, useInterfaces) : DecCoin.fromPartial({});
+    obj.price = message.price ? DecCoin.toAmino(message.price, useInterfaces) : DecCoin.toAmino(DecCoin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: GasPriceResponseAminoMsg): GasPriceResponse {
@@ -616,7 +612,7 @@ export const GasPricesResponse = {
     if (message.prices) {
       obj.prices = message.prices.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.prices = [];
+      obj.prices = message.prices;
     }
     return obj;
   },

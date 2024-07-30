@@ -816,7 +816,7 @@ export const EventCreateClass = {
   },
   toAmino(message: EventCreateClass, useInterfaces: boolean = false): EventCreateClassAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: EventCreateClassAminoMsg): EventCreateClass {
@@ -879,7 +879,7 @@ export const EventCreateProject = {
   },
   toAmino(message: EventCreateProject, useInterfaces: boolean = false): EventCreateProjectAmino {
     const obj: any = {};
-    obj.project_id = message.projectId;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     return obj;
   },
   fromAminoMsg(object: EventCreateProjectAminoMsg): EventCreateProject {
@@ -953,7 +953,7 @@ export const EventCreateBatch = {
   },
   toAmino(message: EventCreateBatch, useInterfaces: boolean = false): EventCreateBatchAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
     return obj;
   },
@@ -1039,9 +1039,9 @@ export const EventMint = {
   },
   toAmino(message: EventMint, useInterfaces: boolean = false): EventMintAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
     return obj;
   },
   fromAminoMsg(object: EventMintAminoMsg): EventMint {
@@ -1115,7 +1115,7 @@ export const EventMintBatchCredits = {
   },
   toAmino(message: EventMintBatchCredits, useInterfaces: boolean = false): EventMintBatchCreditsAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
     return obj;
   },
@@ -1223,11 +1223,11 @@ export const EventTransfer = {
   },
   toAmino(message: EventTransfer, useInterfaces: boolean = false): EventTransferAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.recipient = message.recipient;
-    obj.batch_denom = message.batchDenom;
-    obj.tradable_amount = message.tradableAmount;
-    obj.retired_amount = message.retiredAmount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.tradable_amount = message.tradableAmount === "" ? undefined : message.tradableAmount;
+    obj.retired_amount = message.retiredAmount === "" ? undefined : message.retiredAmount;
     return obj;
   },
   fromAminoMsg(object: EventTransferAminoMsg): EventTransfer {
@@ -1334,11 +1334,11 @@ export const EventRetire = {
   },
   toAmino(message: EventRetire, useInterfaces: boolean = false): EventRetireAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
-    obj.jurisdiction = message.jurisdiction;
-    obj.reason = message.reason;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.jurisdiction = message.jurisdiction === "" ? undefined : message.jurisdiction;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: EventRetireAminoMsg): EventRetire {
@@ -1434,10 +1434,10 @@ export const EventCancel = {
   },
   toAmino(message: EventCancel, useInterfaces: boolean = false): EventCancelAmino {
     const obj: any = {};
-    obj.owner = message.owner;
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
-    obj.reason = message.reason;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: EventCancelAminoMsg): EventCancel {
@@ -1500,7 +1500,7 @@ export const EventUpdateClassAdmin = {
   },
   toAmino(message: EventUpdateClassAdmin, useInterfaces: boolean = false): EventUpdateClassAdminAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: EventUpdateClassAdminAminoMsg): EventUpdateClassAdmin {
@@ -1563,7 +1563,7 @@ export const EventUpdateClassIssuers = {
   },
   toAmino(message: EventUpdateClassIssuers, useInterfaces: boolean = false): EventUpdateClassIssuersAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: EventUpdateClassIssuersAminoMsg): EventUpdateClassIssuers {
@@ -1626,7 +1626,7 @@ export const EventUpdateClassMetadata = {
   },
   toAmino(message: EventUpdateClassMetadata, useInterfaces: boolean = false): EventUpdateClassMetadataAmino {
     const obj: any = {};
-    obj.class_id = message.classId;
+    obj.class_id = message.classId === "" ? undefined : message.classId;
     return obj;
   },
   fromAminoMsg(object: EventUpdateClassMetadataAminoMsg): EventUpdateClassMetadata {
@@ -1689,7 +1689,7 @@ export const EventUpdateProjectAdmin = {
   },
   toAmino(message: EventUpdateProjectAdmin, useInterfaces: boolean = false): EventUpdateProjectAdminAmino {
     const obj: any = {};
-    obj.project_id = message.projectId;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     return obj;
   },
   fromAminoMsg(object: EventUpdateProjectAdminAminoMsg): EventUpdateProjectAdmin {
@@ -1752,7 +1752,7 @@ export const EventUpdateProjectMetadata = {
   },
   toAmino(message: EventUpdateProjectMetadata, useInterfaces: boolean = false): EventUpdateProjectMetadataAmino {
     const obj: any = {};
-    obj.project_id = message.projectId;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
     return obj;
   },
   fromAminoMsg(object: EventUpdateProjectMetadataAminoMsg): EventUpdateProjectMetadata {
@@ -1815,7 +1815,7 @@ export const EventUpdateBatchMetadata = {
   },
   toAmino(message: EventUpdateBatchMetadata, useInterfaces: boolean = false): EventUpdateBatchMetadataAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     return obj;
   },
   fromAminoMsg(object: EventUpdateBatchMetadataAminoMsg): EventUpdateBatchMetadata {
@@ -1878,7 +1878,7 @@ export const EventSealBatch = {
   },
   toAmino(message: EventSealBatch, useInterfaces: boolean = false): EventSealBatchAmino {
     const obj: any = {};
-    obj.batch_denom = message.batchDenom;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     return obj;
   },
   fromAminoMsg(object: EventSealBatchAminoMsg): EventSealBatch {
@@ -1941,7 +1941,7 @@ export const EventAddCreditType = {
   },
   toAmino(message: EventAddCreditType, useInterfaces: boolean = false): EventAddCreditTypeAmino {
     const obj: any = {};
-    obj.abbreviation = message.abbreviation;
+    obj.abbreviation = message.abbreviation === "" ? undefined : message.abbreviation;
     return obj;
   },
   fromAminoMsg(object: EventAddCreditTypeAminoMsg): EventAddCreditType {
@@ -2059,12 +2059,12 @@ export const EventBridge = {
   },
   toAmino(message: EventBridge, useInterfaces: boolean = false): EventBridgeAmino {
     const obj: any = {};
-    obj.target = message.target;
-    obj.recipient = message.recipient;
-    obj.contract = message.contract;
-    obj.amount = message.amount;
-    obj.owner = message.owner;
-    obj.batch_denom = message.batchDenom;
+    obj.target = message.target === "" ? undefined : message.target;
+    obj.recipient = message.recipient === "" ? undefined : message.recipient;
+    obj.contract = message.contract === "" ? undefined : message.contract;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.owner = message.owner === "" ? undefined : message.owner;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
     return obj;
   },
   fromAminoMsg(object: EventBridgeAminoMsg): EventBridge {
@@ -2160,9 +2160,9 @@ export const EventBridgeReceive = {
   },
   toAmino(message: EventBridgeReceive, useInterfaces: boolean = false): EventBridgeReceiveAmino {
     const obj: any = {};
-    obj.project_id = message.projectId;
-    obj.batch_denom = message.batchDenom;
-    obj.amount = message.amount;
+    obj.project_id = message.projectId === "" ? undefined : message.projectId;
+    obj.batch_denom = message.batchDenom === "" ? undefined : message.batchDenom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     obj.origin_tx = message.originTx ? OriginTx.toAmino(message.originTx, useInterfaces) : undefined;
     return obj;
   },
@@ -2248,9 +2248,9 @@ export const EventBurnRegen = {
   },
   toAmino(message: EventBurnRegen, useInterfaces: boolean = false): EventBurnRegenAmino {
     const obj: any = {};
-    obj.burner = message.burner;
-    obj.amount = message.amount;
-    obj.reason = message.reason;
+    obj.burner = message.burner === "" ? undefined : message.burner;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.reason = message.reason === "" ? undefined : message.reason;
     return obj;
   },
   fromAminoMsg(object: EventBurnRegenAminoMsg): EventBurnRegen {
