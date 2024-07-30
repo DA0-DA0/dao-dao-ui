@@ -42,7 +42,10 @@ export const useLoadingFeaturedDaoCards = (
    */
   chainId?: string
 ): LoadingData<StatefulDaoCardProps[]> => {
-  const featuredDaos = useQueryLoadingData(daoQueries.listFeatured(), [])
+  const featuredDaos = useQueryLoadingData(
+    daoQueries.listFeatured(),
+    [] as DaoSource[]
+  )
 
   const daos = useLoadingDaos(
     featuredDaos.loading

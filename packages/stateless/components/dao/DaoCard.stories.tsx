@@ -36,6 +36,7 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
     admin: 'parent',
     registeredSubDao: true,
     parentDao: null,
+    polytoneProxy: null,
   },
   supportedFeatures: {} as any,
   votingModuleAddress: '',

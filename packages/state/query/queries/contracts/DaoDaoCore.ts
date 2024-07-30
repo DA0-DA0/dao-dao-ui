@@ -19,12 +19,9 @@ import {
   DumpStateResponse,
   GetItemResponse,
   InfoResponse,
-  ListAllSubDaosResponse,
   ListItemsResponse,
   PauseInfoResponse,
   ProposalModuleCountResponse,
-  SubDao,
-  SubDaoWithChainId,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
@@ -33,7 +30,6 @@ import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 import { DaoDaoCoreQueryClient } from '../../../contracts/DaoDaoCore'
 import { contractQueries } from '../contract'
 import { indexerQueries } from '../indexer'
-import { polytoneQueries } from '../polytone'
 
 export const daoDaoCoreQueryKeys = {
   contract: [
@@ -187,14 +183,6 @@ export const daoDaoCoreQueryKeys = {
       {
         ...daoDaoCoreQueryKeys.address(contractAddress)[0],
         method: 'list_sub_daos',
-        args,
-      },
-    ] as const,
-  listAllSubDaos: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
-        method: 'list_all_sub_daos',
         args,
       },
     ] as const,
@@ -703,135 +691,6 @@ export const daoDaoCoreQueries = {
     },
     ...options,
   }),
-  listAllSubDaos: <TData = ListAllSubDaosResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreListAllSubDaosQuery<TData>
-  ): UseQueryOptions<ListAllSubDaosResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.listAllSubDaos(contractAddress, args),
-    queryFn: async () => {
-      let subDaos: SubDao[] | undefined
-
-      try {
-        const indexerSubDaos = await queryClient.fetchQuery(
-          indexerQueries.queryContract<SubDao[]>(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/listSubDaos',
-          })
-        )
-        if (indexerSubDaos) {
-          subDaos = indexerSubDaos
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      if (!subDaos) {
-        subDaos = []
-        const limit = 30
-        while (true) {
-          const page = await queryClient.fetchQuery(
-            daoDaoCoreQueries.listSubDaos({
-              chainId,
-              contractAddress,
-              args: {
-                limit,
-                startAfter: subDaos.length
-                  ? subDaos[subDaos.length - 1]?.addr
-                  : undefined,
-              },
-            })
-          )
-          if (!page.length) {
-            break
-          }
-
-          subDaos.push(...page)
-
-          // If we have less than the limit of subDaos, we've exhausted them.
-          if (page.length < limit) {
-            break
-          }
-        }
-      }
-
-      const subDaosWithChainId = (
-        await Promise.all(
-          subDaos.map(async (subDao): Promise<SubDaoWithChainId | []> => {
-            const [isDao, isPolytoneProxy] = await Promise.all([
-              queryClient.fetchQuery(
-                contractQueries.isDao(queryClient, {
-                  chainId,
-                  address: subDao.addr,
-                })
-              ),
-              queryClient.fetchQuery(
-                contractQueries.isPolytoneProxy(queryClient, {
-                  chainId,
-                  address: subDao.addr,
-                })
-              ),
-            ])
-
-            if (isDao) {
-              // Filter SubDAO by admin if specified.
-              if (args?.onlyAdmin) {
-                const admin = await queryClient.fetchQuery(
-                  daoDaoCoreQueries.admin(queryClient, {
-                    chainId,
-                    contractAddress: subDao.addr,
-                  })
-                )
-
-                if (admin !== contractAddress) {
-                  return []
-                }
-              }
-
-              return {
-                ...subDao,
-                chainId,
-              }
-            }
-
-            // Reverse lookup polytone proxy and verify it's a DAO, as long as
-            // not filtering by admin, since polytone proxies do not have admins
-            // and live on other chains.
-            if (isPolytoneProxy && !args?.onlyAdmin) {
-              try {
-                const { chainId: remoteChainId, remoteAddress } =
-                  await queryClient.fetchQuery(
-                    polytoneQueries.reverseLookupProxy(queryClient, {
-                      chainId,
-                      address: subDao.addr,
-                    })
-                  )
-
-                return {
-                  chainId: remoteChainId,
-                  addr: remoteAddress,
-                  charter: subDao.charter,
-                }
-              } catch (error) {
-                console.error(error)
-              }
-            }
-
-            return []
-          })
-        )
-      ).flat()
-
-      return subDaosWithChainId
-    },
-    ...options,
-  }),
   daoURI: <TData = DaoURIResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreDaoURIQuery<TData>
@@ -964,16 +823,6 @@ export interface DaoDaoCoreListSubDaosQuery<TData>
   args: {
     limit?: number
     startAfter?: string
-  }
-}
-export interface DaoDaoCoreListAllSubDaosQuery<TData>
-  extends DaoDaoCoreReactQuery<ListAllSubDaosResponse, TData> {
-  args?: {
-    /**
-     * Only include SubDAOs that this DAO is the admin of, meaning this DAO can
-     * execute on behalf of the SubDAO. Defaults to false.
-     */
-    onlyAdmin?: boolean
   }
 }
 export interface DaoDaoCoreVotingModuleQuery<TData>

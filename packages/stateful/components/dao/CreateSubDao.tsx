@@ -31,8 +31,9 @@ export const CreateSubDao = () => {
         coreVersion,
         name,
         imageUrl: imageUrl || getFallbackImage(coreAddress),
-        parentDao,
         admin,
+        parentDao,
+        polytoneProxy: null,
 
         // If creating a SubDAO, it is not yet registered.
         registeredSubDao: false,

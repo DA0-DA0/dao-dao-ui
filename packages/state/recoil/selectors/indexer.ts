@@ -358,29 +358,6 @@ export const walletProposalStatsSelector = selectorFamily<
     },
 })
 
-export const walletAdminOfDaosSelector = selectorFamily<
-  string[],
-  WithChainId<{ walletAddress: string }>
->({
-  key: 'walletAdminOfDaos',
-  get:
-    ({ walletAddress, chainId }) =>
-    ({ get }) => {
-      const walletAdminOfDaos: string[] = get(
-        queryWalletIndexerSelector({
-          chainId,
-          walletAddress,
-          formula: 'daos/adminOf',
-          noFallback: true,
-        })
-      )
-
-      return walletAdminOfDaos && Array.isArray(walletAdminOfDaos)
-        ? walletAdminOfDaos
-        : []
-    },
-})
-
 export const indexerWebSocketSelector = selector({
   key: 'indexerWebSocket',
   get: () =>

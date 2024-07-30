@@ -5,6 +5,7 @@ import {
   chainQueries,
   contractQueries,
   polytoneQueries,
+  daoQueries as stateDaoQueries,
   votingModuleQueries,
 } from '@dao-dao/state/query'
 import { daoDaoCoreQueries } from '@dao-dao/state/query/queries/contracts/DaoDaoCore'
@@ -253,13 +254,58 @@ export const fetchDaoParentInfo = async (
     ignoreParents?: string[]
   }
 ): Promise<DaoParentInfo> => {
+  let parentChainId = chainId
+  let parentDaoAddress = parentAddress
+  let polytoneProxy: string | null = null
+
   // If address is a DAO contract...
-  const isDao = await queryClient.fetchQuery(
-    contractQueries.isDao(queryClient, {
-      chainId,
-      address: parentAddress,
-    })
-  )
+  let [isDao, isPolytoneProxy] = await Promise.all([
+    queryClient.fetchQuery(
+      contractQueries.isDao(queryClient, {
+        chainId: parentChainId,
+        address: parentDaoAddress,
+      })
+    ),
+    queryClient.fetchQuery(
+      contractQueries.isPolytoneProxy(queryClient, {
+        chainId: parentChainId,
+        address: parentDaoAddress,
+      })
+    ),
+  ])
+
+  if (isPolytoneProxy) {
+    const { chainId: remoteChainId, remoteAddress } =
+      await queryClient.fetchQuery(
+        polytoneQueries.reverseLookupProxy(queryClient, {
+          chainId: parentChainId,
+          address: parentDaoAddress,
+        })
+      )
+
+    const remoteIsDao = await queryClient.fetchQuery(
+      contractQueries.isDao(queryClient, {
+        chainId: remoteChainId,
+        address: remoteAddress,
+      })
+    )
+
+    if (remoteIsDao) {
+      isDao = true
+      polytoneProxy = parentAddress
+      parentChainId = remoteChainId
+      parentDaoAddress = remoteAddress
+    }
+  }
+
+  console.log('PARENT', {
+    isDao,
+    isPolytoneProxy,
+    chainId,
+    parentAddress,
+    parentChainId,
+    parentDaoAddress,
+  })
 
   if (isDao) {
     const [parentVersion, parentAdmin, { name, image_url }] = await Promise.all(
@@ -267,21 +313,21 @@ export const fetchDaoParentInfo = async (
         queryClient
           .fetchQuery(
             contractQueries.info(queryClient, {
-              chainId,
-              address: parentAddress,
+              chainId: parentChainId,
+              address: parentDaoAddress,
             })
           )
           .then(({ info }) => parseContractVersion(info.version)),
         queryClient.fetchQuery(
           daoDaoCoreQueries.admin(queryClient, {
-            chainId,
-            contractAddress: parentAddress,
+            chainId: parentChainId,
+            contractAddress: parentDaoAddress,
           })
         ),
         queryClient.fetchQuery(
           daoDaoCoreQueries.config(queryClient, {
-            chainId,
-            contractAddress: parentAddress,
+            chainId: parentChainId,
+            contractAddress: parentDaoAddress,
           })
         ),
       ]
@@ -293,38 +339,39 @@ export const fetchDaoParentInfo = async (
       isFeatureSupportedByVersion(Feature.SubDaos, parentVersion) &&
       (
         await queryClient.fetchQuery(
-          daoDaoCoreQueries.listAllSubDaos(queryClient, {
-            chainId,
-            contractAddress: parentAddress,
+          stateDaoQueries.listAllSubDaos(queryClient, {
+            chainId: parentChainId,
+            address: parentDaoAddress,
           })
         )
       ).some(({ addr }) => addr === subDaoAddress)
 
     // Recursively fetch parent.
     const parentDao =
-      parentAdmin && parentAdmin !== parentAddress
+      parentAdmin && parentAdmin !== parentDaoAddress
         ? await queryClient
             .fetchQuery(
               daoQueries.parentInfo(queryClient, {
-                chainId,
+                chainId: parentChainId,
                 parentAddress: parentAdmin,
-                subDaoAddress: parentAddress,
+                subDaoAddress: parentDaoAddress,
                 // Add address to ignore list to prevent infinite loops.
-                ignoreParents: [...(ignoreParents || []), parentAddress],
+                ignoreParents: [...(ignoreParents || []), parentDaoAddress],
               })
             )
             .catch(() => null)
         : null
 
     return {
-      chainId,
-      coreAddress: parentAddress,
+      chainId: parentChainId,
+      coreAddress: parentDaoAddress,
       coreVersion: parentVersion,
       name,
-      imageUrl: image_url || getFallbackImage(parentAddress),
+      imageUrl: image_url || getFallbackImage(parentDaoAddress),
       admin: parentAdmin ?? '',
       registeredSubDao,
       parentDao,
+      polytoneProxy,
     }
   } else {
     // If address is the chain's x/gov module...
@@ -348,6 +395,7 @@ export const fetchDaoParentInfo = async (
           !!subDaoAddress &&
           !!getSupportedChainConfig(chainId)?.subDaos?.includes(subDaoAddress),
         parentDao: null,
+        polytoneProxy: null,
       }
     }
   }
@@ -363,9 +411,9 @@ export const fetchSubDaoInfos = async (
   { chainId, coreAddress }: DaoSource
 ): Promise<DaoInfo[]> => {
   const subDaos = await queryClient.fetchQuery(
-    daoDaoCoreQueries.listAllSubDaos(queryClient, {
+    stateDaoQueries.listAllSubDaos(queryClient, {
       chainId,
-      contractAddress: coreAddress,
+      address: coreAddress,
     })
   )
 

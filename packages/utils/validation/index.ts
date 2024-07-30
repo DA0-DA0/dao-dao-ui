@@ -33,7 +33,7 @@ export const validatePercent = (v: string | number | undefined) => {
 }
 
 export const makeValidateAddress =
-  (bech32Prefix: string, required = true) =>
+  (bech32Prefix?: string, required = true) =>
   (v: any) =>
     (!required && !v) ||
     (v && typeof v === 'string' && isValidBech32Address(v, bech32Prefix)) ||

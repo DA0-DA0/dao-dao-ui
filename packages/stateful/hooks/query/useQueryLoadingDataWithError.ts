@@ -1,4 +1,4 @@
-import { QueryKey, skipToken, useQuery } from '@tanstack/react-query'
+import { skipToken, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { useUpdatingRef } from '@dao-dao/stateless'
@@ -10,16 +10,13 @@ import { LoadingDataWithError } from '@dao-dao/types'
  */
 export const useQueryLoadingDataWithError = <
   TQueryFnData extends unknown,
-  TQueryKey extends QueryKey = QueryKey,
   TTransformedData extends unknown = TQueryFnData
 >(
   /**
    * Query options to passthrough to useQuery.
    */
   options?: Omit<
-    Parameters<
-      typeof useQuery<TQueryFnData, Error, TQueryFnData, TQueryKey>
-    >[0],
+    Parameters<typeof useQuery<TQueryFnData, Error, TQueryFnData, any>>[0],
     'select'
   >,
   /**

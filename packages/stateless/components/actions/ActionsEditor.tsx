@@ -156,6 +156,10 @@ export const ActionsEditor = ({
       <ActionLibrary
         actionDataFieldName={actionDataFieldName}
         categories={categories}
+        defaultOpen={
+          // Default open only if no actions exist yet.
+          groupedActionData.length === 0
+        }
         loadedActions={loadedActions}
         onSelect={() => {
           // Enable scrolling to new actions once an action is selected for the

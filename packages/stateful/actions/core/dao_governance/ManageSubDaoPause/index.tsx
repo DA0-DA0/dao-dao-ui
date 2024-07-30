@@ -1,7 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import { DaoDaoCoreSelectors } from '@dao-dao/state'
-import { PlayPauseEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { daoQueries } from '@dao-dao/state'
+import { PlayPauseEmoji } from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -21,6 +22,7 @@ import {
 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../components'
+import { useQueryLoadingData } from '../../../../hooks'
 import { useMsgExecutesContract } from '../../../hooks'
 import { ManageSubDaoPauseComponent, ManageSubDaoPauseData } from './Component'
 
@@ -93,25 +95,23 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageSubDaoPauseData> = (
 const Component: ActionComponent<undefined, ManageSubDaoPauseData> = (
   props
 ) => {
-  const neutronSubdaos = useCachedLoading(
-    DaoDaoCoreSelectors.listAllSubDaosSelector({
+  const queryClient = useQueryClient()
+  const neutronSubdaos = useQueryLoadingData(
+    daoQueries.listAllSubDaos(queryClient, {
       chainId: ChainId.NeutronMainnet,
-      contractAddress: NEUTRON_GOVERNANCE_DAO,
+      address: NEUTRON_GOVERNANCE_DAO,
     }),
-    []
+    [],
+    {
+      transform: (subDaos) => subDaos.map(({ addr }) => addr),
+    }
   )
 
   return (
     <ManageSubDaoPauseComponent
       {...props}
       options={{
-        neutronSubdaos: neutronSubdaos.loading
-          ? neutronSubdaos
-          : {
-              loading: false,
-              updating: neutronSubdaos.updating,
-              data: neutronSubdaos.data.map(({ addr }) => addr),
-            },
+        neutronSubdaos,
         EntityDisplay,
       }}
     />

@@ -2,10 +2,11 @@ import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { InputErrorMessage, InputLabel } from '@dao-dao/stateless'
+import { InputErrorMessage, InputLabel, useChain } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent, ActionKey } from '@dao-dao/types/actions'
 import {
+  getChainAddressForActionOptions,
   isValidBech32Address,
   makeValidateAddress,
   validateRequired,
@@ -17,6 +18,7 @@ import { UpdateAdminData } from '../../smart_contracting/UpdateAdmin'
 import { ManageSubDaosData } from '../ManageSubDaos/Component'
 
 export type AcceptSubDaoData = {
+  chainId: string
   address: string
 }
 
@@ -37,10 +39,10 @@ export const AcceptSubDaoComponent: ActionComponent<
   options: { AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    address: currentAddress,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const options = useActionOptions()
+
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const currentAddress = getChainAddressForActionOptions(options, chainId)
 
   const { watch, register, setValue, getValues } =
     useFormContext<AcceptSubDaoData>()
@@ -74,6 +76,7 @@ export const AcceptSubDaoComponent: ActionComponent<
         {
           actionKey: ActionKey.DaoAdminExec,
           data: {
+            chainId,
             coreAddress: address,
             _actionData: [
               {
@@ -91,16 +94,24 @@ export const AcceptSubDaoComponent: ActionComponent<
         index + 1
       )
     } else {
-      // Path to the address field on the update admin sub-action of the DAO
-      // admin exec action.
-      const existingAddressFieldName = fieldNamePrefix.replace(
+      // Prefix to the fields on the update admin sub-action of the DAO admin
+      // exec action.
+      const existingActionPrefix = fieldNamePrefix.replace(
         new RegExp(`${index}\\.data.$`),
-        `${existingUpdateAdminIndex}.data._actionData.0.data.contract`
+        `${existingUpdateAdminIndex}.data._actionData.0.data.`
       )
 
-      // If the address isn't correct, update the existing one.
-      if (getValues(existingAddressFieldName as any) !== address) {
-        setValue(existingAddressFieldName as any, address)
+      // If the fields aren't correct, update the existing one.
+      if (getValues((existingActionPrefix + 'chainId') as any) !== chainId) {
+        setValue((existingActionPrefix + 'chainId') as any, chainId)
+      }
+      if (getValues((existingActionPrefix + 'contract') as any) !== address) {
+        setValue((existingActionPrefix + 'contract') as any, address)
+      }
+      if (
+        getValues((existingActionPrefix + 'newAdmin') as any) !== currentAddress
+      ) {
+        setValue((existingActionPrefix + 'newAdmin') as any, currentAddress)
       }
     }
 
@@ -150,32 +161,24 @@ export const AcceptSubDaoComponent: ActionComponent<
 
   return (
     <>
-      <div className="space-y-3">
-        {isCreating && (
-          <p className="max-w-prose">
-            {t('info.acceptSubDaoActionDescription')}
-          </p>
-        )}
-
-        <div className="space-y-1">
-          <InputLabel name={t('form.acceptSubDaoAddressInputLabel')} />
-          <AddressInput
-            disabled={!isCreating}
-            error={errors?.address}
-            fieldName={addressFieldName}
-            register={register}
-            type="contract"
-            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
-          />
-          <InputErrorMessage error={errors?.address} />
-        </div>
-
-        {otherActionsAdded && (
-          <p className="max-w-prose">
-            {t('info.acceptSubDaoActionOtherActionsAdded')}
-          </p>
-        )}
+      <div className="space-y-1">
+        <InputLabel name={t('form.acceptSubDaoAddressInputLabel')} />
+        <AddressInput
+          disabled={!isCreating}
+          error={errors?.address}
+          fieldName={addressFieldName}
+          register={register}
+          type="contract"
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
+        />
+        <InputErrorMessage error={errors?.address} />
       </div>
+
+      {otherActionsAdded && (
+        <p className="caption-text max-w-prose italic">
+          {t('info.acceptSubDaoActionOtherActionsAdded')}
+        </p>
+      )}
     </>
   )
 }

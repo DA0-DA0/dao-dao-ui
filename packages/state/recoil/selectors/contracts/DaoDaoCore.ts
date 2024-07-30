@@ -1,6 +1,5 @@
 import uniq from 'lodash.uniq'
 import {
-  constSelector,
   selectorFamily,
   waitForAll,
   waitForAllSettled,
@@ -31,7 +30,6 @@ import {
   GetItemResponse,
   ListItemsResponse,
   PauseInfoResponse,
-  SubDao,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
@@ -54,21 +52,16 @@ import {
   DaoDaoCoreClient,
   DaoDaoCoreQueryClient,
 } from '../../../contracts/DaoDaoCore'
+import { daoQueries } from '../../../query'
 import {
+  queryClientAtom,
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import {
-  accountsSelector,
-  reverseLookupPolytoneProxySelector,
-} from '../account'
+import { accountsSelector } from '../account'
 import { cosmWasmClientForChainSelector } from '../chain'
-import {
-  contractInfoSelector,
-  isDaoSelector,
-  isPolytoneProxySelector,
-} from '../contract'
+import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 import { walletStargazeNftCardInfosSelector } from '../nft'
 import { genericTokenSelector } from '../token'
@@ -416,15 +409,13 @@ export const votingModuleSelector = selectorFamily<
       return await client.votingModule(...params)
     },
 })
-// Use listAllSubDaosSelector as it uses the indexer and implements pagination
-// for chain queries.
-export const _listSubDaosSelector = selectorFamily<
+export const listSubDaosSelector = selectorFamily<
   ArrayOfSubDao,
   QueryClientParams & {
     params: Parameters<DaoDaoCoreQueryClient['listSubDaos']>
   }
 >({
-  key: 'daoDaoCore_ListSubDaos',
+  key: 'daoDaoCoreListSubDaos',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -1135,135 +1126,6 @@ export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
     },
 })
 
-const SUBDAO_LIST_LIMIT = 30
-export const listAllSubDaosSelector = selectorFamily<
-  WithChainId<SubDao>[],
-  QueryClientParams & {
-    /**
-     * Only include SubDAOs that this DAO is the admin of, meaning this DAO can
-     * execute on behalf of the SubDAO.
-     */
-    onlyAdmin?: boolean
-  }
->({
-  key: 'daoDaoCoreListAllSubDaos',
-  get:
-    ({ onlyAdmin, ...queryClientParams }) =>
-    async ({ get }) => {
-      let subDaos: ArrayOfSubDao = []
-
-      const indexerSubDaos = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/listSubDaos',
-        })
-      )
-      if (indexerSubDaos) {
-        subDaos = indexerSubDaos
-      } else {
-        // If indexer query fails, fallback to contract query.
-        while (true) {
-          const response = await get(
-            _listSubDaosSelector({
-              ...queryClientParams,
-              params: [
-                {
-                  startAfter: subDaos[subDaos.length - 1]?.addr,
-                  limit: SUBDAO_LIST_LIMIT,
-                },
-              ],
-            })
-          )
-          if (!response?.length) break
-
-          subDaos.push(...response)
-
-          // If we have less than the limit of items, we've exhausted them.
-          if (response.length < SUBDAO_LIST_LIMIT) {
-            break
-          }
-        }
-      }
-
-      const subDaosWithTypes = get(
-        waitForAll(
-          subDaos.map((subDao) =>
-            waitForAll([
-              constSelector({
-                ...subDao,
-              }),
-              isDaoSelector({
-                chainId: queryClientParams.chainId,
-                address: subDao.addr,
-              }),
-              isPolytoneProxySelector({
-                chainId: queryClientParams.chainId,
-                address: subDao.addr,
-              }),
-            ])
-          )
-        )
-      )
-
-      // Reverse lookup only polytone proxies.
-      const reverseLookups = get(
-        waitForAllSettled(
-          subDaosWithTypes.map(([{ addr }, , isPolytoneProxy]) =>
-            // No need to look these up if we only care about the admin DAOs,
-            // since SubDAO proxies live on another chain.
-            isPolytoneProxy && !onlyAdmin
-              ? reverseLookupPolytoneProxySelector({
-                  chainId: queryClientParams.chainId,
-                  proxy: addr,
-                })
-              : constSelector(undefined)
-          )
-        )
-      )
-
-      const subDaoAdmins = get(
-        waitForAllSettled(
-          subDaosWithTypes.map(([{ addr }, isDao]) =>
-            // Only look up the admin if we're filtering SubDAOs by admin.
-            isDao && onlyAdmin
-              ? adminSelector({
-                  chainId: queryClientParams.chainId,
-                  contractAddress: addr,
-                  params: [],
-                })
-              : constSelector(undefined)
-          )
-        )
-      )
-
-      const validSubDaos = subDaosWithTypes.flatMap(
-        ([subDao, isDao, isPolytoneProxy], index): WithChainId<SubDao> | [] =>
-          isDao &&
-          // If filtering by only admin, check that SubDAO admin is set to the
-          // current DAO.
-          (!onlyAdmin ||
-            (subDaoAdmins[index].state === 'hasValue' &&
-              subDaoAdmins[index].contents ===
-                queryClientParams.contractAddress))
-            ? {
-                ...subDao,
-                chainId: queryClientParams.chainId,
-              }
-            : isPolytoneProxy &&
-              reverseLookups[index].state === 'hasValue' &&
-              reverseLookups[index].contents
-            ? {
-                addr: reverseLookups[index].contents.address,
-                charter: subDao.charter,
-                chainId: reverseLookups[index].contents.chainId,
-              }
-            : []
-      )
-
-      return validSubDaos
-    },
-})
-
 /**
  * Get the configs for all this DAO's recognized SubDAOs. These will only be
  * SubDAOs on the same chain.
@@ -1276,7 +1138,14 @@ export const allSubDaoConfigsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const subDaos = get(listAllSubDaosSelector(queryClientParams))
+      const queryClient = get(queryClientAtom)
+      const subDaos = await queryClient.fetchQuery(
+        daoQueries.listAllSubDaos(queryClient, {
+          chainId: queryClientParams.chainId,
+          address: queryClientParams.contractAddress,
+        })
+      )
+
       const subDaoConfigs = get(
         waitForAll(
           subDaos.map(({ chainId, addr }) =>

@@ -22,6 +22,8 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
+import { daoQueries } from '../../query'
+import { queryClientAtom } from '../atoms'
 import { contractInfoSelector, contractVersionSelector } from './contract'
 import { DaoDaoCoreSelectors } from './contracts'
 import { queryContractIndexerSelector } from './indexer'
@@ -99,7 +101,7 @@ export const daoDropdownInfoSelector: (
   key: 'daoDropdownInfo',
   get:
     ({ chainId, coreAddress, parents, noSubDaos }) =>
-    ({ get }) => {
+    async ({ get }) => {
       const isGovModule = isConfiguredChainName(chainId, coreAddress)
       // Native chain x/gov module.
       if (isGovModule) {
@@ -152,11 +154,12 @@ export const daoDropdownInfoSelector: (
         ])
       )
 
+      const queryClient = get(queryClientAtom)
       const subDaos = isFeatureSupportedByVersion(Feature.SubDaos, version)
-        ? get(
-            DaoDaoCoreSelectors.listAllSubDaosSelector({
+        ? await queryClient.fetchQuery(
+            daoQueries.listAllSubDaos(queryClient, {
               chainId,
-              contractAddress: coreAddress,
+              address: coreAddress,
             })
           )
         : []

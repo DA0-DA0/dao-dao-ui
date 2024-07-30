@@ -92,8 +92,16 @@ export type DaoParentInfo = {
   imageUrl: string
   admin: string
   parentDao: DaoParentInfo | null
+  /**
+   * If this parent is on a different chain from the SubDAO it's attached to,
+   * this is the polytone proxy that is actually the admin of the SubDAO, on the
+   * SubDAO's chain.
+   */
+  polytoneProxy: string | null
 
-  // Whether or not this parent has registered its child as a SubDAO.
+  /**
+   * Whether or not this parent has registered its child as a SubDAO.
+   */
   registeredSubDao: boolean
 }
 

@@ -72,7 +72,7 @@ export const useEntity = (address: string): UseEntityReturn => {
       name: null,
       imageUrl: getFallbackImage(address),
       profile: makeEmptyUnifiedProfile(chainId, address),
-    }
+    } as Entity
   )
 
   return {
