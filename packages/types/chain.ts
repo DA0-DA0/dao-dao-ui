@@ -179,6 +179,10 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   tokenCreationUnderDevelopment?: boolean
   /**
+   * Token creation factory address to use during DAO creation.
+   */
+  tokenCreationFactoryAddress?: string
+  /**
    * Whether or not to create a DAO through chain governance.
    */
   createViaGovernance?: boolean

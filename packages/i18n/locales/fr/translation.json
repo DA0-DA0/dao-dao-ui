@@ -141,7 +141,7 @@
     "governanceTokenSymbolTitle": "Symbole du Jeton",
     "imageURLTitle": "URL de l'image",
     "imageUrlTooltip": "Un lien à une image. Par exemple: https://moonphase.is/image.svg",
-    "initialSupply": "Offre totale de jetons",
+    "initialTokenSupply": "Offre totale de jetons",
     "instantiatedAddress": "Adresse instanciée",
     "membersAddress": "Adresse du membre",
     "membersToAddOrUpdate": "Membres à ajouter/mettre à jour",

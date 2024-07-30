@@ -109,14 +109,12 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
               }
             : {
                 factory: encodeJsonToBase64({
-                  wasm: {
-                    execute: {
-                      contract_addr: config.token.factory.address,
-                      funds: config.token.factory.funds || [],
-                      msg: encodeJsonToBase64(config.token.factory.message),
-                    },
-                  } as WasmMsg,
-                }),
+                  execute: {
+                    contract_addr: config.token.factory.address,
+                    funds: config.token.factory.funds || [],
+                    msg: encodeJsonToBase64(config.token.factory.message),
+                  },
+                } as WasmMsg),
               },
         unstaking_duration: config.unstakingDuration,
       } as InstantiateMsg),

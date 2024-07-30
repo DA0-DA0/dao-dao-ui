@@ -36,6 +36,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     newInfo: {
       initialSupply: 10000000,
       initialTreasuryPercent: 90,
+      maxSupply: 100000000,
       symbol: '',
       name: '',
     },

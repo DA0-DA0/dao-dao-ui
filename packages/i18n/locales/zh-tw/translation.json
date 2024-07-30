@@ -140,7 +140,7 @@
     "governanceTokenSymbolTitle": "代幣符號",
     "imageURLTitle": "圖片位址",
     "imageUrlTooltip": "圖片位址，例如：https://moonphase.is/image.svg",
-    "initialSupply": "代幣供應總額",
+    "initialTokenSupply": "代幣供應總額",
     "instantiatedAddress": "已初始化地址",
     "membersAddress": "成員地址",
     "membersToAddOrUpdate": "要新增或修改的成員",
