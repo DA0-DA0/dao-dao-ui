@@ -26,81 +26,118 @@ export const cw3FlexMultisigQueryKeys = {
       contract: 'cw3FlexMultisig',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...cw3FlexMultisigQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  threshold: (contractAddress: string, args?: Record<string, unknown>) =>
+  threshold: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'threshold',
         args,
       },
     ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal',
         args,
       },
     ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_proposals',
         args,
       },
     ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'reverse_proposals',
         args,
       },
     ] as const,
-  getVote: (contractAddress: string, args?: Record<string, unknown>) =>
+  getVote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'vote',
         args,
       },
     ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_votes',
         args,
       },
     ] as const,
-  voter: (contractAddress: string, args?: Record<string, unknown>) =>
+  voter: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'voter',
         args,
       },
     ] as const,
-  listVoters: (contractAddress: string, args?: Record<string, unknown>) =>
+  listVoters: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_voters',
         args,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw3FlexMultisigQueryKeys.address(contractAddress)[0],
+        ...cw3FlexMultisigQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
@@ -116,7 +153,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.threshold(contractAddress),
+    queryKey: cw3FlexMultisigQueryKeys.threshold(chainId, contractAddress),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -134,7 +171,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.proposal(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.proposal(chainId, contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -154,7 +191,11 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.listProposals(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.listProposals(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -175,7 +216,11 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.reverseProposals(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.reverseProposals(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -196,7 +241,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.getVote(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.getVote(chainId, contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -217,7 +262,11 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.listVotes(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.listVotes(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -239,7 +288,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.voter(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.voter(chainId, contractAddress, args),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -259,7 +308,11 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.listVoters(contractAddress, args),
+    queryKey: cw3FlexMultisigQueryKeys.listVoters(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -280,7 +333,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.listVoters(contractAddress),
+    queryKey: cw3FlexMultisigQueryKeys.listVoters(chainId, contractAddress),
     queryFn: async () => {
       const voters: VoterListResponse['voters'] = []
 
@@ -324,7 +377,7 @@ export const cw3FlexMultisigQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw3FlexMultisigQueryKeys.config(contractAddress),
+    queryKey: cw3FlexMultisigQueryKeys.config(chainId, contractAddress),
     queryFn: async () =>
       new Cw3FlexMultisigQueryClient(
         await getCosmWasmClientForChainId(chainId),

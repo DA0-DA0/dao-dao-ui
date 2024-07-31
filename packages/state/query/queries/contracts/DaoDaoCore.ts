@@ -37,181 +37,250 @@ export const daoDaoCoreQueryKeys = {
       contract: 'daoDaoCore',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoDaoCoreQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  admin: (contractAddress: string, args?: Record<string, unknown>) =>
+  admin: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'admin',
         args,
       },
     ] as const,
-  adminNomination: (contractAddress: string, args?: Record<string, unknown>) =>
+  adminNomination: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'admin_nomination',
         args,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
     ] as const,
-  cw20Balances: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw20Balances: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw20_balances',
         args,
       },
     ] as const,
-  cw20TokenList: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw20TokenList: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw20_token_list',
         args,
       },
     ] as const,
-  cw721TokenList: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw721TokenList: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw721_token_list',
         args,
       },
     ] as const,
-  dumpState: (contractAddress: string, args?: Record<string, unknown>) =>
+  dumpState: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'dump_state',
         args,
       },
     ] as const,
-  getItem: (contractAddress: string, args?: Record<string, unknown>) =>
+  getItem: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_item',
         args,
       },
     ] as const,
-  listItems: (contractAddress: string, args?: Record<string, unknown>) =>
+  listItems: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_items',
         args,
       },
     ] as const,
-  listAllItems: (contractAddress: string, args?: Record<string, unknown>) =>
+  listAllItems: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_all_items',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
     ] as const,
-  proposalModules: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalModules: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_modules',
         args,
       },
     ] as const,
   activeProposalModules: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'active_proposal_modules',
         args,
       },
     ] as const,
   proposalModuleCount: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_module_count',
         args,
       },
     ] as const,
-  pauseInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  pauseInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'pause_info',
         args,
       },
     ] as const,
-  votingModule: (contractAddress: string, args?: Record<string, unknown>) =>
+  votingModule: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_module',
         args,
       },
     ] as const,
-  listSubDaos: (contractAddress: string, args?: Record<string, unknown>) =>
+  listSubDaos: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_sub_daos',
         args,
       },
     ] as const,
-  daoURI: (contractAddress: string, args?: Record<string, unknown>) =>
+  daoURI: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao_u_r_i',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
@@ -222,7 +291,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreAdminQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.admin(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.admin(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -249,7 +318,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreAdminNominationQuery<TData>
   ): UseQueryOptions<AdminNominationResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.adminNomination(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.adminNomination(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -278,7 +347,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.config(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -311,7 +380,7 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.cw20Balances(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.cw20Balances(chainId, contractAddress, args),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -333,7 +402,7 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.cw20TokenList(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.cw20TokenList(chainId, contractAddress, args),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -355,7 +424,11 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.cw721TokenList(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.cw721TokenList(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -371,7 +444,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreDumpStateQuery<TData>
   ): UseQueryOptions<DumpStateResponse | IndexerDumpState, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.dumpState(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -401,7 +474,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: DaoDaoCoreGetItemQuery<TData>
   ): UseQueryOptions<GetItemResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.getItem(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -440,7 +513,7 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.listItems(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.listItems(chainId, contractAddress, args),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -461,7 +534,7 @@ export const daoDaoCoreQueries = {
       options,
     }: DaoDaoCoreListAllItemsQuery<TData>
   ): UseQueryOptions<ListItemsResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.listAllItems(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.listAllItems(chainId, contractAddress, args),
     queryFn: async () => {
       let items: ListItemsResponse | undefined
 
@@ -534,7 +607,11 @@ export const daoDaoCoreQueries = {
       options,
     }: DaoDaoCoreProposalModulesQuery<TData>
   ): UseQueryOptions<ArrayOfProposalModule, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.proposalModules(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.proposalModules(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -570,7 +647,11 @@ export const daoDaoCoreQueries = {
       options,
     }: DaoDaoCoreActiveProposalModulesQuery<TData>
   ): UseQueryOptions<ArrayOfProposalModule, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.activeProposalModules(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.activeProposalModules(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -606,7 +687,7 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.proposalModuleCount(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.proposalModuleCount(chainId, contractAddress),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -619,7 +700,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCorePauseInfoQuery<TData>
   ): UseQueryOptions<PauseInfoResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.pauseInfo(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -646,7 +727,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreVotingModuleQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.votingModule(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -679,7 +760,7 @@ export const daoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoDaoCoreQueryKeys.listSubDaos(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.listSubDaos(chainId, contractAddress, args),
     queryFn: async () => {
       return new DaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -695,7 +776,7 @@ export const daoDaoCoreQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreDaoURIQuery<TData>
   ): UseQueryOptions<DaoURIResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.daoURI(contractAddress),
+    queryKey: daoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -727,7 +808,11 @@ export const daoDaoCoreQueries = {
       options,
     }: DaoDaoCoreVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -766,7 +851,11 @@ export const daoDaoCoreQueries = {
       options,
     }: DaoDaoCoreTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(contractAddress, args),
+    queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

@@ -25,60 +25,100 @@ export const secretDaoPreProposeSingleQueryKeys = {
       contract: 'secretDaoPreProposeSingle',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoPreProposeSingleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  proposalModule: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
-        method: 'proposal_module',
-        args,
-      },
-    ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
-        method: 'dao',
-        args,
-      },
-    ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  depositInfo: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
-        method: 'deposit_info',
-        args,
-      },
-    ] as const,
-  proposalSubmittedHooks: (
+  proposalModule: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'proposal_module',
+        args,
+      },
+    ] as const,
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'dao',
+        args,
+      },
+    ] as const,
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  depositInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'deposit_info',
+        args,
+      },
+    ] as const,
+  proposalSubmittedHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'proposal_submitted_hooks',
         args,
       },
     ] as const,
-  queryExtension: (contractAddress: string, args?: Record<string, unknown>) =>
+  queryExtension: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoPreProposeSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoPreProposeSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'query_extension',
         args,
       },
@@ -94,8 +134,10 @@ export const secretDaoPreProposeSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoPreProposeSingleQueryKeys.proposalModule(contractAddress),
+    queryKey: secretDaoPreProposeSingleQueryKeys.proposalModule(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -112,7 +154,7 @@ export const secretDaoPreProposeSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoPreProposeSingleQueryKeys.dao(contractAddress),
+    queryKey: secretDaoPreProposeSingleQueryKeys.dao(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -129,7 +171,10 @@ export const secretDaoPreProposeSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoPreProposeSingleQueryKeys.config(contractAddress),
+    queryKey: secretDaoPreProposeSingleQueryKeys.config(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -148,6 +193,7 @@ export const secretDaoPreProposeSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoPreProposeSingleQueryKeys.depositInfo(
+      chainId,
       contractAddress,
       args
     ),
@@ -169,10 +215,10 @@ export const secretDaoPreProposeSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoPreProposeSingleQueryKeys.proposalSubmittedHooks(
-        contractAddress
-      ),
+    queryKey: secretDaoPreProposeSingleQueryKeys.proposalSubmittedHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -191,6 +237,7 @@ export const secretDaoPreProposeSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoPreProposeSingleQueryKeys.queryExtension(
+      chainId,
       contractAddress,
       args
     ),

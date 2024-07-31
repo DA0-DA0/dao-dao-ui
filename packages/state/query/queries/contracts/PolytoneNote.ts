@@ -12,17 +12,22 @@ export const polytoneNoteQueryKeys = {
       contract: 'polytoneNote',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...polytoneNoteQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  remoteAddress: (contractAddress: string, args?: Record<string, unknown>) =>
+  remoteAddress: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...polytoneNoteQueryKeys.address(contractAddress)[0],
+        ...polytoneNoteQueryKeys.address(chainId, contractAddress)[0],
         method: 'remote_address',
         ...(args && { args }),
       },
@@ -38,7 +43,11 @@ export const polytoneNoteQueries = {
       options,
     }: PolytoneNoteRemoteAddressQuery<TData>
   ): UseQueryOptions<NullableString, Error, TData> => ({
-    queryKey: polytoneNoteQueryKeys.remoteAddress(contractAddress, args),
+    queryKey: polytoneNoteQueryKeys.remoteAddress(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         return await queryClient.fetchQuery(

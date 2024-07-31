@@ -28,84 +28,118 @@ export const cw20BaseQueryKeys = {
       contract: 'cw20Base',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...cw20BaseQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  balance: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
-        method: 'balance',
-        args,
-      },
-    ] as const,
-  tokenInfo: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
-        method: 'token_info',
-        args,
-      },
-    ] as const,
-  minter: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
-        method: 'minter',
-        args,
-      },
-    ] as const,
-  allowance: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
-        method: 'allowance',
-        args,
-      },
-    ] as const,
-  allAllowances: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
-        method: 'all_allowances',
-        args,
-      },
-    ] as const,
-  allSpenderAllowances: (
+  balance: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
+        method: 'balance',
+        args,
+      },
+    ] as const,
+  tokenInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
+        method: 'token_info',
+        args,
+      },
+    ] as const,
+  minter: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
+        method: 'minter',
+        args,
+      },
+    ] as const,
+  allowance: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
+        method: 'allowance',
+        args,
+      },
+    ] as const,
+  allAllowances: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
+        method: 'all_allowances',
+        args,
+      },
+    ] as const,
+  allSpenderAllowances: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'all_spender_allowances',
         args,
       },
     ] as const,
-  allAccounts: (contractAddress: string, args?: Record<string, unknown>) =>
+  allAccounts: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'all_accounts',
         args,
       },
     ] as const,
-  marketingInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  marketingInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'marketing_info',
         args,
       },
     ] as const,
-  downloadLogo: (contractAddress: string, args?: Record<string, unknown>) =>
+  downloadLogo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw20BaseQueryKeys.address(contractAddress)[0],
+        ...cw20BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'download_logo',
         args,
       },
@@ -116,7 +150,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseBalanceQuery<TData>
   ): UseQueryOptions<BalanceResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.balance(contractAddress, args),
+    queryKey: cw20BaseQueryKeys.balance(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -148,7 +182,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseTokenInfoQuery<TData>
   ): UseQueryOptions<TokenInfoResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.tokenInfo(contractAddress),
+    queryKey: cw20BaseQueryKeys.tokenInfo(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -175,7 +209,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseMinterQuery<TData>
   ): UseQueryOptions<MinterResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.minter(contractAddress),
+    queryKey: cw20BaseQueryKeys.minter(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -202,7 +236,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseAllowanceQuery<TData>
   ): UseQueryOptions<AllowanceResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allowance(contractAddress, args),
+    queryKey: cw20BaseQueryKeys.allowance(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -238,7 +272,7 @@ export const cw20BaseQueries = {
       options,
     }: Cw20BaseAllAllowancesQuery<TData>
   ): UseQueryOptions<AllAllowancesResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allAllowances(contractAddress, args),
+    queryKey: cw20BaseQueryKeys.allAllowances(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -278,7 +312,11 @@ export const cw20BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw20BaseQueryKeys.allSpenderAllowances(contractAddress, args),
+    queryKey: cw20BaseQueryKeys.allSpenderAllowances(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new Cw20BaseQueryClient(
         await cosmWasmClientRouter.connect(chainId),
@@ -294,7 +332,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseAllAccountsQuery<TData>
   ): UseQueryOptions<AllAccountsResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allAccounts(contractAddress, args),
+    queryKey: cw20BaseQueryKeys.allAccounts(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -327,7 +365,7 @@ export const cw20BaseQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseMarketingInfoQuery<TData>
   ): UseQueryOptions<MarketingInfoResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.marketingInfo(contractAddress),
+    queryKey: cw20BaseQueryKeys.marketingInfo(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer
@@ -359,7 +397,7 @@ export const cw20BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw20BaseQueryKeys.downloadLogo(contractAddress),
+    queryKey: cw20BaseQueryKeys.downloadLogo(chainId, contractAddress),
     queryFn: async () =>
       new Cw20BaseQueryClient(
         await cosmWasmClientRouter.connect(chainId),

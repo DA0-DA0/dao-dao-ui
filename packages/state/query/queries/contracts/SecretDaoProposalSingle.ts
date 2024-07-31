@@ -29,116 +29,205 @@ export const secretDaoProposalSingleQueryKeys = {
       contract: 'secretDaoProposalSingle',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoProposalSingleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'proposal',
-        args,
-      },
-    ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'list_proposals',
-        args,
-      },
-    ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'reverse_proposals',
-        args,
-      },
-    ] as const,
-  getVote: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'get_vote',
-        args,
-      },
-    ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'list_votes',
-        args,
-      },
-    ] as const,
-  proposalCount: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
-        method: 'proposal_count',
-        args,
-      },
-    ] as const,
-  proposalCreationPolicy: (
+  config: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'proposal',
+        args,
+      },
+    ] as const,
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'list_proposals',
+        args,
+      },
+    ] as const,
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'reverse_proposals',
+        args,
+      },
+    ] as const,
+  getVote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'get_vote',
+        args,
+      },
+    ] as const,
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'list_votes',
+        args,
+      },
+    ] as const,
+  proposalCount: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'proposal_count',
+        args,
+      },
+    ] as const,
+  proposalCreationPolicy: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'proposal_creation_policy',
         args,
       },
     ] as const,
-  proposalHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'proposal_hooks',
         args,
       },
     ] as const,
-  voteHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  voteHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'vote_hooks',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'info',
         args,
       },
     ] as const,
-  nextProposalId: (contractAddress: string, args?: Record<string, unknown>) =>
+  nextProposalId: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalSingleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalSingleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'next_proposal_id',
         args,
       },
@@ -154,7 +243,7 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.config(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.config(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -172,7 +261,11 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposal(contractAddress, args),
+    queryKey: secretDaoProposalSingleQueryKeys.proposal(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -193,6 +286,7 @@ export const secretDaoProposalSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalSingleQueryKeys.listProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -217,6 +311,7 @@ export const secretDaoProposalSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalSingleQueryKeys.reverseProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -240,7 +335,11 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.getVote(contractAddress, args),
+    queryKey: secretDaoProposalSingleQueryKeys.getVote(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -261,7 +360,11 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.listVotes(contractAddress, args),
+    queryKey: secretDaoProposalSingleQueryKeys.listVotes(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -282,7 +385,10 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposalCount(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.proposalCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -299,8 +405,10 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoProposalSingleQueryKeys.proposalCreationPolicy(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.proposalCreationPolicy(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -317,7 +425,10 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposalHooks(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.proposalHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -334,7 +445,10 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.voteHooks(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.voteHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -351,7 +465,7 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.dao(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.dao(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -368,7 +482,7 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.info(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.info(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -385,7 +499,10 @@ export const secretDaoProposalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.nextProposalId(contractAddress),
+    queryKey: secretDaoProposalSingleQueryKeys.nextProposalId(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),

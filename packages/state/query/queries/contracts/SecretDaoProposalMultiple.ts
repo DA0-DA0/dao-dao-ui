@@ -29,116 +29,205 @@ export const secretDaoProposalMultipleQueryKeys = {
       contract: 'secretDaoProposalMultiple',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoProposalMultipleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'proposal',
-        args,
-      },
-    ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'list_proposals',
-        args,
-      },
-    ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'reverse_proposals',
-        args,
-      },
-    ] as const,
-  getVote: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'get_vote',
-        args,
-      },
-    ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'list_votes',
-        args,
-      },
-    ] as const,
-  proposalCount: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'proposal_count',
-        args,
-      },
-    ] as const,
-  proposalCreationPolicy: (
+  config: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'proposal',
+        args,
+      },
+    ] as const,
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'list_proposals',
+        args,
+      },
+    ] as const,
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'reverse_proposals',
+        args,
+      },
+    ] as const,
+  getVote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'get_vote',
+        args,
+      },
+    ] as const,
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'list_votes',
+        args,
+      },
+    ] as const,
+  proposalCount: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
+        method: 'proposal_count',
+        args,
+      },
+    ] as const,
+  proposalCreationPolicy: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'proposal_creation_policy',
         args,
       },
     ] as const,
-  proposalHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'proposal_hooks',
         args,
       },
     ] as const,
-  voteHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  voteHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'vote_hooks',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'info',
         args,
       },
     ] as const,
-  nextProposalId: (contractAddress: string, args?: Record<string, unknown>) =>
+  nextProposalId: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...secretDaoProposalMultipleQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'next_proposal_id',
         args,
       },
@@ -154,7 +243,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.config(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.config(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -173,6 +265,7 @@ export const secretDaoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalMultipleQueryKeys.proposal(
+      chainId,
       contractAddress,
       args
     ),
@@ -196,6 +289,7 @@ export const secretDaoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalMultipleQueryKeys.listProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -220,6 +314,7 @@ export const secretDaoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalMultipleQueryKeys.reverseProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -243,7 +338,11 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.getVote(contractAddress, args),
+    queryKey: secretDaoProposalMultipleQueryKeys.getVote(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -265,6 +364,7 @@ export const secretDaoProposalMultipleQueries = {
     TData
   > => ({
     queryKey: secretDaoProposalMultipleQueryKeys.listVotes(
+      chainId,
       contractAddress,
       args
     ),
@@ -288,7 +388,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposalCount(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.proposalCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -305,10 +408,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoProposalMultipleQueryKeys.proposalCreationPolicy(
-        contractAddress
-      ),
+    queryKey: secretDaoProposalMultipleQueryKeys.proposalCreationPolicy(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -325,7 +428,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposalHooks(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.proposalHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -342,7 +448,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.voteHooks(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.voteHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -359,7 +468,7 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.dao(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.dao(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -376,7 +485,7 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.info(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.info(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -393,8 +502,10 @@ export const secretDaoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoProposalMultipleQueryKeys.nextProposalId(contractAddress),
+    queryKey: secretDaoProposalMultipleQueryKeys.nextProposalId(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),

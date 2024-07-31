@@ -30,95 +30,130 @@ export const daoVotingCw721StakedQueryKeys = {
       contract: 'daoVotingCw721Staked',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingCw721StakedQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
     ] as const,
-  nftClaims: (contractAddress: string, args?: Record<string, unknown>) =>
+  nftClaims: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'nft_claims',
         args,
       },
     ] as const,
-  hooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  hooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'hooks',
         args,
       },
     ] as const,
-  stakedNfts: (contractAddress: string, args?: Record<string, unknown>) =>
+  stakedNfts: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'staked_nfts',
         args,
       },
     ] as const,
-  activeThreshold: (contractAddress: string, args?: Record<string, unknown>) =>
+  activeThreshold: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'active_threshold',
         args,
       },
     ] as const,
-  isActive: (contractAddress: string, args?: Record<string, unknown>) =>
+  isActive: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'is_active',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw721StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw721StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -133,7 +168,7 @@ export const daoVotingCw721StakedQueries = {
       options,
     }: DaoVotingCw721StakedConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoVotingCw721StakedQueryKeys.config(contractAddress),
+    queryKey: daoVotingCw721StakedQueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -165,7 +200,11 @@ export const daoVotingCw721StakedQueries = {
       options,
     }: DaoVotingCw721StakedNftClaimsQuery<TData>
   ): UseQueryOptions<NftClaimsResponse, Error, TData> => ({
-    queryKey: daoVotingCw721StakedQueryKeys.nftClaims(contractAddress, args),
+    queryKey: daoVotingCw721StakedQueryKeys.nftClaims(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -202,7 +241,7 @@ export const daoVotingCw721StakedQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingCw721StakedQueryKeys.hooks(contractAddress),
+    queryKey: daoVotingCw721StakedQueryKeys.hooks(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingCw721StakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -220,7 +259,11 @@ export const daoVotingCw721StakedQueries = {
       options,
     }: DaoVotingCw721StakedStakedNftsQuery<TData>
   ): UseQueryOptions<ArrayOfString, Error, TData> => ({
-    queryKey: daoVotingCw721StakedQueryKeys.stakedNfts(contractAddress, args),
+    queryKey: daoVotingCw721StakedQueryKeys.stakedNfts(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -256,7 +299,10 @@ export const daoVotingCw721StakedQueries = {
       options,
     }: DaoVotingCw721StakedActiveThresholdQuery<TData>
   ): UseQueryOptions<ActiveThresholdResponse, Error, TData> => ({
-    queryKey: daoVotingCw721StakedQueryKeys.activeThreshold(contractAddress),
+    queryKey: daoVotingCw721StakedQueryKeys.activeThreshold(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -290,7 +336,7 @@ export const daoVotingCw721StakedQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingCw721StakedQueryKeys.isActive(contractAddress),
+    queryKey: daoVotingCw721StakedQueryKeys.isActive(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingCw721StakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -309,6 +355,7 @@ export const daoVotingCw721StakedQueries = {
     }: DaoVotingCw721StakedVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingCw721StakedQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -351,6 +398,7 @@ export const daoVotingCw721StakedQueries = {
     }: DaoVotingCw721StakedTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingCw721StakedQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -383,7 +431,7 @@ export const daoVotingCw721StakedQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingCw721StakedDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw721StakedQueryKeys.dao(contractAddress),
+    queryKey: daoVotingCw721StakedQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

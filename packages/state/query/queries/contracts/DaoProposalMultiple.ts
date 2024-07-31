@@ -29,116 +29,166 @@ export const daoProposalMultipleQueryKeys = {
       contract: 'daoProposalMultiple',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoProposalMultipleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'proposal',
-        args,
-      },
-    ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'list_proposals',
-        args,
-      },
-    ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'reverse_proposals',
-        args,
-      },
-    ] as const,
-  getVote: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'get_vote',
-        args,
-      },
-    ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'list_votes',
-        args,
-      },
-    ] as const,
-  proposalCount: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
-        method: 'proposal_count',
-        args,
-      },
-    ] as const,
-  proposalCreationPolicy: (
+  config: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'proposal',
+        args,
+      },
+    ] as const,
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'list_proposals',
+        args,
+      },
+    ] as const,
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'reverse_proposals',
+        args,
+      },
+    ] as const,
+  getVote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'get_vote',
+        args,
+      },
+    ] as const,
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'list_votes',
+        args,
+      },
+    ] as const,
+  proposalCount: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'proposal_count',
+        args,
+      },
+    ] as const,
+  proposalCreationPolicy: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_creation_policy',
         args,
       },
     ] as const,
-  proposalHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_hooks',
         args,
       },
     ] as const,
-  voteHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  voteHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'vote_hooks',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
     ] as const,
-  nextProposalId: (contractAddress: string, args?: Record<string, unknown>) =>
+  nextProposalId: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalMultipleQueryKeys.address(contractAddress)[0],
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'next_proposal_id',
         args,
       },
@@ -149,7 +199,7 @@ export const daoProposalMultipleQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoProposalMultipleConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.config(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -181,7 +231,11 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleProposalQuery<TData>
   ): UseQueryOptions<ProposalResponse, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.proposal(contractAddress, args),
+    queryKey: daoProposalMultipleQueryKeys.proposal(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -218,7 +272,11 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleListProposalsQuery<TData>
   ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.listProposals(contractAddress, args),
+    queryKey: daoProposalMultipleQueryKeys.listProposals(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -257,6 +315,7 @@ export const daoProposalMultipleQueries = {
     }: DaoProposalMultipleReverseProposalsQuery<TData>
   ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
     queryKey: daoProposalMultipleQueryKeys.reverseProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -297,7 +356,11 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleGetVoteQuery<TData>
   ): UseQueryOptions<VoteResponse, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.getVote(contractAddress, args),
+    queryKey: daoProposalMultipleQueryKeys.getVote(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -335,7 +398,11 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleListVotesQuery<TData>
   ): UseQueryOptions<VoteListResponse, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.listVotes(contractAddress, args),
+    queryKey: daoProposalMultipleQueryKeys.listVotes(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -373,7 +440,10 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleProposalCountQuery<TData>
   ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.proposalCount(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.proposalCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -404,8 +474,10 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleProposalCreationPolicyQuery<TData>
   ): UseQueryOptions<ProposalCreationPolicy, Error, TData> => ({
-    queryKey:
-      daoProposalMultipleQueryKeys.proposalCreationPolicy(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.proposalCreationPolicy(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -437,7 +509,10 @@ export const daoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoProposalMultipleQueryKeys.proposalHooks(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.proposalHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -455,7 +530,7 @@ export const daoProposalMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoProposalMultipleQueryKeys.voteHooks(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.voteHooks(chainId, contractAddress),
     queryFn: async () => {
       return new DaoProposalMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -468,7 +543,7 @@ export const daoProposalMultipleQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoProposalMultipleDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.dao(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -500,7 +575,10 @@ export const daoProposalMultipleQueries = {
       options,
     }: DaoProposalMultipleNextProposalIdQuery<TData>
   ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalMultipleQueryKeys.nextProposalId(contractAddress),
+    queryKey: daoProposalMultipleQueryKeys.nextProposalId(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

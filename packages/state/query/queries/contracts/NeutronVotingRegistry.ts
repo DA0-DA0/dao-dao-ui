@@ -24,63 +24,82 @@ export const neutronVotingRegistryQueryKeys = {
       contract: 'neutronVotingRegistry',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...neutronVotingRegistryQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
     ] as const,
-  votingVaults: (contractAddress: string, args?: Record<string, unknown>) =>
+  votingVaults: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_vaults',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...neutronVotingRegistryQueryKeys.address(contractAddress)[0],
+        ...neutronVotingRegistryQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -96,7 +115,7 @@ export const neutronVotingRegistryQueries = {
     Error,
     TData
   > => ({
-    queryKey: neutronVotingRegistryQueryKeys.dao(contractAddress),
+    queryKey: neutronVotingRegistryQueryKeys.dao(chainId, contractAddress),
     queryFn: async () =>
       new NeutronVotingRegistryQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -113,7 +132,7 @@ export const neutronVotingRegistryQueries = {
     Error,
     TData
   > => ({
-    queryKey: neutronVotingRegistryQueryKeys.config(contractAddress),
+    queryKey: neutronVotingRegistryQueryKeys.config(chainId, contractAddress),
     queryFn: async () =>
       new NeutronVotingRegistryQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -132,6 +151,7 @@ export const neutronVotingRegistryQueries = {
     TData
   > => ({
     queryKey: neutronVotingRegistryQueryKeys.votingVaults(
+      chainId,
       contractAddress,
       args
     ),
@@ -155,6 +175,7 @@ export const neutronVotingRegistryQueries = {
     TData
   > => ({
     queryKey: neutronVotingRegistryQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -179,6 +200,7 @@ export const neutronVotingRegistryQueries = {
     TData
   > => ({
     queryKey: neutronVotingRegistryQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -200,7 +222,7 @@ export const neutronVotingRegistryQueries = {
     Error,
     TData
   > => ({
-    queryKey: neutronVotingRegistryQueryKeys.info(contractAddress),
+    queryKey: neutronVotingRegistryQueryKeys.info(chainId, contractAddress),
     queryFn: async () =>
       new NeutronVotingRegistryQueryClient(
         await getCosmWasmClientForChainId(chainId),

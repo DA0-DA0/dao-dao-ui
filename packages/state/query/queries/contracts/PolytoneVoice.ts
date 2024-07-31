@@ -12,20 +12,22 @@ export const polytoneVoiceQueryKeys = {
       contract: 'polytoneVoice',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...polytoneVoiceQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
   senderInfoForProxy: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...polytoneVoiceQueryKeys.address(contractAddress)[0],
+        ...polytoneVoiceQueryKeys.address(chainId, contractAddress)[0],
         method: 'sender_info_for_proxy',
         ...(args && { args }),
       },
@@ -41,7 +43,11 @@ export const polytoneVoiceQueries = {
       options,
     }: PolytoneVoiceSenderInfoForProxyQuery<TData>
   ): UseQueryOptions<SenderInfo, Error, TData> => ({
-    queryKey: polytoneVoiceQueryKeys.senderInfoForProxy(contractAddress, args),
+    queryKey: polytoneVoiceQueryKeys.senderInfoForProxy(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       let indexerNonExistent = false
       try {

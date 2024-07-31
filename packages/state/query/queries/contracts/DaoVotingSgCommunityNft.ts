@@ -28,87 +28,145 @@ export const daoVotingSgCommunityNftQueryKeys = {
       contract: 'daoVotingSgCommunityNft',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingSgCommunityNftQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  nftContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  nftContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'nft_contract',
         args,
       },
     ] as const,
-  hooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  hooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'hooks',
         args,
       },
     ] as const,
-  registeredNft: (contractAddress: string, args?: Record<string, unknown>) =>
+  registeredNft: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'registered_nft',
         args,
       },
     ] as const,
-  listVoters: (contractAddress: string, args?: Record<string, unknown>) =>
+  listVoters: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'list_voters',
         args,
       },
     ] as const,
-  ownership: (contractAddress: string, args?: Record<string, unknown>) =>
+  ownership: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'ownership',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingSgCommunityNftQueryKeys.address(contractAddress)[0],
+        ...daoVotingSgCommunityNftQueryKeys.address(
+          chainId,
+          contractAddress
+        )[0],
         method: 'info',
         args,
       },
@@ -123,7 +181,10 @@ export const daoVotingSgCommunityNftQueries = {
       options,
     }: DaoVotingSgCommunityNftNftContractQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingSgCommunityNftQueryKeys.nftContract(contractAddress),
+    queryKey: daoVotingSgCommunityNftQueryKeys.nftContract(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -155,7 +216,7 @@ export const daoVotingSgCommunityNftQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingSgCommunityNftQueryKeys.hooks(contractAddress),
+    queryKey: daoVotingSgCommunityNftQueryKeys.hooks(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingSgCommunityNftQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -174,6 +235,7 @@ export const daoVotingSgCommunityNftQueries = {
     }: DaoVotingSgCommunityNftRegisteredNftQuery<TData>
   ): UseQueryOptions<RegisteredNftResponse, Error, TData> => ({
     queryKey: daoVotingSgCommunityNftQueryKeys.registeredNft(
+      chainId,
       contractAddress,
       args
     ),
@@ -212,6 +274,7 @@ export const daoVotingSgCommunityNftQueries = {
     }: DaoVotingSgCommunityNftListVotersQuery<TData>
   ): UseQueryOptions<ListVotersResponse, Error, TData> => ({
     queryKey: daoVotingSgCommunityNftQueryKeys.listVoters(
+      chainId,
       contractAddress,
       args
     ),
@@ -250,7 +313,10 @@ export const daoVotingSgCommunityNftQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingSgCommunityNftQueryKeys.ownership(contractAddress),
+    queryKey: daoVotingSgCommunityNftQueryKeys.ownership(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new DaoVotingSgCommunityNftQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -269,6 +335,7 @@ export const daoVotingSgCommunityNftQueries = {
     }: DaoVotingSgCommunityNftVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingSgCommunityNftQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -311,6 +378,7 @@ export const daoVotingSgCommunityNftQueries = {
     }: DaoVotingSgCommunityNftTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingSgCommunityNftQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -347,7 +415,7 @@ export const daoVotingSgCommunityNftQueries = {
       options,
     }: DaoVotingSgCommunityNftDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingSgCommunityNftQueryKeys.dao(contractAddress),
+    queryKey: daoVotingSgCommunityNftQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

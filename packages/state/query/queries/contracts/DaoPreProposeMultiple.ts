@@ -27,68 +27,94 @@ export const daoPreProposeMultipleQueryKeys = {
       contract: 'daoPreProposeMultiple',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoPreProposeMultipleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  proposalModule: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
-        method: 'proposal_module',
-        args,
-      },
-    ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
-        method: 'dao',
-        args,
-      },
-    ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  depositInfo: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
-        method: 'deposit_info',
-        args,
-      },
-    ] as const,
-  canPropose: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
-        method: 'can_propose',
-        args,
-      },
-    ] as const,
-  proposalSubmittedHooks: (
+  proposalModule: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'proposal_module',
+        args,
+      },
+    ] as const,
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'dao',
+        args,
+      },
+    ] as const,
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  depositInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'deposit_info',
+        args,
+      },
+    ] as const,
+  canPropose: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'can_propose',
+        args,
+      },
+    ] as const,
+  proposalSubmittedHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_submitted_hooks',
         args,
       },
     ] as const,
-  queryExtension: (contractAddress: string, args?: Record<string, unknown>) =>
+  queryExtension: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoPreProposeMultipleQueryKeys.address(contractAddress)[0],
+        ...daoPreProposeMultipleQueryKeys.address(chainId, contractAddress)[0],
         method: 'query_extension',
         args,
       },
@@ -103,7 +129,10 @@ export const daoPreProposeMultipleQueries = {
       options,
     }: DaoPreProposeMultipleProposalModuleQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoPreProposeMultipleQueryKeys.proposalModule(contractAddress),
+    queryKey: daoPreProposeMultipleQueryKeys.proposalModule(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -130,7 +159,7 @@ export const daoPreProposeMultipleQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoPreProposeMultipleDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoPreProposeMultipleQueryKeys.dao(contractAddress),
+    queryKey: daoPreProposeMultipleQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -161,7 +190,7 @@ export const daoPreProposeMultipleQueries = {
       options,
     }: DaoPreProposeMultipleConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoPreProposeMultipleQueryKeys.config(contractAddress),
+    queryKey: daoPreProposeMultipleQueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -193,7 +222,11 @@ export const daoPreProposeMultipleQueries = {
       options,
     }: DaoPreProposeMultipleDepositInfoQuery<TData>
   ): UseQueryOptions<DepositInfoResponse, Error, TData> => ({
-    queryKey: daoPreProposeMultipleQueryKeys.depositInfo(contractAddress, args),
+    queryKey: daoPreProposeMultipleQueryKeys.depositInfo(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -229,7 +262,11 @@ export const daoPreProposeMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoPreProposeMultipleQueryKeys.canPropose(contractAddress, args),
+    queryKey: daoPreProposeMultipleQueryKeys.canPropose(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new DaoPreProposeMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -249,8 +286,10 @@ export const daoPreProposeMultipleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      daoPreProposeMultipleQueryKeys.proposalSubmittedHooks(contractAddress),
+    queryKey: daoPreProposeMultipleQueryKeys.proposalSubmittedHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new DaoPreProposeMultipleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -270,6 +309,7 @@ export const daoPreProposeMultipleQueries = {
     TData
   > => ({
     queryKey: daoPreProposeMultipleQueryKeys.queryExtension(
+      chainId,
       contractAddress,
       args
     ),

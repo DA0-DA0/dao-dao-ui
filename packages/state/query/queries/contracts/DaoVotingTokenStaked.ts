@@ -32,111 +32,154 @@ export const daoVotingTokenStakedQueryKeys = {
       contract: 'daoVotingTokenStaked',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingTokenStakedQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  getConfig: (contractAddress: string, args?: Record<string, unknown>) =>
+  getConfig: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_config',
         args,
       },
     ] as const,
-  claims: (contractAddress: string, args?: Record<string, unknown>) =>
+  claims: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'claims',
         args,
       },
     ] as const,
-  listStakers: (contractAddress: string, args?: Record<string, unknown>) =>
+  listStakers: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_stakers',
         args,
       },
     ] as const,
-  activeThreshold: (contractAddress: string, args?: Record<string, unknown>) =>
+  activeThreshold: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'active_threshold',
         args,
       },
     ] as const,
-  getHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  getHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_hooks',
         args,
       },
     ] as const,
-  tokenContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  tokenContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'token_contract',
         args,
       },
     ] as const,
-  denom: (contractAddress: string, args?: Record<string, unknown>) =>
+  denom: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'denom',
         args,
       },
     ] as const,
-  isActive: (contractAddress: string, args?: Record<string, unknown>) =>
+  isActive: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'is_active',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingTokenStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingTokenStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -151,7 +194,7 @@ export const daoVotingTokenStakedQueries = {
       options,
     }: DaoVotingTokenStakedGetConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.getConfig(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.getConfig(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -183,7 +226,11 @@ export const daoVotingTokenStakedQueries = {
       options,
     }: DaoVotingTokenStakedClaimsQuery<TData>
   ): UseQueryOptions<ClaimsResponse, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.claims(contractAddress, args),
+    queryKey: daoVotingTokenStakedQueryKeys.claims(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -218,7 +265,11 @@ export const daoVotingTokenStakedQueries = {
       options,
     }: DaoVotingTokenStakedListStakersQuery<TData>
   ): UseQueryOptions<ListStakersResponse, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.listStakers(contractAddress, args),
+    queryKey: daoVotingTokenStakedQueryKeys.listStakers(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -253,7 +304,10 @@ export const daoVotingTokenStakedQueries = {
       options,
     }: DaoVotingTokenStakedActiveThresholdQuery<TData>
   ): UseQueryOptions<ActiveThresholdResponse, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.activeThreshold(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.activeThreshold(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -287,7 +341,7 @@ export const daoVotingTokenStakedQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingTokenStakedQueryKeys.getHooks(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.getHooks(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingTokenStakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -304,7 +358,10 @@ export const daoVotingTokenStakedQueries = {
       options,
     }: DaoVotingTokenStakedTokenContractQuery<TData>
   ): UseQueryOptions<NullableAddr, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.tokenContract(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.tokenContract(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -331,7 +388,7 @@ export const daoVotingTokenStakedQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingTokenStakedDenomQuery<TData>
   ): UseQueryOptions<DenomResponse, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.denom(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.denom(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -365,7 +422,7 @@ export const daoVotingTokenStakedQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingTokenStakedQueryKeys.isActive(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.isActive(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingTokenStakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -384,6 +441,7 @@ export const daoVotingTokenStakedQueries = {
     }: DaoVotingTokenStakedVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingTokenStakedQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -426,6 +484,7 @@ export const daoVotingTokenStakedQueries = {
     }: DaoVotingTokenStakedTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingTokenStakedQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -458,7 +517,7 @@ export const daoVotingTokenStakedQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingTokenStakedDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingTokenStakedQueryKeys.dao(contractAddress),
+    queryKey: daoVotingTokenStakedQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

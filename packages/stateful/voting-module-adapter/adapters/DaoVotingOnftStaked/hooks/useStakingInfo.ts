@@ -139,9 +139,13 @@ export const useStakingInfo = ({
     })
     // Then invalidate contract query that uses indexer query.
     queryClient.invalidateQueries({
-      queryKey: daoVotingOnftStakedQueryKeys.stakedNfts(votingModuleAddress, {
-        address: walletAddress,
-      }),
+      queryKey: daoVotingOnftStakedQueryKeys.stakedNfts(
+        chainId,
+        votingModuleAddress,
+        {
+          address: walletAddress,
+        }
+      ),
     })
   }, [
     chainId,
@@ -184,9 +188,13 @@ export const useStakingInfo = ({
     })
     // Then invalidate contract query that uses indexer query.
     queryClient.invalidateQueries({
-      queryKey: daoVotingOnftStakedQueryKeys.nftClaims(votingModuleAddress, {
-        address: walletAddress,
-      }),
+      queryKey: daoVotingOnftStakedQueryKeys.nftClaims(
+        chainId,
+        votingModuleAddress,
+        {
+          address: walletAddress,
+        }
+      ),
     })
   }, [chainId, queryClient, votingModuleAddress, walletAddress])
 

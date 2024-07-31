@@ -23,55 +23,70 @@ export const secretDaoVotingCw4QueryKeys = {
       contract: 'secretDaoVotingCw4',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoVotingCw4QueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  groupContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  groupContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...secretDaoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'group_contract',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...secretDaoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...secretDaoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...secretDaoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...secretDaoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -87,7 +102,10 @@ export const secretDaoVotingCw4Queries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.groupContract(contractAddress),
+    queryKey: secretDaoVotingCw4QueryKeys.groupContract(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoVotingCw4QueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -106,6 +124,7 @@ export const secretDaoVotingCw4Queries = {
     TData
   > => ({
     queryKey: secretDaoVotingCw4QueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -130,6 +149,7 @@ export const secretDaoVotingCw4Queries = {
     TData
   > => ({
     queryKey: secretDaoVotingCw4QueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -151,7 +171,7 @@ export const secretDaoVotingCw4Queries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.dao(contractAddress),
+    queryKey: secretDaoVotingCw4QueryKeys.dao(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoVotingCw4QueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -168,7 +188,7 @@ export const secretDaoVotingCw4Queries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.info(contractAddress),
+    queryKey: secretDaoVotingCw4QueryKeys.info(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoVotingCw4QueryClient(
         await getCosmWasmClientForChainId(chainId),

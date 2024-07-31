@@ -12,17 +12,22 @@ export const polytoneProxyQueryKeys = {
       contract: 'polytoneProxy',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...polytoneProxyQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  instantiator: (contractAddress: string, args?: Record<string, unknown>) =>
+  instantiator: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...polytoneProxyQueryKeys.address(contractAddress)[0],
+        ...polytoneProxyQueryKeys.address(chainId, contractAddress)[0],
         method: 'instantiator',
         ...(args && { args }),
       },
@@ -33,7 +38,7 @@ export const polytoneProxyQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: PolytoneProxyInstantiatorQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: polytoneProxyQueryKeys.instantiator(contractAddress),
+    queryKey: polytoneProxyQueryKeys.instantiator(chainId, contractAddress),
     queryFn: async () => {
       let indexerNonExistent = false
       try {

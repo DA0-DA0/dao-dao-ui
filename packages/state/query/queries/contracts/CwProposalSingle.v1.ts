@@ -30,89 +30,130 @@ export const cwProposalSingleV1QueryKeys = {
       contract: 'cwProposalSingleV1',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...cwProposalSingleV1QueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
     ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal',
         args,
       },
     ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'list_proposals',
         args,
       },
     ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'reverse_proposals',
         args,
       },
     ] as const,
-  proposalCount: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalCount: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_count',
         args,
       },
     ] as const,
-  vote: (contractAddress: string, args?: Record<string, unknown>) =>
+  vote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'vote',
         args,
       },
     ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'list_votes',
         args,
       },
     ] as const,
-  proposalHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_hooks',
         args,
       },
     ] as const,
-  voteHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  voteHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'vote_hooks',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cwProposalSingleV1QueryKeys.address(contractAddress)[0],
+        ...cwProposalSingleV1QueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -123,7 +164,7 @@ export const cwProposalSingleV1Queries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: CwProposalSingleV1ConfigQuery<TData>
   ): UseQueryOptions<ConfigResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.config(contractAddress),
+    queryKey: cwProposalSingleV1QueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -155,7 +196,11 @@ export const cwProposalSingleV1Queries = {
       options,
     }: CwProposalSingleV1ProposalQuery<TData>
   ): UseQueryOptions<ProposalResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.proposal(contractAddress, args),
+    queryKey: cwProposalSingleV1QueryKeys.proposal(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -190,7 +235,11 @@ export const cwProposalSingleV1Queries = {
       options,
     }: CwProposalSingleV1ListProposalsQuery<TData>
   ): UseQueryOptions<ListProposalsResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.listProposals(contractAddress, args),
+    queryKey: cwProposalSingleV1QueryKeys.listProposals(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -229,6 +278,7 @@ export const cwProposalSingleV1Queries = {
     }: CwProposalSingleV1ReverseProposalsQuery<TData>
   ): UseQueryOptions<ReverseProposalsResponse, Error, TData> => ({
     queryKey: cwProposalSingleV1QueryKeys.reverseProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -268,7 +318,10 @@ export const cwProposalSingleV1Queries = {
       options,
     }: CwProposalSingleV1ProposalCountQuery<TData>
   ): UseQueryOptions<ProposalCountResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.proposalCount(contractAddress),
+    queryKey: cwProposalSingleV1QueryKeys.proposalCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -305,7 +358,7 @@ export const cwProposalSingleV1Queries = {
       options,
     }: CwProposalSingleV1VoteQuery<TData>
   ): UseQueryOptions<VoteResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.vote(contractAddress, args),
+    queryKey: cwProposalSingleV1QueryKeys.vote(chainId, contractAddress, args),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -343,7 +396,11 @@ export const cwProposalSingleV1Queries = {
       options,
     }: CwProposalSingleV1ListVotesQuery<TData>
   ): UseQueryOptions<ListVotesResponse, Error, TData> => ({
-    queryKey: cwProposalSingleV1QueryKeys.listVotes(contractAddress, args),
+    queryKey: cwProposalSingleV1QueryKeys.listVotes(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -382,7 +439,10 @@ export const cwProposalSingleV1Queries = {
     Error,
     TData
   > => ({
-    queryKey: cwProposalSingleV1QueryKeys.proposalHooks(contractAddress),
+    queryKey: cwProposalSingleV1QueryKeys.proposalHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new CwProposalSingleV1QueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -399,7 +459,7 @@ export const cwProposalSingleV1Queries = {
     Error,
     TData
   > => ({
-    queryKey: cwProposalSingleV1QueryKeys.voteHooks(contractAddress),
+    queryKey: cwProposalSingleV1QueryKeys.voteHooks(chainId, contractAddress),
     queryFn: async () =>
       new CwProposalSingleV1QueryClient(
         await getCosmWasmClientForChainId(chainId),

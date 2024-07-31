@@ -24,55 +24,70 @@ export const daoVotingCw4QueryKeys = {
       contract: 'daoVotingCw4',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingCw4QueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  groupContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  groupContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...daoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'group_contract',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...daoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...daoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...daoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+        ...daoVotingCw4QueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -83,7 +98,7 @@ export const daoVotingCw4Queries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingCw4GroupContractQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw4QueryKeys.groupContract(contractAddress),
+    queryKey: daoVotingCw4QueryKeys.groupContract(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -115,7 +130,11 @@ export const daoVotingCw4Queries = {
       options,
     }: DaoVotingCw4VotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoVotingCw4QueryKeys.votingPowerAtHeight(contractAddress, args),
+    queryKey: daoVotingCw4QueryKeys.votingPowerAtHeight(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -156,7 +175,11 @@ export const daoVotingCw4Queries = {
       options,
     }: DaoVotingCw4TotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoVotingCw4QueryKeys.totalPowerAtHeight(contractAddress, args),
+    queryKey: daoVotingCw4QueryKeys.totalPowerAtHeight(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -188,7 +211,7 @@ export const daoVotingCw4Queries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingCw4DaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw4QueryKeys.dao(contractAddress),
+    queryKey: daoVotingCw4QueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

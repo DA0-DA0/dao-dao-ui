@@ -25,47 +25,68 @@ export const secretDaoPreProposeApprovalSingleQueryKeys = {
       contract: 'secretDaoPreProposeApprovalSingle',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  proposalModule: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalModule: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'proposal_module',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'dao',
         args,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'config',
         args,
       },
     ] as const,
-  depositInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  depositInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'deposit_info',
@@ -73,22 +94,29 @@ export const secretDaoPreProposeApprovalSingleQueryKeys = {
       },
     ] as const,
   proposalSubmittedHooks: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'proposal_submitted_hooks',
         args,
       },
     ] as const,
-  queryExtension: (contractAddress: string, args?: Record<string, unknown>) =>
+  queryExtension: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
         ...secretDaoPreProposeApprovalSingleQueryKeys.address(
+          chainId,
           contractAddress
         )[0],
         method: 'query_extension',
@@ -106,10 +134,10 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoPreProposeApprovalSingleQueryKeys.proposalModule(
-        contractAddress
-      ),
+    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.proposalModule(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeApprovalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -126,7 +154,10 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.dao(contractAddress),
+    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.dao(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeApprovalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -143,8 +174,10 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoPreProposeApprovalSingleQueryKeys.config(contractAddress),
+    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.config(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeApprovalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -163,6 +196,7 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoPreProposeApprovalSingleQueryKeys.depositInfo(
+      chainId,
       contractAddress,
       args
     ),
@@ -184,10 +218,10 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     Error,
     TData
   > => ({
-    queryKey:
-      secretDaoPreProposeApprovalSingleQueryKeys.proposalSubmittedHooks(
-        contractAddress
-      ),
+    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.proposalSubmittedHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoPreProposeApprovalSingleQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -206,6 +240,7 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     TData
   > => ({
     queryKey: secretDaoPreProposeApprovalSingleQueryKeys.queryExtension(
+      chainId,
       contractAddress,
       args
     ),

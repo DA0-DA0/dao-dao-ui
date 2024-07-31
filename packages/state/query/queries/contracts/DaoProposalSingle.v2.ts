@@ -29,116 +29,166 @@ export const daoProposalSingleV2QueryKeys = {
       contract: 'daoProposalSingleV2',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoProposalSingleV2QueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'config',
-        args,
-      },
-    ] as const,
-  proposal: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'proposal',
-        args,
-      },
-    ] as const,
-  listProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'list_proposals',
-        args,
-      },
-    ] as const,
-  reverseProposals: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'reverse_proposals',
-        args,
-      },
-    ] as const,
-  getVote: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'get_vote',
-        args,
-      },
-    ] as const,
-  listVotes: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'list_votes',
-        args,
-      },
-    ] as const,
-  proposalCount: (contractAddress: string, args?: Record<string, unknown>) =>
-    [
-      {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
-        method: 'proposal_count',
-        args,
-      },
-    ] as const,
-  proposalCreationPolicy: (
+  config: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'config',
+        args,
+      },
+    ] as const,
+  proposal: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'proposal',
+        args,
+      },
+    ] as const,
+  listProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'list_proposals',
+        args,
+      },
+    ] as const,
+  reverseProposals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'reverse_proposals',
+        args,
+      },
+    ] as const,
+  getVote: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'get_vote',
+        args,
+      },
+    ] as const,
+  listVotes: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'list_votes',
+        args,
+      },
+    ] as const,
+  proposalCount: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'proposal_count',
+        args,
+      },
+    ] as const,
+  proposalCreationPolicy: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_creation_policy',
         args,
       },
     ] as const,
-  proposalHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_hooks',
         args,
       },
     ] as const,
-  voteHooks: (contractAddress: string, args?: Record<string, unknown>) =>
+  voteHooks: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'vote_hooks',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
     ] as const,
-  nextProposalId: (contractAddress: string, args?: Record<string, unknown>) =>
+  nextProposalId: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoProposalSingleV2QueryKeys.address(contractAddress)[0],
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
         method: 'next_proposal_id',
         args,
       },
@@ -149,7 +199,7 @@ export const daoProposalSingleV2Queries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoProposalSingleV2ConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.config(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.config(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -181,7 +231,11 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2ProposalQuery<TData>
   ): UseQueryOptions<ProposalResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposal(contractAddress, args),
+    queryKey: daoProposalSingleV2QueryKeys.proposal(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -218,7 +272,11 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2ListProposalsQuery<TData>
   ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.listProposals(contractAddress, args),
+    queryKey: daoProposalSingleV2QueryKeys.listProposals(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -257,6 +315,7 @@ export const daoProposalSingleV2Queries = {
     }: DaoProposalSingleV2ReverseProposalsQuery<TData>
   ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
     queryKey: daoProposalSingleV2QueryKeys.reverseProposals(
+      chainId,
       contractAddress,
       args
     ),
@@ -297,7 +356,11 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2GetVoteQuery<TData>
   ): UseQueryOptions<VoteResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.getVote(contractAddress, args),
+    queryKey: daoProposalSingleV2QueryKeys.getVote(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -335,7 +398,11 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2ListVotesQuery<TData>
   ): UseQueryOptions<VoteListResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.listVotes(contractAddress, args),
+    queryKey: daoProposalSingleV2QueryKeys.listVotes(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -373,7 +440,10 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2ProposalCountQuery<TData>
   ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposalCount(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.proposalCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -404,8 +474,10 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2ProposalCreationPolicyQuery<TData>
   ): UseQueryOptions<ProposalCreationPolicy, Error, TData> => ({
-    queryKey:
-      daoProposalSingleV2QueryKeys.proposalCreationPolicy(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.proposalCreationPolicy(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -437,7 +509,10 @@ export const daoProposalSingleV2Queries = {
     Error,
     TData
   > => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposalHooks(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.proposalHooks(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new DaoProposalSingleV2QueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -455,7 +530,7 @@ export const daoProposalSingleV2Queries = {
     Error,
     TData
   > => ({
-    queryKey: daoProposalSingleV2QueryKeys.voteHooks(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.voteHooks(chainId, contractAddress),
     queryFn: async () => {
       return new DaoProposalSingleV2QueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -468,7 +543,7 @@ export const daoProposalSingleV2Queries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoProposalSingleV2DaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.dao(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -500,7 +575,10 @@ export const daoProposalSingleV2Queries = {
       options,
     }: DaoProposalSingleV2NextProposalIdQuery<TData>
   ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.nextProposalId(contractAddress),
+    queryKey: daoProposalSingleV2QueryKeys.nextProposalId(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

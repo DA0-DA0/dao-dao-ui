@@ -27,73 +27,106 @@ export const valenceRebalancerQueryKeys = {
       contract: 'valenceRebalancer',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...valenceRebalancerQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  getConfig: (contractAddress: string, args?: Record<string, unknown>) =>
+  getConfig: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_config',
         args,
       },
     ] as const,
-  getAllConfigs: (contractAddress: string, args?: Record<string, unknown>) =>
+  getAllConfigs: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_all_configs',
         args,
       },
     ] as const,
-  getPausedConfig: (contractAddress: string, args?: Record<string, unknown>) =>
+  getPausedConfig: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_paused_config',
         args,
       },
     ] as const,
-  getSystemStatus: (contractAddress: string, args?: Record<string, unknown>) =>
+  getSystemStatus: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_system_status',
         args,
       },
     ] as const,
-  getServiceFee: (contractAddress: string, args?: Record<string, unknown>) =>
+  getServiceFee: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_service_fee',
         args,
       },
     ] as const,
-  getWhiteLists: (contractAddress: string, args?: Record<string, unknown>) =>
+  getWhiteLists: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_white_lists',
         args,
       },
     ] as const,
-  getManagersAddrs: (contractAddress: string, args?: Record<string, unknown>) =>
+  getManagersAddrs: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_managers_addrs',
         args,
       },
     ] as const,
-  getAdmin: (contractAddress: string, args?: Record<string, unknown>) =>
+  getAdmin: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...valenceRebalancerQueryKeys.address(contractAddress)[0],
+        ...valenceRebalancerQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_admin',
         args,
       },
@@ -110,7 +143,11 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getConfig(contractAddress, args),
+    queryKey: valenceRebalancerQueryKeys.getConfig(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -131,7 +168,11 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getAllConfigs(contractAddress, args),
+    queryKey: valenceRebalancerQueryKeys.getAllConfigs(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -153,7 +194,11 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getPausedConfig(contractAddress, args),
+    queryKey: valenceRebalancerQueryKeys.getPausedConfig(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -173,7 +218,10 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getSystemStatus(contractAddress),
+    queryKey: valenceRebalancerQueryKeys.getSystemStatus(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -192,7 +240,11 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getServiceFee(contractAddress, args),
+    queryKey: valenceRebalancerQueryKeys.getServiceFee(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -213,7 +265,10 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getWhiteLists(contractAddress),
+    queryKey: valenceRebalancerQueryKeys.getWhiteLists(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -231,7 +286,10 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getManagersAddrs(contractAddress),
+    queryKey: valenceRebalancerQueryKeys.getManagersAddrs(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -249,7 +307,7 @@ export const valenceRebalancerQueries = {
     Error,
     TData
   > => ({
-    queryKey: valenceRebalancerQueryKeys.getAdmin(contractAddress),
+    queryKey: valenceRebalancerQueryKeys.getAdmin(chainId, contractAddress),
     queryFn: async () => {
       return new ValenceRebalancerQueryClient(
         await getCosmWasmClientForChainId(chainId),

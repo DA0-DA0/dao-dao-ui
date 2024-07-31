@@ -13,17 +13,22 @@ export const cw1WhitelistQueryKeys = {
       contract: 'cw1Whitelist',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...cw1WhitelistQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  adminList: (contractAddress: string, args?: Record<string, unknown>) =>
+  adminList: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw1WhitelistQueryKeys.address(contractAddress)[0],
+        ...cw1WhitelistQueryKeys.address(chainId, contractAddress)[0],
         method: 'admin_list',
         ...(args && { args }),
       },
@@ -32,12 +37,13 @@ export const cw1WhitelistQueryKeys = {
    * If this is a cw1-whitelist, return the admins. Otherwise, return null.
    */
   adminsIfCw1Whitelist: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...cw1WhitelistQueryKeys.address(contractAddress)[0],
+        ...cw1WhitelistQueryKeys.address(chainId, contractAddress)[0],
         method: 'adminsIfCw1Whitelist',
         ...(args && { args }),
       },
@@ -48,7 +54,7 @@ export const cw1WhitelistQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw1WhitelistAdminListQuery<TData>
   ): UseQueryOptions<AdminListResponse, Error, TData> => ({
-    queryKey: cw1WhitelistQueryKeys.adminList(contractAddress),
+    queryKey: cw1WhitelistQueryKeys.adminList(chainId, contractAddress),
     queryFn: async () => {
       let indexerNonExistent = false
       try {
@@ -91,7 +97,10 @@ export const cw1WhitelistQueries = {
       options,
     }: Cw1WhitelistAdminsIfCw1WhitelistQuery<TData>
   ): UseQueryOptions<string[] | null, Error, TData> => ({
-    queryKey: cw1WhitelistQueryKeys.adminsIfCw1Whitelist(contractAddress),
+    queryKey: cw1WhitelistQueryKeys.adminsIfCw1Whitelist(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       const isCw1Whitelist = await queryClient.fetchQuery(
         contractQueries.isCw1Whitelist(queryClient, {

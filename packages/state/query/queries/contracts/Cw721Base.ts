@@ -37,121 +37,178 @@ export const cw721BaseQueryKeys = {
       contract: 'cw721Base',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...cw721BaseQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  ownerOf: (contractAddress: string, args?: Record<string, unknown>) =>
+  ownerOf: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'owner_of',
         args,
       },
     ] as const,
-  approval: (contractAddress: string, args?: Record<string, unknown>) =>
+  approval: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'approval',
         args,
       },
     ] as const,
-  approvals: (contractAddress: string, args?: Record<string, unknown>) =>
+  approvals: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'approvals',
         args,
       },
     ] as const,
-  operator: (contractAddress: string, args?: Record<string, unknown>) =>
+  operator: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'operator',
         args,
       },
     ] as const,
-  allOperators: (contractAddress: string, args?: Record<string, unknown>) =>
+  allOperators: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'all_operators',
         args,
       },
     ] as const,
-  numTokens: (contractAddress: string, args?: Record<string, unknown>) =>
+  numTokens: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'num_tokens',
         args,
       },
     ] as const,
-  contractInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  contractInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'contract_info',
         args,
       },
     ] as const,
-  nftInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  nftInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'nft_info',
         args,
       },
     ] as const,
-  allNftInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  allNftInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'all_nft_info',
         args,
       },
     ] as const,
-  tokens: (contractAddress: string, args?: Record<string, unknown>) =>
+  tokens: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'tokens',
         args,
       },
     ] as const,
-  allTokens: (contractAddress: string, args?: Record<string, unknown>) =>
+  allTokens: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'all_tokens',
         args,
       },
     ] as const,
-  minter: (contractAddress: string, args?: Record<string, unknown>) =>
+  minter: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'minter',
         args,
       },
     ] as const,
-  extension: (contractAddress: string, args?: Record<string, unknown>) =>
+  extension: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'extension',
         args,
       },
     ] as const,
-  ownership: (contractAddress: string, args?: Record<string, unknown>) =>
+  ownership: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...cw721BaseQueryKeys.address(contractAddress)[0],
+        ...cw721BaseQueryKeys.address(chainId, contractAddress)[0],
         method: 'ownership',
         args,
       },
@@ -168,7 +225,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.ownerOf(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.ownerOf(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -190,7 +247,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.approval(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.approval(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -213,7 +270,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.approvals(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.approvals(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -235,7 +292,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.operator(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.operator(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -258,7 +315,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.allOperators(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.allOperators(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -281,7 +338,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.numTokens(contractAddress),
+    queryKey: cw721BaseQueryKeys.numTokens(chainId, contractAddress),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -299,7 +356,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.contractInfo(contractAddress),
+    queryKey: cw721BaseQueryKeys.contractInfo(chainId, contractAddress),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -318,7 +375,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.nftInfo(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.nftInfo(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -339,7 +396,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.allNftInfo(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.allNftInfo(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -361,7 +418,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.tokens(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.tokens(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -384,7 +441,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.allTokens(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.allTokens(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -405,7 +462,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.minter(contractAddress),
+    queryKey: cw721BaseQueryKeys.minter(chainId, contractAddress),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -420,7 +477,7 @@ export const cw721BaseQueries = {
     args,
     options,
   }: Cw721BaseExtensionQuery<TData>): UseQueryOptions<Null, Error, TData> => ({
-    queryKey: cw721BaseQueryKeys.extension(contractAddress, args),
+    queryKey: cw721BaseQueryKeys.extension(chainId, contractAddress, args),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -440,7 +497,7 @@ export const cw721BaseQueries = {
     Error,
     TData
   > => ({
-    queryKey: cw721BaseQueryKeys.ownership(contractAddress),
+    queryKey: cw721BaseQueryKeys.ownership(chainId, contractAddress),
     queryFn: async () => {
       return new Cw721BaseQueryClient(
         await getCosmWasmClientForChainId(chainId),

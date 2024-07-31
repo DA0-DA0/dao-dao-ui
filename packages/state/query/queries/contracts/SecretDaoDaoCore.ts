@@ -36,173 +36,238 @@ export const secretDaoDaoCoreQueryKeys = {
       contract: 'secretDaoDaoCore',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...secretDaoDaoCoreQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  admin: (contractAddress: string, args?: Record<string, unknown>) =>
+  admin: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'admin',
         args,
       },
     ] as const,
-  adminNomination: (contractAddress: string, args?: Record<string, unknown>) =>
+  adminNomination: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'admin_nomination',
         args,
       },
     ] as const,
-  config: (contractAddress: string, args?: Record<string, unknown>) =>
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
         args,
       },
     ] as const,
-  cw20Balances: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw20Balances: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw20_balances',
         args,
       },
     ] as const,
-  cw20TokenList: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw20TokenList: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw20_token_list',
         args,
       },
     ] as const,
-  cw721TokenList: (contractAddress: string, args?: Record<string, unknown>) =>
+  cw721TokenList: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'cw721_token_list',
         args,
       },
     ] as const,
-  dumpState: (contractAddress: string, args?: Record<string, unknown>) =>
+  dumpState: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'dump_state',
         args,
       },
     ] as const,
-  getItem: (contractAddress: string, args?: Record<string, unknown>) =>
+  getItem: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_item',
         args,
       },
     ] as const,
-  listItems: (contractAddress: string, args?: Record<string, unknown>) =>
+  listItems: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_items',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
     ] as const,
-  proposalModules: (contractAddress: string, args?: Record<string, unknown>) =>
+  proposalModules: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_modules',
         args,
       },
     ] as const,
   activeProposalModules: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'active_proposal_modules',
         args,
       },
     ] as const,
   proposalModuleCount: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'proposal_module_count',
         args,
       },
     ] as const,
-  pauseInfo: (contractAddress: string, args?: Record<string, unknown>) =>
+  pauseInfo: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'pause_info',
         args,
       },
     ] as const,
-  votingModule: (contractAddress: string, args?: Record<string, unknown>) =>
+  votingModule: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_module',
         args,
       },
     ] as const,
-  listSubDaos: (contractAddress: string, args?: Record<string, unknown>) =>
+  listSubDaos: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_sub_daos',
         args,
       },
     ] as const,
-  daoURI: (contractAddress: string, args?: Record<string, unknown>) =>
+  daoURI: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao_u_r_i',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...secretDaoDaoCoreQueryKeys.address(contractAddress)[0],
+        ...secretDaoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
@@ -218,7 +283,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.admin(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.admin(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -235,7 +300,10 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.adminNomination(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.adminNomination(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -252,7 +320,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.config(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.config(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -270,7 +338,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw20Balances(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.cw20Balances(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -291,7 +363,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw20TokenList(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.cw20TokenList(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -312,7 +388,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw721TokenList(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.cw721TokenList(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -332,7 +412,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.dumpState(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -350,7 +430,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.getItem(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -370,7 +450,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.listItems(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.listItems(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -390,7 +474,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.info(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.info(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -408,7 +492,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.proposalModules(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.proposalModules(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -430,6 +518,7 @@ export const secretDaoDaoCoreQueries = {
     TData
   > => ({
     queryKey: secretDaoDaoCoreQueryKeys.activeProposalModules(
+      chainId,
       contractAddress,
       args
     ),
@@ -452,7 +541,10 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.proposalModuleCount(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.proposalModuleCount(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -469,7 +561,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.pauseInfo(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -486,7 +578,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.votingModule(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -504,7 +596,11 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.listSubDaos(contractAddress, args),
+    queryKey: secretDaoDaoCoreQueryKeys.listSubDaos(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -524,7 +620,7 @@ export const secretDaoDaoCoreQueries = {
     Error,
     TData
   > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.daoURI(contractAddress),
+    queryKey: secretDaoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
     queryFn: async () =>
       new SecretDaoDaoCoreQueryClient(
         await getCosmWasmClientForChainId(chainId),
@@ -543,6 +639,7 @@ export const secretDaoDaoCoreQueries = {
     TData
   > => ({
     queryKey: secretDaoDaoCoreQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -567,6 +664,7 @@ export const secretDaoDaoCoreQueries = {
     TData
   > => ({
     queryKey: secretDaoDaoCoreQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),

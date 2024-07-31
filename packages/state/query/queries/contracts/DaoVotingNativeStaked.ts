@@ -27,71 +27,94 @@ export const daoVotingNativeStakedQueryKeys = {
       contract: 'daoVotingNativeStaked',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingNativeStakedQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  getConfig: (contractAddress: string, args?: Record<string, unknown>) =>
+  getConfig: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'get_config',
         args,
       },
     ] as const,
-  claims: (contractAddress: string, args?: Record<string, unknown>) =>
+  claims: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'claims',
         args,
       },
     ] as const,
-  listStakers: (contractAddress: string, args?: Record<string, unknown>) =>
+  listStakers: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'list_stakers',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingNativeStakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingNativeStakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
@@ -106,7 +129,10 @@ export const daoVotingNativeStakedQueries = {
       options,
     }: DaoVotingNativeStakedGetConfigQuery<TData>
   ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.getConfig(contractAddress),
+    queryKey: daoVotingNativeStakedQueryKeys.getConfig(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -138,7 +164,11 @@ export const daoVotingNativeStakedQueries = {
       options,
     }: DaoVotingNativeStakedClaimsQuery<TData>
   ): UseQueryOptions<ClaimsResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.claims(contractAddress, args),
+    queryKey: daoVotingNativeStakedQueryKeys.claims(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -175,7 +205,11 @@ export const daoVotingNativeStakedQueries = {
       options,
     }: DaoVotingNativeStakedListStakersQuery<TData>
   ): UseQueryOptions<ListStakersResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.listStakers(contractAddress, args),
+    queryKey: daoVotingNativeStakedQueryKeys.listStakers(
+      chainId,
+      contractAddress,
+      args
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -214,6 +248,7 @@ export const daoVotingNativeStakedQueries = {
     }: DaoVotingNativeStakedVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingNativeStakedQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -256,6 +291,7 @@ export const daoVotingNativeStakedQueries = {
     }: DaoVotingNativeStakedTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingNativeStakedQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -288,7 +324,7 @@ export const daoVotingNativeStakedQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingNativeStakedDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.dao(contractAddress),
+    queryKey: daoVotingNativeStakedQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.

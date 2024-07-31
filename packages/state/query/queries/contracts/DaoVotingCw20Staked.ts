@@ -26,79 +26,106 @@ export const daoVotingCw20StakedQueryKeys = {
       contract: 'daoVotingCw20Staked',
     },
   ] as const,
-  address: (contractAddress: string) =>
+  address: (chainId: string, contractAddress: string) =>
     [
       {
         ...daoVotingCw20StakedQueryKeys.contract[0],
+        chainId,
         address: contractAddress,
       },
     ] as const,
-  stakingContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  stakingContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'staking_contract',
         args,
       },
     ] as const,
-  activeThreshold: (contractAddress: string, args?: Record<string, unknown>) =>
+  activeThreshold: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'active_threshold',
         args,
       },
     ] as const,
   votingPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_at_height',
         args,
       },
     ] as const,
   totalPowerAtHeight: (
+    chainId: string,
     contractAddress: string,
     args?: Record<string, unknown>
   ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
         args,
       },
     ] as const,
-  dao: (contractAddress: string, args?: Record<string, unknown>) =>
+  dao: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'dao',
         args,
       },
     ] as const,
-  info: (contractAddress: string, args?: Record<string, unknown>) =>
+  info: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
         args,
       },
     ] as const,
-  tokenContract: (contractAddress: string, args?: Record<string, unknown>) =>
+  tokenContract: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'token_contract',
         args,
       },
     ] as const,
-  isActive: (contractAddress: string, args?: Record<string, unknown>) =>
+  isActive: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
     [
       {
-        ...daoVotingCw20StakedQueryKeys.address(contractAddress)[0],
+        ...daoVotingCw20StakedQueryKeys.address(chainId, contractAddress)[0],
         method: 'is_active',
         args,
       },
@@ -113,7 +140,10 @@ export const daoVotingCw20StakedQueries = {
       options,
     }: DaoVotingCw20StakedStakingContractQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw20StakedQueryKeys.stakingContract(contractAddress),
+    queryKey: daoVotingCw20StakedQueryKeys.stakingContract(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -144,7 +174,10 @@ export const daoVotingCw20StakedQueries = {
       options,
     }: DaoVotingCw20StakedActiveThresholdQuery<TData>
   ): UseQueryOptions<ActiveThresholdResponse, Error, TData> => ({
-    queryKey: daoVotingCw20StakedQueryKeys.activeThreshold(contractAddress),
+    queryKey: daoVotingCw20StakedQueryKeys.activeThreshold(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -180,6 +213,7 @@ export const daoVotingCw20StakedQueries = {
     }: DaoVotingCw20StakedVotingPowerAtHeightQuery<TData>
   ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingCw20StakedQueryKeys.votingPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -222,6 +256,7 @@ export const daoVotingCw20StakedQueries = {
     }: DaoVotingCw20StakedTotalPowerAtHeightQuery<TData>
   ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
     queryKey: daoVotingCw20StakedQueryKeys.totalPowerAtHeight(
+      chainId,
       contractAddress,
       args
     ),
@@ -254,7 +289,7 @@ export const daoVotingCw20StakedQueries = {
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVotingCw20StakedDaoQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw20StakedQueryKeys.dao(contractAddress),
+    queryKey: daoVotingCw20StakedQueryKeys.dao(chainId, contractAddress),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -286,7 +321,10 @@ export const daoVotingCw20StakedQueries = {
       options,
     }: DaoVotingCw20StakedTokenContractQuery<TData>
   ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingCw20StakedQueryKeys.tokenContract(contractAddress),
+    queryKey: daoVotingCw20StakedQueryKeys.tokenContract(
+      chainId,
+      contractAddress
+    ),
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -318,7 +356,7 @@ export const daoVotingCw20StakedQueries = {
     Error,
     TData
   > => ({
-    queryKey: daoVotingCw20StakedQueryKeys.isActive(contractAddress),
+    queryKey: daoVotingCw20StakedQueryKeys.isActive(chainId, contractAddress),
     queryFn: async () => {
       return new DaoVotingCw20StakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
