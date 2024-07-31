@@ -27,8 +27,13 @@ program.requiredOption(
   '-p, --path <path>',
   'path to contract folder that contains "schema" folder'
 )
+program.option(
+  // Adds inverted `indexer` boolean to the options object.
+  '--no-indexer',
+  "don't add indexer queries"
+)
 program.parse()
-const { name, path: dir } = program.opts()
+const { name, path: dir, indexer } = program.opts()
 
 codegen({
   contracts: [
@@ -123,7 +128,12 @@ codegen({
       // add imports
       content = content.replace(
         'export const',
-        "import { getCosmWasmClientForChainId } from '@dao-dao/utils'\nimport { contractQueries } from '../contract'\nimport { indexerQueries } from '../indexer'\n\nexport const"
+        [
+          "import { getCosmWasmClientForChainId } from '@dao-dao/utils'",
+          "import { contractQueries } from '../contract'",
+          ...(indexer ? ["import { indexerQueries } from '../indexer'"] : []),
+          '\nexport const',
+        ].join('\n')
       )
       content = content.replace(
         'import { UseQueryOptions',
@@ -144,10 +154,12 @@ codegen({
         'info: contractQueries.info,'
       )
       // add queryClient argument to functions
-      content = content.replace(
-        /(: <TData = [^>]+>\()\{/g,
-        '$1queryClient: QueryClient,{'
-      )
+      if (indexer) {
+        content = content.replace(
+          /(: <TData = [^>]+>\()\{/g,
+          '$1queryClient: QueryClient,{'
+        )
+      }
       // replace client with chain ID and contract address
       content = content.replace(
         /client: [^;]+;/g,
@@ -155,11 +167,26 @@ codegen({
       )
       content = content.replace(/client,/g, 'chainId, contractAddress,')
       content = content.replace(/client\?\.contractAddress/g, 'contractAddress')
+      // add chain ID to query keys
+      content = content.replace(
+        /(  \w+): \(contractAddress: string/g,
+        '$1: (chainId: string, contractAddress: string'
+      )
+      content = content.replace(
+        /(QueryKeys\.[^(]+\()contractAddress/g,
+        '$1chainId, contractAddress'
+      )
+      content = content.replace(
+        /(\.\.\..+QueryKeys\.contract\[0\],\n)(\s+)(address: contractAddress)/g,
+        '$1$2chainId,\n$2$3'
+      )
+
       const camelCasedContractName =
         contractName.charAt(0).toLowerCase() + contractName.slice(1)
       content = content.replace(
         /queryFn: \(\) => client\.([^(]+)(\([^\)]*\)),/gm,
-        `
+        indexer
+          ? `
     queryFn: async () => {
       try {
         // Attempt to fetch data from the indexer.
@@ -176,6 +203,10 @@ codegen({
       }
 
       // If indexer query fails, fallback to contract query.
+      return new ${contractName}QueryClient(await getCosmWasmClientForChainId(chainId), contractAddress).$1$2
+    },`.trim()
+          : `
+    queryFn: async () => {
       return new ${contractName}QueryClient(await getCosmWasmClientForChainId(chainId), contractAddress).$1$2
     },`.trim()
       )
