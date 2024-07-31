@@ -97,12 +97,15 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
 
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const onSubmit = useCallback(
-    async (data: RatingsFormData) => {
+    async ({ ratings }: RatingsFormData) => {
       setLoadingSubmit(true)
 
       try {
         await postRequest(`/${coreAddress}/${status.survey.uuid}/rate`, {
-          ...data,
+          // no need to submit weight to ratings. not used by backend.
+          ratings: ratings.map(({ weight: _, ...rating }) => ({
+            ...rating,
+          })),
         })
         toast.success(t('success.ratingsSubmitted'))
         // Reload status on success.
