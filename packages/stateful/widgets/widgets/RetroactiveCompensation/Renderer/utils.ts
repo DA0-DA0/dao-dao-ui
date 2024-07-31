@@ -140,6 +140,10 @@ export const extractContributionFormDataFromSurvey = ({
   contribution,
 }: SurveyWithMetadata): ContributionFormData => ({
   contribution: contribution?.content || '',
-  files: contribution?.files || [],
+  files:
+    contribution?.files?.map((f) => ({
+      ...f,
+      image: f.mimetype.startsWith('image'),
+    })) || [],
   ratings: contribution?.selfRatings || attributes.map(() => null),
 })
