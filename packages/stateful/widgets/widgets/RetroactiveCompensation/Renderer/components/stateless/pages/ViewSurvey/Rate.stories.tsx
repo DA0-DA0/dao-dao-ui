@@ -8,19 +8,17 @@ import {
   AddressInput,
   EntityDisplay,
   Trans,
-} from '../../../../../../components'
+} from '../../../../../../../../components'
+import { Rate } from './Rate'
 import { makeSurvey } from './Submit.stories'
-import { RatingForm } from './RatingForm'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / RatingForm',
-  component: RatingForm,
-} as ComponentMeta<typeof RatingForm>
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / Rate',
+  component: Rate,
+} as ComponentMeta<typeof Rate>
 
-const Template: ComponentStory<typeof RatingForm> = (args) => (
-  <RatingForm {...args} />
-)
+const Template: ComponentStory<typeof Rate> = (args) => <Rate {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
@@ -30,7 +28,7 @@ Default.args = {
     contributionSelfRatings: null,
     rated: false,
   },
-  data: {
+  state: {
     contributions: [
       {
         id: 1,

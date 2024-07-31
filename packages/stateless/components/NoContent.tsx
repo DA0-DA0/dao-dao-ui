@@ -16,6 +16,7 @@ export interface NoContentProps {
   small?: boolean
   error?: boolean
   noBorder?: boolean
+  shallow?: boolean
 }
 
 // This component displays a dashed outline and centers its content in a way
@@ -43,6 +44,7 @@ export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
       small,
       error,
       noBorder,
+      shallow,
     },
     ref
   ) {
@@ -107,7 +109,12 @@ export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
     )
 
     return href ? (
-      <LinkWrapper className={containerClassName} href={href} ref={ref}>
+      <LinkWrapper
+        className={containerClassName}
+        href={href}
+        ref={ref}
+        shallow={shallow}
+      >
         {content}
       </LinkWrapper>
     ) : (

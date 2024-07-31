@@ -4,7 +4,7 @@ import { PagePath } from '../../types'
 import { TabRenderer as StatelessTabRenderer } from '../stateless/TabRenderer'
 import { CreateSurvey } from './pages/CreateSurvey'
 import { Home } from './pages/Home'
-import { Submit } from './pages/Submit'
+import { ViewSurvey } from './pages/ViewSurvey'
 
 export const TabRenderer = () => {
   const { isMember = false } = useMembership()
@@ -16,7 +16,7 @@ export const TabRenderer = () => {
       pages={{
         [PagePath.Home]: Home,
         [PagePath.Create]: CreateSurvey,
-        [PagePath.Submit]: Submit,
+        [PagePath.View]: ViewSurvey,
       }}
     />
   )

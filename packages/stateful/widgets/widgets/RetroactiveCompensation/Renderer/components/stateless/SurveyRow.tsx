@@ -1,24 +1,44 @@
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalWalletVote, Tooltip } from '@dao-dao/stateless'
+import {
+  ProposalWalletVote,
+  Tooltip,
+  useDaoContext,
+  useDaoNavHelpers,
+} from '@dao-dao/stateless'
+import { LinkWrapperProps, WidgetId } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { ActiveSurveyStatus, SurveyStatus } from '../../types'
+import { PagePath, SurveyStatus, SurveyWithMetadata } from '../../types'
 
-export type ActiveSurveyRowProps = {
-  activeSurvey: ActiveSurveyStatus
-  onClick?: () => void
-  loading: boolean
+export type SurveyRowProps = {
+  /**
+   * The active survey.
+   */
+  survey: SurveyWithMetadata
+  /**
+   * Whether or not a wallet is connected.
+   */
   connected: boolean
+  /**
+   * Whether or not the current wallet was a member of the DAO when the survey
+   * was created.
+   */
   isMember: boolean
+  /**
+   * Stateful link wrapper component.
+   */
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export const ActiveSurveyRow = ({
-  activeSurvey: {
+export const SurveyRow = ({
+  survey: {
     contribution,
     rated,
     survey: {
+      surveyId,
       status,
       name,
       contributionsOpenAt,
@@ -26,12 +46,13 @@ export const ActiveSurveyRow = ({
       ratingsCloseAt,
     },
   },
-  onClick,
-  loading,
   connected,
   isMember,
-}: ActiveSurveyRowProps) => {
+  LinkWrapper,
+}: SurveyRowProps) => {
   const { t } = useTranslation()
+  const { dao } = useDaoContext()
+  const { getDaoPath } = useDaoNavHelpers()
 
   // Display upcoming date first, then date when contributions close. Even
   // during processing, show the date when contributions closed.
@@ -109,14 +130,15 @@ export const ActiveSurveyRow = ({
 
   return (
     <Tooltip title={tooltip}>
-      <div
+      <LinkWrapper
         className={clsx(
-          'rounded-md bg-background-secondary',
-          onClick &&
-            'cursor-pointer transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
-          loading && 'animate-pulse'
+          'block rounded-md bg-background-secondary cursor-pointer transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed'
         )}
-        onClick={onClick}
+        href={getDaoPath(
+          dao.coreAddress,
+          [WidgetId.RetroactiveCompensation, PagePath.View, surveyId].join('/')
+        )}
+        shallow
       >
         {/* Desktop */}
         <div className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex">
@@ -142,7 +164,7 @@ export const ActiveSurveyRow = ({
             </p>
           </div>
         </div>
-      </div>
+      </LinkWrapper>
     </Tooltip>
   )
 }

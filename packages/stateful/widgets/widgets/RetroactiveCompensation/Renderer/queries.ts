@@ -1,7 +1,7 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { API_BASE } from './constants'
-import { ActiveSurveyStatus, CompletedSurveyStatus } from './types'
+import { SurveyWithMetadata } from './types'
 
 /**
  * Fetch survey with wallet metadata.
@@ -14,7 +14,7 @@ export const fetchSurvey = async ({
   daoAddress: string
   walletPublicKey: string
   surveyId: number
-}): Promise<ActiveSurveyStatus> => {
+}): Promise<SurveyWithMetadata> => {
   const response = await fetch(
     `${API_BASE}/${daoAddress}/${surveyId}/${walletPublicKey}/status`
   )
@@ -35,15 +35,15 @@ export const fetchSurvey = async ({
     )
   }
 
-  const survey: ActiveSurveyStatus = await response.json()
+  const survey: SurveyWithMetadata = await response.json()
 
   return survey
 }
 
 /**
- * List active surveys.
+ * List surveys.
  */
-export const listActiveSurveys = async (
+export const listSurveys = async (
   queryClient: QueryClient,
   {
     daoAddress,
@@ -52,9 +52,9 @@ export const listActiveSurveys = async (
     daoAddress: string
     walletPublicKey: string
   }
-): Promise<ActiveSurveyStatus[]> => {
+): Promise<SurveyWithMetadata[]> => {
   const response = await fetch(
-    `${API_BASE}/${daoAddress}/${walletPublicKey}/active`
+    `${API_BASE}/${daoAddress}/${walletPublicKey}/list`
   )
 
   if (!response.ok) {
@@ -62,7 +62,7 @@ export const listActiveSurveys = async (
       error: err instanceof Error ? err.message : JSON.stringify(err),
     }))
     console.error(
-      'Failed to fetch retroactive compensation active surveys.',
+      'Failed to fetch retroactive compensation surveys.',
       response,
       responseBody
     )
@@ -73,11 +73,11 @@ export const listActiveSurveys = async (
     )
   }
 
-  const surveys: ActiveSurveyStatus[] = (await response.json()).surveys
+  const surveys: SurveyWithMetadata[] = (await response.json()).surveys
 
   surveys.forEach((survey) => {
     queryClient.setQueryData(
-      retroactiveCompensationQueries.activeSurvey({
+      retroactiveCompensationQueries.survey({
         daoAddress,
         walletPublicKey,
         surveyId: survey.survey.surveyId,
@@ -89,63 +89,24 @@ export const listActiveSurveys = async (
   return surveys
 }
 
-/**
- * List completed surveys.
- */
-export const listCompletedSurveys = async ({
-  daoAddress,
-}: {
-  daoAddress: string
-}): Promise<CompletedSurveyStatus[]> => {
-  const response = await fetch(`${API_BASE}/${daoAddress}/completed`)
-
-  if (!response.ok) {
-    const responseBody = await response.json().catch((err) => ({
-      error: err instanceof Error ? err.message : JSON.stringify(err),
-    }))
-    console.error(
-      'Failed to fetch retroactive compensation completed surveys.',
-      response,
-      responseBody
-    )
-    throw new Error(
-      'error' in responseBody
-        ? responseBody.error
-        : JSON.stringify(responseBody)
-    )
-  }
-
-  const surveys: CompletedSurveyStatus[] = (await response.json()).surveys
-
-  return surveys
-}
-
 export const retroactiveCompensationQueries = {
   /**
    * Fetch survey with wallet metadata.
    */
-  activeSurvey: (options: Parameters<typeof fetchSurvey>[0]) =>
+  survey: (options: Parameters<typeof fetchSurvey>[0]) =>
     queryOptions({
-      queryKey: ['retroactiveCompensation', 'activeSurvey', options],
+      queryKey: ['retroactiveCompensation', 'survey', options],
       queryFn: () => fetchSurvey(options),
     }),
   /**
-   * List active surveys.
+   * List surveys.
    */
-  listActiveSurveys: (
+  listSurveys: (
     queryClient: QueryClient,
-    options: Parameters<typeof listActiveSurveys>[1]
+    options: Parameters<typeof listSurveys>[1]
   ) =>
     queryOptions({
-      queryKey: ['retroactiveCompensation', 'listActiveSurveys', options],
-      queryFn: () => listActiveSurveys(queryClient, options),
-    }),
-  /**
-   * List completed surveys.
-   */
-  listCompletedSurveys: (options: Parameters<typeof listCompletedSurveys>[0]) =>
-    queryOptions({
-      queryKey: ['retroactiveCompensation', 'listCompletedSurveys', options],
-      queryFn: () => listCompletedSurveys(options),
+      queryKey: ['retroactiveCompensation', 'listSurveys', options],
+      queryFn: () => listSurveys(queryClient, options),
     }),
 }

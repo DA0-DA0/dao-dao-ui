@@ -5,8 +5,8 @@ import { Default as ConnectWalletStory } from '@dao-dao/stateless/components/wal
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType } from '@dao-dao/types'
 
-import { Trans } from '../../../../../../../components'
-import { Survey, SurveyStatus } from '../../../types'
+import { Trans } from '../../../../../../../../components'
+import { Survey, SurveyStatus } from '../../../../types'
 import { Submit } from './Submit'
 
 export default {
@@ -53,13 +53,15 @@ export const makeSurvey = (): Survey => ({
       cw20Tokens: [],
     },
   ],
+  proposalId: null,
   createdAtBlockHeight: 1,
+  contributionCount: 1,
 })
 
 export const Default = Template.bind({})
 Default.args = {
   connected: true,
-  survey: {
+  status: {
     survey: makeSurvey(),
     contribution: 'this is my contribution\n\npls give me money',
     contributionSelfRatings: null,

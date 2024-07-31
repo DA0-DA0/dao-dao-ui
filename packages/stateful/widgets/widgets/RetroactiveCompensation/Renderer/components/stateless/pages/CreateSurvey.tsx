@@ -17,8 +17,7 @@ import { validateRequired } from '@dao-dao/utils'
 import { NewSurveyFormData } from '../../../types'
 import { NewAttribute, NewAttributeProps } from '../NewAttribute'
 
-export interface CreateSurveyProps
-  extends Pick<NewAttributeProps, 'availableTokens'> {
+export type CreateSurveyProps = Pick<NewAttributeProps, 'availableTokens'> & {
   onCreate: (newCompensationCycle: NewSurveyFormData) => Promise<void>
   loading: boolean
 }

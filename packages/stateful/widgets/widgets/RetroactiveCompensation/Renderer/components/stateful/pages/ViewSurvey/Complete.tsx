@@ -1,123 +1,71 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
+import { waitForAll } from 'recoil'
 
+import { genericTokenWithUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
+  Loader,
+  useCachedLoadable,
   useChain,
-  useDaoInfoContext,
+  useDaoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { UnifiedCosmosMsg, WidgetId } from '@dao-dao/types'
+import { TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   makeBankMessage,
   makeWasmMessage,
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { useMembership, useWallet } from '../../../../../../hooks'
-import { usePostRequest } from '../../hooks/usePostRequest'
 import {
-  ActiveSurveyProps,
+  EntityDisplay,
+  ProposalList,
+  SuspenseLoader,
+} from '../../../../../../../../components'
+import {
+  useDaoProposalSinglePublishProposal,
+  useEntity,
+  useWallet,
+} from '../../../../../../../../hooks'
+import { NewProposalData } from '../../../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
+import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { retroactiveCompensationQueries } from '../../../../queries'
+import {
   CompleteRatings,
   Contribution,
-  ContributionRating,
-  ContributionResponse,
   ContributionWithCompensation,
   Rating,
   RatingsResponse,
   RatingsResponseWithIdentities,
-  SurveyStatus,
-} from '../../types'
-import { computeCompensation } from '../../utils'
-import { OpenSurveySection as StatelessOpenSurveySection } from '../stateless/OpenSurveySection'
-import { ContributionRatingData } from '../stateless/RatingForm'
-import { ContributionForm } from './ContributionForm'
-import { ProposalCreationForm } from './Complete'
-import { RatingForm } from './RatingForm'
+} from '../../../../types'
+import { computeCompensation } from '../../../../utils'
+import {
+  ProposalCreationFormData,
+  Complete as StatelessComplete,
+} from '../../../stateless/pages/ViewSurvey/Complete'
+import { ViewSurveyPageProps } from './types'
 
-export const ActiveSurvey = ({ activeSurveys }: ActiveSurveyProps) => {
-  const { coreAddress } = useDaoInfoContext()
-  const { bech32_prefix: bech32Prefix } = useChain()
-  const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
-
-  // Show contribution form if `submit` subpath is present and the currently
-  // open survey is inactive or accepting contributions.
-  const showContributionForm =
-    daoSubpathComponents[0] === WidgetId.RetroactiveCompensation &&
-    daoSubpathComponents[1] === 'submit' &&
-    (status.survey.status === SurveyStatus.Inactive ||
-      status.survey.status === SurveyStatus.AcceptingContributions)
-  const setShowContributionForm = useCallback(
-    (show: boolean) =>
-      goToDao(
-        coreAddress,
-        WidgetId.RetroactiveCompensation + (show ? `/submit` : ''),
-        undefined,
-        {
-          shallow: true,
-        }
-      ),
-    [coreAddress, goToDao]
-  )
-
-  const { isWalletConnected } = useWallet()
-  // Voting power at time of survey creation, which determines what access level
-  // this wallet has.
-  const { isMember = false } = useMembership({
-    blockHeight: status.survey.createdAtBlockHeight,
+export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
+  const { t } = useTranslation()
+  const { dao } = useDaoContext()
+  const { daoSubpathComponents, goToDaoProposal } = useDaoNavHelpers()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { address: walletAddress = '', hexPublicKey } = useWallet({
+    loadAccount: true,
   })
-
-  const [loading, setLoading] = useState(false)
-  const [ratingFormData, setRatingFormData] = useState<ContributionRatingData>()
-  const [weightByVotingPower, setWeightByVotingPower] = useState<boolean>(true)
-  const [proposalCreationFormData, setProposalCreationFormData] =
-    useState<CompleteRatings>()
-
   const postRequest = usePostRequest()
+  const queryClient = useQueryClient()
 
-  const loadRatingFormData = useCallback(async () => {
-    setLoading(true)
+  const surveyId = Number(daoSubpathComponents[2] || '-1')
 
-    try {
-      // Fetch contributions.
-      const response: {
-        contributions: ContributionResponse[]
-        ratings: ContributionRating[]
-      } = await postRequest(`/${coreAddress}/contributions`)
+  const publishProposal = useDaoProposalSinglePublishProposal()
 
-      // Get addresses for contributor public keys.
-      const contributions = await Promise.all(
-        response.contributions.map(
-          async ({
-            contributor: publicKey,
-            ...contribution
-          }): Promise<Contribution> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
+  const [weightByVotingPower, setWeightByVotingPower] = useState<boolean>(true)
+  const [completeRatings, setCompleteRatings] = useState<CompleteRatings>()
 
-            return {
-              ...contribution,
-              contributor: {
-                publicKey,
-                address,
-              },
-            }
-          }
-        )
-      )
-
-      setRatingFormData({
-        contributions,
-        existingRatings: response.ratings,
-      })
-    } catch (err) {
-      console.error(err)
-      toast.error(err instanceof Error ? err.message : JSON.stringify(err))
-    } finally {
-      setLoading(false)
-    }
-  }, [bech32Prefix, coreAddress, postRequest])
+  const [loadingRatings, setLoadingRatings] = useState(false)
 
   const [ratingsResponse, setRatingsResponse] =
     useState<RatingsResponseWithIdentities>()
@@ -224,18 +172,18 @@ export const ActiveSurvey = ({ activeSurveys }: ActiveSurveyProps) => {
         cosmosMsgs,
       }
 
-      setProposalCreationFormData(completeRatings)
+      setCompleteRatings(completeRatings)
     },
     [ratingsResponse, status.survey.attributes, weightByVotingPower]
   )
 
-  const loadRatingsAndProposalCreationFormData = useCallback(async () => {
-    setLoading(true)
+  const loadRatings = useCallback(async () => {
+    setLoadingRatings(true)
 
     try {
       // Fetch ratings.
       const response: RatingsResponse = await postRequest(
-        `/${coreAddress}/ratings`
+        `/${dao.coreAddress}/${status.survey.surveyId}/ratings`
       )
 
       // Get addresses for contributor and rater public keys.
@@ -292,14 +240,20 @@ export const ActiveSurvey = ({ activeSurveys }: ActiveSurveyProps) => {
       console.error(err)
       toast.error(err instanceof Error ? err.message : JSON.stringify(err))
     } finally {
-      setLoading(false)
+      setLoadingRatings(false)
     }
-  }, [bech32Prefix, coreAddress, updateProposalCreationFormData, postRequest])
+  }, [
+    postRequest,
+    dao.coreAddress,
+    status.survey.surveyId,
+    updateProposalCreationFormData,
+    bech32Prefix,
+  ])
 
   // If proposal creation form data is defined and weight by vote power changes,
   // recompute based on same ratings response.
   useEffect(() => {
-    if (!proposalCreationFormData) {
+    if (!completeRatings) {
       return
     }
 
@@ -309,47 +263,112 @@ export const ActiveSurvey = ({ activeSurveys }: ActiveSurveyProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weightByVotingPower])
 
-  const onClick =
-    status.survey.status === SurveyStatus.Inactive ||
-    status.survey.status === SurveyStatus.AcceptingContributions
-      ? () => setShowContributionForm(true)
-      : isMember
-      ? status.survey.status === SurveyStatus.AcceptingRatings
-        ? loadRatingFormData
-        : status.survey.status === SurveyStatus.AwaitingCompletion
-        ? loadRatingsAndProposalCreationFormData
-        : undefined
-      : undefined
+  const [completing, setCompleting] = useState(false)
+  const onComplete = async (formData: ProposalCreationFormData) => {
+    if (!completeRatings) {
+      toast.error(t('error.loadingData'))
+      return
+    }
+    if (!publishProposal) {
+      toast.error(t('error.noSingleChoiceProposalModule'))
+      return
+    }
 
-  return (status.survey.status === SurveyStatus.Inactive ||
-    status.survey.status === SurveyStatus.AcceptingContributions) &&
-    showContributionForm ? (
-    <div className="pb-10">
-      <ContributionForm />
-    </div>
-  ) : status.survey.status === SurveyStatus.AcceptingRatings &&
-    isMember &&
-    ratingFormData ? (
-    <div className="pb-10">
-      <RatingForm data={ratingFormData} reloadData={loadRatingFormData} />
-    </div>
-  ) : status.survey.status === SurveyStatus.AwaitingCompletion &&
-    isMember &&
-    proposalCreationFormData ? (
-    <div className="pb-10">
-      <ProposalCreationForm
-        data={proposalCreationFormData}
-        setWeightByVotingPower={setWeightByVotingPower}
-        weightByVotingPower={weightByVotingPower}
-      />
-    </div>
-  ) : (
-    <StatelessOpenSurveySection
-      connected={isWalletConnected}
-      isMember={isMember}
-      loading={loading}
-      onClick={onClick}
-      status={status}
-    />
+    setCompleting(true)
+
+    try {
+      let proposalId = ''
+      if (formData.type === 'new') {
+        // Propose.
+        const proposalData: NewProposalData = {
+          ...formData.newProposal,
+          msgs: completeRatings.cosmosMsgs,
+        }
+
+        proposalId = (await publishProposal(proposalData)).proposalId
+        toast.success(t('success.proposalCreatedCompleteCompensationCycle'))
+      } else if (formData.type === 'existing') {
+        proposalId = formData.existing
+      }
+      // 'none' will leave the proposal ID empty
+
+      // Complete with proposal ID.
+      await postRequest(`/${dao.coreAddress}/${surveyId}/complete`, {
+        proposalId,
+      })
+      toast.success(
+        t('success.compensationCycleCompleted', {
+          context: proposalId ? 'withProposal' : 'noProposal',
+        })
+      )
+
+      // Reload surveys on success.
+      await queryClient.refetchQueries({
+        queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+          daoAddress: dao.coreAddress,
+          walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
+        }).queryKey,
+      })
+
+      // Navigate to proposal if set.
+      if (proposalId) {
+        goToDaoProposal(dao.coreAddress, proposalId)
+        // Don't stop loading on success since we are now navigating.
+      } else {
+        setCompleting(false)
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(err instanceof Error ? err.message : JSON.stringify(err))
+      setCompleting(false)
+    }
+  }
+
+  const tokenPrices = useCachedLoadable(
+    waitForAll(
+      status.survey.attributes.flatMap(({ nativeTokens, cw20Tokens }) => [
+        ...nativeTokens.map(({ denom }) =>
+          genericTokenWithUsdPriceSelector({
+            chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          })
+        ),
+        ...cw20Tokens.map(({ address }) =>
+          genericTokenWithUsdPriceSelector({
+            chainId,
+            type: TokenType.Cw20,
+            denomOrAddress: address,
+          })
+        ),
+      ])
+    )
+  )
+  const { entity: walletEntity } = useEntity(walletAddress)
+
+  return (
+    <SuspenseLoader
+      fallback={<Loader />}
+      forceFallback={tokenPrices.state === 'loading'}
+    >
+      {tokenPrices.state === 'hasValue' && (
+        <StatelessComplete
+          EntityDisplay={EntityDisplay}
+          ProposalList={ProposalList}
+          canComplete={isMember}
+          completeRatings={completeRatings}
+          completing={completing}
+          entity={walletEntity}
+          loadRatings={loadRatings}
+          loadingRatings={loadingRatings}
+          onComplete={onComplete}
+          setWeightByVotingPower={setWeightByVotingPower}
+          status={status}
+          tokenPrices={tokenPrices.contents}
+          walletAddress={walletAddress}
+          weightByVotingPower={weightByVotingPower}
+        />
+      )}
+    </SuspenseLoader>
   )
 }

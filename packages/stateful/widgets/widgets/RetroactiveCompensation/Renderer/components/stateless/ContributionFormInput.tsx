@@ -10,6 +10,7 @@ import {
   ImageUploadInput,
   InputErrorMessage,
   InputLabel,
+  MarkdownRenderer,
   RangeInput,
   TextAreaInput,
 } from '@dao-dao/stateless'
@@ -24,12 +25,14 @@ import { ContributionFormData, Survey } from '../../types'
 export type ContributionFormInputProps = {
   survey: Survey
   thirdPerson?: boolean
+  readOnly?: boolean
   Trans: ComponentType<TransProps>
 }
 
 export const ContributionFormInput = ({
   survey,
   thirdPerson,
+  readOnly,
   Trans,
 }: ContributionFormInputProps) => {
   const { t } = useTranslation()
@@ -52,6 +55,7 @@ export const ContributionFormInput = ({
   })
   const images = watch('images')
 
+  const contribution = watch('contribution')
   const ratings = watch('ratings', [])
   const allRatingsAbstain = ratings.every((rating) => rating === null)
   const toggleAbstain = () =>
@@ -67,17 +71,21 @@ export const ContributionFormInput = ({
 
   return (
     <>
-      <div className="flex flex-col">
-        <TextAreaInput
-          error={errors.contribution}
-          fieldName="contribution"
-          placeholder={t('form.iContributedPlaceholder')}
-          register={register}
-          rows={10}
-          validation={[validateRequired]}
-        />
-        <InputErrorMessage error={errors.contribution} />
-      </div>
+      {readOnly ? (
+        <MarkdownRenderer markdown={contribution} />
+      ) : (
+        <div className="flex flex-col">
+          <TextAreaInput
+            error={errors.contribution}
+            fieldName="contribution"
+            placeholder={t('form.iContributedPlaceholder')}
+            register={register}
+            rows={10}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage error={errors.contribution} />
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
         {imageFields.map(({ id }, index) => (
@@ -90,53 +98,58 @@ export const ContributionFormInput = ({
                 src={transformIpfsUrlToHttpsIfNecessary(images[index].url!)}
               />
             ) : (
-              <ImageUploadInput
-                Trans={Trans}
-                onChange={(url) => setValue(`images.${index}.url`, url)}
-              />
+              !readOnly && (
+                <ImageUploadInput
+                  Trans={Trans}
+                  onChange={(url) => setValue(`images.${index}.url`, url)}
+                />
+              )
             )}
 
-            <IconButton
-              Icon={Close}
-              onClick={() => removeImage(index)}
-              size="sm"
-              variant="ghost"
-            />
+            {!readOnly && (
+              <IconButton
+                Icon={Close}
+                onClick={() => removeImage(index)}
+                size="sm"
+                variant="ghost"
+              />
+            )}
           </div>
         ))}
 
-        <Button
-          className="self-start"
-          onClick={() => appendImage({})}
-          variant="secondary"
-        >
-          {t('button.addImage')}
-        </Button>
+        {!readOnly && (
+          <Button
+            className="self-start"
+            onClick={() => appendImage({})}
+            variant="secondary"
+          >
+            {t('button.addImage')}
+          </Button>
+        )}
       </div>
 
-      <div className="mt-2 flex flex-col gap-4">
-        <div className="flex flex-row flex-wrap items-center gap-6">
-          <p className="primary-text text-text-body">
-            {thirdPerson
-              ? t('info.whatDoTheyWantToBeRated')
-              : t('info.whatDoYouWantToBeRated')}
-          </p>
-
-          <div className="flex flex-row items-center gap-2">
-            <Checkbox
-              checked={allRatingsAbstain}
-              onClick={toggleAbstain}
-              size="sm"
-            />
-
-            <p
-              className="body-text cursor-pointer text-xs"
-              onClick={toggleAbstain}
-            >
-              {t('info.dontKnowNotSure')}
+      <div className="flex mt-2 flex-col gap-4">
+        {!readOnly && (
+          <div className="flex flex-row flex-wrap items-center gap-6">
+            <p className="primary-text text-text-body">
+              {thirdPerson
+                ? t('info.whatDoTheyWantToBeRated')
+                : t('info.whatDoYouWantToBeRated')}
             </p>
+
+            <div className="flex flex-row items-center gap-2">
+              <Checkbox
+                checked={allRatingsAbstain}
+                onClick={toggleAbstain}
+                size="sm"
+              />
+
+              <p className="body-text text-xs" onClick={toggleAbstain}>
+                {t('info.dontKnowNotSure')}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-row items-stretch gap-4">
           {survey.attributes.map(({ name }, attributeIndex) => (
@@ -145,6 +158,7 @@ export const ContributionFormInput = ({
 
               <RangeInput
                 className="mt-1 !h-20 w-40"
+                disabled={readOnly}
                 fieldName={`ratings.${attributeIndex}`}
                 max={100}
                 min={0}

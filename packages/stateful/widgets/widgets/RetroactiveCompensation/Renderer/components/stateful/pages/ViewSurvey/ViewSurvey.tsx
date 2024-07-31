@@ -1,0 +1,105 @@
+import { useQueryClient } from '@tanstack/react-query'
+import { ComponentType } from 'react'
+
+import {
+  ErrorPage,
+  Loader,
+  useDaoContext,
+  useDaoNavHelpers,
+  useUpdatingRef,
+} from '@dao-dao/stateless'
+import { ImmutableRef } from '@dao-dao/types'
+
+import {
+  useMembership,
+  useQueryLoadingDataWithError,
+  useWallet,
+} from '../../../../../../../../hooks'
+import { retroactiveCompensationQueries } from '../../../../queries'
+import { SurveyStatus, SurveyWithMetadata } from '../../../../types'
+import { Complete } from './Complete'
+import { Info } from './Info'
+import { Rate } from './Rate'
+import { Submit } from './Submit'
+import { ViewSurveyPageProps } from './types'
+
+export const ViewSurvey = () => {
+  const { dao } = useDaoContext()
+  const { daoSubpathComponents } = useDaoNavHelpers()
+
+  const { hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
+
+  const surveyId = Number(daoSubpathComponents[2] || '-1')
+
+  const queryClient = useQueryClient()
+  const surveyQuery = retroactiveCompensationQueries.survey({
+    daoAddress: dao.coreAddress,
+    walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
+    surveyId,
+  })
+  const loadingSurvey = useQueryLoadingDataWithError(surveyQuery)
+
+  // Memoize callback.
+  const refreshRef = useUpdatingRef(() =>
+    queryClient.refetchQueries({
+      queryKey: surveyQuery.queryKey,
+    })
+  )
+
+  return (
+    <>
+      {loadingSurvey.loading ? (
+        <Loader />
+      ) : loadingSurvey.errored ? (
+        <ErrorPage error={loadingSurvey.error} />
+      ) : (
+        <InnerViewSurvey refreshRef={refreshRef} status={loadingSurvey.data} />
+      )}
+    </>
+  )
+}
+
+export const InnerViewSurvey = ({
+  status,
+  refreshRef,
+}: {
+  status: SurveyWithMetadata
+  refreshRef: ImmutableRef<() => Promise<void>>
+}) => {
+  const { isWalletConnected } = useWallet()
+
+  // Voting power at time of survey creation, which determines what access level
+  // this wallet has.
+  const { loadingIsMember } = useMembership({
+    blockHeight: status.survey.createdAtBlockHeight,
+  })
+
+  const Page: ComponentType<ViewSurveyPageProps> =
+    status.survey.status in viewSurveyPageMap
+      ? viewSurveyPageMap[status.survey.status as SurveyStatus]
+      : Info
+
+  return (
+    <div className="pb-10">
+      <Page
+        connected={isWalletConnected}
+        isMember={loadingIsMember}
+        refreshRef={refreshRef}
+        status={status}
+      />
+    </div>
+  )
+}
+
+export const viewSurveyPageMap: Record<
+  SurveyStatus,
+  ComponentType<ViewSurveyPageProps>
+> = {
+  [SurveyStatus.Inactive]: Submit,
+  [SurveyStatus.AcceptingContributions]: Submit,
+  [SurveyStatus.AcceptingRatings]: Rate,
+  [SurveyStatus.AwaitingCompletion]: Complete,
+  [SurveyStatus.Complete]: Info,
+}

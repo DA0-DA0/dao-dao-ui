@@ -1,4 +1,4 @@
-import { Add, ChevronLeft, Remove } from '@mui/icons-material'
+import { Add, ArrowBackRounded, Remove } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -46,13 +46,15 @@ export const TabRenderer = ({
         >
           <ButtonLink
             className="shrink-0"
-            disabled={!isMember || pagePath === PagePath.Create}
+            disabled={!isMember}
             href={getDaoPath(
               coreAddress,
               WidgetId.RetroactiveCompensation +
                 '/' +
                 (pagePath === PagePath.Create ? PagePath.Home : PagePath.Create)
             )}
+            shallow
+            variant={pagePath === PagePath.Home ? 'primary' : 'secondary'}
           >
             {pagePath === PagePath.Create ? (
               <>
@@ -75,9 +77,12 @@ export const TabRenderer = ({
       {/* Back button. */}
       {pagePath !== PagePath.Home && (
         <ButtonLink
+          containerClassName="self-start"
           href={getDaoPath(coreAddress, WidgetId.RetroactiveCompensation)}
+          shallow
+          variant="secondary"
         >
-          <ChevronLeft className="!h-4 !w-4" />
+          <ArrowBackRounded className="!h-4 !w-4" />
           {t('button.back')}
         </ButtonLink>
       )}

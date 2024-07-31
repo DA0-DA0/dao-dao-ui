@@ -1,4 +1,4 @@
-import { DaoSource } from '@dao-dao/types'
+import { DaoSource, LoadingDataWithError } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from './query/useQueryLoadingDataWithError'
 import { useDaoClient } from './useDaoClient'
@@ -15,9 +15,31 @@ interface UseMembershipOptions {
 }
 
 interface UseMembershipResponse {
+  /**
+   * Whether or not all of the fields have finished loading.
+   */
   loading: boolean
+  /**
+   * Whether or not the current wallet is a member of the DAO. Will be in the
+   * loading state when no wallet is connected.
+   */
+  loadingIsMember: LoadingDataWithError<boolean>
+  /**
+   * Whether or not the current wallet is a member of the DAO. Will be undefined
+   * until it successfully loads.
+   *
+   * This should not be used and only exists for backwards compatibility.
+   */
   isMember: boolean | undefined
+  /**
+   * The current wallet voting weight in the DAO. Will be undefined until it
+   * successfully loads.
+   */
   walletVotingWeight: number | undefined
+  /**
+   * The current wallet voting weight in the DAO. Will be undefined until it
+   * successfully loads.
+   */
   totalVotingWeight: number | undefined
 }
 
@@ -69,12 +91,22 @@ export const useMembership = ({
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
   return {
-    isMember,
-    walletVotingWeight,
-    totalVotingWeight,
     loading:
       _walletVotingWeight.loading ||
       _totalVotingWeight.loading ||
       isWalletConnecting,
+    loadingIsMember:
+      _walletVotingWeight.loading || _walletVotingWeight.errored
+        ? _walletVotingWeight
+        : {
+            loading: false,
+            errored: false,
+            data:
+              !isNaN(Number(_walletVotingWeight.data.power)) &&
+              Number(_walletVotingWeight.data.power) > 0,
+          },
+    isMember,
+    walletVotingWeight,
+    totalVotingWeight,
   }
 }

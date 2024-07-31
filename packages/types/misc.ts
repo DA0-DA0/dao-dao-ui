@@ -71,3 +71,11 @@ export type LoadingDataWithError<D> =
       errored: true
       error: Error
     }
+
+/**
+ * A non-nullable ref with a current value that cannot be changed. This is used
+ * by `useUpdatingRef` to prevent modifying the returned mutable ref object.
+ */
+export type ImmutableRef<T = unknown> = {
+  readonly current: T
+}
