@@ -63,8 +63,11 @@ Default.args = {
   connected: true,
   status: {
     survey: makeSurvey(),
-    contribution: 'this is my contribution\n\npls give me money',
-    contributionSelfRatings: null,
+    contribution: {
+      content: 'this is my contribution\n\npls give me money',
+      files: [],
+      selfRatings: null,
+    },
     rated: false,
   },
   onSubmit: async (data) => alert('submit: ' + JSON.stringify(data)),

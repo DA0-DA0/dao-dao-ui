@@ -22,8 +22,11 @@ export const Default = Template.bind({})
 Default.args = {
   status: {
     survey: makeSurvey(),
-    contribution: 'this is my contribution\n\npls give me money',
-    contributionSelfRatings: null,
+    contribution: {
+      content: 'this is my contribution\n\npls give me money',
+      files: [],
+      selfRatings: null,
+    },
     rated: false,
   },
   completeRatings: {
@@ -37,6 +40,7 @@ Default.args = {
         content: 'I contributed so much of my BLOOD SWEAT AND TEARS',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        files: [],
         ratings: [20, 40],
         compensation: {
           contributionId: 1,
@@ -72,6 +76,7 @@ Default.args = {
         },
         content:
           "i did absolutely nothing but i expect money because i'm around",
+        files: [],
         ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

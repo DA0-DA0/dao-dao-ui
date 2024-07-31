@@ -54,10 +54,23 @@ export type NewSurveyFormData = Omit<NewSurveyRequest, 'attributes'> & {
   }[]
 }
 
+export type ContributionFile = {
+  name: string
+  url: string
+  mimetype: string
+}
+
+/**
+ * Survey with extra metadata about the requesting user's relationship to the
+ * survey.
+ */
 export type SurveyWithMetadata = {
   survey: Survey
-  contribution: string | null
-  contributionSelfRatings: (number | null)[] | null
+  contribution: {
+    content: string
+    files: ContributionFile[] | null
+    selfRatings: (number | null)[] | null
+  } | null
   rated: boolean
 }
 
@@ -85,6 +98,7 @@ export type ContributionResponse = {
   id: number
   contributor: string
   content: string
+  files: ContributionFile[] | null
   ratings: (number | null)[] | null
   createdAt: string
   updatedAt: string
@@ -145,9 +159,11 @@ export type CompletedSurvey = Survey & {
 
 export type ContributionFormData = {
   contribution: string
-  images?: {
-    url?: string
-  }[]
+  files: Partial<
+    ContributionFile & {
+      image: boolean
+    }
+  >[]
   ratings: (number | null)[]
 }
 

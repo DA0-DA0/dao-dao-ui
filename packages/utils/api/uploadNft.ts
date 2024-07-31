@@ -12,11 +12,12 @@ export default async function handler(
     // Parse form fields and image.
     const {
       fields: { name, description = '', extra: _extra },
-      imageData,
-      imageExtension,
+      fileData: imageData,
+      fileExtension: imageExtension,
       mimetype,
     } = await parseForm(req, {
-      requireImage: false,
+      requireFile: false,
+      allowedFiletype: 'image',
     })
 
     // Make sure name is not empty.

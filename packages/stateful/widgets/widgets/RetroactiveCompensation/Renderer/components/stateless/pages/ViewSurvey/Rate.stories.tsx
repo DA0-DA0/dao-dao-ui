@@ -24,8 +24,11 @@ export const Default = Template.bind({})
 Default.args = {
   status: {
     survey: makeSurvey(),
-    contribution: 'this is my contribution\n\npls give me money',
-    contributionSelfRatings: null,
+    contribution: {
+      content: 'this is my contribution\n\npls give me money',
+      files: [],
+      selfRatings: null,
+    },
     rated: false,
   },
   state: {
@@ -37,6 +40,7 @@ Default.args = {
           address: 'juno1',
         },
         content: 'I did stuff',
+        files: [],
         ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -48,6 +52,7 @@ Default.args = {
           address: 'juno2',
         },
         content: 'I did other stuff\n:D',
+        files: [],
         ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

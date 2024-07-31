@@ -8,23 +8,18 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    // Parse image from form.
-    const {
-      fileData: imageData,
-      fileExtension: imageExtension,
-      mimetype,
-    } = await parseForm(req, {
+    // Parse file from form.
+    const { fileData, fileExtension, mimetype } = await parseForm(req, {
       requireFile: true,
-      allowedFiletype: 'image',
     })
-    // Type-check. Parser should throw error if no image is found.
-    if (!imageData || !imageExtension) {
-      throw new Error('No image found.')
+    // Type-check. Parser should throw error if no file is found.
+    if (!fileData || !fileExtension) {
+      throw new Error('No file found.')
     }
 
     const cid = await uploadToFilebase(
-      imageData,
-      `${uuidv4()}.${imageExtension}`,
+      fileData,
+      `${uuidv4()}.${fileExtension}`,
       mimetype
     )
 

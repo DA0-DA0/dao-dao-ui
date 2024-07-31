@@ -179,7 +179,7 @@ export const Rate = ({
   const nominationFormMethods = useForm<NominationForm>({
     defaultValues: {
       contribution: '',
-      images: [],
+      files: [],
       ratings: survey.attributes.map(() => null),
     },
   })
@@ -326,7 +326,16 @@ export const Rate = ({
 
                       <MarkdownRenderer
                         className="styled-scrollbar max-h-96 !max-w-full overflow-y-auto py-2 px-2"
-                        markdown={contribution.content}
+                        markdown={[
+                          contribution.content,
+                          // Add images and links to files below content.
+                          ...(contribution.files?.map(
+                            ({ name, url, mimetype }) =>
+                              `${mimetype.startsWith('image') ? '!' : ''}[${
+                                name || url
+                              }](${url})`
+                          ) || []),
+                        ].join('\n\n')}
                       />
                     </div>
 

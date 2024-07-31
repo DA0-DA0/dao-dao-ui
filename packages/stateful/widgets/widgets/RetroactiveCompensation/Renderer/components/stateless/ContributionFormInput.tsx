@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ButtonLink,
   Checkbox,
+  FileUploadInput,
   IconButton,
   ImageUploadInput,
   InputErrorMessage,
@@ -46,14 +48,14 @@ export const ContributionFormInput = ({
   } = useFormContext<ContributionFormData>()
 
   const {
-    fields: imageFields,
-    append: appendImage,
-    remove: removeImage,
+    fields: fileFields,
+    append: appendFile,
+    remove: removeFile,
   } = useFieldArray({
     control,
-    name: 'images',
+    name: 'files',
   })
-  const images = watch('images')
+  const files = watch('files')
 
   const contribution = watch('contribution')
   const ratings = watch('ratings', [])
@@ -88,43 +90,93 @@ export const ContributionFormInput = ({
       )}
 
       <div className="flex flex-col gap-4">
-        {imageFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row items-center gap-2">
-            {images?.[index].url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={images[index].url}
-                className="min-w-24 min-h-24 max-w-80 h-auto max-h-80 w-auto"
-                src={transformIpfsUrlToHttpsIfNecessary(images[index].url!)}
-              />
-            ) : (
-              !readOnly && (
-                <ImageUploadInput
-                  Trans={Trans}
-                  onChange={(url) => setValue(`images.${index}.url`, url)}
-                />
-              )
-            )}
+        {fileFields.map(
+          ({ id }, index) =>
+            (files?.[index].url || !readOnly) && (
+              <div key={id} className="flex flex-row items-center gap-2">
+                {files?.[index].url ? (
+                  files[index].image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt={files[index].url}
+                      className="min-w-24 min-h-24 max-w-80 h-auto max-h-80 w-auto"
+                      src={transformIpfsUrlToHttpsIfNecessary(
+                        files[index].url!
+                      )}
+                    />
+                  ) : (
+                    <ButtonLink
+                      href={transformIpfsUrlToHttpsIfNecessary(
+                        files[index].url!
+                      )}
+                      openInNewTab
+                      variant="underline"
+                    >
+                      {/* eslint-disable-next-line i18next/no-literal-string */}
+                      {files[index].name || 'File'}
+                    </ButtonLink>
+                  )
+                ) : (
+                  !readOnly &&
+                  (files?.[index].image ? (
+                    <ImageUploadInput
+                      Trans={Trans}
+                      onChange={(url, file) => {
+                        setValue(`files.${index}.name`, file.name)
+                        setValue(`files.${index}.url`, url)
+                        setValue(`files.${index}.mimetype`, file.type)
+                      }}
+                    />
+                  ) : (
+                    <FileUploadInput
+                      Trans={Trans}
+                      onChange={(url, file) => {
+                        setValue(`files.${index}.name`, file.name)
+                        setValue(`files.${index}.url`, url)
+                        setValue(`files.${index}.mimetype`, file.type)
+                      }}
+                    />
+                  ))
+                )}
 
-            {!readOnly && (
-              <IconButton
-                Icon={Close}
-                onClick={() => removeImage(index)}
-                size="sm"
-                variant="ghost"
-              />
-            )}
-          </div>
-        ))}
+                {!readOnly && (
+                  <IconButton
+                    Icon={Close}
+                    onClick={() => removeFile(index)}
+                    size="sm"
+                    variant="ghost"
+                  />
+                )}
+              </div>
+            )
+        )}
 
         {!readOnly && (
-          <Button
-            className="self-start"
-            onClick={() => appendImage({})}
-            variant="secondary"
-          >
-            {t('button.addImage')}
-          </Button>
+          <div className="flex flex-row gap-2 items-stretch">
+            <Button
+              className="self-start"
+              onClick={() =>
+                appendFile({
+                  image: true,
+                })
+              }
+              variant="secondary"
+            >
+              {t('button.addImage')}
+            </Button>
+
+            <Button
+              className="self-start"
+              onClick={() =>
+                appendFile({
+                  image: false,
+                })
+              }
+              variant="secondary"
+            >
+              {t('button.addFile')}
+            </Button>
+          </div>
         )}
       </div>
 

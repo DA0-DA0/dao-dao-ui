@@ -7,16 +7,27 @@ import { NextApiRequest } from 'next'
 export const parseForm = async (
   req: NextApiRequest,
   {
-    requireImage = false,
-    /**
-     * Limit the maximum size of the uploaded image in megabytes. Defaults to 3.
-     */
+    requireFile = false,
+    allowedFiletype = 'any',
     maxFileSizeMb = 3,
+  }: {
+    /**
+     * Whether or not to require a file is uploaded.
+     */
+    requireFile?: boolean
+    /**
+     * Restrict the type of file that can be uploaded. Defaults to 'any'.
+     */
+    allowedFiletype?: 'any' | 'image'
+    /**
+     * Limit the maximum size of the uploaded file in megabytes. Defaults to 3.
+     */
+    maxFileSizeMb?: number
   } = {}
 ): Promise<{
   fields: Record<string, string | undefined>
-  imageData: Buffer | undefined
-  imageExtension: string | undefined
+  fileData: Buffer | undefined
+  fileExtension: string | undefined
   mimetype: string | undefined
 }> => {
   // Get fields and files from form.
@@ -50,7 +61,7 @@ export const parseForm = async (
   const files = Object.values(_files).flat()
 
   // Make sure there is only one file, or optionally none if not required.
-  if (requireImage && files.length === 0) {
+  if (requireFile && files.length === 0) {
     throw new Error('No files found.')
   } else if (files.length > 1) {
     throw new Error('Too many files found.')
@@ -59,7 +70,11 @@ export const parseForm = async (
   const file: File | undefined = files[0]
 
   // Makes sure file is an image.
-  if (file && !file.mimetype?.startsWith('image')) {
+  if (
+    file &&
+    allowedFiletype === 'image' &&
+    !file.mimetype?.startsWith('image')
+  ) {
     throw new Error('Only images are supported.')
   }
 
@@ -70,13 +85,13 @@ export const parseForm = async (
     }
     return acc
   }, {} as Record<string, string>)
-  // Read image data from temporarily uploaded location.
-  const imageData = file ? await fs.readFile(file.filepath) : undefined
+  // Read file data from temporarily uploaded location.
+  const fileData = file ? await fs.readFile(file.filepath) : undefined
 
   return {
     fields,
-    imageData,
-    imageExtension: file?.originalFilename?.includes('.')
+    fileData,
+    fileExtension: file?.originalFilename?.includes('.')
       ? file.originalFilename.split('.').slice(-1)[0]
       : undefined,
     mimetype: file?.mimetype ?? undefined,

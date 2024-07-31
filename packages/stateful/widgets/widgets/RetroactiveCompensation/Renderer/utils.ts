@@ -120,25 +120,17 @@ export const computeCompensation = (
 }
 
 /**
- * Prepare contribution form data by combining text and images into the
- * contribution text and removing the images.
+ * Prepare contribution form data by removing files that don't have all the
+ * fields set and removing the image field.
  */
 export const prepareContributionFormData = <D extends ContributionFormData>(
   data: D
-): D => {
-  const formData: D = {
-    ...data,
-    // Add Markdown image lines to bottom of contribution if they exist.
-    contribution: [
-      data.contribution,
-      data.images?.flatMap(({ url }) => `![${url}](${url})` || []).join('\n'),
-    ]
-      .filter(Boolean)
-      .join('\n\n'),
-  }
-  delete formData.images
-  return formData
-}
+): D => ({
+  ...data,
+  files: data.files.flatMap(({ image: _, ...file }) =>
+    file.name && file.url && file.mimetype ? file : []
+  ),
+})
 
 /**
  * Extract contribution form data from survey.
@@ -146,30 +138,8 @@ export const prepareContributionFormData = <D extends ContributionFormData>(
 export const extractContributionFormDataFromSurvey = ({
   survey: { attributes },
   contribution,
-  contributionSelfRatings,
-}: SurveyWithMetadata): ContributionFormData => {
-  contribution ||= ''
-
-  // Pull images out of the contribution text.
-  const images = contribution
-    ? contribution
-        .split('\n\n')
-        .pop()
-        ?.split('\n')
-        .map((part) =>
-          part.startsWith('![') ? part.split('](')[1].slice(0, -1) : undefined
-        )
-        .flatMap((url) => (url ? { url } : []))
-    : []
-
-  // If images were found, remove them from the text.
-  if (images?.length) {
-    contribution = contribution.split('\n\n').slice(0, -1).join('\n\n')
-  }
-
-  return {
-    contribution,
-    images,
-    ratings: contributionSelfRatings || attributes.map(() => null),
-  }
-}
+}: SurveyWithMetadata): ContributionFormData => ({
+  contribution: contribution?.content || '',
+  files: contribution?.files || [],
+  ratings: contribution?.selfRatings || attributes.map(() => null),
+})

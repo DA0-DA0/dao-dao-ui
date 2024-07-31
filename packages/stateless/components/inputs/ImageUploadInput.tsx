@@ -6,7 +6,7 @@ export type ImageUploadInputProps = Omit<
   ImageDropInputProps,
   'onSelect' | 'loading'
 > & {
-  onChange: (url: string) => void | Promise<void>
+  onChange: (url: string, file: File) => void | Promise<void>
   onError?: (error: unknown) => void
 }
 
@@ -43,7 +43,7 @@ export const ImageUploadInput = ({
         throw new Error('Failed to upload image')
       }
 
-      onChange(`ipfs://${cid}`)
+      onChange(`ipfs://${cid}`, file)
     } catch (err) {
       console.error(err)
       onError?.(err)
