@@ -21,7 +21,7 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
       const titleI18nKey =
         survey.survey.status in statusTitles
           ? statusTitles[survey.survey.status]
-          : '<unknown>'
+          : 'title.other'
 
       let group = acc.find((g) => g.titleI18nKey === titleI18nKey)
       if (!group) {
