@@ -9,14 +9,14 @@ import { SurveyWithMetadata } from './types'
 export const fetchSurvey = async ({
   daoAddress,
   walletPublicKey,
-  surveyId,
+  uuid,
 }: {
   daoAddress: string
   walletPublicKey: string
-  surveyId: number
+  uuid: string
 }): Promise<SurveyWithMetadata> => {
   const response = await fetch(
-    `${API_BASE}/${daoAddress}/${surveyId}/${walletPublicKey}/status`
+    `${API_BASE}/${daoAddress}/${uuid}/${walletPublicKey}/status`
   )
 
   if (!response.ok) {
@@ -24,7 +24,7 @@ export const fetchSurvey = async ({
       error: err instanceof Error ? err.message : JSON.stringify(err),
     }))
     console.error(
-      `Failed to fetch retroactive compensation survey for ID ${surveyId}.`,
+      `Failed to fetch retroactive compensation survey for ID ${uuid}.`,
       response,
       responseBody
     )
@@ -80,7 +80,7 @@ export const listSurveys = async (
       retroactiveCompensationQueries.survey({
         daoAddress,
         walletPublicKey,
-        surveyId: survey.survey.surveyId,
+        uuid: survey.survey.uuid,
       }).queryKey,
       survey
     )

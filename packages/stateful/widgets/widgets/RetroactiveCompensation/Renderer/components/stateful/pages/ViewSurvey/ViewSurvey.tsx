@@ -31,13 +31,13 @@ export const ViewSurvey = () => {
     loadAccount: true,
   })
 
-  const surveyId = Number(daoSubpathComponents[2] || '-1')
+  const uuid = daoSubpathComponents[2]
 
   const queryClient = useQueryClient()
   const surveyQuery = retroactiveCompensationQueries.survey({
     daoAddress: dao.coreAddress,
     walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
-    surveyId,
+    uuid,
   })
   const loadingSurvey = useQueryLoadingDataWithError(surveyQuery)
 

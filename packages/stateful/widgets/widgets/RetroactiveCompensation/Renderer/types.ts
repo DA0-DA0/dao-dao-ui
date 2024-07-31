@@ -30,7 +30,7 @@ export type AnyToken = {
 }
 
 export type Survey = {
-  surveyId: number
+  uuid: string
   status: string
   name: string
   contributionsOpenAt: string

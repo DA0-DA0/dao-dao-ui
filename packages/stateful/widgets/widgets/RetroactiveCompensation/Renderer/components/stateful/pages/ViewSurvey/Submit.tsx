@@ -33,7 +33,7 @@ export const Submit = ({
 
     try {
       await postRequest(
-        `/${dao.coreAddress}/${status.survey.surveyId}/contribution`,
+        `/${dao.coreAddress}/${status.survey.uuid}/contribution`,
         prepareContributionFormData(data)
       )
 

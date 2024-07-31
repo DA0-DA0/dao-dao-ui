@@ -57,7 +57,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
         contributions: ContributionResponse[]
         ratings: ContributionRating[]
       } = await postRequest(
-        `/${coreAddress}/${status.survey.surveyId}/contributions`
+        `/${coreAddress}/${status.survey.uuid}/contributions`
       )
 
       // Get addresses for contributor public keys.
@@ -93,7 +93,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
     } finally {
       setLoadingState(false)
     }
-  }, [bech32Prefix, coreAddress, postRequest, status.survey.surveyId])
+  }, [bech32Prefix, coreAddress, postRequest, status.survey.uuid])
 
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const onSubmit = useCallback(
@@ -101,7 +101,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
       setLoadingSubmit(true)
 
       try {
-        await postRequest(`/${coreAddress}/${status.survey.surveyId}/rate`, {
+        await postRequest(`/${coreAddress}/${status.survey.uuid}/rate`, {
           ...data,
         })
         toast.success(t('success.ratingsSubmitted'))
@@ -114,7 +114,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
         setLoadingSubmit(false)
       }
     },
-    [coreAddress, postRequest, refreshRef, status.survey.surveyId, t]
+    [coreAddress, postRequest, refreshRef, status.survey.uuid, t]
   )
 
   const tokenPrices = useCachedLoadable(
@@ -152,13 +152,10 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
         const contributorPublicKey = toHex(fromBase64(account.pubkey.value))
 
         // Nominate.
-        await postRequest(
-          `/${coreAddress}/${status.survey.surveyId}/nominate`,
-          {
-            ...prepareContributionFormData(formData),
-            contributor: contributorPublicKey,
-          }
-        )
+        await postRequest(`/${coreAddress}/${status.survey.uuid}/nominate`, {
+          ...prepareContributionFormData(formData),
+          contributor: contributorPublicKey,
+        })
         toast.success(t('success.nominationSubmitted'))
 
         // Reload data so nomination appears if data already loaded.
@@ -172,15 +169,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
         setLoadingNominate(false)
       }
     },
-    [
-      client,
-      postRequest,
-      coreAddress,
-      status.survey.surveyId,
-      t,
-      state,
-      loadState,
-    ]
+    [client, postRequest, coreAddress, status.survey.uuid, t, state, loadState]
   )
 
   return (

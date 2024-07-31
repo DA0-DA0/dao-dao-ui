@@ -1,7 +1,7 @@
+import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
 import { genericTokenBalancesSelector } from '@dao-dao/state'
 import {
@@ -9,19 +9,21 @@ import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { TokenType, WidgetId } from '@dao-dao/types'
 import { convertDenomToMicroDenomStringWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
-import { refreshStatusAtom } from '../../../atoms'
 import { usePostRequest } from '../../../hooks/usePostRequest'
 import {
   Cw20Token,
   NativeToken,
   NewSurveyFormData,
   NewSurveyRequest,
+  PagePath,
+  Survey,
 } from '../../../types'
 import { CreateSurvey as StatelessCreateSurvey } from '../../stateless/pages/CreateSurvey'
 
@@ -29,6 +31,8 @@ export const CreateSurvey = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoPath } = useDaoNavHelpers()
+  const router = useRouter()
 
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been
@@ -56,11 +60,6 @@ export const CreateSurvey = () => {
   )
 
   const postRequest = usePostRequest()
-  const setRefreshStatus = useSetRecoilState(
-    refreshStatusAtom({
-      daoAddress: coreAddress,
-    })
-  )
 
   const [loading, setLoading] = useState(false)
   const onCreate = useCallback(
@@ -134,19 +133,35 @@ export const CreateSurvey = () => {
           }),
         }
 
-        await postRequest(`/${coreAddress}/survey`, { survey })
+        const {
+          survey: { uuid },
+        } = await postRequest<{ survey: Survey }>(`/${coreAddress}/survey`, {
+          survey,
+        })
+
         toast.success(t('success.compensationCycleCreated'))
 
-        // Reload status on success.
-        setRefreshStatus((id) => id + 1)
+        // Navigate to survey.
+        router.push(
+          getDaoPath(
+            coreAddress,
+            [WidgetId.RetroactiveCompensation, PagePath.View, uuid].join('/')
+          ),
+          undefined,
+          {
+            shallow: true,
+          }
+        )
+
+        // Don't stop loading since we're navigating. Only stop loading on
+        // error.
       } catch (err) {
         console.error(err)
         toast.error(err instanceof Error ? err.message : JSON.stringify(err))
-      } finally {
         setLoading(false)
       }
     },
-    [coreAddress, availableTokensLoading, postRequest, setRefreshStatus, t]
+    [availableTokensLoading, t, postRequest, coreAddress, router, getDaoPath]
   )
 
   return (

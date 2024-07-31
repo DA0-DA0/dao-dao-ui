@@ -38,7 +38,7 @@ export const SurveyRow = ({
     contribution,
     rated,
     survey: {
-      surveyId,
+      uuid,
       status,
       name,
       contributionsOpenAt,
@@ -136,7 +136,7 @@ export const SurveyRow = ({
         )}
         href={getDaoPath(
           dao.coreAddress,
-          [WidgetId.RetroactiveCompensation, PagePath.View, surveyId].join('/')
+          [WidgetId.RetroactiveCompensation, PagePath.View, uuid].join('/')
         )}
         shallow
       >

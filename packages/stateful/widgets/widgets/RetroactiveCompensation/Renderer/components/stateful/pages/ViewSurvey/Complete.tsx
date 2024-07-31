@@ -50,15 +50,13 @@ import { ViewSurveyPageProps } from './types'
 export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
   const { t } = useTranslation()
   const { dao } = useDaoContext()
-  const { daoSubpathComponents, goToDaoProposal } = useDaoNavHelpers()
+  const { goToDaoProposal } = useDaoNavHelpers()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress = '', hexPublicKey } = useWallet({
     loadAccount: true,
   })
   const postRequest = usePostRequest()
   const queryClient = useQueryClient()
-
-  const surveyId = Number(daoSubpathComponents[2] || '-1')
 
   const publishProposal = useDaoProposalSinglePublishProposal()
 
@@ -183,7 +181,7 @@ export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
     try {
       // Fetch ratings.
       const response: RatingsResponse = await postRequest(
-        `/${dao.coreAddress}/${status.survey.surveyId}/ratings`
+        `/${dao.coreAddress}/${status.survey.uuid}/ratings`
       )
 
       // Get addresses for contributor and rater public keys.
@@ -245,7 +243,7 @@ export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
   }, [
     postRequest,
     dao.coreAddress,
-    status.survey.surveyId,
+    status.survey.uuid,
     updateProposalCreationFormData,
     bech32Prefix,
   ])
@@ -293,7 +291,7 @@ export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
       // 'none' will leave the proposal ID empty
 
       // Complete with proposal ID.
-      await postRequest(`/${dao.coreAddress}/${surveyId}/complete`, {
+      await postRequest(`/${dao.coreAddress}/${status.survey.uuid}/complete`, {
         proposalId,
       })
       toast.success(

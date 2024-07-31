@@ -55,7 +55,7 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
 
           <div className="flex flex-col gap-1">
             {surveys.map((survey) => (
-              <SurveyRow key={survey.survey.surveyId} survey={survey} />
+              <SurveyRow key={survey.survey.uuid} survey={survey} />
             ))}
           </div>
         </div>

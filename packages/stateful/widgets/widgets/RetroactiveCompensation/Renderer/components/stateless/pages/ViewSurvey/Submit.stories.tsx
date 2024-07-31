@@ -21,7 +21,7 @@ const Template: ComponentStory<typeof Submit> = (args) => <Submit {...args} />
 let surveyId = 1
 
 export const makeSurvey = (): Survey => ({
-  surveyId: surveyId++,
+  uuid: (surveyId++).toString(),
   status: SurveyStatus.AcceptingContributions,
   name: 'DAO DAO Contributor Drop November 2022',
   contributionsOpenAt: '2022-11-21T08:00:00.000Z',

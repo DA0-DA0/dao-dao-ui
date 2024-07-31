@@ -23,7 +23,7 @@ export const Info = ({ status, isMember }: ViewSurveyPageProps) => {
     setDownloading(true)
     try {
       const { survey }: { survey: CompletedSurvey } = await postRequest(
-        `/${dao.coreAddress}/${status.survey.surveyId}/dump`
+        `/${dao.coreAddress}/${status.survey.uuid}/dump`
       )
 
       const raterTitles = (
@@ -72,7 +72,7 @@ export const Info = ({ status, isMember }: ViewSurveyPageProps) => {
       const csvContent = jsonToCsv(csvData, { columns: csvTitles })
       saveAs(
         new Blob([csvContent], { type: 'text/plain;charset=utf-8' }),
-        `survey-${survey.surveyId}.csv`
+        `survey-${survey.uuid}.csv`
       )
     } catch (err) {
       console.error(
