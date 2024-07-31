@@ -18,15 +18,16 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
 
   const grouped = surveys.reduce(
     (acc, survey) => {
-      let group = acc.find((g) => g.status === survey.survey.status)
+      const titleI18nKey =
+        survey.survey.status in statusTitles
+          ? statusTitles[survey.survey.status]
+          : '<unknown>'
+
+      let group = acc.find((g) => g.titleI18nKey === titleI18nKey)
       if (!group) {
         group = {
           status: survey.survey.status,
-          title: t(
-            survey.survey.status in statusTitles
-              ? statusTitles[survey.survey.status]
-              : '<unknown>'
-          ),
+          titleI18nKey,
           surveys: [],
         }
         acc.push(group)
@@ -38,7 +39,7 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
     },
     [] as {
       status: SurveyStatus
-      title: string
+      titleI18nKey: string
       surveys: SurveyWithMetadata[]
     }[]
   )
@@ -49,12 +50,12 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
 
   return (
     <>
-      {grouped.map(({ status, title, surveys }) => (
-        <div key={status} className="flex flex-col gap-4">
+      {grouped.map(({ titleI18nKey, surveys }) => (
+        <div key={titleI18nKey} className="flex flex-col gap-4">
           <div className="link-text ml-2 flex flex-row items-center gap-3">
             <ArrowDropDown className="!h-4 !w-4 text-icon-primary" />
 
-            <p className="text-text-secondary">{title}</p>
+            <p className="text-text-secondary">{t(titleI18nKey)}</p>
           </div>
 
           <div className="flex flex-col gap-1">
