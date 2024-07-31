@@ -95,7 +95,7 @@ export const ContributionFormInput = ({
             (files?.[index].url || !readOnly) && (
               <div key={id} className="flex flex-row items-center gap-2">
                 {files?.[index].url ? (
-                  files[index].image ? (
+                  files[index].mimetype?.startsWith('image') ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       alt={files[index].url}
