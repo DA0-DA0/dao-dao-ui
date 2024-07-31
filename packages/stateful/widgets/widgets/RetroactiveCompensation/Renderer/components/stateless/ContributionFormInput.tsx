@@ -112,8 +112,7 @@ export const ContributionFormInput = ({
                       openInNewTab
                       variant="underline"
                     >
-                      {/* eslint-disable-next-line i18next/no-literal-string */}
-                      {files[index].name || 'File'}
+                      {files[index].name || files[index].url}
                     </ButtonLink>
                   )
                 ) : (
