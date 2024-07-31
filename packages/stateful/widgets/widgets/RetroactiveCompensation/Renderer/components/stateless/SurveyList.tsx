@@ -24,7 +24,7 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
           status: survey.survey.status,
           title: t(
             survey.survey.status in statusTitles
-              ? statusTitles[survey.survey.status as keyof typeof statusTitles]
+              ? statusTitles[survey.survey.status]
               : '<unknown>'
           ),
           surveys: [],
@@ -37,10 +37,14 @@ export const SurveyList = ({ surveys, SurveyRow }: SurveyListProps) => {
       return acc
     },
     [] as {
-      status: string
+      status: SurveyStatus
       title: string
       surveys: SurveyWithMetadata[]
     }[]
+  )
+
+  grouped.sort(
+    (a, b) => statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
   )
 
   return (
@@ -71,3 +75,11 @@ const statusTitles: Record<SurveyStatus, string> = {
   [SurveyStatus.AwaitingCompletion]: 'info.waitingForRateAndPropose',
   [SurveyStatus.Complete]: 'title.history',
 }
+
+const statusOrder: SurveyStatus[] = [
+  SurveyStatus.Inactive,
+  SurveyStatus.AcceptingContributions,
+  SurveyStatus.AcceptingRatings,
+  SurveyStatus.AwaitingCompletion,
+  SurveyStatus.Complete,
+]

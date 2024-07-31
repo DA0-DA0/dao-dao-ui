@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -17,6 +18,7 @@ import { convertDenomToMicroDenomStringWithDecimals } from '@dao-dao/utils'
 import { SuspenseLoader } from '../../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import { usePostRequest } from '../../../hooks/usePostRequest'
+import { retroactiveCompensationQueries } from '../../../queries'
 import {
   Cw20Token,
   NativeToken,
@@ -59,6 +61,7 @@ export const CreateSurvey = () => {
     []
   )
 
+  const queryClient = useQueryClient()
   const postRequest = usePostRequest()
 
   const [loading, setLoading] = useState(false)
@@ -141,6 +144,13 @@ export const CreateSurvey = () => {
 
         toast.success(t('success.compensationCycleCreated'))
 
+        // Reload survey list.
+        await queryClient.refetchQueries({
+          queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+            daoAddress: coreAddress,
+          }).queryKey,
+        })
+
         // Navigate to survey.
         router.push(
           getDaoPath(
@@ -161,7 +171,15 @@ export const CreateSurvey = () => {
         setLoading(false)
       }
     },
-    [availableTokensLoading, t, postRequest, coreAddress, router, getDaoPath]
+    [
+      availableTokensLoading,
+      t,
+      postRequest,
+      coreAddress,
+      queryClient,
+      router,
+      getDaoPath,
+    ]
   )
 
   return (

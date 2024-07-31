@@ -34,17 +34,21 @@ export const ViewSurvey = () => {
   const uuid = daoSubpathComponents[2]
 
   const queryClient = useQueryClient()
-  const surveyQuery = retroactiveCompensationQueries.survey({
-    daoAddress: dao.coreAddress,
-    walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
-    uuid,
-  })
-  const loadingSurvey = useQueryLoadingDataWithError(surveyQuery)
+  const loadingSurvey = useQueryLoadingDataWithError(
+    retroactiveCompensationQueries.survey({
+      daoAddress: dao.coreAddress,
+      walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
+      uuid,
+    })
+  )
 
   // Memoize callback.
   const refreshRef = useUpdatingRef(() =>
     queryClient.refetchQueries({
-      queryKey: surveyQuery.queryKey,
+      queryKey: retroactiveCompensationQueries.survey({
+        daoAddress: dao.coreAddress,
+        uuid,
+      }).queryKey,
     })
   )
 
@@ -77,9 +81,7 @@ export const InnerViewSurvey = ({
   })
 
   const Page: ComponentType<ViewSurveyPageProps> =
-    status.survey.status in viewSurveyPageMap
-      ? viewSurveyPageMap[status.survey.status as SurveyStatus]
-      : Info
+    viewSurveyPageMap[status.survey.status] || Info
 
   return (
     <div className="pb-10">

@@ -47,14 +47,16 @@ import {
 } from '../../../stateless/pages/ViewSurvey/Complete'
 import { ViewSurveyPageProps } from './types'
 
-export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
+export const Complete = ({
+  status,
+  refreshRef,
+  isMember,
+}: ViewSurveyPageProps) => {
   const { t } = useTranslation()
   const { dao } = useDaoContext()
   const { goToDaoProposal } = useDaoNavHelpers()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress = '', hexPublicKey } = useWallet({
-    loadAccount: true,
-  })
+  const { address: walletAddress = '' } = useWallet()
   const postRequest = usePostRequest()
   const queryClient = useQueryClient()
 
@@ -300,13 +302,15 @@ export const Complete = ({ status, isMember }: ViewSurveyPageProps) => {
         })
       )
 
-      // Reload surveys on success.
-      await queryClient.refetchQueries({
-        queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
-          daoAddress: dao.coreAddress,
-          walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
-        }).queryKey,
-      })
+      // Reload survey list on success and also individual survey.
+      await Promise.all([
+        queryClient.refetchQueries({
+          queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+            daoAddress: dao.coreAddress,
+          }).queryKey,
+        }),
+        refreshRef.current(),
+      ])
 
       // Navigate to proposal if set.
       if (proposalId) {

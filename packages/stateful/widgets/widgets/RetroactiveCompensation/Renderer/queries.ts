@@ -8,11 +8,11 @@ import { SurveyWithMetadata } from './types'
  */
 export const fetchSurvey = async ({
   daoAddress,
-  walletPublicKey,
+  walletPublicKey = '_',
   uuid,
 }: {
   daoAddress: string
-  walletPublicKey: string
+  walletPublicKey?: string
   uuid: string
 }): Promise<SurveyWithMetadata> => {
   const response = await fetch(
@@ -47,10 +47,10 @@ export const listSurveys = async (
   queryClient: QueryClient,
   {
     daoAddress,
-    walletPublicKey,
+    walletPublicKey = '_',
   }: {
     daoAddress: string
-    walletPublicKey: string
+    walletPublicKey?: string
   }
 ): Promise<SurveyWithMetadata[]> => {
   const response = await fetch(
