@@ -4,18 +4,18 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType, TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../../../../components'
-import { makeSurvey } from './ContributionForm.stories'
-import { ProposalCreationForm } from './ProposalCreationForm'
+import { EntityDisplay } from '../../../../../../../../components'
+import { Complete } from './Complete'
+import { makeSurvey } from './Submit.stories'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / ProposalCreationForm',
-  component: ProposalCreationForm,
-} as ComponentMeta<typeof ProposalCreationForm>
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / pages / ProposalCreationForm',
+  component: Complete,
+} as ComponentMeta<typeof Complete>
 
-const Template: ComponentStory<typeof ProposalCreationForm> = (args) => (
-  <ProposalCreationForm {...args} />
+const Template: ComponentStory<typeof Complete> = (args) => (
+  <Complete {...args} />
 )
 
 export const Default = Template.bind({})
@@ -141,7 +141,7 @@ Default.args = {
     cosmosMsgs: [],
   },
   onComplete: async (data) => alert('complete: ' + JSON.stringify(data)),
-  loading: false,
+  completing: false,
   EntityDisplay,
   tokenPrices: [
     {

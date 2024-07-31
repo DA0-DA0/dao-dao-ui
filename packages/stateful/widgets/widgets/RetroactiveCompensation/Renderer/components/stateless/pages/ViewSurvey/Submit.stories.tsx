@@ -3,25 +3,25 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
 import { Default as ConnectWalletStory } from '@dao-dao/stateless/components/wallet/ConnectWallet.stories'
 import { CHAIN_ID } from '@dao-dao/storybook'
-import { EntityType, TokenType } from '@dao-dao/types'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { EntityType } from '@dao-dao/types'
 
-import { Trans } from '../../../../../../components'
-import { Survey, SurveyStatus } from '../../types'
-import { ContributionForm } from './ContributionForm'
+import { Trans } from '../../../../../../../../components'
+import { Survey, SurveyStatus } from '../../../../types'
+import { Submit } from './Submit'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / ContributionForm',
-  component: ContributionForm,
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / pages / Submit',
+  component: Submit,
   excludeStories: ['makeSurvey'],
-} as ComponentMeta<typeof ContributionForm>
+} as ComponentMeta<typeof Submit>
 
-const Template: ComponentStory<typeof ContributionForm> = (args) => (
-  <ContributionForm {...args} />
-)
+const Template: ComponentStory<typeof Submit> = (args) => <Submit {...args} />
+
+let surveyId = 1
 
 export const makeSurvey = (): Survey => ({
+  uuid: (surveyId++).toString(),
   status: SurveyStatus.AcceptingContributions,
   name: 'DAO DAO Contributor Drop November 2022',
   contributionsOpenAt: '2022-11-21T08:00:00.000Z',
@@ -53,7 +53,9 @@ export const makeSurvey = (): Survey => ({
       cw20Tokens: [],
     },
   ],
+  proposalId: null,
   createdAtBlockHeight: 1,
+  contributionCount: 1,
 })
 
 export const Default = Template.bind({})
@@ -77,30 +79,6 @@ Default.args = {
       imageUrl: '/placeholders/1.svg',
     },
   },
-  tokenPrices: [
-    {
-      token: {
-        chainId: CHAIN_ID,
-        type: TokenType.Cw20,
-        denomOrAddress: 'dao',
-        symbol: 'DAO',
-        decimals: 6,
-        imageUrl: '/daodao.png',
-        source: {
-          chainId: CHAIN_ID,
-          type: TokenType.Cw20,
-          denomOrAddress: 'dao',
-        },
-      },
-      usdPrice: 1,
-      timestamp: new Date(),
-    },
-    {
-      token: getNativeTokenForChainId(CHAIN_ID),
-      usdPrice: 1,
-      timestamp: new Date(),
-    },
-  ],
   EntityDisplay: () => (
     <EntityDisplay
       address="juno123"

@@ -8,29 +8,30 @@ export enum SurveyStatus {
   Complete = 'complete',
 }
 
-export interface NativeToken {
+export type NativeToken = {
   denom: string
   amount: string
 }
 
-export interface Cw20Token {
+export type Cw20Token = {
   address: string
   amount: string
 }
 
-export interface Attribute {
+export type Attribute = {
   name: string
   nativeTokens: NativeToken[]
   cw20Tokens: Cw20Token[]
 }
 
-export interface AnyToken {
+export type AnyToken = {
   denomOrAddress: string
   amount: string
 }
 
-export interface Survey {
-  status: string
+export type Survey = {
+  uuid: string
+  status: SurveyStatus
   name: string
   contributionsOpenAt: string
   contributionsCloseRatingsOpenAt: string
@@ -38,13 +39,14 @@ export interface Survey {
   contributionInstructions: string
   ratingInstructions: string
   attributes: Attribute[]
+  proposalId: string | null
   createdAtBlockHeight: number
+  contributionCount: number
 }
 
 export type NewSurveyRequest = Omit<Survey, 'status' | 'createdAtBlockHeight'>
 
-export interface NewSurveyFormData
-  extends Omit<NewSurveyRequest, 'attributes'> {
+export type NewSurveyFormData = Omit<NewSurveyRequest, 'attributes'> & {
   // Combine native and CW20 tokens into one, and uncombine before submitting.
   attributes: {
     name: string
@@ -52,23 +54,14 @@ export interface NewSurveyFormData
   }[]
 }
 
-export interface Status {
+export type SurveyWithMetadata = {
   survey: Survey
   contribution: string | null
   contributionSelfRatings: (number | null)[] | null
   rated: boolean
 }
 
-export interface CompletedSurveyListing {
-  id: number
-  name: string
-  contributionCount: number
-  contributionsOpenedAt: string
-  proposalId: string
-  createdAtBlockHeight: number
-}
-
-export interface ContributionRating {
+export type ContributionRating = {
   contributionId: number
   /**
    * Weight can be any number. The computation utility function normalizes
@@ -79,16 +72,16 @@ export interface ContributionRating {
   attributes: (number | null)[]
 }
 
-export interface RatingsFormData {
+export type RatingsFormData = {
   ratings: ContributionRating[]
 }
 
-export interface Identity {
+export type Identity = {
   publicKey: string
   address: string
 }
 
-export interface ContributionResponse {
+export type ContributionResponse = {
   id: number
   contributor: string
   content: string
@@ -97,12 +90,11 @@ export interface ContributionResponse {
   updatedAt: string
 }
 
-export interface Contribution
-  extends Omit<ContributionResponse, 'contributor'> {
+export type Contribution = Omit<ContributionResponse, 'contributor'> & {
   contributor: Identity
 }
 
-export interface RatingResponse {
+export type RatingResponse = {
   rater: string
   raterVotingPower: string
   contributions: {
@@ -112,11 +104,11 @@ export interface RatingResponse {
   }[]
 }
 
-export interface Rating extends Omit<RatingResponse, 'rater'> {
+export type Rating = Omit<RatingResponse, 'rater'> & {
   rater: Identity
 }
 
-export interface RatingsResponse {
+export type RatingsResponse = {
   contributions: ContributionResponse[]
   ratings: RatingResponse[]
 }
@@ -126,7 +118,7 @@ export type RatingsResponseWithIdentities = {
   ratings: Rating[]
 }
 
-export interface ContributionCompensation {
+export type ContributionCompensation = {
   contributionId: number
   compensationPerAttribute: {
     averageRating: number
@@ -135,24 +127,20 @@ export interface ContributionCompensation {
   }[]
 }
 
-export interface ContributionWithCompensation extends Contribution {
+export type ContributionWithCompensation = Contribution & {
   compensation: ContributionCompensation
 }
 
-export interface CompleteRatings {
+export type CompleteRatings = {
   contributions: ContributionWithCompensation[]
   ratings: Rating[]
   cosmosMsgs: UnifiedCosmosMsg[]
 }
 
-export type CompletedSurvey = Omit<Survey, 'status'> & {
+export type CompletedSurvey = Survey & {
   id: number
   contributions: ContributionResponse[]
   ratings: RatingResponse[]
-}
-
-export interface StatefulOpenSurveySectionProps {
-  status: Status
 }
 
 export type ContributionFormData = {
@@ -161,4 +149,17 @@ export type ContributionFormData = {
     url?: string
   }[]
   ratings: (number | null)[]
+}
+
+export enum PagePath {
+  Home = '',
+  Create = 'create',
+  View = 's',
+}
+
+export type StatefulSurveyRowProps = {
+  /**
+   * The active survey.
+   */
+  survey: SurveyWithMetadata
 }

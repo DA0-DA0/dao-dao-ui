@@ -8,7 +8,7 @@ import { NewAttribute, NewAttributeProps } from './NewAttribute'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / payroll / adapters / Retroactive / components / stateless / NewAttribute',
+    'DAO DAO / packages / stateful / widgets / widgets / RetroactiveCompensation / components / stateless / NewAttribute',
   component: NewAttribute,
   decorators: [
     makeReactHookFormDecorator({

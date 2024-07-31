@@ -1,26 +1,44 @@
-import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalWalletVote, Tooltip } from '@dao-dao/stateless'
+import {
+  ProposalWalletVote,
+  Tooltip,
+  useDaoContext,
+  useDaoNavHelpers,
+} from '@dao-dao/stateless'
+import { LinkWrapperProps, WidgetId } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { Status, SurveyStatus } from '../../types'
+import { PagePath, SurveyStatus, SurveyWithMetadata } from '../../types'
 
-export interface OpenSurveySectionProps {
-  status: Status
-  onClick?: () => void
-  loading: boolean
+export type SurveyRowProps = {
+  /**
+   * The active survey.
+   */
+  survey: SurveyWithMetadata
+  /**
+   * Whether or not a wallet is connected.
+   */
   connected: boolean
+  /**
+   * Whether or not the current wallet was a member of the DAO when the survey
+   * was created.
+   */
   isMember: boolean
-  tooltip?: string
+  /**
+   * Stateful link wrapper component.
+   */
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export const OpenSurveySection = ({
-  status: {
+export const SurveyRow = ({
+  survey: {
     contribution,
     rated,
     survey: {
+      uuid,
       status,
       name,
       contributionsOpenAt,
@@ -28,20 +46,13 @@ export const OpenSurveySection = ({
       ratingsCloseAt,
     },
   },
-  onClick,
-  loading,
   connected,
   isMember,
-  tooltip,
-}: OpenSurveySectionProps) => {
+  LinkWrapper,
+}: SurveyRowProps) => {
   const { t } = useTranslation()
-
-  const sectionTitleKey =
-    status === SurveyStatus.Inactive
-      ? 'title.upcoming'
-      : status === SurveyStatus.AcceptingContributions
-      ? 'title.acceptingSubmissions'
-      : 'info.waitingForRateAndPropose'
+  const { dao } = useDaoContext()
+  const { getDaoPath } = useDaoNavHelpers()
 
   // Display upcoming date first, then date when contributions close. Even
   // during processing, show the date when contributions closed.
@@ -110,50 +121,50 @@ export const OpenSurveySection = ({
     />
   )
 
+  const tooltip = isMember
+    ? undefined
+    : status === SurveyStatus.AcceptingRatings ||
+      status === SurveyStatus.AwaitingCompletion
+    ? t('info.submissionsBeingRated')
+    : undefined
+
   return (
-    <>
-      <div className="link-text ml-2 flex flex-row items-center gap-3">
-        <ArrowDropDown className="!h-4 !w-4 text-icon-primary" />
+    <Tooltip title={tooltip}>
+      <LinkWrapper
+        className={clsx(
+          'block rounded-md bg-background-secondary cursor-pointer transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed'
+        )}
+        href={getDaoPath(
+          dao.coreAddress,
+          [WidgetId.RetroactiveCompensation, PagePath.View, uuid].join('/')
+        )}
+        shallow
+      >
+        {/* Desktop */}
+        <div className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex">
+          <p className="body-text grow truncate">{name}</p>
 
-        <p className="text-text-secondary">{t(sectionTitleKey)}</p>
-      </div>
+          <p className="caption-text shrink-0 break-words text-right font-mono">
+            {date}
+          </p>
 
-      <Tooltip title={tooltip}>
-        <div
-          className={clsx(
-            'rounded-md bg-background-secondary',
-            onClick &&
-              'cursor-pointer transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
-            loading && 'animate-pulse'
-          )}
-          onClick={onClick}
-        >
-          {/* Desktop */}
-          <div className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex">
-            <p className="body-text grow truncate">{name}</p>
+          {statusDisplay}
+        </div>
 
-            <p className="caption-text shrink-0 break-words text-right font-mono">
-              {date}
-            </p>
-
+        {/* Mobile */}
+        <div className="flex flex-col justify-between gap-2 rounded-md p-4 text-sm sm:hidden">
+          <div className="flex flex-row items-start justify-between gap-3">
+            <p className="body-text break-words">{name}</p>
             {statusDisplay}
           </div>
 
-          {/* Mobile */}
-          <div className="flex flex-col justify-between gap-2 rounded-md p-4 text-sm sm:hidden">
-            <div className="flex flex-row items-start justify-between gap-3">
-              <p className="body-text break-words">{name}</p>
-              {statusDisplay}
-            </div>
-
-            <div className="flex flex-row items-center justify-between gap-6">
-              <p className="caption-text shrink-0 break-words text-right font-mono">
-                {date}
-              </p>
-            </div>
+          <div className="flex flex-row items-center justify-between gap-6">
+            <p className="caption-text shrink-0 break-words text-right font-mono">
+              {date}
+            </p>
           </div>
         </div>
-      </Tooltip>
-    </>
+      </LinkWrapper>
+    </Tooltip>
   )
 }

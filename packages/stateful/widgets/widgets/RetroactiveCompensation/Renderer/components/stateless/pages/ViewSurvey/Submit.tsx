@@ -4,74 +4,71 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Loader, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
-import {
-  Entity,
-  GenericTokenWithUsdPrice,
-  LoadingData,
-  TransProps,
-} from '@dao-dao/types'
+import { Entity, LoadingData, TransProps } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { ContributionFormData, Status, SurveyStatus } from '../../types'
-import { ContributionFormInput } from './ContributionFormInput'
+import {
+  ContributionFormData,
+  SurveyStatus,
+  SurveyWithMetadata,
+} from '../../../../types'
+import { extractContributionFormDataFromSurvey } from '../../../../utils'
+import { ContributionFormInput } from '../../ContributionFormInput'
 
-export interface ContributionFormProps {
+export type SubmitProps = {
+  /**
+   * Whether or not a wallet is connected.
+   */
   connected: boolean
-  status: Status
+  /**
+   * The active survey.
+   */
+  status: SurveyWithMetadata
+  /**
+   * Callback to submit form data.
+   */
   onSubmit: (data: ContributionFormData) => Promise<void>
+  /**
+   * Whether or not the form is being submitted.
+   */
   loading: boolean
+  /**
+   * The wallet entity.
+   */
   loadingEntity: LoadingData<Entity>
-  tokenPrices: GenericTokenWithUsdPrice[]
+  /**
+   * Wallet entity display.
+   */
   EntityDisplay: ComponentType
+  /**
+   * Connect wallet button.
+   */
   ConnectWallet: ComponentType
+  /**
+   * Stateful i18n translation component.
+   */
   Trans: ComponentType<TransProps>
 }
 
-export const ContributionForm = ({
+export const Submit = ({
   connected,
-  status: {
-    survey,
-    contribution: existingContribution,
-    contributionSelfRatings,
-  },
+  status,
   onSubmit,
   loading,
   loadingEntity,
   EntityDisplay,
   ConnectWallet,
   Trans,
-}: ContributionFormProps) => {
+}: SubmitProps) => {
+  const { survey } = status
+
   const { t } = useTranslation()
 
-  let defaultContribution = existingContribution || ''
-  // Pull images out of the contribution text.
-  const defaultImages = defaultContribution
-    ? defaultContribution
-        .split('\n\n')
-        .pop()
-        ?.split('\n')
-        .map((part) =>
-          part.startsWith('![') ? part.split('](')[1].slice(0, -1) : undefined
-        )
-        .flatMap((url) => (url ? { url } : []))
-    : []
-  // If images were found, remove them from the text.
-  if (defaultImages?.length) {
-    defaultContribution = defaultContribution
-      .split('\n\n')
-      .slice(0, -1)
-      .join('\n\n')
-  }
-
   const formMethods = useForm<ContributionFormData>({
-    defaultValues: {
-      contribution: defaultContribution,
-      images: defaultImages,
-      ratings: contributionSelfRatings || survey.attributes.map(() => null),
-    },
+    defaultValues: extractContributionFormDataFromSurvey(status),
   })
 
-  const contributed = !!existingContribution
+  const contributed = !!status.contribution
 
   const dateText =
     survey.status === SurveyStatus.Inactive

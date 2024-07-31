@@ -18,8 +18,11 @@ export const ButtonLink = forwardRef<HTMLDivElement, ButtonLinkProps>(
         loading={loading || navigating}
         onClick={(event) => {
           onClick?.(event)
+
           // Update global loading state.
-          updateNavigatingHref(href)
+          if (href && !props.openInNewTab && !href.startsWith('http')) {
+            updateNavigatingHref(href)
+          }
         }}
         ref={ref}
       >

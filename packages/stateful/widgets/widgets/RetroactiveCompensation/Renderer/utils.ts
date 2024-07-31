@@ -4,6 +4,7 @@ import {
   ContributionCompensation,
   ContributionFormData,
   ContributionRating,
+  SurveyWithMetadata,
 } from './types'
 
 // Distribute compensation per survey attribute among the contributions
@@ -137,4 +138,38 @@ export const prepareContributionFormData = <D extends ContributionFormData>(
   }
   delete formData.images
   return formData
+}
+
+/**
+ * Extract contribution form data from survey.
+ */
+export const extractContributionFormDataFromSurvey = ({
+  survey: { attributes },
+  contribution,
+  contributionSelfRatings,
+}: SurveyWithMetadata): ContributionFormData => {
+  contribution ||= ''
+
+  // Pull images out of the contribution text.
+  const images = contribution
+    ? contribution
+        .split('\n\n')
+        .pop()
+        ?.split('\n')
+        .map((part) =>
+          part.startsWith('![') ? part.split('](')[1].slice(0, -1) : undefined
+        )
+        .flatMap((url) => (url ? { url } : []))
+    : []
+
+  // If images were found, remove them from the text.
+  if (images?.length) {
+    contribution = contribution.split('\n\n').slice(0, -1).join('\n\n')
+  }
+
+  return {
+    contribution,
+    images,
+    ratings: contributionSelfRatings || attributes.map(() => null),
+  }
 }
