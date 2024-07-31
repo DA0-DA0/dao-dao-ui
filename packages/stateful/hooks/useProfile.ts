@@ -188,7 +188,7 @@ export const useProfile = ({
           publicKey,
           bech32Hash: toBech32Hash(address),
           chains: chains.data.flatMap((c) =>
-            c.publicKey.hex === publicKey ? [c] : c
+            c.publicKey.hex === publicKey ? c : []
           ),
         })),
       }

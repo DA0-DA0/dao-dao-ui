@@ -14,6 +14,7 @@ import { DaoSource } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
   KVPK_API_BASE,
+  daoSourcesEqual,
   processError,
   serializeDaoSource,
 } from '@dao-dao/utils'
@@ -49,8 +50,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
               walletPublicKey: publicKey,
             })
           )
-        ),
-    (data) => data.flat()
+        )
   )
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
@@ -64,7 +64,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     const followingDaosSet = new Set(
       followingDaosLoading.loading || followingDaosLoading.errored
         ? []
-        : followingDaosLoading.data.map(serializeDaoSource)
+        : followingDaosLoading.data.flat().map(serializeDaoSource)
     )
 
     return (dao: DaoSource) => followingDaosSet.has(serializeDaoSource(dao))
@@ -160,6 +160,29 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       setUpdating(true)
 
       try {
+        // Try to find which public key is following this DAO and use a chain ID
+        // for unfollowing with that same public key. By default we follow from
+        // the chain the DAO is on, so this is for backwards compatibilty in
+        // case some follows are stuck on another public key. We have to
+        // unfollow using the same public key that followed since keys are
+        // stored under the signing public key.
+        const followingPublicKeyIndex =
+          followingDaosLoading.loading || followingDaosLoading.errored
+            ? undefined
+            : followingDaosLoading.data.findIndex((follows) =>
+                follows.some((f) => daoSourcesEqual(f, dao))
+              )
+        const unfollowChainId =
+          (uniquePublicKeys.loading ||
+          followingPublicKeyIndex === undefined ||
+          followingPublicKeyIndex === -1
+            ? undefined
+            : uniquePublicKeys.data[followingPublicKeyIndex]?.chains[0]
+                ?.chainId) ||
+          // Fallback to DAO chain ID since this will most likely be the right
+          // chain.
+          dao.chainId
+
         const serializedDaoSource = serializeDaoSource(dao)
 
         await postRequest(
@@ -169,9 +192,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
             value: null,
           },
           undefined,
-          // Use DAO chain ID for following state to ensure we use the same
-          // chain ID when following and unfollowing the DAO.
-          dao.chainId
+          unfollowChainId
         )
 
         setTemporary((prev) => ({
@@ -195,7 +216,16 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [
+      followingDaosLoading,
+      postRequest,
+      ready,
+      refreshFollowing,
+      setTemporary,
+      t,
+      uniquePublicKeys,
+      updating,
+    ]
   )
 
   return {
