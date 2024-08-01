@@ -2389,8 +2389,8 @@ export const CHAIN_ENDPOINTS: Partial<
   >
 > = {
   [ChainId.JunoMainnet]: {
-    rpc: 'https://juno-rpc.publicnode.com',
-    rest: 'https://juno-rest.publicnode.com',
+    rpc: 'https://juno-rpc.kleomedes.network',
+    rest: 'https://juno-api.kleomedes.network',
   },
   [ChainId.JunoTestnet]: {
     rpc: 'https://juno-testnet-rpc.polkachu.com',
