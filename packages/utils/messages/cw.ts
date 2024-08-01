@@ -20,7 +20,10 @@ import {
   UnifiedCosmosMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
-import { MsgSendTx } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import {
+  MsgRegisterInterchainAccount,
+  MsgSendTx,
+} from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
 import {
   CosmosTx,
   InterchainAccountPacketData,
@@ -531,13 +534,54 @@ export const decodeIcaExecuteMsg = (
     return {
       match: true,
       chainId: chain.chain_id,
+      type: 'execute',
       msgWithSender: msgsWithSenders[0],
       cosmosMsgWithSender: cosmosMsgsWithSenders[0],
       msgsWithSenders,
       cosmosMsgsWithSenders,
     }
   } catch (err) {
-    console.error('ICA decode error', err)
+    console.error('ICA execute decode error', err)
+    return {
+      match: false,
+    }
+  }
+}
+
+/**
+ * Checks if the message is an ICA create message and extracts the chain ID.
+ */
+export const decodeIcaCreateMsg = (
+  srcChainId: string,
+  decodedMsg: Record<string, any>
+): DecodedIcaMsg => {
+  if (
+    !isDecodedStargateMsg(decodedMsg) ||
+    decodedMsg.stargate.typeUrl !== MsgRegisterInterchainAccount.typeUrl
+  ) {
+    return {
+      match: false,
+    }
+  }
+
+  try {
+    const { connectionId } = decodedMsg.stargate
+      .value as MsgRegisterInterchainAccount
+    const { destinationChain } = getIbcTransferInfoFromConnection(
+      srcChainId,
+      connectionId
+    )
+    const chain = getChainForChainName(destinationChain.chain_name)
+
+    return {
+      match: true,
+      chainId: chain.chain_id,
+      type: 'create',
+      msgsWithSenders: [],
+      cosmosMsgsWithSenders: [],
+    }
+  } catch (err) {
+    console.error('ICA create decode error', err)
     return {
       match: false,
     }
@@ -569,7 +613,10 @@ export const decodeCrossChainMessages = (
         }
       }
 
-      const decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
+      let decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
+      if (!decodedIca.match) {
+        decodedIca = decodeIcaCreateMsg(srcChainId, msg)
+      }
       if (decodedIca.match) {
         const ibcInfo = getIbcTransferInfoBetweenChains(
           srcChainId,

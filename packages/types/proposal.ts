@@ -68,25 +68,36 @@ export type DecodedPolytoneMsg =
 export type DecodedIcaMsgMatch = {
   match: true
   chainId: string
-  // The first message, or undefined if none.
-  msgWithSender:
-    | {
-        sender: string
-        msg: Record<string, any>
-      }
-    | undefined
-  // The first message, or undefined if none.
-  cosmosMsgWithSender:
-    | {
-        sender: string
-        msg: UnifiedCosmosMsg
-      }
-    | undefined
-  // All messages.
+  /**
+   * Whether or not this is an ICA create or execute message.
+   */
+  type: 'create' | 'execute'
+  /**
+   * The first message, or undefined if none. Will be undefined if execute with
+   * no messages and for create messages.
+   */
+  msgWithSender?: {
+    sender: string
+    msg: Record<string, any>
+  }
+  /**
+   * The first Cosmos message, or undefined if none. Will be undefined if
+   * execute with no messages and for create messages.
+   */
+  cosmosMsgWithSender?: {
+    sender: string
+    msg: UnifiedCosmosMsg
+  }
+  /**
+   * All messages.
+   */
   msgsWithSenders: {
     sender: string
     msg: Record<string, any>
   }[]
+  /**
+   * All Cosmos messages.
+   */
   cosmosMsgsWithSenders: {
     sender: string
     msg: UnifiedCosmosMsg
