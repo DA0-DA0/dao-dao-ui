@@ -68,6 +68,7 @@ import {
   getRpcForChainId,
   makeBankMessage,
   processError,
+  retry,
 } from '@dao-dao/utils'
 
 import { useWallet } from '../hooks'
@@ -375,17 +376,19 @@ export const SelfRelayExecuteModal = ({
           const relayerAddress = (await signer.getAccounts())[0].address
 
           // Create IBC client with newly created signer.
-          const client = await IbcClient.connectWithSigner(
-            getRpcForChainId(chain.chain_id),
-            signer,
-            relayerAddress,
-            {
-              // How long it waits in between checking for a new block.
-              estimatedBlockTime: 3000,
-              // How long it waits until looking for acks.
-              estimatedIndexerTime: 3000,
-              gasPrice: new DynamicGasPrice(queryClient, chain),
-            }
+          const client = await retry(10, (attempt) =>
+            IbcClient.connectWithSigner(
+              getRpcForChainId(chain.chain_id, attempt - 1),
+              signer,
+              relayerAddress,
+              {
+                // How long it waits in between checking for a new block.
+                estimatedBlockTime: 3000,
+                // How long it waits until looking for acks.
+                estimatedIndexerTime: 3000,
+                gasPrice: new DynamicGasPrice(queryClient, chain),
+              }
+            )
           )
 
           return {
