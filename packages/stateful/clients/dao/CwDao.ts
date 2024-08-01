@@ -35,6 +35,7 @@ import {
   Cw20StakedVotingModule,
   Cw4VotingModule,
   Cw721StakedVotingModule,
+  FallbackVotingModule,
   NativeStakedVotingModule,
   NeutronVotingRegistryVotingModule,
   OnftStakedVotingModule,
@@ -153,15 +154,16 @@ export class CwDao extends DaoBase {
     this._info = info
 
     if (info) {
-      const VotingModule = getVotingModuleBases().find((Base) =>
-        Base.contractNames.includes(info.votingModuleInfo.contract)
-      )
-      if (!VotingModule) {
-        throw new Error(
-          'Voting module not found for contract: ' +
-            info.votingModuleInfo.contract
+      const VotingModule =
+        getVotingModuleBases().find((Base) =>
+          Base.contractNames.includes(info.votingModuleInfo.contract)
+        ) || FallbackVotingModule
+      if (VotingModule === FallbackVotingModule) {
+        console.error(
+          `Voting module not found for contract: ${info.votingModuleInfo.contract}. Using fallback.`
         )
       }
+
       this._votingModule = new VotingModule(
         this.queryClient,
         this,
