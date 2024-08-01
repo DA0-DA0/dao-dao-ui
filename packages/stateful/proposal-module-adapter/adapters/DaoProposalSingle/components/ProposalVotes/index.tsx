@@ -12,7 +12,7 @@ import { BaseProposalVotesProps } from '@dao-dao/types'
 
 import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
-import { useLoadingProposal } from '../../hooks'
+import { useLoadingProposal, useProposalRefreshers } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
 const VOTES_PER_PAGE = 20
@@ -23,6 +23,7 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
     proposalNumber,
     chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
+  const { refreshProposalId } = useProposalRefreshers()
 
   const loadingProposal = useLoadingProposal()
 
@@ -35,7 +36,12 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
   const [votes, setVotes] = useState<ProposalVote[]>([])
   const loadVotes = useRecoilCallback(
     ({ snapshot }) =>
-      async () => {
+      async (
+        /**
+         * Reload all existing votes.
+         */
+        reloadAll = false
+      ) => {
         // Don't load votes until proposal is ready so that the `totalPower`
         // calculation in the transformation function works correctly.
         if (loadingProposal.loading) {
@@ -44,38 +50,65 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
 
         setLoading(true)
         try {
-          const newVotes = (
-            await snapshot.getPromise(
-              DaoProposalSingleCommonSelectors.listVotesSelector({
-                chainId,
-                contractAddress: proposalModuleAddress,
-                params: [
-                  {
-                    proposalId: proposalNumber,
-                    limit: VOTES_PER_PAGE,
-                    startAfter:
-                      votes.length > 0
-                        ? votes[votes.length - 1].voterAddress
-                        : undefined,
-                  },
-                ],
+          let newVotes: ProposalVote[] = []
+          let noMoreVotes = false
+
+          while (true) {
+            const pageVotes = (
+              await snapshot.getPromise(
+                DaoProposalSingleCommonSelectors.listVotesSelector({
+                  chainId,
+                  contractAddress: proposalModuleAddress,
+                  params: [
+                    {
+                      proposalId: proposalNumber,
+                      limit: VOTES_PER_PAGE,
+                      startAfter: reloadAll
+                        ? newVotes[newVotes.length - 1]?.voterAddress
+                        : votes[votes.length - 1]?.voterAddress,
+                    },
+                  ],
+                })
+              )
+            ).votes.map(
+              ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
+                voterAddress: voter,
+                vote,
+                votingPowerPercent:
+                  totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
+                rationale,
+                votedAt: votedAt ? new Date(votedAt) : undefined,
               })
             )
-          ).votes.map(
-            ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
-              voterAddress: voter,
-              vote,
-              votingPowerPercent:
-                totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
-              rationale,
-              votedAt: votedAt ? new Date(votedAt) : undefined,
-            })
-          )
+
+            newVotes.push(...pageVotes)
+
+            // No more votes if we loaded less than the limit we requested.
+            noMoreVotes = pageVotes.length < VOTES_PER_PAGE
+            if (noMoreVotes) {
+              break
+            }
+
+            if (reloadAll) {
+              // If reloading all, stop once we load at least as many votes as
+              // we already have.
+              if (newVotes.length >= votes.length) {
+                break
+              }
+            } else {
+              break
+            }
+          }
 
           setVotes((prev) =>
-            uniqBy([...prev, ...newVotes], ({ voterAddress }) => voterAddress)
+            uniqBy(
+              // Reset votes array with new votes that started from the
+              // beginning if we're reloading all. Otherwise, just append.
+              [...(reloadAll ? [] : prev), ...newVotes],
+              ({ voterAddress }) => voterAddress
+            )
           )
-          setNoMoreVotes(newVotes.length < VOTES_PER_PAGE)
+          setNoMoreVotes(noMoreVotes)
         } finally {
           setLoading(false)
         }
@@ -89,13 +122,13 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
       votes,
     ]
   )
-  // Load once proposal is ready.
+  // Load once proposal is ready or refresh proposal ID changes.
   useEffect(() => {
     if (!loadingProposal.loading) {
-      loadVotes()
+      loadVotes(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadingProposal.loading])
+  }, [loadingProposal.loading, refreshProposalId])
 
   const getAllVotes = useRecoilCallback(
     ({ snapshot }) =>

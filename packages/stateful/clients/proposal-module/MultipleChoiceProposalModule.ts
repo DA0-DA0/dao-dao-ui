@@ -262,7 +262,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       vote,
     })
 
-    await this.queryClient.invalidateQueries({
+    await this.queryClient.refetchQueries({
       queryKey: this.getVoteQuery({
         proposalId,
         voter: sender,
@@ -318,11 +318,11 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       contractAddress: this.info.address,
       args: {
         proposalId,
-        // Force type-cast since the query won't be enabled until this is set.
+        ...(voter && { voter }),
+        // Force type-cast since the query won't be enabled until voter is set.
         // This allows us to pass an undefined `voter` argument in order to
         // invalidate/refresh the query for all voters.
-        voter: voter!,
-      },
+      } as any,
       // If no voter, return query in loading state.
       options: {
         enabled: !!voter,

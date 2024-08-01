@@ -96,7 +96,7 @@ export interface IProposalModuleBase<
    */
   getVoteQuery(options: {
     proposalId: number
-    voter: string | undefined
+    voter?: string
   }): FetchQueryOptions<VoteResponse>
 
   /**

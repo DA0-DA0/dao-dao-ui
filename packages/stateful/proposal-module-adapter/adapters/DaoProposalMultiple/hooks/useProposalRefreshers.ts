@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   indexerQueries,
@@ -20,7 +20,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
 
   const queryClient = useQueryClient()
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  const setRefreshProposalId = useSetRecoilState(
+  const [refreshProposalId, setRefreshProposalId] = useRecoilState(
     refreshProposalIdAtom({
       address: proposalModule.address,
       proposalId: proposalNumber,
@@ -58,6 +58,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
   const loadingProposal = useLoadingProposal()
 
   return {
+    refreshProposalId,
     refreshProposal,
     refreshProposalAndAll,
     refreshing: loadingProposal.loading || !!loadingProposal.updating,

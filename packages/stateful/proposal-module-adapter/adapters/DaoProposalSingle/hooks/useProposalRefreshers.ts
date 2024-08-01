@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { constSelector, useSetRecoilState } from 'recoil'
+import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   DaoPreProposeApprovalSingleSelectors,
@@ -22,7 +22,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
 
   const queryClient = useQueryClient()
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  const setRefreshProposalId = useSetRecoilState(
+  const [refreshProposalId, setRefreshProposalId] = useRecoilState(
     refreshProposalIdAtom({
       address:
         isPreProposeApprovalProposal && proposalModule.prePropose
@@ -96,6 +96,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
   )
 
   return {
+    refreshProposalId,
     refreshProposal,
     refreshProposalAndAll,
     refreshing: isPreProposeApprovalProposal

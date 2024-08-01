@@ -358,6 +358,7 @@ export type WalletVoteInfo<T> = {
 }
 
 export type ProposalRefreshers = {
+  refreshProposalId: number
   refreshProposal: () => void
   refreshProposalAndAll: () => void
   refreshing: boolean

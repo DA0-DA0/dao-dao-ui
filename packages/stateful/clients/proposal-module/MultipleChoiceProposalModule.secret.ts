@@ -221,7 +221,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       },
     })
 
-    await this.queryClient.invalidateQueries({
+    await this.queryClient.refetchQueries({
       queryKey: this.getVoteQuery({
         proposalId,
         voter: sender,

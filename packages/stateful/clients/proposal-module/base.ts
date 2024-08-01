@@ -112,7 +112,7 @@ export abstract class ProposalModuleBase<
    */
   abstract getVoteQuery(options: {
     proposalId: number
-    voter: string | undefined
+    voter?: string
   }): FetchQueryOptions<VoteResponse>
 
   /**
