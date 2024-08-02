@@ -74,7 +74,7 @@ export const convertCosmosVetoConfigToVeto = (
   veto: VetoConfig | null | undefined,
   // If provided, `veto.vetoer` should be a cw1-whitelist contract address, and
   // this should be its list of admins.
-  cw1WhitelistAdmins?: string[]
+  cw1WhitelistAdmins?: string[] | null
 ): ProposalVetoConfig =>
   veto
     ? {
