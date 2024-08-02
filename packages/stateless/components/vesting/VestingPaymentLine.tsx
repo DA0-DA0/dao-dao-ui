@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -9,24 +8,18 @@ import {
   Tooltip,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { StatefulEntityDisplayProps, VestingInfo } from '@dao-dao/types'
+import { VestingPaymentLineProps } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDate,
   formatDateTimeTz,
 } from '@dao-dao/utils'
 
-export type VestingPaymentLineProps = VestingInfo & {
-  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  onClick: () => void
-  transparentBackground?: boolean
-}
-
 export const VestingPaymentLine = ({
-  EntityDisplay,
+  vestingInfo,
   onClick,
   transparentBackground,
-  ...vestingInfo
+  EntityDisplay,
 }: VestingPaymentLineProps) => {
   const { t } = useTranslation()
   const startTimeAgoFormatter = useTranslatedTimeDeltaFormatter({
@@ -96,6 +89,7 @@ export const VestingPaymentLine = ({
               className="body-text truncate text-right font-mono"
               decimals={token.decimals}
               symbol={token.symbol}
+              wrapperClassName="justify-end"
             />
           </>
         ) : (

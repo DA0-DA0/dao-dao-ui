@@ -14,6 +14,7 @@ import {
   LoadingData,
   LoadingDataWithError,
   StatefulEntityDisplayProps,
+  StatefulVestingPaymentCardProps,
   VestingInfo,
 } from '@dao-dao/types'
 import {
@@ -33,7 +34,7 @@ export type CancelVestingOptions = {
   vestingInfos: LoadingDataWithError<VestingInfo[]>
   cancelledVestingContract: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  VestingPaymentCard: ComponentType<VestingInfo>
+  VestingPaymentCard: ComponentType<StatefulVestingPaymentCardProps>
 }
 
 export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
@@ -149,7 +150,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
         cancelledVestingContract.loading ? (
           <Loader />
         ) : cancelledVestingContract.data ? (
-          <VestingPaymentCard {...cancelledVestingContract.data} />
+          <VestingPaymentCard vestingInfo={cancelledVestingContract.data} />
         ) : (
           <p className="text-text-interactive-error">
             {t('error.loadingData')}

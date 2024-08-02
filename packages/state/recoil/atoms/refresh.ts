@@ -1,5 +1,7 @@
 import { atom, atomFamily } from 'recoil'
 
+import { GenericTokenSource } from '@dao-dao/types'
+
 // Change this to refresh claims for the given wallet.
 export const refreshClaimsIdAtom = atomFamily<number, string | undefined>({
   key: 'refreshClaimsId',
@@ -50,12 +52,12 @@ export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
   default: 0,
 })
 
-// Change this to refresh native token staking info for the given address.
-export const refreshNativeTokenStakingInfoAtom = atomFamily<
+// Change this to refresh token card lazy info for the given token and owner.
+export const refreshTokenCardLazyInfoAtom = atomFamily<
   number,
-  string | undefined
+  { token: GenericTokenSource; owner: string }
 >({
-  key: 'refreshNativeTokenStakingInfo',
+  key: 'refreshTokenCardLazyInfo',
   default: 0,
 })
 
@@ -80,12 +82,6 @@ export const refreshWalletProposalStatsAtom = atom({
 // Change this to refresh following DAOs.
 export const refreshFollowingDaosAtom = atom({
   key: 'refreshFollowingDaos',
-  default: 0,
-})
-
-// Change this to refresh a vesting contract's data.
-export const refreshVestingAtom = atomFamily<number, string>({
-  key: 'refreshVesting',
   default: 0,
 })
 

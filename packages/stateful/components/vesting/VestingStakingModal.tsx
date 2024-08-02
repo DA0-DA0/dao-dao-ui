@@ -1,13 +1,15 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
 import {
+  chainQueries,
+  cwVestingExtraQueries,
+  cwVestingQueryKeys,
+} from '@dao-dao/state/query'
+import {
   nativeUnstakingDurationSecondsSelector,
-  refreshNativeTokenStakingInfoAtom,
-  refreshVestingAtom,
-  refreshWalletBalancesIdAtom,
   validatorsSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -15,7 +17,6 @@ import {
   StakingModalProps,
   StakingMode,
   useCachedLoadable,
-  useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
@@ -45,6 +46,7 @@ export type VestingStakingModalProps = Pick<
 
 export const VestingStakingModal = ({
   vestingInfo: {
+    chainId,
     vestingContractAddress,
     stakable,
     vest: { recipient },
@@ -54,8 +56,8 @@ export const VestingStakingModal = ({
   ...props
 }: VestingStakingModalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
+  const queryClient = useQueryClient()
 
   const validatorsLoadable = useCachedLoadable(
     validatorsSelector({
@@ -69,22 +71,14 @@ export const VestingStakingModal = ({
     })
   )
 
-  // Refreshes validator balances.
-  const setRefreshValidatorBalances = useSetRecoilState(
-    refreshWalletBalancesIdAtom('')
-  )
-  const setRefreshVesting = useSetRecoilState(
-    refreshVestingAtom(vestingContractAddress)
-  )
-  const setRefreshStaking = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(vestingContractAddress)
-  )
   const awaitNextBlock = useAwaitNextBlock()
 
   const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '' } = useWallet({
+    chainId,
+  })
   const delegate = useDelegate({
     contractAddress: vestingContractAddress,
     sender: walletAddress,
@@ -237,9 +231,40 @@ export const VestingStakingModal = ({
       if (!recipientIsDao) {
         // Wait a block for balances to update.
         await awaitNextBlock()
-        setRefreshValidatorBalances((id) => id + 1)
-        setRefreshVesting((id) => id + 1)
-        setRefreshStaking((id) => id + 1)
+
+        // Invalidate validators.
+        queryClient.invalidateQueries({
+          queryKey: ['chain', 'validator', { chainId }],
+        })
+        // Invalidate staking info.
+        queryClient.invalidateQueries({
+          queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+            chainId,
+            address: vestingContractAddress,
+          }).queryKey,
+        })
+        // Invalidate vesting indexer queries.
+        queryClient.invalidateQueries({
+          queryKey: [
+            'indexer',
+            'query',
+            {
+              chainId,
+              address: vestingContractAddress,
+            },
+          ],
+        })
+        // Then invalidate contract queries that depend on indexer queries.
+        queryClient.invalidateQueries({
+          queryKey: cwVestingQueryKeys.address(chainId, vestingContractAddress),
+        })
+        // Then info query.
+        queryClient.invalidateQueries({
+          queryKey: cwVestingExtraQueries.info(queryClient, {
+            chainId,
+            address: vestingContractAddress,
+          }).queryKey,
+        })
 
         toast.success(
           mode === StakingMode.Stake

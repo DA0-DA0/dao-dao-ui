@@ -108,6 +108,7 @@ export type VestingInfo = {
           }
       ))
     | undefined
+    | null
   // Amount vested so far.
   vested: string
   // Amount available to distribute.

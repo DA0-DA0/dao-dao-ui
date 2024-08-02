@@ -5,10 +5,11 @@ import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { SecretUtils } from '@keplr-wallet/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { chainQueries } from '@dao-dao/state/query'
 import {
+  refreshWalletBalancesIdAtom,
   walletChainIdAtom,
   walletHexPublicKeySelector,
 } from '@dao-dao/state/recoil'
@@ -60,9 +61,13 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
    */
   getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
   /**
-   * Fetch SecretUtils from the wallet if available
+   * Fetch SecretUtils from the wallet if available.
    */
   getSecretUtils: () => SecretUtils
+  /**
+   * Refresh wallet balances.
+   */
+  refreshBalances: () => void
 }
 
 export const useWallet = ({
@@ -202,6 +207,49 @@ export const useWallet = ({
     })
   }, [queryClient, chain.chain_id])
 
+  const setRefreshWalletBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(walletChainRef.current.address ?? '')
+  )
+  const refreshBalances = useCallback(() => {
+    const address = walletChainRef.current.address
+
+    // Refresh Recoil balance selectors.
+    setRefreshWalletBalancesId((id) => id + 1)
+
+    // Invalidate native and staked balances.
+    queryClient.invalidateQueries({
+      queryKey: [
+        'chain',
+        'nativeBalance',
+        {
+          chainId,
+          ...(address && { address }),
+        },
+      ],
+    })
+    queryClient.invalidateQueries({
+      queryKey: [
+        'chain',
+        'nativeStakedBalance',
+        {
+          chainId,
+          ...(address && { address }),
+        },
+      ],
+    })
+    // Invalidate validators.
+    queryClient.invalidateQueries({
+      queryKey: ['chain', 'validator', { chainId }],
+    })
+    // Then native delegation info.
+    queryClient.invalidateQueries({
+      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+        chainId,
+        ...(address && { address }),
+      } as any).queryKey,
+    })
+  }, [chainId, queryClient, setRefreshWalletBalancesId, walletChainRef])
+
   const response = useMemo(
     (): UseWalletReturn => {
       // TODO(secret): support different enigma utils sources based on connected
@@ -264,6 +312,7 @@ export const useWallet = ({
         getSecretSigningCosmWasmClient,
         getSigningClient,
         getSecretUtils,
+        refreshBalances,
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -277,6 +326,7 @@ export const useWallet = ({
       walletChainRef.current?.status,
       hexPublicKeyFromChain,
       queryClient,
+      refreshBalances,
     ]
   )
 

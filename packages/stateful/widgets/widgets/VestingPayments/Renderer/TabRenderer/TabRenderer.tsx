@@ -11,14 +11,14 @@ import {
   Modal,
   NoContent,
   Tooltip,
-  VestingPaymentLine,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
   LoadingDataWithError,
-  StatefulEntityDisplayProps,
+  StatefulVestingPaymentCardProps,
+  StatefulVestingPaymentLineProps,
   TransProps,
   VestingInfo,
   WidgetId,
@@ -32,8 +32,8 @@ export interface TabRendererProps {
   createVestingPaymentHref: string | undefined
   registerSlashesHref: string | undefined
   ButtonLink: ComponentType<ButtonLinkProps>
-  VestingPaymentCard: ComponentType<VestingInfo>
-  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  VestingPaymentCard: ComponentType<StatefulVestingPaymentCardProps>
+  VestingPaymentLine: ComponentType<StatefulVestingPaymentLineProps>
   Trans: ComponentType<TransProps>
 }
 
@@ -44,7 +44,7 @@ export const TabRenderer = ({
   registerSlashesHref,
   ButtonLink,
   VestingPaymentCard,
-  EntityDisplay,
+  VestingPaymentLine,
   Trans,
 }: TabRendererProps) => {
   const { t } = useTranslation()
@@ -229,16 +229,20 @@ export const TabRenderer = ({
 
                 <div className="space-y-1">
                   {vestingPaymentsNeedingSlashRegistration.map(
-                    (props, index) => (
+                    (vestingInfo, index) => (
                       <VestingPaymentLine
-                        key={props.chainId + props.vestingContractAddress}
-                        EntityDisplay={EntityDisplay}
+                        key={
+                          vestingInfo.chainId +
+                          vestingInfo.vestingContractAddress
+                        }
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
-                          setOpenVestingContract(props.vestingContractAddress)
+                          setOpenVestingContract(
+                            vestingInfo.vestingContractAddress
+                          )
                         }}
                         transparentBackground={index % 2 !== 0}
-                        {...props}
+                        vestingInfo={vestingInfo}
                       />
                     )
                   )}
@@ -250,16 +254,17 @@ export const TabRenderer = ({
               <div className="space-y-1">
                 <ActiveVestingPaymentLineHeader />
 
-                {activeVestingPayments.map((props, index) => (
+                {activeVestingPayments.map((vestingInfo, index) => (
                   <VestingPaymentLine
-                    key={props.chainId + props.vestingContractAddress}
-                    EntityDisplay={EntityDisplay}
+                    key={
+                      vestingInfo.chainId + vestingInfo.vestingContractAddress
+                    }
                     onClick={() => {
                       setVestingPaymentModalOpen(true)
-                      setOpenVestingContract(props.vestingContractAddress)
+                      setOpenVestingContract(vestingInfo.vestingContractAddress)
                     }}
                     transparentBackground={index % 2 !== 0}
-                    {...props}
+                    vestingInfo={vestingInfo}
                   />
                 ))}
               </div>
@@ -296,16 +301,20 @@ export const TabRenderer = ({
                       <p className="text-right">{t('title.totalVested')}</p>
                     </div>
 
-                    {completedVestingPayments.map((props, index) => (
+                    {completedVestingPayments.map((vestingInfo, index) => (
                       <VestingPaymentLine
-                        key={props.chainId + props.vestingContractAddress}
-                        EntityDisplay={EntityDisplay}
+                        key={
+                          vestingInfo.chainId +
+                          vestingInfo.vestingContractAddress
+                        }
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
-                          setOpenVestingContract(props.vestingContractAddress)
+                          setOpenVestingContract(
+                            vestingInfo.vestingContractAddress
+                          )
                         }}
                         transparentBackground={index % 2 !== 0}
-                        {...props}
+                        vestingInfo={vestingInfo}
                       />
                     ))}
                   </div>
@@ -333,7 +342,7 @@ export const TabRenderer = ({
       >
         {openVestingPayment ? (
           <ChainProvider chainId={openVestingPayment.chainId}>
-            <VestingPaymentCard {...openVestingPayment} />
+            <VestingPaymentCard vestingInfo={openVestingPayment} />
           </ChainProvider>
         ) : (
           <Loader />

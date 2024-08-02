@@ -1,22 +1,29 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import uniq from 'lodash.uniq'
 
 import {
   ChainId,
+  Delegation,
   GovProposalVersion,
   GovProposalWithDecodedContent,
+  NativeDelegationInfo,
   ProposalV1,
   ProposalV1Beta1,
+  UnbondingDelegation,
+  Validator,
 } from '@dao-dao/types'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
+  NONEXISTENT_QUERY_ERROR_SUBSTRINGS,
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
+  cosmosValidatorToValidator,
   cosmwasmProtoRpcClientRouter,
   decodeGovProposal,
   feemarketProtoRpcClientRouter,
@@ -189,6 +196,23 @@ export const fetchBlockTimestamp = async ({
 }
 
 /**
+ * Fetch the native token balance for a given address.
+ */
+export const fetchNativeBalance = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<Coin> => {
+  const client = await stargateClientRouter.connect(chainId)
+  return await client.getBalance(
+    address,
+    getNativeTokenForChainId(chainId).denomOrAddress
+  )
+}
+
+/**
  * Fetch the sum of native tokens staked across all validators.
  */
 export const fetchNativeStakedBalance = async ({
@@ -244,6 +268,180 @@ export const fetchTotalNativeStakedBalance = async ({
   }
 
   return pool.bondedTokens
+}
+
+/**
+ * Fetch native delegation info.
+ */
+export const fetchNativeDelegationInfo = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<NativeDelegationInfo> => {
+  // Neutron does not support staking.
+  if (
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
+  ) {
+    return {
+      delegations: [],
+      unbondingDelegations: [],
+    }
+  }
+
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+
+  try {
+    const delegations = await getAllRpcResponse(
+      client.staking.v1beta1.delegatorDelegations,
+      {
+        delegatorAddr: address,
+        pagination: undefined,
+      },
+      'delegationResponses'
+    )
+    const rewards = (
+      await client.distribution.v1beta1.delegationTotalRewards({
+        delegatorAddress: address,
+      })
+    ).rewards
+    const unbondingDelegations = await getAllRpcResponse(
+      client.staking.v1beta1.delegatorUnbondingDelegations,
+      {
+        delegatorAddr: address,
+        pagination: undefined,
+      },
+      'unbondingResponses'
+    )
+
+    const uniqueValidators = uniq([
+      ...delegations.flatMap(
+        ({ delegation }) => delegation?.validatorAddress || []
+      ),
+      ...unbondingDelegations.map(({ validatorAddress }) => validatorAddress),
+    ])
+    const validators = await Promise.all(
+      uniqueValidators.map((address) =>
+        queryClient.fetchQuery(
+          chainQueries.validator({
+            chainId,
+            address,
+          })
+        )
+      )
+    )
+
+    return {
+      delegations: delegations.flatMap(
+        ({
+          delegation: { validatorAddress: address } = {
+            validatorAddress: '',
+          },
+          balance: delegationBalance,
+        }): Delegation | [] => {
+          if (
+            !delegationBalance ||
+            delegationBalance.denom !==
+              getNativeTokenForChainId(chainId).denomOrAddress
+          ) {
+            return []
+          }
+
+          const validator = validators.find((v) => v.address === address)
+          let pendingReward = rewards
+            .find(({ validatorAddress }) => validatorAddress === address)
+            ?.reward.find(
+              ({ denom }) =>
+                denom === getNativeTokenForChainId(chainId).denomOrAddress
+            )
+
+          if (!validator || !pendingReward) {
+            return []
+          }
+
+          // Truncate.
+          pendingReward.amount = pendingReward.amount.split('.')[0]
+
+          return {
+            validator,
+            delegated: delegationBalance,
+            pendingReward,
+          }
+        }
+      ),
+
+      // Only returns native token unbondings, no need to check.
+      unbondingDelegations: unbondingDelegations.flatMap(
+        ({ validatorAddress, entries }) => {
+          const validator = validators.find(
+            (v) => v.address === validatorAddress
+          )
+          if (!validator) {
+            return []
+          }
+
+          return entries.map(
+            ({
+              creationHeight,
+              completionTime,
+              balance,
+            }): UnbondingDelegation => ({
+              validator,
+              balance: {
+                amount: balance,
+                denom: getNativeTokenForChainId(chainId).denomOrAddress,
+              },
+              startedAtHeight: Number(creationHeight),
+              finishesAt: completionTime || new Date(0),
+            })
+          )
+        }
+      ),
+    }
+  } catch (err) {
+    // Fails on chains without staking.
+    if (
+      err instanceof Error &&
+      NONEXISTENT_QUERY_ERROR_SUBSTRINGS.some((substring) =>
+        (err as Error).message.includes(substring)
+      )
+    ) {
+      return {
+        delegations: [],
+        unbondingDelegations: [],
+      }
+    }
+
+    // Rethrow error if anything else, like a network error.
+    throw err
+  }
+}
+
+/**
+ * Fetch a validator.
+ */
+export const fetchValidator = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<Validator> => {
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+
+  const { validator } = await client.staking.v1beta1.validator({
+    validatorAddr: address,
+  })
+  if (!validator) {
+    throw new Error('Validator not found')
+  }
+
+  return cosmosValidatorToValidator(validator)
 }
 
 /**
@@ -683,6 +881,14 @@ export const chainQueries = {
       queryFn: () => fetchBlockTimestamp(options),
     }),
   /**
+   * Fetch the native token balance for a given address.
+   */
+  nativeBalance: (options?: Parameters<typeof fetchNativeBalance>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'nativeBalance', options],
+      queryFn: options ? () => fetchNativeBalance(options) : skipToken,
+    }),
+  /**
    * Fetch the sum of native tokens staked across all validators.
    */
   nativeStakedBalance: (
@@ -701,6 +907,25 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'totalNativeStakedBalance', options],
       queryFn: () => fetchTotalNativeStakedBalance(options),
+    }),
+  /**
+   * Fetch native delegation info.
+   */
+  nativeDelegationInfo: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchNativeDelegationInfo>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'nativeDelegationInfo', options],
+      queryFn: () => fetchNativeDelegationInfo(queryClient, options),
+    }),
+  /**
+   * Fetch a validator.
+   */
+  validator: (options: Parameters<typeof fetchValidator>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'validator', options],
+      queryFn: () => fetchValidator(options),
     }),
   /**
    * Fetch the dynamic gas price for the native fee token.

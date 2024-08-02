@@ -2,17 +2,9 @@ import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import {
-  Cw20BaseSelectors,
-  nativeDenomBalanceSelector,
-  refreshWalletBalancesIdAtom,
-} from '@dao-dao/state'
+import { Cw20BaseSelectors, nativeDenomBalanceSelector } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   checkProposalSubmissionPolicy,
@@ -50,6 +42,7 @@ export const makeUsePublishProposal =
       isWalletConnected,
       address: walletAddress,
       getSigningClient,
+      refreshBalances,
     } = useWallet()
     const { isMember = false } = useMembership()
 
@@ -133,14 +126,6 @@ export const makeUsePublishProposal =
           (!nativeDepositTokenBalance ||
             Number(nativeDepositTokenBalance.amount) <
               requiredProposalDeposit)))
-
-    const setRefreshWalletBalancesId = useSetRecoilState(
-      refreshWalletBalancesIdAtom(walletAddress ?? '')
-    )
-    const refreshBalances = useCallback(
-      () => setRefreshWalletBalancesId((id) => id + 1),
-      [setRefreshWalletBalancesId]
-    )
 
     const increaseCw20DepositAllowance = Cw20BaseHooks.useIncreaseAllowance({
       contractAddress: depositInfoCw20TokenAddress ?? '',

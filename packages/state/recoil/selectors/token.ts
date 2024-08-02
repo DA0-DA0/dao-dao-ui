@@ -28,15 +28,14 @@ import {
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
-import { tokenQueries } from '../../query'
-import { queryClientAtom } from '../atoms'
+import { chainQueries, tokenQueries } from '../../query'
+import { queryClientAtom, refreshTokenCardLazyInfoAtom } from '../atoms'
 import { astroportUsdPriceSelector } from './astroport'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
-  nativeDelegationInfoSelector,
   nativeDenomBalanceSelector,
   nativeUnstakingDurationSecondsSelector,
 } from './chain'
@@ -355,7 +354,10 @@ export const genericTokenUndelegatingBalancesSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const { unbondingDelegations } = get(nativeDelegationInfoSelector(params))
+      const queryClient = get(queryClientAtom)
+      const { unbondingDelegations } = await queryClient.fetchQuery(
+        chainQueries.nativeDelegationInfo(queryClient, params)
+      )
 
       const tokens = get(
         waitForAll(
@@ -596,7 +598,14 @@ export const tokenCardLazyInfoSelector = selectorFamily<
   key: 'tokenCardLazyInfo',
   get:
     ({ owner, token, unstakedBalance }) =>
-    ({ get }) => {
+    async ({ get }) => {
+      get(
+        refreshTokenCardLazyInfoAtom({
+          token: token.source,
+          owner,
+        })
+      )
+
       const { chainId, type } = token
 
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
@@ -615,77 +624,68 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         token.denomOrAddress ===
         getNativeTokenForChainId(chainId).denomOrAddress
       ) {
-        // Neutron does not have staking so this may error. Ignore if so.
-        const nativeDelegationInfoLoadable = get(
-          waitForAllSettled([
-            nativeDelegationInfoSelector({
+        const queryClient = get(queryClientAtom)
+        const { delegations, unbondingDelegations } =
+          await queryClient.fetchQuery(
+            chainQueries.nativeDelegationInfo(queryClient, {
+              chainId,
               address: owner,
-              chainId,
-            }),
-          ])
-        )[0]
-        const nativeDelegationInfo =
-          nativeDelegationInfoLoadable.state === 'hasValue'
-            ? nativeDelegationInfoLoadable.contents
-            : undefined
-
-        if (nativeDelegationInfo) {
-          const unstakingDurationSeconds = get(
-            nativeUnstakingDurationSecondsSelector({
-              chainId,
             })
           )
 
-          const unstakingTasks = nativeDelegationInfo.unbondingDelegations.map(
-            ({ balance, finishesAt }) => ({
-              token,
-              status: UnstakingTaskStatus.Unstaking,
-              amount: convertMicroDenomToDenomWithDecimals(
-                balance.amount,
-                token.decimals
-              ),
-              date: finishesAt,
-            })
-          )
+        const unstakingDurationSeconds = get(
+          nativeUnstakingDurationSecondsSelector({
+            chainId,
+          })
+        )
 
-          const stakes = nativeDelegationInfo.delegations.map(
-            ({ validator, delegated, pendingReward }) => ({
-              token,
-              validator,
-              amount: convertMicroDenomToDenomWithDecimals(
-                delegated.amount,
-                token.decimals
-              ),
-              rewards: convertMicroDenomToDenomWithDecimals(
-                pendingReward.amount,
-                token.decimals
-              ),
-            })
-          )
+        const unstakingTasks = unbondingDelegations.map(
+          ({ balance, finishesAt }) => ({
+            token,
+            status: UnstakingTaskStatus.Unstaking,
+            amount: convertMicroDenomToDenomWithDecimals(
+              balance.amount,
+              token.decimals
+            ),
+            date: finishesAt,
+          })
+        )
 
-          const totalStaked =
-            stakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-          const totalPendingRewards =
-            stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-          const totalUnstaking =
-            unstakingTasks.reduce(
-              (acc, task) =>
-                acc +
-                // Only include balance of unstaking tasks.
-                (task.status === UnstakingTaskStatus.Unstaking
-                  ? task.amount
-                  : 0),
-              0
-            ) ?? 0
+        const stakes = delegations.map(
+          ({ validator, delegated, pendingReward }) => ({
+            token,
+            validator,
+            amount: convertMicroDenomToDenomWithDecimals(
+              delegated.amount,
+              token.decimals
+            ),
+            rewards: convertMicroDenomToDenomWithDecimals(
+              pendingReward.amount,
+              token.decimals
+            ),
+          })
+        )
 
-          stakingInfo = {
-            unstakingTasks,
-            unstakingDurationSeconds,
-            stakes,
-            totalStaked,
-            totalPendingRewards,
-            totalUnstaking,
-          }
+        const totalStaked =
+          stakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
+        const totalPendingRewards =
+          stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
+        const totalUnstaking =
+          unstakingTasks.reduce(
+            (acc, task) =>
+              acc +
+              // Only include balance of unstaking tasks.
+              (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+            0
+          ) ?? 0
+
+        stakingInfo = {
+          unstakingTasks,
+          unstakingDurationSeconds,
+          stakes,
+          totalStaked,
+          totalPendingRewards,
+          totalUnstaking,
         }
       }
 

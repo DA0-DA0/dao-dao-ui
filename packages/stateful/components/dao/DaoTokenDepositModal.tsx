@@ -24,7 +24,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { Cw20BaseHooks, useWallet, useWalletBalances } from '../../hooks'
+import { Cw20BaseHooks, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 
 export type DaoTokenDepositModalProps = Pick<
@@ -42,13 +42,15 @@ export const DaoTokenDepositModal = ({
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
-  const { isWalletConnected, address, getSigningStargateClient } = useWallet({
+  const {
+    isWalletConnected,
+    address,
+    getSigningStargateClient,
+    refreshBalances: refreshWalletBalances,
+  } = useWallet({
     chainId: token.chainId,
     // Only attempt connection when the modal is visible.
     attemptConnection: props.visible,
-  })
-  const { refreshBalances: refreshWalletBalances } = useWalletBalances({
-    chainId: token.chainId,
   })
 
   const depositAddress = owner.address

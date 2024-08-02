@@ -3,7 +3,7 @@ import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 import {
   chainQueries,
   contractQueries,
-  cw1WhitelistQueries,
+  cw1WhitelistExtraQueries,
   polytoneQueries,
   profileQueries,
 } from '@dao-dao/state/query'
@@ -128,9 +128,9 @@ export const fetchEntityInfo = async (
     // Attempt to load cw1-whitelist admins.
     queryClient
       .fetchQuery(
-        cw1WhitelistQueries.adminsIfCw1Whitelist(queryClient, {
+        cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
           chainId,
-          contractAddress: address,
+          address,
         })
       )
       .then((admins): Promise<Entity[]> | undefined => {

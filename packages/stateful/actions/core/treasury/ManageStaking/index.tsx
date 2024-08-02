@@ -1,11 +1,11 @@
 import { coin, parseCoins } from '@cosmjs/amino'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector } from 'recoil'
 
 import {
-  nativeDelegationInfoSelector,
+  chainQueries,
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
@@ -21,6 +21,7 @@ import {
   ChainId,
   Coin,
   LoadingData,
+  NativeDelegationInfo,
   TokenType,
   UnifiedCosmosMsg,
   decodedStakingStargateMsgToCw,
@@ -57,7 +58,10 @@ import {
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'
-import { useExecutedProposalTxLoadable } from '../../../../hooks'
+import {
+  useExecutedProposalTxLoadable,
+  useQueryLoadingData,
+} from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
 import {
@@ -299,14 +303,19 @@ const InnerComponent: ActionComponent = (props) => {
       }
 
   const address = getChainAddressForActionOptions(options, chainId)
-  const loadingNativeDelegationInfo = useCachedLoading(
+
+  const queryClient = useQueryClient()
+  const loadingNativeDelegationInfo = useQueryLoadingData(
     address
-      ? nativeDelegationInfoSelector({
+      ? chainQueries.nativeDelegationInfo(queryClient, {
           chainId,
           address,
         })
-      : constSelector(undefined),
-    undefined
+      : undefined,
+    {
+      delegations: [],
+      unbondingDelegations: [],
+    } as NativeDelegationInfo
   )
 
   const loadingValidators = useCachedLoading(
@@ -408,24 +417,22 @@ const InnerComponent: ActionComponent = (props) => {
             loadingNativeBalance.loading || !loadingNativeBalance.data
               ? '0'
               : loadingNativeBalance.data.amount,
-          stakes:
-            loadingNativeDelegationInfo.loading ||
-            !loadingNativeDelegationInfo.data
-              ? []
-              : loadingNativeDelegationInfo.data.delegations.map(
-                  ({ validator, delegated, pendingReward }) => ({
-                    token: nativeToken,
-                    validator,
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      delegated.amount,
-                      nativeToken.decimals
-                    ),
-                    rewards: convertMicroDenomToDenomWithDecimals(
-                      pendingReward.amount,
-                      nativeToken.decimals
-                    ),
-                  })
-                ),
+          stakes: loadingNativeDelegationInfo.loading
+            ? []
+            : loadingNativeDelegationInfo.data.delegations.map(
+                ({ validator, delegated, pendingReward }) => ({
+                  token: nativeToken,
+                  validator,
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    delegated.amount,
+                    nativeToken.decimals
+                  ),
+                  rewards: convertMicroDenomToDenomWithDecimals(
+                    pendingReward.amount,
+                    nativeToken.decimals
+                  ),
+                })
+              ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,
           executed:
             executedTxLoadable.state === 'hasValue' &&
@@ -491,9 +498,10 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   const useDefaults: UseDefaults<ManageStakingData> = () => {
     const stakeActions = useStakeActions()
 
-    const loadingNativeDelegationInfo = useCachedLoading(
+    const queryClient = useQueryClient()
+    const loadingNativeDelegationInfo = useQueryLoadingData(
       address
-        ? nativeDelegationInfoSelector({
+        ? chainQueries.nativeDelegationInfo(queryClient, {
             chainId,
             address,
           })
@@ -501,7 +509,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
       {
         delegations: [],
         unbondingDelegations: [],
-      }
+      } as NativeDelegationInfo
     )
 
     return {
@@ -510,8 +518,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
       // Default to first validator if exists.
       validator:
         (!loadingNativeDelegationInfo.loading &&
-          loadingNativeDelegationInfo.data?.delegations[0]?.validator
-            .address) ||
+          loadingNativeDelegationInfo.data.delegations[0]?.validator.address) ||
         '',
       toValidator: '',
       amount: 1,

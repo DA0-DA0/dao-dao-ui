@@ -40,7 +40,6 @@ import {
   useManageProfile,
   useProfile,
   useWallet,
-  useWalletBalances,
 } from '../hooks'
 import { NftSelectionModal } from './nft'
 import { ProfileAddChains } from './profile'
@@ -61,6 +60,7 @@ export const InnerPfpkNftSelectionModal = ({
     isWalletError,
     message: walletErrorMessage,
     chain,
+    refreshBalances,
   } = useWallet({
     attemptConnection: visible,
   })
@@ -96,7 +96,6 @@ export const InnerPfpkNftSelectionModal = ({
     profile,
     updateProfile: { updating: updatingProfile, go: updateProfile },
   } = useManageProfile()
-  const { refreshBalances } = useWalletBalances()
   // Initialize to selected NFT.
   const [selectedKey, setSelectedKey] = useState<string | undefined>(
     !profile.loading && profile.data.nft

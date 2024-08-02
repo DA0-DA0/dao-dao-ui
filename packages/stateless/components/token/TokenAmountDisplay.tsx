@@ -51,6 +51,7 @@ export const TokenAmountDisplay = ({
   hideSymbol,
   estimatedUsdValue,
   onClick,
+  wrapperClassName,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
@@ -195,7 +196,8 @@ export const TokenAmountDisplay = ({
         className={clsx(
           'flex min-w-0 flex-row items-center gap-2',
           onClick &&
-            'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70'
+            'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70',
+          wrapperClassName
         )}
         onClick={onClick}
       >

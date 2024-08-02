@@ -162,14 +162,19 @@ export const DISTRIBUTION_COLORS_EVERY_OTHER = [
 ]
 
 /**
+ * Error substrings that indicate a query does not exist.
+ */
+export const NONEXISTENT_QUERY_ERROR_SUBSTRINGS = ['unknown query path']
+
+/**
  * Error substrings that indicate a contract is invalid or does not exist.
  */
 export const INVALID_CONTRACT_ERROR_SUBSTRINGS = [
   'Error parsing into type',
   'no such contract',
   'not found',
-  'unknown query path',
   'decoding bech32 failed',
+  ...NONEXISTENT_QUERY_ERROR_SUBSTRINGS,
 ]
 
 /**

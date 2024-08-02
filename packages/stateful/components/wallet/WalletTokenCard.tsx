@@ -7,15 +7,17 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
+  chainQueries,
   hiddenBalancesSelector,
   refreshHiddenBalancesAtom,
-  refreshNativeTokenStakingInfoAtom,
+  refreshTokenCardLazyInfoAtom,
   temporaryHiddenBalancesAtom,
   tokenCardLazyInfoSelector,
 } from '@dao-dao/state'
@@ -47,7 +49,6 @@ import {
   useCfWorkerAuthPostRequest,
   useProfile,
   useWallet,
-  useWalletBalances,
 } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
@@ -62,10 +63,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     ? undefined
     : chains.data.find((c) => c.chainId === props.token.chainId)
 
-  const { chainWallet } = useWallet({
-    chainId: props.token.chainId,
-  })
-  const { refreshBalances } = useWalletBalances({
+  const { chainWallet, refreshBalances } = useWallet({
     chainId: props.token.chainId,
   })
 
@@ -83,13 +81,33 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   )
 
   // Refresh staking info.
-  const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(profileChain?.address)
+  const setRefreshTokenCardLazyInfo = useSetRecoilState(
+    refreshTokenCardLazyInfoAtom({
+      token: props.token.source,
+      owner: props.owner.address,
+    })
   )
-  const refreshNativeTokenStakingInfo = useCallback(
-    () => setRefreshNativeTokenStakingInfo((id) => id + 1),
-    [setRefreshNativeTokenStakingInfo]
-  )
+  const queryClient = useQueryClient()
+  const refreshNativeTokenStakingInfo = useCallback(() => {
+    // Invalidate validators.
+    queryClient.invalidateQueries({
+      queryKey: ['chain', 'validator', { chainId: props.token.chainId }],
+    })
+    // Then native delegation info.
+    queryClient.invalidateQueries({
+      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+        chainId: props.token.chainId,
+        address: props.owner.address,
+      }).queryKey,
+    })
+    // Then token card lazy info.
+    setRefreshTokenCardLazyInfo((id) => id + 1)
+  }, [
+    props.owner.address,
+    props.token.chainId,
+    queryClient,
+    setRefreshTokenCardLazyInfo,
+  ])
 
   const { ready: hiddenBalancesReady, postRequest: postHiddenBalancesRequest } =
     useCfWorkerAuthPostRequest(

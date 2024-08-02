@@ -42,6 +42,10 @@ export type TokenAmountDisplayProps = Omit<
    * Optionally specify a callback when clicked and make the pointer a cursor.
    */
   onClick?: () => void
+  /**
+   * Optionally apply a class name to the div wrapper.
+   */
+  wrapperClassName?: string
 } & ( // If not USD estimate, require symbol and decimals.
     | {
         symbol: string

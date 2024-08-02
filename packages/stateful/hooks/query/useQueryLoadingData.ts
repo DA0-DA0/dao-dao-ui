@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { skipToken, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
@@ -16,10 +16,12 @@ export const useQueryLoadingData = <
   /**
    * Query options to passthrough to useQuery.
    */
-  options: Omit<
-    Parameters<typeof useQuery<TQueryFnData, Error, TQueryFnData, any>>[0],
-    'select'
-  >,
+  options:
+    | Omit<
+        Parameters<typeof useQuery<TQueryFnData, Error, TQueryFnData, any>>[0],
+        'select'
+      >
+    | undefined,
   /**
    * Default value in case of an error.
    */
@@ -35,7 +37,13 @@ export const useQueryLoadingData = <
     transform?: (data: TQueryFnData) => TTransformedData
   }
 ): LoadingData<TTransformedData> => {
-  const { isPending, isError, isRefetching, data, error } = useQuery(options)
+  const { isPending, isError, isRefetching, data, error } = useQuery(
+    // Loading state if options undefined.
+    options || {
+      queryKey: [] as any,
+      queryFn: skipToken,
+    }
+  )
 
   const onErrorRef = useUpdatingRef(extra?.onError)
   const transformRef = useUpdatingRef(extra?.transform)

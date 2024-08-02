@@ -17,16 +17,13 @@ import {
   AllGovParams,
   AmountWithTimestamp,
   ChainId,
-  Delegation,
   GenericTokenBalance,
   GenericTokenBalanceWithOwner,
   GovProposalVersion,
   GovProposalWithDecodedContent,
-  NativeDelegationInfo,
   ProposalV1,
   ProposalV1Beta1,
   TokenType,
-  UnbondingDelegation,
   Validator,
   ValidatorSlash,
   WithChainId,
@@ -75,7 +72,6 @@ import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
   refreshIbcDataAtom,
-  refreshNativeTokenStakingInfoAtom,
   refreshOpenProposalsAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
@@ -345,39 +341,6 @@ export const nativeBalancesSelector = selectorFamily<
     },
 })
 
-// Refreshes when wallet balances refresh.
-export const nativeBalancesFetchedAtSelector = selectorFamily<
-  Date,
-  WithChainId<{ address: string }>
->({
-  key: 'nativeBalancesFetchedAt',
-  get:
-    ({ address }) =>
-    ({ get }) => {
-      get(refreshWalletBalancesIdAtom(address))
-      return new Date()
-    },
-})
-
-export const nativeBalanceSelector = selectorFamily<
-  Coin,
-  WithChainId<{ address: string }>
->({
-  key: 'nativeBalance',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const client = get(stargateClientForChainSelector(chainId))
-
-      get(refreshWalletBalancesIdAtom(address))
-
-      return await client.getBalance(
-        address,
-        getNativeTokenForChainId(chainId).denomOrAddress
-      )
-    },
-})
-
 export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
   Coin[] | undefined,
   string
@@ -611,31 +574,6 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
         // Rethrow other errors.
         throw err
       }
-    },
-})
-
-// Queries the chain for the commission of a given validator address.
-export const validatorSelector = selectorFamily<
-  Validator,
-  WithChainId<{ address: string }>
->({
-  key: 'validator',
-  get:
-    ({ address: validatorAddr, chainId }) =>
-    async ({ get }) => {
-      get(refreshWalletBalancesIdAtom(''))
-      get(refreshWalletBalancesIdAtom(validatorAddr))
-
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      const { validator } = await client.staking.v1beta1.validator({
-        validatorAddr,
-      })
-      if (!validator) {
-        throw new Error('Validator not found')
-      }
-
-      return cosmosValidatorToValidator(validator)
     },
 })
 
@@ -1381,122 +1319,6 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
       return validators
         .map((validator) => cosmosValidatorToValidator(validator))
         .sort((a, b) => b.tokens - a.tokens)
-    },
-})
-
-export const nativeDelegationInfoSelector = selectorFamily<
-  NativeDelegationInfo,
-  WithChainId<{ address: string }>
->({
-  key: 'nativeDelegationInfo',
-  get:
-    ({ address: delegatorAddr, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      get(refreshNativeTokenStakingInfoAtom(delegatorAddr))
-
-      const delegations = await getAllRpcResponse(
-        client.staking.v1beta1.delegatorDelegations,
-        {
-          delegatorAddr,
-          pagination: undefined,
-        },
-        'delegationResponses'
-      )
-      const validators = await getAllRpcResponse(
-        client.staking.v1beta1.delegatorValidators,
-        {
-          delegatorAddr,
-          pagination: undefined,
-        },
-        'validators'
-      )
-      const rewards = (
-        await client.distribution.v1beta1.delegationTotalRewards({
-          delegatorAddress: delegatorAddr,
-        })
-      ).rewards
-      const unbondingDelegations = await getAllRpcResponse(
-        client.staking.v1beta1.delegatorUnbondingDelegations,
-        {
-          delegatorAddr,
-          pagination: undefined,
-        },
-        'unbondingResponses'
-      )
-
-      return {
-        delegations: delegations
-          .map(
-            ({
-              delegation: { validatorAddress: address } = {
-                validatorAddress: '',
-              },
-              balance: delegationBalance,
-            }): Delegation | undefined => {
-              if (
-                !delegationBalance ||
-                delegationBalance.denom !==
-                  getNativeTokenForChainId(chainId).denomOrAddress
-              ) {
-                return
-              }
-
-              const validator = validators.find(
-                ({ operatorAddress }) => operatorAddress === address
-              )
-              let pendingReward = rewards
-                .find(({ validatorAddress }) => validatorAddress === address)
-                ?.reward.find(
-                  ({ denom }) =>
-                    denom === getNativeTokenForChainId(chainId).denomOrAddress
-                )
-
-              if (!validator || !pendingReward) {
-                return
-              }
-
-              // Truncate.
-              pendingReward.amount = pendingReward.amount.split('.')[0]
-
-              return {
-                validator: cosmosValidatorToValidator(validator),
-                delegated: delegationBalance,
-                pendingReward,
-              }
-            }
-          )
-          .filter(Boolean) as Delegation[],
-
-        // Only returns native token unbondings, no need to check.
-        unbondingDelegations: unbondingDelegations.flatMap(
-          ({ validatorAddress, entries }) => {
-            const validator = get(
-              validatorSelector({
-                address: validatorAddress,
-                chainId,
-              })
-            )
-
-            return entries.map(
-              ({
-                creationHeight,
-                completionTime,
-                balance,
-              }): UnbondingDelegation => ({
-                validator,
-                balance: {
-                  amount: balance,
-                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
-                },
-                startedAtHeight: Number(creationHeight),
-                finishesAt: completionTime || new Date(0),
-              })
-            )
-          }
-        ),
-      }
     },
 })
 

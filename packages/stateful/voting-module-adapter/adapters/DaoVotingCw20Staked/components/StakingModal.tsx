@@ -37,7 +37,6 @@ import {
   OraichainCw20StakingHooks,
   useAwaitNextBlock,
   useWallet,
-  useWalletBalances,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
@@ -57,8 +56,11 @@ const InnerStakingModal = ({
   maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { address: walletAddress, isWalletConnected } = useWallet()
-  const { refreshBalances } = useWalletBalances()
+  const {
+    address: walletAddress,
+    isWalletConnected,
+    refreshBalances,
+  } = useWallet()
   const { chainId, coreAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)

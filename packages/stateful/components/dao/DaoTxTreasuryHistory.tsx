@@ -1,4 +1,5 @@
 import { ArrowOutwardRounded, East, West } from '@mui/icons-material'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -8,7 +9,7 @@ import {
   blockHeightSelector,
   blockHeightTimestampSafeSelector,
   blockHeightTimestampSelector,
-  nativeBalanceSelector,
+  chainQueries,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
 import {
@@ -157,8 +158,8 @@ export const InnerDaoTxTreasuryHistory = ({
     ]
   )
 
-  const nativeBalance = useRecoilValue(
-    nativeBalanceSelector({
+  const { data: nativeBalance } = useSuspenseQuery(
+    chainQueries.nativeBalance({
       chainId,
       address: coreAddress,
     })

@@ -1,13 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
 import {
-  refreshVestingAtom,
-  refreshWalletBalancesIdAtom,
-  tokenCardLazyInfoSelector,
-} from '@dao-dao/state/recoil'
+  chainQueries,
+  cwVestingExtraQueries,
+  cwVestingQueryKeys,
+} from '@dao-dao/state/query'
+import { tokenCardLazyInfoSelector } from '@dao-dao/state/recoil'
 import {
   VestingPaymentCard as StatelessVestingPaymentCard,
   useAddToken,
@@ -15,7 +16,12 @@ import {
   useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, ChainId, EntityType, VestingInfo } from '@dao-dao/types'
+import {
+  ActionKey,
+  ChainId,
+  EntityType,
+  StatefulVestingPaymentCardProps,
+} from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
@@ -27,8 +33,8 @@ import {
 import {
   useAwaitNextBlock,
   useEntity,
+  useQueryLoadingDataWithError,
   useWallet,
-  useWalletBalances,
 } from '../../hooks'
 import {
   useDistribute,
@@ -38,11 +44,33 @@ import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { VestingStakingModal } from './VestingStakingModal'
 
-export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
+export const VestingPaymentCard = ({
+  vestingInfo: fallbackInfo,
+}: StatefulVestingPaymentCardProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { isWalletConnected, refreshBalances } = useWalletBalances()
+
+  const {
+    address: walletAddress = '',
+    isWalletConnected,
+    refreshBalances,
+  } = useWallet({
+    attemptConnection: true,
+  })
+
+  const queryClient = useQueryClient()
+  // Use info passed into props as fallback, since it came from the list query;
+  // the individual query updates more frequently.
+  const freshInfo = useQueryLoadingDataWithError(
+    cwVestingExtraQueries.info(queryClient, {
+      chainId,
+      address: fallbackInfo.vestingContractAddress,
+    })
+  )
+
+  const vestingInfo =
+    freshInfo.loading || freshInfo.errored ? fallbackInfo : freshInfo.data
 
   const {
     vestingContractAddress,
@@ -77,20 +105,44 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     }
   )
 
-  const setRefreshVestingInfo = useSetRecoilState(
-    refreshVestingAtom(vestingContractAddress)
-  )
-  const setRefreshBalances = useSetRecoilState(
-    refreshWalletBalancesIdAtom(vestingContractAddress)
-  )
   const refresh = () => {
-    setRefreshVestingInfo((r) => r + 1)
-    setRefreshBalances((r) => r + 1)
+    // Invalidate validators.
+    queryClient.invalidateQueries({
+      queryKey: ['chain', 'validator', { chainId }],
+    })
+    // Invalidate staking info.
+    queryClient.invalidateQueries({
+      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+        chainId,
+        address: vestingContractAddress,
+      }).queryKey,
+    })
+    // Invalidate vesting indexer queries.
+    queryClient.invalidateQueries({
+      queryKey: [
+        'indexer',
+        'query',
+        {
+          chainId,
+          address: vestingContractAddress,
+        },
+      ],
+    })
+    // Then invalidate contract queries that depend on indexer queries.
+    queryClient.invalidateQueries({
+      queryKey: cwVestingQueryKeys.address(chainId, vestingContractAddress),
+    })
+    // Then info query.
+    queryClient.invalidateQueries({
+      queryKey: cwVestingExtraQueries.info(queryClient, {
+        chainId,
+        address: vestingContractAddress,
+      }).queryKey,
+    })
   }
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const { address: walletAddress = '' } = useWallet()
   const distribute = useDistribute({
     contractAddress: vestingContractAddress,
     sender: walletAddress,

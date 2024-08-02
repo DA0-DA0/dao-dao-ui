@@ -92,9 +92,9 @@ export type BeginVestingOptions = {
   // If undefined, no widget is setup, and begin vesting should be disabled.
   widgetData: VestingPaymentsWidgetData | undefined
   tokens: GenericTokenBalanceWithOwner[]
-  // The vesting contract factory owner. If undefined, no owner is set. This is
+  // The vesting contract factory owner. If null, no owner is set. This is
   // only used for pre-v1 vesting widgets.
-  preV1VestingFactoryOwner: LoadingDataWithError<string | undefined>
+  preV1VestingFactoryOwner: LoadingDataWithError<string | null>
   AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   createCw1WhitelistOwners: CreateCw1Whitelist

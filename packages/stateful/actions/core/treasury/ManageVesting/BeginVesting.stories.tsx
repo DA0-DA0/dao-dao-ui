@@ -88,7 +88,7 @@ Default.args = {
     preV1VestingFactoryOwner: {
       loading: false,
       errored: false,
-      data: undefined,
+      data: null,
     },
     AddressInput,
     EntityDisplay,
