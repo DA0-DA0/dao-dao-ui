@@ -143,12 +143,15 @@ export const VestingPaymentCard = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
-  // Can only withdraw if there is a distributable amount and a wallet is
-  // connected.
-  const canWithdraw = isWalletConnected && distributableAmount > 0
-
   const recipientIsDao =
     !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao
+
+  // Can only withdraw if there is a distributable amount and the recipient is
+  // the currently connected wallet or is a DAO.
+  const canWithdraw =
+    isWalletConnected &&
+    (recipientIsWallet || recipientIsDao) &&
+    distributableAmount > 0
 
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
