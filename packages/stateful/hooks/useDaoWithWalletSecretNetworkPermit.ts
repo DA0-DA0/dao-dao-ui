@@ -9,7 +9,10 @@ import { useDaoClient } from './useDaoClient'
 import { useOnSecretNetworkPermitUpdate } from './useOnSecretNetworkPermitUpdate'
 import { UseWalletOptions, UseWalletReturn, useWallet } from './useWallet'
 
-export type UseWalletWithSecretNetworkPermitOptions = UseWalletOptions & {
+export type UseWalletWithSecretNetworkPermitOptions = Omit<
+  UseWalletOptions,
+  'chainId'
+> & {
   /**
    * DAO to fetch the permit for, or the current DAO context.
    */
@@ -21,6 +24,12 @@ export type UseWalletWithSecretNetworkPermitReturn = UseWalletReturn & {
    * Whether or not the current chain is Secret Network.
    */
   isSecretNetwork: boolean
+  /**
+   * Whether or not a permit is needed. This is true when the wallet is
+   * connected, the DAO is on Secret Network, and no permit has been found for
+   * the current DAO in the browser.
+   */
+  isSecretNetworkPermitNeeded: boolean
   /**
    * DAO client.
    */
@@ -45,7 +54,10 @@ export const useDaoWithWalletSecretNetworkPermit = ({
   const { dao: daoClient } = useDaoClient({
     dao,
   })
-  const wallet = useWallet(options)
+  const wallet = useWallet({
+    chainId: daoClient.chainId,
+    ...options,
+  })
 
   // Stabilize reference so callback doesn't change. This only needs to update
   // on wallet connection state change anyway.
@@ -107,16 +119,19 @@ export const useDaoWithWalletSecretNetworkPermit = ({
     return permit
   }, [daoClient, wallet.address, wallet.isWalletConnected])
 
-  const response = useMemo(
-    (): UseWalletWithSecretNetworkPermitReturn => ({
+  const response = useMemo((): UseWalletWithSecretNetworkPermitReturn => {
+    const isSecret = isSecretNetwork(daoClient.chainId)
+
+    return {
       ...wallet,
-      isSecretNetwork: isSecretNetwork(wallet.chain.chain_id),
+      isSecretNetwork: isSecret,
+      isSecretNetworkPermitNeeded:
+        wallet.isWalletConnected && isSecret && !permit,
       dao: daoClient,
       permit,
       getPermit,
-    }),
-    [wallet, daoClient, permit, getPermit]
-  )
+    }
+  }, [wallet, daoClient, permit, getPermit])
 
   return response
 }

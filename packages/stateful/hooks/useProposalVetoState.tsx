@@ -50,7 +50,7 @@ export type UseProposalVetoStateReturn = {
   vetoEnabled: boolean
   canBeVetoed: boolean
   vetoOrEarlyExecute: ProposalStatusAndInfoProps['vetoOrEarlyExecute']
-  vetoInfoItems: ProposalStatusAndInfoProps<any>['info']
+  vetoInfoItems: ProposalStatusAndInfoProps['info']
 }
 
 /**
@@ -390,14 +390,14 @@ export const useProposalVetoState = ({
                   </Tooltip>
                 ),
               },
-            ] as ProposalStatusAndInfoProps<any>['info'])
+            ] as ProposalStatusAndInfoProps['info'])
           : (vetoerEntities.map((entity) => ({
               Icon: ThumbDownOutlined,
               label: t('title.vetoer'),
               Value: (props) => (
                 <EntityDisplay {...props} address={entity.address} noCopy />
               ),
-            })) as ProposalStatusAndInfoProps<any>['info'])
+            })) as ProposalStatusAndInfoProps['info'])
         : [],
   }
 }

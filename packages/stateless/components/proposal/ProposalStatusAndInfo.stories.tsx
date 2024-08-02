@@ -8,7 +8,6 @@ import {
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalVoterProps } from '@dao-dao/types'
-import { Vote as VoteType } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ButtonLink } from '../buttons'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
@@ -23,9 +22,7 @@ export default {
   component: ProposalStatusAndInfo,
 } as ComponentMeta<typeof ProposalStatusAndInfo>
 
-const Template: ComponentStory<typeof ProposalStatusAndInfo<VoteType>> = (
-  args
-) => (
+const Template: ComponentStory<typeof ProposalStatusAndInfo> = (args) => (
   <div className="max-w-sm">
     <ProposalStatusAndInfo {...args} />
   </div>

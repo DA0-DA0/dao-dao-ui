@@ -5,26 +5,28 @@ import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   Loader,
   ProfileCantVoteCard,
+  ProfileCreatePermitCard,
   ProfileVoteCard,
   useCachedLoadable,
-  useDaoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
-import { useManageProfile, useMembership } from '../../hooks'
+import {
+  useDaoWithWalletSecretNetworkPermit,
+  useManageProfile,
+  useMembership,
+} from '../../hooks'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
+import { CreateDaoPermit } from '../dao'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export interface ProfileProposalCardProps {
-  onVoteSuccess: () => void | Promise<void>
-}
-
 export const ProfileProposalCard = () => {
-  const { dao } = useDaoContext()
+  const { dao, isSecretNetworkPermitNeeded } =
+    useDaoWithWalletSecretNetworkPermit()
   const {
     profile,
     updateProfile: { go: updateProfile },
@@ -80,6 +82,15 @@ export const ProfileProposalCard = () => {
   const { isMember = false } = useMembership()
 
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+
+  if (isSecretNetworkPermitNeeded) {
+    return (
+      <ProfileCreatePermitCard
+        CreatePermit={CreateDaoPermit}
+        profile={profile}
+      />
+    )
+  }
 
   // This card should only display when a wallet is connected. The wallet vote
   // info hook returns undefined when there is no wallet connected. If we are

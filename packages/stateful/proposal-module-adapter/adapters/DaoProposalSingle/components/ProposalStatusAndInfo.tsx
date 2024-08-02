@@ -34,7 +34,6 @@ import {
   PreProposeModuleType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
-import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   formatDateTimeTz,
   formatPercentOf100,
@@ -218,7 +217,7 @@ const InnerProposalStatusAndInfo = ({
       onExecuteSuccess,
     })
 
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
@@ -282,7 +281,7 @@ const InnerProposalStatusAndInfo = ({
             label: t('title.revoting'),
             Value: (props) => <p {...props}>{t('info.enabled')}</p>,
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(timestampInfo.display
       ? ([
@@ -295,7 +294,7 @@ const InnerProposalStatusAndInfo = ({
               </Tooltip>
             ),
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(vetoTimelockExpiration
       ? ([
@@ -313,7 +312,7 @@ const InnerProposalStatusAndInfo = ({
               </Tooltip>
             ),
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
@@ -346,7 +345,7 @@ const InnerProposalStatusAndInfo = ({
                 </div>
               ) : null,
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(approvedProposalPath
       ? ([

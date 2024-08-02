@@ -15,7 +15,6 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/types'
-import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ButtonLink } from '../../../../components/ButtonLink'
 
@@ -29,7 +28,7 @@ export const ProposalStatusAndInfoLoader = (
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
   )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),

@@ -10,7 +10,6 @@ import {
   makeDappLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
-import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
   ProposalContentDisplayProps,
@@ -44,7 +43,7 @@ export const Default = Template.bind({})
 Default.args = {
   ProposalStatusAndInfo: (props) => (
     <ProposalStatusAndInfo
-      {...(ProposalStatusAndInfoVoteStory.args as ProposalStatusAndInfoProps<Vote>)}
+      {...(ProposalStatusAndInfoVoteStory.args as ProposalStatusAndInfoProps)}
       {...props}
     />
   ),

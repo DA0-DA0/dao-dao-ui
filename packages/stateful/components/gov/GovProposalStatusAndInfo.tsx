@@ -35,10 +35,7 @@ import {
   GovProposalWithMetadata,
   TokenType,
 } from '@dao-dao/types'
-import {
-  ProposalStatus,
-  Vote,
-} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -141,7 +138,7 @@ const InnerGovProposalStatusAndInfo = ({
     depositToken.decimals
   )
 
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
@@ -164,7 +161,7 @@ const InnerGovProposalStatusAndInfo = ({
               <EntityDisplay {...props} address={proposal.proposal.proposer} />
             ),
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     {
       Icon: RotateRightOutlined,
@@ -201,7 +198,7 @@ const InnerGovProposalStatusAndInfo = ({
               </Tooltip>
             ),
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
   ]
 
@@ -361,7 +358,7 @@ const InnerProposalStatusAndInfoLoader = (
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
   )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),

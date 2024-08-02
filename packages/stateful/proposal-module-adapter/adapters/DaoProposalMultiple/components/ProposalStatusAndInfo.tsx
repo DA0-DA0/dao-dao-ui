@@ -33,7 +33,6 @@ import {
   DepositRefundPolicy,
   ProposalStatusEnum,
 } from '@dao-dao/types'
-import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   formatDateTimeTz,
   formatPercentOf100,
@@ -174,7 +173,7 @@ const InnerProposalStatusAndInfo = ({
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
-  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),
@@ -204,7 +203,7 @@ const InnerProposalStatusAndInfo = ({
             label: t('title.revoting'),
             Value: (props) => <p {...props}>{t('info.enabled')}</p>,
           },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(timestampInfo.display
       ? ([
@@ -217,7 +216,7 @@ const InnerProposalStatusAndInfo = ({
               </Tooltip>
             ),
           },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(vetoTimelockExpiration
       ? ([
@@ -235,7 +234,7 @@ const InnerProposalStatusAndInfo = ({
               </Tooltip>
             ),
           },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
@@ -268,7 +267,7 @@ const InnerProposalStatusAndInfo = ({
                 </div>
               ) : null,
           },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
     ...(winningChoice &&
     (statusKey === ProposalStatusEnum.Passed ||
@@ -284,7 +283,7 @@ const InnerProposalStatusAndInfo = ({
               <TooltipTruncatedText {...props} text={winningChoice.title} />
             ),
           },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
   ]
 
@@ -399,7 +398,7 @@ const InnerProposalStatusAndInfoLoader = (
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
   )
-  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: (props) => <Logo {...props} />,
       label: t('title.dao'),

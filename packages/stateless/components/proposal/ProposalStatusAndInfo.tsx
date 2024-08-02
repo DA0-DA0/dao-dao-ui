@@ -3,13 +3,11 @@ import clsx from 'clsx'
 import { ComponentType, Fragment, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalVoterProps } from '@dao-dao/types'
-
 import { Button } from '../buttons'
 import { StatusCard } from '../StatusCard'
 import { ProposalVoteButton } from './ProposalVoteButton'
 
-export type ProposalStatusAndInfoProps<Vote extends unknown = unknown> = {
+export type ProposalStatusAndInfoProps = {
   status?: string
   info: {
     Icon: ComponentType<{ className: string }>
@@ -42,10 +40,10 @@ export type ProposalStatusAndInfoProps<Vote extends unknown = unknown> = {
   /**
    * Voter component. Only shown on desktop. Should only be defined if can vote.
    */
-  Voter?: ComponentType<Pick<ProposalVoterProps<Vote>, 'className'>>
+  Voter?: ComponentType<{ className: string }>
 }
 
-export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
+export const ProposalStatusAndInfo = ({
   status,
   info,
   inline = false,
@@ -54,7 +52,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   footer,
   className,
   Voter,
-}: ProposalStatusAndInfoProps<Vote>) => {
+}: ProposalStatusAndInfoProps) => {
   const { t } = useTranslation()
 
   return (
