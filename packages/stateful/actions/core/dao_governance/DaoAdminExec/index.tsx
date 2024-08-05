@@ -11,7 +11,6 @@ import {
   RadioInputNoForm,
 } from '@dao-dao/stateless'
 import {
-  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -186,11 +185,13 @@ const Component: ActionComponent = (props) => {
             />
           )}
 
-          <DaoSupportedChainPickerInput
-            disabled={!props.isCreating}
-            fieldName={props.fieldNamePrefix + 'chainId'}
-            onlyDaoChainIds
-          />
+          {context.type === ActionContextType.Dao && (
+            <DaoSupportedChainPickerInput
+              disabled={!props.isCreating}
+              fieldName={props.fieldNamePrefix + 'chainId'}
+              onlyDaoChainIds
+            />
+          )}
 
           <InputLabel className="-mb-2" name={t('title.dao')} />
 
@@ -287,22 +288,13 @@ const useTransformToCosmos: UseTransformToCosmos<DaoAdminExecData> = () => {
 
 export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   t,
-  context,
-  chainContext,
-}) =>
-  // Only allow using this action in DAOs or gov props on chains with CW.
-  context.type === ActionContextType.Dao ||
-  (context.type === ActionContextType.Gov &&
-    chainContext.type !== ActionChainContextType.Any &&
-    !chainContext.config.noCosmWasm)
-    ? {
-        key: ActionKey.DaoAdminExec,
-        Icon: JoystickEmoji,
-        label: t('title.daoAdminExec'),
-        description: t('info.daoAdminExecDescription'),
-        Component,
-        useDefaults,
-        useTransformToCosmos,
-        useDecodedCosmosMsg,
-      }
-    : null
+}) => ({
+  key: ActionKey.DaoAdminExec,
+  Icon: JoystickEmoji,
+  label: t('title.daoAdminExec'),
+  description: t('info.daoAdminExecDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

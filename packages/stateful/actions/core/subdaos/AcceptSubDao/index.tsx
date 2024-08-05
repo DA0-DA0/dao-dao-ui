@@ -8,6 +8,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -23,6 +24,7 @@ import {
 
 import { AddressInput } from '../../../../components'
 import { useActionOptions } from '../../../react'
+import { CrossChainExecuteData } from '../../advanced/CrossChainExecute/Component'
 import { AcceptSubDaoComponent, AcceptSubDaoData } from './Component'
 
 const useDefaults: UseDefaults<AcceptSubDaoData> = () => ({
@@ -79,8 +81,13 @@ const useTransformToCosmos: UseTransformToCosmos<AcceptSubDaoData> = () => {
 
 const Component: ActionComponent<undefined, AcceptSubDaoData> = (props) => {
   const { t } = useTranslation()
+  const {
+    context,
+    chain: { chain_id: nativeChainId },
+  } = useActionOptions()
   const { watch } = useFormContext<AcceptSubDaoData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const address = watch((props.fieldNamePrefix + 'address') as 'address')
 
   return (
     <>
@@ -88,11 +95,43 @@ const Component: ActionComponent<undefined, AcceptSubDaoData> = (props) => {
         <p className="max-w-prose">{t('info.acceptSubDaoActionDescription')}</p>
       )}
 
-      <DaoSupportedChainPickerInput
-        disabled={!props.isCreating}
-        fieldName={props.fieldNamePrefix + 'chainId'}
-        onlyDaoChainIds
-      />
+      {context.type === ActionContextType.Dao && (
+        <DaoSupportedChainPickerInput
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          onChange={
+            // If selecting a chain ID different from the current chain, replace
+            // this action with a cross-chain execute so we make sure to update
+            // the admin in the same cross-chain packet.
+            props.isCreating
+              ? (newChainId) => {
+                  if (newChainId !== nativeChainId) {
+                    props.remove()
+                    props.addAction(
+                      {
+                        actionKey: ActionKey.CrossChainExecute,
+                        data: {
+                          chainId: newChainId,
+                          _actionData: [
+                            {
+                              actionKey: ActionKey.AcceptSubDao,
+                              data: {
+                                chainId: newChainId,
+                                address,
+                              } as AcceptSubDaoData,
+                            },
+                          ],
+                        } as CrossChainExecuteData,
+                      },
+                      props.index
+                    )
+                  }
+                }
+              : undefined
+          }
+          onlyDaoChainIds
+        />
+      )}
 
       <ChainProvider chainId={chainId}>
         <AcceptSubDaoComponent
@@ -108,15 +147,13 @@ const Component: ActionComponent<undefined, AcceptSubDaoData> = (props) => {
 
 export const makeAcceptSubDaoAction: ActionMaker<AcceptSubDaoData> = ({
   t,
-}) => {
-  return {
-    key: ActionKey.AcceptSubDao,
-    Icon: CheckEmoji,
-    label: t('title.acceptSubDao'),
-    description: t('info.acceptSubDaoDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
-}
+}) => ({
+  key: ActionKey.AcceptSubDao,
+  Icon: CheckEmoji,
+  label: t('title.acceptSubDao'),
+  description: t('info.acceptSubDaoDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})
