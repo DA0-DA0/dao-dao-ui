@@ -614,9 +614,10 @@ export const decodeCrossChainMessages = (
       }
 
       let decodedIca = decodeIcaExecuteMsg(srcChainId, msg, 'any')
-      if (!decodedIca.match) {
-        decodedIca = decodeIcaCreateMsg(srcChainId, msg)
-      }
+      // TODO(ICA-create): fix self-relaying ICA create messages
+      // if (!decodedIca.match) {
+      //   decodedIca = decodeIcaCreateMsg(srcChainId, msg)
+      // }
       if (decodedIca.match) {
         const ibcInfo = getIbcTransferInfoBetweenChains(
           srcChainId,
