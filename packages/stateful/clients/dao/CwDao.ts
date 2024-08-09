@@ -44,7 +44,7 @@ import {
 } from '../voting-module'
 import { DaoBase } from './base'
 
-const getVotingModuleBases = () => [
+export const getVotingModuleBases = () => [
   Cw4VotingModule,
   Cw20StakedVotingModule,
   Cw721StakedVotingModule,
@@ -55,7 +55,7 @@ const getVotingModuleBases = () => [
   SgCommunityNftVotingModule,
 ]
 
-const getProposalModuleBases = () => [
+export const getProposalModuleBases = () => [
   SingleChoiceProposalModule,
   MultipleChoiceProposalModule,
 ]

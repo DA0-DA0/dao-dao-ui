@@ -2,27 +2,21 @@ import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/util
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
-import uniq from 'lodash.uniq'
 import {
   noWait,
   selector,
   selectorFamily,
   waitForAll,
-  waitForAllSettled,
   waitForAny,
 } from 'recoil'
 
 import {
   AccountType,
-  AllGovParams,
   AmountWithTimestamp,
   ChainId,
   GenericTokenBalance,
   GenericTokenBalanceWithOwner,
-  GovProposalVersion,
   GovProposalWithDecodedContent,
-  ProposalV1,
-  ProposalV1Beta1,
   TokenType,
   Validator,
   ValidatorSlash,
@@ -33,8 +27,6 @@ import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/ba
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
   ProposalStatus,
-  TallyResult,
-  Vote,
   WeightedVoteOption,
 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
@@ -42,8 +34,6 @@ import {
   Validator as RpcValidator,
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/staking'
 import { Packet } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
-import { Fee as NeutronFee } from '@dao-dao/types/protobuf/codegen/neutron/feerefunder/fee'
-import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
   MAINNET,
   SecretCosmWasmClient,
@@ -53,7 +43,6 @@ import {
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
   cosmwasmProtoRpcClientRouter,
-  decodeGovProposal,
   getAllRpcResponse,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
@@ -67,7 +56,8 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
-import { SearchGovProposalsOptions } from '../../indexer'
+import { chainQueries } from '../../query'
+import { queryClientAtom } from '../atoms'
 import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
@@ -78,7 +68,6 @@ import {
 import {
   queryGenericIndexerSelector,
   queryValidatorIndexerSelector,
-  searchGovProposalsSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
 import { walletTokenDaoStakedDenomsSelector } from './wallet'
@@ -387,76 +376,6 @@ export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
     },
 })
 
-export const nobleTariffTransferFeeSelector = selector<
-  NobleTariffParams | undefined
->({
-  key: 'nobleTariffTransferFee',
-  get: async ({ get }) => {
-    const nobleClient = get(nobleRpcClientSelector)
-    try {
-      const { params } = await nobleClient.tariff.params()
-      return params
-    } catch (err) {
-      console.error(err)
-    }
-  },
-})
-
-export const neutronIbcTransferFeeSelector = selector<
-  | {
-      fee: NeutronFee
-      // Total fees summed together.
-      sum: GenericTokenBalance[]
-    }
-  | undefined
->({
-  key: 'neutronIbcTransferFee',
-  get: async ({ get }) => {
-    const neutronClient = get(neutronRpcClientSelector)
-    try {
-      const { params } = await neutronClient.feerefunder.params()
-      const fee = params?.minFee
-      if (fee) {
-        const fees = [...fee.ackFee, ...fee.recvFee, ...fee.timeoutFee]
-        const uniqueDenoms = uniq(fees.map((fee) => fee.denom))
-        const tokens = get(
-          waitForAll(
-            uniqueDenoms.map((denom) =>
-              genericTokenSelector({
-                type: TokenType.Native,
-                chainId: MAINNET
-                  ? ChainId.NeutronMainnet
-                  : ChainId.NeutronTestnet,
-                denomOrAddress: denom,
-              })
-            )
-          )
-        )
-
-        return {
-          fee,
-          sum: uniqueDenoms.map((denom) => ({
-            token: tokens.find((token) => token.denomOrAddress === denom)!,
-            balance: fees
-              .filter(({ denom: feeDenom }) => feeDenom === denom)
-              .reduce((acc, { amount }) => acc + BigInt(amount), 0n)
-              .toString(),
-          })),
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err)
-        return
-      }
-
-      // Rethrow non errors (like promises) since `get` throws a Promise while
-      // the data is still loading.
-      throw err
-    }
-  },
-})
-
 export const nativeDenomBalanceSelector = selectorFamily<
   Coin,
   WithChainId<{ walletAddress: string; denom: string }>
@@ -611,60 +530,9 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
     },
 })
 
-/**
- * Search gov proposals in the indexer and decode their content.
- */
-export const searchedDecodedGovProposalsSelector = selectorFamily<
-  {
-    proposals: GovProposalWithDecodedContent[]
-    total: number
-  },
-  SearchGovProposalsOptions
->({
-  key: 'searchedDecodedGovProposals',
-  get:
-    (options) =>
-    async ({ get }) => {
-      const supportsV1Gov = get(
-        chainSupportsV1GovModuleSelector({ chainId: options.chainId })
-      )
-
-      const { results, total } = get(searchGovProposalsSelector(options))
-
-      const proposals = (
-        await Promise.allSettled(
-          results.map(async ({ value: { id, data } }) =>
-            decodeGovProposal(
-              options.chainId,
-              supportsV1Gov
-                ? {
-                    version: GovProposalVersion.V1,
-                    id: BigInt(id),
-                    proposal: ProposalV1.decode(fromBase64(data)),
-                  }
-                : {
-                    version: GovProposalVersion.V1_BETA_1,
-                    id: BigInt(id),
-                    proposal: ProposalV1Beta1.decode(
-                      fromBase64(data),
-                      undefined,
-                      true
-                    ),
-                  }
-            )
-          )
-        )
-      ).flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
-
-      return {
-        proposals,
-        total,
-      }
-    },
-})
-
-// Queries the chain for governance proposals, defaulting to those that are
-// currently open for voting.
+// Keeping this around for now (even though query exists for it now) because
+// it's used in the open proposals feed selector and allows partial loading.
+// Once we convert the open proposals feed to a query, we can remove this.
 export const govProposalsSelector = selectorFamily<
   {
     proposals: GovProposalWithDecodedContent[]
@@ -678,492 +546,41 @@ export const govProposalsSelector = selectorFamily<
 >({
   key: 'govProposals',
   get:
-    ({ chainId, status, offset, limit }) =>
+    (options) =>
     async ({ get }) => {
-      get(refreshGovProposalsAtom(chainId))
+      get(refreshGovProposalsAtom(options.chainId))
+
       if (
-        status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
-        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+        options.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
+        options.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
       ) {
         get(refreshOpenProposalsAtom)
       }
 
-      // Try to load from indexer first.
-      const indexerProposals = get(
-        waitForAllSettled([
-          searchedDecodedGovProposalsSelector({
-            chainId,
-            status,
-            offset,
-            limit,
-          }),
-        ])
-      )[0].valueMaybe()
-
-      if (indexerProposals?.proposals.length) {
-        return indexerProposals
-      }
-
-      // Fallback to querying chain if indexer failed.
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
-
-      let v1Proposals: ProposalV1[] | undefined
-      let v1Beta1Proposals: ProposalV1Beta1[] | undefined
-      let total = 0
-
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      if (supportsV1Gov) {
-        try {
-          if (limit === undefined && offset === undefined) {
-            v1Proposals =
-              (await getAllRpcResponse(
-                client.gov.v1.proposals,
-                {
-                  proposalStatus:
-                    status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-                  voter: '',
-                  depositor: '',
-                  pagination: undefined,
-                },
-                'proposals',
-                true
-              )) || []
-            total = v1Proposals.length
-          } else {
-            const response = await client.gov.v1.proposals({
-              proposalStatus:
-                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-              voter: '',
-              depositor: '',
-              pagination: {
-                key: new Uint8Array(),
-                offset: BigInt(offset || 0),
-                limit: BigInt(limit || 0),
-                countTotal: true,
-                reverse: true,
-              },
-            })
-            v1Proposals = response.proposals
-            total = Number(response.pagination?.total || 0)
-          }
-        } catch (err) {
-          // Fallback to v1beta1 query if v1 not supported.
-          if (
-            !(err instanceof Error) ||
-            !err.message.includes('unknown query path')
-          ) {
-            // Rethrow other errors.
-            throw err
-          }
-        }
-      }
-
-      if (!v1Proposals) {
-        if (limit === undefined && offset === undefined) {
-          v1Beta1Proposals =
-            (await getAllRpcResponse(
-              client.gov.v1beta1.proposals,
-              {
-                proposalStatus:
-                  status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-                voter: '',
-                depositor: '',
-                pagination: undefined,
-              },
-              'proposals',
-              true,
-              true
-            )) || []
-          total = v1Beta1Proposals.length
-        } else {
-          const response = await client.gov.v1beta1.proposals(
-            {
-              proposalStatus:
-                status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-              voter: '',
-              depositor: '',
-              pagination: {
-                key: new Uint8Array(),
-                offset: BigInt(offset || 0),
-                limit: BigInt(limit || 0),
-                countTotal: true,
-                reverse: true,
-              },
-            },
-            true
-          )
-          v1Beta1Proposals = response.proposals
-          total = Number(response.pagination?.total || 0)
-        }
-      }
-
-      const proposals = await Promise.all([
-        ...(v1Beta1Proposals || []).map((proposal) =>
-          decodeGovProposal(chainId, {
-            version: GovProposalVersion.V1_BETA_1,
-            id: proposal.proposalId,
-            proposal,
-          })
-        ),
-        ...(v1Proposals || []).map((proposal) =>
-          decodeGovProposal(chainId, {
-            version: GovProposalVersion.V1,
-            id: proposal.id,
-            proposal,
-          })
-        ),
-      ])
-
-      return {
-        proposals,
-        total,
-      }
+      const queryClient = get(queryClientAtom)
+      return await queryClient.fetchQuery(
+        chainQueries.govProposals(queryClient, options)
+      )
     },
 })
 
-// Queries the chain for a specific governance proposal.
-export const govProposalSelector = selectorFamily<
-  GovProposalWithDecodedContent,
-  WithChainId<{ proposalId: number }>
->({
-  key: 'govProposal',
-  get:
-    ({ proposalId, chainId }) =>
-    async ({ get }) => {
-      const id = get(refreshGovProposalsAtom(chainId))
-
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
-
-      // Try to load from indexer first.
-      const indexerProposal:
-        | {
-            id: string
-            version: string
-            data: string
-          }
-        | undefined
-        | null = get(
-        waitForAllSettled([
-          queryGenericIndexerSelector({
-            chainId,
-            formula: 'gov/proposal',
-            args: {
-              id: proposalId,
-            },
-            id,
-          }),
-        ])
-      )[0].valueMaybe()
-
-      let govProposal: GovProposalWithDecodedContent | undefined
-
-      if (indexerProposal) {
-        if (supportsV1Gov) {
-          govProposal = await decodeGovProposal(chainId, {
-            version: GovProposalVersion.V1,
-            id: BigInt(proposalId),
-            proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
-          })
-        } else {
-          govProposal = await decodeGovProposal(chainId, {
-            version: GovProposalVersion.V1_BETA_1,
-            id: BigInt(proposalId),
-            proposal: ProposalV1Beta1.decode(
-              fromBase64(indexerProposal.data),
-              undefined,
-              true
-            ),
-          })
-        }
-      }
-
-      // Fallback to querying chain if indexer failed.
-      if (!govProposal) {
-        const client = get(cosmosRpcClientForChainSelector(chainId))
-
-        if (supportsV1Gov) {
-          try {
-            const proposal = (
-              await client.gov.v1.proposal({
-                proposalId: BigInt(proposalId),
-              })
-            ).proposal
-            if (!proposal) {
-              throw new Error('Proposal not found')
-            }
-
-            govProposal = await decodeGovProposal(chainId, {
-              version: GovProposalVersion.V1,
-              id: BigInt(proposalId),
-              proposal,
-            })
-          } catch (err) {
-            // Fallback to v1beta1 query if v1 not supported.
-            if (
-              !(err instanceof Error) ||
-              !err.message.includes('unknown query path')
-            ) {
-              // Rethrow other errors.
-              throw err
-            }
-          }
-        }
-
-        if (!govProposal) {
-          const proposal = (
-            await client.gov.v1beta1.proposal(
-              {
-                proposalId: BigInt(proposalId),
-              },
-              true
-            )
-          ).proposal
-          if (!proposal) {
-            throw new Error('Proposal not found')
-          }
-
-          govProposal = await decodeGovProposal(chainId, {
-            version: GovProposalVersion.V1_BETA_1,
-            id: BigInt(proposalId),
-            proposal,
-          })
-        }
-      }
-
-      // If gov proposal is in deposit or voting period, refresh when open
-      // proposals refresh since it may have just opened (for voting) or closed.
-      if (
-        govProposal.proposal.status ===
-          ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD ||
-        govProposal.proposal.status ===
-          ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-      ) {
-        get(refreshOpenProposalsAtom)
-      }
-
-      return govProposal
-    },
-})
-
-// Queries the chain for a vote on a governance proposal.
+// Keeping this around for now (even though query exists for it now) because
+// it's used in the open proposals feed selector and allows partial loading.
+// Once we convert the open proposals feed to a query, we can remove this.
 export const govProposalVoteSelector = selectorFamily<
   WeightedVoteOption[],
   WithChainId<{ proposalId: number; voter: string }>
 >({
   key: 'govProposalVote',
   get:
-    ({ proposalId, voter, chainId }) =>
+    (options) =>
     async ({ get }) => {
-      get(refreshGovProposalsAtom(chainId))
+      get(refreshGovProposalsAtom(options.chainId))
 
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      try {
-        return (
-          (
-            await client.gov.v1beta1.vote({
-              proposalId: BigInt(proposalId),
-              voter,
-            })
-          ).vote?.options || []
-        )
-      } catch (err) {
-        // If not found, the voter has not yet voted.
-        if (
-          err instanceof Error &&
-          err.message.includes('not found for proposal')
-        ) {
-          return []
-        }
-
-        throw err
-      }
-    },
-})
-
-// Queries the chain for a vote on a governance proposal.
-export const govProposalVotesSelector = selectorFamily<
-  {
-    votes: (Vote & { staked: bigint })[]
-    total: number
-  },
-  WithChainId<{
-    proposalId: number
-    offset: number
-    limit: number
-  }>
->({
-  key: 'govProposalVotes',
-  get:
-    ({ proposalId, offset, limit, chainId }) =>
-    async ({ get }) => {
-      get(refreshGovProposalsAtom(chainId))
-
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      const { votes, pagination } = await client.gov.v1beta1.votes({
-        proposalId: BigInt(proposalId),
-        pagination: {
-          key: new Uint8Array(),
-          offset: BigInt(offset),
-          limit: BigInt(limit),
-          countTotal: true,
-          reverse: true,
-        },
-      })
-      const stakes = get(
-        waitForAll(
-          votes.map(({ voter }) =>
-            nativeDelegatedBalanceSelector({
-              chainId,
-              address: voter,
-            })
-          )
-        )
+      const queryClient = get(queryClientAtom)
+      return await queryClient.fetchQuery(
+        chainQueries.govProposalVote(queryClient, options)
       )
-
-      return {
-        votes: votes.map((vote, index) => ({
-          ...vote,
-          staked: BigInt(stakes[index].amount),
-        })),
-        total: Number(pagination?.total ?? 0),
-      }
-    },
-})
-
-export const govProposalTallySelector = selectorFamily<
-  TallyResult | undefined,
-  WithChainId<{ proposalId: number }>
->({
-  key: 'govProposalTally',
-  get:
-    ({ proposalId, chainId }) =>
-    async ({ get }) => {
-      get(refreshGovProposalsAtom(chainId))
-
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      const tally = (
-        await client.gov.v1beta1.tallyResult({
-          proposalId: BigInt(proposalId),
-        })
-      )?.tally
-
-      return tally
-    },
-})
-
-// Queries the chain for the governance module params.
-export const govParamsSelector = selectorFamily<AllGovParams, WithChainId<{}>>({
-  key: 'govParams',
-  get:
-    ({ chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supportsUnifiedV1GovParams = get(
-        chainSupportsV1GovModuleSelector({ chainId, require47: true })
-      )
-
-      if (supportsUnifiedV1GovParams) {
-        try {
-          const { params } = await client.gov.v1.params({
-            // Does not matter.
-            paramsType: 'tallying',
-          })
-          if (!params) {
-            throw new Error('Gov params failed to load')
-          }
-
-          return {
-            ...params,
-            quorum: Number(params.quorum),
-            threshold: Number(params.threshold),
-            vetoThreshold: Number(params.vetoThreshold),
-            minInitialDepositRatio: Number(params.minInitialDepositRatio),
-          }
-        } catch (err) {
-          // Fallback to v1beta1 query if v1 not supported.
-          if (
-            !(err instanceof Error) ||
-            !err.message.includes('unknown query path')
-          ) {
-            // Rethrow other errors.
-            throw err
-          }
-        }
-      }
-
-      const [{ votingParams }, { depositParams }, { tallyParams }] =
-        await Promise.all([
-          client.gov.v1beta1.params({
-            paramsType: 'voting',
-          }),
-          client.gov.v1beta1.params({
-            paramsType: 'deposit',
-          }),
-          client.gov.v1beta1.params({
-            paramsType: 'tallying',
-          }),
-        ])
-
-      if (!votingParams || !depositParams || !tallyParams) {
-        throw new Error('Gov params failed to load')
-      }
-
-      return {
-        minDeposit: depositParams.minDeposit,
-        maxDepositPeriod: depositParams.maxDepositPeriod,
-        votingPeriod: votingParams.votingPeriod,
-        quorum: Number(tallyParams.quorum),
-        threshold: Number(tallyParams.threshold),
-        vetoThreshold: Number(tallyParams.vetoThreshold),
-        // Cannot retrieve this from v1beta1 query, so just assume 0.25 as it is
-        // a conservative estimate. Osmosis uses 0.25 and Juno uses 0.2 as of
-        // 2023-08-13
-        minInitialDepositRatio: 0.25,
-      }
-    },
-})
-
-// Get module address.
-export const moduleAddressSelector = selectorFamily<
-  string,
-  WithChainId<{ name: string }>
->({
-  key: 'moduleAddress',
-  get:
-    ({ name, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      let account: ModuleAccount | undefined
-      try {
-        const response = await client.auth.v1beta1.moduleAccountByName({
-          name,
-        })
-        account = response?.account
-      } catch (err) {
-        // Some chains don't support getting a module account by name
-        // directly, so fallback to getting all module accounts.
-        if (
-          err instanceof Error &&
-          err.message.includes('unknown query path')
-        ) {
-          const { accounts } = await client.auth.v1beta1.moduleAccounts({})
-          account = accounts.find(
-            (acc) =>
-              'name' in acc && (acc as unknown as ModuleAccount).name === name
-          ) as ModuleAccount | undefined
-        } else {
-          // Rethrow other errors.
-          throw err
-        }
-      }
-
-      if (!account) {
-        throw new Error(`Failed to find ${name} module address.`)
-      }
-      return 'baseAccount' in account ? account.baseAccount?.address ?? '' : ''
     },
 })
 
@@ -1265,20 +682,20 @@ export const communityPoolBalancesSelector = selectorFamily<
       // In case any chain has a community pool but no gov module, handle
       // gracefully by falling back to chain ID. I doubt this will ever happen,
       // but why not be safe... Cosmos is crazy.
-      const owner =
-        get(
-          waitForAllSettled([
-            moduleAddressSelector({
-              name: 'gov',
-              chainId,
-            }),
-          ])
-        )[0].valueMaybe() || chainId
+      const queryClient = get(queryClientAtom)
+      const owner = await queryClient
+        .fetchQuery(
+          chainQueries.moduleAddress({
+            chainId,
+            name: 'gov',
+          })
+        )
+        .catch(() => chainId)
 
       const balances = tokens.map(
         (token, i): GenericTokenBalanceWithOwner => ({
           owner: {
-            type: AccountType.Native,
+            type: AccountType.Base,
             chainId,
             address: owner,
           },

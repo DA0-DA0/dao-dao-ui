@@ -35,7 +35,7 @@ import {
   BaseNewProposalProps,
   DaoTabId,
   ProposalDraft,
-  ProposalModule,
+  ProposalModuleInfo,
   ProposalPrefill,
 } from '@dao-dao/types'
 import {
@@ -109,8 +109,8 @@ export const CreateDaoProposal = () => {
 }
 
 type InnerCreateDaoProposalProps = {
-  selectedProposalModule: ProposalModule
-  setSelectedProposalModule: Dispatch<SetStateAction<ProposalModule>>
+  selectedProposalModule: ProposalModuleInfo
+  setSelectedProposalModule: Dispatch<SetStateAction<ProposalModuleInfo>>
   latestProposalSave: any
 }
 

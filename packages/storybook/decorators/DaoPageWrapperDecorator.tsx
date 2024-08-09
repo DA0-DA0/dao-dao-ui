@@ -60,7 +60,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   polytoneProxies: {},
   accounts: [
     {
-      type: AccountType.Native,
+      type: AccountType.Base,
       chainId: ChainId.JunoMainnet,
       address: 'junoDaoCoreAddress',
     },

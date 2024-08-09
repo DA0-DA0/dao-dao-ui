@@ -11,12 +11,8 @@ import clsx from 'clsx'
 import { ComponentProps, ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
-import {
-  genericTokenSelector,
-  refreshGovProposalsAtom,
-} from '@dao-dao/state/recoil'
+import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GOV_PROPOSAL_STATUS_I18N_KEY_MAP,
   Logo,
@@ -46,7 +42,11 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadingGovProposal, useWallet } from '../../hooks'
+import {
+  useLoadingGovProposal,
+  useRefreshGovProposals,
+  useWallet,
+} from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -217,11 +217,7 @@ const InnerGovProposalStatusAndInfo = ({
           turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
         })
 
-  const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))
-  const refreshProposal = useCallback(
-    () => setRefreshProposal((id) => id + 1),
-    [setRefreshProposal]
-  )
+  const refreshProposal = useRefreshGovProposals()
 
   const [depositValue, setDepositValue] = useState(missingDeposit)
   const [depositing, setDepositing] = useState(false)

@@ -3,6 +3,7 @@ import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 import {
   ContractVersion,
   ContractVersionInfo,
+  GenericToken,
   IDaoBase,
   IVotingModuleBase,
 } from '@dao-dao/types'
@@ -84,4 +85,13 @@ export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>
       )
     ).power
   }
+
+  /**
+   * Query options to fetch the governance token used by this voting module. Not
+   * all voting modules have a governance token.
+   */
+  getGovernanceTokenQuery?(): Pick<
+    FetchQueryOptions<GenericToken>,
+    'queryKey' | 'queryFn'
+  >
 }

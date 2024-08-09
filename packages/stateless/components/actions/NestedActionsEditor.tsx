@@ -1,24 +1,22 @@
-import { ComponentType } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
-  ActionCategoryWithLabel,
   ActionComponent,
-  LoadedActions,
+  ActionEncodeContext,
   NestedActionsEditorFormData,
   SuspenseLoaderProps,
-  UnifiedCosmosMsg,
 } from '@dao-dao/types'
-import { convertActionsToMessages } from '@dao-dao/utils'
+import { encodeActions } from '@dao-dao/utils'
 
-import { Loader } from '../logo'
+import { useActionsContext } from '../../contexts'
+import { useLoadingPromise } from '../../hooks'
+import { InputErrorMessage } from '../inputs'
 import { ActionsEditor } from './ActionsEditor'
 
 export type NestedActionsEditorOptions = {
-  categories: ActionCategoryWithLabel[]
-  loadedActions: LoadedActions
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  encodeContext: ActionEncodeContext
 }
 
 export const NestedActionsEditor: ActionComponent<
@@ -26,8 +24,9 @@ export const NestedActionsEditor: ActionComponent<
 > = ({
   fieldNamePrefix,
   errors,
-  options: { categories, loadedActions, SuspenseLoader },
+  options: { SuspenseLoader, encodeContext },
 }) => {
+  const { actionMap } = useActionsContext()
   const { watch, setValue, clearErrors, setError } =
     useFormContext<NestedActionsEditorFormData>()
 
@@ -35,29 +34,35 @@ export const NestedActionsEditor: ActionComponent<
     watch((fieldNamePrefix + '_actionData') as '_actionData') || []
 
   // Update action msgs from actions form data.
-  let msgs: UnifiedCosmosMsg[] = []
-  try {
-    msgs = convertActionsToMessages(loadedActions, actionData)
+  const msgs = useLoadingPromise({
+    promise: actionData.length
+      ? () =>
+          encodeActions({
+            actionMap,
+            encodeContext,
+            data: actionData,
+          })
+      : () => Promise.resolve([]),
+    deps: [actionMap, actionData],
+  })
 
-    if (errors?.msgs) {
-      clearErrors((fieldNamePrefix + 'msgs') as 'msgs')
+  useEffect(() => {
+    if (msgs.loading) {
+      return
     }
-  } catch (err) {
-    console.error(err)
 
-    if (!errors?.msgs) {
+    if (msgs.errored) {
+      console.error(msgs.error)
       setError((fieldNamePrefix + 'msgs') as 'msgs', {
         type: 'manual',
-        message: err instanceof Error ? err.message : `${err}`,
+        message: msgs.error.message,
       })
+      return
     }
-  }
 
-  useDeepCompareEffect(() => {
-    if (msgs) {
-      setValue((fieldNamePrefix + 'msgs') as 'msgs', msgs)
-    }
-  }, [msgs])
+    clearErrors((fieldNamePrefix + 'msgs') as 'msgs')
+    setValue((fieldNamePrefix + 'msgs') as 'msgs', msgs.data)
+  }, [clearErrors, fieldNamePrefix, msgs, setError, setValue])
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,12 +70,10 @@ export const NestedActionsEditor: ActionComponent<
         SuspenseLoader={SuspenseLoader}
         actionDataErrors={errors?._actionData}
         actionDataFieldName={fieldNamePrefix + '_actionData'}
-        categories={categories}
         hideEmptyPlaceholder
-        loadedActions={loadedActions}
       />
 
-      {categories.length === 0 && <Loader />}
+      <InputErrorMessage className="!m-0" error={errors?.msgs} />
     </div>
   )
 }

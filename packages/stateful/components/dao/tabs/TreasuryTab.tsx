@@ -7,11 +7,11 @@ import {
   useCachedLoading,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useInitializedActionForKey,
 } from '@dao-dao/stateless'
 import { ActionKey, LazyNftCardInfo, TokenCardInfo } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../../actions'
 import { useWallet } from '../../../hooks'
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
@@ -55,37 +55,36 @@ export const TreasuryTab = () => {
     {}
   )
 
-  const createCrossChainAccountAction = useActionForKey(
+  const createCrossChainAccountAction = useInitializedActionForKey(
     ActionKey.CreateCrossChainAccount
   )
-  const createCrossChainAccountActionDefaults =
-    createCrossChainAccountAction?.useDefaults()
-  const createCrossChainAccountPrefill = getDaoProposalSinglePrefill({
-    actions: createCrossChainAccountAction
-      ? [
-          {
-            actionKey: createCrossChainAccountAction.key,
-            data: createCrossChainAccountActionDefaults,
-          },
-        ]
-      : [],
-  })
+  const createCrossChainAccountPrefill =
+    createCrossChainAccountAction.loading ||
+    createCrossChainAccountAction.errored
+      ? undefined
+      : getDaoProposalSinglePrefill({
+          actions: [
+            {
+              actionKey: createCrossChainAccountAction.data.key,
+              data: createCrossChainAccountAction.data.defaults,
+            },
+          ],
+        })
 
-  const configureRebalancerAction = useActionForKey(
+  const configureRebalancerAction = useInitializedActionForKey(
     ActionKey.ConfigureRebalancer
   )
-  const configureRebalancerActionDefaults =
-    configureRebalancerAction?.useDefaults()
-  const configureRebalancerPrefill = getDaoProposalSinglePrefill({
-    actions: configureRebalancerAction
-      ? [
-          {
-            actionKey: ActionKey.ConfigureRebalancer,
-            data: configureRebalancerActionDefaults,
-          },
-        ]
-      : [],
-  })
+  const configureRebalancerPrefill =
+    configureRebalancerAction.loading || configureRebalancerAction.errored
+      ? undefined
+      : getDaoProposalSinglePrefill({
+          actions: [
+            {
+              actionKey: configureRebalancerAction.data.key,
+              data: configureRebalancerAction.data.defaults,
+            },
+          ],
+        })
 
   return (
     <StatelessTreasuryTab<TokenCardInfo, LazyNftCardInfo>
@@ -107,8 +106,10 @@ export const TreasuryTab = () => {
       createCrossChainAccountHref={
         // Only show create cross-chain account button if we can use the action
         // (i.e. chains are missing and can be created).
-        createCrossChainAccountAction &&
-        !createCrossChainAccountAction.hideFromPicker
+        createCrossChainAccountPrefill &&
+        !createCrossChainAccountAction.loading &&
+        !createCrossChainAccountAction.errored &&
+        !createCrossChainAccountAction.data.metadata.hideFromPicker
           ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
               prefill: createCrossChainAccountPrefill,
             })

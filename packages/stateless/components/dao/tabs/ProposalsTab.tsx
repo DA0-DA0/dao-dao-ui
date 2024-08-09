@@ -73,7 +73,7 @@ export const ProposalsTab = ({
         </Tooltip>
       </div>
 
-      <ProposalList />
+      <ProposalList className="border-t border-border-secondary py-6" />
     </>
   )
 }

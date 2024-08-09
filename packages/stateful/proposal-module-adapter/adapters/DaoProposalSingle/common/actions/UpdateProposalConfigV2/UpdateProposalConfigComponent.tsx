@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import {
   ChartEmoji,
   ClockEmoji,
-  FormSwitch,
   FormSwitchCard,
   InputErrorMessage,
+  KeyEmoji,
   NumberInput,
   PeopleEmoji,
   ProposalVetoConfigurer,
@@ -98,30 +98,17 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <FormSwitchCard
-        containerClassName="self-start"
-        fieldName={
-          (fieldNamePrefix + 'onlyMembersExecute') as 'onlyMembersExecute'
-        }
-        label={t('form.onlyMembersExecuteTitle')}
-        readOnly={!isCreating}
-        setValue={setValue}
-        sizing="sm"
-        tooltip={t('form.onlyMembersExecuteTooltip')}
-        tooltipIconSize="sm"
-        value={onlyMembersExecute}
-      />
-
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
-        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <h3 className="primary-text">
-            <ChartEmoji /> {t('form.passingThresholdTitle')}
-          </h3>
+      <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row items-center gap-1">
+            <ChartEmoji className="text-base" />
+            <p className="primary-text">{t('form.passingThresholdTitle')}</p>
+          </div>
           <p className="secondary-text">
             {t('form.passingThresholdDescription')}
           </p>
         </div>
-        <div className="flex grow flex-row flex-wrap justify-center gap-2">
+        <div className="flex grow flex-row flex-wrap gap-2">
           {percentageThresholdSelected && (
             <div className="flex flex-col gap-1">
               <NumberInput
@@ -152,12 +139,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
-        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
-            <h3 className="primary-text">
-              <PeopleEmoji /> {t('form.quorumTitle')}
-            </h3>
+      <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row items-start justify-between flex-wrap gap-2">
+            <div className="flex flex-row items-center basis-1/2 gap-1 grow">
+              <PeopleEmoji className="text-base" />
+              <p className="primary-text">{t('form.quorumTitle')}</p>
+            </div>
 
             <FormSwitchCard
               fieldName={(fieldNamePrefix + 'quorumEnabled') as 'quorumEnabled'}
@@ -168,10 +156,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
             />
           </div>
 
-          <p className="secondary-text">{t('form.quorumDescription')}</p>
+          <p className="secondary-text max-w-prose">
+            {t('form.quorumDescription')}
+          </p>
         </div>
+
         {quorumEnabled && (
-          <div className="flex grow flex-row flex-wrap justify-center gap-2">
+          <div className="flex grow flex-row flex-wrap gap-2">
             {percentageQuorumSelected && (
               <div className="flex flex-col gap-1">
                 <NumberInput
@@ -203,16 +194,18 @@ export const UpdateProposalConfigComponent: ActionComponent<
         )}
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
-        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <h3 className="primary-text">
-            <ClockEmoji /> {t('form.votingDurationTitle')}
-          </h3>
-          <p className="secondary-text">
+      <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row items-center gap-1">
+            <ClockEmoji className="text-base" />
+            <p className="primary-text">{t('form.votingDurationTitle')}</p>
+          </div>
+
+          <p className="secondary-text max-w-prose">
             {t('form.votingDurationDescription')}
           </p>
         </div>
-        <div className="flex grow flex-row flex-wrap justify-center gap-2">
+        <div className="flex grow flex-row flex-wrap gap-2">
           <div className="flex flex-col gap-1">
             <NumberInput
               disabled={!isCreating}
@@ -259,31 +252,57 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
-        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <h3 className="primary-text">
-            <RecycleEmoji /> {t('form.allowRevotingTitle')}
-          </h3>
-          <p className="secondary-text">{t('form.allowRevotingDescription')}</p>
+      <div className="flex flex-col gap-2 rounded-lg bg-background-secondary max-w-2xl p-3">
+        <div className="flex flex-row items-start justify-between flex-wrap gap-2">
+          <div className="flex flex-row items-center basis-1/2 gap-1 grow">
+            <KeyEmoji className="text-base" />
+            <p className="primary-text">{t('form.onlyMembersExecuteTitle')}</p>
+          </div>
+
+          <FormSwitchCard
+            fieldName={
+              (fieldNamePrefix + 'onlyMembersExecute') as 'onlyMembersExecute'
+            }
+            readOnly={!isCreating}
+            setValue={setValue}
+            sizing="sm"
+            value={onlyMembersExecute}
+          />
         </div>
-        <div className="flex grow items-center justify-center">
-          <FormSwitch
+
+        <p className="secondary-text max-w-prose">
+          {t('form.onlyMembersExecuteDescription')}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2 rounded-lg bg-background-secondary max-w-2xl p-3">
+        <div className="flex flex-row items-start justify-between flex-wrap gap-2">
+          <div className="flex flex-row items-center basis-1/2 gap-1 grow">
+            <RecycleEmoji className="text-base" />
+            <p className="primary-text">{t('form.allowRevotingTitle')}</p>
+          </div>
+
+          <FormSwitchCard
             fieldName={(fieldNamePrefix + 'allowRevoting') as 'allowRevoting'}
             readOnly={!isCreating}
             setValue={setValue}
-            sizing="md"
+            sizing="sm"
             value={allowRevoting}
           />
         </div>
+        <p className="secondary-text max-w-prose">
+          {t('form.allowRevotingDescription')}
+        </p>
       </div>
 
       {version && isFeatureSupportedByVersion(Feature.Veto, version) && (
-        <div className="flex flex-col gap-4 rounded-lg bg-background-secondary p-3">
-          <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-            <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
-              <h3 className="primary-text">
-                <ThumbDownEmoji /> {t('title.veto')}
-              </h3>
+        <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-start justify-between flex-wrap gap-2">
+              <div className="flex flex-row items-center basis-1/2 gap-1 grow">
+                <ThumbDownEmoji className="text-base" />
+                <p className="primary-text">{t('title.veto')}</p>
+              </div>
 
               <FormSwitchCard
                 fieldName={(fieldNamePrefix + 'veto.enabled') as 'veto.enabled'}
@@ -294,7 +313,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
               />
             </div>
 
-            <p className="secondary-text">{t('info.vetoDescription')}</p>
+            <p className="secondary-text max-w-prose">
+              {t('info.vetoDescription')}
+            </p>
           </div>
 
           {veto.enabled && (

@@ -28,7 +28,7 @@ export const InputErrorMessage = ({
   return message ? (
     <span
       className={clsx(
-        'mt-1 ml-1 inline-block max-w-prose break-words text-xs',
+        'mt-1 inline-block max-w-prose break-words text-xs',
         warning
           ? 'text-text-interactive-warning-body'
           : 'text-text-interactive-error',

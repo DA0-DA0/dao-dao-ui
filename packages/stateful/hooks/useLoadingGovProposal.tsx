@@ -1,13 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { chainQueries } from '@dao-dao/state'
 import {
-  chainStakingPoolSelector,
-  govParamsSelector,
-  govProposalSelector,
-  govProposalTallySelector,
-} from '@dao-dao/state'
-import {
-  useCachedLoading,
   useConfiguredChainContext,
   useLoadingGovProposalTimestampInfo,
 } from '@dao-dao/stateless'
@@ -19,6 +14,7 @@ import {
 } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from './query'
 import { useLoadingGovProposalWalletVoteInfo } from './useLoadingGovProposalWalletVoteInfo'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -28,52 +24,43 @@ export const useLoadingGovProposal = (
 ): LoadingData<GovProposalWithMetadata> => {
   const { t } = useTranslation()
   const { chain } = useConfiguredChainContext()
+  const queryClient = useQueryClient()
 
-  const loadingProposal = useCachedLoading(
-    govProposalSelector({
+  const loadingProposal = useQueryLoadingDataWithError(
+    chainQueries.govProposal(queryClient, {
       chainId: chain.chain_id,
       proposalId: Number(proposalId),
-    }),
-    undefined,
-    // If proposal undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
+    })
   )
 
-  const loadingProposalTally = useCachedLoading(
-    govProposalTallySelector({
+  const loadingProposalTally = useQueryLoadingDataWithError(
+    chainQueries.govProposalTally(queryClient, {
       chainId: chain.chain_id,
       proposalId: Number(proposalId),
-    }),
-    undefined,
-    // If proposal undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
+    })
   )
 
-  const loadingGovParams = useCachedLoading(
-    govParamsSelector({
+  const loadingGovParams = useQueryLoadingDataWithError(
+    chainQueries.govParams(queryClient, {
       chainId: chain.chain_id,
-    }),
-    undefined,
-    // If undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
+    })
   )
 
-  const loadingChainStakingPool = useCachedLoading(
-    chainStakingPoolSelector({
+  const loadingTotalNativeStakedBalance = useQueryLoadingDataWithError(
+    chainQueries.totalNativeStakedBalance({
       chainId: chain.chain_id,
-    }),
-    undefined,
-    // If undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
+    })
   )
+
+  // Throw error if data fails to load.
+  if (
+    loadingProposal.errored ||
+    loadingProposalTally.errored ||
+    loadingGovParams.errored ||
+    loadingTotalNativeStakedBalance.errored
+  ) {
+    throw new Error(t('error.loadingData'))
+  }
 
   const loadingTimestampInfo = useLoadingGovProposalTimestampInfo(
     loadingProposal.loading ? undefined : loadingProposal.data?.proposal
@@ -90,8 +77,8 @@ export const useLoadingGovProposal = (
     !loadingProposalTally.data ||
     loadingGovParams.loading ||
     !loadingGovParams.data ||
-    loadingChainStakingPool.loading ||
-    !loadingChainStakingPool.data ||
+    loadingTotalNativeStakedBalance.loading ||
+    !loadingTotalNativeStakedBalance.data ||
     loadingTimestampInfo.loading
   ) {
     return { loading: true }
@@ -101,7 +88,7 @@ export const useLoadingGovProposal = (
   const noVotes = Number(loadingProposalTally.data.no)
   const abstainVotes = Number(loadingProposalTally.data.abstain)
   const noWithVetoVotes = Number(loadingProposalTally.data.noWithVeto)
-  const totalVotingPower = Number(loadingChainStakingPool.data.bondedTokens)
+  const totalVotingPower = Number(loadingTotalNativeStakedBalance.data)
   const turnoutTotal = yesVotes + noVotes + abstainVotes + noWithVetoVotes
   const turnoutPercent = turnoutTotal
     ? (turnoutTotal / totalVotingPower) * 100

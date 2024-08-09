@@ -3,6 +3,7 @@ import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
+  ActionKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
@@ -12,14 +13,9 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import {
-  makeMigrateMigalooV4TokenFactoryAction,
-  makeMintAction,
-  makeUpdateMinterAllowanceAction,
-  makeUpdateStakingConfigAction,
-} from './actions'
+import { MintAction, UpdateStakingConfigAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
-import { useCommonGovernanceTokenInfo, useMainDaoInfoCards } from './hooks'
+import { useMainDaoInfoCards } from './hooks'
 
 export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
@@ -30,7 +26,6 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     hooks: {
       useMainDaoInfoCards,
       useVotingModuleRelevantAddresses: () => [],
-      useCommonGovernanceTokenInfo,
     },
 
     // Components
@@ -55,23 +50,16 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
 
     // Functions
     fields: {
-      actionCategoryMakers: [
-        () => ({
-          // Add to Commonly Used category.
-          key: ActionCategoryKey.CommonlyUsed,
-          actionMakers: [makeMigrateMigalooV4TokenFactoryAction],
-        }),
-        () => ({
+      actions: {
+        actions: [MintAction, UpdateStakingConfigAction],
+        categoryMakers: [
           // Add to DAO Governance category.
-          key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [
-            makeMintAction,
-            makeUpdateMinterAllowanceAction,
-            makeUpdateStakingConfigAction,
-            makeMigrateMigalooV4TokenFactoryAction,
-          ],
-        }),
-      ],
+          () => ({
+            key: ActionCategoryKey.DaoGovernance,
+            actionKeys: [ActionKey.Mint, ActionKey.UpdateStakingConfig],
+          }),
+        ],
+      },
     },
   }),
 }

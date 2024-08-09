@@ -2,7 +2,7 @@ import {
   allBalancesSelector,
   communityPoolBalancesSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useActionOptions, useCachedLoading } from '@dao-dao/stateless'
 import {
   AccountType,
   ActionContextType,
@@ -13,7 +13,6 @@ import {
 } from '@dao-dao/types'
 
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../voting-module-adapter'
-import { useActionOptions } from '../react'
 
 export type UseTokenBalancesOptions = {
   /**

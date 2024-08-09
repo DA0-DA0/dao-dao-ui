@@ -1,20 +1,18 @@
 import { DataObject } from '@mui/icons-material'
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
   ActionCardLoader,
-  ActionsRenderer,
+  ActionsMatchAndRender,
   Button,
-  CosmosMessageDisplay,
+  RawActionsRenderer,
 } from '@dao-dao/stateless'
 import {
-  ActionAndData,
   BasePreProposeApprovalInnerContentDisplayProps,
   PreProposeApprovalProposalWithMeteadata,
 } from '@dao-dao/types'
-import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingPreProposeApprovalProposal } from '../hooks/useLoadingPreProposeApprovalProposal'
@@ -40,65 +38,19 @@ export const PreProposeApprovalInnerContentDisplay = (
 }
 
 const InnerPreProposeApprovalInnerContentDisplay = ({
-  actionsForMatching,
   proposal,
-  setSeenAllActionPages,
 }: BasePreProposeApprovalInnerContentDisplayProps & {
   proposal: PreProposeApprovalProposalWithMeteadata
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
 
-  const decodedMessages = useMemo(
-    () => decodeMessages(proposal.msg.msgs),
-    [proposal.msg.msgs]
-  )
-  const rawDecodedMessages = useMemo(
-    () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
-    [decodedMessages]
-  )
-
-  // If no msgs, set seen all action pages to true so that the user can vote.
-  const [markedSeen, setMarkedSeen] = useState(false)
-  useEffect(() => {
-    if (markedSeen) {
-      return
-    }
-
-    if (setSeenAllActionPages && !decodedMessages.length) {
-      setSeenAllActionPages()
-      setMarkedSeen(true)
-    }
-  }, [decodedMessages.length, markedSeen, setSeenAllActionPages])
-
-  // Call relevant action hooks in the same order every time.
-  const actionData: ActionAndData[] = decodedMessages.map((message) => {
-    const actionMatch = actionsForMatching
-      .map((action) => ({
-        action,
-        ...action.useDecodedCosmosMsg(message),
-      }))
-      .find(({ match }) => match)
-
-    // There should always be a match since custom matches all. This should
-    // never happen as long as the Custom action exists.
-    if (!actionMatch?.match) {
-      throw new Error(t('error.loadingData'))
-    }
-
-    return {
-      action: actionMatch.action,
-      data: actionMatch.data,
-    }
-  })
-
-  return decodedMessages?.length ? (
+  return proposal.msg.msgs.length ? (
     <div className="space-y-3">
-      <ActionsRenderer
+      <ActionsMatchAndRender
         SuspenseLoader={SuspenseLoader}
-        actionData={actionData}
+        messages={proposal.msg.msgs}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-        setSeenAllActionPages={setSeenAllActionPages}
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
@@ -108,7 +60,7 @@ const InnerPreProposeApprovalInnerContentDisplay = ({
         </p>
       </Button>
 
-      {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
+      {showRaw && <RawActionsRenderer messages={proposal.msg.msgs} />}
     </div>
   ) : (
     <p className="caption-text italic">{t('info.noProposalActions')}</p>

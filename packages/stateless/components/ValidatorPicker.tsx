@@ -4,15 +4,6 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Button,
-  CopyToClipboard,
-  FilterableItemPopup,
-  IconButtonLink,
-  InputThemedText,
-  TokenAmountDisplay,
-  Tooltip,
-} from '@dao-dao/stateless'
-import {
   PopupTriggerCustomComponent,
   ValidatorPickerProps,
 } from '@dao-dao/types'
@@ -20,6 +11,14 @@ import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
 } from '@dao-dao/utils'
+
+import { Button } from './buttons'
+import { CopyToClipboard } from './CopyToClipboard'
+import { IconButtonLink } from './icon_buttons'
+import { InputThemedText } from './inputs'
+import { FilterableItemPopup } from './popup'
+import { TokenAmountDisplay } from './token'
+import { Tooltip } from './tooltip'
 
 export const ValidatorPicker = ({
   validators,

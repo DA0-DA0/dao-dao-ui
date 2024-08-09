@@ -1,24 +1,27 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  DaoPreProposeMultipleSelectors,
+  contractQueries,
+  daoPreProposeMultipleQueries,
   genericTokenSelector,
+  tokenQueries,
 } from '@dao-dao/state'
-import { GearEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
+import { ActionBase, GearEmoji, useActionOptions } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
-  ActionMaker,
+  ActionMatch,
+  ActionOptions,
   DepositRefundPolicy,
   Feature,
   IProposalModuleBase,
+  PreProposeModule,
+  ProcessedMessage,
   TokenType,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import {
   ExecuteMsg,
@@ -31,29 +34,24 @@ import {
   getNativeTokenForChainId,
   isFeatureSupportedByVersion,
   isValidBech32Address,
-  makeWasmMessage,
+  makeExecuteSmartContractMessage,
+  objectMatchesStructure,
+  tokensEqual,
 } from '@dao-dao/utils'
 
-import {
-  useActionOptions,
-  useMsgExecutesContract,
-} from '../../../../../../actions'
-import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
+import { useDaoGovernanceToken } from '../../../../../../hooks'
 import {
   UpdatePreProposeConfigComponent,
   UpdatePreProposeConfigData,
 } from './UpdatePreProposeConfigComponent'
 
-export const Component: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  const {
-    hooks: { useCommonGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const governanceToken = useCommonGovernanceTokenInfo?.()
+  const governanceToken = useDaoGovernanceToken() ?? undefined
 
   const { fieldNamePrefix } = props
 
@@ -121,316 +119,307 @@ export const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeUpdatePreProposeConfigActionMaker =
-  ({
-    prePropose,
-  }: IProposalModuleBase): ActionMaker<UpdatePreProposeConfigData> =>
-  ({ t, chain: { chain_id: chainId } }) => {
+export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<UpdatePreProposeConfigData> {
+  public readonly key = ActionKey.UpdatePreProposeConfig
+  public readonly Component = Component
+
+  private prePropose: PreProposeModule
+
+  constructor(
+    options: ActionOptions,
+    private proposalModule: IProposalModuleBase
+  ) {
     // Only when pre propose address present.
-    if (!prePropose) {
-      return null
+    if (!proposalModule.prePropose) {
+      throw new Error(
+        'Pre-propose config can only be updated when a pre-propose module is being used.'
+      )
     }
 
-    const preProposeAddress = prePropose.address
+    super(options, {
+      Icon: GearEmoji,
+      label: options.t('proposalModuleLabel.DaoProposalMultiple'),
+      // Unused.
+      description: '',
+    })
 
-    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
-      const {
-        hooks: { useCommonGovernanceTokenInfo },
-      } = useVotingModuleAdapter()
-      const { denomOrAddress: governanceTokenDenomOrAddress } =
-        useCommonGovernanceTokenInfo?.() ?? {}
+    this.prePropose = proposalModule.prePropose
+  }
 
-      const configLoading = useCachedLoadingWithError(
-        DaoPreProposeMultipleSelectors.configSelector({
-          chainId,
-          contractAddress: preProposeAddress,
-          params: [],
-        })
+  async setup() {
+    const governanceToken = this.proposalModule.dao.votingModule
+      .getGovernanceTokenQuery
+      ? await this.options.queryClient.fetchQuery(
+          this.proposalModule.dao.votingModule.getGovernanceTokenQuery()
+        )
+      : undefined
+
+    const config = await this.options.queryClient.fetchQuery(
+      daoPreProposeMultipleQueries.config(this.options.queryClient, {
+        chainId: this.proposalModule.dao.chainId,
+        contractAddress: this.prePropose.address,
+      })
+    )
+
+    // The config response only contains `native` or `cw20`, as
+    // `voting_module_token` is only passed in on execution.
+    const token = config.deposit_info
+      ? await this.options.queryClient.fetchQuery(
+          tokenQueries.info(this.options.queryClient, {
+            chainId: this.proposalModule.dao.chainId,
+            type:
+              'native' in config.deposit_info.denom
+                ? TokenType.Native
+                : TokenType.Cw20,
+            denomOrAddress:
+              'native' in config.deposit_info.denom
+                ? config.deposit_info.denom.native
+                : config.deposit_info.denom.cw20,
+          })
+        )
+      : undefined
+
+    const isVotingModuleToken =
+      governanceToken && token && tokensEqual(governanceToken, token)
+
+    const depositRequired = !!config.deposit_info
+    const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
+      config.deposit_info
+        ? {
+            amount: convertMicroDenomToDenomWithDecimals(
+              config.deposit_info.amount,
+              token?.decimals ?? 0
+            ),
+            type: isVotingModuleToken
+              ? 'voting_module_token'
+              : 'native' in config.deposit_info.denom
+              ? 'native'
+              : 'cw20',
+            denomOrAddress: isVotingModuleToken
+              ? governanceToken.denomOrAddress
+              : 'native' in config.deposit_info.denom
+              ? config.deposit_info.denom.native
+              : config.deposit_info.denom.cw20,
+            token,
+            refundPolicy: config.deposit_info.refund_policy,
+          }
+        : {
+            amount: 1,
+            type: 'native',
+            denomOrAddress: getNativeTokenForChainId(
+              this.proposalModule.dao.chainId
+            ).denomOrAddress,
+            token: undefined,
+            refundPolicy: DepositRefundPolicy.OnlyPassed,
+          }
+
+    this.defaults = {
+      depositRequired,
+      depositInfo,
+      anyoneCanPropose: isFeatureSupportedByVersion(
+        Feature.GranularSubmissionPolicy,
+        this.prePropose.version
       )
+        ? !!config.submission_policy && 'anyone' in config.submission_policy
+        : !!config.open_proposal_submission,
+    }
+  }
 
-      // The config response only contains `native` or `cw20`, as
-      // `voting_module_token` is only passed in an execution. The contract
-      // converts it to `cw20`.
-      const tokenLoading = useCachedLoadingWithError(
-        configLoading.loading || configLoading.errored
-          ? undefined
-          : configLoading.data.deposit_info
-          ? genericTokenSelector({
+  async encode({
+    depositRequired,
+    depositInfo,
+    anyoneCanPropose,
+  }: UpdatePreProposeConfigData): Promise<UnifiedCosmosMsg> {
+    const votingModuleTokenType =
+      depositRequired && depositInfo.type === 'voting_module_token'
+        ? depositInfo.token?.type
+        : false
+    if (votingModuleTokenType === undefined) {
+      throw new Error('Voting module token not loaded.')
+    }
+
+    const updateConfigMessage: ExecuteMsg = {
+      update_config: {
+        deposit_info: depositRequired
+          ? {
+              amount: convertDenomToMicroDenomStringWithDecimals(
+                depositInfo.amount,
+                depositInfo.token?.decimals ?? 0
+              ),
+              denom:
+                depositInfo.type === 'voting_module_token'
+                  ? {
+                      voting_module_token: {
+                        token_type:
+                          votingModuleTokenType === TokenType.Native
+                            ? 'native'
+                            : votingModuleTokenType === TokenType.Cw20
+                            ? 'cw20'
+                            : // Cause a chain error. Should never happen.
+                              ('invalid' as never),
+                      },
+                    }
+                  : {
+                      token: {
+                        denom:
+                          depositInfo.type === 'native'
+                            ? {
+                                native: depositInfo.denomOrAddress,
+                              }
+                            : // depositInfo.type === 'cw20'
+                              {
+                                cw20: depositInfo.denomOrAddress,
+                              },
+                      },
+                    },
+              refund_policy: depositInfo.refundPolicy,
+            }
+          : null,
+        ...(isFeatureSupportedByVersion(
+          Feature.GranularSubmissionPolicy,
+          this.prePropose.version
+        )
+          ? {
+              submission_policy: anyoneCanPropose
+                ? {
+                    anyone: {
+                      denylist: [],
+                    },
+                  }
+                : {
+                    specific: {
+                      dao_members: true,
+                      allowlist: [],
+                      denylist: [],
+                    },
+                  },
+            }
+          : {
+              open_proposal_submission: anyoneCanPropose,
+            }),
+      },
+    }
+
+    return makeExecuteSmartContractMessage({
+      chainId: this.proposalModule.dao.chainId,
+      contractAddress: this.prePropose.address,
+      sender: this.options.address,
+      msg: updateConfigMessage,
+    })
+  }
+
+  async match([
+    {
+      decodedMessage,
+      account: { chainId },
+    },
+  ]: ProcessedMessage[]): Promise<ActionMatch> {
+    return (
+      objectMatchesStructure(decodedMessage, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_config: {},
+            },
+          },
+        },
+      }) &&
+      chainId === this.proposalModule.dao.chainId &&
+      (await this.options.queryClient.fetchQuery(
+        contractQueries.isContract(this.options.queryClient, {
+          chainId,
+          address: decodedMessage.wasm.execute.contract_addr,
+          nameOrNames: DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
+        })
+      ))
+    )
+  }
+
+  async decode([
+    {
+      decodedMessage,
+      account: { chainId },
+    },
+  ]: ProcessedMessage[]): Promise<UpdatePreProposeConfigData> {
+    const config = decodedMessage.wasm.execute.msg.update_config
+    const configDepositInfo = config.deposit_info as
+      | UncheckedDepositInfo
+      | null
+      | undefined
+
+    const token = configDepositInfo
+      ? 'voting_module_token' in configDepositInfo.denom
+        ? this.proposalModule.dao.votingModule.getGovernanceTokenQuery
+          ? await this.options.queryClient.fetchQuery(
+              this.proposalModule.dao.votingModule.getGovernanceTokenQuery()
+            )
+          : undefined
+        : await this.options.queryClient.fetchQuery(
+            tokenQueries.info(this.options.queryClient, {
               chainId,
               type:
-                'native' in configLoading.data.deposit_info.denom
+                'native' in configDepositInfo.denom.token.denom
                   ? TokenType.Native
                   : TokenType.Cw20,
               denomOrAddress:
-                'native' in configLoading.data.deposit_info.denom
-                  ? configLoading.data.deposit_info.denom.native
-                  : configLoading.data.deposit_info.denom.cw20,
+                'native' in configDepositInfo.denom.token.denom
+                  ? configDepositInfo.denom.token.denom.native
+                  : configDepositInfo.denom.token.denom.cw20,
             })
-          : constSelector(undefined)
-      )
+          )
+      : undefined
 
-      if (configLoading.loading || tokenLoading.loading) {
-        return
-      }
-      if (configLoading.errored) {
-        return configLoading.error
-      }
-      if (tokenLoading.errored) {
-        return tokenLoading.error
-      }
+    const anyoneCanPropose =
+      // < v2.5.0
+      'open_proposal_submission' in config
+        ? !!config.open_proposal_submission
+        : // >= v2.5.0
+        'submission_policy' in config
+        ? 'anyone' in config.submission_policy
+        : undefined
 
-      const token = tokenLoading.data
-      const config = configLoading.data
+    // anyoneCanPropose should be defined
+    if (anyoneCanPropose === undefined) {
+      throw new Error('Invalid config update message.')
+    }
 
-      const isVotingModuleToken =
-        governanceTokenDenomOrAddress &&
-        token &&
-        token.denomOrAddress === governanceTokenDenomOrAddress
-
-      const depositRequired = !!config.deposit_info
-      const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
-        config.deposit_info
-          ? {
-              amount: convertMicroDenomToDenomWithDecimals(
-                config.deposit_info.amount,
-                token?.decimals ?? 0
-              ),
-              type: isVotingModuleToken
-                ? 'voting_module_token'
-                : 'native' in config.deposit_info.denom
-                ? 'native'
-                : 'cw20',
-              denomOrAddress: isVotingModuleToken
-                ? governanceTokenDenomOrAddress
-                : 'native' in config.deposit_info.denom
-                ? config.deposit_info.denom.native
-                : config.deposit_info.denom.cw20,
-              token,
-              refundPolicy: config.deposit_info.refund_policy,
-            }
-          : {
-              amount: 1,
-              type: 'native',
-              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
-              token: undefined,
-              refundPolicy: DepositRefundPolicy.OnlyPassed,
-            }
-
+    if (!configDepositInfo || !token) {
       return {
-        depositRequired,
-        depositInfo,
-        anyoneCanPropose: isFeatureSupportedByVersion(
-          Feature.GranularSubmissionPolicy,
-          prePropose.version
-        )
-          ? !!config.submission_policy && 'anyone' in config.submission_policy
-          : !!config.open_proposal_submission,
+        depositRequired: false,
+        depositInfo: {
+          amount: 1,
+          type: 'native',
+          denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
+          refundPolicy: DepositRefundPolicy.OnlyPassed,
+        },
+        anyoneCanPropose,
       }
     }
 
-    const useTransformToCosmos: UseTransformToCosmos<
-      UpdatePreProposeConfigData
-    > = () =>
-      useCallback(
-        ({
-          depositRequired,
-          depositInfo,
-          anyoneCanPropose,
-        }: UpdatePreProposeConfigData) => {
-          const votingModuleTokenType =
-            depositRequired && depositInfo.type === 'voting_module_token'
-              ? depositInfo.token?.type
-              : false
-          if (votingModuleTokenType === undefined) {
-            throw new Error(t('error.loadingData'))
-          }
+    const type: UpdatePreProposeConfigData['depositInfo']['type'] =
+      'voting_module_token' in configDepositInfo.denom
+        ? 'voting_module_token'
+        : 'native' in configDepositInfo.denom.token.denom
+        ? 'native'
+        : 'cw20'
 
-          const updateConfigMessage: ExecuteMsg = {
-            update_config: {
-              deposit_info: depositRequired
-                ? {
-                    amount: convertDenomToMicroDenomStringWithDecimals(
-                      depositInfo.amount,
-                      depositInfo.token?.decimals ?? 0
-                    ),
-                    denom:
-                      depositInfo.type === 'voting_module_token'
-                        ? {
-                            voting_module_token: {
-                              token_type:
-                                votingModuleTokenType === TokenType.Native
-                                  ? 'native'
-                                  : votingModuleTokenType === TokenType.Cw20
-                                  ? 'cw20'
-                                  : // Cause a chain error. Should never happen.
-                                    ('invalid' as never),
-                            },
-                          }
-                        : {
-                            token: {
-                              denom:
-                                depositInfo.type === 'native'
-                                  ? {
-                                      native: depositInfo.denomOrAddress,
-                                    }
-                                  : // depositInfo.type === 'cw20'
-                                    {
-                                      cw20: depositInfo.denomOrAddress,
-                                    },
-                            },
-                          },
-                    refund_policy: depositInfo.refundPolicy,
-                  }
-                : null,
-              ...(isFeatureSupportedByVersion(
-                Feature.GranularSubmissionPolicy,
-                prePropose.version
-              )
-                ? {
-                    submission_policy: anyoneCanPropose
-                      ? {
-                          anyone: {
-                            denylist: [],
-                          },
-                        }
-                      : {
-                          specific: {
-                            dao_members: true,
-                            allowlist: [],
-                            denylist: [],
-                          },
-                        },
-                  }
-                : {
-                    open_proposal_submission: anyoneCanPropose,
-                  }),
-            },
-          }
-
-          return makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: preProposeAddress,
-                funds: [],
-                msg: updateConfigMessage,
-              },
-            },
-          })
-        },
-        []
-      )
-
-    const useDecodedCosmosMsg: UseDecodedCosmosMsg<
-      UpdatePreProposeConfigData
-    > = (msg: Record<string, any>) => {
-      const isUpdatePreProposeConfig = useMsgExecutesContract(
-        msg,
-        DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
-        {
-          update_config: {
-            deposit_info: {},
-          },
-        }
-      )
-
-      const configDepositInfo = msg.wasm?.execute?.msg?.update_config
-        ?.deposit_info as UncheckedDepositInfo | null | undefined
-
-      const {
-        hooks: { useCommonGovernanceTokenInfo },
-      } = useVotingModuleAdapter()
-      const governanceToken = useCommonGovernanceTokenInfo?.()
-
-      const token = useCachedLoadingWithError(
-        isUpdatePreProposeConfig &&
-          configDepositInfo &&
-          isUpdatePreProposeConfig
-          ? 'voting_module_token' in configDepositInfo.denom
-            ? constSelector(governanceToken)
-            : genericTokenSelector({
-                chainId,
-                type:
-                  'native' in configDepositInfo.denom.token.denom
-                    ? TokenType.Native
-                    : TokenType.Cw20,
-                denomOrAddress:
-                  'native' in configDepositInfo.denom.token.denom
-                    ? configDepositInfo.denom.token.denom.native
-                    : configDepositInfo.denom.token.denom.cw20,
-              })
-          : constSelector(undefined)
-      )
-
-      if (!isUpdatePreProposeConfig || token.loading || token.errored) {
-        return { match: false }
-      }
-
-      const anyoneCanPropose =
-        // < v2.5.0
-        'open_proposal_submission' in msg.wasm.execute.msg.update_config
-          ? !!msg.wasm.execute.msg.update_config.open_proposal_submission
-          : // >= v2.5.0
-          'submission_policy' in msg.wasm.execute.msg.update_config
-          ? 'anyone' in msg.wasm.execute.msg.update_config.submission_policy
-          : undefined
-
-      if (anyoneCanPropose === undefined) {
-        return { match: false }
-      }
-
-      if (!configDepositInfo || !token.data) {
-        return {
-          data: {
-            depositRequired: false,
-            depositInfo: {
-              amount: 1,
-              type: 'native',
-              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
-              refundPolicy: DepositRefundPolicy.OnlyPassed,
-            },
-            anyoneCanPropose,
-          },
-          match: true,
-        }
-      }
-
-      const type: UpdatePreProposeConfigData['depositInfo']['type'] =
-        'voting_module_token' in configDepositInfo.denom
-          ? 'voting_module_token'
-          : 'native' in configDepositInfo.denom.token.denom
-          ? 'native'
-          : 'cw20'
-
-      const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
-        amount: convertMicroDenomToDenomWithDecimals(
-          configDepositInfo.amount,
-          token.data.decimals
-        ),
-        type,
-        denomOrAddress: token.data.denomOrAddress,
-        token: token.data,
-        refundPolicy: configDepositInfo.refund_policy,
-      }
-
-      return {
-        data: {
-          depositRequired: true,
-          depositInfo,
-          anyoneCanPropose,
-        },
-        match: true,
-      }
+    const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
+      amount: convertMicroDenomToDenomWithDecimals(
+        configDepositInfo.amount,
+        token.decimals
+      ),
+      type,
+      denomOrAddress: token.denomOrAddress,
+      token,
+      refundPolicy: configDepositInfo.refund_policy,
     }
 
     return {
-      key: ActionKey.UpdatePreProposeConfig,
-      Icon: GearEmoji,
-      label: t('proposalModuleLabel.DaoProposalMultiple'),
-      // Not used.
-      description: '',
-      Component,
-      useDefaults,
-      useTransformToCosmos,
-      useDecodedCosmosMsg,
+      depositRequired: true,
+      depositInfo,
+      anyoneCanPropose,
     }
   }
+}

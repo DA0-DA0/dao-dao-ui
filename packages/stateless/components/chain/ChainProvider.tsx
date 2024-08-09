@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import {
   getChainForChainId,
@@ -14,16 +14,19 @@ export type ChainProviderProps = {
   children: ReactNode | ReactNode[]
 }
 
-export const ChainProvider = ({ chainId, children }: ChainProviderProps) => (
-  <ChainContext.Provider
-    value={{
+export const ChainProvider = ({ chainId, children }: ChainProviderProps) => {
+  const context = useMemo(
+    () => ({
       chainId,
       chain: getChainForChainId(chainId),
       nativeToken: maybeGetNativeTokenForChainId(chainId),
       base: getConfiguredChainConfig(chainId),
       config: getSupportedChainConfig(chainId),
-    }}
-  >
-    {children}
-  </ChainContext.Provider>
-)
+    }),
+    [chainId]
+  )
+
+  return (
+    <ChainContext.Provider value={context}>{children}</ChainContext.Provider>
+  )
+}

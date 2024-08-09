@@ -11,6 +11,7 @@ import {
   MoneyEmoji,
   SegmentedControls,
   TokenInput,
+  useActionOptions,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -27,8 +28,6 @@ import {
   makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { useActionOptions } from '../../../../../../actions'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
@@ -132,12 +131,13 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
-            <p className="primary-text">
-              <MoneyEmoji /> {t('form.proposalDepositTitle')}
-            </p>
+          <div className="flex flex-row items-start justify-between flex-wrap gap-2">
+            <div className="flex flex-row items-center basis-1/2 gap-1 grow">
+              <MoneyEmoji className="text-base" />
+              <p className="primary-text">{t('form.proposalDepositTitle')}</p>
+            </div>
 
             <FormSwitchCard
               fieldName={
@@ -149,6 +149,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               value={depositRequired}
             />
           </div>
+
           <p className="secondary-text max-w-prose">
             {t('form.proposalDepositDescription')}
           </p>
@@ -272,11 +273,14 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         )}
       </div>
 
-      <div className="flex flex-row flex-wrap items-end justify-between gap-x-12 gap-y-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-col gap-4 rounded-lg bg-background-secondary max-w-2xl p-3">
         <div className="flex flex-col gap-2">
-          <p className="primary-text">
-            <LockWithPenEmoji /> {t('form.proposalSubmissionPolicyTitle')}
-          </p>
+          <div className="flex flex-row items-center gap-1 grow">
+            <LockWithPenEmoji className="text-base" />
+            <p className="primary-text">
+              {t('form.proposalSubmissionPolicyTitle')}
+            </p>
+          </div>
           <p className="secondary-text max-w-prose">
             {t('form.proposalSubmissionPolicyDescription')}
           </p>

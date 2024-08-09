@@ -2,6 +2,7 @@ import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 
 import {
   ActionCategoryKey,
+  ActionKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
@@ -11,7 +12,7 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { makeManageMembersAction } from './actions'
+import { ManageMembersAction } from './actions'
 import {
   MainDaoInfoCardsLoader,
   MembersTab,
@@ -49,15 +50,18 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
       ProfileCardMemberInfo,
     },
 
-    // Functions
+    // Fields
     fields: {
-      actionCategoryMakers: [
-        () => ({
+      actions: {
+        actions: [ManageMembersAction],
+        categoryMakers: [
           // Add to DAO Governance category.
-          key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeManageMembersAction],
-        }),
-      ],
+          () => ({
+            key: ActionCategoryKey.DaoGovernance,
+            actionKeys: [ActionKey.ManageMembers],
+          }),
+        ],
+      },
     },
   }),
 }

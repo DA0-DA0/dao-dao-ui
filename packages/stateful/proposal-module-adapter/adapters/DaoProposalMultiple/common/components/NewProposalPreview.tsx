@@ -3,9 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalContentDisplay } from '@dao-dao/stateless'
-import { convertActionsToMessages } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useActionEncodeContext } from '../../../../../actions'
 import { EntityDisplay, SuspenseLoader } from '../../../../../components'
 import { useEntity, useWallet } from '../../../../../hooks'
 import { MULTIPLE_CHOICE_OPTION_COLORS } from '../../components/MultipleChoiceOptionEditor'
@@ -15,8 +14,8 @@ import { NewProposalForm } from '../../types'
 export const NewProposalPreview = () => {
   const { t } = useTranslation()
   const { watch } = useFormContext<NewProposalForm>()
+  const encodeContext = useActionEncodeContext()
 
-  const { loadedActions } = useLoadedActionsAndCategories()
   const { address: walletAddress = '' } = useWallet()
   const { entity } = useEntity(walletAddress)
 
@@ -41,23 +40,17 @@ export const NewProposalPreview = () => {
             <MultipleChoiceOptionViewer
               key={index}
               SuspenseLoader={SuspenseLoader}
+              actionKeysAndData={actionData}
               data={{
                 choice: {
                   description,
                   index,
+                  // Unused in preview mode. Uses actionKeysAndData instead.
                   msgs: [],
                   title,
                   option_type: 'standard',
                   vote_count: '0',
                 },
-                actionData: [],
-                decodedMessages: convertActionsToMessages(
-                  loadedActions,
-                  actionData || [],
-                  {
-                    throwErrors: false,
-                  }
-                ),
                 voteOption: {
                   Icon: Circle,
                   label: title,
@@ -68,33 +61,35 @@ export const NewProposalPreview = () => {
                     ],
                 },
               }}
-              forceRaw
+              encodeContext={encodeContext}
               lastOption={false}
+              preview
             />
           ))}
 
           {/* None of the above */}
           <MultipleChoiceOptionViewer
             SuspenseLoader={SuspenseLoader}
+            actionKeysAndData={[]}
             data={{
               choice: {
                 description: '',
                 index: choices.length,
+                // Unused in preview mode. Uses actionKeysAndData instead.
                 msgs: [],
                 title: '',
                 option_type: 'none',
                 vote_count: '0',
               },
-              actionData: [],
-              decodedMessages: [],
               voteOption: {
                 Icon: Block,
                 label: '',
                 value: { option_id: choices.length },
               },
             }}
-            forceRaw
+            encodeContext={encodeContext}
             lastOption
+            preview
           />
         </div>
       }

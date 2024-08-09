@@ -2,12 +2,13 @@ import { PendingOutlined, ThumbDown, ThumbUp } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import {
   ProposalStatus,
   ProposalStatusKey,
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { keyFromPreProposeStatus } from '@dao-dao/utils'
+
+import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 
 export type PreProposeApprovalProposalStatusProps = {
   status: ProposalStatus

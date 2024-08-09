@@ -1,4 +1,5 @@
 import {
+  IDaoBase,
   IVotingModuleAdapterContext,
   IVotingModuleAdapterOptions,
   VotingModuleAdapter,
@@ -47,22 +48,30 @@ export const matchAdapter = (contractNameToMatch: string) =>
   ) || FallbackAdapter
 
 export const matchAndLoadAdapter = (
-  contractName: string,
-  options: IVotingModuleAdapterOptions
+  dao: IDaoBase
 ): IVotingModuleAdapterContext => {
-  const adapter = matchAdapter(contractName)
+  const adapter = matchAdapter(dao.info.votingModuleInfo.contract)
 
   if (!adapter) {
     throw new Error(
-      `Failed to find voting module adapter matching contract "${contractName}". Available adapters: ${getAdapters()
+      `Failed to find voting module adapter matching contract "${
+        dao.info.votingModuleInfo.contract
+      }". Available adapters: ${getAdapters()
         .map(({ id }) => id)
         .join(', ')}`
     )
+  }
+
+  const options: IVotingModuleAdapterOptions = {
+    chainId: dao.chainId,
+    votingModuleAddress: dao.info.votingModuleAddress,
+    coreAddress: dao.coreAddress,
   }
 
   return {
     id: adapter.id,
     adapter: adapter.load(options),
     options,
+    votingModule: dao.votingModule,
   }
 }

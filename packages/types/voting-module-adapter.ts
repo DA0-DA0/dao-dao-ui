@@ -1,9 +1,9 @@
 import { ComponentType } from 'react'
 
-import { ActionCategoryMaker } from './actions'
+import { ActionCategoryMaker, ImplementedAction } from './actions'
+import { IVotingModuleBase } from './clients'
 import { DaoInfoCard, StakingMode } from './components'
 import { DaoTabWithComponent } from './dao'
-import { GenericToken } from './token'
 
 export interface BaseProfileCardMemberInfoProps {
   maxGovernanceTokenDeposit: string | undefined
@@ -28,7 +28,6 @@ export interface IVotingModuleAdapter {
   hooks: {
     useMainDaoInfoCards: () => DaoInfoCard[]
     useVotingModuleRelevantAddresses: () => VotingModuleRelevantAddress[]
-    useCommonGovernanceTokenInfo?: () => GenericToken
   }
 
   // Components
@@ -43,7 +42,10 @@ export interface IVotingModuleAdapter {
 
   // Fields
   fields: {
-    actionCategoryMakers: ActionCategoryMaker[]
+    actions?: {
+      actions?: ImplementedAction<any>[]
+      categoryMakers: ActionCategoryMaker[]
+    }
   }
 }
 
@@ -64,4 +66,5 @@ export interface IVotingModuleAdapterContext {
   id: string
   options: IVotingModuleAdapterOptions
   adapter: IVotingModuleAdapter
+  votingModule: IVotingModuleBase
 }

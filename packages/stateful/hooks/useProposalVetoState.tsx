@@ -216,13 +216,12 @@ export const useProposalVetoState = ({
             prefill: getDaoProposalSinglePrefill({
               actions: [
                 {
-                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  actionKey: ActionKey.VetoProposal,
                   data: {
                     chainId,
                     coreAddress,
                     proposalModuleAddress: proposalModule.address,
                     proposalId: proposalNumber,
-                    action: 'veto',
                   },
                 },
               ],
@@ -304,13 +303,12 @@ export const useProposalVetoState = ({
             prefill: getDaoProposalSinglePrefill({
               actions: [
                 {
-                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  actionKey: ActionKey.ExecuteProposal,
                   data: {
                     chainId,
                     coreAddress,
                     proposalModuleAddress: proposalModule.address,
                     proposalId: proposalNumber,
-                    action: 'earlyExecute',
                   },
                 },
               ],

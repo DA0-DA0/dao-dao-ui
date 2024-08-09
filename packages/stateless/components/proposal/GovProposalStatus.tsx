@@ -8,8 +8,9 @@ import {
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+
+import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 
 export type GovProposalStatusProps = {
   status: ProposalStatus

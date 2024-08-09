@@ -65,7 +65,7 @@ export type GenericToken = {
   /**
    * The image URL for this token.
    */
-  imageUrl: string | undefined
+  imageUrl?: string | null
   /**
    * The source chain and base denom. For IBC assets, this should differ from
    * the main fields. If the source chain ID is the same as the main chain ID,

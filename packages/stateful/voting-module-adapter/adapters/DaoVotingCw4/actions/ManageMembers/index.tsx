@@ -1,28 +1,26 @@
-import { useCallback } from 'react'
-
-import { PeopleEmoji } from '@dao-dao/stateless'
+import { daoVotingCw4Queries } from '@dao-dao/state/query'
+import { ActionBase, PeopleEmoji, useActionOptions } from '@dao-dao/stateless'
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage } from '@dao-dao/utils'
+import {
+  makeExecuteSmartContractMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
+import { Cw4VotingModule } from '../../../../../clients'
 import { AddressInput, EntityDisplay } from '../../../../../components'
 import { useLoadingVotingModule } from '../../hooks/useLoadingVotingModule'
 import {
   ManageMembersData,
   ManageMembersComponent as StatelessManageMembersComponent,
 } from './Component'
-
-const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
-  toAdd: [],
-  toRemove: [],
-})
 
 const Component: ActionComponent = (props) => {
   const { address } = useActionOptions()
@@ -49,86 +47,84 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
-  t,
-  address,
-}) => {
-  const useTransformToCosmos: UseTransformToCosmos<ManageMembersData> = () => {
-    const votingModule = useLoadingVotingModule(address)
-    const cw4GroupAddress =
-      votingModule.loading || votingModule.errored
-        ? undefined
-        : votingModule.data.cw4GroupAddress
+export class ManageMembersAction extends ActionBase<ManageMembersData> {
+  public readonly key = ActionKey.ManageMembers
+  public readonly Component = Component
 
-    return useCallback(
-      ({ toAdd, toRemove }) => {
-        if (!cw4GroupAddress) {
-          throw new Error(t('error.loadingData'))
-        }
+  protected _defaults: ManageMembersData = {
+    toAdd: [],
+    toRemove: [],
+  }
 
-        return makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: cw4GroupAddress,
-              funds: [],
-              msg: {
-                update_members: {
-                  add: toAdd,
-                  remove: toRemove,
-                },
-              },
-            },
-          },
-        })
-      },
-      [cw4GroupAddress]
+  private votingModule: Cw4VotingModule
+  private cw4GroupAddress = ''
+
+  constructor(options: ActionOptions) {
+    if (options.context.type !== ActionContextType.Dao) {
+      throw new Error('Not DAO context')
+    }
+
+    if (!(options.context.dao.votingModule instanceof Cw4VotingModule)) {
+      throw new Error('Not a CW4 voting module')
+    }
+
+    super(options, {
+      Icon: PeopleEmoji,
+      label: options.t('title.manageMembers'),
+      description: options.t('info.manageMembersActionDescription'),
+      // Show at the top.
+      listOrder: 1,
+    })
+
+    this.votingModule = options.context.dao.votingModule
+  }
+
+  async setup() {
+    this.cw4GroupAddress = await this.options.queryClient.fetchQuery(
+      daoVotingCw4Queries.groupContract(this.options.queryClient, {
+        chainId: this.votingModule.dao.chainId,
+        contractAddress: this.votingModule.address,
+      })
     )
   }
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
-    msg: Record<string, any>
-  ) => {
-    const votingModule = useLoadingVotingModule(address)
-    const cw4GroupAddress =
-      votingModule.loading || votingModule.errored
-        ? undefined
-        : votingModule.data.cw4GroupAddress
+  encode({ toAdd, toRemove }: ManageMembersData): UnifiedCosmosMsg {
+    if (!this.cw4GroupAddress) {
+      throw new Error('Manage members action not initialized')
+    }
 
-    if (
-      cw4GroupAddress &&
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      msg.wasm.execute.contract_addr === cw4GroupAddress &&
-      'update_members' in msg.wasm.execute.msg &&
-      'add' in msg.wasm.execute.msg.update_members &&
-      'remove' in msg.wasm.execute.msg.update_members
-    ) {
-      return {
-        match: true,
-        data: {
-          toAdd: msg.wasm.execute.msg.update_members.add,
-          toRemove: msg.wasm.execute.msg.update_members.remove,
+    return makeExecuteSmartContractMessage({
+      chainId: this.options.chain.chain_id,
+      sender: this.options.address,
+      contractAddress: this.cw4GroupAddress,
+      msg: {
+        update_members: {
+          add: toAdd,
+          remove: toRemove,
         },
-      }
-    }
-
-    return {
-      match: false,
-    }
+      },
+    })
   }
 
-  return {
-    key: ActionKey.ManageMembers,
-    Icon: PeopleEmoji,
-    label: t('title.manageMembers'),
-    description: t('info.manageMembersActionDescription'),
-    notReusable: true,
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-    // Show at the top.
-    order: 1,
+  match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
+    return objectMatchesStructure(decodedMessage, {
+      wasm: {
+        execute: {
+          msg: {
+            update_members: {
+              add: {},
+              remove: {},
+            },
+          },
+        },
+      },
+    })
+  }
+
+  decode([{ decodedMessage }]: ProcessedMessage[]): ManageMembersData {
+    return {
+      toAdd: decodedMessage.wasm.execute.msg.update_members.add,
+      toRemove: decodedMessage.wasm.execute.msg.update_members.remove,
+    }
   }
 }

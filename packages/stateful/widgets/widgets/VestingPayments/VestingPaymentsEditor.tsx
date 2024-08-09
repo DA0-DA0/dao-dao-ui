@@ -124,7 +124,7 @@ const VestingFactoryChain = ({
 }: VestingFactoryChainProps) => {
   const { t } = useTranslation()
   const nativeChainId =
-    props.accounts.find((a) => a.type === AccountType.Native)?.chainId ||
+    props.accounts.find((a) => a.type === AccountType.Base)?.chainId ||
     props.accounts[0].chainId
   const daoChainAccountAddress = getAccountAddress({
     accounts: props.accounts,

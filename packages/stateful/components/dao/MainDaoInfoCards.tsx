@@ -16,7 +16,7 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { useQueryLoadingData } from '../../hooks'
+import { useDaoGovernanceToken, useQueryLoadingData } from '../../hooks'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -37,10 +37,10 @@ const InnerMainDaoInfoCards = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const {
-    hooks: { useMainDaoInfoCards, useCommonGovernanceTokenInfo },
+    hooks: { useMainDaoInfoCards },
   } = useVotingModuleAdapter()
   const votingModuleCards = useMainDaoInfoCards()
-  const tokenInfo = useCommonGovernanceTokenInfo?.()
+  const tokenInfo = useDaoGovernanceToken()
 
   const { dao } = useDaoContext()
   const { activeThreshold, created, proposalModules } = dao.info

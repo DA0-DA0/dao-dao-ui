@@ -4,6 +4,7 @@ import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import {
+  AllGovParams,
   ChainId,
   Delegation,
   GovProposalVersion,
@@ -17,23 +18,26 @@ import {
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
-import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
-  NONEXISTENT_QUERY_ERROR_SUBSTRINGS,
+  ProposalStatus,
+  TallyResult,
+  Vote,
+  WeightedVoteOption,
+} from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import {
   cosmosProtoRpcClientRouter,
   cosmosSdkVersionIs46OrHigher,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
-  cosmwasmProtoRpcClientRouter,
   decodeGovProposal,
   feemarketProtoRpcClientRouter,
   getAllRpcResponse,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
-  isSecretNetwork,
+  ibcProtoRpcClientRouter,
+  isNonexistentQueryError,
   isValidBech32Address,
   osmosisProtoRpcClientRouter,
-  secretCosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -41,6 +45,7 @@ import {
   SearchGovProposalsOptions,
   searchGovProposals,
 } from '../../indexer/search'
+import { indexerQueries } from './indexer'
 
 /**
  * Fetch the module address associated with the specified name.
@@ -405,12 +410,7 @@ export const fetchNativeDelegationInfo = async (
     }
   } catch (err) {
     // Fails on chains without staking.
-    if (
-      err instanceof Error &&
-      NONEXISTENT_QUERY_ERROR_SUBSTRINGS.some((substring) =>
-        (err as Error).message.includes(substring)
-      )
-    ) {
+    if (isNonexistentQueryError(err)) {
       return {
         delegations: [],
         unbondingDelegations: [],
@@ -418,6 +418,37 @@ export const fetchNativeDelegationInfo = async (
     }
 
     // Rethrow error if anything else, like a network error.
+    throw err
+  }
+}
+
+/**
+ * Fetch the unstaking duration in seconds for the native token.
+ */
+export const fetchNativeUnstakingDurationSeconds = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<number> => {
+  // Neutron does not have staking.
+  if (
+    chainId === ChainId.NeutronMainnet ||
+    chainId === ChainId.NeutronTestnet
+  ) {
+    return 0
+  }
+
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+  try {
+    const { params } = await client.staking.v1beta1.params()
+    return Number(params?.unbondingTime?.seconds ?? -1)
+  } catch (err) {
+    // Staking unsupported.
+    if (isNonexistentQueryError(err)) {
+      return 0
+    }
+
+    // Rethrow other errors.
     throw err
   }
 }
@@ -476,33 +507,6 @@ export const fetchDynamicGasPrice = async ({
   }
 
   return price
-}
-
-/**
- * Fetch the wasm contract-level admin for a contract.
- */
-export const fetchWasmContractAdmin = async ({
-  chainId,
-  address,
-}: {
-  chainId: string
-  address: string
-}): Promise<string | null> => {
-  if (isSecretNetwork(chainId)) {
-    const client = await secretCosmWasmClientRouter.connect(chainId)
-    return (await client.getContract(address))?.admin ?? null
-  }
-
-  // CosmWasmClient.getContract is not compatible with Terra Classic for some
-  // reason, so use protobuf query directly.
-  const client = await cosmwasmProtoRpcClientRouter.connect(chainId)
-  return (
-    (
-      await client.wasm.v1.contractInfo({
-        address,
-      })
-    )?.contractInfo?.admin ?? null
-  )
 }
 
 /**
@@ -633,6 +637,113 @@ export const fetchChainSupportsV1GovModule = async (
     return true
   } catch {
     return false
+  }
+}
+
+/**
+ * Fetch whether or not a chain supports the ICA controller module.
+ */
+export const fetchSupportsIcaController = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<boolean> => {
+  const client = await ibcProtoRpcClientRouter.connect(chainId)
+
+  try {
+    const { params: { controllerEnabled } = {} } =
+      await client.applications.interchain_accounts.controller.v1.params()
+
+    return !!controllerEnabled
+  } catch (err) {
+    if (isNonexistentQueryError(err)) {
+      return false
+    }
+
+    // Rethrow other errors.
+    throw err
+  }
+}
+
+/**
+ * Fetch governance module params.
+ */
+export const fetchGovParams = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+  }: {
+    chainId: string
+  }
+): Promise<AllGovParams> => {
+  const [supportsV1, client] = await Promise.all([
+    queryClient.fetchQuery(
+      chainQueries.supportsV1GovModule(queryClient, {
+        chainId,
+        require47: true,
+      })
+    ),
+    cosmosProtoRpcClientRouter.connect(chainId),
+  ])
+
+  if (supportsV1) {
+    try {
+      const { params } = await client.gov.v1.params({
+        // Does not matter.
+        paramsType: 'tallying',
+      })
+      if (!params) {
+        throw new Error('Gov params failed to load')
+      }
+
+      return {
+        ...params,
+        quorum: Number(params.quorum),
+        threshold: Number(params.threshold),
+        vetoThreshold: Number(params.vetoThreshold),
+        minInitialDepositRatio: Number(params.minInitialDepositRatio),
+        supportsV1,
+      }
+    } catch (err) {
+      // Fallback to v1beta1 query if v1 not supported.
+      if (!isNonexistentQueryError(err)) {
+        // Rethrow other errors.
+        throw err
+      }
+    }
+  }
+
+  // v1beta1 queries are separate
+
+  const [{ votingParams }, { depositParams }, { tallyParams }] =
+    await Promise.all([
+      client.gov.v1beta1.params({
+        paramsType: 'voting',
+      }),
+      client.gov.v1beta1.params({
+        paramsType: 'deposit',
+      }),
+      client.gov.v1beta1.params({
+        paramsType: 'tallying',
+      }),
+    ])
+
+  if (!votingParams || !depositParams || !tallyParams) {
+    throw new Error('Gov params failed to load')
+  }
+
+  return {
+    minDeposit: depositParams.minDeposit,
+    maxDepositPeriod: depositParams.maxDepositPeriod,
+    votingPeriod: votingParams.votingPeriod,
+    quorum: Number(tallyParams.quorum),
+    threshold: Number(tallyParams.threshold),
+    vetoThreshold: Number(tallyParams.vetoThreshold),
+    // Cannot retrieve this from v1beta1 query, so just assume 0.25 as it is a
+    // conservative estimate. Osmosis uses 0.25 and Juno uses 0.2 as of
+    // 2023-08-13
+    minInitialDepositRatio: 0.25,
+    supportsV1: false,
   }
 }
 
@@ -842,6 +953,311 @@ export const fetchGovProposals = async (
   }
 }
 
+/**
+ * Fetch a chain governance proposal.
+ */
+export const fetchGovProposal = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    proposalId,
+  }: {
+    chainId: string
+    proposalId: number
+  }
+): Promise<GovProposalWithDecodedContent> => {
+  const supportsV1 = await queryClient.fetchQuery(
+    chainQueries.supportsV1GovModule(queryClient, {
+      chainId,
+    })
+  )
+
+  // Try to load from indexer first.
+  const indexerProposal: {
+    id: string
+    version: string
+    data: string
+  } | null = await queryClient
+    .fetchQuery(
+      indexerQueries.queryGeneric(queryClient, {
+        chainId,
+        formula: 'gov/proposal',
+        args: {
+          id: proposalId,
+        },
+      })
+    )
+    .catch(() => null)
+
+  let govProposal: GovProposalWithDecodedContent | undefined
+
+  if (indexerProposal) {
+    if (supportsV1) {
+      govProposal = await decodeGovProposal(chainId, {
+        version: GovProposalVersion.V1,
+        id: BigInt(proposalId),
+        proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
+      })
+    } else {
+      govProposal = await decodeGovProposal(chainId, {
+        version: GovProposalVersion.V1_BETA_1,
+        id: BigInt(proposalId),
+        proposal: ProposalV1Beta1.decode(
+          fromBase64(indexerProposal.data),
+          undefined,
+          true
+        ),
+      })
+    }
+  }
+
+  // Fallback to querying chain if indexer failed.
+  if (!govProposal) {
+    const client = await cosmosProtoRpcClientRouter.connect(chainId)
+
+    if (supportsV1) {
+      try {
+        const proposal = (
+          await client.gov.v1.proposal({
+            proposalId: BigInt(proposalId),
+          })
+        ).proposal
+        if (!proposal) {
+          throw new Error('Proposal not found')
+        }
+
+        govProposal = await decodeGovProposal(chainId, {
+          version: GovProposalVersion.V1,
+          id: BigInt(proposalId),
+          proposal,
+        })
+      } catch (err) {
+        // Fallback to v1beta1 query if v1 not supported.
+        if (!isNonexistentQueryError(err)) {
+          // Rethrow other errors.
+          throw err
+        }
+      }
+    }
+
+    if (!govProposal) {
+      const proposal = (
+        await client.gov.v1beta1.proposal(
+          {
+            proposalId: BigInt(proposalId),
+          },
+          true
+        )
+      ).proposal
+      if (!proposal) {
+        throw new Error('Proposal not found')
+      }
+
+      govProposal = await decodeGovProposal(chainId, {
+        version: GovProposalVersion.V1_BETA_1,
+        id: BigInt(proposalId),
+        proposal,
+      })
+    }
+  }
+
+  return govProposal
+}
+
+/**
+ * Fetch the tally for a chain governance proposal.
+ */
+export const fetchGovProposalTally = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    proposalId,
+  }: {
+    chainId: string
+    proposalId: number
+  }
+): Promise<TallyResult> => {
+  const [client, supportsV1] = await Promise.all([
+    cosmosProtoRpcClientRouter.connect(chainId),
+    queryClient.fetchQuery(
+      chainQueries.supportsV1GovModule(queryClient, {
+        chainId,
+      })
+    ),
+  ])
+
+  let tally: TallyResult | undefined
+
+  // Attempt to fetch v1 tally if on v1.
+  if (supportsV1) {
+    try {
+      const { tally: v1Tally } = await client.gov.v1.tallyResult({
+        proposalId: BigInt(proposalId),
+      })
+
+      // Conform to v1beta1 TallyResult object as it's cleaner.
+      tally = v1Tally && {
+        yes: v1Tally.yesCount,
+        no: v1Tally.noCount,
+        abstain: v1Tally.abstainCount,
+        noWithVeto: v1Tally.noWithVetoCount,
+      }
+    } catch (err) {
+      // Fallback to v1beta1 query if v1 failed due to a nonexistent query.
+      if (!isNonexistentQueryError(err)) {
+        // Rethrow other errors.
+        throw err
+      }
+    }
+  }
+
+  if (!tally) {
+    tally = (
+      await client.gov.v1beta1.tallyResult({
+        proposalId: BigInt(proposalId),
+      })
+    ).tally
+  }
+
+  if (!tally) {
+    throw new Error('Tally not found')
+  }
+
+  return tally
+}
+
+/**
+ * Fetch a vote for a chain governance proposal.
+ */
+export const fetchGovProposalVote = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    proposalId,
+    voter,
+  }: {
+    chainId: string
+    proposalId: number
+    voter: string
+  }
+): Promise<WeightedVoteOption[]> => {
+  const [client, supportsV1] = await Promise.all([
+    cosmosProtoRpcClientRouter.connect(chainId),
+    queryClient.fetchQuery(
+      chainQueries.supportsV1GovModule(queryClient, {
+        chainId,
+      })
+    ),
+  ])
+
+  let vote: WeightedVoteOption[] | undefined
+
+  try {
+    // Attempt to fetch v1 vote if on v1.
+    if (supportsV1) {
+      try {
+        vote = (
+          await client.gov.v1.vote({
+            proposalId: BigInt(proposalId),
+            voter,
+          })
+        ).vote?.options
+      } catch (err) {
+        // Fallback to v1beta1 query if v1 failed due to a nonexistent query.
+        if (!isNonexistentQueryError(err)) {
+          // Rethrow other errors.
+          throw err
+        }
+      }
+    }
+
+    if (!vote) {
+      vote = (
+        await client.gov.v1beta1.vote({
+          proposalId: BigInt(proposalId),
+          voter,
+        })
+      ).vote?.options
+    }
+  } catch (err) {
+    // If not found, the voter has not yet voted.
+    if (
+      err instanceof Error &&
+      err.message.includes('not found for proposal')
+    ) {
+      return []
+    }
+
+    // Rethrow other errors.
+    throw err
+  }
+
+  if (!vote) {
+    throw new Error('Vote not found')
+  }
+
+  return vote
+}
+
+/**
+ * Fetch paginated votes for a chain governance proposal.
+ */
+export const fetchGovProposalVotes = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    proposalId,
+    offset,
+    limit,
+  }: {
+    chainId: string
+    proposalId: number
+    offset: number
+    limit: number
+  }
+): Promise<{
+  /**
+   * Paginated votes with staked amounts.
+   */
+  votes: (Vote & { staked: bigint })[]
+  /**
+   * Total votes cast.
+   */
+  total: number
+}> => {
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+
+  const { votes, pagination } = await client.gov.v1beta1.votes({
+    proposalId: BigInt(proposalId),
+    pagination: {
+      key: new Uint8Array(),
+      offset: BigInt(offset),
+      limit: BigInt(limit),
+      countTotal: true,
+      reverse: true,
+    },
+  })
+
+  const stakes = await Promise.all(
+    votes.map(({ voter }) =>
+      queryClient.fetchQuery(
+        chainQueries.nativeStakedBalance({
+          chainId,
+          address: voter,
+        })
+      )
+    )
+  )
+
+  return {
+    votes: votes.map((vote, index) => ({
+      ...vote,
+      staked: BigInt(stakes[index].amount),
+    })),
+    total: Number(pagination?.total ?? 0),
+  }
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -920,6 +1336,16 @@ export const chainQueries = {
       queryFn: () => fetchNativeDelegationInfo(queryClient, options),
     }),
   /**
+   * Fetch the unstaking duration in seconds for the native token.
+   */
+  nativeUnstakingDurationSeconds: (
+    options: Parameters<typeof fetchNativeUnstakingDurationSeconds>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'nativeUnstakingDurationSeconds', options],
+      queryFn: () => fetchNativeUnstakingDurationSeconds(options),
+    }),
+  /**
    * Fetch a validator.
    */
   validator: (options: Parameters<typeof fetchValidator>[0]) =>
@@ -934,14 +1360,6 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'dynamicGasPrice', options],
       queryFn: () => fetchDynamicGasPrice(options),
-    }),
-  /**
-   * Fetch the wasm contract-level admin for a contract.
-   */
-  wasmContractAdmin: (options: Parameters<typeof fetchWasmContractAdmin>[0]) =>
-    queryOptions({
-      queryKey: ['chain', 'wasmContractAdmin', options],
-      queryFn: () => fetchWasmContractAdmin(options),
     }),
   /**
    * Fetch the on-chain metadata for a denom if it exists.
@@ -973,6 +1391,27 @@ export const chainQueries = {
       queryFn: () => fetchChainSupportsV1GovModule(queryClient, options),
     }),
   /**
+   * Fetch whether or not a chain supports the ICA controller module.
+   */
+  supportsIcaController: (
+    options: Parameters<typeof fetchSupportsIcaController>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'supportsIcaController', options],
+      queryFn: () => fetchSupportsIcaController(options),
+    }),
+  /**
+   * Fetch governance module params.
+   */
+  govParams: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovParams>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govParams', options],
+      queryFn: () => fetchGovParams(queryClient, options),
+    }),
+  /**
    * Search chain governance proposals.
    */
   searchGovProposals: (options: SearchGovProposalsOptions) =>
@@ -1002,5 +1441,49 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'govProposals', options],
       queryFn: () => fetchGovProposals(queryClient, options),
+    }),
+  /**
+   * Fetch a chain governance proposal.
+   */
+  govProposal: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovProposal>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govProposal', options],
+      queryFn: () => fetchGovProposal(queryClient, options),
+    }),
+  /**
+   * Fetch the tally for a chain governance proposal.
+   */
+  govProposalTally: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovProposalTally>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govProposalTally', options],
+      queryFn: () => fetchGovProposalTally(queryClient, options),
+    }),
+  /**
+   * Fetch a vote for a chain governance proposal.
+   */
+  govProposalVote: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovProposalVote>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govProposalVote', options],
+      queryFn: () => fetchGovProposalVote(queryClient, options),
+    }),
+  /**
+   * Fetch paginated votes for a chain governance proposal.
+   */
+  govProposalVotes: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchGovProposalVotes>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'govProposalVotes', options],
+      queryFn: () => fetchGovProposalVotes(queryClient, options),
     }),
 }

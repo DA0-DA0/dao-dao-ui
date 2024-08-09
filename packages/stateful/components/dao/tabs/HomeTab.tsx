@@ -10,7 +10,10 @@ import {
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 
-import { useDaoWithWalletSecretNetworkPermit } from '../../../hooks'
+import {
+  useDaoGovernanceToken,
+  useDaoWithWalletSecretNetworkPermit,
+} from '../../../hooks'
 import { matchAndLoadCommon } from '../../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
@@ -29,7 +32,6 @@ export const HomeTab = () => {
 
   const {
     components: { ProfileCardMemberInfo },
-    hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
 
   const depositInfoSelectors = useMemo(
@@ -45,7 +47,7 @@ export const HomeTab = () => {
   )
 
   const { denomOrAddress: governanceDenomOrAddress } =
-    useCommonGovernanceTokenInfo?.() ?? {}
+    useDaoGovernanceToken() ?? {}
 
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =

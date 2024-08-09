@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader, WalletChainSwitcher } from '@dao-dao/stateful'
-import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
@@ -23,8 +22,6 @@ export default {
 } as ComponentMeta<typeof ProfileActions>
 
 const Template: ComponentStory<typeof ProfileActions> = (args) => {
-  const { loadedActions, categories } = useLoadedActionsAndCategories()
-
   const formMethods = useForm<AccountTxForm>({
     mode: 'onChange',
     defaultValues: {
@@ -32,14 +29,7 @@ const Template: ComponentStory<typeof ProfileActions> = (args) => {
     },
   })
 
-  return (
-    <ProfileActions
-      {...args}
-      categories={categories}
-      formMethods={formMethods}
-      loadedActions={loadedActions}
-    />
-  )
+  return <ProfileActions {...args} formMethods={formMethods} />
 }
 
 export const Default = Template.bind({})
@@ -48,7 +38,6 @@ Default.args = {
     console.log('execute!', data)
     alert('executed')
   },
-  loading: false,
   SuspenseLoader,
   saves: {
     loading: false,
@@ -79,8 +68,6 @@ Default.args = {
   WalletChainSwitcher,
 
   // Overwritten in template.
-  categories: [],
-  loadedActions: {},
   formMethods: {} as any,
 }
 

@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 
 import { AssetList, Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
+import uniq from 'lodash.uniq'
 import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
@@ -496,6 +497,39 @@ export const getIbcTransferInfoFromChannel = (
     channel,
     info,
   }
+}
+
+/**
+ * Get the chain IDs with an existing IBC transfer channel to the given chain.
+ */
+export const getIbcTransferChainIdsForChain = (chainId: string): string[] => {
+  const sourceChain = getChainForChainId(chainId)
+  return uniq(
+    ibc
+      .filter(
+        ({ chain_1, chain_2, channels }) =>
+          // Either chain is the source chain.
+          (chain_1.chain_name === sourceChain.chain_name ||
+            chain_2.chain_name === sourceChain.chain_name) &&
+          // Both chains exist in the registry.
+          maybeGetChainForChainName(chain_1.chain_name) &&
+          maybeGetChainForChainName(chain_2.chain_name) &&
+          // An ics20 transfer channel exists.
+          channels.some(
+            ({ chain_1, chain_2, version }) =>
+              version === 'ics20-1' &&
+              chain_1.port_id === 'transfer' &&
+              chain_2.port_id === 'transfer'
+          )
+      )
+      .map(({ chain_1, chain_2 }) => {
+        const otherChain =
+          chain_1.chain_name === sourceChain.chain_name ? chain_2 : chain_1
+        return getChainForChainName(otherChain.chain_name).chain_id
+      })
+      // Remove nonexistent osmosis testnet chain.
+      .filter((chainId) => chainId !== 'osmo-test-4')
+  )
 }
 
 export const getConfiguredChainConfig = (

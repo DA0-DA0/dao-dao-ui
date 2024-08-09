@@ -26,7 +26,7 @@ import {
   DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   IndexerDaoWithVetoableProposals,
-  ProposalModule,
+  ProposalModuleInfo,
   StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
@@ -41,7 +41,7 @@ import { matchAdapter as matchVotingModuleAdapter } from '../../voting-module-ad
 
 export const followingDaosWithProposalModulesSelector = selectorFamily<
   (DaoSource & {
-    proposalModules: ProposalModule[]
+    proposalModules: ProposalModuleInfo[]
   })[],
   {
     walletPublicKey: string
@@ -74,7 +74,7 @@ export const followingDaosWithProposalModulesSelector = selectorFamily<
 })
 
 export const daoCoreProposalModulesSelector = selectorFamily<
-  ProposalModule[],
+  ProposalModuleInfo[],
   WithChainId<{ coreAddress: string }>
 >({
   key: 'daoCoreProposalModules',

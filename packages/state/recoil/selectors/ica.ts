@@ -82,27 +82,3 @@ export const chainSupportsIcaHostSelector = selectorFamily<
       }
     },
 })
-
-/**
- * Whether or not the chain has ICA controller setup.
- */
-export const chainSupportsIcaControllerSelector = selectorFamily<
-  boolean,
-  WithChainId<{}>
->({
-  key: 'chainSupportsIcaController',
-  get:
-    ({ chainId }) =>
-    async ({ get }) => {
-      const ibc = get(ibcRpcClientForChainSelector(chainId))
-
-      try {
-        const { params: { controllerEnabled } = {} } =
-          await ibc.applications.interchain_accounts.controller.v1.params()
-
-        return !!controllerEnabled
-      } catch {
-        return false
-      }
-    },
-})

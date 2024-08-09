@@ -8,7 +8,7 @@ export interface TokenSwapStatusProps {
     amount: number
     decimals: number
     symbol: string
-    tokenLogoUrl?: string
+    tokenLogoUrl?: string | null
     provided: boolean
   }
   counterparty: {
@@ -16,7 +16,7 @@ export interface TokenSwapStatusProps {
     amount: number
     decimals: number
     symbol: string
-    tokenLogoUrl?: string
+    tokenLogoUrl?: string | null
     provided: boolean
   }
 

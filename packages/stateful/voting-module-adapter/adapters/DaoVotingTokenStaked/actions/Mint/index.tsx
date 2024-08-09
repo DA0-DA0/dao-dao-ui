@@ -1,101 +1,27 @@
-import { useCallback } from 'react'
-
+import { daoVotingTokenStakedExtraQueries } from '@dao-dao/state/query'
+import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
+import { GenericToken, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
-  DaoVotingTokenStakedSelectors,
-  contractDetailsSelector,
-} from '@dao-dao/state/recoil'
-import { HerbEmoji, useCachedLoadable } from '@dao-dao/stateless'
-import { ChainId } from '@dao-dao/types'
-import {
-  ActionChainContextType,
   ActionComponent,
+  ActionContextType,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseHideFromPicker,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  makeWasmMessage,
+  makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
 import { AddressInput } from '../../../../../components/AddressInput'
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo } from '../../hooks'
 import {
   MintData,
   MintComponent as StatelessMintComponent,
 } from './MintComponent'
-
-const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
-  const {
-    tokenFactoryIssuerAddress,
-    governanceToken: { decimals },
-  } = useGovernanceTokenInfo()
-
-  return useCallback(
-    ({ recipient, amount }: MintData) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: tokenFactoryIssuerAddress,
-            funds: [],
-            msg: {
-              mint: {
-                to_address: recipient,
-                amount: convertDenomToMicroDenomStringWithDecimals(
-                  amount,
-                  decimals
-                ),
-              },
-            },
-          },
-        },
-      }),
-    [decimals, tokenFactoryIssuerAddress]
-  )
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
-  msg: Record<string, any>
-) => {
-  const {
-    tokenFactoryIssuerAddress,
-    governanceToken: { decimals },
-  } = useGovernanceTokenInfo()
-
-  return objectMatchesStructure(msg, {
-    wasm: {
-      execute: {
-        contract_addr: {},
-        msg: {
-          mint: {
-            amount: {},
-            to_address: {},
-          },
-        },
-      },
-    },
-  }) && msg.wasm.execute.contract_addr === tokenFactoryIssuerAddress
-    ? {
-        match: true,
-        data: {
-          recipient: msg.wasm.execute.msg.mint.to_address,
-          amount: convertMicroDenomToDenomWithDecimals(
-            msg.wasm.execute.msg.mint.amount,
-            decimals
-          ),
-        },
-      }
-    : {
-        match: false,
-      }
-}
 
 const Component: ActionComponent = (props) => {
   const { governanceToken } = useGovernanceTokenInfo()
@@ -111,53 +37,149 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-// Only show in picker if using cw-tokenfactory-issuer contract.
-const useHideFromPicker: UseHideFromPicker = () => {
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const { chainContext } = useActionOptions()
+export class MintAction extends ActionBase<MintData> {
+  public readonly key = ActionKey.Mint
+  public readonly Component = Component
 
-  const tfIssuer = useCachedLoadable(
-    DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector({
-      contractAddress: votingModuleAddress,
-      chainId,
+  private governanceToken?: GenericToken
+  private tokenFactoryIssuerAddress: string | null = null
+
+  constructor(options: ActionOptions) {
+    super(options, {
+      Icon: HerbEmoji,
+      label: options.t('title.mint'),
+      description: options.t('info.mintActionDescription'),
+      // Hide until ready. Update this in setup.
+      hideFromPicker: true,
     })
-  )
-  const tfIssuerContract = useCachedLoadable(
-    tfIssuer.state === 'hasValue' && tfIssuer.contents
-      ? contractDetailsSelector({
-          contractAddress: tfIssuer.contents,
-          chainId,
-        })
-      : undefined
-  )
 
-  return (
-    tfIssuer.state !== 'hasValue' ||
-    !tfIssuer.contents ||
-    // Disallow minting on Miagloo if cw-tokenfactory-issuer is on old version.
-    (chainContext.chainId === ChainId.MigalooMainnet &&
-      chainContext.type === ActionChainContextType.Supported &&
-      (tfIssuerContract.state !== 'hasValue' ||
-        tfIssuerContract.contents.codeId ===
-          chainContext.config.codeIds.CwTokenfactoryIssuerCosmWasm))
-  )
-}
+    this.defaults = {
+      recipient: options.address,
+      amount: 1,
+    }
 
-export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
-  const useDefaults: UseDefaults<MintData> = () => ({
-    recipient: address,
-    amount: 1,
-  })
+    // Fire async init immediately since we may hide this action.
+    this.init().catch(() => {})
+  }
 
-  return {
-    key: ActionKey.Mint,
-    Icon: HerbEmoji,
-    label: t('title.mint'),
-    description: t('info.mintActionDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-    useHideFromPicker,
+  async setup() {
+    // Type-check.
+    if (
+      this.options.context.type !== ActionContextType.Dao ||
+      !this.options.context.dao.votingModule.getGovernanceTokenQuery
+    ) {
+      throw new Error('Invalid context for mint action')
+    }
+
+    this.governanceToken = await this.options.queryClient.fetchQuery(
+      this.options.context.dao.votingModule.getGovernanceTokenQuery()
+    )
+
+    this.tokenFactoryIssuerAddress = await this.options.queryClient.fetchQuery(
+      daoVotingTokenStakedExtraQueries.validatedTokenfactoryIssuerContract(
+        this.options.queryClient,
+        {
+          chainId: this.options.chain.chain_id,
+          address: this.options.context.dao.votingModule.address,
+        }
+      )
+    )
+
+    // Need token factory issuer address to mint.
+    this.metadata.hideFromPicker = !this.tokenFactoryIssuerAddress
+  }
+
+  encode({ recipient, amount: _amount }: MintData): UnifiedCosmosMsg[] {
+    if (!this.governanceToken || !this.tokenFactoryIssuerAddress) {
+      throw new Error('Action not ready')
+    }
+
+    const amount = convertDenomToMicroDenomStringWithDecimals(
+      _amount,
+      this.governanceToken.decimals
+    )
+
+    return [
+      // Set DAO minter allowance to the amount we're about to mint.
+      makeExecuteSmartContractMessage({
+        chainId: this.options.chain.chain_id,
+        sender: this.options.address,
+        contractAddress: this.tokenFactoryIssuerAddress,
+        msg: {
+          set_minter_allowance: {
+            address: this.options.address,
+            allowance: amount,
+          },
+        },
+      }),
+      // Mint.
+      makeExecuteSmartContractMessage({
+        chainId: this.options.chain.chain_id,
+        sender: this.options.address,
+        contractAddress: this.tokenFactoryIssuerAddress,
+        msg: {
+          mint: {
+            to_address: recipient,
+            amount,
+          },
+        },
+      }),
+    ]
+  }
+
+  match(messages: ProcessedMessage[]): ActionMatch {
+    return !!this.tokenFactoryIssuerAddress &&
+      messages.length >= 2 &&
+      // Set minter allowance.
+      objectMatchesStructure(messages[0].decodedMessage, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              set_minter_allowance: {
+                address: {},
+                allowance: {},
+              },
+            },
+          },
+        },
+      }) &&
+      messages[0].decodedMessage.wasm.execute.contract_addr ===
+        this.tokenFactoryIssuerAddress &&
+      // Mint.
+      objectMatchesStructure(messages[1].decodedMessage, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              mint: {
+                to_address: {},
+                amount: {},
+              },
+            },
+          },
+        },
+      }) &&
+      messages[1].decodedMessage.wasm.execute.contract_addr ===
+        this.tokenFactoryIssuerAddress
+      ? // Match both messages.
+        2
+      : false
+  }
+
+  decode([_, { decodedMessage }]: ProcessedMessage[]): MintData {
+    if (!this.governanceToken) {
+      throw new Error('Action not ready')
+    }
+
+    return {
+      recipient: decodedMessage.wasm.execute.msg.mint.to_address,
+      amount: convertMicroDenomToDenomWithDecimals(
+        decodedMessage.wasm.execute.msg.mint.amount,
+        this.governanceToken.decimals
+      ),
+    }
   }
 }

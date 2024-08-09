@@ -6,10 +6,10 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  DaoProposalMultipleUpdateConfigAction,
+  DaoProposalMultipleUpdatePreProposeConfigAction,
   NewProposal,
   depositInfoSelector as makeDepositInfoSelector,
-  makeUpdatePreProposeConfigActionMaker,
-  makeUpdateProposalConfigActionMaker,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -72,10 +72,13 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
           choices: [],
         }),
         newProposalFormTitleKey: 'title',
-        updateConfigActionMaker:
-          makeUpdateProposalConfigActionMaker(proposalModule),
-        updatePreProposeConfigActionMaker:
-          makeUpdatePreProposeConfigActionMaker(proposalModule),
+        updateConfigActionMaker: (options) =>
+          new DaoProposalMultipleUpdateConfigAction(options, proposalModule),
+        updatePreProposeConfigActionMaker: (options) =>
+          new DaoProposalMultipleUpdatePreProposeConfigAction(
+            options,
+            proposalModule
+          ),
       },
 
       // Selectors

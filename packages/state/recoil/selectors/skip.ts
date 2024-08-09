@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import {
   GenericToken,
@@ -49,34 +49,6 @@ export const skipAssetSelector = selectorFamily<
           },
         })
       ),
-})
-
-export const skipChainPfmEnabledSelector = selectorFamily<boolean, string>({
-  key: 'skipChainPfmEnabled',
-  get:
-    (chainId) =>
-    ({ get }) => {
-      const chain = get(skipChainSelector(chainId))
-      return chain?.ibc_capabilities?.cosmos_pfm ?? chain?.pfm_enabled ?? false
-    },
-})
-
-export const skipAllChainsPfmEnabledSelector = selectorFamily<
-  boolean,
-  string[]
->({
-  key: 'skipAllChainsPfmEnabled',
-  get:
-    (chainIds) =>
-    ({ get }) => {
-      const chainsPfmEnabled = get(
-        waitForAll(
-          chainIds.map((chainId) => skipChainPfmEnabledSelector(chainId))
-        )
-      )
-
-      return chainsPfmEnabled.every(Boolean)
-    },
 })
 
 export const skipRecommendedAssetsSelector = selectorFamily<

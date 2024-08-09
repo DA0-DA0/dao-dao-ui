@@ -1,14 +1,12 @@
-import { waitForAll } from 'recoil'
-
-import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
+  ErrorPage,
   Loader,
   PayEntityDisplay as StatelessPayEntityDisplay,
-  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import { StatefulPayEntityDisplayProps, TokenType } from '@dao-dao/types'
 
+import { useQueryTokens } from '../hooks'
 import { EntityDisplay } from './EntityDisplay'
 
 export const PayEntityDisplay = ({
@@ -17,21 +15,18 @@ export const PayEntityDisplay = ({
 }: StatefulPayEntityDisplayProps) => {
   const { chain_id: chainId } = useChain()
 
-  const tokens = useCachedLoading(
-    waitForAll(
-      coins.map(({ denom }) =>
-        genericTokenSelector({
-          chainId,
-          type: TokenType.Native,
-          denomOrAddress: denom,
-        })
-      )
-    ),
-    []
+  const tokens = useQueryTokens(
+    coins.map(({ denom }) => ({
+      chainId,
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    }))
   )
 
   return tokens.loading ? (
     <Loader size={32} />
+  ) : tokens.errored ? (
+    <ErrorPage error={tokens.error} />
   ) : (
     <StatelessPayEntityDisplay
       {...props}

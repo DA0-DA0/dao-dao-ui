@@ -364,7 +364,7 @@ export const treasuryValueHistorySelector = selectorFamily<
       let allAccounts: Account[] = isCommunityPool
         ? [
             {
-              type: AccountType.Native,
+              type: AccountType.Base,
               chainId: nativeChainId,
               address,
             },

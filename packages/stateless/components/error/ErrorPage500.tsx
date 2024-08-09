@@ -1,9 +1,9 @@
 import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonLink } from '@dao-dao/stateful'
 import { PageHeaderProps } from '@dao-dao/types'
 
+import { ButtonLink } from '../buttons'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {

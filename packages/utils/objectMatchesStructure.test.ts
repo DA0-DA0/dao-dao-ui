@@ -16,6 +16,16 @@ const object = {
     and_an_undefined_value: undefined,
   },
   another: false,
+  array_of_objs: [
+    {
+      a: 1,
+      b: 2,
+    },
+    {
+      c: 3,
+      d: 4,
+    },
+  ],
 }
 
 test('objectMatchesStructure', () => {
@@ -139,5 +149,90 @@ test('objectMatchesStructure', () => {
         ignoreNullUndefined: false,
       }
     )
+  ).toBe(false)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: {},
+    })
+  ).toBe(true)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [{}],
+    })
+  ).toBe(false)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [{}, {}],
+    })
+  ).toBe(true)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [
+        {
+          a: {},
+          b: {},
+        },
+        {},
+      ],
+    })
+  ).toBe(true)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [
+        {
+          a: {},
+          b: {},
+        },
+        {
+          d: {},
+        },
+      ],
+    })
+  ).toBe(true)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [
+        {
+          a: {},
+          b: {},
+        },
+        {
+          c: {},
+          d: {},
+        },
+      ],
+    })
+  ).toBe(true)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [
+        {
+          a: {},
+          b: {},
+        },
+        {
+          c: {},
+          d: {},
+          e: {},
+        },
+      ],
+    })
+  ).toBe(false)
+  expect(
+    objectMatchesStructure(object, {
+      array_of_objs: [
+        {
+          a: {},
+          b: {},
+        },
+        {
+          c: {},
+          d: {},
+        },
+        {
+          e: {},
+        },
+      ],
+    })
   ).toBe(false)
 })

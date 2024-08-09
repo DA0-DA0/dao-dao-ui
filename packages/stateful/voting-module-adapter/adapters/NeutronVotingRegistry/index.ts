@@ -38,8 +38,6 @@ export const NeutronVotingRegistryAdapter: VotingModuleAdapter = {
     },
 
     // Fields
-    fields: {
-      actionCategoryMakers: [],
-    },
+    fields: {},
   }),
 }

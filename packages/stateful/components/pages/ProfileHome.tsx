@@ -24,7 +24,7 @@ import {
 import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
 import { getConfiguredChainConfig, getConfiguredChains } from '@dao-dao/utils'
 
-import { WalletActionsProvider } from '../../actions/react/provider'
+import { WalletActionsProvider } from '../../actions/providers/wallet'
 import { useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { ProfileActions, ProfileDaos, ProfileWallet } from '../profile'

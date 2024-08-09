@@ -1,6 +1,6 @@
 import { NestedActionsEditorFormData } from './actions'
 import { Coin, UnifiedCosmosMsg } from './contracts'
-import { LoadingData } from './misc'
+import { LoadingDataWithError } from './misc'
 import { ProcessedTQ, ProposalTimestampInfo } from './proposal'
 import { CommunityPoolSpendProposal } from './protobuf/codegen/cosmos/distribution/v1beta1/distribution'
 import {
@@ -79,7 +79,7 @@ export type GovProposalWithDecodedContent =
 export type GovProposalWithMetadata = GovProposalWithDecodedContent & {
   timestampInfo: ProposalTimestampInfo
   votesInfo: GovProposalVotesInfo
-  walletVoteInfo: LoadingData<GovProposalWalletVoteInfo>
+  walletVoteInfo: LoadingDataWithError<GovProposalWalletVoteInfo>
   // Deposit needed to ender voting period.
   minDeposit: Coin[]
 }
@@ -114,7 +114,7 @@ export type GovProposalVotesInfo = {
 
 export type GovProposalWalletVoteInfo = {
   // Present if voted.
-  vote: WeightedVoteOption[] | undefined
+  vote: WeightedVoteOption[] | null
 }
 
 export type GovProposalActionDisplayProps = {
@@ -131,7 +131,12 @@ export type AllGovParams = Pick<
   threshold: number
   vetoThreshold: number
   minInitialDepositRatio: number
-} & Partial<Pick<GovParamsV1, 'expeditedMinDeposit'>>
+} & Partial<Pick<GovParamsV1, 'expeditedMinDeposit'>> & {
+    /**
+     * Whether or not the v1 gov module is supported on the chain.
+     */
+    supportsV1: boolean
+  }
 
 export const GOVERNANCE_PROPOSAL_TYPES = [
   TextProposal,
@@ -145,8 +150,6 @@ export const GOVERNANCE_PROPOSAL_TYPE_CUSTOM = 'CUSTOM'
 
 export type GovernanceProposalActionData = {
   chainId: string
-  // The address of the chain's gov module. Loaded in the background.
-  govModuleAddress?: string
   version: GovProposalVersion
   title: string
   description: string

@@ -1,5 +1,4 @@
 import { FlagOutlined, Timelapse } from '@mui/icons-material'
-import { useCallback, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +13,7 @@ import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
+  useActionsContext,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
@@ -21,19 +21,18 @@ import {
 import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
-  convertActionsToMessages,
   convertExpirationToDate,
   dateToWdhms,
+  encodeActions,
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useActionEncodeContext } from '../../../../../actions'
 import { useMembership, useWallet } from '../../../../../hooks'
 import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
   NewProposalForm,
-  SimulateProposal,
   UsePublishProposal,
 } from '../../types'
 import { useProcessQ } from '../hooks'
@@ -69,8 +68,6 @@ export const NewProposal = ({
 
   const { isMember = false, loading: membershipLoading } = useMembership()
 
-  const [loading, setLoading] = useState(false)
-
   // Info about if the DAO is paused. This selector depends on blockHeight,
   // which is refreshed periodically, so use a loadable to avoid unnecessary
   // re-renders.
@@ -94,25 +91,12 @@ export const NewProposal = ({
   )
 
   const {
-    simulateProposal: _simulateProposal,
+    simulateProposal,
     publishProposal,
     cannotProposeReason,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
-
-  const [simulating, setSimulating] = useState(false)
-  const simulateProposal: SimulateProposal = useCallback(
-    async (...params) => {
-      setSimulating(true)
-      try {
-        await _simulateProposal(...params)
-      } finally {
-        setSimulating(false)
-      }
-    },
-    [_simulateProposal]
-  )
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -128,7 +112,6 @@ export const NewProposal = ({
         }
         const blocksPerYear = blocksPerYearLoadable.contents
 
-        setLoading(true)
         try {
           const { proposalNumber, proposalId } = await publishProposal(
             newProposalData,
@@ -209,11 +192,9 @@ export const NewProposal = ({
                   },
                 }
           )
-          // Don't stop loading indicator on success since we are navigating.
         } catch (err) {
           console.error(err)
           toast.error(processError(err))
-          setLoading(false)
         }
       },
     [
@@ -232,24 +213,35 @@ export const NewProposal = ({
     ]
   )
 
-  const { loadedActions } = useLoadedActionsAndCategories()
+  const { actionMap } = useActionsContext()
+  const encodeContext = useActionEncodeContext()
 
   const getProposalDataFromFormData: StatelessNewProposalProps<
     NewProposalForm,
     NewProposalData
-  >['getProposalDataFromFormData'] = ({ title, description, choices }) => ({
+  >['getProposalDataFromFormData'] = async ({
+    title,
+    description,
+    choices,
+  }) => ({
     title,
     description,
     choices: {
-      options: choices.map((option) => ({
-        title: option.title,
-        description: option.description,
-        // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs. The
-        // contract execution will fail if the messages are invalid, so this is
-        // safe. The UI should ensure that the co rrect messages are used for
-        // the given chain anyways.
-        msgs: convertActionsToMessages(loadedActions, option.actionData) as any,
-      })),
+      options: await Promise.all(
+        choices.map(async (option) => ({
+          title: option.title,
+          description: option.description,
+          // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
+          // The contract execution will fail if the messages are invalid, so
+          // this is safe. The UI should ensure that the correct messages are
+          // used for the given chain anyways.
+          msgs: (await encodeActions({
+            actionMap,
+            encodeContext,
+            data: option.actionData,
+          })) as any,
+        }))
+      ),
     },
   })
 
@@ -283,7 +275,6 @@ export const NewProposal = ({
       }
       isPaused={isPaused}
       isWalletConnecting={isWalletConnecting}
-      loading={loading || simulating}
       proposalTitle={proposalTitle}
       simulateProposal={simulateProposal}
       simulationBypassExpiration={simulationBypassExpiration}

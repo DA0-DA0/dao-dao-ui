@@ -24,11 +24,6 @@ export type ProposalVoterProps<Vote extends unknown = unknown> = {
    */
   proposalOpen: boolean
   /**
-   * Whether or not the user has viewed all action pages. If they haven't, they
-   * can't vote.
-   */
-  seenAllActionPages?: boolean
-  /**
    * An optional class name for the container.
    */
   className?: string

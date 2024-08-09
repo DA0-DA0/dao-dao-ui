@@ -14,7 +14,6 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   Duration,
-  ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -111,7 +110,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === ProposalStatusEnum.Open,
+          status,
         })
       )
 

@@ -200,17 +200,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     return () => clearInterval(interval)
   }, [listeningForProposal, listeningForVote, refreshProposalAndAll])
 
-  // Whether or not the user has seen all the action pages.
-  const [seenAllActionPages, __setSeenAllActionPages] = useState(false)
-  const _setSeenAllActionPages = useCallback(
-    () => __setSeenAllActionPages(true),
-    []
-  )
-  const setSeenAllActionPages =
-    // Only set seen all action pages if the user can vote. This prevents the
-    // warning from appearing if the user can't vote.
-    canVote ? _setSeenAllActionPages : undefined
-
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
   // component's consistency. If we inline the component definition in the props
@@ -224,7 +213,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onVetoSuccess={onVetoSuccess}
         openSelfRelayExecute={setSelfRelayExecuteProps}
         voter={{
-          seenAllActionPages,
           onVoteSuccess,
         }}
       />
@@ -235,7 +223,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       onExecuteSuccess,
       onVetoSuccess,
       onVoteSuccess,
-      seenAllActionPages,
     ]
   )
 
@@ -273,10 +260,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
                 commonContext={proposalModuleAdapterCommonContext}
                 context={proposalModuleAdapterContext}
               >
-                <ProposalVoter
-                  onVoteSuccess={onVoteSuccess}
-                  seenAllActionPages={seenAllActionPages}
-                />
+                <ProposalVoter onVoteSuccess={onVoteSuccess} />
               </ProposalModuleAdapterBothProviders>
             </Popup>
           ) : undefined
@@ -299,19 +283,13 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         }
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
-            <DaoApproverProposalContentDisplay
-              proposalInfo={proposalInfo}
-              setSeenAllActionPages={setSeenAllActionPages}
-            />
+            <DaoApproverProposalContentDisplay proposalInfo={proposalInfo} />
           ) : isPreProposeApprovalProposal ? (
             <DaoPreProposeApprovalProposalContentDisplay
               proposalInfo={proposalInfo}
             />
           ) : (
-            <DaoProposalContentDisplay
-              proposalInfo={proposalInfo}
-              setSeenAllActionPages={setSeenAllActionPages}
-            />
+            <DaoProposalContentDisplay proposalInfo={proposalInfo} />
           )
         }
         voteTally={

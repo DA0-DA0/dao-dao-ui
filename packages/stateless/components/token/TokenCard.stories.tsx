@@ -124,7 +124,7 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
 
   return {
     owner: {
-      type: AccountType.Native,
+      type: AccountType.Base,
       address: 'owner',
       chainId: CHAIN_ID,
     },
