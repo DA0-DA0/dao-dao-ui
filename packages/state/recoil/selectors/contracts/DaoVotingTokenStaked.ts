@@ -332,36 +332,6 @@ export const infoSelector = contractInfoSelector
 
 ///! Custom selectors
 
-export const topStakersSelector = selectorFamily<
-  | {
-      address: string
-      balance: string
-      votingPowerPercent: number
-    }[]
-  | undefined,
-  QueryClientParams
->({
-  key: 'daoVotingTokenStakedTopStakers',
-  get:
-    (queryClientParams) =>
-    ({ get }) => {
-      const id =
-        get(refreshWalletBalancesIdAtom(undefined)) +
-        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
-
-      return (
-        get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'daoVotingTokenStaked/topStakers',
-            id,
-            noFallback: true,
-          })
-        ) ?? undefined
-      )
-    },
-})
-
 /**
  * Returns the cw-tokenfactory-issuer contract address if this voting module
  * uses a token factory denom and uses a cw-tokenfactory-issuer contract.

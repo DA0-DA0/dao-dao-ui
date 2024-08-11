@@ -1,10 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { DaoVotingNativeStakedSelectors } from '@dao-dao/state/recoil'
-import {
-  MembersTab as StatelessMembersTab,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { indexerQueries } from '@dao-dao/state/query'
+import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
@@ -13,6 +11,7 @@ import {
   DaoMemberCard,
   EntityDisplay,
 } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
@@ -21,10 +20,13 @@ export const MembersTab = () => {
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
   const { governanceToken } = useGovernanceTokenInfo()
 
-  const members = useCachedLoadingWithError(
-    DaoVotingNativeStakedSelectors.topStakersSelector({
+  const queryClient = useQueryClient()
+  const members = useQueryLoadingDataWithError(
+    indexerQueries.queryContract(queryClient, {
       chainId,
       contractAddress: votingModuleAddress,
+      formula: 'daoVotingNativeStaked/topStakers',
+      noFallback: true,
     }),
     (data) =>
       data?.map(
@@ -32,7 +34,7 @@ export const MembersTab = () => {
           address,
           balance,
           votingPowerPercent,
-        }): StatefulDaoMemberCardProps => ({
+        }: any): StatefulDaoMemberCardProps => ({
           address,
           balanceLabel: t('title.staked'),
           balance: {

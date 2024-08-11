@@ -1,10 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { DaoVotingTokenStakedSelectors } from '@dao-dao/state'
-import {
-  TokenAmountDisplay,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { indexerQueries } from '@dao-dao/state'
+import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
@@ -12,6 +10,7 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 import { useStakingInfo } from './useStakingInfo'
@@ -32,10 +31,13 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     supply,
   } = useGovernanceTokenInfo()
 
-  const loadingMembers = useCachedLoadingWithError(
-    DaoVotingTokenStakedSelectors.topStakersSelector({
+  const queryClient = useQueryClient()
+  const loadingMembers = useQueryLoadingDataWithError(
+    indexerQueries.queryContract(queryClient, {
       chainId,
       contractAddress: votingModuleAddress,
+      formula: 'daoVotingTokenStaked/topStakers',
+      noFallback: true,
     })
   )
 

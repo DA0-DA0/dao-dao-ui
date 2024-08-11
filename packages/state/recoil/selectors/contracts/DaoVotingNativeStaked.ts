@@ -231,35 +231,3 @@ export const totalPowerAtHeightSelector = selectorFamily<
     },
 })
 export const infoSelector = contractInfoSelector
-
-///! Custom selectors
-
-export const topStakersSelector = selectorFamily<
-  | {
-      address: string
-      balance: string
-      votingPowerPercent: number
-    }[]
-  | undefined,
-  QueryClientParams
->({
-  key: 'daoVotingNativeStakedTopStakers',
-  get:
-    (queryClientParams) =>
-    ({ get }) => {
-      const id =
-        get(refreshWalletBalancesIdAtom(undefined)) +
-        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
-
-      return (
-        get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'daoVotingNativeStaked/topStakers',
-            id,
-            noFallback: true,
-          })
-        ) ?? undefined
-      )
-    },
-})

@@ -214,38 +214,3 @@ export const isActiveSelector = selectorFamily<
       return await client.isActive(...params)
     },
 })
-
-///! Custom selectors
-
-export const topStakersSelector = selectorFamily<
-  | {
-      address: string
-      balance: string
-      votingPowerPercent: number
-    }[]
-  | undefined,
-  QueryClientParams & { limit?: number }
->({
-  key: 'daoVotingCw20StakedTopStakers',
-  get:
-    ({ limit, ...queryClientParams }) =>
-    ({ get }) => {
-      const id =
-        get(refreshWalletBalancesIdAtom(undefined)) +
-        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
-
-      return (
-        get(
-          queryContractIndexerSelector({
-            ...queryClientParams,
-            formula: 'daoVotingCw20Staked/topStakers',
-            args: {
-              limit,
-            },
-            id,
-            noFallback: true,
-          })
-        ) ?? undefined
-      )
-    },
-})
