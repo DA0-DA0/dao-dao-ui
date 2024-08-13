@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.5.0-rc.1",
+  "version": "2.5.0-rc.2",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -26,7 +26,7 @@
     "utils": "yarn workspace @dao-dao/utils",
     "email": "yarn workspace @dao-dao/email",
     "dispatch": "yarn workspace @dao-dao/dispatch",
-    "publish-all": "lerna publish --no-private from-package"
+    "publish-all": "find . -name '*.log' -delete && lerna publish --no-private from-package"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
