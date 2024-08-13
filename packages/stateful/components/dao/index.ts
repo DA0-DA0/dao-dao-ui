@@ -1,6 +1,5 @@
 export * from './tabs'
 
-export * from './tabs/HomeTab'
 export * from './CreateDaoForm'
 export * from './CreateDaoPermit'
 export * from './CreateDaoProposal'
