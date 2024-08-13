@@ -27,6 +27,12 @@ interface ChainConfig {
  * Map chain ID to deployment config.
  */
 export const chains: Record<string, ChainConfig> = {
+  [ChainId.CosmosHubMainnet]: {
+    listenerCodeId: 17,
+    noteCodeId: 18,
+    proxyCodeId: 19,
+    voiceCodeId: 20,
+  },
   [ChainId.JunoMainnet]: {
     listenerCodeId: 3319,
     noteCodeId: 3320,
@@ -55,7 +61,7 @@ export const chains: Record<string, ChainConfig> = {
     listenerCodeId: 229,
     noteCodeId: 230,
     proxyCodeId: 231,
-    voiceCodeId: 2373,
+    voiceCodeId: 578,
   },
   [ChainId.OraichainMainnet]: {
     listenerCodeId: 1567,

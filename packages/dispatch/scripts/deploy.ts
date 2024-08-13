@@ -91,9 +91,7 @@ const main = async () => {
     slip44,
   } = getChainForChainId(chainId)
 
-  await queryClient.prefetchQuery(
-    chainQueries.dynamicGasPrice({ chainId: chainId })
-  )
+  await queryClient.prefetchQuery(chainQueries.dynamicGasPrice({ chainId }))
 
   const signer = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
     prefix: bech32Prefix,

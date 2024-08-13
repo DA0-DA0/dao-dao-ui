@@ -6,8 +6,8 @@ import { TokenBasedCreator } from './TokenBased'
 
 export const getCreators = (): readonly DaoCreator[] => [
   MembershipBasedCreator,
-  NftBasedCreator,
   TokenBasedCreator,
+  NftBasedCreator,
 ]
 
 export const getCreatorById = (id: string) =>

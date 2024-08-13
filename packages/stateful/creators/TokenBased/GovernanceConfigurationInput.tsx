@@ -330,9 +330,12 @@ export const GovernanceConfigurationInput = ({
           {
             label: t('button.createAToken'),
             value: GovernanceTokenType.New,
-            disabled: config.tokenCreationUnderDevelopment,
+            disabled:
+              config.tokenCreationUnderDevelopment || config.noTokenFactory,
             tooltip: config.tokenCreationUnderDevelopment
               ? t('info.tokenCreationUnderDevelopment')
+              : config.noTokenFactory
+              ? t('info.tokenCreationNoTokenFactory')
               : undefined,
           },
           {

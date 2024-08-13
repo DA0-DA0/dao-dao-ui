@@ -179,6 +179,12 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   tokenCreationUnderDevelopment?: boolean
   /**
+   * Disallow creating new tokens for token-based DAOs and show a tooltip that
+   * token creation is disabled due to the lack of token factory. Defaults to
+   * false.
+   */
+  noTokenFactory?: boolean
+  /**
    * Token creation factory address to use during DAO creation.
    */
   tokenCreationFactoryAddress?: string
@@ -257,6 +263,7 @@ export type CodeIdConfig = {
   DaoPreProposeSingle: number
   DaoProposalMultiple: number
   DaoProposalSingle: number
+  DaoRewardsDistributor?: number
   DaoVotingCw4: number
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number

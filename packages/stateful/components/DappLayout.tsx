@@ -1,3 +1,4 @@
+import uniqBy from 'lodash.uniqby'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -170,8 +171,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
               ? { loading: true }
               : {
                   loading: false,
-                  data: followingDaoDropdownInfos.data
-                    .flat()
+                  data: uniqBy(
+                    followingDaoDropdownInfos.data.flat(),
+                    (d) => d.chainId + d.coreAddress
+                  )
                     // Alphabetize.
                     .sort((a, b) => a.name.localeCompare(b.name)),
                 }

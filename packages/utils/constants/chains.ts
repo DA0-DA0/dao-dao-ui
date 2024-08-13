@@ -128,6 +128,212 @@ export const ibc: IBCInfo[] = [
  */
 export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
   {
+    chainId: ChainId.CosmosHubMainnet,
+    name: 'cosmos',
+    mainnet: true,
+    accentColor: '#5064fb',
+    factoryContractAddress:
+      'cosmos18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3q795n8y',
+    explorerUrlTemplates: {
+      tx: 'https://mintscan.io/cosmos/tx/REPLACE',
+      gov: 'https://mintscan.io/cosmos/proposals',
+      govProp: 'https://mintscan.io/cosmos/proposals/REPLACE',
+      wallet: 'https://mintscan.io/cosmos/account/REPLACE',
+    },
+    // Disable token creation.
+    noTokenFactory: true,
+    daoCreatorDisabled: {
+      // No NFTs on the Hub.
+      [NftBasedCreatorId]: 'unsupported',
+    },
+    codeIdsVersion: ContractVersion.V250,
+    codeIds: {
+      Cw1Whitelist: 2,
+      Cw4Group: 3,
+      CwPayrollFactory: 5,
+      CwTokenSwap: 6,
+      CwVesting: 7,
+      DaoCore: 1,
+      DaoPreProposeApprovalSingle: 8,
+      DaoPreProposeApprover: 9,
+      DaoPreProposeMultiple: 10,
+      DaoPreProposeSingle: 11,
+      DaoProposalMultiple: 12,
+      DaoProposalSingle: 13,
+      DaoRewardsDistributor: 14,
+      DaoVotingCw4: 15,
+      DaoVotingTokenStaked: 16,
+
+      // unused
+      CwTokenfactoryIssuerMain: -1,
+      DaoMigrator: -1,
+      DaoVotingCw721Staked: -1,
+    },
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // cosmoshub
+        note: 'cosmos1gya5c9y6yehyps5kz9vt2dptgkncvvx76mf05jext4axh9x6vpxqt6yuut',
+        // cosmoshub
+        listener:
+          'cosmos1r22k3my03clkws8phjhfcc3ny45p939hwkh0f05wjyl27a3y8cwskfw8dl',
+        // juno
+        voice:
+          'juno13w4mgqg5qxy2x6kt4ke0ednuga0ja7duvnd3tnku4390udv9tnyqdp5mus',
+        // cosmoshub
+        localConnection: 'connection-372',
+        // juno
+        remoteConnection: 'connection-2',
+        // cosmoshub
+        localChannel: 'channel-982',
+        // juno
+        remoteChannel: 'channel-600',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // cosmoshub
+        note: 'cosmos188w3894z52ljp85s98lvaqufnql60y9nvpxk8a893qj92s5rqfsqswlr0l',
+        // cosmoshub
+        listener:
+          'cosmos14nurau9scuqhr3sczktx63sr8kdpvwh00zyftamrrn685vex2uusp827m6',
+        // osmosis
+        voice:
+          'osmo1s3j43su8937yeng64y5fld3senneh9jqtyme9yh7tg06k67hu4vqgszday',
+        // cosmoshub
+        localConnection: 'connection-257',
+        // osmosis
+        remoteConnection: 'connection-1',
+        // cosmoshub
+        localChannel: 'channel-983',
+        // osmosis
+        remoteChannel: 'channel-80710',
+      },
+      [ChainId.StargazeMainnet]: {
+        // cosmoshub
+        note: 'cosmos1gxv4mwdq084q8hrmrvksk9zr8cnlekgwjk27dg2tdgpp7yjd32ls2fy54w',
+        // cosmoshub
+        listener:
+          'cosmos1fxkx7wd4q7z5zgm8qh0vaxptx4gp0ppgjm0ke56jr55azpzecpcsc4teug',
+        // stargaze
+        voice:
+          'stars1dly5ml5wfmw29t8ycqr6c0vrl2qkt3rvsxdge9xdasqn7vgemydsdgxp6q',
+        // cosmoshub
+        localConnection: 'connection-918',
+        // stargaze
+        remoteConnection: 'connection-256',
+        // cosmoshub
+        localChannel: 'channel-984',
+        // stargaze
+        remoteChannel: 'channel-382',
+      },
+      [ChainId.NeutronMainnet]: {
+        // cosmoshub
+        note: 'cosmos105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74esw0ea9e',
+        // cosmoshub
+        listener:
+          'cosmos15v8jqq6aqhsuykdgdevx3qqcj9lp4h27ypsycds4cmv6er9qv0vsy2vmrm',
+        // neutron
+        voice:
+          'neutron14684aj2x67uuyuafcytfhg9kmyqat4836frg4e3svuzl54pcx4yse5spua',
+        // cosmoshub
+        localConnection: 'connection-809',
+        // neutron
+        remoteConnection: 'connection-0',
+        // cosmoshub
+        localChannel: 'channel-985',
+        // neutron
+        remoteChannel: 'channel-4818',
+      },
+      [ChainId.TerraMainnet]: {
+        // cosmoshub
+        note: 'cosmos1lqgdq9u8zhcvwwwz3xjswactrtq6qzptmlzlh6xspl34dxq32uhq56xy20',
+        // cosmoshub
+        listener:
+          'cosmos1csmy3sr5qx58k00cw97sq2h22g7yfwc2frrx73kw0zd93ujsnn2qfu7g3g',
+        // terra2
+        voice:
+          'terra16s3hnkgz3suq45fe084yey7zw62m8en8wgc9fsmhe0gesunsv5jqlvrzjc',
+        // cosmoshub
+        localConnection: 'connection-551',
+        // terra2
+        remoteConnection: 'connection-1',
+        // cosmoshub
+        localChannel: 'channel-986',
+        // terra2
+        remoteChannel: 'channel-524',
+      },
+      [ChainId.OraichainMainnet]: {
+        // cosmoshub
+        note: 'cosmos1elaymnd2epmfr498h2x9p2nezc4eklv95uv92u9csfs8wl75w7yqmflnyn',
+        // cosmoshub
+        listener:
+          'cosmos15fnweczx7273jc6tmuuacmkl6zk6mq8ffh8r0artxp9srdpctcesfm6z2u',
+        // oraichain
+        voice:
+          'orai1zugx655l70dv5y426hlpq29dvaukkdvnfqr8qxtun9mp2mf409eq5aqzs9',
+        // cosmoshub
+        localConnection: 'connection-497',
+        // oraichain
+        remoteConnection: 'connection-22',
+        // cosmoshub
+        localChannel: 'channel-988',
+        // oraichain
+        remoteChannel: 'channel-265',
+      },
+      [ChainId.InjectiveMainnet]: {
+        // cosmoshub
+        note: 'cosmos1utve8x4s2jq8wua78mtagwusyu0u64ldlx9sc8pff00077rhqwdswlqs87',
+        // cosmoshub
+        listener:
+          'cosmos1m0z0kk0qqug74n9u9ul23e28x5fszr628h20xwt6jywjpp64xn4quyeg9v',
+        // injective
+        voice: 'inj1dd8htv4v9kr0xhty9kg7hnsmlmy2zk8uxkamnd',
+        // cosmoshub
+        localConnection: 'connection-388',
+        // injective
+        remoteConnection: 'connection-2',
+        // cosmoshub
+        localChannel: 'channel-989',
+        // injective
+        remoteChannel: 'channel-342',
+      },
+      [ChainId.BitsongMainnet]: {
+        // cosmoshub
+        note: 'cosmos153vp64h0jlenzwspje0qza5lz8px9sdf63hcdaljtqcghewgl32sk2sa52',
+        // cosmoshub
+        listener:
+          'cosmos1sklnkaxkmnhhrqu8e4csx6tzepvpjf4e4qj5qh0sf4aa2ngr3eds2kf2hf',
+        // bitsong
+        voice:
+          'bitsong1ptdgvq2ykp0xxd9njuas2pdj8drlhygpg0mllmewq2w9e0pnkh5qyycvx4',
+        // cosmoshub
+        localConnection: 'connection-395',
+        // bitsong
+        remoteConnection: 'connection-2',
+        // cosmoshub
+        localChannel: 'channel-990',
+        // bitsong
+        remoteChannel: 'channel-36',
+      },
+      [ChainId.OmniflixHubMainnet]: {
+        // cosmoshub
+        note: 'cosmos1sxujcvele5eqtx0xc4wuy6jr0m28y0yt8spn7efc3527vc2j2xrqqt7jrf',
+        // cosmoshub
+        listener:
+          'cosmos1e6ykfrslyaex794s9wuxyp8cn3gjj5v9wsa7r7nd4g76nluspacq7u6zk4',
+        // omniflixhub
+        voice:
+          'omniflix1qqlk2773dvj8cyv3ftnzvyrknq78yryghp3uyumnumaxu656yres82laf6',
+        // cosmoshub
+        localConnection: 'connection-501',
+        // omniflixhub
+        remoteConnection: 'connection-19',
+        // cosmoshub
+        localChannel: 'channel-991',
+        // omniflixhub
+        remoteChannel: 'channel-44',
+      },
+    },
+  },
+  {
     chainId: ChainId.JunoMainnet,
     name: 'juno',
     mainnet: true,
@@ -187,6 +393,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     // - Injective
     // - Neutron
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // juno
+        note: 'juno1hwuzgtg682yelk75yvxv8vfqunqvvv5ztwytvvvtenram6rccffs4gkdsg',
+        // juno
+        listener:
+          'juno1gjt9fu3y59dch546vzrktywgmuekyznjc6y7k6v9qdrska08dkss2vdfes',
+        // cosmoshub
+        voice:
+          'cosmos1xz4cya4qm2ws6nzperhvc40wdjcq4872fl6d3j2s4cytyx8j80eq0zurq9',
+        // juno
+        localConnection: 'connection-2',
+        // cosmoshub
+        remoteConnection: 'connection-372',
+        // juno
+        localChannel: 'channel-603',
+        // cosmoshub
+        remoteChannel: 'channel-994',
+      },
       [ChainId.OsmosisMainnet]: {
         // juno
         note: 'juno1ads7gcpje0y5jxhtn3ntsqs8kg3ahch9u953jk6v0njq4l39m3us5sxw68',
@@ -414,6 +638,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // osmosis
+        note: 'osmo1fnq0y2wdhk92rhnp734yy46cmsuvn5ff5sajgwp9q98ypnjlvw9q7mglzh',
+        // osmosis
+        listener:
+          'osmo1jz05sz2mc6h7fvuwleruvxaj8ccj7kdn3m6w4vg0xgk83hga8e3sqhs6xg',
+        // cosmoshub
+        voice:
+          'cosmos1ed304eumv07zlkc8srffmr3mh8xlk286xex820gyahpgts3c540s23wxu7',
+        // osmosis
+        localConnection: 'connection-1',
+        // cosmoshub
+        remoteConnection: 'connection-257',
+        // osmosis
+        localChannel: 'channel-80713',
+        // cosmoshub
+        remoteChannel: 'channel-996',
+      },
       [ChainId.JunoMainnet]: {
         // osmosis
         note: 'osmo1zu9sa2yu9ffdk6pxsgjzgp56wqgyzdh8e0ndn7crr3d0xhvtj8uqdv3dqa',
@@ -688,6 +930,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // neutron
+        note: 'neutron1ca7fwa0yjww52a2pvus8ykzwsgqxfrg6ljkcw74trhg825updqjss4xwy8',
+        // neutron
+        listener:
+          'neutron1unsyghg06zt3mqatcwnv4eg23ckswg98um87ectawj0h8ygu6rysanus5d',
+        // cosmoshub
+        voice:
+          'cosmos1yphzt0jh8l5n77e5ytlqh2x84nej92whjl8k72g9wnds3cp59pws3h0mdh',
+        // neutron
+        localConnection: 'connection-0',
+        // cosmoshub
+        remoteConnection: 'connection-809',
+        // neutron
+        localChannel: 'channel-4819',
+        // cosmoshub
+        remoteChannel: 'channel-1002',
+      },
       [ChainId.OsmosisMainnet]: {
         // neutron
         note: 'neutron1767kfqeglqyctuqsmvyzgjecs60lpqju2f590smxevk9duq5fhaqgk5eca',
@@ -887,6 +1147,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // stargaze
+        note: 'stars1jhr5fp88qvjp6arf686td2xr4h6czpgrz4f392uh4x5vn6qsp7sqsp4hq2',
+        // stargaze
+        listener:
+          'stars1krf32kcd247urdagcxjfc0h8fxy94h4gf8yczpa94p73gv74yw4s3gyvf6',
+        // cosmoshub
+        voice:
+          'cosmos17aatfk5ktm834djmyk3dsgr48mja54e8hjzcs4c8vyunlpacc7qswcmuwn',
+        // stargaze
+        localConnection: 'connection-256',
+        // cosmoshub
+        remoteConnection: 'connection-918',
+        // stargaze
+        localChannel: 'channel-383',
+        // cosmoshub
+        remoteChannel: 'channel-1005',
+      },
       [ChainId.OsmosisMainnet]: {
         // stargaze
         note: 'stars1p4f96xz9pz8264ccgapz2l6xu82l5cj0jvvng0ltlm3dw2sxqdrs43acfl',
@@ -1277,6 +1555,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 2645,
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // terra2
+        note: 'terra1r7fej5936y57hzhavw6wt6lld5vq27av3ftl7jjvlgcc4lh0ehrs2n9cvy',
+        // terra2
+        listener:
+          'terra13ynfm5p6k3yaavm9rfyffsa4e5rtxsgl9mmtxnqtnwpcy5t5t75ql66wr8',
+        // cosmoshub
+        voice:
+          'cosmos1rsrefjc7xnl6d6fm6avl706nu5y6nkpxaa9qnpqpzs67pk7vzjdq647dhu',
+        // terra2
+        localConnection: 'connection-1',
+        // cosmoshub
+        remoteConnection: 'connection-551',
+        // terra2
+        localChannel: 'channel-525',
+        // cosmoshub
+        remoteChannel: 'channel-1007',
+      },
       [ChainId.JunoMainnet]: {
         // terra
         note: 'terra1dfwrwcjmsnprmr9938sg3d2885vm84cg2jfxtznf7kr59nrrxdtsdgnqu8',
@@ -1569,6 +1865,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw20Staked: 1566,
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // oraichain
+        note: 'orai1gzxhsxnd5etp383jjxqu4zeqv347pck7m9xq6sxv47lmwkwyl9aquec3nz',
+        // oraichain
+        listener:
+          'orai1h59fpkdvgkng8eh45pk9dy38jdjrnxsv2rq5nj6z3zkjhwjc7djq5g57qy',
+        // cosmoshub
+        voice:
+          'cosmos18cyd5amev24hecxlktffagty6gnkvsefphtxtth5adhdsx2fnk9qseeluh',
+        // oraichain
+        localConnection: 'connection-22',
+        // cosmoshub
+        remoteConnection: 'connection-497',
+        // oraichain
+        localChannel: 'channel-266',
+        // cosmoshub
+        remoteChannel: 'channel-1013',
+      },
       [ChainId.OsmosisMainnet]: {
         // oraichain
         note: 'orai1hvfzt6f7n7pea803j633089rsh23qhgmexk3j844lsegnyfxjluqt0e9pq',
@@ -1799,6 +2113,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwTokenfactoryIssuerMain: -1,
     },
     polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // bitsong
+        note: 'bitsong1svze9hf5s42syg9yvfem62vp3affx39ek2wf99ws0sllaxc6zsfsl4vrq0',
+        // bitsong
+        listener:
+          'bitsong1zn5zg8flc6jdeyqeludphwjhkw3lkqlc8gcdnhyj9rc9ez5j36qs6ktszm',
+        // cosmoshub
+        voice:
+          'cosmos1hkcp8avzchehvt5y8373ac0xyqklz6yalyz2q2t28k0qpvpkeyzsd40y2y',
+        // bitsong
+        localConnection: 'connection-2',
+        // cosmoshub
+        remoteConnection: 'connection-395',
+        // bitsong
+        localChannel: 'channel-37',
+        // cosmoshub
+        remoteChannel: 'channel-1014',
+      },
       [ChainId.JunoMainnet]: {
         // bitsong
         note: 'bitsong1ucgr536rjpw3qvt3tkyx2w5w98llfpfe8v6eacud3g7tl3jdh07qkqz6hh',
@@ -1875,6 +2207,26 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
 
       // Unused
       DaoVotingCw721Staked: -1,
+    },
+    polytone: {
+      [ChainId.CosmosHubMainnet]: {
+        // omniflixhub
+        note: 'omniflix1cll3u3wuwx0qvnu9lnyu74m233y5xz8yv47jdz6ynmkxgg4gncuqgnfn03',
+        // omniflixhub
+        listener:
+          'omniflix1x9zrl4gvf0780rcxnv9fjx2h52jg6zxpxzgq6lhhjqyrg0ue4dyq9n9g2q',
+        // cosmoshub
+        voice:
+          'cosmos1gn59sajfpqdlzxwmnnl69r7k2rxdt52l0nwwgalaa8nn2h8vrjzsw7t83m',
+        // omniflixhub
+        localConnection: 'connection-19',
+        // cosmoshub
+        remoteConnection: 'connection-501',
+        // omniflixhub
+        localChannel: 'channel-45',
+        // cosmoshub
+        remoteChannel: 'channel-1015',
+      },
     },
   },
   {
@@ -2489,22 +2841,6 @@ export const CHAIN_ENDPOINTS: Partial<
   },
 }
 
-const INITIAL_CONFIGURED_CHAINS: BaseChainConfig[] = [
-  {
-    chainId: ChainId.CosmosHubMainnet,
-    name: 'cosmos',
-    mainnet: true,
-    accentColor: '#5064fb',
-    explorerUrlTemplates: {
-      tx: 'https://ping.pub/cosmos/tx/REPLACE',
-      gov: 'https://ping.pub/cosmos/gov',
-      govProp: 'https://ping.pub/cosmos/gov/REPLACE',
-      wallet: 'https://ping.pub/cosmos/account/REPLACE',
-    },
-  },
-  ...SUPPORTED_CHAINS,
-]
-
 // The chains not to show in the governance UI.
 const NO_GOV_CHAIN_IDS = ['noble-1']
 
@@ -2513,12 +2849,12 @@ const NO_GOV_CHAIN_IDS = ['noble-1']
  * DAO DAO is deployed on, or other chains that show up in the governance UI.
  */
 export const CONFIGURED_CHAINS: BaseChainConfig[] = [
-  ...INITIAL_CONFIGURED_CHAINS,
+  ...SUPPORTED_CHAINS,
   // Add other chains from chain registry.
   ...chains
     .flatMap((chain): BaseChainConfig | [] => {
       // Skip if chain already exists in configured chains.
-      if (INITIAL_CONFIGURED_CHAINS.some((c) => c.chainId === chain.chain_id)) {
+      if (SUPPORTED_CHAINS.some((c) => c.chainId === chain.chain_id)) {
         return []
       }
 

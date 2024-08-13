@@ -87,6 +87,7 @@ enum RelayStatus {
 }
 
 const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
+  [ChainId.CosmosHubMainnet]: 0.06 * 10 ** 6,
   [ChainId.JunoMainnet]: 1 * 10 ** 6,
   [ChainId.OsmosisMainnet]: 0.1 * 10 ** 6,
   [ChainId.StargazeMainnet]: 2 * 10 ** 6,
