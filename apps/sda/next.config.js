@@ -67,7 +67,7 @@ const config = {
     },
     {
       source: '/:locale',
-      destination: process.env.NEXT_PUBLIC_SDA_DEFAULT_DAO_ADDRESS,
+      destination: '/' + process.env.NEXT_PUBLIC_SDA_DEFAULT_DAO_ADDRESS,
       permanent: false,
       locale: false,
     },
