@@ -366,6 +366,7 @@ const main = async () => {
       DaoPreProposeSingle: codeIdMap['dao_pre_propose_single'] ?? -1,
       DaoProposalMultiple: codeIdMap['dao_proposal_multiple'] ?? -1,
       DaoProposalSingle: codeIdMap['dao_proposal_single'] ?? -1,
+      DaoRewardsDistributor: codeIdMap['dao_rewards_distributor'] ?? -1,
       DaoVotingCw4: codeIdMap['dao_voting_cw4'] ?? -1,
       DaoVotingCw721Staked: codeIdMap['dao_voting_cw721_staked'] ?? -1,
       DaoVotingTokenStaked: codeIdMap['dao_voting_token_staked'] ?? -1,

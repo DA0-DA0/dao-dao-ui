@@ -158,7 +158,7 @@ export const UnstakingModal = ({
               })}
             />
 
-            <p>{t('title.numTasks', { count: unstaking.length })}</p>
+            <p>{t('title.numPending', { count: unstaking.length })}</p>
           </div>
 
           {unstaking.length > 0 && (

@@ -2175,37 +2175,35 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: true,
     accentColor: '#d71d6a',
     factoryContractAddress:
-      'omniflix13ehuhysn5mqjeaheeuew2gjs785f6k7jm8vfsqg3jhtpkwppcmzqjrdywp',
+      'omniflix1zrhumzxl9hexjwh95te3as6fcjv46cty8z8ephtg70f5am3pw46sk93q7l',
     explorerUrlTemplates: {
       tx: 'https://ping.pub/omniflixhub/tx/REPLACE',
       gov: 'https://ping.pub/omniflixhub/gov',
       govProp: 'https://ping.pub/omniflixhub/gov/REPLACE',
       wallet: 'https://ping.pub/omniflixhub/account/REPLACE',
     },
-    daoCreatorDisabled: {
-      // NFT DAOs not yet ready.
-      [NftBasedCreatorId]: 'underDevelopment',
-    },
-    codeIdsVersion: ContractVersion.V242,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       Cw1Whitelist: 5,
       Cw4Group: 6,
-      CwPayrollFactory: 8,
-      CwTokenSwap: 9,
-      CwTokenfactoryIssuerMain: 21,
-      CwVesting: 10,
-      DaoCore: 11,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 13,
-      DaoPreProposeApprover: 14,
-      DaoPreProposeMultiple: 15,
-      DaoPreProposeSingle: 16,
-      DaoProposalMultiple: 17,
-      DaoProposalSingle: 18,
-      DaoVotingCw4: 19,
-      DaoVotingTokenStaked: 22,
+      CwPayrollFactory: 27,
+      CwTokenSwap: 28,
+      CwTokenfactoryIssuerMain: 29,
+      CwVesting: 30,
+      DaoCore: 31,
+      DaoPreProposeApprovalSingle: 32,
+      DaoPreProposeApprover: 33,
+      DaoPreProposeMultiple: 34,
+      DaoPreProposeSingle: 35,
+      DaoProposalMultiple: 36,
+      DaoProposalSingle: 37,
+      DaoRewardsDistributor: 38,
+      DaoVotingCw4: 39,
+      DaoVotingOnftStaked: 25,
+      DaoVotingTokenStaked: 40,
 
       // Unused
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
       DaoVotingCw721Staked: -1,
     },
     polytone: {
