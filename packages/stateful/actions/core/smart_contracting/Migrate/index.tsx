@@ -174,8 +174,7 @@ const Component: ActionComponent = (props) => {
         <StatelessMigrateContractComponent
           {...props}
           options={{
-            contractAdmin:
-              admin.state === 'hasValue' ? admin.getValue() : undefined,
+            contractAdmin: admin.valueMaybe(),
             onContractChange: (contract: string) => setContract(contract),
           }}
         />

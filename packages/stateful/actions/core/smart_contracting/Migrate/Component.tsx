@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  getChainAddressForActionOptions,
   makeValidateAddress,
   validateJSON,
   validatePositive,
@@ -33,9 +34,11 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   options: { onContractChange, contractAdmin },
 }) => {
   const { t } = useTranslation()
-  const { address } = useActionOptions()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const options = useActionOptions()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { register, control } = useFormContext()
+
+  const address = getChainAddressForActionOptions(options, chainId)
 
   return (
     <>
@@ -82,7 +85,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
       </div>
 
-      {contractAdmin !== address && (
+      {!!address && !!contractAdmin && contractAdmin !== address && (
         <StatusCard content={t('info.notAdmin')} style="warning" />
       )}
 
