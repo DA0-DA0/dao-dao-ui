@@ -104,6 +104,7 @@ export const TokenLine = <T extends TokenCardInfo>(
           decimals={token.decimals}
           hideSymbol
           showFullAmount
+          wrapperClassName="justify-end"
         />
 
         {/* Only show on larger screen. */}
