@@ -331,13 +331,13 @@ export const makeCombineQueryResultsIntoLoadingDataWithError =
       firstLoad === 'all'
         ? results.some((r) => r.isPending)
         : firstLoad === 'one'
-        ? results.every((r) => r.isPending)
+        ? results.length > 0 && results.every((r) => r.isPending)
         : false
     const isError =
       errorIf === 'any'
         ? results.some((r) => r.isError)
         : errorIf === 'all'
-        ? results.every((r) => r.isError)
+        ? results.length > 0 && results.every((r) => r.isError)
         : false
 
     if (isLoading) {
