@@ -7,6 +7,7 @@ import {
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
+import { mustGetSupportedChainConfig } from '@dao-dao/utils'
 
 import { makeCreatePostActionMaker } from './actions/CreatePost'
 import { makeDeletePostActionMaker } from './actions/DeletePost'
@@ -23,6 +24,9 @@ export const PressWidget: Widget<PressData> = {
   visibilityContext: WidgetVisibilityContext.Always,
   Renderer,
   Editor,
+  // Must have cw721 base to mint NFTs.
+  isChainSupported: (chainId) =>
+    (mustGetSupportedChainConfig(chainId).codeIds.Cw721Base ?? 0) > 0,
   getActionCategoryMakers: (data) => {
     // Make makers in outer function so they're not remade on every render.
     const actionMakers = [

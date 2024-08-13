@@ -289,11 +289,15 @@ export const makeUpdatePreProposeConfigActionMaker =
                 ? {
                     submission_policy: anyoneCanPropose
                       ? {
-                          anyone: {},
+                          anyone: {
+                            denylist: [],
+                          },
                         }
                       : {
                           specific: {
                             dao_members: true,
+                            allowlist: [],
+                            denylist: [],
                           },
                         },
                   }

@@ -8,6 +8,7 @@ import {
   Button,
   ChainLabel,
   ChainProvider,
+  InputErrorMessage,
   Tooltip,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
@@ -61,8 +62,9 @@ export const VestingPaymentsEditor = (
 
   // Prevent action from being submitted if the vesting factories map does not
   // exist.
+  const factoriesExist = factories && Object.keys(factories).length > 0
   useEffect(() => {
-    if (!factories) {
+    if (!factoriesExist) {
       setError((props.fieldNamePrefix + 'factories') as 'factories', {
         type: 'manual',
         message: t('error.noVestingManagersCreated'),
@@ -70,7 +72,7 @@ export const VestingPaymentsEditor = (
     } else {
       clearErrors((props.fieldNamePrefix + 'factories') as 'factories')
     }
-  }, [setError, clearErrors, t, props.fieldNamePrefix, factories])
+  }, [setError, clearErrors, t, props.fieldNamePrefix, factoriesExist])
 
   // Whether or not any of the factories are on an old version.
   const hasUpdate = factories
@@ -88,6 +90,8 @@ export const VestingPaymentsEditor = (
           context: props.type,
         })}
       </p>
+
+      <InputErrorMessage error={props.errors?.factories} />
 
       {possibleChainIds.map((chainId) => (
         <VestingFactoryChain key={chainId} {...props} chainId={chainId} />

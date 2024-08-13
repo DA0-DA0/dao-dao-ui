@@ -66,8 +66,8 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
   location: WidgetLocation
   // The context in which the widget is visible.
   visibilityContext: WidgetVisibilityContext
-  // If defined, the widget is only available on these chains.
-  supportedChainIds?: string[]
+  // If defined, the widget is only available if this returns true for a chain.
+  isChainSupported?: (chainId: string) => boolean
   // The default values for the widget's variables.
   defaultValues?: Variables
   // Component that renders the widget.

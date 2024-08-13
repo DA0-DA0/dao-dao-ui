@@ -8,6 +8,7 @@ import { ContractVersion } from '@dao-dao/types'
 import {
   MsgExecuteContract,
   MsgInstantiateContract,
+  MsgInstantiateContract2,
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { getChainForChainId } from './chain'
@@ -46,6 +47,8 @@ export type SupportedSigningCosmWasmClient =
  * the SDK version (47+) change that improperly handles the optional admin field
  * as an empty string. The normal signing client `instantiate` function is thus
  * no longer reliable.
+ *
+ * If `salt` is passed, instantiate2 will be used instead of instantiate.
  */
 export const instantiateSmartContract = async (
   client:
@@ -58,11 +61,19 @@ export const instantiateSmartContract = async (
   funds?: Coin[],
   admin?: string | null,
   fee = CHAIN_GAS_MULTIPLIER,
-  memo: string | undefined = undefined
+  memo: string | undefined = undefined,
+  /**
+   * If passed, will use instantiate2 instead of instantiate.
+   */
+  salt: Uint8Array | undefined = undefined
 ): Promise<string> => {
   client = typeof client === 'function' ? await client() : client
 
   if (client instanceof SecretSigningCosmWasmClient) {
+    if (salt) {
+      throw new Error('Secret Network does not support instantiate2')
+    }
+
     const { contractAddress } = await client.instantiate(
       sender,
       codeId,
@@ -81,17 +92,31 @@ export const instantiateSmartContract = async (
     const result = await client.signAndBroadcast(
       sender,
       [
-        {
-          typeUrl: MsgInstantiateContract.typeUrl,
-          value: MsgInstantiateContract.fromPartial({
-            sender,
-            admin: admin ?? undefined,
-            codeId: BigInt(codeId),
-            label,
-            msg: toUtf8(JSON.stringify(msg)),
-            funds,
-          }),
-        },
+        salt
+          ? {
+              typeUrl: MsgInstantiateContract2.typeUrl,
+              value: MsgInstantiateContract2.fromPartial({
+                sender,
+                admin: admin ?? undefined,
+                codeId: BigInt(codeId),
+                label,
+                msg: toUtf8(JSON.stringify(msg)),
+                funds,
+                salt,
+                fixMsg: false,
+              }),
+            }
+          : {
+              typeUrl: MsgInstantiateContract.typeUrl,
+              value: MsgInstantiateContract.fromPartial({
+                sender,
+                admin: admin ?? undefined,
+                codeId: BigInt(codeId),
+                label,
+                msg: toUtf8(JSON.stringify(msg)),
+                funds,
+              }),
+            },
       ],
       fee,
       memo

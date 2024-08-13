@@ -28,14 +28,14 @@ export type DepositRefundPolicy = 'always' | 'only_passed' | 'never'
 export type PreProposeSubmissionPolicy =
   | {
       anyone: {
-        denylist?: string[] | null
+        denylist: string[]
       }
     }
   | {
       specific: {
-        allowlist?: string[] | null
+        allowlist: string[]
         dao_members: boolean
-        denylist?: string[] | null
+        denylist: string[]
       }
     }
 export interface InstantiateMsg {

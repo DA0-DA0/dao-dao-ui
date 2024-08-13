@@ -14,8 +14,7 @@ export const getWidgets = (chainId: string): readonly Widget[] =>
     RetroactiveCompensationWidget,
     PressWidget,
   ].filter(
-    (widget) =>
-      !widget.supportedChainIds || widget.supportedChainIds.includes(chainId)
+    (widget) => !widget.isChainSupported || widget.isChainSupported(chainId)
   )
 
 export const getWidgetById = (chainId: string, id: string) =>

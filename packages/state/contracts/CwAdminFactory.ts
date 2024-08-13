@@ -21,6 +21,24 @@ export interface CwAdminFactoryInterface {
     memo?: string,
     funds?: Coin[]
   ) => Promise<ExecuteResult>
+  instantiate2ContractWithSelfAdmin: (
+    {
+      codeId,
+      instantiateMsg,
+      label,
+      salt,
+      expect,
+    }: {
+      codeId: number
+      instantiateMsg: Binary
+      label: string
+      salt: Binary
+      expect?: string | null
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    funds?: Coin[]
+  ) => Promise<ExecuteResult>
 }
 export class CwAdminFactoryClient implements CwAdminFactoryInterface {
   client: SigningCosmWasmClient
@@ -37,8 +55,9 @@ export class CwAdminFactoryClient implements CwAdminFactoryInterface {
     this.contractAddress = contractAddress
     this.instantiateContractWithSelfAdmin =
       this.instantiateContractWithSelfAdmin.bind(this)
+    this.instantiate2ContractWithSelfAdmin =
+      this.instantiate2ContractWithSelfAdmin.bind(this)
   }
-
   instantiateContractWithSelfAdmin = async (
     {
       codeId,
@@ -61,6 +80,41 @@ export class CwAdminFactoryClient implements CwAdminFactoryInterface {
           code_id: codeId,
           instantiate_msg: instantiateMsg,
           label,
+        },
+      },
+      fee,
+      memo,
+      funds
+    )
+  }
+  instantiate2ContractWithSelfAdmin = async (
+    {
+      codeId,
+      instantiateMsg,
+      label,
+      salt,
+      expect,
+    }: {
+      codeId: number
+      instantiateMsg: Binary
+      label: string
+      salt: Binary
+      expect?: string | null
+    },
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        instantiate2_contract_with_self_admin: {
+          code_id: codeId,
+          instantiate_msg: instantiateMsg,
+          label,
+          salt,
+          expect,
         },
       },
       fee,

@@ -1,3 +1,4 @@
+import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { ArrowBack } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
 import cloneDeep from 'lodash.clonedeep'
@@ -36,6 +37,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
+  ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoPageMode,
@@ -73,6 +75,7 @@ import {
   makeWasmMessage,
   parseContractVersion,
   processError,
+  versionGte,
 } from '@dao-dao/utils'
 
 import { CustomData } from '../../actions/core/advanced/Custom/Component'
@@ -88,6 +91,7 @@ import {
   SecretCwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
+  useGenerateInstantiate2,
   useQuerySyncedRecoilState,
   useWallet,
 } from '../../hooks'
@@ -115,14 +119,6 @@ export enum CreateDaoSubmitValue {
   Review = 'button.review',
   Create = 'button.createDAO',
 }
-
-const CreateDaoPages = [
-  CreateDaoStart,
-  CreateDaoGovernance,
-  CreateDaoVoting,
-  CreateDaoExtensions,
-  CreateDaoReview,
-]
 
 export type CreateDaoFormProps = {
   parentDao?: DaoParentInfo
@@ -180,11 +176,27 @@ export const InnerCreateDaoForm = ({
     config: {
       name: chainGovName,
       factoryContractAddress,
-      codeIds,
+      codeIdsVersion,
+      codeIds: { DaoCore: daoCoreCodeId },
       codeHashes,
       createViaGovernance,
+      noInstantiate2Create,
     },
   } = chainContext
+
+  // Only v2.5.0 and above supports instantiate2 in admin factory, so we can set
+  // up widgets with the predictable DAO address.
+  const supportsInstantiate2 =
+    versionGte(codeIdsVersion, ContractVersion.V250) && !noInstantiate2Create
+
+  const CreateDaoPages = [
+    CreateDaoStart,
+    CreateDaoGovernance,
+    CreateDaoVoting,
+    // Need instantiate2 to setup extensions on DAO creation.
+    ...(supportsInstantiate2 ? [CreateDaoExtensions] : []),
+    CreateDaoReview,
+  ]
 
   const { goToDao, goToDaoProposal } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos()
@@ -260,6 +272,11 @@ export const InnerCreateDaoForm = ({
       cached.votingConfig
     )
 
+    // Ensure UUID is set.
+    if (!cached.uuid) {
+      cached.uuid = defaultNewDao.uuid
+    }
+
     return merge(
       // Merges into this object.
       cached,
@@ -275,6 +292,7 @@ export const InnerCreateDaoForm = ({
 
   const newDao = form.watch()
   const {
+    uuid,
     name,
     description,
     imageUrl,
@@ -414,11 +432,14 @@ export const InnerCreateDaoForm = ({
       // Add widgets if configured.
       ...(widgets &&
         Object.keys(widgets).length > 0 && {
-          initialItems: Object.entries(widgets).map(
-            ([id, values]): InitialItem => ({
-              key: getWidgetStorageItemKey(id),
-              value: JSON.stringify(values),
-            })
+          initialItems: Object.entries(widgets).flatMap(
+            ([id, values]): InitialItem | [] =>
+              values
+                ? {
+                    key: getWidgetStorageItemKey(id),
+                    value: JSON.stringify(values),
+                  }
+                : []
           ),
         }),
     }
@@ -470,8 +491,34 @@ export const InnerCreateDaoForm = ({
     refreshBalances,
   } = useWallet()
 
+  const predictedDaoAddress = useGenerateInstantiate2({
+    chainId,
+    creator: factoryContractAddress,
+    codeId: daoCoreCodeId,
+    salt: uuid,
+  })
+
+  // If the predicted DAO address differs from the one in the form, update it
+  // and clear widgets, since widgets depend on knowing the DAO address ahead of
+  // time.
+  useEffect(() => {
+    if (
+      !predictedDaoAddress.loading &&
+      !predictedDaoAddress.errored &&
+      predictedDaoAddress.data !== newDao.predictedDaoAddress
+    ) {
+      form.setValue('predictedDaoAddress', predictedDaoAddress.data)
+      form.setValue('widgets', {})
+    }
+  }, [form, newDao.predictedDaoAddress, predictedDaoAddress])
+
   const instantiateWithSelfAdmin =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
+      contractAddress: factoryContractAddress,
+      sender: walletAddress ?? '',
+    })
+  const instantiate2WithSelfAdmin =
+    CwAdminFactoryHooks.useInstantiate2WithAdminFactory({
       contractAddress: factoryContractAddress,
       sender: walletAddress ?? '',
     })
@@ -500,11 +547,14 @@ export const InnerCreateDaoForm = ({
       return await instantiateSmartContract(
         getSigningClient,
         walletAddress,
-        codeIds.DaoCore,
+        daoCoreCodeId,
         contractLabel,
         instantiateMsg,
         instantiateFunds,
-        instantiateMsg.admin
+        instantiateMsg.admin,
+        undefined,
+        undefined,
+        supportsInstantiate2 ? toUtf8(uuid) : undefined
       )
     } else if (isSecret) {
       if (!codeHashes?.DaoCore) {
@@ -514,7 +564,7 @@ export const InnerCreateDaoForm = ({
       const { events } = await secretInstantiateWithSelfAdmin(
         {
           instantiateMsg: encodeJsonToBase64(instantiateMsg),
-          codeId: codeIds.DaoCore,
+          codeId: daoCoreCodeId,
           codeHash: codeHashes.DaoCore,
           label: contractLabel,
         },
@@ -529,16 +579,33 @@ export const InnerCreateDaoForm = ({
         'set contract admin as itself'
       )!
     } else {
-      const { events } = await instantiateWithSelfAdmin(
-        {
-          codeId: codeIds.DaoCore,
-          instantiateMsg: encodeJsonToBase64(instantiateMsg),
-          label: contractLabel,
-        },
-        CHAIN_GAS_MULTIPLIER,
-        undefined,
-        instantiateFunds
-      )
+      if (supportsInstantiate2 && !newDao.predictedDaoAddress) {
+        throw new Error('Predicted DAO address not found')
+      }
+
+      const { events } = await (supportsInstantiate2
+        ? instantiate2WithSelfAdmin(
+            {
+              codeId: daoCoreCodeId,
+              instantiateMsg: encodeJsonToBase64(instantiateMsg),
+              label: contractLabel,
+              salt: toBase64(toUtf8(uuid)),
+              expect: newDao.predictedDaoAddress,
+            },
+            CHAIN_GAS_MULTIPLIER,
+            undefined,
+            instantiateFunds
+          )
+        : instantiateWithSelfAdmin(
+            {
+              codeId: daoCoreCodeId,
+              instantiateMsg: encodeJsonToBase64(instantiateMsg),
+              label: contractLabel,
+            },
+            CHAIN_GAS_MULTIPLIER,
+            undefined,
+            instantiateFunds
+          ))
       return findWasmAttributeValue(
         chainId,
         events,
@@ -595,6 +662,10 @@ export const InnerCreateDaoForm = ({
 
         const contractLabel = `DAO DAO DAO (${Date.now()})`
 
+        if (supportsInstantiate2 && !newDao.predictedDaoAddress) {
+          throw new Error('Predicted DAO address not found')
+        }
+
         // Redirect to prefilled chain governance prop page.
         goToDaoProposal(chainGovName, 'create', {
           prefill: encodeJsonToBase64({
@@ -613,13 +684,18 @@ export const InnerCreateDaoForm = ({
                       message: JSON.stringify(
                         makeWasmMessage({
                           wasm: {
-                            instantiate: {
+                            [supportsInstantiate2
+                              ? 'instantiate2'
+                              : 'instantiate']: {
                               admin: instantiateMsg.admin,
-                              code_id: codeIds.DaoCore,
+                              code_id: daoCoreCodeId,
                               funds:
                                 getFundsFromDaoInstantiateMsg(instantiateMsg),
                               label: contractLabel,
                               msg: instantiateMsg,
+                              ...(supportsInstantiate2 && {
+                                salt: toBase64(toUtf8(uuid)),
+                              }),
                             },
                           },
                         }),
@@ -642,11 +718,17 @@ export const InnerCreateDaoForm = ({
                               funds:
                                 getFundsFromDaoInstantiateMsg(instantiateMsg),
                               msg: {
-                                instantiate_contract_with_self_admin: {
-                                  code_id: codeIds.DaoCore,
+                                [supportsInstantiate2
+                                  ? 'instantiate2_contract_with_self_admin'
+                                  : 'instantiate_contract_with_self_admin']: {
+                                  code_id: daoCoreCodeId,
                                   instantiate_msg:
                                     encodeJsonToBase64(instantiateMsg),
                                   label: contractLabel,
+                                  ...(supportsInstantiate2 && {
+                                    salt: toBase64(toUtf8(uuid)),
+                                    expect: newDao.predictedDaoAddress,
+                                  }),
                                 },
                               },
                             },
@@ -861,6 +943,7 @@ export const InnerCreateDaoForm = ({
     commonVotingConfig: loadCommonVotingConfigItems(),
     availableCreators,
     creator,
+    predictedDaoAddress,
     proposalModuleDaoCreationAdapters,
     availableWidgets,
     makeDefaultNewDao,

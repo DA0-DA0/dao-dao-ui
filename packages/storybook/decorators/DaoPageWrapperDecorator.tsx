@@ -37,6 +37,8 @@ export const makeDaoInfo = (): DaoInfo => ({
         submissionPolicy: {
           specific: {
             dao_members: true,
+            allowlist: [],
+            denylist: [],
           },
         },
       },

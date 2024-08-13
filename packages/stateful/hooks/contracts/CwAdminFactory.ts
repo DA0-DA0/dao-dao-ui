@@ -50,3 +50,6 @@ const wrapExecuteHook =
 export const useInstantiateWithAdminFactory = wrapExecuteHook(
   'instantiateContractWithSelfAdmin'
 )
+export const useInstantiate2WithAdminFactory = wrapExecuteHook(
+  'instantiate2ContractWithSelfAdmin'
+)
