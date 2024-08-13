@@ -1,6 +1,12 @@
 import { ComponentType } from 'react'
+import { FieldErrors } from 'react-hook-form'
 
-import { ActionCategoryMaker, ActionComponentProps } from './actions'
+import { Account } from './account'
+import {
+  ActionCategoryMaker,
+  ActionComponentProps,
+  ActionOptions,
+} from './actions'
 
 export enum WidgetId {
   MintNft = 'mint_nft',
@@ -31,22 +37,37 @@ export type WidgetRendererProps<Variables extends Record<string, unknown>> = {
 }
 
 export type WidgetEditorProps<Variables extends Record<string, unknown> = any> =
-  ActionComponentProps<undefined, Variables>
+  (
+    | ({
+        type: 'action'
+        options: ActionOptions
+      } & ActionComponentProps<undefined, Variables>)
+    | {
+        type: 'daoCreation'
+        // To match action props.
+        isCreating: true
+        fieldNamePrefix: string
+        errors: FieldErrors
+      }
+  ) & {
+    accounts: readonly Account[]
+  }
 
 export type Widget<Variables extends Record<string, unknown> = any> = {
   // A unique identifier for the widget.
   id: WidgetId
-  // An icon for the widget. Used when `location` is `WidgetLocation.Tab`.
-  Icon?: ComponentType<{ className: string }>
-  // A filled icon for the widget. Used when `location` is
-  // `WidgetLocation.Home`.
-  IconFilled?: ComponentType<{ className: string }>
+  // An icon for the widget. Used for display in the editor and when `location`
+  // is `WidgetLocation.Tab`.
+  Icon: ComponentType<{ className: string }>
+  // A filled icon for the widget. Used for display in the editor and when
+  // `location` is `WidgetLocation.Home`.
+  IconFilled: ComponentType<{ className: string }>
   // The location where the widget is displayed.
   location: WidgetLocation
   // The context in which the widget is visible.
   visibilityContext: WidgetVisibilityContext
-  // If defined, the widget is only available on these chains.
-  supportedChainIds?: string[]
+  // If defined, the widget is only available if this returns true for a chain.
+  isChainSupported?: (chainId: string) => boolean
   // The default values for the widget's variables.
   defaultValues?: Variables
   // Component that renders the widget.

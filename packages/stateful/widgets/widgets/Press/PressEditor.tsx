@@ -8,41 +8,35 @@ import {
   Button,
   CopyableAddress,
   DaoSupportedChainPickerInput,
+  useChain,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { ActionKey, ChainId, WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  getChainAddressForActionOptions,
+  getAccountAddress,
   getSupportedChainConfig,
   instantiateSmartContract,
   processError,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../actions'
 import { ConnectWallet } from '../../../components/ConnectWallet'
 import { useWallet } from '../../../hooks/useWallet'
 import { PressData } from './types'
 
 export const PressEditor = ({
-  remove,
-  addAction,
   fieldNamePrefix,
   isCreating,
+  ...props
 }: WidgetEditorProps<PressData>) => {
   const { t } = useTranslation()
-
-  const actionOptions = useActionOptions()
 
   const {
     config: { polytone },
   } = useSupportedChainContext()
-  const {
-    name: daoName,
-    chainId: daoChainId,
-    polytoneProxies,
-  } = useDaoInfoContext()
+  const { chain_id: nativeChainId } = useChain()
+  const { name: daoName, polytoneProxies } = useDaoInfoContext()
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
@@ -51,13 +45,13 @@ export const PressEditor = ({
   // Auto-select valid chain ID if undefined.
   useEffect(() => {
     const defaultChainId =
-      daoChainId === ChainId.StargazeMainnet
+      nativeChainId === ChainId.StargazeMainnet
         ? Object.keys(polytoneProxies)[0]
-        : daoChainId
+        : nativeChainId
     if (!chainId && defaultChainId) {
       setValue((fieldNamePrefix + 'chainId') as 'chainId', defaultChainId)
     }
-  }, [chainId, daoChainId, setValue, fieldNamePrefix, polytoneProxies])
+  }, [chainId, nativeChainId, setValue, fieldNamePrefix, polytoneProxies])
 
   const {
     address: walletAddress = '',
@@ -77,7 +71,10 @@ export const PressEditor = ({
       toast.error(t('error.selectAChainToContinue'))
       return
     }
-    const minter = getChainAddressForActionOptions(actionOptions, chainId)
+    const minter = getAccountAddress({
+      accounts: props.accounts,
+      chainId,
+    })
     if (!minter) {
       toast.error(t('error.addressNotFoundOnChain'))
       return
@@ -134,8 +131,8 @@ export const PressEditor = ({
   }, [setError, clearErrors, t, contract, fieldNamePrefix, chainId])
 
   const stargazeDaoNoCrossChainAccounts =
-    (daoChainId === ChainId.StargazeMainnet ||
-      daoChainId === ChainId.StargazeTestnet) &&
+    (nativeChainId === ChainId.StargazeMainnet ||
+      nativeChainId === ChainId.StargazeTestnet) &&
     !Object.keys(polytoneProxies).length
 
   return (
@@ -144,14 +141,16 @@ export const PressEditor = ({
       {isCreating && stargazeDaoNoCrossChainAccounts ? (
         <>
           <p className="secondary-text max-w-prose text-text-interactive-error">
-            {t('error.stargazeDaoNoCrossChainAccountsForPress')}
+            {t('error.stargazeDaoNoCrossChainAccountsForPress', {
+              context: props.type,
+            })}
           </p>
 
-          {remove && addAction && (
+          {props.type === 'action' && props.remove && props.addAction && (
             <Button
               onClick={() => {
-                remove?.()
-                addAction?.({
+                props.remove()
+                props.addAction({
                   actionKey: ActionKey.CreateCrossChainAccount,
                   data: {
                     chainId: Object.keys(polytone || {})[0],

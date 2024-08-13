@@ -2,10 +2,13 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { InfoResponse } from '@dao-dao/types'
+import { CodeInfoResponse } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/query'
+import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
   ContractName,
   DAO_CORE_CONTRACT_NAMES,
   INVALID_CONTRACT_ERROR_SUBSTRINGS,
+  cosmwasmProtoRpcClientRouter,
   getChainForChainId,
   getCosmWasmClientForChainId,
   isSecretNetwork,
@@ -190,6 +193,47 @@ export const fetchContractInstantiationTime = async (
 }
 
 /**
+ * Fetch contract code info.
+ */
+export const fetchContractCodeInfo = async ({
+  chainId,
+  codeId,
+}: {
+  chainId: string
+  codeId: number
+}): Promise<CodeInfoResponse> => {
+  if (isSecretNetwork(chainId)) {
+    const client = await secretCosmWasmClientRouter.connect(chainId)
+    const code = await client.getCodeDetails(codeId)
+    return {
+      codeId: BigInt(code.id),
+      creator: code.creator,
+      dataHash: toUtf8(code.checksum),
+      // Secret Network is permissionless.
+      instantiatePermission: {
+        permission: AccessType.Everybody,
+        addresses: [],
+      },
+    }
+  }
+
+  // CosmWasmClient.getContract is not compatible with Terra Classic for some
+  // reason, so use protobuf query directly.
+  const client = await cosmwasmProtoRpcClientRouter.connect(chainId)
+  const codeInfo = (
+    await client.wasm.v1.code({
+      codeId: BigInt(codeId),
+    })
+  )?.codeInfo
+
+  if (!codeInfo) {
+    throw new Error('Code info not found for code ID: ' + codeId)
+  }
+
+  return codeInfo
+}
+
+/**
  * Get code hash for a Secret Network contract.
  */
 export const fetchSecretContractCodeHash = async ({
@@ -285,6 +329,14 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'instantiationTime', options],
       queryFn: () => fetchContractInstantiationTime(queryClient, options),
+    }),
+  /**
+   * Fetch contract code info.
+   */
+  codeInfo: (options: Parameters<typeof fetchContractCodeInfo>[0]) =>
+    queryOptions({
+      queryKey: ['contract', 'codeInfo', options],
+      queryFn: () => fetchContractCodeInfo(options),
     }),
   /**
    * Fetch the code hash for a Secret Network contract.

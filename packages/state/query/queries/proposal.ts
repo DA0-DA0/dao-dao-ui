@@ -277,11 +277,15 @@ export const fetchPreProposeModule = async (
       'open_proposal_submission' in moduleConfig
       ? moduleConfig.open_proposal_submission
         ? {
-            anyone: {},
+            anyone: {
+              denylist: [],
+            },
           }
         : {
             specific: {
               dao_members: true,
+              allowlist: [],
+              denylist: [],
             },
           }
       : // >= v2.5.0
@@ -291,12 +295,16 @@ export const fetchPreProposeModule = async (
         {
           specific: {
             dao_members: true,
+            allowlist: [],
+            denylist: [],
           },
         }
     : // If no config loaded, assume only members can propose.
       {
         specific: {
           dao_members: true,
+          allowlist: [],
+          denylist: [],
         },
       }
 

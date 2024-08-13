@@ -90,11 +90,15 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
             submission_policy:
               config.submissionPolicy === 'anyone'
                 ? {
-                    anyone: {},
+                    anyone: {
+                      denylist: [],
+                    },
                   }
                 : {
                     specific: {
                       dao_members: true,
+                      allowlist: [],
+                      denylist: [],
                     },
                   },
           }

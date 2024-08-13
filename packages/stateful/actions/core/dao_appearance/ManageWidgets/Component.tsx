@@ -16,6 +16,8 @@ import {
 import { DaoWidget, SuspenseLoaderProps, Widget } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
+import { useActionOptions } from '../../../react'
+
 export type ManageWidgetsData = {
   mode: 'set' | 'delete'
   id: string
@@ -41,6 +43,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
 
   const { t } = useTranslation()
   const { setValue, watch, clearErrors } = useFormContext<ManageWidgetsData>()
+  const actionOptions = useActionOptions()
 
   const mode = watch((fieldNamePrefix + 'mode') as 'mode')
   const widgetId = watch((fieldNamePrefix + 'id') as 'id')
@@ -187,9 +190,12 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
               <div className="flex flex-col gap-4">
                 <widget.Editor
                   {...props}
+                  accounts={actionOptions.context.accounts}
                   data={props.data.values}
                   errors={errors?.values}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
+                  options={actionOptions}
+                  type="action"
                 />
               </div>
             </SuspenseLoader>
@@ -211,8 +217,11 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
               <div className="flex flex-col gap-4">
                 <widget.Editor
                   {...props}
+                  accounts={actionOptions.context.accounts}
                   data={props.data.values}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
+                  options={actionOptions}
+                  type="action"
                 />
               </div>
             </SuspenseLoader>

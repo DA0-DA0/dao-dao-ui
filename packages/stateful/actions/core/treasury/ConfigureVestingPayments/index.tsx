@@ -11,7 +11,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
+import { getWidgetStorageItemKey } from '@dao-dao/utils'
 
 import { useWidgets } from '../../../../widgets'
 import { makeManageWidgetsAction } from '../../dao_appearance/ManageWidgets'
@@ -77,9 +77,7 @@ export const makeConfigureVestingPaymentsAction: ActionMaker<
   }
 
   const vestingEnabled =
-    !!context.dao.info.items[
-      DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments
-    ]
+    !!context.dao.info.items[getWidgetStorageItemKey(WidgetId.VestingPayments)]
 
   return {
     key: ActionKey.ConfigureVestingPayments,

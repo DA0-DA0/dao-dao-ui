@@ -42,6 +42,7 @@ import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
+import { LoadingDataWithError } from './misc'
 import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
@@ -49,6 +50,7 @@ import {
 } from './proposal-module-adapter'
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
+import { Widget } from './widgets'
 
 /**
  * An object that represents a DAO across the app.
@@ -238,6 +240,8 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
+  availableWidgets: readonly Widget[]
+  predictedDaoAddress: LoadingDataWithError<string>
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   makeDefaultNewDao: (chainId: string) => NewDao
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
@@ -248,6 +252,7 @@ export interface NewDao<
   CreatorData extends FieldValues = any,
   VotingConfig = any
 > {
+  uuid: string
   chainId: string
   name: string
   description: string
@@ -262,6 +267,22 @@ export interface NewDao<
   }[]
   votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
+  /**
+   * Map widget ID to values for that widget. If null, it was added and then
+   * deleted. Make optional for backwards compatibility with saved forms in
+   * people's browsers.
+   */
+  widgets?: Record<string, Record<string, any> | null>
+  /**
+   * The DAO address that will be created based on the uuid when using
+   * instantiate2. This is used when setting up extensions that need to know the
+   * DAO address. When the factory that creates DAOs changes, the instantiate2
+   * address changes. This field is used to reset the extensions when the
+   * predicted address changes due to a factory change. This will likely never
+   * happen as the factories never need to change, and will only be an edge case
+   * due to cached data.
+   */
+  predictedDaoAddress?: string
 }
 
 export interface NewDaoTier {

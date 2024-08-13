@@ -187,6 +187,11 @@ export type SupportedChainConfig = BaseChainConfig & {
    */
   createViaGovernance?: boolean
   /**
+   * Whether or not this chain supports instantiate2 for creating DAOs with
+   * extensions setup.
+   */
+  noInstantiate2Create?: boolean
+  /**
    * Whether or not this chain has an indexer.
    */
   noIndexer?: boolean

@@ -4,12 +4,14 @@ import { VestingPaymentsWidgetData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
 import { VestingPaymentsEditor } from '../../../../widgets/widgets/VestingPayments/VestingPaymentsEditor'
+import { useActionOptions } from '../../../react'
 
 export const ConfigureVestingPaymentsComponent: ActionComponent<
   undefined,
   VestingPaymentsWidgetData
 > = (props) => {
   const { t } = useTranslation()
+  const options = useActionOptions()
 
   return (
     <>
@@ -17,7 +19,12 @@ export const ConfigureVestingPaymentsComponent: ActionComponent<
         {t('info.vestingPaymentsDescription')}
       </p>
 
-      <VestingPaymentsEditor {...props} />
+      <VestingPaymentsEditor
+        {...props}
+        accounts={options.context.accounts}
+        options={options}
+        type="action"
+      />
     </>
   )
 }

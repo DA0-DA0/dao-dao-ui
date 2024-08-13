@@ -353,7 +353,7 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
         const instantiateMsg = makeStargateMessage({
           stargate: {
             typeUrl: MsgInstantiateContract2.typeUrl,
-            value: {
+            value: MsgInstantiateContract2.fromPartial({
               sender: getChainAddressForActionOptions(options, chainId),
               admin: admin || '',
               codeId: codeId ? BigInt(codeId) : 0n,
@@ -362,7 +362,7 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
               funds: convertedFunds,
               salt: toUtf8(salt),
               fixMsg: false,
-            } as MsgInstantiateContract2,
+            }),
           },
         })
 
