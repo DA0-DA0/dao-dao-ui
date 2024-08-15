@@ -52,13 +52,18 @@ export const VestingPaymentsEditor = (
 
   // A DAO can create a vesting payment factory on the current chain and any
   // polytone connection that is also a supported chain (since the vesting
-  // factory+contract only exists on supported chains).
-  const possibleChainIds = [
-    nativeChainId,
-    ...Object.keys(polytone).filter((chainId) =>
-      getSupportedChainConfig(chainId)
-    ),
-  ]
+  // factory+contract only exists on supported chains). When creating a DAO, no
+  // cross-chain accounts exist or can be created, so only show the native
+  // chain.
+  const possibleChainIds =
+    props.type === 'daoCreation'
+      ? [nativeChainId]
+      : [
+          nativeChainId,
+          ...Object.keys(polytone).filter((chainId) =>
+            getSupportedChainConfig(chainId)
+          ),
+        ]
 
   // Prevent action from being submitted if the vesting factories map does not
   // exist.
