@@ -15,7 +15,7 @@ import {
   StatefulHomeProps,
   daoQueries as statefulDaoQueries,
 } from '@dao-dao/stateful'
-import { AccountTabId, ChainId, DaoDaoIndexerChainStats } from '@dao-dao/types'
+import { AccountTabId, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
   MAINNET,
   chainIsIndexed,
@@ -47,8 +47,6 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       : [getDaoInfoForChainId(chainId, [])]
     : // Get chain x/gov DAOs if not on a chain-specific home.
       [
-        // Start with Cosmos Hub on mainnet.
-        ...(MAINNET ? [ChainId.CosmosHubMainnet] : []),
         // Add DAO DAO-supported chains.
         ...getSupportedChains().flatMap(({ chainId, noGov }) =>
           noGov ? [] : chainId
