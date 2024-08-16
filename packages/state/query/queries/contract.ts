@@ -136,6 +136,12 @@ export const fetchIsContract = async (
       return false
     }
 
+    // On Secret Network, just return, since there are weird failures for
+    // failed contract queries.
+    if (isSecretNetwork(chainId)) {
+      return false
+    }
+
     // Rethrow other errors because it should not have failed.
     throw err
   }

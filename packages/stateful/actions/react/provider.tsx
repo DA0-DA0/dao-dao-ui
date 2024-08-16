@@ -1,7 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
+import { accountQueries } from '@dao-dao/state/query'
 import {
   accountsSelector,
   govParamsSelector,
@@ -30,7 +32,7 @@ import {
   WalletActionsProviderProps,
 } from '@dao-dao/types'
 
-import { useProfile } from '../../hooks'
+import { useProfile, useQueryLoadingDataWithError } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -195,25 +197,21 @@ export const WalletActionsProvider = ({
 
   const { profile } = useProfile({ address })
 
-  const accounts = useCachedLoadingWithError(
+  const queryClient = useQueryClient()
+  const accounts = useQueryLoadingDataWithError(
     address
-      ? accountsSelector({
+      ? accountQueries.list(queryClient, {
           chainId: chain.chain_id,
           address,
         })
       : undefined
   )
 
-  if (
-    address === undefined ||
-    profile.loading ||
-    accounts.loading ||
-    accounts.errored
-  ) {
-    return <Loader />
-  }
-
-  return (
+  return address === undefined || profile.loading || accounts.loading ? (
+    <Loader />
+  ) : accounts.errored ? (
+    <ErrorPage error={accounts.error} />
+  ) : (
     <BaseActionsProvider
       address={address}
       context={{
