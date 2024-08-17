@@ -2659,8 +2659,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoPreProposeApprover: 9764,
       DaoPreProposeMultiple: 9748,
       DaoPreProposeSingle: 9798,
-      DaoProposalMultiple: 10055,
-      DaoProposalSingle: 10054,
+      DaoProposalMultiple: 10058,
+      DaoProposalSingle: 10057,
       DaoVotingCw4: 9790,
       DaoVotingCw20Staked: 9793, // snip20
       DaoVotingCw721Staked: 9767, // snip721
@@ -2697,9 +2697,9 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoPreProposeSingle:
         'e10ae1c3c1ffd3fb3102ed12b6daf0a854885257cca1ad0051ef0dbf992d50fc',
       DaoProposalMultiple:
-        'abe4630509aeda95d1613e22d579b009ae5fe7a6b83f0476d8ca0f69343998b7',
+        '00a5268893a57795c54f6a1d74cc722160ada0c499808078923c02ac93418d21',
       DaoProposalSingle:
-        '6cd22250c1756dc00b9cc0dbad81907547b0e8db8cde51becb2486c21d323f6d',
+        '397df138ed1ce0b46b0d5e8dde6078c6e7a9bbab3eee03648f880422cd0f161c',
       DaoVotingCw4:
         'a0f4f3069d8bb0789d90829052c32ec93d16eb1113feb4063f5265c3bda3f6f7',
       DaoVotingCw20Staked:

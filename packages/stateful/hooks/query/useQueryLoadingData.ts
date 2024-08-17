@@ -64,12 +64,22 @@ export const useQueryLoadingData = <
         data: memoizedDefaultValue,
       }
     } else {
-      return {
-        loading: false,
-        updating: isRefetching,
-        data: transformRef.current
-          ? transformRef.current(data)
-          : (data as unknown as TTransformedData),
+      try {
+        return {
+          loading: false,
+          updating: isRefetching,
+          data: transformRef.current
+            ? transformRef.current(data)
+            : (data as unknown as TTransformedData),
+        }
+
+        // Catch errors in `transform` function.
+      } catch (err) {
+        onErrorRef.current?.(err instanceof Error ? err : new Error(`${err}`))
+        return {
+          loading: false,
+          data: memoizedDefaultValue,
+        }
       }
     }
   }, [

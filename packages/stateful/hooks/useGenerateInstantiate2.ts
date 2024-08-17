@@ -3,7 +3,7 @@ import { toUtf8 } from '@cosmjs/encoding'
 
 import { contractQueries } from '@dao-dao/state/query'
 import { LoadingDataWithError } from '@dao-dao/types'
-import { getChainForChainId } from '@dao-dao/utils'
+import { getChainForChainId, isSecretNetwork } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError } from './query'
 
@@ -27,7 +27,11 @@ export const useGenerateInstantiate2 = ({
 
   // Load checksum of the contract code.
   return useQueryLoadingDataWithError(
-    chainId && creator && codeId
+    chainId &&
+      creator &&
+      codeId &&
+      // Instantiate2 not supported on Secret Network, so just don't load.
+      !isSecretNetwork(chainId)
       ? contractQueries.codeInfo({
           chainId,
           codeId,

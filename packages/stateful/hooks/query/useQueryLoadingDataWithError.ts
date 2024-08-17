@@ -46,13 +46,23 @@ export const useQueryLoadingDataWithError = <
         error,
       }
     } else {
-      return {
-        loading: false,
-        errored: false,
-        updating: isRefetching,
-        data: transformRef.current
-          ? transformRef.current(data)
-          : (data as unknown as TTransformedData),
+      try {
+        return {
+          loading: false,
+          errored: false,
+          updating: isRefetching,
+          data: transformRef.current
+            ? transformRef.current(data)
+            : (data as unknown as TTransformedData),
+        }
+
+        // Catch errors in `transform` function.
+      } catch (err) {
+        return {
+          loading: false,
+          errored: true,
+          error: err instanceof Error ? err : new Error(`${err}`),
+        }
       }
     }
   }, [isPending, isError, isRefetching, data, error, transformRef])
