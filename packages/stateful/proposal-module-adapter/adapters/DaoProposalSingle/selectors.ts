@@ -83,7 +83,7 @@ export const approverIdForPreProposeApprovalIdSelector = selectorFamily<
                 },
               },
             ],
-          }) as RecoilValueReadOnly<number>,
+          }) as RecoilValueReadOnly<number | null>,
         ])
       )
 
