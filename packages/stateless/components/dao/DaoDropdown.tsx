@@ -22,7 +22,13 @@ export const DaoDropdown = ({
   const { getDaoPath } = useDaoNavHelpers()
   const href = getDaoPath(coreAddress)
 
-  const selected = asPath.startsWith(href)
+  // Ensure no more alphanumeric characters follow DAO address in URL. This
+  // regex should look something like `^/dao/cosmos\b.*`, to ensure that DAOs
+  // whose addresses are prefixes of other DAO addresses do not match. This
+  // ensures that a chain x/gov DAO does not show as selected when a DAO on that
+  // chain is selected, since a DAO's address prefix may start with the name of
+  // the chain x/gov DAO itself.
+  const selected = new RegExp(`^${href}\\b.*`).test(asPath)
 
   // If compact, just show image.
   return compact ? (
