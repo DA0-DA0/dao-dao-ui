@@ -105,8 +105,8 @@ export const WalletDaos = ({
 }
 
 const FILTERABLE_KEYS: Fuse.FuseOptionKey<LazyDaoCardProps>[] = [
-  'chainId',
-  'coreAddress',
-  'name',
-  'description',
+  'info.chainId',
+  'info.coreAddress',
+  'info.name',
+  'info.description',
 ]
