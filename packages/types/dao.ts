@@ -569,4 +569,5 @@ export type VotingVaultInfo =
 
 export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
+  totalPower: string
 }

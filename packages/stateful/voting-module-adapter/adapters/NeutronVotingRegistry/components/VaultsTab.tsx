@@ -1,21 +1,18 @@
-import { NeutronVotingRegistrySelectors } from '@dao-dao/state'
-import {
-  NeutronVotingVaultsTab,
-  useCachedLoadingWithError,
-  useChain,
-} from '@dao-dao/stateless'
+import { neutronVotingRegistryQueries } from '@dao-dao/state'
+import { NeutronVotingVaultsTab, useChain } from '@dao-dao/stateless'
 
 import { DaoVotingVaultCard } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModule } from '../hooks'
 
 export const VaultsTab = () => {
   const { chain_id: chainId } = useChain()
   const { votingRegistryAddress, loadingVaults } = useVotingModule()
-  const loadingTotalVotingPower = useCachedLoadingWithError(
-    NeutronVotingRegistrySelectors.totalPowerAtHeightSelector({
-      contractAddress: votingRegistryAddress,
+  const loadingTotalVotingPower = useQueryLoadingDataWithError(
+    neutronVotingRegistryQueries.totalPowerAtHeight({
       chainId,
-      params: [{}],
+      contractAddress: votingRegistryAddress,
+      args: {},
     })
   )
 
