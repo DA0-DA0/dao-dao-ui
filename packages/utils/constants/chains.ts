@@ -881,7 +881,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: true,
     accentColor: '#000000',
     factoryContractAddress:
-      'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
+      'neutron1xsvrsy4m37pay0fkd6ur75hsl8p6netvxvzvpvj7h4tsp9udxuysqxpuzh',
     govContractAddress: NEUTRON_GOVERNANCE_DAO,
     subDaos: [
       'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc',
@@ -891,7 +891,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       tx: 'https://neutron.celat.one/neutron-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/neutron-1/accounts/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V240,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 552,
@@ -899,23 +899,26 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 232,
 
-      CwPayrollFactory: 553,
-      CwTokenSwap: 564,
-      CwTokenfactoryIssuerMain: 565,
-      CwVesting: 703,
-      DaoCore: 567,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 569,
-      DaoPreProposeApprover: 570,
-      DaoPreProposeMultiple: 575,
-      DaoPreProposeSingle: 571,
-      DaoProposalMultiple: 572,
-      DaoProposalSingle: 573,
-      DaoVotingCw4: 574,
-      DaoVotingCw721Staked: 576,
-      DaoVotingTokenStaked: 577,
+      CwPayrollFactory: 1851,
+      CwTokenSwap: 1852,
+      CwTokenfactoryIssuerMain: 1853,
+      CwVesting: 1854,
+      DaoCore: 1855,
+      DaoPreProposeApprovalSingle: 1856,
+      DaoPreProposeApprover: 1857,
+      DaoPreProposeMultiple: 1858,
+      DaoPreProposeSingle: 1859,
+      DaoProposalMultiple: 1860,
+      DaoProposalSingle: 1861,
+      DaoRewardsDistributor: 1862,
+      DaoVotingCw4: 1863,
+      DaoVotingCw721Staked: 1864,
+      DaoVotingTokenStaked: 1865,
 
       ValenceAccount: 1618,
+
+      // unused
+      DaoMigrator: -1,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -2528,13 +2531,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: false,
     accentColor: '#000000',
     factoryContractAddress:
-      'neutron1gu2c0ddyrzk78cuzdlwwtz4c07mfyumx43wefe2fgtv5rf7fvlrq5upnkr',
+      'neutron1ujfsy8m04mxxam3az6hfxfp2rlky0vk32pknjcwv0weu2fcc2n9sxup3sd',
     govContractAddress: NEUTRON_GOVERNANCE_DAO,
     explorerUrlTemplates: {
       tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
       wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V242,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 4618,
@@ -2542,21 +2545,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 4620,
 
-      CwPayrollFactory: 4622,
-      CwTokenSwap: 4623,
-      CwTokenfactoryIssuerMain: 4635,
-      CwVesting: 4624,
-      DaoCore: 4625,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 4627,
-      DaoPreProposeApprover: 4628,
-      DaoPreProposeMultiple: 4629,
-      DaoPreProposeSingle: 4630,
-      DaoProposalMultiple: 4631,
-      DaoProposalSingle: 4632,
-      DaoVotingCw4: 4633,
-      DaoVotingCw721Staked: 4634,
-      DaoVotingTokenStaked: 4636,
+      CwPayrollFactory: 6286,
+      CwTokenSwap: 6287,
+      CwTokenfactoryIssuerMain: 6288,
+      CwVesting: 6289,
+      DaoCore: 6290,
+      DaoPreProposeApprovalSingle: 6291,
+      DaoPreProposeApprover: 6292,
+      DaoPreProposeMultiple: 6293,
+      DaoPreProposeSingle: 6294,
+      DaoProposalMultiple: 6295,
+      DaoProposalSingle: 6296,
+      DaoRewardsDistributor: 6297,
+      DaoVotingCw4: 6298,
+      DaoVotingCw721Staked: 6299,
+      DaoVotingTokenStaked: 6300,
+
+      // unused
+      DaoMigrator: -1,
     },
   },
   {
