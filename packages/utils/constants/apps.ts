@@ -33,6 +33,11 @@ export const DAO_APPS: DaoApp[] = [
     url: 'https://app.calculated.fi/?chain=osmosis-1',
   },
   {
+    name: 'Mars Protocol',
+    imageUrl: '/apps/mars.jpg',
+    url: 'https://app.marsprotocol.io',
+  },
+  {
     name: 'FIN',
     platform: 'Kujira',
     imageUrl: '/apps/fin.png',
