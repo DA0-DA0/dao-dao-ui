@@ -4,6 +4,7 @@ import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   ActionKey,
+  ChainId,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
@@ -13,7 +14,11 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { MintAction, UpdateStakingConfigAction } from './actions'
+import {
+  BitSongFantokenMintAction,
+  MintAction,
+  UpdateStakingConfigAction,
+} from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import { useMainDaoInfoCards } from './hooks'
 
@@ -51,7 +56,13 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     // Functions
     fields: {
       actions: {
-        actions: [MintAction, UpdateStakingConfigAction],
+        actions: [
+          ...(chainId === ChainId.BitsongMainnet ||
+          chainId === ChainId.BitsongTestnet
+            ? [BitSongFantokenMintAction]
+            : [MintAction]),
+          UpdateStakingConfigAction,
+        ],
         categoryMakers: [
           // Add to DAO Governance category.
           () => ({

@@ -112,7 +112,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
               maxSupply,
               NEW_DAO_TOKEN_DECIMALS
             ),
-            // TODO(bitsong-fantoken-factory)
+            // TODO(bitsong-fantoken)
             uri: '',
             initial_balances: microInitialBalances,
             initial_dao_balance: microInitialTreasuryBalance,

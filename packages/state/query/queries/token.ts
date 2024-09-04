@@ -1,7 +1,14 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
-import { GenericToken, GenericTokenSource, TokenType } from '@dao-dao/types'
 import {
+  ChainId,
+  GenericToken,
+  GenericTokenSource,
+  TokenType,
+} from '@dao-dao/types'
+import { FanToken } from '@dao-dao/types/protobuf/codegen/bitsong/fantoken/v1beta1/fantoken'
+import {
+  bitsongProtoRpcClientRouter,
   getChainForChainName,
   getFallbackImage,
   getIbcTransferInfoFromChannel,
@@ -158,6 +165,32 @@ export const fetchTokenInfo = async (
 
   // Attempt to fetch from chain.
   try {
+    if (
+      (chainId === ChainId.BitsongMainnet ||
+        chainId === ChainId.BitsongTestnet) &&
+      denomOrAddress.startsWith('ft')
+    ) {
+      const { metaData } = await queryClient.fetchQuery(
+        tokenQueries.bitSongFantoken({
+          chainId,
+          denom: denomOrAddress,
+        })
+      )
+      if (metaData) {
+        return {
+          chainId,
+          type,
+          denomOrAddress,
+          symbol: metaData.symbol.toUpperCase(),
+          // All BitSong Fantokens are assumed to have 6 decimals.
+          decimals: 6,
+          // TODO(bitsong-fantoken)
+          imageUrl: metaData.uri || getFallbackImage(denomOrAddress),
+          source,
+        }
+      }
+    }
+
     const chainMetadata = await queryClient.fetchQuery(
       chainQueries.denomMetadata({
         chainId,
@@ -321,6 +354,28 @@ export const fetchCw20LogoUrl = async (
     : null
 }
 
+/**
+ * Fetch the info for a BitSong Fantoken.
+ */
+export const fetchBitSongFantoken = async ({
+  chainId,
+  denom,
+}: {
+  chainId: string
+  denom: string
+}): Promise<FanToken> => {
+  const bitsongClient = await bitsongProtoRpcClientRouter.connect(chainId)
+  const { fantoken } = await bitsongClient.fantoken.v1beta1.fanToken({
+    denom,
+  })
+
+  if (!fantoken) {
+    throw new Error('Fantoken not found')
+  }
+
+  return fantoken
+}
+
 export const tokenQueries = {
   /**
    * Fetch info for a token.
@@ -355,5 +410,13 @@ export const tokenQueries = {
     queryOptions({
       queryKey: ['token', 'cw20LogoUrl', options],
       queryFn: () => fetchCw20LogoUrl(queryClient, options),
+    }),
+  /**
+   * Fetch the info for a BitSong Fantoken.
+   */
+  bitSongFantoken: (options: Parameters<typeof fetchBitSongFantoken>[0]) =>
+    queryOptions({
+      queryKey: ['token', 'bitSongFantoken', options],
+      queryFn: () => fetchBitSongFantoken(options),
     }),
 }
