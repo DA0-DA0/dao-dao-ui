@@ -1,6 +1,7 @@
 import { Check, Link } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoaderProps, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
@@ -58,7 +59,7 @@ export const ActionsRenderer = ({
             return {
               _id: index.toString(),
               actionKey: data.action.key,
-              data: await data.decode().catch(() => {}),
+              data: await data.decode().catch(() => ({})),
             }
           } else {
             return {
@@ -116,6 +117,7 @@ export const ActionsRenderer = ({
                 ? []
                 : loadingAllActionsWithData.data
             }
+            index={index}
             {...('decode' in data
               ? {
                   decoder: data,
@@ -169,8 +171,23 @@ export const ActionRenderer = <
   action,
   ...props
 }: ActionRendererProps<Data>) => {
+  const { t } = useTranslation()
   const data = useLoadingPromise({
-    promise: async () => (props.decoder ? props.decoder.decode() : props.data),
+    promise: async () => {
+      if (props.decoder) {
+        try {
+          return await props.decoder.decode()
+        } catch (err) {
+          console.error(
+            `Decoder error for ${action.key} at index ${props.index}`,
+            err
+          )
+          throw err
+        }
+      } else {
+        return props.data
+      }
+    },
     deps: [props.data, props.decoder],
   })
 
@@ -180,7 +197,7 @@ export const ActionRenderer = <
     </ActionCard>
   ) : data.errored ? (
     <ActionCard action={action}>
-      <ErrorPage error={data.error} />
+      <ErrorPage error={data.error} title={t('title.decoderError')} />
     </ActionCard>
   ) : (
     <InnerActionRenderer<Data> {...props} action={action} data={data.data} />
@@ -192,6 +209,7 @@ type InnerActionRendererProps<
 > = {
   action: Action<Data>
   data: Data
+  index: number
   allActionsWithData: ActionKeyAndData[]
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
@@ -201,6 +219,7 @@ const InnerActionRenderer = <
 >({
   action,
   data,
+  index,
   allActionsWithData,
   SuspenseLoader,
 }: InnerActionRendererProps<Data>) => {
@@ -218,7 +237,7 @@ const InnerActionRenderer = <
             allActionsWithData={allActionsWithData}
             data={data}
             fieldNamePrefix="data."
-            index={0}
+            index={index}
             isCreating={false}
           />
         </SuspenseLoader>

@@ -289,56 +289,50 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
       account: { chainId, address: sender },
     },
   ]: ProcessedMessage[]): Promise<Instantiate2Data> {
+    let data
+
     // Convert to CW msg format to use consistent logic below.
     if (isDecodedStargateMsg(decodedMessage, MsgInstantiateContract2)) {
-      decodedMessage = {
-        wasm: {
-          instantiate2: {
-            admin: decodedMessage.stargate.value.admin,
-            code_id: Number(decodedMessage.stargate.value.codeId),
-            label: decodedMessage.stargate.value.label,
-            msg: decodeJsonFromBase64(
-              toBase64(decodedMessage.stargate.value.decodedMessage),
-              true
-            ),
-            funds: decodedMessage.stargate.value.funds,
-            fix_msg: decodedMessage.stargate.value.fixMsg,
-            salt: fromUtf8(decodedMessage.stargate.value.salt),
-          },
-        },
+      data = {
+        admin: decodedMessage.stargate.value.admin,
+        code_id: Number(decodedMessage.stargate.value.codeId),
+        label: decodedMessage.stargate.value.label,
+        msg: decodeJsonFromBase64(
+          toBase64(decodedMessage.stargate.value.msg),
+          true
+        ),
+        funds: decodedMessage.stargate.value.funds,
+        fix_msg: decodedMessage.stargate.value.fixMsg,
+        salt: fromUtf8(decodedMessage.stargate.value.salt),
       }
+    } else {
+      data = decodedMessage.wasm.instantiate2
     }
 
     const fundsTokens = await Promise.all(
-      (decodedMessage.wasm.instantiate2.funds as Coin[])?.map(
-        async ({ denom, amount }) => ({
-          denom,
-          amount,
-          decimals: (
-            await this.options.queryClient.fetchQuery(
-              tokenQueries.info(this.options.queryClient, {
-                chainId,
-                type: TokenType.Native,
-                denomOrAddress: denom,
-              })
-            )
-          ).decimals,
-        })
-      ) || []
+      (data.funds as Coin[])?.map(async ({ denom, amount }) => ({
+        denom,
+        amount,
+        decimals: (
+          await this.options.queryClient.fetchQuery(
+            tokenQueries.info(this.options.queryClient, {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+            })
+          )
+        ).decimals,
+      })) || []
     )
 
     return {
       chainId,
       sender,
-      admin: decodedMessage.stargate.value.admin ?? '',
-      codeId: Number(decodedMessage.stargate.value.codeId),
-      label: decodedMessage.stargate.value.label,
-      message: JSON.stringify(
-        decodeJsonFromBase64(fromUtf8(decodedMessage.stargate.value.msg), true),
-        null,
-        2
-      ),
-      salt: decodedMessage.wasm.instantiate2.salt,
+      admin: data.admin || '',
+      codeId: data.code_id,
+      label: data.label,
+      message: JSON.stringify(data.msg, null, 2),
+      salt: data.salt,
       funds: fundsTokens.map(({ denom, amount, decimals }) => ({
         denom,
         amount: convertMicroDenomToDenomWithDecimals(amount, decimals),

@@ -56,6 +56,7 @@ type WasmMsgType =
 const WASM_TYPES: WasmMsgType[] = [
   'execute',
   'instantiate',
+  'instantiate2',
   'migrate',
   'update_admin',
   'clear_admin',

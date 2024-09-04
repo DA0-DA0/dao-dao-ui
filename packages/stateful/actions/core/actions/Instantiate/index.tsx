@@ -168,25 +168,23 @@ const Component: ActionComponent = (props) => {
       return
     }
 
-    // All instantiate actions' data that instantiate the same code ID.
-    const instantiateActionsData = props.allActionsWithData
-      .filter(
-        ({ actionKey, data }) =>
-          actionKey === ActionKey.Instantiate &&
-          'codeId' in data &&
-          data.codeId === codeId
-      )
-      .map(({ data }) => data) as InstantiateData[]
+    // All instantiate action indexes that instantiate the same code ID.
+    const instantiateIndexes = props.allActionsWithData.flatMap(
+      ({ actionKey, data }, index) =>
+        (actionKey === ActionKey.Instantiate ||
+          actionKey === ActionKey.Instantiate2) &&
+        data &&
+        'codeId' in data &&
+        data.codeId === codeId
+          ? index
+          : []
+    )
     // Index of this action in the list of all instantiation actions for this
     // code ID.
-    const innerIndex = instantiateActionsData.indexOf(
-      props.allActionsWithData[props.index].data
-    )
-    // Should never happen since this action is part of all actions.
+    const innerIndex = instantiateIndexes.indexOf(props.index)
+    // If all actions with data not yet loaded, this will not be found.
     if (innerIndex === -1) {
-      throw new Error(
-        'internal error: could not find inner instantiation action index'
-      )
+      return
     }
 
     // Instantiated contracts from the transaction data for this code ID.
@@ -205,7 +203,7 @@ const Component: ActionComponent = (props) => {
     // instantiation events from the chain, then another message must've
     // instantiated the same contract, so we cannot definitively locate the
     // address.
-    if (instantiateActionsData.length !== instantiatedContracts.length) {
+    if (instantiateIndexes.length !== instantiatedContracts.length) {
       return
     }
 
