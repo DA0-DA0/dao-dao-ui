@@ -133,6 +133,18 @@ export const ActionLibrary = ({
     },
   })
 
+  // Initialize all filtered actions and re-render when the promise changes
+  // since this affects the actions displayed.
+  useLoadingPromise({
+    promise: async () =>
+      filter
+        ? Promise.all(
+            filteredActions.map(({ item: action }) => action.init()) || []
+          )
+        : [],
+    deps: [filter, filteredActions],
+  })
+
   // If filter exists, unselect category.
   const categoryKeySelected = filter
     ? undefined
@@ -151,15 +163,26 @@ export const ActionLibrary = ({
     (!action.metadata.notReusable ||
       !actionData.some((a) => a.actionKey === action.key))
 
+  const categoryActions = categoryKeySelected
+    ? (selectedCategory || categories[0]).actionKeys.flatMap(
+        (key) => actionMap[key] || []
+      )
+    : undefined
+
+  // Initialize all category actions and re-render when the promise changes
+  // since this affects the actions displayed.
+  useLoadingPromise({
+    promise: async () =>
+      Promise.all(categoryActions?.map((a) => a.init()) || []),
+    deps: [categoryKeySelected],
+  })
+
   const showingActions = (
-    categoryKeySelected
-      ? (selectedCategory || categories[0]).actionKeys
-          .flatMap((key) => actionMap[key] || [])
-          .filter(filterVisibleActions)
-      : filteredActions
-          .map(({ item }) => item)
-          .filter(filterVisibleActions)
-          .slice(0, 10)
+    categoryActions?.filter(filterVisibleActions) ||
+    filteredActions
+      .map(({ item }) => item)
+      .filter(filterVisibleActions)
+      .slice(0, 10)
   ).sort((a, b) =>
     a.metadata.listOrder !== undefined && b.metadata.listOrder !== undefined
       ? a.metadata.listOrder - b.metadata.listOrder

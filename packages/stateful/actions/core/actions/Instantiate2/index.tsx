@@ -172,7 +172,7 @@ const Component: ActionComponent = (props) => {
 }
 
 export class Instantiate2Action extends ActionBase<Instantiate2Data> {
-  public readonly key = ActionKey.Instantiate
+  public readonly key = ActionKey.Instantiate2
   public readonly Component = Component
 
   constructor(options: ActionOptions) {
