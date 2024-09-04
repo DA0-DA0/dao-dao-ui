@@ -1,13 +1,18 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   DaoPreProposeMultipleClient,
   DaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
-import { daoProposalMultipleQueries } from '@dao-dao/state/query'
 import {
+  daoPreProposeMultipleQueries,
+  daoProposalMultipleQueries,
+} from '@dao-dao/state/query'
+import {
+  CheckedDepositInfo,
   Coin,
   ContractVersion,
+  Duration,
   Feature,
   ModuleInstantiateInfo,
 } from '@dao-dao/types'
@@ -16,11 +21,12 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
-  Duration,
+  Config,
   InstantiateMsg,
   MultipleChoiceVote,
   PercentageThreshold,
   PreProposeInfo,
+  ProposalResponse,
   VetoConfig,
   VoteInfo,
   VoteResponse,
@@ -41,9 +47,11 @@ import { ProposalModuleBase } from './base'
 export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   NewProposalData,
+  ProposalResponse,
   VoteResponse,
   VoteInfo,
-  MultipleChoiceVote
+  MultipleChoiceVote,
+  Config
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES
 
@@ -163,6 +171,19 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         funds: [],
       }),
     }
+  }
+
+  /**
+   * Query options to fetch the DAO address.
+   */
+  static getDaoAddressQuery(
+    queryClient: QueryClient,
+    options: {
+      chainId: string
+      contractAddress: string
+    }
+  ) {
+    return daoProposalMultipleQueries.dao(queryClient, options)
   }
 
   async propose({
@@ -310,6 +331,26 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
+  getProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse> {
+    return daoProposalMultipleQueries.proposal(this.queryClient, {
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+      args: {
+        proposalId,
+      },
+    })
+  }
+
+  async getProposal(
+    ...params: Parameters<MultipleChoiceProposalModule['getProposalQuery']>
+  ): Promise<ProposalResponse> {
+    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  }
+
   getVoteQuery({
     proposalId,
     voter,
@@ -319,7 +360,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }): FetchQueryOptions<VoteResponse> {
     return daoProposalMultipleQueries.getVote(this.queryClient, {
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
       args: {
         proposalId,
         ...(voter && { voter }),
@@ -348,5 +389,53 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       chainId: this.dao.chainId,
       contractAddress: this.info.address,
     })
+  }
+
+  getDaoAddressQuery(): FetchQueryOptions<string> {
+    return daoProposalMultipleQueries.dao(this.queryClient, {
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getConfigQuery(): FetchQueryOptions<Config> {
+    return daoProposalMultipleQueries.config(this.queryClient, {
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+    return {
+      queryKey: [
+        'multipleChoiceProposalModule',
+        'depositInfo',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        if (this.prePropose) {
+          const { deposit_info: depositInfo } =
+            await this.queryClient.fetchQuery(
+              daoPreProposeMultipleQueries.config(this.queryClient, {
+                chainId: this.dao.chainId,
+                contractAddress: this.prePropose.address,
+              })
+            )
+
+          return depositInfo || null
+        }
+
+        // If pre-propose is supported but not set, there are no deposits.
+        return null
+      },
+    }
+  }
+
+  async getMaxVotingPeriod(): Promise<Duration> {
+    return (await this.queryClient.fetchQuery(this.getConfigQuery()))
+      .max_voting_period
   }
 }

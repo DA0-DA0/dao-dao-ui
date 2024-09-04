@@ -5,16 +5,12 @@ import { useTranslation } from 'react-i18next'
 
 import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  DaoWidget,
   LoadedWidget,
   LoadingData,
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
-import {
-  getFilteredDaoItemsByPrefix,
-  getWidgetStorageItemKey,
-} from '@dao-dao/utils'
+import { getDaoWidgets } from '@dao-dao/utils'
 
 import { useMembership } from '../../hooks'
 import { getWidgetById } from '../core'
@@ -36,28 +32,11 @@ export const useWidgets = ({
   const { isMember = false } = useMembership()
 
   const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {
-    const parsedWidgets = getFilteredDaoItemsByPrefix(
-      items,
-      getWidgetStorageItemKey('')
-    )
-      .map(([id, widgetJson]): DaoWidget | undefined => {
-        try {
-          return {
-            id,
-            values: (widgetJson && JSON.parse(widgetJson)) || {},
-          }
-        } catch (err) {
-          // Ignore widget format error but log to console for debugging.
-          console.error(`Invalid widget JSON: ${widgetJson}`, err)
-          return
-        }
-      })
-      // Validate widget structure.
-      .filter((widget): widget is DaoWidget => !!widget)
+    const daoWidgets = getDaoWidgets(items)
 
     return {
       loading: false,
-      data: parsedWidgets
+      data: daoWidgets
         .map((daoWidget): LoadedWidget | undefined => {
           const widget = getWidgetById(chainId, daoWidget.id)
           // Enforce location filter.

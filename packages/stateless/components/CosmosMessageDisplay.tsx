@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 
 import { Theme, useThemeContext } from '../theme'
+import { Loader } from './logo'
 
 const CodeMirror = dynamic(
   () => import('react-codemirror2').then((module) => module.UnControlled),
@@ -21,32 +22,39 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
 
 export interface CosmosMessageDisplayProps {
   value: string
+  loading?: boolean
   className?: string
 }
 
 export const CosmosMessageDisplay = ({
   value,
+  loading,
   className,
 }: CosmosMessageDisplayProps) => {
   const themeCtx = useThemeContext()
   const editorTheme =
     themeCtx.theme !== Theme.Dark ? 'default' : 'material-ocean'
+
   return (
     <div className={clsx('flex flex-col', className)}>
-      <CodeMirror
-        className="text-sm"
-        options={{
-          theme: editorTheme,
-          mode: {
-            name: 'javascript',
-            json: true,
-          },
-          readOnly: true,
-          lineWrapping: true,
-          tabSize: 2,
-        }}
-        value={value}
-      />
+      {loading ? (
+        <Loader />
+      ) : (
+        <CodeMirror
+          className="text-sm"
+          options={{
+            theme: editorTheme,
+            mode: {
+              name: 'javascript',
+              json: true,
+            },
+            readOnly: true,
+            lineWrapping: true,
+            tabSize: 2,
+          }}
+          value={value}
+        />
+      )}
     </div>
   )
 }

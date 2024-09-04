@@ -2,18 +2,17 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import {
-  ChainProvider,
-  TokenAmountDisplay,
-  Tooltip,
-  useTranslatedTimeDeltaFormatter,
-} from '@dao-dao/stateless'
 import { VestingPaymentLineProps } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDate,
   formatDateTimeTz,
 } from '@dao-dao/utils'
+
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
+import { ChainProvider } from '../chain'
+import { TokenAmountDisplay } from '../token'
+import { Tooltip } from '../tooltip'
 
 export const VestingPaymentLine = ({
   vestingInfo,

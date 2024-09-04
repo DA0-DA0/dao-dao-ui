@@ -9,7 +9,11 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-export interface MintOptions {
+export type MintData = {
+  amount: number
+}
+
+export type MintOptions = {
   govToken: GenericToken
 }
 

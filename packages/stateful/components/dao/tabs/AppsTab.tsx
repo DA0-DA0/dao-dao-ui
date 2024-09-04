@@ -3,13 +3,12 @@ import { fromBech32 } from '@cosmjs/encoding'
 import { DirectSignDoc, SimpleAccount, WalletAccount } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
 import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
-import { v4 as uuidv4 } from 'uuid'
 
 import { OverrideHandler } from '@dao-dao/cosmiframe'
 import {
@@ -18,18 +17,22 @@ import {
   refreshProposalsIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  ActionCardLoader,
+  ActionMatcherProvider,
+  ErrorPage,
   Loader,
   Modal,
   ProfileImage,
   ProfileNameDisplayAndEditor,
   AppsTab as StatelessAppsTab,
   StatusCard,
+  useActionMatcher,
   useDaoInfoContext,
+  useLoadingPromise,
 } from '@dao-dao/stateless'
 import {
   AccountType,
   ActionKeyAndData,
-  ActionKeyAndDataNoId,
   BaseNewProposalProps,
   ProposalDraft,
   UnifiedCosmosMsg,
@@ -42,15 +45,13 @@ import {
   DaoProposalSingleAdapterId,
   SITE_TITLE,
   SITE_URL,
-  decodeMessages,
   getAccountAddress,
   getAccountChainId,
   getChainForChainId,
   getDisplayNameForChainId,
-  maybeMakePolytoneExecuteMessage,
+  maybeMakePolytoneExecuteMessages,
 } from '@dao-dao/utils'
 
-import { useActionsForMatching } from '../../../actions'
 import { useProfile } from '../../../hooks'
 import {
   ProposalModuleAdapterCommonProvider,
@@ -87,6 +88,8 @@ export const AppsTab = () => {
   )
 
   const [msgs, setMsgs] = useState<UnifiedCosmosMsg[]>()
+  const close = useCallback(() => setMsgs(undefined), [])
+
   const [fullScreen, setFullScreen] = useState(false)
 
   const addressForChainId = (chainId: string) => {
@@ -94,7 +97,7 @@ export const AppsTab = () => {
       getAccountAddress({
         accounts,
         chainId,
-        types: [AccountType.Native, AccountType.Polytone],
+        types: [AccountType.Base, AccountType.Polytone],
       }) ||
       // Fallback to ICA if exists, but don't use if a native or polytone
       // account exists.
@@ -137,8 +140,8 @@ export const AppsTab = () => {
     }
 
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
-    const messages = encodedMessages.map((msg) =>
-      maybeMakePolytoneExecuteMessage(
+    const messages = encodedMessages.flatMap((msg) =>
+      maybeMakePolytoneExecuteMessages(
         currentChainId,
         chainId,
         protobufToCwMsg(getChainForChainId(chainId), msg, false).msg
@@ -153,8 +156,8 @@ export const AppsTab = () => {
       return
     }
 
-    const messages = signDoc.msgs.map((msg) =>
-      maybeMakePolytoneExecuteMessage(
+    const messages = signDoc.msgs.flatMap((msg) =>
+      maybeMakePolytoneExecuteMessages(
         currentChainId,
         chainId,
         decodedStargateMsgToCw(
@@ -336,11 +339,9 @@ export const AppsTab = () => {
         <ProposalModuleAdapterCommonProvider
           proposalModuleAddress={singleChoiceProposalModule.address}
         >
-          <ActionMatcherAndProposer
-            key={JSON.stringify(msgs)}
-            msgs={msgs}
-            setMsgs={setMsgs}
-          />
+          <ActionMatcherProvider messages={msgs}>
+            <ActionMatcherAndProposer close={close} />
+          </ActionMatcherProvider>
         </ProposalModuleAdapterCommonProvider>
       )}
     </>
@@ -353,13 +354,46 @@ export const AppsTab = () => {
 }
 
 type ActionMatcherAndProposerProps = {
-  msgs: UnifiedCosmosMsg[]
-  setMsgs: (msgs: UnifiedCosmosMsg[] | undefined) => void
+  close: () => void
+  actionKeysAndData: ActionKeyAndData[]
 }
 
-const ActionMatcherAndProposer = ({
-  msgs,
-  setMsgs,
+const ActionMatcherAndProposer = (
+  props: Omit<ActionMatcherAndProposerProps, 'actionKeysAndData'>
+) => {
+  const matcher = useActionMatcher()
+  const data = useLoadingPromise({
+    promise: async () =>
+      matcher.ready
+        ? Promise.all(
+            matcher.matches.map(
+              async (decoder, index): Promise<ActionKeyAndData> => ({
+                _id: index.toString(),
+                actionKey: decoder.action.key,
+                data: await decoder.decode(),
+              })
+            )
+          )
+        : ([] as ActionKeyAndData[]),
+    deps: [matcher.status],
+  })
+
+  return data.loading ? (
+    <div className="flex flex-col gap-2">
+      <ActionCardLoader />
+      <ActionCardLoader />
+      <ActionCardLoader />
+    </div>
+  ) : data.errored ? (
+    <ErrorPage error={data.error} />
+  ) : (
+    <InnerActionMatcherAndProposer {...props} actionKeysAndData={data.data} />
+  )
+}
+
+const InnerActionMatcherAndProposer = ({
+  close,
+  actionKeysAndData,
 }: ActionMatcherAndProposerProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
@@ -373,42 +407,12 @@ const ActionMatcherAndProposer = ({
     },
   } = useProposalModuleAdapterCommonContext()
 
-  const actionsForMatching = useActionsForMatching()
-
-  const decodedMessages = useMemo(() => decodeMessages(msgs), [msgs])
-
-  // Call relevant action hooks in the same order every time.
-  const actionData: ActionKeyAndDataNoId[] = decodedMessages.map((message) => {
-    const actionMatch = actionsForMatching
-      .map((action) => ({
-        action,
-        ...action.useDecodedCosmosMsg(message),
-      }))
-      .find(({ match }) => match)
-
-    // There should always be a match since custom matches all. This should
-    // never happen as long as the Custom action exists.
-    if (!actionMatch?.match) {
-      throw new Error(t('error.loadingData'))
-    }
-
-    return {
-      actionKey: actionMatch.action.key,
-      data: actionMatch.data,
-    }
-  })
-
   const formMethods = useForm<NewSingleChoiceProposalForm>({
     mode: 'onChange',
     defaultValues: {
       title: '',
       description: '',
-      actionData: actionData.map(
-        (data): ActionKeyAndData => ({
-          _id: uuidv4(),
-          ...data,
-        })
-      ),
+      actionData: actionKeysAndData,
     },
   })
   const proposalData = formMethods.watch()
@@ -418,14 +422,9 @@ const ActionMatcherAndProposer = ({
     formMethods.reset({
       title: proposalData.title,
       description: proposalData.description,
-      actionData: actionData.map(
-        (data): ActionKeyAndData => ({
-          _id: uuidv4(),
-          ...data,
-        })
-      ),
+      actionData: actionKeysAndData,
     })
-  }, [actionData])
+  }, [actionKeysAndData])
 
   const setProposalCreatedCardProps = useSetRecoilState(
     proposalCreatedCardPropsAtom
@@ -535,14 +534,14 @@ const ActionMatcherAndProposer = ({
       refreshProposals()
 
       // Close modal.
-      setMsgs(undefined)
+      close()
     },
     [
       deleteDraft,
       draftIndex,
       refreshProposals,
-      setMsgs,
       setProposalCreatedCardProps,
+      close,
     ]
   )
 
@@ -574,7 +573,7 @@ const ActionMatcherAndProposer = ({
         title: t('title.createProposal'),
         subtitle: t('info.appsProposalDescription'),
       }}
-      onClose={() => setMsgs(undefined)}
+      onClose={close}
       visible
     >
       <FormProvider {...formMethods}>

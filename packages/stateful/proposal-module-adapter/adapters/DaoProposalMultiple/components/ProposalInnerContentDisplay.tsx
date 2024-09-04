@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { Loader } from '@dao-dao/stateless'
 import {
-  ActionAndData,
   ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
   ProposalStatusEnum,
@@ -14,7 +12,7 @@ import {
   MultipleChoiceProposal,
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { decodeMessages, getProposalStatusKey } from '@dao-dao/utils'
+import { getProposalStatusKey } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -63,11 +61,9 @@ export const ProposalInnerContentDisplay = (
 
 export const InnerProposalInnerContentDisplay = ({
   setDuplicateFormData,
-  actionsForMatching,
   proposal,
   voteOptions,
   votesInfo: { winningChoice },
-  setSeenAllActionPages,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: MultipleChoiceProposal
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
@@ -75,103 +71,59 @@ export const InnerProposalInnerContentDisplay = ({
 }) => {
   const { t } = useTranslation()
 
-  const mappedDecodedMessages = useMemo(
-    () => proposal.choices.map((choice) => decodeMessages(choice.msgs)),
-    [proposal.choices]
-  )
+  const statusKey = getProposalStatusKey(proposal.status)
 
   // Map action data to each proposal choice.
   const optionsData = proposal.choices.map(
     (choice, index): MultipleChoiceOptionData => {
       const voteOption = voteOptions[index]
-      const decodedMessages = mappedDecodedMessages[index]
-      const actionData: ActionAndData[] = decodedMessages.map((message) => {
-        const actionMatch = actionsForMatching
-          .map((action) => ({
-            action,
-            ...action.useDecodedCosmosMsg(message),
-          }))
-          .find(({ match }) => match)
-
-        // There should always be a match since custom matches all. This
-        // should never happen as long as the Custom action exists.
-        if (!actionMatch?.match) {
-          throw new Error(t('error.loadingData'))
-        }
-
-        return {
-          action: actionMatch.action,
-          data: actionMatch.data,
-        }
-      })
 
       return {
         choice,
-        actionData,
-        decodedMessages,
         voteOption,
       }
     }
   )
 
-  useDeepCompareEffect(() => {
-    setDuplicateFormData?.({
-      title: proposal.title,
-      description: proposal.description,
-      choices: optionsData
-        .filter(({ choice }) => choice.option_type !== 'none')
-        .map(({ choice, actionData }) => ({
-          title: choice.title,
-          description: choice.description,
-          actionData: actionData.map(
-            ({ action, data }, index): ActionKeyAndData => ({
-              _id: index.toString(),
-              actionKey: action.key,
-              data,
-            })
-          ),
-        })),
-    })
-  }, [optionsData, proposal.title, proposal.description, setDuplicateFormData])
+  // Load data for each choice until they're all ready.
+  const [loadedData, setLoadedData] = useState<
+    Record<number, ActionKeyAndData[]>
+  >({})
 
-  // Store for each option whether the user has seen all action pages.
-  const [seenAllActionPagesForOption, setSeenAllActionPagesPerOption] =
-    useState(
-      // Initialize to true if there are no msgs for an option.
-      () =>
-        optionsData.reduce(
-          (acc, { decodedMessages }, index) => ({
-            ...acc,
-            [index]: decodedMessages.length === 0,
-          }),
-          {} as Record<number, boolean | undefined>
-        )
-    )
-  // Check that every option has seen all action pages, and if so, call the
-  // `setSeenAllActionPages` callback.
-  const [markedSeen, setMarkedSeen] = useState(false)
   useEffect(() => {
-    if (markedSeen) {
+    if (!setDuplicateFormData) {
       return
     }
 
-    if (
-      setSeenAllActionPages &&
-      [...Array(proposal.choices.length)].every(
-        (_, index) => seenAllActionPagesForOption[index]
-      )
-    ) {
-      setSeenAllActionPages()
-      setMarkedSeen(true)
-    }
-  }, [
-    markedSeen,
-    proposal.choices.length,
-    seenAllActionPagesForOption,
-    setSeenAllActionPages,
-  ])
+    // Remove 'none' choice.
+    const choices = proposal.choices.filter(
+      ({ option_type }) => option_type !== 'none'
+    )
 
-  const statusKey = getProposalStatusKey(proposal.status)
+    // Wait until all data is loaded.
+    const allLoaded = choices.every(
+      ({ msgs, index }) => msgs.length === 0 || loadedData[index]
+    )
+    if (!allLoaded) {
+      return
+    }
+
+    setDuplicateFormData({
+      title: proposal.title,
+      description: proposal.description,
+      choices: choices.map(({ title, description, index }) => ({
+        title,
+        description,
+        actionData: loadedData[index] || [],
+      })),
+    })
+  }, [
+    setDuplicateFormData,
+    loadedData,
+    proposal.title,
+    proposal.description,
+    proposal.choices,
+  ])
 
   return (
     <div>
@@ -183,16 +135,16 @@ export const InnerProposalInnerContentDisplay = ({
           SuspenseLoader={SuspenseLoader}
           data={data}
           lastOption={index === optionsData.length - 1}
-          setSeenAllActionPages={() =>
-            setSeenAllActionPagesPerOption((prev) =>
-              // Don't update if already true.
-              prev[index]
-                ? prev
-                : {
-                    ...prev,
-                    [index]: true,
-                  }
-            )
+          onLoad={
+            setDuplicateFormData &&
+            data.choice.option_type !== 'none' &&
+            data.choice.msgs.length > 0
+              ? (loadedData) =>
+                  setLoadedData((d) => ({
+                    ...d,
+                    [data.choice.index]: loadedData,
+                  }))
+              : undefined
           }
           winner={
             (statusKey === ProposalStatusEnum.Passed ||

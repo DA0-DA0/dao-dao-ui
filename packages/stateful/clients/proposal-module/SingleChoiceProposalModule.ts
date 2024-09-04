@@ -1,4 +1,4 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   CwProposalSingleV1Client,
@@ -9,9 +9,13 @@ import {
   cwProposalSingleV1Queries,
   daoProposalSingleV2Queries,
 } from '@dao-dao/state/query'
+import { daoPreProposeSingleQueries } from '@dao-dao/state/query/queries/contracts/DaoPreProposeSingle'
 import {
+  CheckedDepositInfo,
   Coin,
   ContractVersion,
+  DepositRefundPolicy,
+  Duration,
   Feature,
   ModuleInstantiateInfo,
 } from '@dao-dao/types'
@@ -21,9 +25,10 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import {
-  Duration,
+  Config,
   InstantiateMsg,
   PreProposeInfo,
+  ProposalResponse,
   Threshold,
   VetoConfig,
   Vote,
@@ -47,9 +52,11 @@ import { ProposalModuleBase } from './base'
 export class SingleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   NewProposalData,
+  ProposalResponse,
   VoteResponse,
   VoteInfo,
-  Vote
+  Vote,
+  Config
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
 
@@ -152,6 +159,19 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       } as InstantiateMsg),
       funds: [],
     }
+  }
+
+  /**
+   * Query options to fetch the DAO address.
+   */
+  static getDaoAddressQuery(
+    queryClient: QueryClient,
+    options: {
+      chainId: string
+      contractAddress: string
+    }
+  ) {
+    return daoProposalSingleV2Queries.dao(queryClient, options)
   }
 
   async propose({
@@ -360,6 +380,26 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
+  getProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse> {
+    return daoProposalSingleV2Queries.proposal(this.queryClient, {
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+      args: {
+        proposalId,
+      },
+    })
+  }
+
+  async getProposal(
+    ...params: Parameters<SingleChoiceProposalModule['getProposalQuery']>
+  ): Promise<ProposalResponse> {
+    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  }
+
   getVoteQuery({
     proposalId,
     voter,
@@ -374,7 +414,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
     return query(this.queryClient, {
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
       args: {
         proposalId,
         ...(voter && { voter }),
@@ -406,7 +446,72 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
     return query(this.queryClient, {
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
     })
+  }
+
+  getConfigQuery(): FetchQueryOptions<Config> {
+    return daoProposalSingleV2Queries.config(this.queryClient, {
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+    return {
+      queryKey: [
+        'singleChoiceProposalModule',
+        'depositInfo',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        if (this.prePropose) {
+          const { deposit_info: depositInfo } =
+            await this.queryClient.fetchQuery(
+              daoPreProposeSingleQueries.config(this.queryClient, {
+                chainId: this.dao.chainId,
+                contractAddress: this.prePropose.address,
+              })
+            )
+
+          return depositInfo || null
+        } else if (
+          // V1 has proposal deposits built right into the proposal module
+          // instead of a separate pre-propose module.
+          !isFeatureSupportedByVersion(Feature.PrePropose, this.version)
+        ) {
+          const { deposit_info: depositInfo } =
+            await this.queryClient.fetchQuery(
+              cwProposalSingleV1Queries.config(this.queryClient, {
+                chainId: this.dao.chainId,
+                contractAddress: this.address,
+              })
+            )
+
+          return depositInfo
+            ? {
+                amount: depositInfo.deposit,
+                denom: {
+                  cw20: depositInfo.token,
+                },
+                refund_policy: depositInfo.refund_failed_proposals
+                  ? DepositRefundPolicy.Always
+                  : DepositRefundPolicy.OnlyPassed,
+              }
+            : null
+        }
+
+        // If pre-propose is supported but not set, there are no deposits.
+        return null
+      },
+    }
+  }
+
+  async getMaxVotingPeriod(): Promise<Duration> {
+    return (await this.queryClient.fetchQuery(this.getConfigQuery()))
+      .max_voting_period
   }
 }

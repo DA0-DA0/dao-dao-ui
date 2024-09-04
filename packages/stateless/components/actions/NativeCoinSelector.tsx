@@ -122,7 +122,7 @@ export const NativeCoinSelector = ({
       : !selectedToken
       ? t('error.unknownDenom', { denom: watchDenom })
       : watchAmount > balance
-      ? t('error.spendActionInsufficientWarning', {
+      ? t('error.insufficientFundsWarning', {
           amount: balance.toLocaleString(undefined, {
             maximumFractionDigits: decimals,
           }),
@@ -210,8 +210,8 @@ export const NativeCoinSelector = ({
         )}
       </div>
 
-      <InputErrorMessage className="-ml-1" error={errors?.amount} />
-      <InputErrorMessage className="-ml-1" error={warning} warning />
+      <InputErrorMessage error={errors?.amount} />
+      <InputErrorMessage error={warning} warning />
     </div>
   )
 }

@@ -1,19 +1,23 @@
 import { Check, DataObject } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useMemo, useState } from 'react'
+import { ComponentType, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ActionsRenderer,
+  ActionsMatchAndRender,
   Button,
-  CosmosMessageDisplay,
   DropdownIconButton,
   MarkdownRenderer,
+  RawActionsRenderer,
   Tooltip,
 } from '@dao-dao/stateless'
-import { SuspenseLoaderProps } from '@dao-dao/types'
-import { decodeRawDataForDisplay } from '@dao-dao/utils'
+import {
+  ActionEncodeContext,
+  ActionKeyAndData,
+  ActionKeyAndDataNoId,
+  SuspenseLoaderProps,
+} from '@dao-dao/types'
 
 import { MultipleChoiceOptionData } from '../types'
 
@@ -23,26 +27,52 @@ export type MultipleChoiceOptionViewerProps = {
   // If undefined, no winner picked yet.
   winner?: boolean
   // Used when previewing to force raw JSON display.
-  forceRaw?: boolean
-  // Called when the user has viewed all action pages.
-  setSeenAllActionPages?: () => void
+  preview?: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-}
+} & (
+  | {
+      /**
+       * Force raw JSON display and use existing action data instead of matching
+       * and decoding messages from the choice data.
+       */
+      preview: true
+      /**
+       * Encode context.
+       */
+      encodeContext: ActionEncodeContext
+      /**
+       * Action keys and data to preview.
+       */
+      actionKeysAndData: ActionKeyAndDataNoId[]
+
+      onLoad?: never
+    }
+  | {
+      preview?: false
+      encodeContext?: never
+      actionKeysAndData?: never
+      /**
+       * Callback when all actions and data are loaded.
+       */
+      onLoad?: (data: ActionKeyAndData[]) => void
+    }
+)
 
 export const MultipleChoiceOptionViewer = ({
-  data: { choice, actionData, decodedMessages, voteOption },
+  data: { choice, voteOption },
   lastOption,
   winner,
-  forceRaw,
-  setSeenAllActionPages,
   SuspenseLoader,
+  ...previewData
 }: MultipleChoiceOptionViewerProps) => {
   const { t } = useTranslation()
 
   const [showRaw, setShowRaw] = useState(false)
 
   const isNoneOption = choice.option_type === 'none'
-  const noMessages = decodedMessages.length === 0
+  const noMessages = previewData.preview
+    ? previewData.actionKeysAndData.length === 0
+    : choice.msgs.length === 0
   const noContent = noMessages && !choice.description
 
   // Close none of the above and disallow expanding.
@@ -54,11 +84,6 @@ export const MultipleChoiceOptionViewer = ({
       !noContent
   )
   const toggleExpanded = () => setExpanded((e) => !e)
-
-  const rawDecodedMessages = useMemo(
-    () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
-    [decodedMessages]
-  )
 
   return (
     <div
@@ -121,18 +146,27 @@ export const MultipleChoiceOptionViewer = ({
 
         {noMessages ? (
           <p className="caption-text italic">{t('info.optionInert')}</p>
-        ) : (forceRaw === undefined && showRaw) || forceRaw ? (
-          <CosmosMessageDisplay value={rawDecodedMessages} />
+        ) : previewData.preview || showRaw ? (
+          // If previewing, load raw from actions.
+          previewData.preview ? (
+            <RawActionsRenderer
+              actionKeysAndData={previewData.actionKeysAndData}
+              encodeContext={previewData.encodeContext}
+            />
+          ) : (
+            // Otherwise use messages that already exist.
+            <RawActionsRenderer messages={choice.msgs} />
+          )
         ) : (
-          <ActionsRenderer
+          <ActionsMatchAndRender
             SuspenseLoader={SuspenseLoader}
-            actionData={actionData}
+            messages={choice.msgs}
             onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-            setSeenAllActionPages={setSeenAllActionPages}
+            onLoad={!previewData.preview && previewData.onLoad}
           />
         )}
 
-        {forceRaw === undefined && decodedMessages.length > 0 && (
+        {!previewData.preview && !noMessages && (
           <Button
             className="-mt-4 self-end"
             onClick={() => setShowRaw(!showRaw)}

@@ -15,7 +15,6 @@ import {
 } from '@dao-dao/types'
 import { encodeJsonToBase64, keyFromPreProposeStatus } from '@dao-dao/utils'
 
-import { useActionsForMatching } from '../../actions'
 import { useEntity } from '../../hooks'
 import { useProposalModuleAdapterContext } from '../../proposal-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
@@ -31,7 +30,6 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const actionsForMatching = useActionsForMatching()
   const {
     id,
     adapter: {
@@ -104,7 +102,6 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
         <PreProposeApprovalInnerContentDisplay
-          actionsForMatching={actionsForMatching}
           setDuplicateFormData={setDuplicateFormData}
         />
       }

@@ -21,11 +21,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import {
-  ActionCategoryWithLabel,
-  LoadedActions,
-  SuspenseLoaderProps,
-} from '@dao-dao/types'
+import { SuspenseLoaderProps } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionFormData, NewProposalForm } from '../types'
@@ -40,10 +36,8 @@ export interface MultipleChoiceOptionEditorProps<
   registerOption: UseFormRegister<FV>
   optionIndex: number
   control: Control<FV>
-  categories: ActionCategoryWithLabel[]
   removeOption: () => void
   addOption: (value: Partial<MultipleChoiceOptionFormData>) => void
-  loadedActions: LoadedActions
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -56,10 +50,8 @@ export const MultipleChoiceOptionEditor = <
   errorsOption,
   registerOption,
   optionIndex,
-  categories,
   removeOption,
   addOption,
-  loadedActions,
   SuspenseLoader,
 }: MultipleChoiceOptionEditorProps<FV, FieldName>) => {
   const { t } = useTranslation()
@@ -163,8 +155,6 @@ export const MultipleChoiceOptionEditor = <
           SuspenseLoader={SuspenseLoader}
           actionDataErrors={errorsOption?.actionData}
           actionDataFieldName={`choices.${optionIndex}.actionData`}
-          categories={categories}
-          loadedActions={loadedActions}
         />
       </div>
     </div>

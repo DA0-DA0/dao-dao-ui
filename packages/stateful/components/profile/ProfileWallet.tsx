@@ -8,11 +8,11 @@ import {
 import {
   ProfileWallet as StatelessProfileWallet,
   useCachedLoadingWithError,
+  useInitializedActionForKey,
 } from '@dao-dao/stateless'
 import { ActionKey, StatefulProfileWalletProps } from '@dao-dao/types'
 import { getActionBuilderPrefillPath } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../actions'
 import { useProfile } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { IconButtonLink } from '../IconButtonLink'
@@ -74,9 +74,9 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
     (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
   )
 
-  const configureRebalancerActionDefaults = useActionForKey(
+  const configureRebalancerAction = useInitializedActionForKey(
     ActionKey.ConfigureRebalancer
-  )?.useDefaults()
+  )
 
   return (
     <StatelessProfileWallet
@@ -87,11 +87,13 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       accounts={accounts}
       configureRebalancerHref={
-        !readOnly && configureRebalancerActionDefaults
+        !readOnly &&
+        !configureRebalancerAction.loading &&
+        !configureRebalancerAction.errored
           ? getActionBuilderPrefillPath([
               {
-                actionKey: ActionKey.ConfigureRebalancer,
-                data: configureRebalancerActionDefaults,
+                actionKey: configureRebalancerAction.data.key,
+                data: configureRebalancerAction.data.defaults,
               },
             ])
           : undefined

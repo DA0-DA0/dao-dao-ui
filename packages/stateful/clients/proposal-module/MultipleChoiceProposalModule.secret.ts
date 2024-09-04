@@ -1,21 +1,30 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   SecretDaoPreProposeMultipleClient,
   SecretDaoProposalMultipleClient,
 } from '@dao-dao/state/contracts'
-import { secretDaoProposalMultipleQueries } from '@dao-dao/state/query'
-import { Coin, SecretModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  secretDaoPreProposeMultipleQueries,
+  secretDaoProposalMultipleQueries,
+} from '@dao-dao/state/query'
+import {
+  CheckedDepositInfo,
+  Coin,
+  Duration,
+  SecretModuleInstantiateInfo,
+} from '@dao-dao/types'
 import {
   InstantiateMsg as SecretDaoPreProposeMultipleInstantiateMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/SecretDaoPreProposeMultiple'
 import {
-  Duration,
+  Config,
   InstantiateMsg,
   MultipleChoiceVote,
   PercentageThreshold,
   PreProposeInfo,
+  ProposalResponse,
   VetoConfig,
   VoteInfo,
   VoteResponse,
@@ -35,9 +44,11 @@ import { ProposalModuleBase } from './base'
 export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   NewProposalData,
+  ProposalResponse,
   VoteResponse,
   VoteInfo,
-  MultipleChoiceVote
+  MultipleChoiceVote,
+  Config
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES
 
@@ -111,6 +122,19 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       } as InstantiateMsg),
       funds: [],
     }
+  }
+
+  /**
+   * Query options to fetch the DAO address.
+   */
+  static getDaoAddressQuery(
+    _: QueryClient,
+    options: {
+      chainId: string
+      contractAddress: string
+    }
+  ) {
+    return secretDaoProposalMultipleQueries.dao(options)
   }
 
   async propose({
@@ -278,6 +302,28 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
+  getProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse> {
+    return secretDaoProposalMultipleQueries.proposal({
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+      args: {
+        proposalId,
+      },
+    })
+  }
+
+  async getProposal(
+    ...params: Parameters<
+      SecretMultipleChoiceProposalModule['getProposalQuery']
+    >
+  ): Promise<ProposalResponse> {
+    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  }
+
   getVoteQuery({
     proposalId,
     voter,
@@ -289,7 +335,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalMultipleQueries.getVote({
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
       // Force type-cast since the query won't be enabled until this is set.
       // This allows us to pass an undefined `voter` argument in order to
       // invalidate/refresh the query for all voters.
@@ -328,7 +374,68 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   getProposalCountQuery(): FetchQueryOptions<number> {
     return secretDaoProposalMultipleQueries.proposalCount({
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
     })
+  }
+
+  getDaoAddressQuery(): FetchQueryOptions<string> {
+    return secretDaoProposalMultipleQueries.dao({
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getConfigQuery(): FetchQueryOptions<Config> {
+    return secretDaoProposalMultipleQueries.config({
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+    return {
+      queryKey: [
+        'secretMultipleChoiceProposalModule',
+        'depositInfo',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        if (this.prePropose) {
+          const { deposit_info: depositInfo } =
+            await this.queryClient.fetchQuery(
+              secretDaoPreProposeMultipleQueries.config({
+                chainId: this.dao.chainId,
+                contractAddress: this.prePropose.address,
+              })
+            )
+
+          return depositInfo
+            ? {
+                amount: depositInfo.amount,
+                denom:
+                  // Convert snip20 to cw20 key.
+                  'snip20' in depositInfo.denom
+                    ? {
+                        // Code hash.
+                        cw20: depositInfo.denom.snip20[0],
+                      }
+                    : depositInfo.denom,
+                refund_policy: depositInfo.refund_policy,
+              }
+            : null
+        }
+
+        // If pre-propose is supported but not set, there are no deposits.
+        return null
+      },
+    }
+  }
+
+  async getMaxVotingPeriod(): Promise<Duration> {
+    return (await this.queryClient.fetchQuery(this.getConfigQuery()))
+      .max_voting_period
   }
 }

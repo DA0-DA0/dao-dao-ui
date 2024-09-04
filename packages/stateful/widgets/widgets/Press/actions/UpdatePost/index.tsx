@@ -1,176 +1,128 @@
-import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { PencilEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, PencilEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
-import {
-  decodePolytoneExecuteMsg,
-  getChainAddressForActionOptions,
-  makeWasmMessage,
-  maybeMakePolytoneExecuteMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
 import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
+import { CreatePostAction } from '../CreatePost'
+import { DeletePostAction } from '../DeletePost'
 import { UpdatePostComponent, UpdatePostData } from './Component'
 
-const useDefaults: UseDefaults<UpdatePostData> = () => ({
-  tokenId: '',
-  tokenUri: '',
-  uploaded: false,
-  data: {
-    title: '',
-    description: '',
-    content: '',
-  },
-})
+export class UpdatePostAction extends ActionBase<UpdatePostData> {
+  public readonly key = ActionKey.UpdatePost
+  public readonly Component: ActionComponent<undefined, UpdatePostData>
 
-export const makeUpdatePostActionMaker = ({
-  chainId: configuredChainId,
-  contract,
-}: PressData): ActionMaker<UpdatePostData> => {
-  // Make outside of the maker function returned below so it doesn't get
-  // redefined and thus remounted on every render.
-  const Component: ActionComponent = (props) => {
-    const {
-      chain: { chain_id: daoChainId },
-    } = useActionOptions()
-    // The chain that Press is set up on. If chain ID is undefined, default to
-    // native DAO chain for backwards compatibility.
-    const pressChainId = configuredChainId || daoChainId
-
-    const { watch } = useFormContext<UpdatePostData>()
-    const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
-    const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
-    const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
-
-    const postLoading = useCachedLoading(
-      uploaded && tokenId && tokenUri
-        ? postSelector({
-            id: tokenId,
-            metadataUri: tokenUri,
-          })
-        : undefined,
-      undefined
-    )
-
-    const postsLoading = useCachedLoading(
-      postsSelector({
-        contractAddress: contract,
-        chainId: pressChainId,
-      }),
-      []
-    )
-
-    return (
-      <UpdatePostComponent
-        {...props}
-        options={{
-          postLoading,
-          postsLoading,
-        }}
-      />
-    )
+  protected _defaults: UpdatePostData = {
+    tokenId: '',
+    tokenUri: '',
+    uploaded: false,
+    data: {
+      title: '',
+      description: '',
+      content: '',
+    },
   }
 
-  return (options) => {
-    const {
-      t,
-      chain: { chain_id: daoChainId },
-    } = options
+  private createPostAction: CreatePostAction
+  private deletePostAction: DeletePostAction
 
-    // The chain that Press is set up on. If chain ID is undefined, default to
-    // native DAO chain for backwards compatibility.
-    const pressChainId = configuredChainId || daoChainId
+  constructor(options: ActionOptions, private pressData: PressData) {
+    super(options, {
+      Icon: PencilEmoji,
+      label: options.t('title.updatePost'),
+      description: options.t('info.updatePostDescription'),
+    })
 
-    const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePostData> = (
-      msg: Record<string, any>
-    ) => {
-      let chainId = daoChainId
-      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
-      if (decodedPolytone.match) {
-        chainId = decodedPolytone.chainId
-        msg = decodedPolytone.msg
-      }
+    this.createPostAction = new CreatePostAction(options, pressData)
+    this.deletePostAction = new DeletePostAction(options, pressData)
 
-      return objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              mint: {
-                owner: {},
-                token_id: {},
-                token_uri: {},
-              },
-            },
-          },
-        },
-      }) &&
-        chainId === pressChainId &&
-        msg.wasm.execute.contract_addr === contract &&
-        msg.wasm.execute.msg.mint.token_uri
-        ? {
-            match: true,
-            data: {
-              chainId,
-              tokenId: msg.wasm.execute.msg.mint.token_id,
-              tokenUri: msg.wasm.execute.msg.mint.token_uri,
-              uploaded: true,
-            },
-          }
-        : {
-            match: false,
-          }
-    }
+    this.Component = function UpdatePostActionComponent(props) {
+      const { watch } = useFormContext<UpdatePostData>()
+      const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+      const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
+      const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
-    const useTransformToCosmos: UseTransformToCosmos<UpdatePostData> = () =>
-      useCallback(
-        ({ tokenId, tokenUri }) =>
-          maybeMakePolytoneExecuteMessage(
-            daoChainId,
-            pressChainId,
-            makeWasmMessage({
-              wasm: {
-                execute: {
-                  contract_addr: contract,
-                  funds: [],
-                  msg: {
-                    mint: {
-                      owner: getChainAddressForActionOptions(
-                        options,
-                        pressChainId
-                      ),
-                      token_id: tokenId,
-                      token_uri: tokenUri,
-                    },
-                  },
-                },
-              },
+      const postLoading = useCachedLoading(
+        uploaded && tokenId && tokenUri
+          ? postSelector({
+              id: tokenId,
+              metadataUri: tokenUri,
             })
-          ),
+          : undefined,
+        undefined
+      )
+
+      const postsLoading = useCachedLoading(
+        postsSelector({
+          contractAddress: pressData.contract,
+          // The chain that Press is set up on. If chain ID is undefined,
+          // default to native DAO chain for backwards compatibility.
+          chainId: pressData.chainId || options.chain.chain_id,
+        }),
         []
       )
 
+      return (
+        <UpdatePostComponent
+          {...props}
+          options={{
+            postLoading,
+            postsLoading,
+          }}
+        />
+      )
+    }
+  }
+
+  encode({ updateId, tokenId, tokenUri }: UpdatePostData): UnifiedCosmosMsg[] {
+    if (!updateId) {
+      throw new Error('No post chosen.')
+    }
+
+    return [
+      ...this.createPostAction.encode({
+        tokenId,
+        tokenUri,
+        // Unused.
+        uploaded: true,
+      }),
+      ...this.deletePostAction.encode({
+        id: updateId,
+      }),
+    ]
+  }
+
+  match(messages: ProcessedMessage[]): ActionMatch {
+    const orderCorrect =
+      messages.length >= 2 &&
+      this.createPostAction.match([messages[0]]) &&
+      this.deletePostAction.match([messages[1]])
+
+    if (!orderCorrect) {
+      return false
+    }
+
+    const createPost = this.createPostAction.decode([messages[0]])
+    const deletePost = this.deletePostAction.decode([messages[1]])
+    return createPost.tokenId === deletePost.id
+  }
+
+  decode(messages: ProcessedMessage[]): UpdatePostData {
+    const createPost = this.createPostAction.decode([messages[0]])
+    const deletePost = this.deletePostAction.decode([messages[1]])
     return {
-      key: ActionKey.UpdatePost,
-      Icon: PencilEmoji,
-      label: t('title.updatePost'),
-      description: t('info.updatePostDescription'),
-      Component,
-      useDefaults,
-      useTransformToCosmos,
-      useDecodedCosmosMsg,
+      updateId: deletePost.id,
+      tokenId: createPost.tokenId,
+      tokenUri: createPost.tokenUri,
+      uploaded: true,
     }
   }
 }

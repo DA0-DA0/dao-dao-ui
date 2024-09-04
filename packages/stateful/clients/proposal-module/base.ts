@@ -2,21 +2,34 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
+  CheckedDepositInfo,
   Coin,
   ContractVersion,
+  Duration,
   IDaoBase,
   IProposalModuleBase,
   PreProposeModule,
-  ProposalModule,
+  ProposalModuleInfo,
 } from '@dao-dao/types'
 
 export abstract class ProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
   Proposal = any,
+  ProposalResponse = any,
   VoteResponse = any,
   VoteInfo = any,
-  Vote = any
-> implements IProposalModuleBase<Dao, Proposal, VoteResponse, VoteInfo, Vote>
+  Vote = any,
+  Config = any
+> implements
+    IProposalModuleBase<
+      Dao,
+      Proposal,
+      ProposalResponse,
+      VoteResponse,
+      VoteInfo,
+      Vote,
+      Config
+    >
 {
   /**
    * The contract names that this module supports.
@@ -26,7 +39,7 @@ export abstract class ProposalModuleBase<
   constructor(
     protected readonly queryClient: QueryClient,
     public readonly dao: Dao,
-    public readonly info: ProposalModule
+    public readonly info: ProposalModuleInfo
   ) {}
 
   /**
@@ -107,6 +120,20 @@ export abstract class ProposalModuleBase<
   }): Promise<void>
 
   /**
+   * Query options to fetch a proposal.
+   */
+  abstract getProposalQuery(options: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse>
+
+  /**
+   * Fetch a proposal.
+   */
+  abstract getProposal(options: {
+    proposalId: number
+  }): Promise<ProposalResponse>
+
+  /**
    * Query options to fetch the vote on a proposal by a given address. If voter
    * is undefined, will return query in loading state.
    */
@@ -139,4 +166,25 @@ export abstract class ProposalModuleBase<
       this.getProposalCountQuery(...params)
     )
   }
+
+  /**
+   * Query options to fetch the config.
+   */
+  abstract getConfigQuery(): Pick<
+    FetchQueryOptions<Config>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Query options to fetch configured deposit info, if any.
+   */
+  abstract getDepositInfoQuery(): Pick<
+    FetchQueryOptions<CheckedDepositInfo | null>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Fetch the max voting period.
+   */
+  abstract getMaxVotingPeriod(): Promise<Duration>
 }

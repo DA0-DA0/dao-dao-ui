@@ -1,2 +1,2 @@
-export { makeUpdatePreProposeConfigActionMaker } from './UpdatePreProposeConfig'
-export { makeUpdateProposalConfigActionMaker } from './UpdateProposalConfig'
+export { DaoProposalMultipleUpdatePreProposeConfigAction } from './UpdatePreProposeConfig'
+export { DaoProposalMultipleUpdateConfigAction } from './UpdateProposalConfig'

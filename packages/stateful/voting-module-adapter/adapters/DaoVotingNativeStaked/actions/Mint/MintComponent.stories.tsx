@@ -3,8 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { CHAIN_ID, makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
 
-import { MintData } from '.'
-import { MintComponent } from './MintComponent'
+import { MintComponent, MintData } from './MintComponent'
 
 export default {
   title:

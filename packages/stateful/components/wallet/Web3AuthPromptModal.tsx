@@ -4,21 +4,20 @@ import { useRecoilValue } from 'recoil'
 
 import { web3AuthPromptAtom } from '@dao-dao/state/recoil'
 import {
-  ActionsRenderer,
+  ActionsMatchAndRender,
   Button,
   ChainProvider,
   CosmosMessageDisplay,
   Modal,
 } from '@dao-dao/stateless'
-import { ActionAndData, protobufToCwMsg } from '@dao-dao/types'
+import { UnifiedCosmosMsg, protobufToCwMsg } from '@dao-dao/types'
 import {
   SignDoc,
   TxBody,
 } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
-import { decodeMessages, getChainForChainId } from '@dao-dao/utils'
+import { getChainForChainId } from '@dao-dao/utils'
 
-import { useActionsForMatching } from '../../actions'
-import { WalletActionsProvider } from '../../actions/react/provider'
+import { WalletActionsProvider } from '../../actions/providers/wallet'
 import { useWallet } from '../../hooks/useWallet'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -33,14 +32,14 @@ export const Web3AuthPromptModal = () => {
     }
 
     if (prompt.signData.type === 'direct') {
-      const messages = decodeMessages(
-        TxBody.decode(prompt.signData.value.bodyBytes).messages.map(
-          (msg) =>
-            protobufToCwMsg(
-              getChainForChainId((prompt.signData.value as SignDoc).chainId),
-              msg
-            ).msg
-        )
+      const messages = TxBody.decode(
+        prompt.signData.value.bodyBytes
+      ).messages.map(
+        (msg) =>
+          protobufToCwMsg(
+            getChainForChainId((prompt.signData.value as SignDoc).chainId),
+            msg
+          ).msg
       )
 
       return {
@@ -54,13 +53,6 @@ export const Web3AuthPromptModal = () => {
       }
     }
   }, [prompt])
-
-  // Re-create when messages change so that hooks are called in the same order.
-  const WalletActionsRenderer = useMemo(
-    () =>
-      makeWalletActionsRenderer(decoded?.type === 'cw' ? decoded.messages : []),
-    [decoded]
-  )
 
   const chainId =
     prompt &&
@@ -118,7 +110,7 @@ export const Web3AuthPromptModal = () => {
           {decoded &&
             (decoded.type === 'cw' ? (
               <WalletActionsProvider>
-                <WalletActionsRenderer />
+                <WalletActionsRenderer messages={decoded.messages} />
               </WalletActionsProvider>
             ) : (
               <CosmosMessageDisplay
@@ -134,37 +126,14 @@ export const Web3AuthPromptModal = () => {
   )
 }
 
-const makeWalletActionsRenderer = (messages: Record<string, any>[]) =>
-  function WalletActionsRenderer() {
-    const { t } = useTranslation()
-    const actionsForMatching = useActionsForMatching()
-
-    // Call relevant action hooks in the same order every time.
-    const actionData: ActionAndData[] = messages.map((message) => {
-      const actionMatch = actionsForMatching
-        .map((action) => ({
-          action,
-          ...action.useDecodedCosmosMsg(message),
-        }))
-        .find(({ match }) => match)
-
-      // There should always be a match since custom matches all. This should
-      // never happen as long as the Custom action exists.
-      if (!actionMatch?.match) {
-        throw new Error(t('error.loadingData'))
-      }
-
-      return {
-        action: actionMatch.action,
-        data: actionMatch.data,
-      }
-    })
-
-    return (
-      <ActionsRenderer
-        SuspenseLoader={SuspenseLoader}
-        actionData={actionData}
-        hideCopyLink
-      />
-    )
-  }
+const WalletActionsRenderer = ({
+  messages,
+}: {
+  messages: UnifiedCosmosMsg[]
+}) => (
+  <ActionsMatchAndRender
+    SuspenseLoader={SuspenseLoader}
+    hideCopyLink
+    messages={messages}
+  />
+)

@@ -1,18 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Dispatch, SetStateAction, useCallback, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
-import {
-  govProposalSelector,
-  refreshGovProposalsAtom,
-} from '@dao-dao/state/recoil'
+import { chainQueries } from '@dao-dao/state/query'
 import {
   PageLoader,
   Popup,
   Proposal,
   ProposalNotFound,
-  useCachedLoadingWithError,
   useChain,
   useDaoInfoContextIfAvailable,
 } from '@dao-dao/stateless'
@@ -28,6 +24,8 @@ import { GovActionsProvider } from '../../actions'
 import {
   useLoadingGovProposal,
   useOnCurrentDaoWebSocketMessage,
+  useQueryLoadingDataWithError,
+  useRefreshGovProposals,
 } from '../../hooks'
 import { DaoProposalProps } from '../dao/DaoPageWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
@@ -63,22 +61,21 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const alreadyVoted =
     !loadingProposal.loading &&
     !loadingProposal.data.walletVoteInfo.loading &&
+    !loadingProposal.data.walletVoteInfo.errored &&
     !!loadingProposal.data.walletVoteInfo.data.vote?.length
 
   const setVoteOpenRef = useRef<
     (Dispatch<SetStateAction<boolean>> | null) | null
   >(null)
 
-  const setRefreshGovProposalsId = useSetRecoilState(
-    refreshGovProposalsAtom(chainId)
-  )
+  const refreshGovProposals = useRefreshGovProposals()
   // Proposal status listener. Show alerts and refresh.
   useOnCurrentDaoWebSocketMessage(
     'proposal',
     async ({ status, proposalId }) => {
       // If the current proposal updated...
       if (proposalId === proposal.id.toString()) {
-        setRefreshGovProposalsId((id) => id + 1)
+        refreshGovProposals()
 
         // Manually revalidate static props.
         fetch(
@@ -172,9 +169,10 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
 
 export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
   const { chain_id: chainId } = useChain()
-  const proposalLoading = useCachedLoadingWithError(
+  const queryClient = useQueryClient()
+  const proposalLoading = useQueryLoadingDataWithError(
     proposalInfo
-      ? govProposalSelector({
+      ? chainQueries.govProposal(queryClient, {
           chainId,
           proposalId: Number(proposalInfo.id),
         })

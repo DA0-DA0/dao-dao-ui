@@ -1,22 +1,17 @@
 import { DaoVotingNativeStakedAdapterId } from '@dao-dao/utils'
 
+import { useDaoGovernanceToken } from '../../../hooks'
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
-// Returns the useGovernanceTokenInfo hook response if using the native-staked
+// Returns the useDaoGovernanceToken hook response if using the native-staked
 // voting module adapter and within a voting module context. This will not error
 // if the adapter is unavailable.
 export const useNativeCommonGovernanceTokenInfoIfExists = () => {
-  const {
-    id,
-    adapter: {
-      hooks: { useCommonGovernanceTokenInfo },
-    },
-  } = useVotingModuleAdapterContextIfAvailable() ?? {
+  const { id } = useVotingModuleAdapterContextIfAvailable() ?? {
     id: undefined,
-    adapter: { hooks: {} },
   }
 
-  const info = useCommonGovernanceTokenInfo?.()
+  const token = useDaoGovernanceToken()
 
-  return id === DaoVotingNativeStakedAdapterId ? info : undefined
+  return id === DaoVotingNativeStakedAdapterId ? token : undefined
 }

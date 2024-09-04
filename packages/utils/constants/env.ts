@@ -57,10 +57,6 @@ export const FILEBASE_BUCKET = process.env.FILEBASE_BUCKET as string
 export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
 
-export const DISABLED_ACTIONS = (
-  process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
-).split(',')
-
 // Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
 export const DISCORD_NOTIFIER_CLIENT_ID = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string

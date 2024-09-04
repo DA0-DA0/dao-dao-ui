@@ -26,6 +26,7 @@ import {
   DaoCreationVotingConfigItemReviewProps,
   DaoCreationVotingConfigWithProposalDeposit,
   DepositRefundPolicy,
+  GenericToken,
   TokenInputOption,
   TokenType,
 } from '@dao-dao/types'
@@ -59,7 +60,9 @@ const ProposalDepositInput = ({
   const isTokenBasedCreator = creator.id === TokenBasedCreatorId
   const tokenBasedCreatorData = creator.data as TokenBasedCreatorData
 
-  const governanceTokenLoadable = useRecoilValueLoadable(
+  const governanceTokenLoadable = useRecoilValueLoadable<
+    GenericToken | undefined
+  >(
     isTokenBasedCreator
       ? tokenBasedCreatorData.tokenType === GovernanceTokenType.New
         ? constSelector({

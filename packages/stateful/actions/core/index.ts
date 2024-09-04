@@ -1,39 +1,42 @@
 import {
-  Action,
   ActionCategory,
+  ActionCategoryBase,
   ActionCategoryMaker,
-  ActionCategoryWithLabel,
   ActionOptions,
+  ImplementedAction,
 } from '@dao-dao/types/actions'
-import { DISABLED_ACTIONS } from '@dao-dao/utils'
 
-import { makeAdvancedActionCategory } from './advanced'
-import { makeAuthorizationsActionCategory } from './authorizations'
-import { makeChainGovernanceActionCategory } from './chain_governance'
-import { makeCommonlyUsedCategory } from './commonlyUsed'
-import { makeDaoAppearanceActionCategory } from './dao_appearance'
-import { makeDaoGovernanceActionCategory } from './dao_governance'
-import { makeManageNftsActionCategory } from './nfts'
-import { makeSmartContractingActionCategory } from './smart_contracting'
-import { makeSubDaosActionCategory } from './subdaos'
-import { makeTreasuryActionCategory } from './treasury'
-import { makeValenceActionCategory } from './valence'
+import * as actions from './actions'
+import * as categories from './categories'
 
-// Get all core action category makers.
-export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
-  makeCommonlyUsedCategory,
-  makeTreasuryActionCategory,
-  makeDaoGovernanceActionCategory,
-  makeSubDaosActionCategory,
-  makeDaoAppearanceActionCategory,
-  makeManageNftsActionCategory,
-  makeSmartContractingActionCategory,
-  makeAuthorizationsActionCategory,
-  makeChainGovernanceActionCategory,
-  makeValenceActionCategory,
-  makeAdvancedActionCategory,
-  // Add action category makers here to display them.
-]
+// Get all core actions, preserving instance to prevent unnecessary re-renders
+// in React hooks.
+let _coreActions: ImplementedAction<any>[] | null = null
+export const getCoreActions = (): ImplementedAction[] => {
+  _coreActions ??= Object.values(actions)
+  return _coreActions
+}
+
+// Get all core action category makers, preserving instance to prevent
+// unnecessary re-renders in React hooks.
+let _coreActionCategoryMakers: ActionCategoryMaker[] | null = null
+export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => {
+  // Set order explicitly instead of relying on import order.
+  _coreActionCategoryMakers ??= [
+    categories.makeCommonlyUsedCategory,
+    categories.makeTreasuryActionCategory,
+    categories.makeDaoGovernanceActionCategory,
+    categories.makeSubDaosActionCategory,
+    categories.makeDaoAppearanceActionCategory,
+    categories.makeManageNftsActionCategory,
+    categories.makeSmartContractingActionCategory,
+    categories.makeAuthorizationsActionCategory,
+    categories.makeChainGovernanceActionCategory,
+    categories.makeValenceActionCategory,
+    categories.makeAdvancedActionCategory,
+  ]
+  return _coreActionCategoryMakers
+}
 
 // Make action category with given options, processing the action category and
 // action makers and removing disabled actions. Returns null if the maker
@@ -42,57 +45,29 @@ export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
 export const makeActionCategory = (
   maker: ActionCategoryMaker,
   options: ActionOptions
-): ActionCategory | null => {
+): ActionCategoryBase | null => {
   const category = maker(options)
 
   // Ignore category if the maker returns null, meaning its invalid for the
-  // given options context.
-  if (!category) {
+  // given options context, or if it has no actions.
+  if (!category || category.actionKeys.length === 0) {
     return null
   }
 
-  const { key, label, description, actions: _actions, actionMakers } = category
-
-  const actions = [
-    ...(_actions ?? []),
-    // Make actions.
-    ...(actionMakers ?? [])
-      .map((makeAction) => makeAction(options))
-      .filter(
-        (action): action is Action =>
-          // Remove null values, since maker functions return null if
-          // they don't make sense in the context (like a DAO-only
-          // action in a wallet context).
-          action !== null &&
-          // Remove disabled actions.
-          !DISABLED_ACTIONS.includes(action.key)
-      ),
-  ]
-
-  // Ignore category if it has no actions.
-  if (actions.length === 0) {
-    return null
-  }
-
-  return {
-    key,
-    label,
-    description,
-    actions,
-  }
+  return category
 }
 
 // Make action categories from makers with given options, merging categories
 // with the same key, and sorting alphabetically. Returns only categories with
 // a label and at least one action.
-export const makeActionCategoriesWithLabel = (
+export const makeActionCategories = (
   makers: ActionCategoryMaker[],
   options: ActionOptions
-): ActionCategoryWithLabel[] =>
+): ActionCategory[] =>
   makers
     .map((maker) => makeActionCategory(maker, options))
     .filter(
-      (category): category is ActionCategory =>
+      (category): category is ActionCategoryBase =>
         // Remove null values, since maker functions return null if they don't
         // make sense in the context (like a DAO-only action in a wallet
         // context) or have no actions.
@@ -105,7 +80,7 @@ export const makeActionCategoriesWithLabel = (
 
       if (existing) {
         // Merge actions.
-        existing.actions = [...existing.actions, ...category.actions]
+        existing.actionKeys = [...existing.actionKeys, ...category.actionKeys]
         // Update label and description if they're not defined.
         existing.label ||= category.label
         existing.description ||= category.description
@@ -121,6 +96,6 @@ export const makeActionCategoriesWithLabel = (
       }
 
       return acc
-    }, [] as ActionCategory[])
+    }, [] as ActionCategoryBase[])
     // Remove categories with no label, just a type-check post-merge.
-    .filter((category): category is ActionCategoryWithLabel => !!category.label)
+    .filter((category): category is ActionCategory => !!category.label)

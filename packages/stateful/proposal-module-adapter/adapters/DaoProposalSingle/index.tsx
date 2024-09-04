@@ -10,11 +10,11 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  DaoProposalSingleUpdatePreProposeConfigAction,
+  DaoProposalSingleV1UpdateConfigAction,
+  DaoProposalSingleV2UpdateConfigAction,
   NewProposal,
   depositInfoSelector as makeDepositInfoSelector,
-  makeUpdatePreProposeSingleConfigActionMaker,
-  makeUpdateProposalConfigV1ActionMaker,
-  makeUpdateProposalConfigV2ActionMaker,
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
@@ -83,11 +83,15 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
           actionData: [],
         }),
         newProposalFormTitleKey: 'title',
-        updateConfigActionMaker: (proposalModule.version === ContractVersion.V1
-          ? makeUpdateProposalConfigV1ActionMaker
-          : makeUpdateProposalConfigV2ActionMaker)(proposalModule),
-        updatePreProposeConfigActionMaker:
-          makeUpdatePreProposeSingleConfigActionMaker(proposalModule),
+        updateConfigActionMaker: (options) =>
+          new (proposalModule.version === ContractVersion.V1
+            ? DaoProposalSingleV1UpdateConfigAction
+            : DaoProposalSingleV2UpdateConfigAction)(options, proposalModule),
+        updatePreProposeConfigActionMaker: (options) =>
+          new DaoProposalSingleUpdatePreProposeConfigAction(
+            options,
+            proposalModule
+          ),
       },
 
       // Selectors

@@ -1,14 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { ProposalListProps } from '@dao-dao/types'
 
 import { useDaoInfoContext } from '../../../contexts/Dao'
 import { ButtonLink } from '../../buttons'
-import {
-  ProposalLineProps,
-  ProposalList,
-  ProposalListProps,
-} from '../../proposal'
+import { ProposalLineProps, ProposalList } from '../../proposal'
 import * as ProposalListStories from '../../proposal/ProposalList.stories'
 import { ProposalsTab } from './ProposalsTab'
 

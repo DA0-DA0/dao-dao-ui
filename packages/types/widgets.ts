@@ -5,7 +5,9 @@ import { Account } from './account'
 import {
   ActionCategoryMaker,
   ActionComponentProps,
+  ActionMaker,
   ActionOptions,
+  ImplementedAction,
 } from './actions'
 
 export enum WidgetId {
@@ -75,7 +77,11 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
   // Component that allows the user to edit the widget's variables in an action.
   Editor?: ComponentType<WidgetEditorProps<Variables>>
   // Actions that are available in proposals when this widget is enabled.
-  getActionCategoryMakers?: (variables: Variables) => ActionCategoryMaker[]
+  getActions?: (variables: Variables) => {
+    actions?: ImplementedAction<any>[]
+    actionMakers?: ActionMaker<any>[]
+    categoryMakers: ActionCategoryMaker[]
+  }
 }
 
 // DaoWidget is the structure of a widget as stored in the DAO's core item map

@@ -35,6 +35,7 @@ import {
   tokensEqual,
 } from '@dao-dao/utils'
 
+import { useDaoGovernanceToken } from '../../hooks'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
@@ -64,11 +65,10 @@ export const DaoTokenCard = ({
     }
   )
 
+  const governanceTokenInfo = useDaoGovernanceToken()
   const {
-    hooks: { useCommonGovernanceTokenInfo },
     components: { StakingModal },
   } = useVotingModuleAdapter()
-  const governanceTokenInfo = useCommonGovernanceTokenInfo?.()
   // If this token is the governance token for the DAO, hide deposit and show
   // staking modal.
   const isGovernanceToken =

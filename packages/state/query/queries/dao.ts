@@ -4,7 +4,11 @@ import {
   skipToken,
 } from '@tanstack/react-query'
 
-import { AmountWithTimestamp, DaoSource } from '@dao-dao/types'
+import {
+  AmountWithTimestamp,
+  ContractVersionInfo,
+  DaoSource,
+} from '@dao-dao/types'
 import {
   SubDao,
   SubDaoWithChainId,
@@ -13,6 +17,7 @@ import {
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
+  DAO_CORE_CONTRACT_NAMES,
   getSupportedChainConfig,
   isConfiguredChainName,
 } from '@dao-dao/utils'
@@ -273,6 +278,44 @@ export const listWalletAdminOfDaos = async (
     : []
 }
 
+/**
+ * List all potential SubDAOs of the DAO.
+ */
+export const listPotentialSubDaos = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<string[]> => {
+  const potentialSubDaos = await queryClient.fetchQuery(
+    indexerQueries.queryContract<
+      {
+        contractAddress: string
+        info: ContractVersionInfo
+      }[]
+    >(queryClient, {
+      chainId,
+      contractAddress: address,
+      formula: 'daoCore/potentialSubDaos',
+      noFallback: true,
+    })
+  )
+
+  // Filter out those that do not appear to be DAO contracts and also the
+  // contract itself since it is probably its own admin.
+  return potentialSubDaos
+    .filter(
+      ({ contractAddress, info }) =>
+        contractAddress !== address &&
+        DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
+    )
+    .map(({ contractAddress }) => contractAddress)
+}
+
 export const daoQueries = {
   /**
    * Fetch featured DAOs.
@@ -330,7 +373,41 @@ export const daoQueries = {
     queryClient: QueryClient,
     options: Parameters<typeof listWalletAdminOfDaos>[1]
   ): FetchQueryOptions<string[]> => ({
-    queryKey: ['dao', 'walletAdminOfDaos', options],
+    queryKey: ['dao', 'listWalletAdminOfDaos', options],
     queryFn: () => listWalletAdminOfDaos(queryClient, options),
   }),
+  /**
+   * List all potential SubDAOs of the DAO.
+   */
+  listPotentialSubDaos: (
+    queryClient: QueryClient,
+    options: Parameters<typeof listPotentialSubDaos>[1]
+  ): FetchQueryOptions<string[]> => ({
+    queryKey: ['dao', 'listPotentialSubDaos', options],
+    queryFn: () => listPotentialSubDaos(queryClient, options),
+  }),
+  /**
+   * List all potential approval DAOs.
+   */
+  listPotentialApprovalDaos: (
+    queryClient: QueryClient,
+    {
+      chainId,
+      address,
+    }: {
+      chainId: string
+      address: string
+    }
+  ) =>
+    indexerQueries.queryContract<
+      {
+        dao: string
+        preProposeAddress: string
+      }[]
+    >(queryClient, {
+      chainId,
+      contractAddress: address,
+      formula: 'daoCore/approvalDaos',
+      noFallback: true,
+    }),
 }

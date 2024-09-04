@@ -1,9 +1,15 @@
 export type Structure = {
   // Nest to match more keys or use an empty object ({}) to check existence.
-  [key: string]: Structure | { [key: string | number | symbol]: never }
+  [key: string]:
+    | Structure
+    | Structure[]
+    | { [key: string | number | symbol]: never }
 }
 
-// Check if object contains the expected structure.
+/**
+ * Check if object contains the expected structure, with exact matching on array
+ * lengths.
+ */
 export const objectMatchesStructure = (
   object: any | undefined | null,
   structure: Structure,
@@ -45,14 +51,27 @@ export const objectMatchesStructure = (
       // Recurse, first verifying the value of the key in the object is an
       // object.
       (typeof object[topLevelKey] === 'object' &&
-        !Array.isArray(object[topLevelKey]) &&
         // typeof null === 'object', so verify this is not null before checking
         // its internal keys.
         object[topLevelKey] !== null &&
-        objectMatchesStructure(
-          object[topLevelKey] as Record<string, unknown>,
-          structureOrEmptyObject,
-          options
-        ))
+        // if the structure is an array, ensure the value of the key is an array
+        // and check each one.
+        ((Array.isArray(structureOrEmptyObject) &&
+          Array.isArray(object[topLevelKey]) &&
+          structureOrEmptyObject.length === object[topLevelKey].length &&
+          structureOrEmptyObject.every((structure, index) =>
+            objectMatchesStructure(
+              object[topLevelKey][index] as Record<string, unknown>,
+              structure,
+              options
+            )
+          )) ||
+          // if the structure is not an array, recurse on the object.
+          (!Array.isArray(structureOrEmptyObject) &&
+            objectMatchesStructure(
+              object[topLevelKey] as Record<string, unknown>,
+              structureOrEmptyObject,
+              options
+            ))))
   )
 }

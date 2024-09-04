@@ -2,13 +2,10 @@ import { EncodeObject } from '@cosmjs/proto-signing'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
-import { refreshGovProposalsAtom } from '@dao-dao/state/recoil'
 import {
   Loader,
   ProposalVoter as StatelessProposalVoter,
-  useChain,
   useGovProposalVoteOptions,
   useUpdatingRef,
 } from '@dao-dao/stateless'
@@ -20,7 +17,11 @@ import {
 import { MsgVote } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
-import { useLoadingGovProposal, useWallet } from '../../hooks'
+import {
+  useLoadingGovProposal,
+  useRefreshGovProposals,
+  useWallet,
+} from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export type GovProposalVoterProps = {
@@ -58,18 +59,13 @@ const InnerGovProposalVoter = ({
   proposal: GovProposalWithMetadata
 }) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
   const {
     isWalletConnected,
     address: walletAddress = '',
     getSigningStargateClient,
   } = useWallet()
 
-  const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))
-  const refreshProposal = useCallback(
-    () => setRefreshProposal((id) => id + 1),
-    [setRefreshProposal]
-  )
+  const refreshProposal = useRefreshGovProposals()
 
   const onVoteSuccessRef = useUpdatingRef(onVoteSuccess)
 
@@ -133,7 +129,7 @@ const InnerGovProposalVoter = ({
     <StatelessProposalVoter
       {...props}
       currentVote={
-        walletVoteInfo.loading
+        walletVoteInfo.loading || walletVoteInfo.errored
           ? undefined
           : walletVoteInfo.data.vote?.[0].option
       }

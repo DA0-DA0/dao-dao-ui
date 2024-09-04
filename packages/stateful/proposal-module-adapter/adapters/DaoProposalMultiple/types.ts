@@ -1,5 +1,4 @@
 import {
-  ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleBase,
@@ -112,10 +111,6 @@ export type ProposalWithMetadata = MultipleChoiceProposal & {
 
 export type MultipleChoiceOptionData = {
   choice: CheckedMultipleChoiceOption
-  actionData: ActionAndData[]
-  decodedMessages: {
-    [key: string]: any
-  }[]
   voteOption: ProposalVoteOption<MultipleChoiceVote>
 }
 

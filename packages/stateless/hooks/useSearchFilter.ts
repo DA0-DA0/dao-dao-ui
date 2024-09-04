@@ -10,7 +10,8 @@ import {
   useState,
 } from 'react'
 
-import { SearchBarProps } from '../components'
+import { SearchBarProps } from '@dao-dao/types'
+
 import { useQuerySyncedState } from './useQuerySyncedState'
 import { useUpdatingRef } from './useUpdatingRef'
 

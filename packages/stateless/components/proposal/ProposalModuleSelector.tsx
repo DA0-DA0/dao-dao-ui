@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   PreProposeModuleType,
-  ProposalModule,
   ProposalModuleAdapter,
+  ProposalModuleInfo,
   TypedOption,
 } from '@dao-dao/types'
 import { ContractName } from '@dao-dao/utils'
@@ -18,7 +18,7 @@ export type ProposalModuleSelectorProps = {
    * Address of the selected proposal module.
    */
   selected: string
-  setSelected: (proposalModule: ProposalModule) => void
+  setSelected: (proposalModule: ProposalModuleInfo) => void
   matchAdapter: (
     contractNameToMatch: string
   ) => ProposalModuleAdapter | undefined
@@ -48,7 +48,7 @@ export const ProposalModuleSelector = ({
           ({ prePropose }) =>
             prePropose?.type !== PreProposeModuleType.NeutronOverruleSingle
         )
-        .map((proposalModule): TypedOption<ProposalModule> | undefined => {
+        .map((proposalModule): TypedOption<ProposalModuleInfo> | undefined => {
           const adapter = matchAdapter(proposalModule.contractName)
 
           return (
@@ -58,7 +58,7 @@ export const ProposalModuleSelector = ({
             }
           )
         })
-        .filter((item): item is TypedOption<ProposalModule> => !!item)
+        .filter((item): item is TypedOption<ProposalModuleInfo> => !!item)
         // Ignore proposals with an approver pre-propose since those are
         // automatically managed by a pre-propose-approval contract in another
         // DAO.

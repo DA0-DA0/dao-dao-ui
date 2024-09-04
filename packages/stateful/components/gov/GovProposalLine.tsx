@@ -48,7 +48,8 @@ const InnerGovProposalLine = (props: StatefulGovProposalLineProps) => {
       title={proposal.title}
       vote={
         // If loading, show nothing until loaded.
-        loadingWalletVoteInfo.loading ? undefined : (
+        loadingWalletVoteInfo.loading ||
+        loadingWalletVoteInfo.errored ? undefined : (
           <GovProposalWalletVote
             fallback={
               // If no vote, display pending or none based on if they are

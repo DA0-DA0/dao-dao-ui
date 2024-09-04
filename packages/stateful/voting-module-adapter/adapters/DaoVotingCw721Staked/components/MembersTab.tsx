@@ -10,14 +10,16 @@ import {
   DaoMemberCard,
   EntityDisplay,
 } from '../../../../components'
-import { useQueryLoadingDataWithError } from '../../../../hooks'
+import {
+  useDaoGovernanceToken,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useCommonGovernanceTokenInfo } from '../hooks'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const token = useCommonGovernanceTokenInfo()
+  const token = useDaoGovernanceToken() ?? undefined
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(

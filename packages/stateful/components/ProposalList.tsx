@@ -17,6 +17,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   CommonProposalListInfo,
+  ProposalStatus,
+  ProposalStatusEnum,
   StatefulProposalLineProps,
   StatefulProposalListProps,
 } from '@dao-dao/types'
@@ -52,6 +54,9 @@ type CommonProposalListInfoWithType = CommonProposalListInfo & {
 export const ProposalList = ({
   onClick,
   hideVetoable = false,
+  onlyExecutable = false,
+  hideNotifier = false,
+  ...props
 }: StatefulProposalListProps) => {
   const { t } = useTranslation()
   const { dao } = useDaoContext()
@@ -60,10 +65,10 @@ export const ProposalList = ({
   const { isMember = false } = useMembership()
 
   const [openProposals, setOpenProposals] = useState<
-    StatefulProposalLineProps[]
+    (StatefulProposalLineProps & { status: ProposalStatus })[]
   >([])
   const [historyProposals, setHistoryProposals] = useState<
-    StatefulProposalLineProps[]
+    (StatefulProposalLineProps & { status: ProposalStatus })[]
   >([])
 
   // Get selectors for all proposal modules so we can list proposals.
@@ -262,7 +267,10 @@ export const ProposalList = ({
             const transformIntoProps = ({
               id,
               type,
-            }: typeof newProposalInfos[number]): StatefulProposalLineProps => ({
+              status,
+            }: typeof newProposalInfos[number]): StatefulProposalLineProps & {
+              status: ProposalStatus
+            } => ({
               chainId: dao.chainId,
               coreAddress: dao.coreAddress,
               proposalId: id,
@@ -275,18 +283,19 @@ export const ProposalList = ({
               isPreProposeProposal:
                 type === ProposalType.PreProposePending ||
                 type === ProposalType.PreProposeCompleted,
+              status,
             })
 
             newOpenProposals = [
               ...newOpenProposals,
               ...newProposalInfos
-                .filter(({ isOpen }) => isOpen)
+                .filter(({ status }) => status === ProposalStatusEnum.Open)
                 .map(transformIntoProps),
             ]
             newHistoryProposals = [
               ...newHistoryProposals,
               ...newProposalInfos
-                .filter(({ isOpen }) => !isOpen)
+                .filter(({ status }) => status !== ProposalStatusEnum.Open)
                 .map(transformIntoProps),
             ]
 
@@ -351,7 +360,10 @@ export const ProposalList = ({
 
   return (
     <StatelessProposalList
-      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+      {...props}
+      DiscordNotifierConfigureModal={
+        hideNotifier ? undefined : DiscordNotifierConfigureModal
+      }
       LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
@@ -368,19 +380,32 @@ export const ProposalList = ({
         () => loadMore()
       }
       loadingMore={loading}
-      openProposals={openProposals}
-      sections={[
-        {
-          title: t('title.history'),
-          proposals: historyProposals,
-          total:
-            !loadingProposalCounts.loading && !loadingProposalCounts.errored
-              ? // Remove open proposals from total history count since they
-                // are shown above.
-                loadingProposalCounts.data - openProposals.length
-              : undefined,
-        },
-      ]}
+      openProposals={
+        // Show executable proposals at the top in place of open proposals.
+        onlyExecutable
+          ? historyProposals.filter(
+              ({ status }) => status === ProposalStatusEnum.Passed
+            )
+          : openProposals
+      }
+      sections={
+        // Show executable proposals at the top in place of open proposals.
+        onlyExecutable
+          ? []
+          : [
+              {
+                title: t('title.history'),
+                proposals: historyProposals,
+                total:
+                  !loadingProposalCounts.loading &&
+                  !loadingProposalCounts.errored
+                    ? // Remove open proposals from total history count since they
+                      // are shown above.
+                      loadingProposalCounts.data - openProposals.length
+                    : undefined,
+              },
+            ]
+      }
     />
   )
 }

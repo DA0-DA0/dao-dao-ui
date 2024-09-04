@@ -79,7 +79,6 @@ export type CosmosMsgForEmpty =
       stargate: {
         type_url: string
         value: Binary
-        [k: string]: unknown
       }
     }
   | {
@@ -96,13 +95,11 @@ export type BankMsg =
       send: {
         amount: Coin[]
         to_address: string
-        [k: string]: unknown
       }
     }
   | {
       burn: {
         amount: Coin[]
-        [k: string]: unknown
       }
     }
 export type Uint128 = string
@@ -113,7 +110,6 @@ export type IbcMsg =
         channel_id: string
         timeout: IbcTimeout
         to_address: string
-        [k: string]: unknown
       }
     }
   | {
@@ -121,13 +117,11 @@ export type IbcMsg =
         channel_id: string
         data: Binary
         timeout: IbcTimeout
-        [k: string]: unknown
       }
     }
   | {
       close_channel: {
         channel_id: string
-        [k: string]: unknown
       }
     }
 export type Timestamp = Uint64
@@ -138,7 +132,6 @@ export type WasmMsg =
         contract_addr: string
         funds: Coin[]
         msg: Binary
-        [k: string]: unknown
       }
     }
   | {
@@ -148,7 +141,6 @@ export type WasmMsg =
         funds: Coin[]
         label: string
         msg: Binary
-        [k: string]: unknown
       }
     }
   | {
@@ -156,27 +148,23 @@ export type WasmMsg =
         contract_addr: string
         msg: Binary
         new_code_id: number
-        [k: string]: unknown
       }
     }
   | {
       update_admin: {
         admin: string
         contract_addr: string
-        [k: string]: unknown
       }
     }
   | {
       clear_admin: {
         contract_addr: string
-        [k: string]: unknown
       }
     }
 export type GovMsg = {
   vote: {
     proposal_id: number
     vote: VoteOption
-    [k: string]: unknown
   }
 }
 export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
@@ -193,20 +181,15 @@ export type Expiration =
 export interface Coin {
   amount: Uint128
   denom: string
-  [k: string]: unknown
 }
-export interface Empty {
-  [k: string]: unknown
-}
+export interface Empty {}
 export interface IbcTimeout {
   block?: IbcTimeoutBlock | null
   timestamp?: Timestamp | null
-  [k: string]: unknown
 }
 export interface IbcTimeoutBlock {
   height: number
   revision: number
-  [k: string]: unknown
 }
 export type QueryMsg = 'get_admin'
 export type Addr = string

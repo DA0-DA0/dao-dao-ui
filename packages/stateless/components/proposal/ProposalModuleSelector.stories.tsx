@@ -2,10 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { matchAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
+import { useDaoInfoContext } from '../../contexts'
 import { ProposalModuleSelector } from './ProposalModuleSelector'
 
 export default {

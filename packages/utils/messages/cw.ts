@@ -1,6 +1,5 @@
 import { fromBase64, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
-import JSON5 from 'json5'
 import cloneDeep from 'lodash.clonedeep'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -69,7 +68,7 @@ const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   migrate: true,
 }
 
-export function isWasmMsg(msg?: UnifiedCosmosMsg): msg is { wasm: WasmMsg } {
+export function isWasmMsg(msg?: any): msg is { wasm: WasmMsg } {
   if (msg) {
     return (msg as any).wasm !== undefined
   }
@@ -100,7 +99,13 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export const decodeMessage = (msg: UnifiedCosmosMsg): Record<string, any> => {
+/**
+ * Decode a Cosmos message so that we can access its contents. For wasm
+ * messages, this decodes the `msg` base64 string field, and for stargate
+ * messages, this decodes the `value` base64 string field with available
+ * protobufs. All other Cosmos messages are returned as-is.
+ */
+export const decodeMessage = (msg: any): any => {
   // Decode base64 wasm binary into object.
   if (isWasmMsg(msg)) {
     const msgType = getWasmMsgType(msg.wasm)
@@ -134,13 +139,42 @@ export const decodeMessage = (msg: UnifiedCosmosMsg): Record<string, any> => {
   return msg
 }
 
-export const decodeMessages = (
-  msgs: UnifiedCosmosMsg[]
-): Record<string, any>[] => msgs.map(decodeMessage)
+export const decodeMessages = (msgs: any[]): any[] => msgs.map(decodeMessage)
 
-export function decodedMessagesString(msgs: UnifiedCosmosMsg[]): string {
+export function decodedMessagesString(msgs: any[]): string {
   const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
+}
+
+/**
+ * Decode wasm message binary if a wasm message, returning null if not.
+ */
+export const decodeWasmMessage = (message: any): Record<string, any> | null => {
+  if (!isWasmMsg(message)) {
+    return null
+  }
+
+  const type = getWasmMsgType(message.wasm)
+  if (type && isBinaryType(type)) {
+    const base64MsgContainer = (message.wasm as any)[type]
+    if (base64MsgContainer && 'msg' in base64MsgContainer) {
+      const parsedMsg = decodeJsonFromBase64(base64MsgContainer.msg, true)
+      if (parsedMsg) {
+        return {
+          ...message,
+          wasm: {
+            ...message.wasm,
+            [type]: {
+              ...base64MsgContainer,
+              msg: parsedMsg,
+            },
+          },
+        }
+      }
+    }
+  }
+
+  return null
 }
 
 /**
@@ -264,12 +298,10 @@ export const makeBankMessage = (
 })
 
 /**
- * Convert stringified JSON object into CosmWasm-formatted Cosmos message. Used
- * by the Custom action component to encode a generic JSON string.
+ * Convert object into CosmWasm-formatted Cosmos message. Used by the Custom
+ * action component to encode a generic JSON string.
  */
-export const convertJsonToCWCosmosMsg = (value: string): UnifiedCosmosMsg => {
-  let msg = JSON5.parse(value)
-
+export const makeCosmosMsg = (msg: any): UnifiedCosmosMsg => {
   // Convert the wasm message component to base64 if necessary.
   if (
     objectMatchesStructure(msg, {
@@ -320,47 +352,44 @@ export enum StakingActionType {
   SetWithdrawAddress = 'set_withdraw_address',
 }
 
-// If the source and destination chains are different, this wraps the message in
-// a polytone execution message. Otherwise, it just returns the message. If the
-// chains are different but the message is undefined, this will return a message
-// that just creates a Polytone account.
-export const maybeMakePolytoneExecuteMessage = (
+// If the source and destination chains are different, this wraps the message(s)
+// in a polytone execution message. Otherwise, it just returns the message(s).
+// If the chains are different but the message is undefined, this will return a
+// message that just creates a Polytone account.
+export const maybeMakePolytoneExecuteMessages = (
   srcChainId: string,
   destChainId: string,
-  // Allow passing no message, which just creates an account. `msg` cannot be an
-  // array if the chains are the same.
-  msg?: UnifiedCosmosMsg | UnifiedCosmosMsg[]
-): UnifiedCosmosMsg => {
-  // If on same chain, just return the message.
-  if (srcChainId === destChainId && msg) {
-    if (Array.isArray(msg)) {
-      throw new Error('Cannot use an array for same-chain messages.')
-    }
-
-    return msg
+  // Allow passing no message, which just creates an account.
+  msg: UnifiedCosmosMsg | UnifiedCosmosMsg[] = []
+): UnifiedCosmosMsg[] => {
+  // If on same chain, just return the message(s).
+  if (srcChainId === destChainId) {
+    return [msg].flat()
   }
 
   const polytoneConnection =
     getSupportedChainConfig(srcChainId)?.polytone?.[destChainId]
 
-  return makeWasmMessage({
-    wasm: {
-      execute: {
-        contract_addr: polytoneConnection?.note,
-        funds: [],
-        msg: {
-          execute: {
-            msgs: msg ? [msg].flat() : [],
-            timeout_seconds: BigInt(IBC_TIMEOUT_SECONDS).toString(),
-            callback: {
-              msg: toBase64(toUtf8(uuidv4())),
-              receiver: polytoneConnection?.listener,
+  return [
+    makeWasmMessage({
+      wasm: {
+        execute: {
+          contract_addr: polytoneConnection?.note,
+          funds: [],
+          msg: {
+            execute: {
+              msgs: [msg].flat(),
+              timeout_seconds: BigInt(IBC_TIMEOUT_SECONDS).toString(),
+              callback: {
+                msg: toBase64(toUtf8(uuidv4())),
+                receiver: polytoneConnection?.listener,
+              },
             },
           },
         },
       },
-    },
-  })
+    }),
+  ]
 }
 
 /**
@@ -429,10 +458,10 @@ export const decodePolytoneExecuteMsg = (
 }
 
 /**
- * If the source and destination chains are different, this wraps the message in
- * an ICA execution message. Otherwise, it just returns the message.
+ * If the source and destination chains are different, this wraps the message(s)
+ * in an ICA execution message. Otherwise, it just returns the message(s).
  */
-export const maybeMakeIcaExecuteMessage = (
+export const maybeMakeIcaExecuteMessages = (
   srcChainId: string,
   destChainId: string,
   /**
@@ -444,42 +473,40 @@ export const maybeMakeIcaExecuteMessage = (
    */
   icaRemoteAddress: string,
   msg: UnifiedCosmosMsg | UnifiedCosmosMsg[]
-): UnifiedCosmosMsg => {
+): UnifiedCosmosMsg[] => {
   // If on same chain, just return the message.
   if (srcChainId === destChainId && msg) {
-    if (Array.isArray(msg)) {
-      throw new Error('Cannot use an array for same-chain messages.')
-    }
-
-    return msg
+    return [msg].flat()
   }
 
   const {
     sourceChain: { connection_id: connectionId },
   } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
 
-  return makeStargateMessage({
-    stargate: {
-      typeUrl: MsgSendTx.typeUrl,
-      value: MsgSendTx.fromPartial({
-        owner: icaHostAddress,
-        connectionId,
-        packetData: InterchainAccountPacketData.fromPartial({
-          type: Type.TYPE_EXECUTE_TX,
-          data: CosmosTx.toProto({
-            messages: [msg]
-              .flat()
-              .map((msg) =>
-                cwMsgToProtobuf(destChainId, msg, icaRemoteAddress)
-              ),
+  return [
+    makeStargateMessage({
+      stargate: {
+        typeUrl: MsgSendTx.typeUrl,
+        value: MsgSendTx.fromPartial({
+          owner: icaHostAddress,
+          connectionId,
+          packetData: InterchainAccountPacketData.fromPartial({
+            type: Type.TYPE_EXECUTE_TX,
+            data: CosmosTx.toProto({
+              messages: [msg]
+                .flat()
+                .map((msg) =>
+                  cwMsgToProtobuf(destChainId, msg, icaRemoteAddress)
+                ),
+            }),
+            memo: '',
           }),
-          memo: '',
+          // Nanoseconds timeout from TX execution.
+          relativeTimeout: BigInt(IBC_TIMEOUT_SECONDS * 1e9),
         }),
-        // Nanoseconds timeout from TX execution.
-        relativeTimeout: BigInt(IBC_TIMEOUT_SECONDS * 1e9),
-      }),
-    },
-  })
+      },
+    }),
+  ]
 }
 
 /**
@@ -492,10 +519,7 @@ export const decodeIcaExecuteMsg = (
   // How many messages are expected.
   type: 'one' | 'zero' | 'oneOrZero' | 'any' = 'one'
 ): DecodedIcaMsg => {
-  if (
-    !isDecodedStargateMsg(decodedMsg) ||
-    decodedMsg.stargate.typeUrl !== MsgSendTx.typeUrl
-  ) {
+  if (!isDecodedStargateMsg(decodedMsg, MsgSendTx)) {
     return {
       match: false,
     }
@@ -555,10 +579,7 @@ export const decodeIcaCreateMsg = (
   srcChainId: string,
   decodedMsg: Record<string, any>
 ): DecodedIcaMsg => {
-  if (
-    !isDecodedStargateMsg(decodedMsg) ||
-    decodedMsg.stargate.typeUrl !== MsgRegisterInterchainAccount.typeUrl
-  ) {
+  if (!isDecodedStargateMsg(decodedMsg, MsgRegisterInterchainAccount)) {
     return {
       match: false,
     }

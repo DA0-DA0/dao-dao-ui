@@ -16,7 +16,6 @@ import {
   savedTxsSelector,
   temporarySavedTxsAtom,
 } from '@dao-dao/state'
-import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   ProfileActionsProps,
   ProfileActions as StatelessProfileActions,
@@ -38,6 +37,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useActionEncodeContext } from '../../actions'
 import { useCfWorkerAuthPostRequest, useWallet } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
@@ -55,8 +55,6 @@ export const ProfileActions = () => {
   } = useWallet({
     loadAccount: true,
   })
-
-  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const [_meTransactionAtom, setWalletTransactionAtom] = useRecoilState(
     meTransactionAtom(chain.chain_id)
@@ -123,7 +121,6 @@ export const ProfileActions = () => {
 
   const holdingAltForDirectSign = useHoldingKey({ key: 'alt' })
 
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txHash, setTxHash] = useState('')
   const execute: ProfileActionsProps['execute'] = useCallback(
@@ -133,7 +130,6 @@ export const ProfileActions = () => {
         return
       }
 
-      setLoading(true)
       setError('')
       setTxHash('')
 
@@ -164,8 +160,6 @@ export const ProfileActions = () => {
         console.error(err)
         const error = processError(err)
         setError(error)
-      } finally {
-        setLoading(false)
       }
     },
     [
@@ -273,18 +267,18 @@ export const ProfileActions = () => {
     return false
   }
 
+  const actionEncodeContext = useActionEncodeContext()
+
   return (
     <StatelessProfileActions
       SuspenseLoader={SuspenseLoader}
       WalletChainSwitcher={WalletChainSwitcher}
-      categories={categories}
+      actionEncodeContext={actionEncodeContext}
       deleteSave={deleteSave}
       error={error}
       execute={execute}
       formMethods={formMethods}
       holdingAltForDirectSign={holdingAltForDirectSign}
-      loadedActions={loadedActions}
-      loading={loading}
       save={save}
       saves={savesLoading}
       saving={saving}

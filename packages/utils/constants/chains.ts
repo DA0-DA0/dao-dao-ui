@@ -2081,39 +2081,39 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     name: 'bitsong',
     mainnet: true,
     accentColor: '#c53381',
-    // Token creation factory not yet ready.
-    tokenCreationUnderDevelopment: true,
     factoryContractAddress:
-      'bitsong1gpf39sy2u859wp370t4jty77gxlv9qennkm253swn0rqcm2r3v0q47w4ny',
+      'bitsong1vdqwdy564mz4cl23nmlgma3c336tsla9vzpw2qrdj5f8w5qgp7pq39h464',
+    tokenCreationFactoryAddress:
+      'bitsong16jp4jd68hzpc9a88mqcg3mnktjhgrlyv96shx4zvt522zzq99afsdldd04',
     explorerUrlTemplates: {
       tx: 'https://ping.pub/bitsong/tx/REPLACE',
       gov: 'https://ping.pub/bitsong/gov',
       govProp: 'https://ping.pub/bitsong/gov/REPLACE',
       wallet: 'https://ping.pub/bitsong/account/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V242,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       Cw1Whitelist: 7,
       Cw4Group: 8,
       Cw721Base: 1,
-      CwPayrollFactory: 11,
-      CwTokenSwap: 12,
-      CwVesting: 13,
-      DaoCore: 14,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 16,
-      DaoPreProposeApprover: 17,
-      DaoPreProposeMultiple: 18,
-      DaoPreProposeSingle: 19,
-      DaoProposalMultiple: 20,
-      DaoProposalSingle: 21,
-      DaoVotingCw4: 22,
-      DaoVotingCw721Staked: 23,
-      // TODO(bitsong): deploy when ready
-      DaoVotingTokenStaked: -1,
+      CwPayrollFactory: 30,
+      CwTokenSwap: 31,
+      CwVesting: 32,
+      DaoCore: 33,
+      DaoPreProposeApprovalSingle: 34,
+      DaoPreProposeApprover: 35,
+      DaoPreProposeMultiple: 36,
+      DaoPreProposeSingle: 37,
+      DaoProposalMultiple: 38,
+      DaoProposalSingle: 39,
+      DaoRewardsDistributor: 40,
+      DaoVotingCw4: 41,
+      DaoVotingCw721Staked: 42,
+      DaoVotingTokenStaked: 43,
 
       // unused
       CwTokenfactoryIssuerMain: -1,
+      DaoMigrator: -1,
     },
     polytone: {
       [ChainId.CosmosHubMainnet]: {

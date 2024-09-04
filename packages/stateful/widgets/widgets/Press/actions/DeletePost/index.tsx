@@ -1,154 +1,101 @@
-import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
-import { TrashEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, TrashEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
-import {
-  decodePolytoneExecuteMsg,
-  makeWasmMessage,
-  maybeMakePolytoneExecuteMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
+import { BurnNftAction } from '../../../../../actions/core/actions'
 import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
 import { DeletePostComponent, DeletePostData } from './Component'
 
-const useDefaults: UseDefaults<DeletePostData> = () => ({
-  id: '',
-})
+export class DeletePostAction extends ActionBase<DeletePostData> {
+  public readonly key = ActionKey.DeletePost
+  public readonly Component: ActionComponent<undefined, DeletePostData>
 
-export const makeDeletePostActionMaker = ({
-  chainId: configuredChainId,
-  contract,
-}: PressData): ActionMaker<DeletePostData> => {
-  // Make outside of the maker function returned below so it doesn't get
-  // redefined and thus remounted on every render.
-  const Component: ActionComponent = (props) => {
-    const {
-      chain: { chain_id: daoChainId },
-    } = useActionOptions()
-    // The chain that Press is set up on. If chain ID is undefined, default to
-    // native DAO chain for backwards compatibility.
-    const pressChainId = configuredChainId || daoChainId
-
-    const { watch } = useFormContext()
-    const id = watch((props.fieldNamePrefix + 'id') as 'id')
-
-    const postsLoading = useCachedLoading(
-      postsSelector({
-        contractAddress: contract,
-        chainId: pressChainId,
-      }),
-      []
-    )
-
-    // Once created, manually load metadata; it won't be retrievable from
-    // the contract if it was successfully removed since the token was
-    // burned.
-    const postLoading = useCachedLoading(
-      !props.isCreating
-        ? postSelector({
-            id,
-            metadataUri: `ipfs://${id}/metadata.json`,
-          })
-        : constSelector(undefined),
-      undefined
-    )
-
-    return (
-      <DeletePostComponent
-        {...props}
-        options={{
-          postsLoading,
-          postLoading,
-        }}
-      />
-    )
+  protected _defaults: DeletePostData = {
+    id: '',
   }
 
-  return ({ t, chain: { chain_id: daoChainId } }) => {
+  private burnNftAction: BurnNftAction
+  private pressChainId: string
+
+  constructor(options: ActionOptions, private pressData: PressData) {
+    super(options, {
+      Icon: TrashEmoji,
+      label: options.t('title.deletePost'),
+      description: options.t('info.deletePostDescription'),
+    })
+
+    this.burnNftAction = new BurnNftAction(options)
+
     // The chain that Press is set up on. If chain ID is undefined, default to
     // native DAO chain for backwards compatibility.
-    const pressChainId = configuredChainId || daoChainId
+    const pressChainId = pressData.chainId || options.chain.chain_id
+    this.pressChainId = pressChainId
 
-    const useDecodedCosmosMsg: UseDecodedCosmosMsg<DeletePostData> = (
-      msg: Record<string, any>
-    ) => {
-      let chainId = daoChainId
-      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
-      if (decodedPolytone.match) {
-        chainId = decodedPolytone.chainId
-        msg = decodedPolytone.msg
-      }
+    this.Component = function DeletePostActionComponent(props) {
+      const { watch } = useFormContext()
+      const id = watch((props.fieldNamePrefix + 'id') as 'id')
 
-      return objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              burn: {
-                token_id: {},
-              },
-            },
-          },
-        },
-      }) &&
-        chainId === pressChainId &&
-        msg.wasm.execute.contract_addr === contract
-        ? {
-            match: true,
-            data: {
-              id: msg.wasm.execute.msg.burn.token_id,
-            },
-          }
-        : {
-            match: false,
-          }
-    }
-
-    const useTransformToCosmos: UseTransformToCosmos<DeletePostData> = () =>
-      useCallback(
-        ({ id }) =>
-          maybeMakePolytoneExecuteMessage(
-            daoChainId,
-            pressChainId,
-            makeWasmMessage({
-              wasm: {
-                execute: {
-                  contract_addr: contract,
-                  funds: [],
-                  msg: {
-                    burn: {
-                      token_id: id,
-                    },
-                  },
-                },
-              },
-            })
-          ),
+      const postsLoading = useCachedLoading(
+        postsSelector({
+          contractAddress: pressData.contract,
+          chainId: pressChainId,
+        }),
         []
       )
 
+      // Once created, manually load metadata; it won't be retrievable from the
+      // contract if it was successfully removed since the token was burned.
+      const postLoading = useCachedLoading(
+        !props.isCreating
+          ? postSelector({
+              id,
+              metadataUri: `ipfs://${id}/metadata.json`,
+            })
+          : constSelector(undefined),
+        undefined
+      )
+
+      return (
+        <DeletePostComponent
+          {...props}
+          options={{
+            postsLoading,
+            postLoading,
+          }}
+        />
+      )
+    }
+  }
+
+  encode({ id }: DeletePostData): UnifiedCosmosMsg[] {
+    return this.burnNftAction.encode({
+      chainId: this.pressChainId,
+      collection: this.pressData.contract,
+      tokenId: id,
+    })
+  }
+
+  match(messages: ProcessedMessage[]): ActionMatch {
+    return (
+      this.burnNftAction.match(messages) &&
+      messages[0].decodedMessage.wasm.execute.contract_addr ===
+        this.pressData.contract
+    )
+  }
+
+  decode([{ decodedMessage }]: ProcessedMessage[]): DeletePostData {
     return {
-      key: ActionKey.DeletePost,
-      Icon: TrashEmoji,
-      label: t('title.deletePost'),
-      description: t('info.deletePostDescription'),
-      Component,
-      useDefaults,
-      useTransformToCosmos,
-      useDecodedCosmosMsg,
+      id: decodedMessage.wasm.execute.msg.burn.token_id,
     }
   }
 }

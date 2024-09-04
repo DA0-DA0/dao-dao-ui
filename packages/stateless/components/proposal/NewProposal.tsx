@@ -57,13 +57,12 @@ export type NewProposalProps<
   }
   getProposalDataFromFormData: (
     formData: UnpackNestedValue<FormData>
-  ) => ProposalData
+  ) => Promise<ProposalData>
   createProposal: (newProposalData: ProposalData) => Promise<void>
   simulateProposal: (newProposalData: ProposalData) => Promise<void>
   proposalTitle: string
   isWalletConnecting: boolean
   additionalSubmitError?: string
-  loading: boolean
   isPaused: boolean
   isActive: boolean
   activeThreshold: ActiveThreshold | null
@@ -88,7 +87,6 @@ export const NewProposal = <
   proposalTitle,
   isWalletConnecting,
   additionalSubmitError,
-  loading,
   isPaused,
   isActive,
   activeThreshold,
@@ -118,7 +116,9 @@ export const NewProposal = <
   const holdingAltForSimulation = useHoldingKey({ key: 'alt' })
   const holdingShiftForForce = useHoldingKey({ key: 'shift' })
 
-  const onSubmitForm: SubmitHandler<FormData> = (formData, event) => {
+  const [loading, setLoading] = useState(false)
+
+  const onSubmitForm: SubmitHandler<FormData> = async (formData, event) => {
     setSubmitError('')
 
     const nativeEvent = event?.nativeEvent as SubmitEvent
@@ -128,9 +128,14 @@ export const NewProposal = <
       return
     }
 
-    let data: ProposalData
+    setLoading(true)
     try {
-      data = getProposalDataFromFormData(formData)
+      const data = await getProposalDataFromFormData(formData)
+      if (holdingAltForSimulation) {
+        await simulateProposal(data)
+      } else {
+        await createProposal(data)
+      }
     } catch (err) {
       console.error(err)
       setSubmitError(
@@ -138,22 +143,20 @@ export const NewProposal = <
           forceCapture: false,
         })
       )
-      return
-    }
-
-    if (holdingAltForSimulation) {
-      simulateProposal(data)
-    } else {
-      createProposal(data)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const onSubmitError: SubmitErrorHandler<FormData> = () => {
+  const onSubmitError: SubmitErrorHandler<FormData> = async (errors) => {
+    console.error('Form errors', errors)
+
     // Even on error, try to simulate proposal.
     if (holdingAltForSimulation) {
-      let data: ProposalData
+      setLoading(true)
       try {
-        data = getProposalDataFromFormData(getValues())
+        const data = await getProposalDataFromFormData(getValues())
+        await simulateProposal(data)
       } catch (err) {
         console.error(err)
         setSubmitError(
@@ -161,16 +164,16 @@ export const NewProposal = <
             forceCapture: false,
           })
         )
-        return
+      } finally {
+        setLoading(false)
       }
-
-      simulateProposal(data)
 
       // Even on error, force publish if holding shift.
     } else if (holdingShiftForForce) {
-      let data: ProposalData
+      setLoading(true)
       try {
-        data = getProposalDataFromFormData(getValues())
+        const data = await getProposalDataFromFormData(getValues())
+        await createProposal(data)
       } catch (err) {
         console.error(err)
         setSubmitError(
@@ -178,10 +181,9 @@ export const NewProposal = <
             forceCapture: false,
           })
         )
-        return
+      } finally {
+        setLoading(false)
       }
-
-      createProposal(data)
 
       // If not simulating or forcing, show error to check for errors.
     } else {

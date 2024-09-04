@@ -1,10 +1,8 @@
 import { constSelector } from 'recoil'
 
 import { isContractSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useActionOptions, useCachedLoadable } from '@dao-dao/stateless'
 import { Structure, objectMatchesStructure } from '@dao-dao/utils'
-
-import { useActionOptions } from '../react/context'
 
 // Returns if the message is a wasm message that executes a specific contract.
 // The names are checked against the data stored in contract_info, via the

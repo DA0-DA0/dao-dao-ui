@@ -1,5 +1,6 @@
 // eslint-disable-next-line regex/invalid
 import { Chain } from '@chain-registry/types'
+import { QueryClient } from '@tanstack/react-query'
 import { ComponentType, ReactNode } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
@@ -10,10 +11,11 @@ import {
   IChainContext,
   SupportedChainContext,
 } from './chain'
-import { IDaoBase } from './clients'
+import { IDaoBase, IProposalModuleBase } from './clients'
 import { UnifiedCosmosMsg } from './contracts/common'
 import { AllGovParams } from './gov'
 import { UnifiedProfile } from './profile'
+import { DecodedIcaMsgMatch, DecodedPolytoneMsgMatch } from './proposal'
 
 export enum ActionCategoryKey {
   CommonlyUsed = 'commonlyUsed',
@@ -69,22 +71,21 @@ export enum ActionKey {
   FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',
   Mint = 'mint',
-  UpdateMinterAllowance = 'updateMinterAllowance',
   ManageVesting = 'manageVesting',
   CreateCrossChainAccount = 'createCrossChainAccount',
   CrossChainExecute = 'crossChainExecute',
   UpdateStakingConfig = 'updateStakingConfig',
   CreateIca = 'createIca',
   IcaExecute = 'icaExecute',
-  ManageIcas = 'manageIcas',
-  VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
+  HideIca = 'hideIca',
+  VetoProposal = 'vetoProposal',
+  ExecuteProposal = 'executeProposal',
   NeutronOverruleSubDaoProposal = 'neutronOverruleSubDaoProposal',
   ManageVetoableDaos = 'manageVetoableDaos',
   UploadCode = 'uploadCode',
   ManageSubDaoPause = 'manageSubDaoPause',
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
-  MigrateMigalooV4TokenFactory = 'migrateMigalooV4TokenFactory',
   CreateDao = 'createDao',
   // Valence
   CreateValenceAccount = 'createValenceAccount',
@@ -108,9 +109,11 @@ export enum ActionKey {
   BecomeSubDao = 'becomeSubDao',
 }
 
-export type ActionAndData = {
-  action: Action
-  data: any
+export type ActionAndData<
+  Data extends Record<string, any> = Record<string, any>
+> = {
+  action: Action<Data>
+  data: Data
 }
 
 export type ActionKeyAndData = {
@@ -140,7 +143,7 @@ export type ActionComponentProps<O = undefined, D = any> = {
         action: ActionKeyAndDataNoId,
         // If omitted, the action will be appened to the end of the list.
         insertIndex?: number
-      ) => void
+      ) => void | Promise<void>
       // Removes this action from the form.
       remove: () => void
     }
@@ -159,80 +162,170 @@ export type ActionComponent<O = undefined, D = any> = ComponentType<
 >
 
 /**
- * A hook that returns the default values for an action. If it returns an error,
- * the action should not be added because some critical data failed to load. If
- * it returns undefined, the action is loading and should not allowed to be
- * added until the default values are loaded.
+ * The match result for an action given a list of messages.
+ *
+ * If this is a `number`, it corresponds to how many messages from the start of
+ * the list are matched by this action. If this is a `boolean`, it corresponds
+ * with either `1` or `0` messages matched, for `true` and `false`,
+ * respectively. A truthy value always corresponds with a match, and falsy
+ * always corresponds with no match.
+ *
+ * Recommended usage is `false` for no match, `true` for one message, and a
+ * number for more than one message.
  */
-export type UseDefaults<D extends {} = any> = () => D | Error | undefined
+export type ActionMatch = boolean | number
 
-export type UseTransformToCosmos<D extends {} = any> = () => (
-  data: D
-) => UnifiedCosmosMsg | undefined
-
-export interface DecodeCosmosMsgNoMatch {
-  match: false
-  data?: never
-}
-export interface DecodeCosmosMsgMatch<D extends {} = any> {
-  match: true
-  data: D
-}
-export type UseDecodedCosmosMsg<D extends {} = any> = (
-  msg: Record<string, any>
-) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
-
-export type UseHideFromPicker = () => boolean
-
-export interface Action<Data extends {} = any, Options extends {} = any> {
-  key: ActionKey
-  Icon: ComponentType
-  label: string
-  description: string
-  // Optional keywords to improve search results.
-  keywords?: string[]
-  Component: ActionComponent<Options, Data>
-  // This determines if the action should be hidden from creation. If true, the
-  // action will not be shown in the list of actions to create, but it will
-  // still match and render in existing contexts. This is used to conditionally
-  // show the upgrade actions while still allowing them to render in existing
-  // proposals and be added programmatically during creation.
-  hideFromPicker?: boolean
-  // Whether or not this action is reusable. Defaults to false. If true, when
-  // editing the action, the add and remove button in the group will be removed,
-  // and the action will be hidden from future category picker selections. Some
-  // actions, like 'Spend', make sense to use multiple times, while others, like
-  // 'Update Info' or any configuration updater, should only be used once at a
-  // time. We should prevent users from adding multiple of these actions.
-  notReusable?: boolean
-  // Programmatic actions cannot be chosen or removed by the user. This is used
-  // for actions should only be controlled by code. The user should not be able
-  // to modify it at all, which also means the user cannot pick this action or
-  // go back to the category action picker. This includes both `hideFromPicker`
-  // and `notReusable`, while also preventing the user from going back to the
-  // category action picker or removing the action.
-  programmaticOnly?: boolean
+export interface Action<
+  Data extends Record<string, any> = Record<string, any>
+> {
   /**
-   * Order of this action in the list of actions. A greater number will be shown
-   * first. If no order specified, actions will be sorted based on their
-   * position in the category definition.
+   * The unique key identifying the action.
    */
-  order?: number
-  // Hook to get default fields for form display.
-  useDefaults: UseDefaults<Data>
-  // Hook to make function to convert action data to UnifiedCosmosMsg.
-  useTransformToCosmos: UseTransformToCosmos<Data>
-  // Hook to make function to convert decoded msg to form display fields.
-  useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
-  // Hook to determine whether or not the action should be hidden from the
-  // creation picker. If true, the action will not be shown in the list of
-  // actions to create, but it will still match and render in existing contexts.
-  // This is a hook version of the `hideFromPicker` option above. If either is
-  // true, it will be hidden.
-  useHideFromPicker?: UseHideFromPicker
+  key: ActionKey
+  /**
+   * Action component to edit/view the data.
+   */
+  Component: ActionComponent<undefined, Data>
+  /**
+   * The metadata describing an action.
+   */
+  metadata: {
+    /**
+     * The icon to display in the card.
+     */
+    Icon: ComponentType
+    /**
+     * The label to display.
+     */
+    label: string
+    /**
+     * The description to display in the picker.
+     */
+    description: string
+    /**
+     * Optional keywords to improve search results.
+     */
+    keywords?: string[]
+    /**
+     * This determines if the action should be hidden from creation. If true,
+     * the action will not be shown in the list of actions to create, but it
+     * will still match and render in existing contexts. This is used to
+     * conditionally show the upgrade actions while still allowing them to
+     * render in existing proposals and be added programmatically during
+     * creation.
+     */
+    hideFromPicker?: boolean
+    /**
+     * Whether or not this action is reusable. Defaults to false. If true, when
+     * editing the action, the add and remove button in the group will be
+     * removed, and the action will be hidden from future category picker
+     * selections. Some actions, like 'Spend', make sense to use multiple times,
+     * while others, like 'Update Info' or any configuration updater, should
+     * only be used once at a time. We should prevent users from adding multiple
+     * of these actions.
+     */
+    notReusable?: boolean
+    /**
+     * Programmatic actions cannot be chosen or removed by the user. This is
+     * used for actions should only be controlled by code. The user should not
+     * be able to modify it at all, which also means the user cannot pick this
+     * action or go back to the category action picker. This includes both
+     * `hideFromPicker` and `notReusable`, while also preventing the user from
+     * going back to the category action picker or removing the action.
+     */
+    programmaticOnly?: boolean
+    /**
+     * Order of this action in the list of actions. A greater number will be
+     * shown first. If no order specified, actions will be sorted based on their
+     * position in the category definition.
+     */
+    listOrder?: number
+    /**
+     * Priority with which successful matches get assigned to this action. A
+     * greater number will be matched first. Equal priorities should be treated
+     * as non-deterministic.
+     *
+     * Default is 0.
+     */
+    matchPriority?: number
+  }
+  /**
+   * Function to initialize the action. This updates status/error and loads
+   * defaults. It may also update metadata, such as `hideFromPicker`.
+   */
+  init: () => void | Promise<void>
+  /**
+   * Status of the action. Starts at 'idle'. If 'idle', 'loading' or 'error',
+   * the action is not ready to be used, and attempting to access `defaults`
+   * will throw an error. If 'error', the action should not be used. If 'ready',
+   * the action is ready to be used.
+   */
+  status: 'idle' | 'loading' | 'error' | 'ready'
+  /**
+   * Whether or not the action is loading.
+   */
+  get loading(): boolean
+  /**
+   * Whether or not the action is errored.
+   */
+  get errored(): boolean
+  /**
+   * Whether or not the action is ready.
+   */
+  get ready(): boolean
+  /**
+   * If status is 'error', this will be the error that caused the action to
+   * fail. Otherwise, it will be undefined.
+   */
+  error?: Error
+  /**
+   * Default data for the action. This will work only when status is 'ready'.
+   * Otherwise, it will throw an error.
+   */
+  defaults: Data
+  /**
+   * Function to transform action data into one or more Cosmos messages. This
+   * should only be called if the action is ready.
+   */
+  encode: (
+    data: Data,
+    context: ActionEncodeContext
+  ) =>
+    | UnifiedCosmosMsg
+    | UnifiedCosmosMsg[]
+    | Promise<UnifiedCosmosMsg | UnifiedCosmosMsg[]>
+  /**
+   * Function to determine if this action exists at the start of the list of
+   * messages. This should only be called if the action is ready.
+   */
+  match: (messages: ProcessedMessage[]) => ActionMatch | Promise<ActionMatch>
+  /**
+   * Function to transform Cosmos messages into action data. It can be partial
+   * data, which will be applied to the defaults as a base. This should only be
+   * called if the action is ready.
+   */
+  decode: (
+    messages: ProcessedMessage[]
+  ) => Partial<Data> | Promise<Partial<Data>>
+  /**
+   * Optional function to transform data from a bulk import into the action's
+   * data shape. This can be used to help coerce certain data types, such as
+   * strings into numbers.
+   */
+  transformImportData?: (data: any) => Data
 }
 
-export type ActionCategory = {
+/**
+ * A class that can be constructed to create an action. Action is the interface,
+ * and this is the type of a class that implements it.
+ */
+export type ImplementedAction<
+  Data extends Record<string, any> = Record<string, any>
+> = {
+  new (options: ActionOptions): Action<Data>
+}
+
+export type ActionCategoryBase = {
   // If many categories exist with the same key, they will be merged. The first
   // defined label and description will be used. This allows additional modules
   // to add actions to the same category without changing any metadata.
@@ -241,10 +334,10 @@ export type ActionCategory = {
   description?: string
   // Optional keywords to improve search results.
   keywords?: string[]
-  actions: Action[]
+  actionKeys: ActionKey[]
 }
 
-export type ActionCategoryWithLabel = Omit<ActionCategory, 'label'> & {
+export type ActionCategory = Omit<ActionCategoryBase, 'label'> & {
   label: string
 }
 
@@ -272,6 +365,23 @@ export type ActionContext = (
   // All contexts should have a list of accounts.
   accounts: Account[]
 }
+
+/**
+ * Additional context passed to the encode function.
+ */
+export type ActionEncodeContext =
+  | {
+      type: ActionContextType.Dao
+      dao: IDaoBase
+      proposalModule: IProposalModuleBase
+    }
+  | {
+      type: ActionContextType.Wallet
+    }
+  | {
+      type: ActionContextType.Gov
+      params: AllGovParams
+    }
 
 export enum ActionChainContextType {
   /**
@@ -309,32 +419,71 @@ export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   // x/gov module address if context.type === Gov
   address: string
   context: ActionContext
+  queryClient: QueryClient
 }
 
-export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
-  options: ActionOptions<ExtraOptions>
-) => Action<Data> | null
+export type ActionMaker<
+  Data extends Record<string, any> = Record<string, any>,
+  ExtraOptions extends {} = {}
+> = (options: ActionOptions<ExtraOptions>) => Action<Data> | null
 
-// A category maker can return null to indicate that the category should not be
-// included. It can also return either actions, action makers, or both. This is
-// convience to avoid every category maker needing the same boilerplate action
-// maker code. `actionMakers` will be made into actions and merged with
-// `actions`. If no actions exist after all are made, the category will be
-// ignored.
+/**
+ * A category maker can return null to indicate that the category should not be
+ * included.
+ */
 export type ActionCategoryMaker<ExtraOptions extends {} = {}> = (
   options: ActionOptions<ExtraOptions>
-) =>
-  | (Omit<ActionCategory, 'actions'> & {
-      actions?: Action[]
-      actionMakers?: ActionMaker[]
-    })
-  | null
+) => ActionCategoryBase | null
 
-// React context/provider system for actions.
+/**
+ * Map action key to action.
+ */
+export type ActionMap = Record<ActionKey, Action>
 
+/**
+ * React context for actions that are available to use.
+ */
 export type IActionsContext = {
+  /**
+   * Action options.
+   */
   options: ActionOptions
-  categories: ActionCategoryWithLabel[]
+  /**
+   * List of all actions.
+   */
+  actions: Action[]
+  /**
+   * Map action key to action.
+   */
+  actionMap: ActionMap
+  /**
+   * List of all action categories.
+   */
+  categories: ActionCategory[]
+  /**
+   * Action message procesor.
+   */
+  messageProcessor: MessageProcessor
+}
+
+/**
+ * React context for actions being matched.
+ */
+export type IActionMatcherContext = {
+  /**
+   * Action matcher.
+   */
+  matcher: IActionMatcher
+}
+
+/**
+ * React context for actions being encoded.
+ */
+export type IActionsEncoderContext = {
+  /**
+   * Action encoder.
+   */
+  encoder: IActionsEncoder
 }
 
 export type UseActionsOptions = {
@@ -343,14 +492,6 @@ export type UseActionsOptions = {
   // list of actions to create.
   isCreating?: boolean
 }
-
-export type LoadedAction = {
-  category: ActionCategoryWithLabel
-  action: Action
-  transform: ReturnType<UseTransformToCosmos>
-  defaults: ReturnType<UseDefaults>
-}
-export type LoadedActions = Partial<Record<ActionKey, LoadedAction>>
 
 export type NestedActionsEditorFormData = {
   msgs: UnifiedCosmosMsg[]
@@ -374,3 +515,209 @@ export type GovActionsProviderProps = ActionsProviderProps & {
    */
   loader?: ReactNode
 }
+
+/**
+ * Action decoder for a single action and set of matched messages.
+ */
+export interface IActionDecoder<
+  Data extends Record<string, any> = Record<string, any>
+> {
+  /**
+   * The action that matched the messages.
+   */
+  action: Action<Data>
+  /**
+   * The messages.
+   */
+  messages: ProcessedMessage[]
+  /**
+   * Status of decoder.
+   */
+  status: 'idle' | 'loading' | 'error' | 'ready'
+  /**
+   * Function to decode messages into action data.
+   * @returns A promise that resolves to the decoded action data.
+   */
+  decode: () => Promise<Data>
+  /**
+   * Decoded action data. Throw an error if not yet decoded.
+   */
+  get data(): Data
+  /**
+   * Whether or not the decoder is loading.
+   */
+  get loading(): boolean
+  /**
+   * Whether or not the decoder is errored.
+   */
+  get errored(): boolean
+  /**
+   * Whether or not the decoder is ready.
+   */
+  get ready(): boolean
+  /**
+   * Error if the decoder errored. Throw an error if not yet errored.
+   */
+  get error(): Error
+}
+
+/**
+ * Action matcher.
+ */
+export interface IActionMatcher {
+  /**
+   * Status of matcher.
+   */
+  status: 'idle' | 'loading' | 'error' | 'ready'
+  /**
+   * Function to match messages with actions and create decoders for them.
+   * @param messages - Array of `UnifiedCosmosMsg` to be matched.
+   * @returns A promise that resolves to an array of `IActionDecoder`.
+   */
+  match: (messages: UnifiedCosmosMsg[]) => Promise<IActionDecoder[]>
+  /**
+   * Action decoders for matched messages. Throw an error if not yet matched.
+   */
+  get matches(): IActionDecoder[]
+  /**
+   * Whether or not the matcher is idle, meaning it hasn't attempted to match
+   * yet.
+   */
+  get idle(): boolean
+  /**
+   * Whether or not the matcher is loading.
+   */
+  get loading(): boolean
+  /**
+   * Whether or not the matcher is errored.
+   */
+  get errored(): boolean
+  /**
+   * Whether or not the matcher is ready.
+   */
+  get ready(): boolean
+  /**
+   * Error if the matcher errored. Throw an error if not yet errored.
+   */
+  get error(): Error
+}
+
+/**
+ * Actions encoder.
+ */
+export interface IActionsEncoder {
+  /**
+   * Status of encoder.
+   */
+  status: 'idle' | 'loading' | 'error' | 'ready'
+  /**
+   * Function to encode actions with data into messages.
+   * @param actionKeysAndData - Array of `ActionKeyAndDataNoId` to be encoded.
+   * @returns A promise that resolves to an array of `UnifiedCosmosMsg`.
+   */
+  encode: (
+    actionKeysAndData: ActionKeyAndDataNoId[]
+  ) => Promise<UnifiedCosmosMsg[]>
+  /**
+   * Encoded messages. Throw an error if not yet encoded.
+   */
+  get messages(): UnifiedCosmosMsg[]
+  /**
+   * Whether or not the encoder is idle, meaning it hasn't attempted to encode
+   * yet.
+   */
+  get idle(): boolean
+  /**
+   * Whether or not the encoder is loading.
+   */
+  get loading(): boolean
+  /**
+   * Whether or not the encoder is errored.
+   */
+  get errored(): boolean
+  /**
+   * Whether or not the encoder is ready.
+   */
+  get ready(): boolean
+  /**
+   * Error if the encoder errored. Throw an error if not yet errored.
+   */
+  get error(): Error
+}
+
+/**
+ * A message that has been processed.
+ */
+export type ProcessedMessage = {
+  /**
+   * The message that was executed.
+   */
+  message: UnifiedCosmosMsg
+  /**
+   * The account that executed the message.
+   */
+  account: Account
+  /**
+   * Whether or not this is a cross-chain message, meaning this was a wrapped
+   * Polytone or ICA execute message. The account's chain ID should differ from
+   * the sender's chain ID.
+   */
+  isCrossChain: boolean
+  /**
+   * Whether or not this is a wrapped execute message, which is a message known
+   * to execute messages as another account.
+   */
+  isWrapped: boolean
+  /**
+   * The processed wrapped messages if any exist.
+   */
+  wrappedMessages: ProcessedMessage[]
+  /**
+   * The decoded message with accessible fields, or if this is a wrapped execute
+   * message (such as a cross-chain or cw1-whitelist execute), the first wrapped
+   * decoded message. If this is a wrapped execute but there are no wrapped
+   * messages, this is null. See the `decodeMessage` util function for more
+   * information.
+   */
+  decodedMessage: any
+  /**
+   * The decoded messages with accessible fields. If this is a wrapped execute
+   * message (such as a cross-chain or cw1-whitelist execute), these are the
+   * wrapped decoded messages. If not a wrapped message, this will be an array
+   * with just the main decoded message in it. See the `decodeMessage` util
+   * function for more information.
+   */
+  decodedMessages: any[]
+  /**
+   * If this was a wrapped Polytone execute, this is the decoded Polytone match.
+   */
+  polytone?: DecodedPolytoneMsgMatch
+  /**
+   * If this was a wrapped ICA execute, this is the decoded ICA match.
+   */
+  ica?: DecodedIcaMsgMatch
+}
+
+/**
+ * Process a single message, detecting the account that sent the message, and
+ * parsing wrapped executions (such as cross-chain messages, cw1-whitelist
+ * executions, etc.).
+ */
+export type MessageProcessor = (options: {
+  /**
+   * The chain the message was executed on.
+   */
+  chainId: string
+  /**
+   * The sender of the message.
+   */
+  sender: string
+  /**
+   * The message to process.
+   */
+  message: UnifiedCosmosMsg
+  /**
+   * The query client.
+   */
+  queryClient: QueryClient
+}) => Promise<ProcessedMessage>

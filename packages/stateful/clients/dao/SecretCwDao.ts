@@ -37,14 +37,14 @@ import {
 } from '../voting-module'
 import { CwDao } from './CwDao'
 
-const getVotingModuleBases = () => [
+export const getVotingModuleBases = () => [
   SecretCw4VotingModule,
   // SecretSnip20StakedVotingModule,
   SecretSnip721StakedVotingModule,
   SecretTokenStakedVotingModule,
 ]
 
-const getProposalModuleBases = () => [
+export const getProposalModuleBases = () => [
   SecretSingleChoiceProposalModule,
   SecretMultipleChoiceProposalModule,
 ]

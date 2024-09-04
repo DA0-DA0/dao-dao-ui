@@ -1,14 +1,15 @@
-import { useSetRecoilState } from 'recoil'
-
-import { refreshGovProposalsAtom } from '@dao-dao/state/recoil'
-import { ProposalContentDisplay, useChain } from '@dao-dao/stateless'
+import { ProposalContentDisplay } from '@dao-dao/stateless'
 import {
   GovProposalVersion,
   GovProposalWithDecodedContent,
 } from '@dao-dao/types'
 import { govProposalToDecodedContent } from '@dao-dao/utils'
 
-import { useEntity, useLoadingGovProposal } from '../../hooks'
+import {
+  useEntity,
+  useLoadingGovProposal,
+  useRefreshGovProposals,
+} from '../../hooks'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
@@ -20,8 +21,6 @@ export type GovProposalContentDisplayProps = {
 export const GovProposalContentDisplay = ({
   proposal,
 }: GovProposalContentDisplayProps) => {
-  const { chain_id: chainId } = useChain()
-
   const proposerAddress =
     (proposal.version === GovProposalVersion.V1 &&
       proposal.proposal.proposer) ||
@@ -29,7 +28,7 @@ export const GovProposalContentDisplay = ({
   const { entity } = useEntity(proposerAddress)
 
   const loadingProposal = useLoadingGovProposal(proposal.id.toString())
-  const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))
+  const refreshProposal = useRefreshGovProposals()
 
   return (
     <ProposalContentDisplay
@@ -50,7 +49,7 @@ export const GovProposalContentDisplay = ({
           content={govProposalToDecodedContent(proposal)}
         />
       }
-      onRefresh={() => setRefreshProposal((id) => id + 1)}
+      onRefresh={refreshProposal}
       refreshing={loadingProposal.loading || !!loadingProposal.updating}
       title={proposal.title}
     />

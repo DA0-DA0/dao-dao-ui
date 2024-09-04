@@ -1,7 +1,10 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingOnftStakedQueries } from '@dao-dao/state/query'
-import { ModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  daoVotingOnftStakedQueries,
+  omniflixQueries,
+} from '@dao-dao/state/query'
+import { GenericToken, ModuleInstantiateInfo, TokenType } from '@dao-dao/types'
 import {
   ActiveThreshold,
   Duration,
@@ -95,5 +98,47 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
         height,
       },
     })
+  }
+
+  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+    return {
+      queryKey: [
+        'onftStakedVotingModule',
+        'governanceToken',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        const { onft_collection_id } = await this.queryClient.fetchQuery(
+          daoVotingOnftStakedQueries.config(this.queryClient, {
+            chainId: this.dao.chainId,
+            contractAddress: this.address,
+          })
+        )
+
+        const { symbol, previewUri } = await this.queryClient.fetchQuery(
+          omniflixQueries.onftCollectionInfo({
+            chainId: this.dao.chainId,
+            id: onft_collection_id,
+          })
+        )
+
+        return {
+          chainId: this.dao.chainId,
+          type: TokenType.Onft,
+          denomOrAddress: onft_collection_id,
+          symbol,
+          decimals: 0,
+          imageUrl: previewUri,
+          source: {
+            chainId: this.dao.chainId,
+            type: TokenType.Onft,
+            denomOrAddress: onft_collection_id,
+          },
+        }
+      },
+    }
   }
 }

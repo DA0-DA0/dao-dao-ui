@@ -1,7 +1,14 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { secretDaoVotingSnip721StakedQueries } from '@dao-dao/state/query'
-import { SecretModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  cw721BaseQueries,
+  secretDaoVotingSnip721StakedQueries,
+} from '@dao-dao/state/query'
+import {
+  GenericToken,
+  SecretModuleInstantiateInfo,
+  TokenType,
+} from '@dao-dao/types'
 import {
   ActiveThreshold,
   Duration,
@@ -123,5 +130,47 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
         height,
       },
     })
+  }
+
+  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+    return {
+      queryKey: [
+        'snip721StakedVotingModule',
+        'governanceToken',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        const { nft_address: collectionAddress } =
+          await this.queryClient.fetchQuery(
+            secretDaoVotingSnip721StakedQueries.config({
+              chainId: this.dao.chainId,
+              contractAddress: this.address,
+            })
+          )
+
+        const contractInfo = await this.queryClient.fetchQuery(
+          cw721BaseQueries.contractInfo({
+            chainId: this.dao.chainId,
+            contractAddress: collectionAddress,
+          })
+        )
+
+        return {
+          chainId: this.dao.chainId,
+          type: TokenType.Cw721,
+          denomOrAddress: collectionAddress,
+          symbol: contractInfo.symbol,
+          decimals: 0,
+          source: {
+            chainId: this.dao.chainId,
+            type: TokenType.Cw721,
+            denomOrAddress: collectionAddress,
+          },
+        }
+      },
+    }
   }
 }

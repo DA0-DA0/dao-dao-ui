@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { useGovProposalVoteOptions } from '@dao-dao/stateless'
 import { VoteOption } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
+
+import { useGovProposalVoteOptions } from '../../hooks'
 
 export type GovProposalVoteDisplayProps = {
   vote: VoteOption

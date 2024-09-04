@@ -34,7 +34,8 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
-  CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  CW20_ITEM_KEY_PREFIX,
+  CW721_ITEM_KEY_PREFIX,
   MAINNET,
   POLYTONE_CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
@@ -528,19 +529,27 @@ export const allNativeCw20TokenListSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      // Load CW20s from storage items.
+      const storageItemContracts = get(
+        listAllItemsWithPrefixSelector({
+          ...queryClientParams,
+          prefix: CW20_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => key)
+
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/cw20List',
         })
       )
-      if (list) {
-        return list
+      if (list && Array.isArray(list)) {
+        return uniq([...storageItemContracts, ...list])
       }
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: ArrayOfAddr = []
+      const tokenList: ArrayOfAddr = [...storageItemContracts]
       while (true) {
         const response = await get(
           _cw20TokenListSelector({
@@ -563,7 +572,7 @@ export const allNativeCw20TokenListSelector = selectorFamily<
         }
       }
 
-      return tokenList
+      return uniq(tokenList)
     },
 })
 
@@ -856,11 +865,11 @@ export const allNativeCw721TokenListSelector = selectorFamily<
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      // Load workaround CW721s from storage items.
-      const workaroundContracts = get(
+      // Load CW721s from storage items.
+      const storageItemContracts = get(
         listAllItemsWithPrefixSelector({
           ...queryClientParams,
-          prefix: CW721_WORKAROUND_ITEM_KEY_PREFIX,
+          prefix: CW721_ITEM_KEY_PREFIX,
         })
       ).map(([key]) => key)
 
@@ -872,7 +881,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
       )
       if (list && Array.isArray(list)) {
         // Copy to new array so we can mutate it below.
-        list = [...workaroundContracts, ...list]
+        list = [...storageItemContracts, ...list]
         // Add governance collection to beginning of list if not present.
         if (
           governanceCollectionAddress &&
@@ -886,7 +895,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: ArrayOfAddr = [...workaroundContracts]
+      const tokenList: ArrayOfAddr = [...storageItemContracts]
       while (true) {
         const response = await get(
           _cw721TokenListSelector({
@@ -917,7 +926,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
         tokenList.splice(0, 0, governanceCollectionAddress)
       }
 
-      return tokenList
+      return uniq(tokenList)
     },
 })
 
@@ -1015,7 +1024,7 @@ export const allCw721CollectionsSelector = selectorFamily<
       > = {
         [queryClientParams.chainId]: {
           owners: accounts
-            .filter((a) => a.type === AccountType.Native)
+            .filter((a) => a.type === AccountType.Base)
             .map((a) => a.address),
           collectionAddresses: nativeCw721TokenList,
         },
@@ -1311,25 +1320,4 @@ export const polytoneProxiesSelector = selectorFamily<
           {} as PolytoneProxies
         )
     },
-})
-
-export const approvalDaosSelector = selectorFamily<
-  {
-    dao: string
-    preProposeAddress: string
-  }[],
-  QueryClientParams
->({
-  key: 'daoDaoCoreApprovalDaos',
-  get:
-    ({ chainId, contractAddress }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          chainId,
-          contractAddress,
-          formula: 'daoCore/approvalDaos',
-          noFallback: true,
-        })
-      ),
 })

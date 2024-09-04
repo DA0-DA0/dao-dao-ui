@@ -1,5 +1,4 @@
 import {
-  ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleBase,
@@ -118,9 +117,4 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   // If this is a proposal in a Neutron fork SubDAO with timelock, this is the
   // overrule proposal and its DAO created once executed and thus timelocked.
   neutronTimelockOverrule?: NeutronTimelockOverrule
-}
-
-export type MessagesWithActionData = {
-  decodedMessages: any[]
-  actionData: ActionAndData[]
 }

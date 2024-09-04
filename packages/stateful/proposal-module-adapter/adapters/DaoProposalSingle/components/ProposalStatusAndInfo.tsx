@@ -448,13 +448,9 @@ const InnerProposalStatusAndInfo = ({
 
   const Voter = useCallback(
     (props: ComponentProps<Required<ProposalStatusAndInfoProps>['Voter']>) => (
-      <ProposalVoter
-        {...props}
-        onVoteSuccess={voter.onVoteSuccess}
-        seenAllActionPages={voter.seenAllActionPages}
-      />
+      <ProposalVoter {...props} onVoteSuccess={voter.onVoteSuccess} />
     ),
-    [voter.onVoteSuccess, voter.seenAllActionPages]
+    [voter.onVoteSuccess]
   )
 
   return (

@@ -9,11 +9,10 @@ import { ComponentProps } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { useInitializedActionForKey } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
 import { getActionBuilderPrefillPath, processError } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../actions'
-import { TransferNftData } from '../../actions/core/nfts/TransferNft/Component'
 import { useManageProfile } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { LazyNftCard } from '../nft'
@@ -64,9 +63,7 @@ export const WalletLazyNftCard = (
     profile.data.nft?.collectionAddress === props.collectionAddress &&
     profile.data.nft?.tokenId === props.tokenId
 
-  const transferActionDefaults = useActionForKey(
-    ActionKey.TransferNft
-  )?.useDefaults() as TransferNftData | undefined
+  const transferAction = useInitializedActionForKey(ActionKey.TransferNft)
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
@@ -95,7 +92,8 @@ export const WalletLazyNftCard = (
           },
         ]
       : []),
-    ...(transferActionDefaults &&
+    ...(!transferAction.loading &&
+    !transferAction.errored &&
     // If the NFT is staked, don't show the transfer/burn buttons, since the
     // wallet does not have control.
     !props.staked
@@ -109,9 +107,9 @@ export const WalletLazyNftCard = (
                 closeOnClick: true,
                 href: getActionBuilderPrefillPath([
                   {
-                    actionKey: ActionKey.TransferNft,
+                    actionKey: transferAction.data.key,
                     data: {
-                      ...transferActionDefaults,
+                      ...transferAction.data.defaults,
                       collection: props.collectionAddress,
                       tokenId: props.tokenId,
                       recipient: '',

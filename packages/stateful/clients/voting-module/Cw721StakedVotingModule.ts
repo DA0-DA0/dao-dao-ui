@@ -1,7 +1,16 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingCw721StakedQueries } from '@dao-dao/state/query'
-import { Coin, ModuleInstantiateInfo, WasmMsg } from '@dao-dao/types'
+import {
+  cw721BaseQueries,
+  daoVotingCw721StakedQueries,
+} from '@dao-dao/state/query'
+import {
+  Coin,
+  GenericToken,
+  ModuleInstantiateInfo,
+  TokenType,
+  WasmMsg,
+} from '@dao-dao/types'
 import {
   ExecuteMsg as Cw721BaseExecuteMsg,
   InstantiateMsg as Cw721BaseInstantiateMsg,
@@ -161,5 +170,47 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
         height,
       },
     })
+  }
+
+  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+    return {
+      queryKey: [
+        'cw721StakedVotingModule',
+        'governanceToken',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        const { nft_address: collectionAddress } =
+          await this.queryClient.fetchQuery(
+            daoVotingCw721StakedQueries.config(this.queryClient, {
+              chainId: this.dao.chainId,
+              contractAddress: this.address,
+            })
+          )
+
+        const contractInfo = await this.queryClient.fetchQuery(
+          cw721BaseQueries.contractInfo({
+            chainId: this.dao.chainId,
+            contractAddress: collectionAddress,
+          })
+        )
+
+        return {
+          chainId: this.dao.chainId,
+          type: TokenType.Cw721,
+          denomOrAddress: collectionAddress,
+          symbol: contractInfo.symbol,
+          decimals: 0,
+          source: {
+            chainId: this.dao.chainId,
+            type: TokenType.Cw721,
+            denomOrAddress: collectionAddress,
+          },
+        }
+      },
+    }
   }
 }

@@ -63,7 +63,7 @@ export class CreatingDaoPlaceholder extends DaoBase {
       polytoneProxies: {},
       accounts: [
         {
-          type: AccountType.Native,
+          type: AccountType.Base,
           chainId: options.chainId,
           address: options.coreAddress,
         },

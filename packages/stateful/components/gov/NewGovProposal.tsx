@@ -19,6 +19,7 @@ import {
   MutableRefObject,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -30,20 +31,13 @@ import {
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { accountQueries, chainQueries } from '@dao-dao/state/query'
 import {
-  accountsSelector,
-  govProposalSelector,
   latestProposalSaveAtom,
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
-  refreshGovProposalsAtom,
 } from '@dao-dao/state/recoil'
 import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
@@ -55,17 +49,16 @@ import {
   PageLoader,
   ProposalContentDisplay,
   Tooltip,
-  useCachedLoadingWithError,
+  useActionOptions,
   useConfiguredChainContext,
   useDaoNavHelpers,
   useHoldingKey,
+  useLoadingPromise,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
-  Action,
   ActionChainContextType,
   ActionContextType,
-  GovProposalVersion,
   GovernanceProposalActionData,
   ProposalDraft,
 } from '@dao-dao/types'
@@ -95,9 +88,14 @@ import {
   uploadJsonToIpfs,
 } from '@dao-dao/utils'
 
-import { WalletActionsProvider, useActionOptions } from '../../actions'
-import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
-import { useEntity, useProfile } from '../../hooks'
+import { WalletActionsProvider } from '../../actions'
+import { GovernanceProposalAction } from '../../actions/core/actions'
+import {
+  useEntity,
+  useProfile,
+  useQueryLoadingDataWithError,
+  useRefreshGovProposals,
+} from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { EntityDisplay } from '../EntityDisplay'
 import { GovProposalActionDisplay } from './GovProposalActionDisplay'
@@ -116,35 +114,45 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useConfiguredChainContext()
+  const queryClient = useQueryClient()
 
   const { address: walletAddress = '' } = useWallet()
   const { profile } = useProfile()
-  const accounts = useCachedLoadingWithError(
+  const accounts = useQueryLoadingDataWithError(
     walletAddress
-      ? accountsSelector({
+      ? accountQueries.list(queryClient, {
           chainId: chainContext.chainId,
           address: walletAddress,
         })
       : undefined
   )
 
-  const governanceProposalAction = makeGovernanceProposalAction({
-    t,
-    chain: chainContext.chain,
-    chainContext: {
-      type: ActionChainContextType.Configured,
-      ...chainContext,
-    },
-    address: walletAddress,
-    context: {
-      type: ActionContextType.Wallet,
-      profile: profile.loading
-        ? makeEmptyUnifiedProfile(chainContext.chainId, walletAddress)
-        : profile.data,
-      accounts: accounts.loading || accounts.errored ? [] : accounts.data,
-    },
-  })!
-  const defaults = governanceProposalAction.useDefaults()
+  const governanceProposalAction = useMemo(
+    () =>
+      new GovernanceProposalAction({
+        t,
+        chain: chainContext.chain,
+        chainContext: {
+          type: ActionChainContextType.Configured,
+          ...chainContext,
+        },
+        address: walletAddress,
+        context: {
+          type: ActionContextType.Wallet,
+          profile: profile.loading
+            ? makeEmptyUnifiedProfile(chainContext.chainId, walletAddress)
+            : profile.data,
+          accounts: accounts.loading || accounts.errored ? [] : accounts.data,
+        },
+        queryClient,
+      }),
+    [t, chainContext, walletAddress, profile, accounts, queryClient]
+  )
+  // Initialize governance proposal action and re-render when done.
+  useLoadingPromise({
+    promise: () => governanceProposalAction.init(),
+    deps: [governanceProposalAction],
+  })
 
   const localStorageKey = `gov_${chainContext.chainId}`
   const latestProposalSave = useRecoilValue(
@@ -222,21 +230,23 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     loadFromPrefill()
   }, [router.query.prefill, router.query.pi, router.isReady, prefillChecked, t])
 
-  return !defaults || (walletAddress && accounts.loading) || !prefillChecked ? (
+  return governanceProposalAction.loading ||
+    (walletAddress && accounts.loading) ||
+    !prefillChecked ? (
     <PageLoader />
-  ) : defaults instanceof Error ? (
-    <ErrorPage error={defaults} />
+  ) : governanceProposalAction.errored ? (
+    <ErrorPage error={governanceProposalAction.error} />
   ) : (
     <InnerNewGovProposal
       {...innerProps}
       action={governanceProposalAction}
       defaults={{
-        ...defaults,
+        ...governanceProposalAction.defaults,
         ...cloneDeep(latestProposalSave),
         ...usePrefill,
       }}
       localStorageKey={localStorageKey}
-      realDefaults={defaults}
+      realDefaults={governanceProposalAction.defaults}
     />
   )
 }
@@ -258,7 +268,7 @@ type InnerNewGovProposalProps = {
   /**
    * The governance proposal creation action.
    */
-  action: Action<GovernanceProposalActionData>
+  action: GovernanceProposalAction
   /**
    * A function ref that the parent uses to clear the form.
    */
@@ -311,11 +321,9 @@ const InnerNewGovProposal = ({
     latestProposalSaveAtom(localStorageKey)
   )
 
-  const transformGovernanceProposalActionDataToCosmos =
-    action.useTransformToCosmos()
   const formMethods = useForm<GovernanceProposalActionData>({
     mode: 'onChange',
-    defaultValues: defaults,
+    defaultValues: cloneDeep(defaults),
   })
   const {
     handleSubmit,
@@ -332,217 +340,199 @@ const InnerNewGovProposal = ({
       setSubmitError('')
     }, [setShowSubmitErrorNote])
 
-  const setRefreshGovProposals = useSetRecoilState(
-    refreshGovProposalsAtom(chainContext.chainId)
-  )
-  const refreshGovProposals = useCallback(
-    () => setRefreshGovProposals((id) => id + 1),
-    [setRefreshGovProposals]
-  )
+  const refreshGovProposals = useRefreshGovProposals()
 
-  const onSubmitForm: SubmitHandler<GovernanceProposalActionData> =
-    useRecoilCallback(
-      ({ snapshot }) =>
-        async (data, event) => {
-          const nativeEvent = event?.nativeEvent as SubmitEvent
-          const submitterValue = (nativeEvent?.submitter as HTMLInputElement)
-            ?.value
+  const onSubmitForm: SubmitHandler<GovernanceProposalActionData> = useCallback(
+    async (data, event) => {
+      const nativeEvent = event?.nativeEvent as SubmitEvent
+      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-          setShowSubmitErrorNote(false)
+      setShowSubmitErrorNote(false)
 
-          // Preview toggled in onClick handler.
-          if (submitterValue === ProposeSubmitValue.Preview) {
-            return
-          }
+      // Preview toggled in onClick handler.
+      if (submitterValue === ProposeSubmitValue.Preview) {
+        return
+      }
 
-          if (!isWalletConnected || !chainWallet) {
-            toast.error(t('error.logInToContinue'))
-            return
-          }
+      if (!isWalletConnected || !chainWallet) {
+        toast.error(t('error.logInToContinue'))
+        return
+      }
 
-          setSubmitError('')
+      setSubmitError('')
 
-          let encodeObject: EncodeObject
-          try {
-            // Transforms to stargate Cosmos message that submits proposal.
-            const submitProposalStargateMsg =
-              transformGovernanceProposalActionDataToCosmos(data)
-            if (
-              !submitProposalStargateMsg ||
-              !isCosmWasmStargateMsg(submitProposalStargateMsg)
-            ) {
-              throw new Error(t('error.loadingData'))
-            }
+      let encodeObject: EncodeObject
+      try {
+        // Transforms to stargate Cosmos message that submits proposal.
+        const submitProposalStargateMsg = await action.encode(data)
+        if (
+          !submitProposalStargateMsg ||
+          !isCosmWasmStargateMsg(submitProposalStargateMsg)
+        ) {
+          throw new Error(t('error.loadingData'))
+        }
 
-            // Transform Cosmos message to executable encode object.
-            encodeObject =
-              data.version === GovProposalVersion.V1_BETA_1
-                ? {
-                    typeUrl: MsgSubmitProposalV1Beta1.typeUrl,
-                    value: MsgSubmitProposalV1Beta1.decode(
-                      fromBase64(submitProposalStargateMsg.stargate.value)
-                    ),
-                  }
-                : {
-                    typeUrl: MsgSubmitProposalV1.typeUrl,
-                    value: MsgSubmitProposalV1.decode(
-                      fromBase64(submitProposalStargateMsg.stargate.value)
-                    ),
-                  }
-
-            // Need to re-encode the v1beta1 content as Any since `decode` fully
-            // decodes the content into an object, but we need it encoded.
-            if (encodeObject.typeUrl === MsgSubmitProposalV1Beta1.typeUrl) {
-              const reader = new BinaryReader(
-                fromBase64(submitProposalStargateMsg.stargate.value)
-              )
-              const end = reader.len
-              while (reader.pos < end) {
-                const tag = reader.uint32()
-                switch (tag >>> 3) {
-                  case 1:
-                    ;(encodeObject.value as MsgSubmitProposalV1Beta1).content =
-                      Any.decode(reader, reader.uint32()) as any
-                    break
-                  default:
-                    reader.skipType(tag & 7)
-                    break
-                }
-              }
-            }
-          } catch (err) {
-            console.error(err)
-            setSubmitError(
-              processError(err, {
-                forceCapture: false,
-              })
-            )
-            return
-          }
-
-          setLoading(true)
-          try {
-            const signer = holdingAltForDirectSign
-              ? getOfflineSignerDirect()
-              : getOfflineSignerAmino()
-            const signingClient = await SigningStargateClient.connectWithSigner(
-              getRpcForChainId(chain.chain_id),
-              signer,
-              makeGetSignerOptions(queryClient)(chain)
-            )
-
-            const { events } = await signingClient.signAndBroadcast(
-              walletAddress,
-              [encodeObject],
-              CHAIN_GAS_MULTIPLIER
-            )
-
-            const proposalId = Number(
-              events
-                .find(
-                  ({ type, attributes }) =>
-                    type === 'submit_proposal' &&
-                    attributes.some(({ key }) => key === 'proposal_id')
+        // Transform Cosmos message to executable encode object.
+        encodeObject = {
+          typeUrl: submitProposalStargateMsg.stargate.type_url,
+          value:
+            submitProposalStargateMsg.stargate.type_url ===
+            MsgSubmitProposalV1.typeUrl
+              ? MsgSubmitProposalV1.decode(
+                  fromBase64(submitProposalStargateMsg.stargate.value)
                 )
-                ?.attributes.find(({ key }) => key === 'proposal_id')?.value ??
-                -1
-            )
-            if (proposalId === -1) {
-              throw new Error(t('error.loadingData'))
+              : MsgSubmitProposalV1Beta1.decode(
+                  fromBase64(submitProposalStargateMsg.stargate.value)
+                ),
+        }
+
+        // Need to re-encode the v1beta1 content as Any since `decode` fully
+        // decodes the content into an object, but we need it encoded.
+        if (encodeObject.typeUrl === MsgSubmitProposalV1Beta1.typeUrl) {
+          const reader = new BinaryReader(
+            fromBase64(submitProposalStargateMsg.stargate.value)
+          )
+          const end = reader.len
+          while (reader.pos < end) {
+            const tag = reader.uint32()
+            switch (tag >>> 3) {
+              case 1:
+                ;(encodeObject.value as MsgSubmitProposalV1Beta1).content =
+                  Any.decode(reader, reader.uint32()) as any
+                break
+              default:
+                reader.skipType(tag & 7)
+                break
             }
-
-            const proposal = await snapshot.getPromise(
-              govProposalSelector({
-                chainId: chainContext.chainId,
-                proposalId,
-              })
-            )
-            if (!proposal) {
-              throw new Error(t('error.loadingData'))
-            }
-
-            const endTime =
-              proposal.proposal.status ===
-              ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
-                ? proposal.proposal.depositEndTime
-                : proposal.proposal.votingEndTime
-
-            // Show modal.
-            setProposalCreatedCardProps({
-              id: proposal.id.toString(),
-              title: proposal.title,
-              description: proposal.description,
-              info: [
-                {
-                  Icon: BookOutlined,
-                  label: `${t('title.threshold')}: ${formatPercentOf100(
-                    context.params.threshold * 100
-                  )}`,
-                },
-                {
-                  Icon: FlagOutlined,
-                  label: `${t('title.quorum')}: ${formatPercentOf100(
-                    context.params.quorum * 100
-                  )}`,
-                },
-                ...(endTime
-                  ? [
-                      {
-                        Icon: Timelapse,
-                        label: dateToWdhms(endTime),
-                      },
-                    ]
-                  : []),
-              ],
-              dao: {
-                name: getDisplayNameForChainId(chainContext.chainId),
-                coreAddress: chainContext.config.name,
-                imageUrl: getImageUrlForChainId(chainContext.chainId),
-              },
-            })
-
-            // Refresh proposals state.
-            refreshGovProposals()
-
-            // Clear saved form data.
-            setLatestProposalSave({})
-
-            // Navigate to proposal (underneath the creation modal).
-            router.push(
-              getDaoProposalPath(
-                chainContext.config.name,
-                proposalId.toString()
-              )
-            )
-
-            // Don't stop loading indicator on success since we are navigating.
-          } catch (err) {
-            console.error(err)
-            toast.error(processError(err))
-            setLoading(false)
           }
-        },
-      [
-        isWalletConnected,
-        chain,
-        chainWallet,
-        t,
-        transformGovernanceProposalActionDataToCosmos,
-        walletAddress,
-        getOfflineSignerAmino,
-        getOfflineSignerDirect,
-        holdingAltForDirectSign,
-        chainContext.chainId,
-        chainContext.config.name,
-        setProposalCreatedCardProps,
-        context.params.threshold,
-        context.params.quorum,
-        refreshGovProposals,
-        setLatestProposalSave,
-        router,
-        queryClient,
-      ]
-    )
+        }
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
+      }
+
+      setLoading(true)
+      try {
+        const signer = holdingAltForDirectSign
+          ? getOfflineSignerDirect()
+          : getOfflineSignerAmino()
+        const signingClient = await SigningStargateClient.connectWithSigner(
+          getRpcForChainId(chain.chain_id),
+          signer,
+          makeGetSignerOptions(queryClient)(chain)
+        )
+
+        const { events } = await signingClient.signAndBroadcast(
+          walletAddress,
+          [encodeObject],
+          CHAIN_GAS_MULTIPLIER
+        )
+
+        const proposalId = Number(
+          events
+            .find(
+              ({ type, attributes }) =>
+                type === 'submit_proposal' &&
+                attributes.some(({ key }) => key === 'proposal_id')
+            )
+            ?.attributes.find(({ key }) => key === 'proposal_id')?.value ?? -1
+        )
+        if (proposalId === -1) {
+          throw new Error(t('error.loadingData'))
+        }
+
+        const proposal = await queryClient.fetchQuery(
+          chainQueries.govProposal(queryClient, {
+            chainId: chainContext.chainId,
+            proposalId,
+          })
+        )
+
+        const endTime =
+          proposal.proposal.status ===
+          ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+            ? proposal.proposal.depositEndTime
+            : proposal.proposal.votingEndTime
+
+        // Show modal.
+        setProposalCreatedCardProps({
+          id: proposal.id.toString(),
+          title: proposal.title,
+          description: proposal.description,
+          info: [
+            {
+              Icon: BookOutlined,
+              label: `${t('title.threshold')}: ${formatPercentOf100(
+                context.params.threshold * 100
+              )}`,
+            },
+            {
+              Icon: FlagOutlined,
+              label: `${t('title.quorum')}: ${formatPercentOf100(
+                context.params.quorum * 100
+              )}`,
+            },
+            ...(endTime
+              ? [
+                  {
+                    Icon: Timelapse,
+                    label: dateToWdhms(endTime),
+                  },
+                ]
+              : []),
+          ],
+          dao: {
+            name: getDisplayNameForChainId(chainContext.chainId),
+            coreAddress: chainContext.config.name,
+            imageUrl: getImageUrlForChainId(chainContext.chainId),
+          },
+        })
+
+        // Refresh proposals state.
+        refreshGovProposals()
+
+        // Clear saved form data.
+        setLatestProposalSave({})
+
+        // Navigate to proposal (underneath the creation modal).
+        router.push(
+          getDaoProposalPath(chainContext.config.name, proposalId.toString())
+        )
+
+        // Don't stop loading indicator on success since we are navigating.
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+        setLoading(false)
+      }
+    },
+    [
+      isWalletConnected,
+      chain,
+      chainWallet,
+      t,
+      action,
+      walletAddress,
+      getOfflineSignerAmino,
+      getOfflineSignerDirect,
+      holdingAltForDirectSign,
+      chainContext.chainId,
+      chainContext.config.name,
+      setProposalCreatedCardProps,
+      context.params.threshold,
+      context.params.quorum,
+      refreshGovProposals,
+      setLatestProposalSave,
+      router,
+      queryClient,
+      getDaoProposalPath,
+    ]
+  )
   const proposalData = watch()
 
   // Reset form to defaults and clear latest proposal save.

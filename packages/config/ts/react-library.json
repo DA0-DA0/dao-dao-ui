@@ -6,7 +6,7 @@
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
-    "target": "es2020",
+    "target": "es2022",
     "allowJs": true,
     "noEmit": true
   }

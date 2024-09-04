@@ -20,6 +20,7 @@ export interface ProposalLineProps {
   vote: ReactNode
   href: string
   onClick?: () => void
+  openInNewTab?: boolean
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
   approvalContext?: ApprovalProposalContext
@@ -34,6 +35,7 @@ export const ProposalLine = ({
   vote,
   href,
   onClick,
+  openInNewTab,
   className,
   LinkWrapper,
   approvalContext,
@@ -45,6 +47,7 @@ export const ProposalLine = ({
     )}
     href={href}
     onClick={onClick}
+    openInNewTab={openInNewTab}
   >
     {/* Desktop */}
     <div className="hidden h-12 flex-row items-center gap-6 p-3 md:flex">

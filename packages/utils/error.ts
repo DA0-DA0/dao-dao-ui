@@ -1,5 +1,28 @@
 import * as Sentry from '@sentry/nextjs'
 
+import {
+  INVALID_CONTRACT_ERROR_SUBSTRINGS,
+  NONEXISTENT_QUERY_ERROR_SUBSTRINGS,
+} from './constants'
+
+/**
+ * Whether or not an error is a non-existent query error.
+ */
+export const isNonexistentQueryError = (error: unknown): boolean =>
+  error instanceof Error &&
+  NONEXISTENT_QUERY_ERROR_SUBSTRINGS.some((substring) =>
+    (error as Error).message.includes(substring)
+  )
+
+/**
+ * Whether or not an error is an invalid contract error.
+ */
+export const isInvalidContractError = (error: unknown): boolean =>
+  error instanceof Error &&
+  INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
+    (error as Error).message.includes(substring)
+  )
+
 // Passing a map will allow common errors to be mapped to a custom error message
 // for the given context.
 export const processError = (

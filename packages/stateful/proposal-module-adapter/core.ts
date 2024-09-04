@@ -7,6 +7,7 @@ import {
   IProposalModuleContext,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
+import { extractProposalInfo } from '@dao-dao/utils'
 
 import {
   DaoProposalMultipleAdapter,
@@ -74,23 +75,17 @@ export const matchAndLoadAdapter = (
   dao: IDaoBase,
   proposalId: string
 ): IProposalModuleContext => {
-  // Prefix is alphabetical, followed by numeric prop number. If there is an
-  // asterisk between the prefix and the prop number, this is a pre-propose
-  // proposal. Allow the prefix to be empty for backwards compatibility. Default
-  // to first proposal module if no alphabetical prefix.
-  const proposalIdParts = proposalId.match(/^([A-Z]*)(\*)?(\d+)$/)
-  if (proposalIdParts?.length !== 4) {
-    throw new ProposalModuleAdapterError('Failed to parse proposal ID.')
-  }
-
-  // Undefined if matching group doesn't exist, i.e. no prefix exists.
-  const proposalPrefix = proposalIdParts[1] ?? ''
-  const isPreProposeApprovalProposal = proposalIdParts[2] === '*'
-  const proposalNumber = Number(proposalIdParts[3])
-
-  if (isNaN(proposalNumber)) {
+  let proposalPrefix: string
+  let proposalNumber: number
+  let isPreProposeApprovalProposal: boolean
+  try {
+    const info = extractProposalInfo(proposalId)
+    proposalPrefix = info.prefix
+    proposalNumber = info.proposalNumber
+    isPreProposeApprovalProposal = info.isPreProposeApprovalProposal
+  } catch (err) {
     throw new ProposalModuleAdapterError(
-      `Invalid proposal number "${proposalNumber}".`
+      err instanceof Error ? err.message : 'Failed to parse proposal ID.'
     )
   }
 

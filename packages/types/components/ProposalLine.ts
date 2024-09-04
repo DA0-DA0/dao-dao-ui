@@ -6,4 +6,5 @@ export type StatefulProposalLineProps = {
   proposalViewUrl: string
   onClick?: () => void
   isPreProposeProposal: boolean
+  openInNewTab?: boolean
 }

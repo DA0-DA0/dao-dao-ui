@@ -1,282 +1,294 @@
-import Emoji from 'a11y-react-emoji'
+import Emoji, { EmojiProps as BaseEmojiProps } from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-export interface EmojiWrapperProps {
+export type EmojiWrapperProps = Omit<BaseEmojiProps, 'symbol' | 'label'> & {
   labelI18nKey: string
   emoji: string
 }
 
-export const EmojiWrapper = ({ labelI18nKey, emoji }: EmojiWrapperProps) => {
+export type EmojiProps = Omit<EmojiWrapperProps, 'labelI18nKey' | 'emoji'>
+
+export const EmojiWrapper = ({
+  labelI18nKey,
+  emoji,
+  ...props
+}: EmojiWrapperProps) => {
   const { t } = useTranslation()
-  return <Emoji label={t(labelI18nKey)} symbol={emoji} />
+  return <Emoji label={t(labelI18nKey)} symbol={emoji} {...props} />
 }
 
-export const GasEmoji = () => (
-  <EmojiWrapper emoji="⛽" labelI18nKey="emoji.gas" />
+export const GasEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⛽" labelI18nKey="emoji.gas" {...props} />
 )
 
-export const KeyEmoji = () => (
-  <EmojiWrapper emoji="🔑" labelI18nKey="emoji.key" />
+export const KeyEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔑" labelI18nKey="emoji.key" {...props} />
 )
 
-export const LockWithKeyEmoji = () => (
-  <EmojiWrapper emoji="🔐" labelI18nKey="emoji.closedLockWithKey" />
+export const LockWithKeyEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔐" labelI18nKey="emoji.closedLockWithKey" {...props} />
 )
 
-export const PickEmoji = () => (
-  <EmojiWrapper emoji="⛏" labelI18nKey="emoji.pick" />
+export const PickEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⛏" labelI18nKey="emoji.pick" {...props} />
 )
 
-export const PencilEmoji = () => (
-  <EmojiWrapper emoji="✏" labelI18nKey="emoji.pencil" />
+export const PencilEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="✏" labelI18nKey="emoji.pencil" {...props} />
 )
 
-export const UnlockEmoji = () => (
-  <EmojiWrapper emoji="🔓" labelI18nKey="emoji.unlock" />
+export const UnlockEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔓" labelI18nKey="emoji.unlock" {...props} />
 )
 
-export const CameraWithFlashEmoji = () => (
-  <EmojiWrapper emoji="📸" labelI18nKey="emoji.cameraWithFlash" />
+export const CameraWithFlashEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📸" labelI18nKey="emoji.cameraWithFlash" {...props} />
 )
 
-export const BoxEmoji = () => (
-  <EmojiWrapper emoji="📦" labelI18nKey="emoji.box" />
+export const BoxEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📦" labelI18nKey="emoji.box" {...props} />
 )
 
-export const MoneyEmoji = () => (
-  <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" />
+export const MoneyEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" {...props} />
 )
 
-export const MoneyBagEmoji = () => (
-  <EmojiWrapper emoji="💰" labelI18nKey="emoji.moneyBag" />
+export const MoneyBagEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="💰" labelI18nKey="emoji.moneyBag" {...props} />
 )
 
-export const MoneyWingsEmoji = () => (
-  <EmojiWrapper emoji="💸" labelI18nKey="emoji.moneyWings" />
+export const MoneyWingsEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="💸" labelI18nKey="emoji.moneyWings" {...props} />
 )
 
-export const BankEmoji = () => (
-  <EmojiWrapper emoji="🏦" labelI18nKey="emoji.bank" />
+export const BankEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🏦" labelI18nKey="emoji.bank" {...props} />
 )
 
-export const DepositEmoji = () => (
-  <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" />
+export const DepositEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" {...props} />
 )
 
-export const TokenEmoji = () => (
-  <EmojiWrapper emoji="🔘" labelI18nKey="emoji.token" />
+export const TokenEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔘" labelI18nKey="emoji.token" {...props} />
 )
 
-export const ImageEmoji = () => (
-  <EmojiWrapper emoji="🖼" labelI18nKey="emoji.image" />
+export const ImageEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🖼" labelI18nKey="emoji.image" {...props} />
 )
 
-export const CameraEmoji = () => (
-  <EmojiWrapper emoji="📸" labelI18nKey="emoji.camera" />
+export const CameraEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📸" labelI18nKey="emoji.camera" {...props} />
 )
 
-export const ArtistPaletteEmoji = () => (
-  <EmojiWrapper emoji="🎨" labelI18nKey="emoji.artistPalette" />
+export const ArtistPaletteEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🎨" labelI18nKey="emoji.artistPalette" {...props} />
 )
 
-export const RobotEmoji = () => (
-  <EmojiWrapper emoji="🤖" labelI18nKey="emoji.robot" />
+export const RobotEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🤖" labelI18nKey="emoji.robot" {...props} />
 )
 
-export const SwordsEmoji = () => (
-  <EmojiWrapper emoji="⚔️" labelI18nKey="emoji.swords" />
+export const SwordsEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⚔️" labelI18nKey="emoji.swords" {...props} />
 )
 
-export const BabyEmoji = () => (
-  <EmojiWrapper emoji="👶" labelI18nKey="emoji.baby" />
+export const BabyEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👶" labelI18nKey="emoji.baby" {...props} />
 )
 
-export const BabyAngelEmoji = () => (
-  <EmojiWrapper emoji="👼" labelI18nKey="emoji.babyAngel" />
+export const BabyAngelEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👼" labelI18nKey="emoji.babyAngel" {...props} />
 )
 
-export const WhaleEmoji = () => (
-  <EmojiWrapper emoji="🐋" labelI18nKey="emoji.whale" />
+export const WhaleEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🐋" labelI18nKey="emoji.whale" {...props} />
 )
 
-export const XEmoji = () => <EmojiWrapper emoji="❌" labelI18nKey="emoji.x" />
+export const XEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="❌" labelI18nKey="emoji.x" {...props} />
+)
+
+export const MushroomEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🍄" labelI18nKey="emoji.mushroom" {...props} />
+)
 
-export const MushroomEmoji = () => (
-  <EmojiWrapper emoji="🍄" labelI18nKey="emoji.mushroom" />
+export const InfoEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="ℹ️" labelI18nKey="emoji.info" {...props} />
 )
 
-export const InfoEmoji = () => (
-  <EmojiWrapper emoji="ℹ️" labelI18nKey="emoji.info" />
+export const FamilyEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👨‍👦" labelI18nKey="emoji.family" {...props} />
 )
 
-export const FamilyEmoji = () => (
-  <EmojiWrapper emoji="👨‍👦" labelI18nKey="emoji.family" />
+export const GearEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⚙️" labelI18nKey="emoji.gear" {...props} />
 )
 
-export const GearEmoji = () => (
-  <EmojiWrapper emoji="⚙️" labelI18nKey="emoji.gear" />
+export const ChartEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📊" labelI18nKey="emoji.chart" {...props} />
 )
 
-export const ChartEmoji = () => (
-  <EmojiWrapper emoji="📊" labelI18nKey="emoji.chart" />
+export const PeopleEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👥" labelI18nKey="emoji.people" {...props} />
 )
 
-export const PeopleEmoji = () => (
-  <EmojiWrapper emoji="👥" labelI18nKey="emoji.people" />
+export const ClockEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⏰" labelI18nKey="emoji.clock" {...props} />
 )
 
-export const ClockEmoji = () => (
-  <EmojiWrapper emoji="⏰" labelI18nKey="emoji.clock" />
+export const RecycleEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="♻️" labelI18nKey="emoji.recycle" {...props} />
 )
 
-export const RecycleEmoji = () => (
-  <EmojiWrapper emoji="♻️" labelI18nKey="emoji.recycle" />
+export const MegaphoneEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📣" labelI18nKey="emoji.megaphone" {...props} />
 )
 
-export const MegaphoneEmoji = () => (
-  <EmojiWrapper emoji="📣" labelI18nKey="emoji.megaphone" />
+export const BallotDepositEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🗳️" labelI18nKey="emoji.ballotBox" {...props} />
 )
 
-export const BallotDepositEmoji = () => (
-  <EmojiWrapper emoji="🗳️" labelI18nKey="emoji.ballotBox" />
+export const RaisedHandEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="✋" labelI18nKey="emoji.raisedHand" {...props} />
 )
 
-export const RaisedHandEmoji = () => (
-  <EmojiWrapper emoji="✋" labelI18nKey="emoji.raisedHand" />
+export const HourglassEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⏳" labelI18nKey="emoji.hourglass" {...props} />
 )
 
-export const HourglassEmoji = () => (
-  <EmojiWrapper emoji="⏳" labelI18nKey="emoji.hourglass" />
+export const HerbEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🌿" labelI18nKey="emoji.herb" {...props} />
 )
 
-export const HerbEmoji = () => (
-  <EmojiWrapper emoji="🌿" labelI18nKey="emoji.herb" />
+export const DaoEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="☯️" labelI18nKey="emoji.yinYang" {...props} />
 )
 
-export const DaoEmoji = () => (
-  <EmojiWrapper emoji="☯️" labelI18nKey="emoji.yinYang" />
+export const HandshakeEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🤝" labelI18nKey="emoji.handshake" {...props} />
 )
 
-export const HandshakeEmoji = () => (
-  <EmojiWrapper emoji="🤝" labelI18nKey="emoji.handshake" />
+export const BrokenHeartEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="💔" labelI18nKey="emoji.brokenHeart" {...props} />
 )
 
-export const BrokenHeartEmoji = () => (
-  <EmojiWrapper emoji="💔" labelI18nKey="emoji.brokenHeart" />
+export const WrenchEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔧" labelI18nKey="emoji.wrench" {...props} />
 )
 
-export const WrenchEmoji = () => (
-  <EmojiWrapper emoji="🔧" labelI18nKey="emoji.wrench" />
+export const FireEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" {...props} />
 )
 
-export const FireEmoji = () => (
-  <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" />
+export const UnicornEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🦄" labelI18nKey="emoji.unicorn" {...props} />
 )
 
-export const UnicornEmoji = () => (
-  <EmojiWrapper emoji="🦄" labelI18nKey="emoji.unicorn" />
+export const LockWithPenEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" {...props} />
 )
 
-export const LockWithPenEmoji = () => (
-  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+export const BeeEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🐝" labelI18nKey="emoji.bee" {...props} />
 )
 
-export const BeeEmoji = () => (
-  <EmojiWrapper emoji="🐝" labelI18nKey="emoji.bee" />
+export const SuitAndTieEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" {...props} />
 )
 
-export const SuitAndTieEmoji = () => (
-  <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" />
+export const CycleEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔄" labelI18nKey="emoji.cycle" {...props} />
 )
 
-export const CycleEmoji = () => (
-  <EmojiWrapper emoji="🔄" labelI18nKey="emoji.cycle" />
+export const JoystickEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" {...props} />
 )
 
-export const JoystickEmoji = () => (
-  <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
+export const NumbersEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" {...props} />
 )
 
-export const NumbersEmoji = () => (
-  <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" />
+export const HammerAndWrenchEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🛠️" labelI18nKey="emoji.hammerAndWrench" {...props} />
 )
 
-export const HammerAndWrenchEmoji = () => (
-  <EmojiWrapper emoji="🛠️" labelI18nKey="emoji.hammerAndWrench" />
+export const FileFolderEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📁" labelI18nKey="emoji.fileFolder" {...props} />
 )
 
-export const FileFolderEmoji = () => (
-  <EmojiWrapper emoji="📁" labelI18nKey="emoji.fileFolder" />
+export const MemoEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📝" labelI18nKey="emoji.memo" {...props} />
 )
 
-export const MemoEmoji = () => (
-  <EmojiWrapper emoji="📝" labelI18nKey="emoji.memo" />
+export const TrashEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🗑️" labelI18nKey="emoji.trash" {...props} />
 )
 
-export const TrashEmoji = () => (
-  <EmojiWrapper emoji="🗑️" labelI18nKey="emoji.trash" />
+export const ChainEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" {...props} />
 )
 
-export const ChainEmoji = () => (
-  <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" />
+export const DottedLineFaceEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🫥" labelI18nKey="emoji.dottedLineFace" {...props} />
 )
 
-export const TelescopeEmoji = () => (
-  <EmojiWrapper emoji="🔭" labelI18nKey="emoji.telescope" />
+export const TelescopeEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🔭" labelI18nKey="emoji.telescope" {...props} />
 )
 
-export const CurvedDownArrowEmoji = () => (
-  <EmojiWrapper emoji="⤵️" labelI18nKey="emoji.curvedDownArrow" />
+export const CurvedDownArrowEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⤵️" labelI18nKey="emoji.curvedDownArrow" {...props} />
 )
 
-export const DownArrowEmoji = () => (
-  <EmojiWrapper emoji="⬇️" labelI18nKey="emoji.downArrow" />
+export const DownArrowEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⬇️" labelI18nKey="emoji.downArrow" {...props} />
 )
 
-export const FilmSlateEmoji = () => (
-  <EmojiWrapper emoji="🎬" labelI18nKey="emoji.filmSlate" />
+export const FilmSlateEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🎬" labelI18nKey="emoji.filmSlate" {...props} />
 )
 
-export const PrinterEmoji = () => (
-  <EmojiWrapper emoji="🖨️" labelI18nKey="emoji.printer" />
+export const PrinterEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🖨️" labelI18nKey="emoji.printer" {...props} />
 )
 
-export const BalanceEmoji = () => (
-  <EmojiWrapper emoji="⚖️" labelI18nKey="emoji.balance" />
+export const BalanceEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⚖️" labelI18nKey="emoji.balance" {...props} />
 )
 
-export const RocketShipEmoji = () => (
-  <EmojiWrapper emoji="🚀" labelI18nKey="emoji.rocketShip" />
+export const RocketShipEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🚀" labelI18nKey="emoji.rocketShip" {...props} />
 )
 
-export const AtomEmoji = () => (
-  <EmojiWrapper emoji="⚛️" labelI18nKey="emoji.atom" />
+export const AtomEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⚛️" labelI18nKey="emoji.atom" {...props} />
 )
 
-export const PersonRaisingHandEmoji = () => (
-  <EmojiWrapper emoji="🙋" labelI18nKey="emoji.personRaisingHand" />
+export const PersonRaisingHandEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🙋" labelI18nKey="emoji.personRaisingHand" {...props} />
 )
 
-export const ControlKnobsEmoji = () => (
-  <EmojiWrapper emoji="🎛️" labelI18nKey="emoji.controlKnobs" />
+export const ControlKnobsEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🎛️" labelI18nKey="emoji.controlKnobs" {...props} />
 )
 
-export const ThumbDownEmoji = () => (
-  <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" />
+export const ThumbDownEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" {...props} />
 )
 
-export const ComputerDiskEmoji = () => (
-  <EmojiWrapper emoji="💽" labelI18nKey="emoji.computerDisk" />
+export const ComputerDiskEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="💽" labelI18nKey="emoji.computerDisk" {...props} />
 )
 
-export const PlayPauseEmoji = () => (
-  <EmojiWrapper emoji="⏯️" labelI18nKey="emoji.playPause" />
+export const PlayPauseEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⏯️" labelI18nKey="emoji.playPause" {...props} />
 )
 
-export const PufferfishEmoji = () => (
-  <EmojiWrapper emoji="🐡" labelI18nKey="emoji.pufferfish" />
+export const PufferfishEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🐡" labelI18nKey="emoji.pufferfish" {...props} />
 )
 
-export const CheckEmoji = () => (
-  <EmojiWrapper emoji="✅" labelI18nKey="emoji.check" />
+export const CheckEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="✅" labelI18nKey="emoji.check" {...props} />
 )

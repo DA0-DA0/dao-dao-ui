@@ -17,7 +17,6 @@ import {
   PreProposeModuleType,
 } from '@dao-dao/types'
 
-import { useActionsForMatching } from '../../actions'
 import { useEntity } from '../../hooks'
 import {
   ProposalModuleAdapterProvider,
@@ -32,7 +31,6 @@ import { DaoProviders } from './DaoProviders'
 
 export type DaoApproverProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
-  setSeenAllActionPages: (() => void) | undefined
 }
 
 type InnerDaoApproverProposalContentDisplayProps = Omit<
@@ -157,7 +155,6 @@ const InnerDaoApproverProposalContentDisplay = (
 )
 
 const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
-  setSeenAllActionPages,
   ...props
 }: InnerDaoApproverProposalContentDisplayWithInnerContentProps) => {
   const { t } = useTranslation()
@@ -165,7 +162,6 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
     hooks: { useLoadingPreProposeApprovalProposal },
     components: { PreProposeApprovalInnerContentDisplay },
   } = useProposalModuleAdapter()
-  const actionsForMatching = useActionsForMatching()
 
   const loadingPreProposeApprovalProposal =
     useLoadingPreProposeApprovalProposal()
@@ -193,12 +189,7 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
         address: creatorAddress,
         entity,
       }}
-      innerContentDisplay={
-        <PreProposeApprovalInnerContentDisplay
-          actionsForMatching={actionsForMatching}
-          setSeenAllActionPages={setSeenAllActionPages}
-        />
-      }
+      innerContentDisplay={<PreProposeApprovalInnerContentDisplay />}
     />
   )
 }

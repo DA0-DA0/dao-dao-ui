@@ -4,7 +4,11 @@ import {
   cwPayrollFactoryExtraQueries,
   cwVestingExtraQueries,
 } from '@dao-dao/state/query'
-import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
+import {
+  useDaoInfoContext,
+  useDaoNavHelpers,
+  useInitializedActionForKey,
+} from '@dao-dao/stateless'
 import {
   ActionKey,
   VestingPaymentsWidgetData,
@@ -15,7 +19,6 @@ import {
   makeCombineQueryResultsIntoLoadingDataWithError,
 } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../../../../actions'
 import {
   ButtonLink,
   Trans,
@@ -87,8 +90,7 @@ export const TabRenderer = ({
     }),
   })
 
-  const vestingAction = useActionForKey(ActionKey.ManageVesting)
-  const vestingActionDefaults = vestingAction?.useDefaults()
+  const vestingAction = useInitializedActionForKey(ActionKey.ManageVesting)
 
   // Vesting payments that need a slash registered.
   const vestingPaymentsNeedingSlashRegistration =
@@ -105,13 +107,13 @@ export const TabRenderer = ({
       VestingPaymentCard={VestingPaymentCard}
       VestingPaymentLine={VestingPaymentLine}
       createVestingPaymentHref={
-        vestingAction
+        !vestingAction.loading && !vestingAction.errored
           ? getDaoProposalPath(coreAddress, 'create', {
               prefill: getDaoProposalSinglePrefill({
                 actions: [
                   {
-                    actionKey: vestingAction.key,
-                    data: vestingActionDefaults,
+                    actionKey: vestingAction.data.key,
+                    data: vestingAction.data.defaults,
                   },
                 ],
               }),
@@ -120,7 +122,9 @@ export const TabRenderer = ({
       }
       isMember={isMember}
       registerSlashesHref={
-        vestingAction && vestingPaymentsNeedingSlashRegistration.length > 0
+        !vestingAction.loading &&
+        !vestingAction.errored &&
+        vestingPaymentsNeedingSlashRegistration.length > 0
           ? getDaoProposalPath(coreAddress, 'create', {
               prefill: getDaoProposalSinglePrefill({
                 actions: vestingPaymentsNeedingSlashRegistration.flatMap(
@@ -134,9 +138,9 @@ export const TabRenderer = ({
                         slashes
                           .filter((slash) => slash.unregisteredAmount > 0)
                           .map((slash) => ({
-                            actionKey: vestingAction.key,
+                            actionKey: vestingAction.data.key,
                             data: {
-                              ...vestingActionDefaults,
+                              ...vestingAction.data.defaults,
                               mode: 'registerSlash',
                               registerSlash: {
                                 chainId,
