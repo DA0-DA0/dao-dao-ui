@@ -728,6 +728,15 @@ export class SpendAction extends ActionBase<SpendData> {
                 timeout_timestamp: timeoutTimestamp,
                 timeout_height: undefined,
               }),
+              // Add Neutron IBC transfer fee if sending from Neutron.
+              ...((fromChainId === ChainId.NeutronMainnet ||
+                fromChainId === ChainId.NeutronTestnet) && {
+                fee: (
+                  await this.options.queryClient.fetchQuery(
+                    neutronQueries.ibcTransferFee(this.options.queryClient)
+                  )
+                )?.fee,
+              }),
             },
           },
         })

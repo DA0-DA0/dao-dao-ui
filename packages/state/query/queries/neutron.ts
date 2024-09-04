@@ -17,9 +17,8 @@ export const fetchNeutronIbcTransferFee = async (
   // Total fees summed together.
   sum: GenericTokenBalance[]
 } | null> => {
-  const neutronClient = await neutronProtoRpcClientRouter.connect(
-    MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
-  )
+  const chainId = MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
+  const neutronClient = await neutronProtoRpcClientRouter.connect(chainId)
   const { params } = await neutronClient.feerefunder.params()
   const fee = params?.minFee
   if (fee) {
@@ -30,8 +29,8 @@ export const fetchNeutronIbcTransferFee = async (
       uniqueDenoms.map((denom) =>
         queryClient.fetchQuery(
           tokenQueries.info(queryClient, {
+            chainId,
             type: TokenType.Native,
-            chainId: MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet,
             denomOrAddress: denom,
           })
         )
