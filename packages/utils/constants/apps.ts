@@ -28,14 +28,14 @@ export const DAO_APPS: DaoApp[] = [
       : 'https://studio.publicawesome.dev',
   },
   {
-    name: 'Calculated Finance',
-    imageUrl: '/apps/calcfi.jpg',
-    url: 'https://app.calculated.fi/?chain=osmosis-1',
-  },
-  {
     name: 'Mars Protocol',
     imageUrl: '/apps/mars.jpg',
     url: 'https://app.marsprotocol.io',
+  },
+  {
+    name: 'Calculated Finance',
+    imageUrl: '/apps/calcfi.jpg',
+    url: 'https://app.calculated.fi/?chain=osmosis-1',
   },
   {
     name: 'FIN',
