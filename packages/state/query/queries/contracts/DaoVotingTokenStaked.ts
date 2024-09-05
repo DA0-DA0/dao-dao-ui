@@ -332,17 +332,30 @@ export const daoVotingTokenStakedQueries = {
     },
     ...options,
   }),
-  getHooks: <TData = GetHooksResponse>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoVotingTokenStakedGetHooksQuery<TData>): UseQueryOptions<
-    GetHooksResponse,
-    Error,
-    TData
-  > => ({
+  getHooks: <TData = GetHooksResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoVotingTokenStakedGetHooksQuery<TData>
+  ): UseQueryOptions<GetHooksResponse, Error, TData> => ({
     queryKey: daoVotingTokenStakedQueryKeys.getHooks(chainId, contractAddress),
     queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoVotingTokenStaked/getHooks',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
       return new DaoVotingTokenStakedQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress

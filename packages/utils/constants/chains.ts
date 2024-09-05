@@ -339,7 +339,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: true,
     accentColor: '#f74a49',
     factoryContractAddress:
-      'juno1eeqgsjyqxcscpxwa6ut36py8vfpu6hxrwy62n2vgu8ud72wa9pyqv38q7y',
+      'juno19c75u4zdthjcnyz4nv7d85n99erwzzjlr3dm64l0wkpquf0y3easzfesvt',
     kado: {
       network: 'JUNO',
     },
@@ -355,7 +355,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/juno/gov/REPLACE',
       wallet: 'https://ping.pub/juno/account/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V240,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 3914,
@@ -363,25 +363,26 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1994, // v0.16
 
-      CwPayrollFactory: 4042,
-      CwTokenSwap: 4043,
-      CwTokenfactoryIssuerMain: 4045,
-      CwVesting: 4046,
-      DaoCore: 4047,
-      DaoMigrator: 4048,
-      DaoPreProposeApprovalSingle: 4049,
-      DaoPreProposeApprover: 4050,
-      DaoPreProposeMultiple: 4051,
-      DaoPreProposeSingle: 4052,
-      DaoProposalMultiple: 4053,
-      DaoProposalSingle: 4054,
-      DaoVotingCw4: 4055,
-      DaoVotingCw721Staked: 4056,
-      DaoVotingTokenStaked: 4057,
+      CwPayrollFactory: 4501,
+      CwTokenSwap: 4502,
+      CwTokenfactoryIssuerMain: 4503,
+      CwVesting: 4504,
+      DaoCore: 4505,
+      DaoMigrator: 4506,
+      DaoPreProposeApprovalSingle: 4507,
+      DaoPreProposeApprover: 4508,
+      DaoPreProposeMultiple: 4509,
+      DaoPreProposeSingle: 4510,
+      DaoProposalMultiple: 4511,
+      DaoProposalSingle: 4512,
+      DaoRewardsDistributor: 4513,
+      DaoVotingCw4: 4515,
+      DaoVotingCw721Staked: 4516,
+      DaoVotingTokenStaked: 4517,
 
       // For migrating v1 DAOs to the latest v2. Not used by new DAOs.
-      Cw20Stake: 4058,
-      DaoVotingCw20Staked: 4059,
+      Cw20Stake: 4499,
+      DaoVotingCw20Staked: 4514,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {

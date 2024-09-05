@@ -213,4 +213,19 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
       },
     }
   }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        daoVotingCw721StakedQueries.hooks(this.queryClient, {
+          chainId: this.dao.chainId,
+          contractAddress: this.getHookCaller(),
+        })
+      )
+    ).hooks
+  }
 }

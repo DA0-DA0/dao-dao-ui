@@ -1,9 +1,8 @@
-import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { toUtf8 } from '@cosmjs/encoding'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { contractQueries } from '@dao-dao/state/query'
 import { LoadingDataWithError } from '@dao-dao/types'
-import { getChainForChainId, isSecretNetwork } from '@dao-dao/utils'
+import { isSecretNetwork } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError } from './query'
 
@@ -23,21 +22,19 @@ export const useGenerateInstantiate2 = ({
   codeId,
   salt,
 }: UseGenerateInstantiate2Options): LoadingDataWithError<string> => {
-  const chain = getChainForChainId(chainId)
-
-  // Load checksum of the contract code.
+  const queryClient = useQueryClient()
   return useQueryLoadingDataWithError(
     chainId &&
       creator &&
       codeId &&
       // Instantiate2 not supported on Secret Network, so just don't load.
       !isSecretNetwork(chainId)
-      ? contractQueries.codeInfo({
+      ? contractQueries.instantiate2Address(queryClient, {
           chainId,
+          creator,
           codeId,
+          salt,
         })
-      : undefined,
-    ({ dataHash }) =>
-      instantiate2Address(dataHash, creator, toUtf8(salt), chain.bech32_prefix)
+      : undefined
   )
 }

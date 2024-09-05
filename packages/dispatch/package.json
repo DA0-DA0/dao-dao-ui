@@ -6,8 +6,8 @@
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "deploy": "ts-node ./scripts/deploy.ts",
-    "polytone": "ts-node ./scripts/polytone.ts"
+    "deploy": "tsx ./scripts/deploy.ts",
+    "polytone": "tsx ./scripts/polytone.ts"
   },
   "devDependencies": {
     "@confio/relayer": "^0.12.0",
@@ -20,7 +20,7 @@
     "dotenv": "^16.4.5",
     "eslint": "^8.23.1",
     "sinon": "^18.0.0",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.19.0",
     "typescript": "5.3.3"
   },
   "prettier": "@dao-dao/config/prettier",

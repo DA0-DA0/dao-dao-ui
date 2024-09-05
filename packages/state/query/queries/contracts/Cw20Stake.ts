@@ -486,17 +486,26 @@ export const cw20StakeQueries = {
     },
     ...options,
   }),
-  getHooks: <TData = GetHooksResponse>({
-    chainId,
-    contractAddress,
-    options,
-  }: Cw20StakeGetHooksQuery<TData>): UseQueryOptions<
-    GetHooksResponse,
-    Error,
-    TData
-  > => ({
+  getHooks: <TData = GetHooksResponse>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: Cw20StakeGetHooksQuery<TData>
+  ): UseQueryOptions<GetHooksResponse, Error, TData> => ({
     queryKey: cw20StakeQueryKeys.getHooks(chainId, contractAddress),
     queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'cw20Stake/getHooks',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
       return new Cw20StakeQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress

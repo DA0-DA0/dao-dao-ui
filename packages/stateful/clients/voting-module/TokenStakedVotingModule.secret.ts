@@ -161,4 +161,19 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
       },
     }
   }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        secretDaoVotingTokenStakedQueries.getHooks({
+          chainId: this.dao.chainId,
+          contractAddress: this.getHookCaller(),
+        })
+      )
+    ).hooks.map(({ addr }) => addr)
+  }
 }

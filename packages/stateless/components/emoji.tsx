@@ -292,3 +292,7 @@ export const PufferfishEmoji = (props: EmojiProps) => (
 export const CheckEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="✅" labelI18nKey="emoji.check" {...props} />
 )
+
+export const BucketEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🪣" labelI18nKey="emoji.bucket" {...props} />
+)

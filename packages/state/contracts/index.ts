@@ -148,3 +148,11 @@ export {
   ValenceAccountClient,
   ValenceAccountQueryClient,
 } from './ValenceAccount'
+export {
+  DaoRewardsDistributorClient,
+  DaoRewardsDistributorQueryClient,
+} from './DaoRewardsDistributor'
+export {
+  SecretCw4GroupClient,
+  SecretCw4GroupQueryClient,
+} from './SecretCw4Group'

@@ -13,35 +13,43 @@ import {
 
 import {
   AdminResponse,
+  Auth,
+  HookItem,
   HooksResponse,
-  ListMembersResponse,
   Member,
+  MemberListResponse,
   MemberResponse,
   TotalWeightResponse,
-} from '@dao-dao/types/contracts/Cw4Group'
+} from '@dao-dao/types/contracts/SecretCw4Group'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
-export interface Cw4GroupReadOnlyInterface {
+export interface SecretCw4GroupReadOnlyInterface {
   contractAddress: string
   admin: () => Promise<AdminResponse>
-  totalWeight: () => Promise<TotalWeightResponse>
+  totalWeight: ({
+    atHeight,
+  }: {
+    atHeight?: number
+  }) => Promise<TotalWeightResponse>
   listMembers: ({
     limit,
     startAfter,
   }: {
     limit?: number
     startAfter?: string
-  }) => Promise<ListMembersResponse>
+  }) => Promise<MemberListResponse>
   member: ({
-    addr,
     atHeight,
+    auth,
   }: {
-    addr: string
     atHeight?: number
+    auth: Auth
   }) => Promise<MemberResponse>
   hooks: () => Promise<HooksResponse>
 }
-export class Cw4GroupQueryClient implements Cw4GroupReadOnlyInterface {
+export class SecretCw4GroupQueryClient
+  implements SecretCw4GroupReadOnlyInterface
+{
   client: CosmWasmClient
   contractAddress: string
   constructor(client: CosmWasmClient, contractAddress: string) {
@@ -58,9 +66,15 @@ export class Cw4GroupQueryClient implements Cw4GroupReadOnlyInterface {
       admin: {},
     })
   }
-  totalWeight = async (): Promise<TotalWeightResponse> => {
+  totalWeight = async ({
+    atHeight,
+  }: {
+    atHeight?: number
+  }): Promise<TotalWeightResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      total_weight: {},
+      total_weight: {
+        at_height: atHeight,
+      },
     })
   }
   listMembers = async ({
@@ -69,7 +83,7 @@ export class Cw4GroupQueryClient implements Cw4GroupReadOnlyInterface {
   }: {
     limit?: number
     startAfter?: string
-  }): Promise<ListMembersResponse> => {
+  }): Promise<MemberListResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       list_members: {
         limit,
@@ -78,16 +92,16 @@ export class Cw4GroupQueryClient implements Cw4GroupReadOnlyInterface {
     })
   }
   member = async ({
-    addr,
     atHeight,
+    auth,
   }: {
-    addr: string
     atHeight?: number
+    auth: Auth
   }): Promise<MemberResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       member: {
-        addr,
         at_height: atHeight,
+        auth,
       },
     })
   }
@@ -97,7 +111,8 @@ export class Cw4GroupQueryClient implements Cw4GroupReadOnlyInterface {
     })
   }
 }
-export interface Cw4GroupInterface extends Cw4GroupReadOnlyInterface {
+export interface SecretCw4GroupInterface
+  extends SecretCw4GroupReadOnlyInterface {
   contractAddress: string
   sender: string
   updateAdmin: (
@@ -124,9 +139,9 @@ export interface Cw4GroupInterface extends Cw4GroupReadOnlyInterface {
   ) => Promise<ExecuteResult>
   addHook: (
     {
-      addr,
+      hook,
     }: {
-      addr: string
+      hook: HookItem
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -134,18 +149,18 @@ export interface Cw4GroupInterface extends Cw4GroupReadOnlyInterface {
   ) => Promise<ExecuteResult>
   removeHook: (
     {
-      addr,
+      hook,
     }: {
-      addr: string
+      hook: HookItem
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
 }
-export class Cw4GroupClient
-  extends Cw4GroupQueryClient
-  implements Cw4GroupInterface
+export class SecretCw4GroupClient
+  extends SecretCw4GroupQueryClient
+  implements SecretCw4GroupInterface
 {
   client: SigningCosmWasmClient
   sender: string
@@ -215,9 +230,9 @@ export class Cw4GroupClient
   }
   addHook = async (
     {
-      addr,
+      hook,
     }: {
-      addr: string
+      hook: HookItem
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -228,7 +243,7 @@ export class Cw4GroupClient
       this.contractAddress,
       {
         add_hook: {
-          addr,
+          hook,
         },
       },
       fee,
@@ -238,9 +253,9 @@ export class Cw4GroupClient
   }
   removeHook = async (
     {
-      addr,
+      hook,
     }: {
-      addr: string
+      hook: HookItem
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
@@ -251,7 +266,7 @@ export class Cw4GroupClient
       this.contractAddress,
       {
         remove_hook: {
-          addr,
+          hook,
         },
       },
       fee,

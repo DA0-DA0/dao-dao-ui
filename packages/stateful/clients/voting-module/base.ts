@@ -94,4 +94,16 @@ export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>
     FetchQueryOptions<GenericToken>,
     'queryKey' | 'queryFn'
   >
+
+  /**
+   * Fetch the contract responsible for voting power change hooks. This may be
+   * the voting module itself if it handles staking directly, or an underlying
+   * contract that manages voting power, such as cw4-group or cw20-stake.
+   */
+  abstract getHookCaller(): string | Promise<string>
+
+  /**
+   * Fetch the registered hooks.
+   */
+  abstract getHooks(): Promise<string[]>
 }

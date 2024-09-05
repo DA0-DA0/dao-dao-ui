@@ -1,14 +1,16 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { constSelector } from 'recoil'
 
 import {
-  Cw4GroupSelectors,
-  DaoDaoCoreSelectors,
-  DaoVotingCw4Selectors,
+  cw4GroupExtraQueries,
+  daoDaoCoreQueries,
+  daoVotingCw4Queries,
 } from '@dao-dao/state'
-import { useCachedLoadingWithError, useChain } from '@dao-dao/stateless'
+import { useChain } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/DaoVotingCw4'
+
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 
 interface UseVotingModuleOptions {
   fetchMembers?: boolean
@@ -25,46 +27,47 @@ export const useLoadingVotingModule = (
   { fetchMembers }: UseVotingModuleOptions = {}
 ): LoadingDataWithError<UseVotingModuleReturn> => {
   const { chain_id: chainId } = useChain()
+  const queryClient = useQueryClient()
 
-  const votingModuleAddress = useCachedLoadingWithError(
-    DaoDaoCoreSelectors.votingModuleSelector({
+  const votingModuleAddress = useQueryLoadingDataWithError(
+    daoDaoCoreQueries.votingModule(queryClient, {
       chainId,
       contractAddress: coreAddress,
-      params: [],
     })
   )
 
-  const cw4GroupAddress = useCachedLoadingWithError(
+  const cw4GroupAddress = useQueryLoadingDataWithError(
     votingModuleAddress.loading || votingModuleAddress.errored
       ? undefined
-      : DaoVotingCw4Selectors.groupContractSelector({
+      : daoVotingCw4Queries.groupContract(queryClient, {
           chainId,
           contractAddress: votingModuleAddress.data,
-          params: [],
         })
   )
 
-  const members = useCachedLoadingWithError(
+  const members = useQueryLoadingDataWithError(
     fetchMembers
       ? cw4GroupAddress.loading || cw4GroupAddress.errored
         ? undefined
-        : Cw4GroupSelectors.listAllMembersSelector({
+        : cw4GroupExtraQueries.listAllMembers(queryClient, {
             chainId,
-            contractAddress: cw4GroupAddress.data,
+            address: cw4GroupAddress.data,
           })
-      : constSelector(undefined)
+      : undefined
   )
 
   return useMemo(
     () =>
-      votingModuleAddress.loading || cw4GroupAddress.loading || members.loading
+      votingModuleAddress.loading ||
+      cw4GroupAddress.loading ||
+      (fetchMembers && members.loading)
         ? {
             loading: true,
             errored: false,
           }
         : votingModuleAddress.errored ||
           cw4GroupAddress.errored ||
-          members.errored
+          (fetchMembers && members.errored)
         ? {
             loading: false,
             errored: true,
@@ -72,7 +75,7 @@ export const useLoadingVotingModule = (
               ? votingModuleAddress.error
               : cw4GroupAddress.errored
               ? cw4GroupAddress.error
-              : members.errored
+              : fetchMembers && members.errored
               ? members.error
               : new Error('Unknown error'),
           }
@@ -82,13 +85,16 @@ export const useLoadingVotingModule = (
             updating:
               votingModuleAddress.updating ||
               cw4GroupAddress.updating ||
-              members.updating,
+              (fetchMembers && !members.loading && members.updating),
             data: {
               votingModuleAddress: votingModuleAddress.data,
               cw4GroupAddress: cw4GroupAddress.data,
-              members: members.data?.members,
+              members:
+                fetchMembers && !members.loading && !members.errored
+                  ? members.data.members
+                  : undefined,
             },
           },
-    [cw4GroupAddress, members, votingModuleAddress]
+    [cw4GroupAddress, members, votingModuleAddress, fetchMembers]
   )
 }

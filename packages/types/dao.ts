@@ -571,3 +571,14 @@ export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
   totalPower: string
 }
+
+export type DaoRewardDistributor = {
+  /**
+   * Unique ID for the reward distributor contract on this chain.
+   */
+  id: string
+  /**
+   * Address of the reward distributor contract.
+   */
+  address: string
+}

@@ -1,6 +1,6 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingCw4Queries } from '@dao-dao/state/query'
+import { cw4GroupQueries, daoVotingCw4Queries } from '@dao-dao/state/query'
 import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
   InstantiateMsg,
@@ -99,5 +99,25 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
         height,
       },
     })
+  }
+
+  async getHookCaller(): Promise<string> {
+    return this.queryClient.fetchQuery(
+      daoVotingCw4Queries.groupContract(this.queryClient, {
+        chainId: this.dao.chainId,
+        contractAddress: this.address,
+      })
+    )
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        cw4GroupQueries.hooks(this.queryClient, {
+          chainId: this.dao.chainId,
+          contractAddress: await this.getHookCaller(),
+        })
+      )
+    ).hooks
   }
 }

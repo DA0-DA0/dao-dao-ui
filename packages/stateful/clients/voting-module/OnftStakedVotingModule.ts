@@ -141,4 +141,19 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
       },
     }
   }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        daoVotingOnftStakedQueries.hooks(this.queryClient, {
+          chainId: this.dao.chainId,
+          contractAddress: this.getHookCaller(),
+        })
+      )
+    ).hooks
+  }
 }

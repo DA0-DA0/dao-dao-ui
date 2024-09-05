@@ -66,6 +66,10 @@ export const NFT_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi']
 // The namespace (prefix) of widgets stored in a DAO's core items list.
 export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 
+// Rewards The namespace (prefix) of reward distribution contracts stored in a
+// DAO's core items list.
+export const DAO_REWARD_DISTRIBUTOR_ITEM_NAMESPACE = 'rewards'
+
 // The namespace (prefix) of cw721 contracts stored in a DAO's core items list
 // that are to be displayed in the treasury.
 export const CW721_ITEM_KEY_PREFIX = 'cw721:'

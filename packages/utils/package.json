@@ -6,9 +6,9 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "jest",
-    "dump-go-relayer": "ts-node ./scripts/dump-go-relayer.ts",
-    "dump-hermes-relayer": "ts-node ./scripts/dump-hermes-relayer.ts",
-    "log-code-ids": "ts-node ./scripts/log-code-ids.ts"
+    "dump-go-relayer": "tsx ./scripts/dump-go-relayer.ts",
+    "dump-hermes-relayer": "tsx ./scripts/dump-hermes-relayer.ts",
+    "log-code-ids": "tsx ./scripts/log-code-ids.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.592.0",
@@ -52,7 +52,7 @@
     "jest": "^29.1.1",
     "next": "^13.3.0",
     "react": "^18.2.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.0",
     "typescript": "5.3.3"
   },
   "peerDependencies": {

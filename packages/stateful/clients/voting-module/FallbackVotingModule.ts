@@ -54,4 +54,12 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
       },
     })
   }
+
+  getHookCaller(): string {
+    throw new Error('Not implemented')
+  }
+
+  getHooks(): Promise<string[]> {
+    throw new Error('Not implemented')
+  }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "build-storybook",
     "start": "start-storybook --ci -p 6006",
-    "generate": "ts-node --esm ./scripts/generate.ts"
+    "generate": "tsx ./scripts/generate.ts"
   },
   "devDependencies": {
     "@dao-dao/config": "2.5.0-rc.2",
@@ -41,8 +41,8 @@
     "storybook-dark-mode": "^1.1.2",
     "stream": "^0.0.2",
     "ts-morph": "^15.1.0",
-    "ts-node": "^10.9.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
+    "tsx": "^4.19.0",
     "typescript": "5.3.3"
   },
   "peerDependencies": {
