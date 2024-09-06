@@ -1,5 +1,5 @@
+import { nanoid } from 'nanoid'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { v4 as uuidv4 } from 'uuid'
 
 import { uploadToFilebase } from '../server'
 
@@ -16,7 +16,7 @@ export default async function handler(
 
     const cid = await uploadToFilebase(
       JSON.stringify(req.body, null, 2),
-      `${uuidv4()}.json`,
+      `${nanoid()}.json`,
       'application/json'
     )
 

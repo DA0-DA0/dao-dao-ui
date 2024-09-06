@@ -1,6 +1,6 @@
 import JSON5 from 'json5'
+import { nanoid } from 'nanoid'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { v4 as uuidv4 } from 'uuid'
 
 import { parseForm, uploadToFilebase } from '../server'
 
@@ -40,7 +40,7 @@ export default async function handler(
       return res.status(400).json({ error: 'No image extension found.' })
     }
 
-    const folder = uuidv4()
+    const folder = nanoid()
 
     const imageCid = imageData
       ? await uploadToFilebase(

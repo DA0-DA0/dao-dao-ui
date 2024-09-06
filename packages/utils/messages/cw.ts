@@ -1,7 +1,7 @@
 import { fromBase64, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
 import cloneDeep from 'lodash.clonedeep'
-import { v4 as uuidv4 } from 'uuid'
+import { nanoid } from 'nanoid'
 
 import {
   CrossChainPacketInfo,
@@ -382,7 +382,7 @@ export const maybeMakePolytoneExecuteMessages = (
               msgs: [msg].flat(),
               timeout_seconds: BigInt(IBC_TIMEOUT_SECONDS).toString(),
               callback: {
-                msg: toBase64(toUtf8(uuidv4())),
+                msg: toBase64(toUtf8(nanoid())),
                 receiver: polytoneConnection?.listener,
               },
             },

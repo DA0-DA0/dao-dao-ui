@@ -1,5 +1,5 @@
+import { nanoid } from 'nanoid'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { v4 as uuidv4 } from 'uuid'
 
 import { parseForm, uploadToFilebase } from '../server'
 
@@ -24,7 +24,7 @@ export default async function handler(
 
     const cid = await uploadToFilebase(
       imageData,
-      `${uuidv4()}.${imageExtension}`,
+      `${nanoid()}.${imageExtension}`,
       mimetype
     )
 

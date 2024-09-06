@@ -1,16 +1,9 @@
 import clsx from 'clsx'
-import {
-  ComponentType,
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { nanoid } from 'nanoid'
+import { ComponentType, useCallback, useEffect, useRef, useState } from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import { ActionKeyAndData, ActionKeyAndDataNoId } from '@dao-dao/types/actions'
@@ -71,7 +64,7 @@ export const ActionsEditor = ({
       const actionData: ActionKeyAndData = {
         // See `ActionKeyAndData` comment in `packages/types/actions.ts` for an
         // explanation of why we need to append with a unique ID.
-        _id: uuidv4(),
+        _id: nanoid(),
         // Allow overriding ID if passed.
         ...data,
       }

@@ -2,11 +2,11 @@ import { Star, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
+import { nanoid } from 'nanoid'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   Action,
@@ -82,7 +82,7 @@ export const ActionLibrary = ({
         addAction({
           // See `ActionKeyAndData` comment in `packages/types/actions.ts` for
           // an explanation of why we need to append with a unique ID.
-          _id: uuidv4(),
+          _id: nanoid(),
           actionKey: action.key,
           // Clone to prevent the form from mutating the original object.
           data: cloneDeep(action.defaults),

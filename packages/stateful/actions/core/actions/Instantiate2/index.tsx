@@ -2,10 +2,10 @@ import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
 import { fromHex, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
+import { nanoid } from 'nanoid'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
-import { v4 as uuidv4 } from 'uuid'
 
 import { tokenQueries } from '@dao-dao/state/query'
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
@@ -199,7 +199,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
       codeId: 0,
       label: '',
       message: '{}',
-      salt: uuidv4(),
+      salt: nanoid(),
       funds: [],
     }
   }
