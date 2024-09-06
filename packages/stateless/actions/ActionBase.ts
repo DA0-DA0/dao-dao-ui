@@ -95,6 +95,10 @@ export abstract class ActionBase<
     return this._status
   }
 
+  get idle() {
+    return this._status === 'idle'
+  }
+
   get loading() {
     return this._status === 'loading'
   }

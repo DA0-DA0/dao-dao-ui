@@ -262,6 +262,10 @@ export interface Action<
    */
   status: 'idle' | 'loading' | 'error' | 'ready'
   /**
+   * Whether or not the action is idle.
+   */
+  get idle(): boolean
+  /**
    * Whether or not the action is loading.
    */
   get loading(): boolean

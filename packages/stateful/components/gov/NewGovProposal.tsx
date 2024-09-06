@@ -230,7 +230,8 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     loadFromPrefill()
   }, [router.query.prefill, router.query.pi, router.isReady, prefillChecked, t])
 
-  return governanceProposalAction.loading ||
+  return governanceProposalAction.idle ||
+    governanceProposalAction.loading ||
     (walletAddress && accounts.loading) ||
     !prefillChecked ? (
     <PageLoader />
