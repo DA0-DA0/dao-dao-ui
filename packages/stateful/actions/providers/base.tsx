@@ -3,7 +3,11 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { processMessage } from '@dao-dao/state'
-import { ActionsContext, useChainContext } from '@dao-dao/stateless'
+import {
+  ActionsContext,
+  useChainContext,
+  useUpdatingRef,
+} from '@dao-dao/stateless'
 import {
   ActionChainContext,
   ActionChainContextType,
@@ -26,11 +30,17 @@ export const BaseActionsProvider = ({
   children,
 }: ActionsProviderProps & {
   address: string
+  /**
+   * The action context to include. This may not be memoized.
+   */
   actionContext: ActionContext
 }) => {
   const { t } = useTranslation()
   const chainContext = useChainContext()
   const queryClient = useQueryClient()
+
+  // Memoize action context since its reference is unstable.
+  const actionContextRef = useUpdatingRef(actionContext)
 
   const context: IActionsContext = useMemo(() => {
     const actionChainContext: ActionChainContext = chainContext.config
@@ -56,7 +66,7 @@ export const BaseActionsProvider = ({
       chain: chainContext.chain,
       chainContext: actionChainContext,
       address,
-      context: actionContext,
+      context: actionContextRef.current,
       queryClient,
     }
 
@@ -83,7 +93,7 @@ export const BaseActionsProvider = ({
       categories,
       messageProcessor: processMessage,
     }
-  }, [chainContext, t, address, actionContext, queryClient])
+  }, [chainContext, t, address, actionContextRef, queryClient])
 
   return (
     <ActionsContext.Provider value={context}>
