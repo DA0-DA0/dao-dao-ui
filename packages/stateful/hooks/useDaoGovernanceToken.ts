@@ -11,7 +11,7 @@ import { GenericToken } from '@dao-dao/types'
 export const useDaoGovernanceToken = () => {
   const dao = useDaoContextIfAvailable()?.dao
   return useSuspenseQuery<GenericToken | null>(
-    dao?.votingModule.getGovernanceTokenQuery?.() || {
+    dao?.maybeVotingModule?.getGovernanceTokenQuery?.() || {
       queryKey: ['null'],
       queryFn: () => null,
     }

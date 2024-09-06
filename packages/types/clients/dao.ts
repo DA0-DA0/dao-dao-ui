@@ -50,6 +50,11 @@ export interface IDaoBase {
   votingModule: IVotingModuleBase
 
   /**
+   * Voting module for the DAO, or undefined if not implemented.
+   */
+  maybeVotingModule: IVotingModuleBase | undefined
+
+  /**
    * Proposal modules for the DAO.
    */
   proposalModules: readonly IProposalModuleBase[]
