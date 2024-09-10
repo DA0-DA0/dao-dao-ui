@@ -2804,8 +2804,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://migaloo-testnet-api.polkachu.com',
   },
   [ChainId.KujiraMainnet]: {
-    rpc: 'https://kujira-rpc.publicnode.com',
-    rest: 'https://kujira-rest.publicnode.com',
+    rpc: 'https://kuji-rpc.kleomedes.network',
+    rest: 'https://kuji-api.kleomedes.network',
   },
   [ChainId.KujiraTestnet]: {
     rpc: 'https://kujira-testnet-rpc.polkachu.com',
