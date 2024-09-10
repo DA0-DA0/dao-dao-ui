@@ -487,6 +487,7 @@
     "noClaimsAvailable": "No claims available.",
     "noCw20Tokens": "There are no CW20 tokens displayed in the treasury.",
     "noFromValidatorSelected": "No from validator selected.",
+    "noIcasForExecute": "No ICAs found. Create an ICA with the Create ICA action before attempting to execute.",
     "noImageSelected": "No image selected.",
     "noItemsSetUnusableAction": "There are no items set, so this action cannot be used.",
     "noMembers": "This DAO has no members.",

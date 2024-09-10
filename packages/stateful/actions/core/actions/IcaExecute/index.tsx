@@ -133,6 +133,12 @@ const Component: ActionComponent = (props) => {
         disabled={!props.isCreating}
         excludeChainIds={[srcChainId]}
         fieldName={props.fieldNamePrefix + 'chainId'}
+        noChainsFallback={
+          <InputErrorMessage
+            className="!mt-0"
+            error={t('error.noIcasForExecute')}
+          />
+        }
         onlyDaoChainIds
       />
 

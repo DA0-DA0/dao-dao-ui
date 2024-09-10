@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -46,6 +47,10 @@ export type DaoSupportedChainPickerInputProps = {
    * Class name applied to container.
    */
   className?: string
+  /**
+   * A component to render if there are no chains to show.
+   */
+  noChainsFallback?: ReactNode
 } & Omit<ChainPickerPopupProps, 'chains' | 'selectedChainId' | 'onSelect'>
 
 /**
@@ -63,6 +68,7 @@ export const DaoSupportedChainPickerInput = ({
   hideFormLabel = false,
   className,
   labelMode = 'chain',
+  noChainsFallback,
   ...pickerProps
 }: DaoSupportedChainPickerInputProps) => {
   const { t } = useTranslation()
@@ -105,11 +111,12 @@ export const DaoSupportedChainPickerInput = ({
       (!includeChainIds || includeChainIds.includes(chainId))
   )
 
-  // Don't show if no chains to show or only showing the current chain.
-  if (
-    chainIds.length === 0 ||
-    (chainIds.length === 1 && chainIds[0] === chainId)
-  ) {
+  if (chainIds.length === 0) {
+    return noChainsFallback ? <>{noChainsFallback}</> : null
+  }
+
+  // Don't show if only showing the current chain.
+  if (chainIds.length === 1 && chainIds[0] === chainId) {
     return null
   }
 
