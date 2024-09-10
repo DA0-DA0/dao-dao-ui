@@ -44,7 +44,7 @@ const Component: ActionComponent<undefined, CreateDaoData> = (props) => {
 }
 
 export class CreateDaoAction extends ActionBase<CreateDaoData> {
-  public readonly key = ActionKey.CreateCrossChainAccount
+  public readonly key = ActionKey.CreateDao
   public readonly Component = Component
 
   protected _defaults: CreateDaoData = {
