@@ -365,7 +365,7 @@ const InnerNewGovProposal = ({
       let encodeObject: EncodeObject
       try {
         // Transforms to stargate Cosmos message that submits proposal.
-        const submitProposalStargateMsg = await action.encode(data)
+        const submitProposalStargateMsg = (await action.encode(data))[0]
         if (
           !submitProposalStargateMsg ||
           !isCosmWasmStargateMsg(submitProposalStargateMsg)
