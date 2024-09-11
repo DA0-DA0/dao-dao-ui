@@ -177,6 +177,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
             {immediate && (
               <StatusCard
+                className="max-w-prose"
                 content={t('info.immediateDistributesAllFundedRewards')}
                 style="warning"
               />

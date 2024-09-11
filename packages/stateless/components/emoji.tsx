@@ -304,3 +304,7 @@ export const ConstructionEmoji = (props: EmojiProps) => (
 export const LowBatteryEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="🪫" labelI18nKey="emoji.lowBattery" {...props} />
 )
+
+export const OpenMailboxEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📬" labelI18nKey="emoji.openMailbox" {...props} />
+)

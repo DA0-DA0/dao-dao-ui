@@ -221,8 +221,10 @@ export const FundRewardDistributionComponent: ActionComponent<
           {isCreating &&
             'immediate' in selectedDistribution.active_epoch.emission_rate && (
               <StatusCard
-                className="self-start"
-                content={t('info.rewardsFundsWillBeDistributedImmediately')}
+                className="self-start max-w-prose"
+                content={t('info.rewardsFundsWillBeDistributedImmediately', {
+                  context: 'update',
+                })}
                 style="warning"
               />
             )}
