@@ -66,7 +66,6 @@ export const CreateRewardDistributionComponent: ActionComponent<
   const { register, setValue, watch } =
     useFormContext<CreateRewardDistributionData>()
 
-  const type = watch((fieldNamePrefix + 'type') as 'type')
   const denomOrAddress = watch(
     (fieldNamePrefix + 'denomOrAddress') as 'denomOrAddress'
   )
@@ -134,11 +133,6 @@ export const CreateRewardDistributionComponent: ActionComponent<
               ? TokenType.Cw20
               : TokenType.Native
             setValue((fieldNamePrefix + 'type') as 'type', type)
-
-            // Cw20 initial funds are not supported yet.
-            if (type === TokenType.Cw20) {
-              setValue((fieldNamePrefix + 'initialFunds') as 'initialFunds', 0)
-            }
           }}
           onSelectToken={(token) => {
             // Custom token selected
@@ -151,11 +145,6 @@ export const CreateRewardDistributionComponent: ActionComponent<
               (fieldNamePrefix + 'denomOrAddress') as 'denomOrAddress',
               token.denomOrAddress
             )
-
-            // Cw20 initial funds are not supported yet.
-            if (token.type === TokenType.Cw20) {
-              setValue((fieldNamePrefix + 'initialFunds') as 'initialFunds', 0)
-            }
           }}
           readOnly={!isCreating}
           selectedToken={selectedToken?.token}
@@ -271,84 +260,78 @@ export const CreateRewardDistributionComponent: ActionComponent<
         )}
       </div>
 
-      {type === TokenType.Native && (
-        <>
-          <div className="flex flex-col gap-2 max-w-prose">
-            <InputLabel name={t('form.initialFunds')} primary />
-            <p className="body-text text-text-secondary max-w-prose -mt-1">
-              {t('info.initialRewardsFundsDescription')}
-            </p>
+      <div className="flex flex-col gap-2 max-w-prose">
+        <InputLabel name={t('form.initialFunds')} primary />
+        <p className="body-text text-text-secondary max-w-prose -mt-1">
+          {t('info.initialRewardsFundsDescription')}
+        </p>
 
-            <NumberInput
-              disabled={!isCreating}
-              fieldName={(fieldNamePrefix + 'initialFunds') as 'initialFunds'}
-              min={0}
-              register={register}
-              setValue={setValue}
-              step={minAmount}
-              unit={
-                selectedToken
-                  ? '$' + selectedToken?.token.symbol
-                  : t('info.tokens')
+        <NumberInput
+          disabled={!isCreating}
+          fieldName={(fieldNamePrefix + 'initialFunds') as 'initialFunds'}
+          min={0}
+          register={register}
+          setValue={setValue}
+          step={minAmount}
+          unit={
+            selectedToken ? '$' + selectedToken?.token.symbol : t('info.tokens')
+          }
+          validation={[validateRequired, validateNonNegative]}
+          watch={watch}
+        />
+        <InputErrorMessage error={errors?.initialFunds} />
+        <InputErrorMessage error={warning} warning />
+      </div>
+
+      {selectedToken && isCreating && (
+        <div className="flex flex-row justify-between flex-wrap items-center -mt-2 mb-2 gap-x-8 gap-y-2 max-w-prose">
+          <div className="flex flex-row items-center gap-2">
+            <p className="caption-text">{t('info.yourBalance')}:</p>
+
+            <TokenAmountDisplay
+              amount={selectedBalance}
+              decimals={decimals}
+              iconUrl={selectedToken.token.imageUrl}
+              onClick={() =>
+                setValue(
+                  (fieldNamePrefix + 'initialFunds') as 'initialFunds',
+                  selectedBalance
+                )
               }
-              validation={[validateRequired, validateNonNegative]}
-              watch={watch}
+              showFullAmount
+              symbol={selectedToken.token.symbol}
             />
-            <InputErrorMessage error={errors?.initialFunds} />
-            <InputErrorMessage error={warning} warning />
           </div>
 
-          {selectedToken && isCreating && (
-            <div className="flex flex-row justify-between flex-wrap items-center -mt-2 mb-2 gap-x-8 gap-y-2 max-w-prose">
-              <div className="flex flex-row items-center gap-2">
-                <p className="caption-text">{t('info.yourBalance')}:</p>
-
-                <TokenAmountDisplay
-                  amount={selectedBalance}
+          {selectedBalance > 0 && (
+            <div className="grid grid-cols-5 gap-1">
+              {[10, 25, 50, 75, 100].map((percent) => (
+                <PercentButton
+                  key={percent}
+                  amount={initialFunds}
                   decimals={decimals}
-                  iconUrl={selectedToken.token.imageUrl}
-                  onClick={() =>
+                  label={`${percent}%`}
+                  loadingMax={{ loading: false, data: selectedBalance }}
+                  percent={percent / 100}
+                  setAmount={(amount) =>
                     setValue(
                       (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                      selectedBalance
+                      amount
                     )
                   }
-                  showFullAmount
-                  symbol={selectedToken.token.symbol}
                 />
-              </div>
-
-              {selectedBalance > 0 && (
-                <div className="grid grid-cols-5 gap-1">
-                  {[10, 25, 50, 75, 100].map((percent) => (
-                    <PercentButton
-                      key={percent}
-                      amount={initialFunds}
-                      decimals={decimals}
-                      label={`${percent}%`}
-                      loadingMax={{ loading: false, data: selectedBalance }}
-                      percent={percent / 100}
-                      setAmount={(amount) =>
-                        setValue(
-                          (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                          amount
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
           )}
+        </div>
+      )}
 
-          {immediate && !!initialFunds && (
-            <StatusCard
-              className="self-start"
-              content={t('info.rewardsFundsWillBeDistributedImmediately')}
-              style="warning"
-            />
-          )}
-        </>
+      {immediate && !!initialFunds && (
+        <StatusCard
+          className="self-start"
+          content={t('info.rewardsFundsWillBeDistributedImmediately')}
+          style="warning"
+        />
       )}
     </>
   )

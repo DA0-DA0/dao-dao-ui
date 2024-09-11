@@ -41,6 +41,7 @@ export interface DaoRewardsDistributorReadOnlyInterface {
     limit?: number
     startAfter?: number
   }) => Promise<PendingRewardsResponse>
+  undistributedRewards: ({ id }: { id: number }) => Promise<Uint128>
   distribution: ({ id }: { id: number }) => Promise<DistributionState>
   distributions: ({
     limit,
@@ -61,6 +62,7 @@ export class DaoRewardsDistributorQueryClient
     this.info = this.info.bind(this)
     this.ownership = this.ownership.bind(this)
     this.pendingRewards = this.pendingRewards.bind(this)
+    this.undistributedRewards = this.undistributedRewards.bind(this)
     this.distribution = this.distribution.bind(this)
     this.distributions = this.distributions.bind(this)
   }
@@ -88,6 +90,13 @@ export class DaoRewardsDistributorQueryClient
         address,
         limit,
         start_after: startAfter,
+      },
+    })
+  }
+  undistributedRewards = async ({ id }: { id: number }): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      undistributed_rewards: {
+        id,
       },
     })
   }
@@ -199,6 +208,11 @@ export interface DaoRewardsDistributorInterface
     memo?: string,
     _funds?: Coin[]
   ) => Promise<ExecuteResult>
+  fundLatest: (
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    _funds?: Coin[]
+  ) => Promise<ExecuteResult>
   claim: (
     {
       id,
@@ -249,6 +263,7 @@ export class DaoRewardsDistributorClient
     this.update = this.update.bind(this)
     this.receive = this.receive.bind(this)
     this.fund = this.fund.bind(this)
+    this.fundLatest = this.fundLatest.bind(this)
     this.claim = this.claim.bind(this)
     this.withdraw = this.withdraw.bind(this)
     this.updateOwnership = this.updateOwnership.bind(this)
@@ -426,6 +441,22 @@ export class DaoRewardsDistributorClient
         fund: {
           id,
         },
+      },
+      fee,
+      memo,
+      _funds
+    )
+  }
+  fundLatest = async (
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    _funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        fund_latest: {},
       },
       fee,
       memo,

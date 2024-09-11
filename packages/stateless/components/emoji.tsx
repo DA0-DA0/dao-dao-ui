@@ -308,3 +308,7 @@ export const LowBatteryEmoji = (props: EmojiProps) => (
 export const OpenMailboxEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="📬" labelI18nKey="emoji.openMailbox" {...props} />
 )
+
+export const PauseEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⏸︎" labelI18nKey="emoji.pause" {...props} />
+)

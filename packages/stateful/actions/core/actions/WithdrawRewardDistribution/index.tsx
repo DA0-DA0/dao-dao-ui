@@ -136,10 +136,11 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
     { decodedMessage },
   ]: ProcessedMessage[]): Promise<WithdrawRewardDistributionData> {
     const address = decodedMessage.wasm.execute.contract_addr
-    const withdrawMsg = decodedMessage.wasm.execute.msg.withdraw
 
     const distribution = this.distributions.find(
-      (d) => d.address === address && d.id === withdrawMsg.id
+      (d) =>
+        d.address === address &&
+        d.id === decodedMessage.wasm.execute.msg.withdraw.id
     )
     if (!distribution) {
       throw new Error('Distribution not found')

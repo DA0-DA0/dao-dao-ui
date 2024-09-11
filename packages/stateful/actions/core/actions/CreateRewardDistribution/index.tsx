@@ -29,11 +29,13 @@ import {
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   convertMicroDenomToDenomWithDecimals,
+  encodeJsonToBase64,
   getDaoRewardDistributors,
   getNativeTokenForChainId,
   getRewardDistributorStorageItemKey,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
+  parseCw20SendContractMessage,
 } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
@@ -252,20 +254,51 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
             vp_contract: votingModule.address,
           } as CreateMsg,
         },
-        funds:
-          type === TokenType.Native && initialFunds
-            ? [
-                {
-                  denom: denomOrAddress,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
-                    initialFunds,
-                    token.decimals
-                  ),
-                },
-              ]
-            : undefined,
       })
     )
+
+    // Fund if initial funds are set.
+    if (initialFunds) {
+      const microAmount = convertDenomToMicroDenomStringWithDecimals(
+        initialFunds,
+        token.decimals
+      )
+      messages.push(
+        type === TokenType.Native
+          ? makeExecuteSmartContractMessage({
+              chainId: this.options.chain.chain_id,
+              sender: this.options.address,
+              contractAddress: distributor,
+              msg: {
+                fund_latest: {},
+              },
+              funds:
+                type === TokenType.Native
+                  ? [
+                      {
+                        denom: denomOrAddress,
+                        amount: microAmount,
+                      },
+                    ]
+                  : undefined,
+            })
+          : // Execute CW20 send message.
+            makeExecuteSmartContractMessage({
+              chainId: this.options.chain.chain_id,
+              sender: this.options.address,
+              contractAddress: denomOrAddress,
+              msg: {
+                send: {
+                  amount: microAmount,
+                  contract: distributor,
+                  msg: encodeJsonToBase64({
+                    fund_latest: {},
+                  }),
+                },
+              },
+            })
+      )
+    }
 
     // If hook missing, add it.
     const hooks = await votingModule.getHooks()
@@ -282,12 +315,6 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
           },
         })
       )
-    }
-
-    // Cw20 funds must be sent after this passes and the distribution ID is
-    // created.
-    if (type === TokenType.Cw20 && initialFunds) {
-      throw new Error('CW20 initial funds not yet supported')
     }
 
     return messages
@@ -307,10 +334,12 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     // - instantiate contract
     // - set storage item
     // - create distribution
+    // - fund distribution (if initial funds set)
     // - add hook (if needed)
     //
     // existing contract:
     // - create distribution
+    // - fund distribution (if initial funds set)
     // - add hook (if needed)
 
     // Existing contract
@@ -345,10 +374,34 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     ) {
       const distributor = messages[0].decodedMessage.wasm.execute.contract_addr
 
-      // Only one or two messages expected for existing contracts, depending on
-      // if hook is being added.
-      return messages.length >= 2 &&
-        objectMatchesStructure(messages[1].decodedMessage, {
+      const fundExists =
+        // Native
+        (objectMatchesStructure(messages[1].decodedMessage, {
+          wasm: {
+            execute: {
+              contract_addr: {},
+              funds: {},
+              msg: {
+                fund_latest: {},
+              },
+            },
+          },
+        }) &&
+          messages[1].decodedMessage.wasm.execute.contract_addr ===
+            distributor) ||
+        // Cw20
+        !!parseCw20SendContractMessage(
+          messages[1].decodedMessage,
+          {
+            fund_latest: {},
+          },
+          distributor
+        )
+
+      const potentialAddHookId = fundExists ? 2 : 1
+      const hookExists =
+        messages.length >= potentialAddHookId + 1 &&
+        objectMatchesStructure(messages[potentialAddHookId].decodedMessage, {
           wasm: {
             execute: {
               contract_addr: {},
@@ -361,11 +414,14 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
             },
           },
         }) &&
-        messages[1].decodedMessage.wasm.execute.contract_addr === hookCaller &&
-        messages[1].decodedMessage.wasm.execute.msg.add_hook.addr ===
-          distributor
-        ? 2
-        : 1
+        messages[potentialAddHookId].decodedMessage.wasm.execute
+          .contract_addr === hookCaller &&
+        messages[potentialAddHookId].decodedMessage.wasm.execute.msg.add_hook
+          .addr === distributor
+
+      // 1, 2, or 3 messages expected for existing contracts, depending on if
+      // funding and if hook is being added.
+      return 1 + (fundExists ? 1 : 0) + (hookExists ? 1 : 0)
     }
 
     // New contract
@@ -409,10 +465,34 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     ) {
       const distributor = messages[2].decodedMessage.wasm.execute.contract_addr
 
-      // Only three or four messages expected for existing contracts, depending
-      // on if hook is being added.
-      return messages.length >= 4 &&
-        objectMatchesStructure(messages[3].decodedMessage, {
+      const fundExists =
+        // Native
+        (objectMatchesStructure(messages[3].decodedMessage, {
+          wasm: {
+            execute: {
+              contract_addr: {},
+              funds: {},
+              msg: {
+                fund_latest: {},
+              },
+            },
+          },
+        }) &&
+          messages[3].decodedMessage.wasm.execute.contract_addr ===
+            distributor) ||
+        // Cw20
+        !!parseCw20SendContractMessage(
+          messages[3].decodedMessage,
+          {
+            fund_latest: {},
+          },
+          distributor
+        )
+
+      const potentialAddHookId = fundExists ? 4 : 3
+      const hookExists =
+        messages.length >= potentialAddHookId + 1 &&
+        objectMatchesStructure(messages[potentialAddHookId].decodedMessage, {
           wasm: {
             execute: {
               contract_addr: {},
@@ -425,11 +505,14 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
             },
           },
         }) &&
-        messages[3].decodedMessage.wasm.execute.contract_addr === hookCaller &&
-        messages[3].decodedMessage.wasm.execute.msg.add_hook.addr ===
-          distributor
-        ? 4
-        : 3
+        messages[potentialAddHookId].decodedMessage.wasm.execute
+          .contract_addr === hookCaller &&
+        messages[potentialAddHookId].decodedMessage.wasm.execute.msg.add_hook
+          .addr === distributor
+
+      // 3, 4, or 5 messages expected for new contracts, depending on if funding
+      // and if hook is being added.
+      return 3 + (fundExists ? 1 : 0) + (hookExists ? 1 : 0)
     }
 
     return false
@@ -438,15 +521,53 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
   async decode(
     messages: ProcessedMessage[]
   ): Promise<CreateRewardDistributionData> {
-    const target = (
-      messages.length === 1
-        ? messages[0].decodedMessage
-        : messages[2].decodedMessage
-    ).wasm.execute
-    const createMsg: CreateMsg = target.msg.create
-    const initialFunds = target.funds[0]?.amount ?? '0'
+    const createId = objectMatchesStructure(messages[0].decodedMessage, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            create: {},
+          },
+        },
+      },
+    })
+      ? 0
+      : 2
 
+    const createMsg: CreateMsg =
+      messages[createId].decodedMessage.wasm.execute.msg.create
     const type = 'native' in createMsg.denom ? TokenType.Native : TokenType.Cw20
+
+    // Fund latest is after create if initial funds are set.
+    const fundLatestId = createId + 1
+    const initialFunds =
+      messages.length >= fundLatestId + 1
+        ? // Native
+          type === TokenType.Native &&
+          objectMatchesStructure(messages[fundLatestId].decodedMessage, {
+            wasm: {
+              execute: {
+                contract_addr: {},
+                funds: {},
+                msg: {
+                  fund_latest: {},
+                },
+              },
+            },
+          })
+          ? messages[fundLatestId].decodedMessage.wasm.execute.funds[0]?.amount
+          : // Cw20
+          type === TokenType.Cw20
+          ? parseCw20SendContractMessage(
+              messages[fundLatestId].decodedMessage,
+              {
+                fund_latest: {},
+              }
+            )?.amount || '0'
+          : '0'
+        : '0'
+
     const denomOrAddress =
       'native' in createMsg.denom
         ? createMsg.denom.native

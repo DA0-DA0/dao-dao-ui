@@ -24,11 +24,11 @@ import {
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  decodeJsonFromBase64,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
+  parseCw20SendContractMessage,
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../hooks'
@@ -208,44 +208,24 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
       },
     })
 
-    const isCw20Fund =
-      objectMatchesStructure(decodedMessage, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              send: {
-                amount: {},
-                contract: {},
-                msg: {},
-              },
-            },
-          },
-        },
-      }) &&
-      objectMatchesStructure(
-        decodeJsonFromBase64(decodedMessage.wasm.execute.msg.send.msg, true),
-        {
-          fund: {
-            id: {},
-          },
-        }
-      )
+    const parsedCw20Fund = parseCw20SendContractMessage(decodedMessage, {
+      fund: {
+        id: {},
+      },
+    })
 
     const address = isNativeFund
       ? decodedMessage.wasm.execute.contract_addr
-      : isCw20Fund
-      ? decodedMessage.wasm.execute.msg.send.contract
-      : undefined
+      : parsedCw20Fund?.contract
+
+    const id = isNativeFund
+      ? decodedMessage.wasm.execute.msg.fund.id
+      : parsedCw20Fund?.msg.fund.id
 
     const distribution =
       address &&
-      this.distributions.find(
-        (d) =>
-          d.address === address &&
-          d.id === decodedMessage.wasm.execute.msg.fund.id
-      )
+      id &&
+      this.distributions.find((d) => d.address === address && d.id === id)
 
     if (!distribution) {
       throw new Error('Distribution not found')
@@ -253,7 +233,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
     const amount = isNativeFund
       ? decodedMessage.wasm.execute.funds[0].amount
-      : decodedMessage.wasm.execute.msg.send.amount
+      : parsedCw20Fund?.amount
 
     return {
       distribution,

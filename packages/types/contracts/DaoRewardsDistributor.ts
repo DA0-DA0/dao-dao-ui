@@ -36,6 +36,9 @@ export type ExecuteMsg =
       fund: FundMsg
     }
   | {
+      fund_latest: {}
+    }
+  | {
       claim: {
         id: number
       }
@@ -161,6 +164,11 @@ export type QueryMsg =
         address: string
         limit?: number | null
         start_after?: number | null
+      }
+    }
+  | {
+      undistributed_rewards: {
+        id: number
       }
     }
   | {

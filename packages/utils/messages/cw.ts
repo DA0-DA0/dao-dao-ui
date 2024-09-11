@@ -41,7 +41,7 @@ import {
 import { IBC_TIMEOUT_SECONDS } from '../constants'
 import { bech32AddressToBase64 } from '../contracts'
 import { processError } from '../error'
-import { objectMatchesStructure } from '../objectMatchesStructure'
+import { Structure, objectMatchesStructure } from '../objectMatchesStructure'
 import { decodeJsonFromBase64, encodeJsonToBase64 } from './encoding'
 import { isDecodedStargateMsg } from './protobuf'
 
@@ -806,3 +806,57 @@ export const getFundsUsedInCwMessage = (msg: UnifiedCosmosMsg): Coin[] =>
         return []
       })()
     : []
+
+/**
+ * Check whether or not the message is a cw20 send contract message, optionally
+ * checking the structure of the nested message and the contract address being
+ * executed. If it is, returns the cw20 message fields and the decoded message
+ * object.
+ */
+export const parseCw20SendContractMessage = (
+  msg: Record<string, any>,
+  nestedStructure?: Structure,
+  contract?: string
+):
+  | undefined
+  | {
+      cw20: string
+      amount: string
+      contract: string
+      msg: Record<string, any>
+    } => {
+  const isCw20Send = objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        funds: {},
+        msg: {
+          send: {
+            amount: {},
+            contract: {},
+            msg: {},
+          },
+        },
+      },
+    },
+  })
+  if (!isCw20Send) {
+    return
+  }
+
+  const decodedMsg = decodeJsonFromBase64(msg.wasm.execute.msg.send.msg, true)
+  if (nestedStructure && !objectMatchesStructure(decodedMsg, nestedStructure)) {
+    return
+  }
+
+  if (contract && msg.wasm.execute.msg.send.contract !== contract) {
+    return
+  }
+
+  return {
+    cw20: msg.wasm.execute.contract_addr,
+    amount: msg.wasm.execute.msg.send.amount,
+    contract: msg.wasm.execute.msg.send.contract,
+    msg: decodedMsg,
+  }
+}

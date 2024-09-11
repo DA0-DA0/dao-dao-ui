@@ -12,6 +12,7 @@ import {
   InfoResponse,
   OwnershipForAddr,
   PendingRewardsResponse,
+  Uint128,
 } from '@dao-dao/types/contracts/DaoRewardsDistributor'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
@@ -66,6 +67,18 @@ export const daoRewardsDistributorQueryKeys = {
       {
         ...daoRewardsDistributorQueryKeys.address(chainId, contractAddress)[0],
         method: 'pending_rewards',
+        args,
+      },
+    ] as const,
+  undistributedRewards: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoRewardsDistributorQueryKeys.address(chainId, contractAddress)[0],
+        method: 'undistributed_rewards',
         args,
       },
     ] as const,
@@ -153,6 +166,31 @@ export const daoRewardsDistributorQueries = {
         address: args.address,
         limit: args.limit,
         startAfter: args.startAfter,
+      })
+    },
+    ...options,
+  }),
+  undistributedRewards: <TData = Uint128>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoRewardsDistributorUndistributedRewardsQuery<TData>): UseQueryOptions<
+    Uint128,
+    Error,
+    TData
+  > => ({
+    queryKey: daoRewardsDistributorQueryKeys.undistributedRewards(
+      chainId,
+      contractAddress,
+      args
+    ),
+    queryFn: async () => {
+      return new DaoRewardsDistributorQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).undistributedRewards({
+        id: args.id,
       })
     },
     ...options,
@@ -256,6 +294,12 @@ export interface DaoRewardsDistributorDistributionsQuery<TData>
 }
 export interface DaoRewardsDistributorDistributionQuery<TData>
   extends DaoRewardsDistributorReactQuery<DistributionState, TData> {
+  args: {
+    id: number
+  }
+}
+export interface DaoRewardsDistributorUndistributedRewardsQuery<TData>
+  extends DaoRewardsDistributorReactQuery<Uint128, TData> {
   args: {
     id: number
   }
