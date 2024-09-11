@@ -296,3 +296,7 @@ export const CheckEmoji = (props: EmojiProps) => (
 export const BucketEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="🪣" labelI18nKey="emoji.bucket" {...props} />
 )
+
+export const ConstructionEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🏗️" labelI18nKey="emoji.construction" {...props} />
+)

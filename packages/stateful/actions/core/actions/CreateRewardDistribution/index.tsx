@@ -293,7 +293,14 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     return messages
   }
 
-  match(messages: ProcessedMessage[]): ActionMatch {
+  async match(messages: ProcessedMessage[]): Promise<ActionMatch> {
+    if (this.options.context.type !== ActionContextType.Dao) {
+      throw new Error('Only DAOs can create reward distributions')
+    }
+
+    const currentVotingModule = this.options.context.dao.votingModule
+    const hookCaller = await currentVotingModule.getHookCaller()
+
     // There are 2 scenarios with different message sets:
     //
     // new contract:
@@ -324,13 +331,19 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
           },
         },
       }) &&
-      this.distributors.includes(
-        messages[0].decodedMessage.wasm.execute.contract_addr
-      )
+      this.distributors.some(
+        (d) =>
+          d.address === messages[0].decodedMessage.wasm.execute.contract_addr
+      ) &&
+      // Ensure voting module and hook caller are correct. Otherwise, this may
+      // be a malicious actor trying to use a different voting module that
+      // distributes rewards to different recipients.
+      messages[0].decodedMessage.wasm.execute.msg.create.vp_contract ===
+        currentVotingModule.address &&
+      messages[0].decodedMessage.wasm.execute.msg.create.hook_caller ===
+        hookCaller
     ) {
       const distributor = messages[0].decodedMessage.wasm.execute.contract_addr
-      const hookCaller =
-        messages[0].decodedMessage.wasm.execute.msg.create.hook_caller
 
       // Only one or two messages expected for existing contracts, depending on
       // if hook is being added.
@@ -378,11 +391,16 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
             },
           },
         },
-      })
+      }) &&
+      // Ensure voting module and hook caller are correct. Otherwise, this may
+      // be a malicious actor trying to use a different voting module that
+      // distributes rewards to different recipients.
+      messages[2].decodedMessage.wasm.execute.msg.create.vp_contract ===
+        currentVotingModule.address &&
+      messages[2].decodedMessage.wasm.execute.msg.create.hook_caller ===
+        hookCaller
     ) {
       const distributor = messages[2].decodedMessage.wasm.execute.contract_addr
-      const hookCaller =
-        messages[2].decodedMessage.wasm.execute.msg.create.hook_caller
 
       // Only three or four messages expected for existing contracts, depending
       // on if hook is being added.

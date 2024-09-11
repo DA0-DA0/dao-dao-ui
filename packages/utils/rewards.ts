@@ -25,7 +25,9 @@ export const getDaoRewardDistributors = (
   getFilteredDaoItemsByPrefix(
     items,
     getRewardDistributorStorageItemKey('')
-  ).map(([id, address]) => ({
-    id,
-    address,
-  }))
+  ).map(
+    ([id, address]): DaoRewardDistributor => ({
+      id,
+      address,
+    })
+  )

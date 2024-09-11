@@ -37,6 +37,7 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { DistributionState } from './contracts/DaoRewardsDistributor'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
@@ -572,9 +573,12 @@ export type VotingVaultWithInfo = VotingVault & {
   totalPower: string
 }
 
+/**
+ * A reward distributor contract for a DAO.
+ */
 export type DaoRewardDistributor = {
   /**
-   * Unique ID for the reward distributor contract on this chain.
+   * Unique ID for the reward distributor contract.
    */
   id: string
   /**
@@ -582,3 +586,21 @@ export type DaoRewardDistributor = {
    */
   address: string
 }
+
+/**
+ * A reward distribution for a DAO, attached to a reward distributor contract.
+ */
+export type DaoRewardDistribution = {
+  /**
+   * Reward distributor chain ID.
+   */
+  chainId: string
+  /**
+   * Reward distributor contract address.
+   */
+  address: string
+  /**
+   * Token being distributed.
+   */
+  token: GenericToken
+} & DistributionState

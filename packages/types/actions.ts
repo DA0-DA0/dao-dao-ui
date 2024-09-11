@@ -110,6 +110,11 @@ export enum ActionKey {
   BecomeSubDao = 'becomeSubDao',
   // Rewards
   CreateRewardDistribution = 'createRewardDistribution',
+  UpdateRewardDistribution = 'updateRewardDistribution',
+  FundRewardDistribution = 'fundRewardDistribution',
+  WithdrawRewardDistribution = 'withdrawRewardDistribution',
+  PauseRewardDistribution = 'pauseRewardDistribution',
+  ResumeRewardDistribution = 'resumeRewardDistribution',
 }
 
 export type ActionAndData<

@@ -115,7 +115,7 @@ export const daoRewardsDistributorQueries = {
           indexerQueries.queryContract(queryClient, {
             chainId,
             contractAddress,
-            formula: 'daoRewardsDistributor/ownership',
+            formula: 'ownership',
           })
         )
       } catch (error) {

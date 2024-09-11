@@ -116,7 +116,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
         })}
       />
 
-      <div className="flex flex-col gap-1 self-start">
+      <div className="flex flex-col gap-2 self-start">
         <InputLabel name={t('title.asset')} primary />
         <TokenInput
           allowCustomToken
@@ -198,7 +198,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
               value: false,
             },
             {
-              label: t('form.immediate'),
+              label: t('title.immediate'),
               value: true,
             },
           ]}

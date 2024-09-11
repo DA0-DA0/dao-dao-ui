@@ -1,9 +1,12 @@
+import { TFunction } from 'react-i18next'
+
 import {
   Account,
   AccountType,
   BreadcrumbCrumb,
   DaoDropdownInfo,
   DaoParentInfo,
+  DaoRewardDistribution,
   DaoSource,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
@@ -11,6 +14,10 @@ import {
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
 
 import { getSupportedChainConfig } from './chain'
+import {
+  convertDurationToHumanReadableString,
+  convertMicroDenomToDenomWithDecimals,
+} from './conversion'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -178,3 +185,29 @@ export const deserializeDaoSource = (serialized: string): DaoSource => {
  */
 export const daoSourcesEqual = (a: DaoSource, b: DaoSource): boolean =>
   a.chainId === b.chainId && a.coreAddress === b.coreAddress
+
+/**
+ * Get the label for a reward distribution.
+ */
+export const getHumanReadableRewardDistributionLabel = (
+  t: TFunction,
+  distribution: DaoRewardDistribution
+): string =>
+  `${distribution.token.symbol} / ${
+    'immediate' in distribution.active_epoch.emission_rate
+      ? t('title.immediate')
+      : 'paused' in distribution.active_epoch.emission_rate
+      ? t('title.paused')
+      : t('info.amountEveryDuration', {
+          amount: convertMicroDenomToDenomWithDecimals(
+            distribution.active_epoch.emission_rate.linear.amount,
+            distribution.token.decimals
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: distribution.token.decimals,
+          }),
+          duration: convertDurationToHumanReadableString(
+            t,
+            distribution.active_epoch.emission_rate.linear.duration
+          ),
+        })
+  }`
