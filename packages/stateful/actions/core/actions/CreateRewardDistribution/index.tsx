@@ -371,10 +371,17 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     // New contract
     if (
       messages.length >= 3 &&
-      // First is instantiate contract.
+      // First is instantiate2 contract.
       this.instantiate2Action.match([messages[0]]) &&
+      // Make sure instantiate2 has no funds.
+      (await this.instantiate2Action.decode([messages[0]])).funds.length ===
+        0 &&
       // Second is set storage item.
       this.manageStorageItemsAction.match([messages[1]]) &&
+      // Make sure setting distributor storage item.
+      this.manageStorageItemsAction
+        .decode([messages[1]])
+        .key.startsWith(getRewardDistributorStorageItemKey('')) &&
       // Third is create distribution.
       objectMatchesStructure(messages[2].decodedMessage, {
         wasm: {

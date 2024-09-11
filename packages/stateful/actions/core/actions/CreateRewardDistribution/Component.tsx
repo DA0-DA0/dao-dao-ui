@@ -9,6 +9,7 @@ import {
   PercentButton,
   SegmentedControls,
   SelectInput,
+  StatusCard,
   TokenAmountDisplay,
   TokenInput,
   useActionOptions,
@@ -341,9 +342,11 @@ export const CreateRewardDistributionComponent: ActionComponent<
           )}
 
           {immediate && !!initialFunds && (
-            <p className="body-text text-text-secondary italic max-w-prose">
-              {t('info.rewardsInitialFundsWillBeDistributedImmediately')}
-            </p>
+            <StatusCard
+              className="self-start"
+              content={t('info.rewardsFundsWillBeDistributedImmediately')}
+              style="warning"
+            />
           )}
         </>
       )}

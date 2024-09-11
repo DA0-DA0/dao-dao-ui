@@ -1,3 +1,4 @@
+import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -130,10 +131,14 @@ export const UpdateRewardDistributionComponent: ActionComponent<
                 className: 'self-start',
                 variant: !address ? 'primary' : 'ghost_outline',
                 size: 'lg',
-                disabled: !isCreating,
-                children: selectedDistribution
-                  ? selectedDistributionDisplay
-                  : t('button.chooseDistribution'),
+                children: selectedDistribution ? (
+                  <>
+                    {selectedDistributionDisplay}
+                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
+                  </>
+                ) : (
+                  t('button.chooseDistribution')
+                ),
               },
             }}
           />

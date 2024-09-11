@@ -300,3 +300,7 @@ export const BucketEmoji = (props: EmojiProps) => (
 export const ConstructionEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="🏗️" labelI18nKey="emoji.construction" {...props} />
 )
+
+export const LowBatteryEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🪫" labelI18nKey="emoji.lowBattery" {...props} />
+)
