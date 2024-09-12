@@ -66,11 +66,22 @@ program.option(
   '-x, --exclude <substrings>',
   'ignore contracts containing any of these comma-separated substrings (e.g. cw721)'
 )
+program.option(
+  '-i, --include <substrings>',
+  'only deploy contracts containing any of these comma-separated substrings (e.g. cw721)'
+)
 
 program.parse(process.argv)
-const { chain: chainId, mode, authz, exclude: _exclude } = program.opts()
+const {
+  chain: chainId,
+  mode,
+  authz,
+  exclude: _exclude,
+  include: _include,
+} = program.opts()
 
 const exclude: string[] | undefined = _exclude?.split(',')
+const include: string[] | undefined = _include?.split(',')
 
 if (!Object.values(Mode).includes(mode)) {
   log(
@@ -276,6 +287,9 @@ const main = async () => {
       if (exclude?.some((substring) => id.includes(substring))) {
         continue
       }
+      if (include && !include.some((substring) => id.includes(substring))) {
+        continue
+      }
 
       const file = path.join(DAO_CONTRACTS_DIR, contract)
 
@@ -315,20 +329,21 @@ const main = async () => {
   // Instantiate admin factory.
   const cwAdminFactoryCodeId = codeIdMap['cw_admin_factory']
   if (!cwAdminFactoryCodeId) {
-    log(chalk.red('cw_admin_factory.CODE_ID not found'))
-    process.exit(1)
+    log(chalk.red('cw_admin_factory.CODE_ID not found, not instantiating'))
   }
 
-  const adminFactoryAddress = await instantiateContract({
-    client,
-    sender,
-    chainId,
-    id: 'cw_admin_factory',
-    codeId: cwAdminFactoryCodeId,
-    msg: {},
-    label: 'daodao_admin_factory',
-    prefixLength: consolePrefixLength,
-  })
+  const adminFactoryAddress = cwAdminFactoryCodeId
+    ? await instantiateContract({
+        client,
+        sender,
+        chainId,
+        id: 'cw_admin_factory',
+        codeId: cwAdminFactoryCodeId,
+        msg: {},
+        label: 'daodao_admin_factory',
+        prefixLength: consolePrefixLength,
+      })
+    : ''
 
   log()
   log(chalk.green('Done! UI config entry:'))
