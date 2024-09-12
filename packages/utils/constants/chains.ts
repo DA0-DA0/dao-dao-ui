@@ -599,7 +599,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     mainnet: true,
     accentColor: '#5604e8',
     factoryContractAddress:
-      'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
+      'osmo1nqxfazrmuvzaka3k2zy6xqzxalhw0mdzde3navda96ch005u0lxspwyk3q',
     kado: {
       network: 'OSMOSIS',
     },
@@ -609,7 +609,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://ping.pub/osmosis/account/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V240,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 351,
@@ -617,21 +617,21 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 124, // v0.16
 
-      CwPayrollFactory: 353,
-      CwTokenSwap: 354,
-      CwTokenfactoryIssuerMain: 364,
-      CwVesting: 355,
-      DaoCore: 365,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist
-      DaoPreProposeApprovalSingle: 357,
-      DaoPreProposeApprover: 358,
-      DaoPreProposeMultiple: 359,
-      DaoPreProposeSingle: 360,
-      DaoProposalMultiple: 366,
-      DaoProposalSingle: 361,
-      DaoVotingCw4: 362,
-      DaoVotingCw721Staked: 363,
-      DaoVotingTokenStaked: 367,
+      CwPayrollFactory: 1078,
+      CwTokenSwap: 1079,
+      CwTokenfactoryIssuerMain: 1080,
+      CwVesting: 1081,
+      DaoCore: 1082,
+      DaoPreProposeApprovalSingle: 1083,
+      DaoPreProposeApprover: 1084,
+      DaoPreProposeMultiple: 1085,
+      DaoPreProposeSingle: 1086,
+      DaoProposalMultiple: 1087,
+      DaoProposalSingle: 1088,
+      DaoRewardsDistributor: 1089,
+      DaoVotingCw4: 1090,
+      DaoVotingCw721Staked: 1091,
+      DaoVotingTokenStaked: 1092,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -1528,14 +1528,14 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     overrideChainImageUrl: '/chains/terra.png',
     accentColor: '#113da5',
     factoryContractAddress:
-      'terra1a6m80fzww958qljatddgdj4xpj29effyshkh6rek8thmfzprd3ssw6wz2f',
+      'terra1kyj0sgjugpmau8ee37vde3rssxe9ztwh8g98pmmxcr7w2prh9hfqfwhsz7',
     explorerUrlTemplates: {
       tx: 'https://finder.terra.money/mainnet/tx/REPLACE',
       gov: 'https://ping.pub/terra/gov',
       govProp: 'https://ping.pub/terra/gov/REPLACE',
       wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
     },
-    codeIdsVersion: ContractVersion.V240,
+    codeIdsVersion: ContractVersion.V250,
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 2627,
@@ -1543,21 +1543,21 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 2629,
 
-      CwPayrollFactory: 2631,
-      CwTokenSwap: 2632,
-      CwTokenfactoryIssuerMain: 2633,
-      CwVesting: 2634,
-      DaoCore: 2635,
-      DaoMigrator: -1,
-      DaoPreProposeApprovalSingle: 2637,
-      DaoPreProposeApprover: 2638,
-      DaoPreProposeMultiple: 2639,
-      DaoPreProposeSingle: 2640,
-      DaoProposalMultiple: 2641,
-      DaoProposalSingle: 2642,
-      DaoVotingCw4: 2643,
-      DaoVotingCw721Staked: 2644,
-      DaoVotingTokenStaked: 2645,
+      CwPayrollFactory: 3180,
+      CwTokenSwap: 3181,
+      CwTokenfactoryIssuerMain: 3182,
+      CwVesting: 3183,
+      DaoCore: 3184,
+      DaoPreProposeApprovalSingle: 3185,
+      DaoPreProposeApprover: 3186,
+      DaoPreProposeMultiple: 3187,
+      DaoPreProposeSingle: 3188,
+      DaoProposalMultiple: 3189,
+      DaoProposalSingle: 3190,
+      DaoRewardsDistributor: 3191,
+      DaoVotingCw4: 3192,
+      DaoVotingCw721Staked: 3193,
+      DaoVotingTokenStaked: 3194,
     },
     polytone: {
       [ChainId.CosmosHubMainnet]: {
@@ -1726,6 +1726,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 8725,
+      Cw20Base: 8785,
       Cw4Group: 8726, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 8727,
@@ -1746,7 +1747,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: 8741,
       DaoVotingTokenStaked: -1, // Not used
 
-      Cw20Base: 8785,
       Cw20Stake: 8786,
       DaoVotingCw20Staked: 8787,
     },
@@ -1844,6 +1844,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw1Whitelist: 1546,
+      Cw20Base: 1595, // v1.1.2
       Cw4Group: 1547, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1548,
@@ -1865,7 +1866,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 1564,
 
       // Oraichain uses cw20 DAOs.
-      Cw20Base: 1595, // v1.1.2
       Cw20Stake: 1565,
       DaoVotingCw20Staked: 1566,
     },
