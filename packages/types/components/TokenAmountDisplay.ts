@@ -17,6 +17,10 @@ export type TokenAmountDisplayProps = Omit<
    */
   maxDecimals?: number
   /**
+   * Min decimals to display.
+   */
+  minDecimals?: number
+  /**
    * Don't show approximation indication (like a tilde).
    */
   hideApprox?: boolean
@@ -49,27 +53,42 @@ export type TokenAmountDisplayProps = Omit<
    * Optionally apply a class name to the div wrapper.
    */
   wrapperClassName?: string
-} & ( // If not USD estimate, require symbol and decimals.
+} & ( // If not USD estimate, require symbol and decimals, and allow minAmount.
     | {
         symbol: string
         hideSymbol?: never
-        // Full decimal precision of the value.
+        /**
+         * Full decimal precision of the value.
+         */
         decimals: number
+        /**
+         * Minimum amount to show. If less than this, will add `< ` to the
+         * prefix and display this value.
+         */
+        minAmount?: number
         estimatedUsdValue?: false
       }
     // Alow hiding symbol.
     | {
         symbol?: string
         hideSymbol: boolean
-        // Full decimal precision of the value.
+        /**
+         * Full decimal precision of the value.
+         */
         decimals: number
+        /**
+         * Minimum amount to show. If less than this, will add `< ` to the
+         * prefix and display this value.
+         */
+        minAmount?: number
         estimatedUsdValue?: false
       }
-    // If USD estimate, disallow symbol and decimals since we'll use USDC's.
+    // If USD estimate, disallow symbol, decimals, and minAmount.
     | {
         symbol?: never
         hideSymbol?: boolean
         decimals?: never
+        minAmount?: never
         estimatedUsdValue: true
       }
   )

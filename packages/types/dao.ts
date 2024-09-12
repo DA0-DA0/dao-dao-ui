@@ -49,7 +49,7 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken } from './token'
+import { GenericToken, GenericTokenBalanceAndValue } from './token'
 import { DurationWithUnits } from './units'
 import { Widget } from './widgets'
 
@@ -604,3 +604,26 @@ export type DaoRewardDistribution = {
    */
   token: GenericToken
 } & DistributionState
+
+/**
+ * Pending DAO rewards for a recipient.
+ */
+export type PendingDaoRewards = {
+  /**
+   * Reward distributions with their pending rewards.
+   */
+  distributions: {
+    /**
+     * Reward distribution.
+     */
+    distribution: DaoRewardDistribution
+    /**
+     * Pending rewards for the distribution.
+     */
+    rewards: number
+  }[]
+  /**
+   * Total pending rewards across all distributions, merged by token.
+   */
+  rewards: GenericTokenBalanceAndValue[]
+}

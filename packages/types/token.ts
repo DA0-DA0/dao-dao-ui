@@ -91,6 +91,25 @@ export type GenericTokenBalance = {
   unstaking?: boolean
 }
 
+export type GenericTokenBalanceAndValue = {
+  /**
+   * Token.
+   */
+  token: GenericToken
+  /**
+   * Balance of token.
+   */
+  balance: number
+  /**
+   * USD value of total balance.
+   */
+  usdValue: number
+  /**
+   * Timestamp of when the USD price was fetched.
+   */
+  timestamp: Date
+}
+
 export type GenericTokenBalanceWithOwner = GenericTokenBalance & {
   owner: Account
 }
@@ -227,4 +246,15 @@ export enum TokenPriceHistoryRange {
   Month = 'month',
   Week = 'week',
   Day = 'day',
+}
+
+export type AstroportToken = {
+  chainId: string
+  denom: string
+  symbol: string
+  description: string
+  decimals: number
+  priceUSD: number
+  totalLiquidityUSD: number
+  dayVolumeUSD: number
 }

@@ -375,8 +375,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       const distributor = messages[0].decodedMessage.wasm.execute.contract_addr
 
       const fundExists =
+        messages.length >= 2 &&
         // Native
-        (objectMatchesStructure(messages[1].decodedMessage, {
+        ((objectMatchesStructure(messages[1].decodedMessage, {
           wasm: {
             execute: {
               contract_addr: {},
@@ -389,14 +390,14 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         }) &&
           messages[1].decodedMessage.wasm.execute.contract_addr ===
             distributor) ||
-        // Cw20
-        !!parseCw20SendContractMessage(
-          messages[1].decodedMessage,
-          {
-            fund_latest: {},
-          },
-          distributor
-        )
+          // Cw20
+          !!parseCw20SendContractMessage(
+            messages[1].decodedMessage,
+            {
+              fund_latest: {},
+            },
+            distributor
+          ))
 
       const potentialAddHookId = fundExists ? 2 : 1
       const hookExists =
@@ -466,8 +467,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       const distributor = messages[2].decodedMessage.wasm.execute.contract_addr
 
       const fundExists =
+        messages.length >= 4 &&
         // Native
-        (objectMatchesStructure(messages[3].decodedMessage, {
+        ((objectMatchesStructure(messages[3].decodedMessage, {
           wasm: {
             execute: {
               contract_addr: {},
@@ -480,14 +482,14 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         }) &&
           messages[3].decodedMessage.wasm.execute.contract_addr ===
             distributor) ||
-        // Cw20
-        !!parseCw20SendContractMessage(
-          messages[3].decodedMessage,
-          {
-            fund_latest: {},
-          },
-          distributor
-        )
+          // Cw20
+          !!parseCw20SendContractMessage(
+            messages[3].decodedMessage,
+            {
+              fund_latest: {},
+            },
+            distributor
+          ))
 
       const potentialAddHookId = fundExists ? 4 : 3
       const hookExists =

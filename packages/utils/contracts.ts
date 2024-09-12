@@ -1,4 +1,8 @@
-import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import {
+  ExecuteInstruction,
+  ExecuteResult,
+  SigningCosmWasmClient,
+} from '@cosmjs/cosmwasm-stargate'
 import { fromBech32, toBase64, toBech32 } from '@cosmjs/encoding'
 import { Coin, DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate'
 import { parseRawLog } from '@cosmjs/stargate/build/logs'
@@ -143,7 +147,7 @@ export const instantiateSmartContract = async (
 }
 
 /**
- * Execute a smart contract from any supported client.
+ * Execute a smart contract message from any supported client.
  */
 export const executeSmartContract = async (
   client:
@@ -155,25 +159,49 @@ export const executeSmartContract = async (
   funds?: Coin[],
   fee = CHAIN_GAS_MULTIPLIER,
   memo: string | undefined = undefined
-): Promise<ExecuteResult> => {
+): Promise<ExecuteResult> =>
+  executeSmartContracts({
+    client,
+    sender,
+    instructions: [{ contractAddress, msg, funds }],
+    fee,
+    memo,
+  })
+
+/**
+ * Execute one or more smart contract messages from any supported client.
+ */
+export const executeSmartContracts = async ({
+  client,
+  sender,
+  instructions,
+  fee = CHAIN_GAS_MULTIPLIER,
+  memo = undefined,
+}: {
+  client:
+    | SupportedSigningCosmWasmClient
+    | (() => Promise<SupportedSigningCosmWasmClient>)
+  sender: string
+  instructions: ExecuteInstruction[]
+  fee?: number
+  memo?: string
+}): Promise<ExecuteResult> => {
   client = typeof client === 'function' ? await client() : client
 
   if (client instanceof SecretSigningCosmWasmClient) {
-    return await client.execute(sender, contractAddress, msg, fee, memo, funds)
+    return await client.executeMultiple(sender, instructions, fee, memo)
   } else {
     const result = await client.signAndBroadcast(
       sender,
-      [
-        {
-          typeUrl: MsgExecuteContract.typeUrl,
-          value: MsgExecuteContract.fromPartial({
-            sender,
-            contract: contractAddress,
-            msg: toUtf8(JSON.stringify(msg)),
-            funds,
-          }),
-        },
-      ],
+      instructions.map(({ contractAddress, msg, funds }) => ({
+        typeUrl: MsgExecuteContract.typeUrl,
+        value: MsgExecuteContract.fromPartial({
+          sender,
+          contract: contractAddress,
+          msg: toUtf8(JSON.stringify(msg)),
+          funds: [...(funds || [])],
+        }),
+      })),
       fee,
       memo
     )

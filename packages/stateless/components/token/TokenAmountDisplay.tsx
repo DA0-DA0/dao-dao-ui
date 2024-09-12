@@ -35,14 +35,16 @@ const LARGE_COMPACT_MAX_DECIMALS = 2
 
 export const TokenAmountDisplay = ({
   amount: _amount,
-  decimals: _decimals,
+  decimals: _decimals = 0,
   prefix,
   prefixClassName,
   suffix,
   suffixClassName,
+  minDecimals,
   maxDecimals,
   hideApprox,
   dateFetched,
+  minAmount: _minAmount,
   showFullAmount,
   iconUrl,
   iconClassName,
@@ -62,6 +64,7 @@ export const TokenAmountDisplay = ({
   const decimals = estimatedUsdValue
     ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
     : _decimals
+  const minAmount = estimatedUsdValue ? 0.01 : _minAmount
 
   const translateOrOmitSymbol = (translationKey: string, amount: string) =>
     hideSymbol
@@ -72,7 +75,12 @@ export const TokenAmountDisplay = ({
         })
 
   // If loading, display pulsing ellipses.
-  if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
+  if (
+    typeof _amount !== 'number' &&
+    _amount &&
+    'loading' in _amount &&
+    _amount.loading
+  ) {
     return (
       <p {...props} className={clsx('animate-pulse truncate', props.className)}>
         {translateOrOmitSymbol(tokenTranslation, '...')}
@@ -81,10 +89,14 @@ export const TokenAmountDisplay = ({
   }
 
   // Extract amount from loaded value.
-  let amount = typeof _amount === 'number' ? _amount : _amount.data
-  // If USD amount too small, set to 0.
-  if (estimatedUsdValue && amount < 0.01) {
-    amount = 0
+  let amount =
+    typeof _amount === 'number' ? _amount : _amount ? _amount.data : 0
+
+  // If amount too small, set to min and add `< ` to prefix.
+  const amountBelowMin = !!minAmount && amount < minAmount
+  if (amountBelowMin) {
+    amount = minAmount
+    prefix = `< ${prefix || ''}`
   }
 
   const options: Intl.NumberFormatOptions & { roundingPriority: string } = {
@@ -108,7 +120,7 @@ export const TokenAmountDisplay = ({
     // Always show all decimals if USD estimate.
     minimumFractionDigits: estimatedUsdValue
       ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
-      : undefined,
+      : minDecimals,
     // notation=compact seems to set maximumSignificantDigits if undefined.
     // Because we are rounding toward more precision above, set
     // maximumSignificantDigits to 1 so that notation=compact does not override
@@ -167,7 +179,7 @@ export const TokenAmountDisplay = ({
   // Show full value in tooltip if different from compact and not an estimated
   // USD value.
   const shouldShowFullTooltip =
-    !showFullAmount && wasCompacted && !estimatedUsdValue
+    !showFullAmount && wasCompacted && !estimatedUsdValue && amount > 0
 
   return (
     <Tooltip

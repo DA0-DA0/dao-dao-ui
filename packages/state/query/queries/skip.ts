@@ -141,6 +141,21 @@ export const skipQueries = {
       queryFn: () => fetchSkipRecommendedAsset(queryClient, options),
     }),
   /**
+   * Fetch Skip recommended asset for generic token.
+   */
+  recommendedAssetForGenericToken: (
+    queryClient: QueryClient,
+    options: Omit<Parameters<typeof fetchSkipRecommendedAsset>[1], 'denom'> &
+      Pick<GenericTokenSource, 'type' | 'denomOrAddress'>
+  ) =>
+    skipQueries.recommendedAsset(queryClient, {
+      fromChainId: options.fromChainId,
+      toChainId: options.toChainId,
+      denom:
+        (options.type === TokenType.Cw20 ? 'cw20:' : '') +
+        options.denomOrAddress,
+    }),
+  /**
    * Fetch whether or not pfm is enabled for a chain.
    */
   chainPfmEnabled: (

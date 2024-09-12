@@ -1,21 +1,15 @@
 import { selectorFamily } from 'recoil'
 
-import { ChainId, GenericToken, GenericTokenWithUsdPrice } from '@dao-dao/types'
+import {
+  AstroportToken,
+  ChainId,
+  GenericToken,
+  GenericTokenWithUsdPrice,
+} from '@dao-dao/types'
 import { ASTROPORT_PRICES_API, objectMatchesStructure } from '@dao-dao/utils'
 
 import { skipRecommendedAssetForGenericTokenSelector } from './skip'
 import { genericTokenSelector } from './token'
-
-type AstroportToken = {
-  chainId: string
-  denom: string
-  symbol: string
-  description: string
-  decimals: number
-  priceUSD: number
-  totalLiquidityUSD: number
-  dayVolumeUSD: number
-}
 
 export const astroportUsdPriceSelector = selectorFamily<
   GenericTokenWithUsdPrice | undefined,

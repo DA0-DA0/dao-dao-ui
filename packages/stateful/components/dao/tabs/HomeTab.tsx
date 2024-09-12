@@ -9,6 +9,7 @@ import {
   useDaoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
+import { getDaoRewardDistributors } from '@dao-dao/utils'
 
 import {
   useDaoGovernanceToken,
@@ -20,6 +21,7 @@ import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { CreateDaoPermit } from '../CreateDaoPermit'
+import { DaoRewardsDistributorClaimCard } from '../DaoRewardsDistributorClaimCard'
 import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
@@ -66,6 +68,9 @@ export const HomeTab = () => {
           0
         )
 
+  const hasRewardDistributors =
+    getDaoRewardDistributors(dao.info.items).length > 0
+
   return (
     <div className="flex flex-col items-stretch gap-4">
       {mode === DaoPageMode.Sda && (
@@ -76,29 +81,42 @@ export const HomeTab = () => {
         />
       )}
 
-      <p className="title-text mt-2">{t('title.membership')}</p>
+      <div className="flex flex-col items-stretch lg:flex-row lg:items-start gap-x-2 gap-y-6 mt-2">
+        <div className="flex flex-col gap-4 w-full md:w-2/3 lg:w-1/2">
+          <p className="title-text">{t('title.membership')}</p>
 
-      <div className="w-full rounded-md bg-background-tertiary p-4 md:w-2/3 lg:w-1/2">
-        {isWalletConnected && !isSecretNetworkPermitNeeded ? (
-          <ProfileCardMemberInfo
-            maxGovernanceTokenDeposit={
-              maxGovernanceTokenProposalModuleDeposit > 0
-                ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
-                : undefined
-            }
-          />
-        ) : isSecretNetworkPermitNeeded ? (
-          <CreateDaoPermit />
-        ) : (
-          <>
-            <p className="body-text mb-3">{t('info.logInToViewMembership')}</p>
+          <div className="rounded-md bg-background-tertiary p-4">
+            {isWalletConnected && !isSecretNetworkPermitNeeded ? (
+              <ProfileCardMemberInfo
+                maxGovernanceTokenDeposit={
+                  maxGovernanceTokenProposalModuleDeposit > 0
+                    ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
+                    : undefined
+                }
+              />
+            ) : isSecretNetworkPermitNeeded ? (
+              <CreateDaoPermit />
+            ) : (
+              <>
+                <p className="body-text mb-3">
+                  {t('info.logInToViewMembership')}
+                </p>
 
-            <ConnectWallet size="md" />
-          </>
+                <ConnectWallet size="md" />
+              </>
+            )}
+          </div>
+        </div>
+
+        {hasRewardDistributors && isWalletConnected && (
+          <div className="flex flex-col gap-4 w-full md:w-2/3 lg:w-1/2">
+            <p className="title-text">{t('title.rewards')}</p>
+            <DaoRewardsDistributorClaimCard />
+          </div>
         )}
       </div>
 
-      <p className="title-text mt-4">{t('title.details')}</p>
+      <p className="title-text mt-2 lg:mt-4">{t('title.details')}</p>
 
       <MainDaoInfoCards />
 

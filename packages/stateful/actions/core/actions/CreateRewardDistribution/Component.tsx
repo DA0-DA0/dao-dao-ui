@@ -267,6 +267,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
         </p>
 
         <NumberInput
+          containerClassName={!isCreating ? 'self-start' : undefined}
           disabled={!isCreating}
           fieldName={(fieldNamePrefix + 'initialFunds') as 'initialFunds'}
           min={0}
