@@ -25,6 +25,7 @@ export type ExecuteMsg =
         emission_rate?: EmissionRate | null
         hook_caller?: string | null
         id: number
+        open_funding?: boolean | null
         vp_contract?: string | null
         withdraw_destination?: string | null
       }
@@ -141,6 +142,7 @@ export interface CreateMsg {
   denom: UncheckedDenom
   emission_rate: EmissionRate
   hook_caller: string
+  open_funding?: boolean | null
   vp_contract: string
   withdraw_destination?: string | null
 }
@@ -198,6 +200,7 @@ export interface DistributionState {
   historical_earned_puvp: Uint256
   hook_caller: Addr
   id: number
+  open_funding: boolean
   vp_contract: Addr
   withdraw_destination: Addr
 }

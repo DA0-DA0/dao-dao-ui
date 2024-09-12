@@ -153,12 +153,14 @@ export interface DaoRewardsDistributorInterface
       denom,
       emissionRate,
       hookCaller,
+      openFunding,
       vpContract,
       withdrawDestination,
     }: {
       denom: UncheckedDenom
       emissionRate: EmissionRate
       hookCaller: string
+      openFunding?: boolean
       vpContract: string
       withdrawDestination?: string
     },
@@ -171,12 +173,14 @@ export interface DaoRewardsDistributorInterface
       emissionRate,
       hookCaller,
       id,
+      openFunding,
       vpContract,
       withdrawDestination,
     }: {
       emissionRate?: EmissionRate
       hookCaller?: string
       id: number
+      openFunding?: boolean
       vpContract?: string
       withdrawDestination?: string
     },
@@ -330,12 +334,14 @@ export class DaoRewardsDistributorClient
       denom,
       emissionRate,
       hookCaller,
+      openFunding,
       vpContract,
       withdrawDestination,
     }: {
       denom: UncheckedDenom
       emissionRate: EmissionRate
       hookCaller: string
+      openFunding?: boolean
       vpContract: string
       withdrawDestination?: string
     },
@@ -351,6 +357,7 @@ export class DaoRewardsDistributorClient
           denom,
           emission_rate: emissionRate,
           hook_caller: hookCaller,
+          open_funding: openFunding,
           vp_contract: vpContract,
           withdraw_destination: withdrawDestination,
         },
@@ -365,12 +372,14 @@ export class DaoRewardsDistributorClient
       emissionRate,
       hookCaller,
       id,
+      openFunding,
       vpContract,
       withdrawDestination,
     }: {
       emissionRate?: EmissionRate
       hookCaller?: string
       id: number
+      openFunding?: boolean
       vpContract?: string
       withdrawDestination?: string
     },
@@ -386,6 +395,7 @@ export class DaoRewardsDistributorClient
           emission_rate: emissionRate,
           hook_caller: hookCaller,
           id,
+          open_funding: openFunding,
           vp_contract: vpContract,
           withdraw_destination: withdrawDestination,
         },
