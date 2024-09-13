@@ -110,7 +110,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
                     symbol: config.token.new.symbol,
                   },
                   subdenom: config.token.new.symbol.toLowerCase(),
-                  token_issuer_code_id: codeIds.CwTokenfactoryIssuerMain,
+                  token_issuer_code_id: codeIds.CwTokenfactoryIssuer,
                 },
               }
             : {
