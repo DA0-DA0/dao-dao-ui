@@ -606,6 +606,16 @@ export type DaoRewardDistribution = {
 } & DistributionState
 
 /**
+ * A reward distribution with the remaining rewards to be distributed.
+ */
+export type DaoRewardDistributionWithRemaining = DaoRewardDistribution & {
+  /**
+   * Remaining rewards to be distributed.
+   */
+  remaining: number
+}
+
+/**
  * Pending DAO rewards for a recipient.
  */
 export type PendingDaoRewards = {

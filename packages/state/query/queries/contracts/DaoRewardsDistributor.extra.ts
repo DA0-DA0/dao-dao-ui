@@ -118,6 +118,21 @@ export const fetchDaoRewardDistributions = async (
         break
       }
 
+      // Cache each distribution individually, to be used in the distribution
+      // query at the bottom of this function.
+      for (const distribution of page) {
+        queryClient.setQueryData(
+          daoRewardsDistributorQueries.distribution(queryClient, {
+            chainId,
+            contractAddress: address,
+            args: {
+              id: distribution.id,
+            },
+          }).queryKey,
+          distribution
+        )
+      }
+
       states.push(...page)
 
       // If we have less than the limit of items, we've exhausted them.
@@ -128,36 +143,16 @@ export const fetchDaoRewardDistributions = async (
   }
 
   const distributions = await Promise.all(
-    states.map(async (state): Promise<DaoRewardDistribution> => {
-      const token = await queryClient.fetchQuery(
-        tokenQueries.info(queryClient, {
+    states.map(({ id }) =>
+      queryClient.fetchQuery(
+        daoRewardsDistributorExtraQueries.distribution(queryClient, {
           chainId,
-          type: 'cw20' in state.denom ? TokenType.Cw20 : TokenType.Native,
-          denomOrAddress:
-            'cw20' in state.denom ? state.denom.cw20 : state.denom.native,
+          address,
+          id,
         })
       )
-
-      return {
-        chainId,
-        address,
-        token,
-        ...state,
-      }
-    })
-  )
-
-  // Cache individually.
-  for (const distribution of distributions) {
-    queryClient.setQueryData(
-      daoRewardsDistributorExtraQueries.distribution(queryClient, {
-        chainId,
-        address,
-        id: distribution.id,
-      }).queryKey,
-      distribution
     )
-  }
+  )
 
   return distributions
 }

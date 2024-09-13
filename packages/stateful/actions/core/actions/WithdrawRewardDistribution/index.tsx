@@ -1,7 +1,10 @@
-import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
+import {
+  daoRewardsDistributorExtraQueries,
+  daoRewardsDistributorQueries,
+} from '@dao-dao/state/query'
 import { ActionBase, OpenMailboxEmoji } from '@dao-dao/stateless'
 import {
-  DaoRewardDistribution,
+  DaoRewardDistributionWithRemaining,
   DaoRewardDistributor,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
@@ -38,7 +41,7 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
   /**
    * Existing reward distributions.
    */
-  private distributions: DaoRewardDistribution[] = []
+  private distributions: DaoRewardDistributionWithRemaining[] = []
 
   constructor(options: ActionOptions) {
     if (options.context.type !== ActionContextType.Dao) {
@@ -69,18 +72,36 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
   async setup() {
     this.distributions = (
       await Promise.all(
-        this.distributors.map(
-          async ({ address }) =>
-            await this.options.queryClient.fetchQuery(
-              daoRewardsDistributorExtraQueries.distributions(
-                this.options.queryClient,
-                {
-                  chainId: this.options.chain.chain_id,
-                  address,
-                }
-              )
+        this.distributors.map(async ({ address }) => {
+          const distributions = await this.options.queryClient.fetchQuery(
+            daoRewardsDistributorExtraQueries.distributions(
+              this.options.queryClient,
+              {
+                chainId: this.options.chain.chain_id,
+                address,
+              }
             )
-        )
+          )
+
+          return await Promise.all(
+            distributions.map(
+              async (
+                distribution
+              ): Promise<DaoRewardDistributionWithRemaining> => ({
+                ...distribution,
+                remaining: Number(
+                  await this.options.queryClient.fetchQuery(
+                    daoRewardsDistributorQueries.undistributedRewards({
+                      chainId: this.options.chain.chain_id,
+                      contractAddress: address,
+                      args: { id: distribution.id },
+                    })
+                  )
+                ),
+              })
+            )
+          )
+        })
       )
     ).flat()
 

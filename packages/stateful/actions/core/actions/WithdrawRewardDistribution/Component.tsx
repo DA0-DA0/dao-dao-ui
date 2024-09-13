@@ -8,10 +8,12 @@ import {
   InputLabel,
   InputThemedText,
   MarkdownRenderer,
+  TokenAmountDisplay,
 } from '@dao-dao/stateless'
-import { DaoRewardDistribution } from '@dao-dao/types'
+import { DaoRewardDistributionWithRemaining } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -26,7 +28,7 @@ export type WithdrawRewardDistributionOptions = {
   /**
    * Existing reward distributions.
    */
-  distributions: DaoRewardDistribution[]
+  distributions: DaoRewardDistributionWithRemaining[]
 }
 
 export const WithdrawRewardDistributionComponent: ActionComponent<
@@ -69,38 +71,66 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
         <InputLabel name={t('title.distribution')} primary />
 
         {isCreating ? (
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={distributions.map((distribution) => ({
-              key: distribution.address + distribution.id,
-              selected: selectedDistribution === distribution,
-              iconUrl:
-                distribution.token.imageUrl ||
-                getFallbackImage(distribution.token.denomOrAddress),
-              label: getHumanReadableRewardDistributionLabel(t, distribution),
-              ...distribution,
-            }))}
-            onSelect={({ address, id }) => {
-              setValue((fieldNamePrefix + 'address') as 'address', address)
-              setValue((fieldNamePrefix + 'id') as 'id', id)
-            }}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'self-start',
-                variant: !address ? 'primary' : 'ghost_outline',
-                size: 'lg',
-                children: selectedDistribution ? (
-                  <>
-                    {selectedDistributionDisplay}
-                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
-                  </>
-                ) : (
-                  t('button.chooseDistribution')
+          <>
+            <FilterableItemPopup
+              filterableItemKeys={FILTERABLE_KEYS}
+              items={distributions.map((distribution) => ({
+                key: distribution.address + distribution.id,
+                selected: selectedDistribution === distribution,
+                iconUrl:
+                  distribution.token.imageUrl ||
+                  getFallbackImage(distribution.token.denomOrAddress),
+                label: getHumanReadableRewardDistributionLabel(t, distribution),
+                description: (
+                  <TokenAmountDisplay
+                    amount={convertMicroDenomToDenomWithDecimals(
+                      distribution.remaining,
+                      distribution.token.decimals
+                    )}
+                    className="text-text-interactive-valid"
+                    decimals={distribution.token.decimals}
+                    suffix={' ' + t('info.remaining')}
+                    symbol={distribution.token.symbol}
+                  />
                 ),
-              },
-            }}
-          />
+                ...distribution,
+              }))}
+              onSelect={({ address, id }) => {
+                setValue((fieldNamePrefix + 'address') as 'address', address)
+                setValue((fieldNamePrefix + 'id') as 'id', id)
+              }}
+              trigger={{
+                type: 'button',
+                props: {
+                  className: 'self-start',
+                  variant: !address ? 'primary' : 'ghost_outline',
+                  size: 'lg',
+                  children: selectedDistribution ? (
+                    <>
+                      {selectedDistributionDisplay}
+                      <ArrowDropDown className="text-icon-primary !h-6 !w-6" />
+                    </>
+                  ) : (
+                    t('button.chooseDistribution')
+                  ),
+                },
+              }}
+            />
+
+            {selectedDistribution && (
+              <p className="text-text-interactive-valid">
+                {t('info.tokensWillBeWithdrawn', {
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    selectedDistribution.remaining,
+                    selectedDistribution.token.decimals
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: selectedDistribution.token.decimals,
+                  }),
+                  tokenSymbol: selectedDistribution.token.symbol,
+                })}
+              </p>
+            )}
+          </>
         ) : (
           <InputThemedText className="!py-2 !px-3">
             {selectedDistributionDisplay}
