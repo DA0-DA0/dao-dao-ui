@@ -243,7 +243,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
       action={governanceProposalAction}
       defaults={{
         ...governanceProposalAction.defaults,
-        ...cloneDeep(latestProposalSave),
+        ...latestProposalSave,
         ...usePrefill,
       }}
       localStorageKey={localStorageKey}
