@@ -1,29 +1,22 @@
 import { ReactNode, useState } from 'react'
 
-import {
-  IVotingModuleAdapterContext,
-  IVotingModuleAdapterOptions,
-} from '@dao-dao/types'
+import { useDaoContext } from '@dao-dao/stateless'
+import { IVotingModuleAdapterContext } from '@dao-dao/types'
 
 import { matchAndLoadAdapter } from '../core'
 import { VotingModuleAdapterContext } from './context'
 
-export interface VotingModuleAdapterProviderProps {
-  contractName: string
-  children: ReactNode | ReactNode[]
-  options: IVotingModuleAdapterOptions
-}
-
 // Ensure this re-renders when the voting module contract name or options
 // addresses change. You can do this by setting a `key` on this component or one
-// of its ancestors. See DaoPageWrapper.tsx where this component is used.
+// of its ancestors. See DaoProviders.tsx where this component is used.
 export const VotingModuleAdapterProvider = ({
-  contractName,
   children,
-  options,
-}: VotingModuleAdapterProviderProps) => {
+}: {
+  children: ReactNode
+}) => {
+  const { dao } = useDaoContext()
   const [context] = useState<IVotingModuleAdapterContext>(() =>
-    matchAndLoadAdapter(contractName, options)
+    matchAndLoadAdapter(dao)
   )
 
   return (

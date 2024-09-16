@@ -1,64 +1,92 @@
 import {
+  ActionAndData,
   ActionContextType,
+  ActionEncodeContext,
   ActionKeyAndData,
+  ActionMap,
   ActionOptions,
-  LoadedActions,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
 
 import { getAccountAddress } from './dao'
 
-// Convert action data to a Cosmos message given all loaded actions.
-export const convertActionsToMessages = (
-  loadedActions: LoadedActions,
-  actions: ActionKeyAndData[],
-  {
-    // Whether or not to throw the error if a transform fails. If false, the
-    // error will be logged to the console, and the message will be skipped.
-    throwErrors = true,
-  }: {
+/**
+ * Encode actions.
+ */
+export const encodeActions = async ({
+  actionMap,
+  encodeContext,
+  data,
+  options: { throwErrors = true } = {},
+}: {
+  actionMap: ActionMap
+  encodeContext: ActionEncodeContext
+  data: ActionKeyAndData[]
+  options?: {
+    /**
+     * Whether or not to throw the error if a transform fails. If false, the
+     * error will be logged to the console, and the message will be skipped.
+     *
+     * Defaults to true.
+     */
     throwErrors?: boolean
-  } = {}
-): UnifiedCosmosMsg[] =>
-  actions
-    .map(({ actionKey, data }) => {
-      // If no action, skip it.
-      if (!actionKey) {
-        return
-      }
-
-      // If no data, throw error because this is invalidly selected.
-      if (!data) {
-        if (throwErrors) {
-          throw new Error('No action selected.')
+  }
+}): Promise<UnifiedCosmosMsg[]> =>
+  (
+    await Promise.all(
+      data.map(async ({ actionKey, data }) => {
+        // If no action, skip it.
+        if (!actionKey) {
+          return []
         }
 
-        return
-      }
+        // If no data, maybe throw error because this is invalidly selected.
+        if (!data) {
+          if (throwErrors) {
+            throw new Error('No action selected.')
+          }
 
-      try {
-        const loadedAction = loadedActions[actionKey]
-        if (!loadedAction) {
-          return
-        }
-        // If action not loaded or errored, throw error.
-        if (!loadedAction.defaults) {
-          throw new Error(`Action not loaded: ${loadedAction.action.label}.`)
-        } else if (loadedAction.defaults instanceof Error) {
-          throw loadedAction.defaults
+          return []
         }
 
-        return loadedAction.transform(data)
-      } catch (err) {
-        if (throwErrors) {
-          throw err
+        try {
+          const action = actionMap[actionKey]
+          if (!action) {
+            return []
+          }
+
+          await action.init()
+
+          return await action.encode(data, encodeContext)
+        } catch (err) {
+          if (throwErrors) {
+            throw err
+          }
+
+          console.error(err)
         }
 
-        console.error(err)
-      }
-    })
-    // Filter out undefined messages.
-    .filter(Boolean) as UnifiedCosmosMsg[]
+        return []
+      })
+    )
+  ).flat()
+
+/**
+ * Resolve action keys with data to their actions.
+ */
+export const convertActionKeysAndDataToActions = (
+  actionMap: ActionMap,
+  actionKeysAndData: ActionKeyAndData[]
+): ActionAndData[] =>
+  actionKeysAndData.flatMap(({ actionKey, data }) => {
+    const action = actionMap[actionKey]
+    return action
+      ? {
+          action,
+          data,
+        }
+      : []
+  })
 
 /**
  * Get the address for the given action options for the given chain. If a DAO,

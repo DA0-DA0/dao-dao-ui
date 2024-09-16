@@ -20,20 +20,15 @@ import { useTranslation } from 'react-i18next'
 import {
   AccountTxForm,
   AccountTxSave,
-  ActionCategoryWithLabel,
-  LoadedActions,
+  ActionEncodeContext,
   LoadingData,
   SuspenseLoaderProps,
   UnifiedCosmosMsg,
   WalletChainSwitcherProps,
 } from '@dao-dao/types'
-import {
-  convertActionsToMessages,
-  processError,
-  validateRequired,
-} from '@dao-dao/utils'
+import { encodeActions, processError, validateRequired } from '@dao-dao/utils'
 
-import { useChainContext } from '../../contexts'
+import { useActionsContext, useChainContext } from '../../contexts'
 import { useHoldingKey } from '../../hooks'
 import { ActionsEditor, RawActionsRenderer } from '../actions'
 import { Button, ButtonLink } from '../buttons'
@@ -49,11 +44,8 @@ enum SubmitValue {
 }
 
 export type ProfileActionsProps = {
-  categories: ActionCategoryWithLabel[]
-  loadedActions: LoadedActions
   formMethods: UseFormReturn<AccountTxForm, object>
   execute: (messages: UnifiedCosmosMsg[]) => Promise<void>
-  loading: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
   txHash?: string
@@ -63,14 +55,12 @@ export type ProfileActionsProps = {
   saving: boolean
   holdingAltForDirectSign: boolean
   WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
+  actionEncodeContext: ActionEncodeContext
 }
 
 export const ProfileActions = ({
-  categories,
-  loadedActions,
   formMethods,
   execute,
-  loading,
   SuspenseLoader,
   error,
   txHash,
@@ -80,9 +70,11 @@ export const ProfileActions = ({
   saving,
   holdingAltForDirectSign,
   WalletChainSwitcher,
+  actionEncodeContext,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
+  const { actionMap } = useActionsContext()
 
   const {
     handleSubmit,
@@ -100,8 +92,10 @@ export const ProfileActions = ({
 
   const holdingShiftForForce = useHoldingKey({ key: 'shift' })
 
+  const [loading, setLoading] = useState(false)
+
   const onSubmitForm: SubmitHandler<AccountTxForm> = useCallback(
-    ({ actions }, event) => {
+    async ({ actions }, event) => {
       setShowSubmitErrorNote(false)
       setSubmitError('')
 
@@ -113,9 +107,14 @@ export const ProfileActions = ({
         return
       }
 
-      let msgs
+      setLoading(true)
       try {
-        msgs = convertActionsToMessages(loadedActions, actions)
+        const msgs = await encodeActions({
+          actionMap,
+          encodeContext: actionEncodeContext,
+          data: actions,
+        })
+        await execute(msgs)
       } catch (err) {
         console.error(err)
         setSubmitError(
@@ -123,23 +122,27 @@ export const ProfileActions = ({
             forceCapture: false,
           })
         )
-        return
+      } finally {
+        setLoading(false)
       }
-
-      execute(msgs)
     },
-    [execute, loadedActions]
+    [actionMap, actionEncodeContext, execute]
   )
 
   const onSubmitError: SubmitErrorHandler<AccountTxForm> = useCallback(
-    (errors) => {
+    async (errors) => {
       console.error('Form errors', errors)
 
       // Attempt submit anyways if forcing.
       if (holdingShiftForForce) {
-        let msgs
+        setLoading(true)
         try {
-          msgs = convertActionsToMessages(loadedActions, getValues('actions'))
+          const msgs = await encodeActions({
+            actionMap,
+            encodeContext: actionEncodeContext,
+            data: getValues('actions'),
+          })
+          await execute(msgs)
         } catch (err) {
           console.error(err)
           setSubmitError(
@@ -147,10 +150,9 @@ export const ProfileActions = ({
               forceCapture: false,
             })
           )
-          return
+        } finally {
+          setLoading(false)
         }
-
-        execute(msgs)
 
         // If not forcing, show error to check for errors.
       } else {
@@ -158,7 +160,7 @@ export const ProfileActions = ({
         setSubmitError('')
       }
     },
-    [execute, getValues, holdingShiftForForce, loadedActions]
+    [actionMap, actionEncodeContext, execute, getValues, holdingShiftForForce]
   )
 
   const [saveModalVisible, setSaveModalVisible] = useState(false)
@@ -208,8 +210,6 @@ export const ProfileActions = ({
             SuspenseLoader={SuspenseLoader}
             actionDataErrors={errors?.actions}
             actionDataFieldName="actions"
-            categories={categories}
-            loadedActions={loadedActions}
           />
 
           <div className="mt-4 flex flex-row items-center justify-between gap-6 border-y border-border-secondary py-6">
@@ -299,8 +299,8 @@ export const ProfileActions = ({
 
           {showPreview && (
             <RawActionsRenderer
-              actionData={actionData}
-              loadedActions={loadedActions}
+              actionKeysAndData={actionData}
+              encodeContext={actionEncodeContext}
             />
           )}
         </form>

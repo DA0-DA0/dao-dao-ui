@@ -17,6 +17,7 @@ import {
   InputLabel,
   Loader,
   NumberInput,
+  useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import {
@@ -31,8 +32,6 @@ import {
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { useActionOptions } from '../../../../../actions'
 
 export interface ManageMembersData {
   toAdd: Member[]

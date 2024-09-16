@@ -51,13 +51,14 @@ export const ProposalLine = ({
 
 type InnerProposalLineProps = Pick<
   StatefulProposalLineProps,
-  'proposalViewUrl' | 'isPreProposeProposal' | 'onClick'
+  'proposalViewUrl' | 'isPreProposeProposal' | 'onClick' | 'openInNewTab'
 >
 
 const InnerProposalLine = ({
   proposalViewUrl,
   onClick,
   isPreProposeProposal,
+  openInNewTab,
 }: InnerProposalLineProps) => {
   const { t } = useTranslation()
   const {
@@ -82,6 +83,7 @@ const InnerProposalLine = ({
         LinkWrapper={LinkWrapper}
         href={proposalViewUrl}
         onClick={onClick}
+        openInNewTab={openInNewTab}
       />
     </SuspenseLoader>
   )

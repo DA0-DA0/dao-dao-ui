@@ -1,5 +1,4 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
-import { useCallback, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +13,7 @@ import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
+  useActionsContext,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
@@ -21,19 +21,18 @@ import {
 } from '@dao-dao/stateless'
 import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
 import {
-  convertActionsToMessages,
   convertExpirationToDate,
   dateToWdhms,
+  encodeActions,
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useActionEncodeContext } from '../../../../../actions'
 import { useMembership, useWallet } from '../../../../../hooks'
 import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
   NewProposalForm,
-  SimulateProposal,
   UsePublishProposal,
 } from '../../types'
 import { NewProposalMain } from './NewProposalMain'
@@ -67,8 +66,6 @@ export const NewProposal = ({
 
   const { isMember = false, loading: membershipLoading } = useMembership()
 
-  const [loading, setLoading] = useState(false)
-
   // Info about if the DAO is paused. This selector depends on blockHeight,
   // which is refreshed periodically, so use a loadable to avoid unnecessary
   // re-renders.
@@ -92,25 +89,12 @@ export const NewProposal = ({
   )
 
   const {
-    simulateProposal: _simulateProposal,
+    simulateProposal,
     publishProposal,
     cannotProposeReason,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
-
-  const [simulating, setSimulating] = useState(false)
-  const simulateProposal: SimulateProposal = useCallback(
-    async (...params) => {
-      setSimulating(true)
-      try {
-        await _simulateProposal(...params)
-      } finally {
-        setSimulating(false)
-      }
-    },
-    [_simulateProposal]
-  )
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -126,7 +110,6 @@ export const NewProposal = ({
         }
         const blocksPerYear = blocksPerYearLoadable.contents
 
-        setLoading(true)
         try {
           const { proposalNumber, proposalId, isPreProposeApprovalProposal } =
             await publishProposal(newProposalData, {
@@ -207,11 +190,9 @@ export const NewProposal = ({
                   },
                 }
           )
-          // Don't stop loading indicator on success since we are navigating.
         } catch (err) {
           console.error(err)
           toast.error(processError(err))
-          setLoading(false)
         }
       },
     [
@@ -230,15 +211,24 @@ export const NewProposal = ({
     ]
   )
 
-  const { loadedActions } = useLoadedActionsAndCategories()
+  const { actionMap } = useActionsContext()
+  const encodeContext = useActionEncodeContext()
 
   const getProposalDataFromFormData: StatelessNewProposalProps<
     NewProposalForm,
     NewProposalData
-  >['getProposalDataFromFormData'] = ({ title, description, actionData }) => ({
+  >['getProposalDataFromFormData'] = async ({
     title,
     description,
-    msgs: convertActionsToMessages(loadedActions, actionData),
+    actionData,
+  }) => ({
+    title,
+    description,
+    msgs: await encodeActions({
+      actionMap,
+      encodeContext,
+      data: actionData,
+    }),
   })
 
   return (
@@ -262,7 +252,6 @@ export const NewProposal = ({
       }
       isPaused={isPaused}
       isWalletConnecting={isWalletConnecting}
-      loading={loading || simulating}
       proposalTitle={proposalTitle}
       simulateProposal={simulateProposal}
       simulationBypassExpiration={simulationBypassExpiration}

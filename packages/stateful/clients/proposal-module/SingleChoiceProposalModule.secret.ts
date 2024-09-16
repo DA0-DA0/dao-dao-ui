@@ -1,20 +1,29 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   SecretDaoPreProposeSingleClient,
   SecretDaoProposalSingleClient,
 } from '@dao-dao/state/contracts'
-import { secretDaoProposalSingleQueries } from '@dao-dao/state/query'
-import { Coin, SecretModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  secretDaoPreProposeSingleQueries,
+  secretDaoProposalSingleQueries,
+} from '@dao-dao/state/query'
+import {
+  CheckedDepositInfo,
+  Coin,
+  Duration,
+  SecretModuleInstantiateInfo,
+} from '@dao-dao/types'
 import { InstantiateMsg as SecretDaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
 import {
   InstantiateMsg as SecretDaoPreProposeSingleInstantiateMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/SecretDaoPreProposeSingle'
 import {
-  Duration,
+  Config,
   InstantiateMsg,
   PreProposeInfo,
+  ProposalResponse,
   Threshold,
   VetoConfig,
   Vote,
@@ -37,9 +46,11 @@ import { ProposalModuleBase } from './base'
 export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   NewProposalData,
+  ProposalResponse,
   VoteResponse,
   VoteInfo,
-  Vote
+  Vote,
+  Config
 > {
   static contractNames: readonly string[] = DAO_PROPOSAL_SINGLE_CONTRACT_NAMES
 
@@ -129,6 +140,19 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       } as InstantiateMsg),
       funds: [],
     }
+  }
+
+  /**
+   * Query options to fetch the DAO address.
+   */
+  static getDaoAddressQuery(
+    _: QueryClient,
+    options: {
+      chainId: string
+      contractAddress: string
+    }
+  ) {
+    return secretDaoProposalSingleQueries.dao(options)
   }
 
   async propose({
@@ -307,6 +331,26 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
+  getProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse> {
+    return secretDaoProposalSingleQueries.proposal({
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+      args: {
+        proposalId,
+      },
+    })
+  }
+
+  async getProposal(
+    ...params: Parameters<SecretSingleChoiceProposalModule['getProposalQuery']>
+  ): Promise<ProposalResponse> {
+    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  }
+
   getVoteQuery({
     proposalId,
     voter,
@@ -356,7 +400,61 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   getProposalCountQuery(): FetchQueryOptions<number> {
     return secretDaoProposalSingleQueries.proposalCount({
       chainId: this.dao.chainId,
-      contractAddress: this.info.address,
+      contractAddress: this.address,
     })
+  }
+
+  getConfigQuery(): FetchQueryOptions<Config> {
+    return secretDaoProposalSingleQueries.config({
+      chainId: this.dao.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+    return {
+      queryKey: [
+        'secretSingleChoiceProposalModule',
+        'depositInfo',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        if (this.prePropose) {
+          const { deposit_info: depositInfo } =
+            await this.queryClient.fetchQuery(
+              secretDaoPreProposeSingleQueries.config({
+                chainId: this.dao.chainId,
+                contractAddress: this.prePropose.address,
+              })
+            )
+
+          return depositInfo
+            ? {
+                amount: depositInfo.amount,
+                denom:
+                  // Convert snip20 to cw20 key.
+                  'snip20' in depositInfo.denom
+                    ? {
+                        // Code hash.
+                        cw20: depositInfo.denom.snip20[0],
+                      }
+                    : depositInfo.denom,
+                refund_policy: depositInfo.refund_policy,
+              }
+            : null
+        }
+
+        // If pre-propose is supported but not set, there are no deposits.
+        return null
+      },
+    }
+  }
+
+  async getMaxVotingPeriod(): Promise<Duration> {
+    return (await this.queryClient.fetchQuery(this.getConfigQuery()))
+      .max_voting_period
   }
 }

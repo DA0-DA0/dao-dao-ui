@@ -2,7 +2,7 @@ import { TFunction } from 'react-i18next'
 
 import {
   DurationUnits,
-  ProposalModule,
+  ProposalModuleInfo,
   ProposalVetoConfig,
 } from '@dao-dao/types'
 import {
@@ -20,7 +20,44 @@ import {
   convertDurationWithUnitsToDuration,
 } from './conversion'
 
-// Get the status key from the weirdly-formatted status enum.
+/**
+ * Extract info from proposal ID.
+ */
+export const extractProposalInfo = (
+  proposalId: string
+): {
+  prefix: string
+  proposalNumber: number
+  isPreProposeApprovalProposal: boolean
+} => {
+  // Prefix is alphabetical, followed by numeric prop number. If there is an
+  // asterisk between the prefix and the prop number, this is a pre-propose
+  // proposal. Allow the prefix to be empty for backwards compatibility. Default
+  // to first proposal module if no alphabetical prefix.
+  const proposalIdParts = proposalId.match(/^([A-Z]*)(\*)?(\d+)$/)
+  if (proposalIdParts?.length !== 4) {
+    throw new Error('Failed to parse proposal ID.')
+  }
+
+  // Undefined if matching group doesn't exist, i.e. no prefix exists.
+  const prefix = proposalIdParts[1] ?? ''
+  const isPreProposeApprovalProposal = proposalIdParts[2] === '*'
+  const proposalNumber = Number(proposalIdParts[3])
+
+  if (isNaN(proposalNumber)) {
+    throw new Error(`Invalid proposal number "${proposalNumber}".`)
+  }
+
+  return {
+    prefix,
+    proposalNumber,
+    isPreProposeApprovalProposal,
+  }
+}
+
+/**
+ * Get the status key from the weirdly-formatted status enum.
+ */
 export const keyFromPreProposeStatus = (
   status: PreProposeStatus
 ): PreProposeStatusKey => Object.keys(status)[0] as PreProposeStatusKey
@@ -72,8 +109,10 @@ export const convertVetoConfigToCosmos = (
  */
 export const convertCosmosVetoConfigToVeto = (
   veto: VetoConfig | null | undefined,
-  // If provided, `veto.vetoer` should be a cw1-whitelist contract address, and
-  // this should be its list of admins.
+  /**
+   * If provided, `veto.vetoer` should be a cw1-whitelist contract address, and
+   * this should be its list of admins.
+   */
   cw1WhitelistAdmins?: string[] | null
 ): ProposalVetoConfig =>
   veto
@@ -122,7 +161,7 @@ export const checkProposalSubmissionPolicy = ({
   /**
    * The proposal module.
    */
-  proposalModule: ProposalModule
+  proposalModule: ProposalModuleInfo
   /**
    * Current wallet address. Undefined if not connected.
    */

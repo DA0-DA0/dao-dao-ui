@@ -2,14 +2,12 @@ import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
   ContractVersion,
-  ContractVersionInfo,
   DaoDropdownInfo,
   Feature,
   LazyDaoCardProps,
   WithChainId,
 } from '@dao-dao/types'
 import {
-  DAO_CORE_CONTRACT_NAMES,
   INACTIVE_DAO_NAMES,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainGovernanceDaoDescription,
@@ -26,7 +24,6 @@ import { daoQueries } from '../../query'
 import { queryClientAtom } from '../atoms'
 import { contractInfoSelector, contractVersionSelector } from './contract'
 import { DaoDaoCoreSelectors } from './contracts'
-import { queryContractIndexerSelector } from './indexer'
 
 export const lazyDaoCardPropsSelector = selectorFamily<
   LazyDaoCardProps,
@@ -215,41 +212,4 @@ export const daoVetoableDaosSelector = selectorFamily<
           coreAddress: coreAdress,
         }
       }),
-})
-
-/**
- * Retrieve all potential SubDAOs of the DAO from the indexer.
- */
-export const daoPotentialSubDaosSelector = selectorFamily<
-  string[],
-  WithChainId<{
-    coreAddress: string
-  }>
->({
-  key: 'daoPotentialSubDaos',
-  get:
-    ({ coreAddress, chainId }) =>
-    ({ get }) => {
-      const potentialSubDaos: {
-        contractAddress: string
-        info: ContractVersionInfo
-      }[] = get(
-        queryContractIndexerSelector({
-          chainId,
-          contractAddress: coreAddress,
-          formula: 'daoCore/potentialSubDaos',
-          noFallback: true,
-        })
-      )
-
-      // Filter out those that do not appear to be DAO contracts and also the
-      // contract itself since it is probably its own admin.
-      return potentialSubDaos
-        .filter(
-          ({ contractAddress, info }) =>
-            contractAddress !== coreAddress &&
-            DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
-        )
-        .map(({ contractAddress }) => contractAddress)
-    },
 })

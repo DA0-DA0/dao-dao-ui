@@ -1,6 +1,6 @@
 import { ChainWalletContext } from '@cosmos-kit/core'
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
-import { v4 as uuidv4 } from 'uuid'
+import { nanoid } from 'nanoid'
 
 import { secretDaoDaoCoreQueries } from '@dao-dao/state/query'
 import {
@@ -37,14 +37,14 @@ import {
 } from '../voting-module'
 import { CwDao } from './CwDao'
 
-const getVotingModuleBases = () => [
+export const getVotingModuleBases = () => [
   SecretCw4VotingModule,
   // SecretSnip20StakedVotingModule,
   SecretSnip721StakedVotingModule,
   SecretTokenStakedVotingModule,
 ]
 
-const getProposalModuleBases = () => [
+export const getProposalModuleBases = () => [
   SecretSingleChoiceProposalModule,
   SecretMultipleChoiceProposalModule,
 ]
@@ -98,7 +98,7 @@ export class SecretCwDao extends CwDao {
         image_url: config.imageUrl?.trim() || null,
         initial_items: config.initialItems,
         name: config.name,
-        prng_seed: uuidv4(),
+        prng_seed: nanoid(),
         proposal_modules_instantiate_info: proposalModules,
         query_auth_code_hash: codeHashes.QueryAuth,
         query_auth_code_id: codeIds.QueryAuth,

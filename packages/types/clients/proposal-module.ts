@@ -1,17 +1,19 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
-import { Coin } from '../contracts/common'
-import { PreProposeModule, ProposalModule } from '../dao'
+import { CheckedDepositInfo, Coin, Duration } from '../contracts/common'
+import { PreProposeModule, ProposalModuleInfo } from '../dao'
 import { ContractVersion } from '../features'
 import { IDaoBase } from './dao'
 
 export interface IProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
   Proposal = any,
+  ProposalResponse = any,
   VoteResponse = any,
   VoteInfo = any,
-  Vote = any
+  Vote = any,
+  Config = any
 > {
   /**
    * DAO this module belongs to.
@@ -21,7 +23,7 @@ export interface IProposalModuleBase<
   /**
    * Proposal module info.
    */
-  info: ProposalModule
+  info: ProposalModuleInfo
 
   /**
    * Contract address.
@@ -91,6 +93,18 @@ export interface IProposalModuleBase<
   }): Promise<void>
 
   /**
+   * Query options to fetch a proposal.
+   */
+  getProposalQuery(options: {
+    proposalId: number
+  }): FetchQueryOptions<ProposalResponse>
+
+  /**
+   * Fetch a proposal.
+   */
+  getProposal(options: { proposalId: number }): Promise<ProposalResponse>
+
+  /**
    * Query options to fetch the vote on a proposal by a given address. If voter
    * is undefined, will return query in loading state.
    */
@@ -117,4 +131,22 @@ export interface IProposalModuleBase<
    * Fetch the total number of proposals.
    */
   getProposalCount(): Promise<number>
+
+  /**
+   * Query options to fetch the config.
+   */
+  getConfigQuery(): Pick<FetchQueryOptions<Config>, 'queryKey' | 'queryFn'>
+
+  /**
+   * Query options to fetch configured deposit info, if any.
+   */
+  getDepositInfoQuery(): Pick<
+    FetchQueryOptions<CheckedDepositInfo | null>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Fetch the max voting period.
+   */
+  getMaxVotingPeriod(): Promise<Duration>
 }

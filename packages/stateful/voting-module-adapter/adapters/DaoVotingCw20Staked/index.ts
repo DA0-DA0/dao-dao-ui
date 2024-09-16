@@ -3,6 +3,7 @@ import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
 import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
+  ActionKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
@@ -12,13 +13,9 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { makeMintAction, makeUpdateStakingConfigAction } from './actions'
+import { MintAction, UpdateStakingConfigAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
-import {
-  useCommonGovernanceTokenInfo,
-  useMainDaoInfoCards,
-  useVotingModuleRelevantAddresses,
-} from './hooks'
+import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
 
 export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
   id: DaoVotingCw20StakedAdapterId,
@@ -29,7 +26,6 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
     hooks: {
       useMainDaoInfoCards,
       useVotingModuleRelevantAddresses,
-      useCommonGovernanceTokenInfo,
     },
 
     // Components
@@ -54,13 +50,16 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
 
     // Functions
     fields: {
-      actionCategoryMakers: [
-        () => ({
+      actions: {
+        actions: [MintAction, UpdateStakingConfigAction],
+        categoryMakers: [
           // Add to DAO Governance category.
-          key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeMintAction, makeUpdateStakingConfigAction],
-        }),
-      ],
+          () => ({
+            key: ActionCategoryKey.DaoGovernance,
+            actionKeys: [ActionKey.Mint, ActionKey.UpdateStakingConfig],
+          }),
+        ],
+      },
     },
   }),
 }

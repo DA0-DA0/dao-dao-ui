@@ -9,6 +9,7 @@ import { useFormContext } from 'react-hook-form'
 import {
   InputErrorMessage,
   NumberInput,
+  useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import {
@@ -22,9 +23,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
+export type MintData = {
+  to: string
+  amount: number
+}
 
-export interface MintOptions {
+export type MintOptions = {
   govToken: GenericToken
   // Used to display the profile of the address receiving minted tokens.
   AddressInput: ComponentType<AddressInputProps>

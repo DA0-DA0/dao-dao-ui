@@ -1,17 +1,9 @@
 import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentPropsWithoutRef, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface SearchBarProps
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'variant'> {
-  hideIcon?: boolean
-  variant?: 'sm' | 'lg'
-  ghost?: boolean
-  onIconClick?: () => void
-  iconClassName?: string
-  containerClassName?: string
-}
+import { SearchBarProps } from '@dao-dao/types'
 
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   function SearchBar(

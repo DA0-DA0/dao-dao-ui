@@ -1,5 +1,6 @@
 import { atomFamily, selectorFamily } from 'recoil'
 
+import { DiscordNotifierRegistration } from '@dao-dao/types'
 import { DISCORD_NOTIFIER_API_BASE } from '@dao-dao/utils'
 
 type DiscordNotifierRegistrationsOptions = {
@@ -15,19 +16,6 @@ export const refreshDiscordNotifierRegistrationsAtom = atomFamily<
   key: 'refreshDiscordNotifierRegistrations',
   default: 0,
 })
-
-export type DiscordNotifierRegistration = {
-  id: string
-  guild: {
-    id: string
-    name: string
-    iconHash: string
-  }
-  channel: {
-    id: string
-    name: string
-  }
-}
 
 export const discordNotifierRegistrationsSelector = selectorFamily<
   DiscordNotifierRegistration[],

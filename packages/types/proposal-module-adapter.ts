@@ -4,12 +4,11 @@ import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { Action, ActionCategoryMaker, ActionMaker } from './actions'
+import { ActionMaker } from './actions'
 import { IProposalModuleBase } from './clients'
 import {
   DaoInfoCard,
   LinkWrapperProps,
-  ProposalVoterProps,
   SelfRelayExecuteModalProps,
 } from './components'
 import { Expiration } from './contracts'
@@ -25,7 +24,7 @@ import {
   DaoCreationVotingConfigItem,
   PreProposeModule,
   ProposalDraft,
-  ProposalModule,
+  ProposalModuleInfo,
 } from './dao'
 import { ContractVersion } from './features'
 import { LoadingData } from './misc'
@@ -39,10 +38,8 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
     makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
 
-    updateConfigActionMaker: ActionMaker
-    updatePreProposeConfigActionMaker?: ActionMaker
-    // Any extra actions added by the proposal module.
-    actionCategoryMakers?: ActionCategoryMaker[]
+    updateConfigActionMaker: ActionMaker<any>
+    updatePreProposeConfigActionMaker?: ActionMaker<any>
   }
 
   // Selectors
@@ -163,7 +160,7 @@ export type IProposalModuleAdapterOptions = {
   /**
    * The proposal module.
    */
-  proposalModule: ProposalModule
+  proposalModule: ProposalModuleInfo
   /**
    * The proposal ID unique across all proposal modules. They include the
    * proposal module's prefix, the proposal number within the proposal module,
@@ -256,7 +253,7 @@ export type CommonProposalListInfo = {
   id: string
   proposalNumber: number
   timestamp: Date | undefined
-  isOpen: boolean
+  status: ProposalStatus
   // If true, will be not be shown in the proposal list. This is used for
   // example to hide completed pre-propose proposals that were approved, since
   // those show up as normal proposals. No need to double count.
@@ -290,7 +287,7 @@ export type BaseProposalStatusAndInfoProps = {
 
 export type BaseProposalVoterProps = {
   onVoteSuccess: () => void | Promise<void>
-} & Pick<ProposalVoterProps, 'seenAllActionPages'>
+}
 
 export type BaseProposalVotesProps = {
   /**
@@ -310,9 +307,6 @@ export type BaseProposalInnerContentDisplayProps<
   // Once proposal messages are loaded, the inner component is responsible for
   // setting the duplicate form data for the duplicate button in the header.
   setDuplicateFormData?: (data: FormData) => void
-  actionsForMatching: Action[]
-  // Called when the user has viewed all action pages.
-  setSeenAllActionPages?: () => void
 }
 
 export type BasePreProposeApprovalInnerContentDisplayProps =
@@ -326,6 +320,7 @@ export type BaseProposalWalletVoteProps<T> = {
 export type BaseProposalLineProps = {
   href: string
   onClick?: () => void
+  openInNewTab?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 

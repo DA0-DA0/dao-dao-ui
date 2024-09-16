@@ -5,6 +5,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '../contracts/DaoDaoCore'
 import { ContractVersion } from '../features'
+import { GenericToken } from '../token'
 import { IDaoBase } from './dao'
 
 export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
@@ -60,4 +61,13 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
    * undefined, the latest block height will be used.
    */
   getTotalVotingPower(height?: number): Promise<string>
+
+  /**
+   * Query options to fetch the governance token used by this voting module. Not
+   * all voting modules have a governance token.
+   */
+  getGovernanceTokenQuery?(): Pick<
+    FetchQueryOptions<GenericToken>,
+    'queryKey' | 'queryFn'
+  >
 }

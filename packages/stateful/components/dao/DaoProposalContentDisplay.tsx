@@ -12,7 +12,6 @@ import {
 } from '@dao-dao/types'
 import { encodeJsonToBase64 } from '@dao-dao/utils'
 
-import { useActionsForMatching } from '../../actions'
 import { useEntity } from '../../hooks'
 import { useProposalModuleAdapterContext } from '../../proposal-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
@@ -20,16 +19,13 @@ import { IconButtonLink } from '../IconButtonLink'
 
 export type DaoProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
-  setSeenAllActionPages: (() => void) | undefined
 }
 
 export const DaoProposalContentDisplay = ({
   proposalInfo,
-  setSeenAllActionPages,
 }: DaoProposalContentDisplayProps) => {
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const actionsForMatching = useActionsForMatching()
   const {
     id,
     options: { proposalModule },
@@ -81,9 +77,7 @@ export const DaoProposalContentDisplay = ({
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
         <ProposalInnerContentDisplay
-          actionsForMatching={actionsForMatching}
           setDuplicateFormData={setDuplicateFormData}
-          setSeenAllActionPages={setSeenAllActionPages}
         />
       }
       onRefresh={refreshProposal}

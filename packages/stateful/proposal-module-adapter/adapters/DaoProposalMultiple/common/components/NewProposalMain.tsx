@@ -2,7 +2,6 @@ import { Add, Block, Circle } from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { SuspenseLoader } from '../../../../../components'
 import {
   MULTIPLE_CHOICE_OPTION_COLORS,
@@ -18,7 +17,6 @@ export const NewProposalMain = () => {
     watch,
     formState: { errors },
   } = useFormContext<NewProposalForm>()
-  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const {
     fields: multipleChoiceFields,
@@ -41,11 +39,9 @@ export const NewProposalMain = () => {
               key={id}
               SuspenseLoader={SuspenseLoader}
               addOption={addOption}
-              categories={categories}
               control={control}
               descriptionFieldName={`choices.${index}.description`}
               errorsOption={errors?.choices?.[index]}
-              loadedActions={loadedActions}
               optionIndex={index}
               registerOption={register}
               removeOption={() => removeOption(index)}

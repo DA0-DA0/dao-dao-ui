@@ -1,45 +1,31 @@
-import { constSelector } from 'recoil'
-
-import { NeutronVaultSelectors } from '@dao-dao/state'
+import { neutronVaultQueries } from '@dao-dao/state'
 import {
   DaoVotingVaultCard as StatelessDaoVotingVaultCard,
-  useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
 import { StatefulDaoVotingVaultCardProps } from '@dao-dao/types'
 
-import { useWallet } from '../../hooks'
+import { useQueryLoadingDataWithError, useWallet } from '../../hooks'
 
 export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
   const { chain_id: chainId } = useChain()
   const { address } = useWallet()
 
-  const loadingVaultVotingPower = useCachedLoadingWithError(
-    NeutronVaultSelectors.totalPowerAtHeightSelector({
-      contractAddress: props.vault.address,
-      chainId,
-      params: [{}],
-    })
-  )
-  const loadingWalletVotingPower = useCachedLoadingWithError(
+  const loadingWalletVotingPower = useQueryLoadingDataWithError(
     address
-      ? NeutronVaultSelectors.votingPowerAtHeightSelector({
-          contractAddress: props.vault.address,
+      ? neutronVaultQueries.votingPowerAtHeight({
           chainId,
-          params: [
-            {
-              address,
-            },
-          ],
+          contractAddress: props.vault.address,
+          args: {
+            address,
+          },
         })
-      : constSelector(undefined)
+      : undefined
   )
 
   return (
     <StatelessDaoVotingVaultCard
       vaultVotingPowerPercent={
-        loadingVaultVotingPower.loading ||
-        loadingVaultVotingPower.errored ||
         props.totalVotingPower.loading
           ? {
               loading: true,
@@ -49,28 +35,28 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
               data:
                 props.totalVotingPower.data === 0
                   ? 0
-                  : (Number(loadingVaultVotingPower.data.power) /
+                  : (Number(props.vault.totalPower) /
                       props.totalVotingPower.data) *
                     100,
             }
       }
       walletVotingPowerPercent={
-        loadingVaultVotingPower.loading ||
-        loadingVaultVotingPower.errored ||
-        loadingWalletVotingPower.loading ||
-        loadingWalletVotingPower.errored
+        !address
+          ? {
+              loading: false,
+              data: undefined,
+            }
+          : loadingWalletVotingPower.loading || loadingWalletVotingPower.errored
           ? {
               loading: true,
             }
           : {
               loading: false,
               data:
-                loadingWalletVotingPower.data === undefined
-                  ? undefined
-                  : loadingVaultVotingPower.data.power === '0'
+                props.vault.totalPower === '0'
                   ? 0
                   : (Number(loadingWalletVotingPower.data.power) /
-                      Number(loadingVaultVotingPower.data.power)) *
+                      Number(props.vault.totalPower)) *
                     100,
             }
       }

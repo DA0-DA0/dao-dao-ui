@@ -3,9 +3,9 @@ import {
   instantiate2Address,
 } from '@cosmjs/cosmwasm-stargate'
 import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { nanoid } from 'nanoid'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
@@ -87,7 +87,7 @@ export const useInstantiateAndExecute = (
       }
 
       // Random salt.
-      const salt = uuidv4()
+      const salt = nanoid()
 
       const contractAddress = instantiate2Address(
         checksum.data,

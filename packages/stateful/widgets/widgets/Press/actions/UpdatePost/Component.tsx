@@ -15,7 +15,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, ActionKey, LoadingData } from '@dao-dao/types'
+import { ActionComponent, LoadingData } from '@dao-dao/types'
 import {
   processError,
   transformIpfsUrlToHttpsIfNecessary,
@@ -49,8 +49,6 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
   errors,
   isCreating,
   options: { postLoading, postsLoading },
-  addAction,
-  allActionsWithData,
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext<UpdatePostData>()
@@ -127,21 +125,6 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
       setValue((fieldNamePrefix + 'tokenId') as 'tokenId', cid)
       setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', metadataUrl)
       setValue((fieldNamePrefix + 'uploaded') as 'uploaded', true)
-
-      // Add action to delete old post if does not already exist.
-      if (
-        !allActionsWithData.some(
-          ({ actionKey, data }) =>
-            actionKey === ActionKey.DeletePost && data.id === updatingPost.id
-        )
-      ) {
-        addAction?.({
-          actionKey: ActionKey.DeletePost,
-          data: {
-            id: updatingPost.id,
-          },
-        })
-      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

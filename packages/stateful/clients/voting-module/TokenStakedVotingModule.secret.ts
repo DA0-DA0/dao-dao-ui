@@ -1,7 +1,14 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { secretDaoVotingTokenStakedQueries } from '@dao-dao/state/query'
-import { SecretModuleInstantiateInfo } from '@dao-dao/types'
+import {
+  secretDaoVotingTokenStakedQueries,
+  tokenQueries,
+} from '@dao-dao/state/query'
+import {
+  GenericToken,
+  SecretModuleInstantiateInfo,
+  TokenType,
+} from '@dao-dao/types'
 import {
   ActiveThreshold,
   Duration,
@@ -122,5 +129,36 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
         height,
       },
     })
+  }
+
+  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+    return {
+      queryKey: [
+        'secretTokenStakedVotingModule',
+        'governanceToken',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        const { denom } = await this.queryClient.fetchQuery(
+          secretDaoVotingTokenStakedQueries.denom({
+            chainId: this.dao.chainId,
+            contractAddress: this.address,
+          })
+        )
+
+        const token = await this.queryClient.fetchQuery(
+          tokenQueries.info(this.queryClient, {
+            chainId: this.dao.chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          })
+        )
+
+        return token
+      },
+    }
   }
 }

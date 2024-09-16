@@ -3,7 +3,7 @@ import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
   followingDaosSelector,
-  refreshOpenProposalsAtom,
+  refreshProposalsIdAtom,
 } from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
@@ -22,7 +22,7 @@ export const VetoableProposals: FeedSource<
   id: 'vetoable_proposals',
   Renderer,
   useData: () => {
-    const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
+    const setRefresh = useSetRecoilState(refreshProposalsIdAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
     const { uniquePublicKeys } = useProfile()

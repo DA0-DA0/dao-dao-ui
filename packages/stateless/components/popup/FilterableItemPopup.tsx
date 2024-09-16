@@ -80,8 +80,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 
   // Default nothing selected.
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  // When filtered items update, reset selection.
-  useEffect(() => setSelectedIndex(-1), [filteredData])
+  // When filtered items length updates, reset selection. The reference to
+  // `filteredData` may change on every render, so we don't want to rely on it
+  // directly, or else we'll create a render loop.
+  useEffect(() => setSelectedIndex(-1), [filteredData.length])
   // Ensure selected item is scrolled into view.
   useEffect(() => {
     const item = itemsListRef.current?.children[selectedIndex]

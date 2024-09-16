@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import {
   GenericToken,
@@ -49,34 +49,6 @@ export const skipAssetSelector = selectorFamily<
           },
         })
       ),
-})
-
-export const skipChainPfmEnabledSelector = selectorFamily<boolean, string>({
-  key: 'skipChainPfmEnabled',
-  get:
-    (chainId) =>
-    ({ get }) => {
-      const chain = get(skipChainSelector(chainId))
-      return chain?.ibc_capabilities?.cosmos_pfm ?? chain?.pfm_enabled ?? false
-    },
-})
-
-export const skipAllChainsPfmEnabledSelector = selectorFamily<
-  boolean,
-  string[]
->({
-  key: 'skipAllChainsPfmEnabled',
-  get:
-    (chainIds) =>
-    ({ get }) => {
-      const chainsPfmEnabled = get(
-        waitForAll(
-          chainIds.map((chainId) => skipChainPfmEnabledSelector(chainId))
-        )
-      )
-
-      return chainsPfmEnabled.every(Boolean)
-    },
 })
 
 export const skipRecommendedAssetsSelector = selectorFamily<
@@ -162,7 +134,12 @@ export const skipRouteSelector = selectorFamily<
         throw new Error('No recommended asset found.')
       }
 
-      const route: SkipRoute = await (
+      const route:
+        | SkipRoute
+        | {
+            code: number
+            message: string
+          } = await (
         await fetch(SKIP_API_BASE + '/v2/fungible/route', {
           method: 'POST',
           headers: {
@@ -177,6 +154,10 @@ export const skipRouteSelector = selectorFamily<
           }),
         })
       ).json()
+
+      if ('code' in route && 'message' in route) {
+        throw new Error(`Skip API error: ${route.message}`)
+      }
 
       if (route.does_swap) {
         throw new Error('Route requires a swap.')

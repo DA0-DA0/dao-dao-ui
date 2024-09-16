@@ -4,13 +4,16 @@ import {
   CwCoreV1QueryClient,
   DaoDaoCoreQueryClient,
 } from '@dao-dao/state/contracts'
-import { indexerQueries } from '@dao-dao/state/query'
+import { contractQueries, indexerQueries } from '@dao-dao/state/query'
 import {
   ContractVersion,
-  ProposalModule,
+  ProposalModuleInfo,
   ProposalModuleType,
 } from '@dao-dao/types'
-import { InfoResponse } from '@dao-dao/types/contracts/common'
+import {
+  ContractVersionInfo,
+  InfoResponse,
+} from '@dao-dao/types/contracts/common'
 import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   DaoProposalMultipleAdapterId,
@@ -29,7 +32,7 @@ export const fetchProposalModules = async (
   coreVersion: ContractVersion,
   // If already fetched (from indexer), use that.
   activeProposalModules?: ProposalModuleWithInfo[]
-): Promise<ProposalModule[]> => {
+): Promise<ProposalModuleInfo[]> => {
   // Try indexer first.
   if (!activeProposalModules) {
     try {
@@ -54,60 +57,94 @@ export const fetchProposalModules = async (
     )
   }
 
-  const proposalModules: ProposalModule[] = await Promise.all(
-    activeProposalModules.map(async ({ info, address, prefix }) => {
-      const version =
-        (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
-
-      // Get adapter for this contract.
-      const adapter = info && matchAdapter(info.contract)
-
-      // Get proposal module type from adapter.
-      const type: ProposalModuleType =
-        adapter?.id === DaoProposalSingleAdapterId
-          ? ProposalModuleType.Single
-          : adapter?.id === DaoProposalMultipleAdapterId
-          ? ProposalModuleType.Multiple
-          : ProposalModuleType.Other
-
-      const [prePropose, veto] = await Promise.allSettled([
-        // Get pre-propose address if exists.
-        adapter?.functions.fetchPrePropose?.(
-          queryClient,
-          chainId,
-          address,
-          version
-        ),
-        // Get veto config if exists.
-        adapter?.functions.fetchVetoConfig?.(chainId, address, version),
-      ])
-
-      return {
+  return await Promise.all(
+    activeProposalModules.map(async ({ info, address, prefix }) =>
+      fetchProposalModule({
+        queryClient,
+        chainId,
         address,
         prefix,
-        contractName: info?.contract || '',
-        version,
-        prePropose:
-          (prePropose.status === 'fulfilled' && prePropose.value) || null,
-        ...(type !== ProposalModuleType.Other
-          ? {
-              type,
-              config: {
-                veto: (veto.status === 'fulfilled' && veto.value) || null,
-              },
-            }
-          : {
-              type,
-            }),
-      }
-    })
+        info,
+      })
+    )
   )
+}
 
-  return proposalModules
+export const fetchProposalModule = async ({
+  queryClient,
+  chainId,
+  address,
+  prefix,
+  info,
+}: {
+  queryClient: QueryClient
+  chainId: string
+  address: string
+  prefix: string
+  /**
+   * If not provided, it will be fetched.
+   */
+  info?: ContractVersionInfo
+}): Promise<ProposalModuleInfo> => {
+  // If no info, fetch it.
+  if (!info) {
+    info = (
+      await queryClient.fetchQuery(
+        contractQueries.info(queryClient, {
+          chainId,
+          address,
+        })
+      )
+    ).info
+  }
+
+  const version =
+    (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
+
+  // Get adapter for this contract.
+  const adapter = info && matchAdapter(info.contract)
+
+  // Get proposal module type from adapter.
+  const type: ProposalModuleType =
+    adapter?.id === DaoProposalSingleAdapterId
+      ? ProposalModuleType.Single
+      : adapter?.id === DaoProposalMultipleAdapterId
+      ? ProposalModuleType.Multiple
+      : ProposalModuleType.Other
+
+  const [prePropose, veto] = await Promise.allSettled([
+    // Get pre-propose address if exists.
+    adapter?.functions.fetchPrePropose?.(
+      queryClient,
+      chainId,
+      address,
+      version
+    ),
+    // Get veto config if exists.
+    adapter?.functions.fetchVetoConfig?.(chainId, address, version),
+  ])
+
+  return {
+    address,
+    prefix,
+    contractName: info?.contract || '',
+    version,
+    prePropose: (prePropose.status === 'fulfilled' && prePropose.value) || null,
+    ...(type !== ProposalModuleType.Other
+      ? {
+          type,
+          config: {
+            veto: (veto.status === 'fulfilled' && veto.value) || null,
+          },
+        }
+      : {
+          type,
+        }),
+  }
 }
 
 const LIMIT = 10
-export const fetchProposalModulesWithInfoFromChain = async (
+const fetchProposalModulesWithInfoFromChain = async (
   chainId: string,
   coreAddress: string,
   coreVersion: ContractVersion

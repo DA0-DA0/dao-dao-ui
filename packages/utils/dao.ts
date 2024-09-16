@@ -69,7 +69,7 @@ export const getFundsFromDaoInstantiateMsg = ({
 export const getAccount = ({
   accounts,
   chainId,
-  types = [AccountType.Native, AccountType.Polytone],
+  types = [AccountType.Base, AccountType.Polytone],
 }: {
   accounts: readonly Account[]
   chainId?: string

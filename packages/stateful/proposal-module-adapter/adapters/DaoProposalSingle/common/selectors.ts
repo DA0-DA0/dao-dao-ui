@@ -118,7 +118,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === ProposalStatusEnum.Open,
+          status,
         })
       )
 
@@ -166,7 +166,7 @@ export const reversePreProposePendingProposalInfosSelector: (
           id: `${proposalModulePrefix}*${id}`,
           proposalNumber: id,
           timestamp: createdAt ? new Date(createdAt) : undefined,
-          isOpen: true,
+          status: ProposalStatusEnum.Open,
         })
       )
 
@@ -214,7 +214,12 @@ export const reversePreProposeCompletedProposalInfosSelector: (
           id: `${proposalModulePrefix}*${id}`,
           proposalNumber: id,
           timestamp: createdAt ? new Date(createdAt) : undefined,
-          isOpen: false,
+          status:
+            'pending' in status
+              ? ProposalStatusEnum.Open
+              : 'approved' in status
+              ? ProposalStatusEnum.Executed
+              : ProposalStatusEnum.Closed,
           // Hide approved proposals from the list since they show up as normal
           // proposals. No need to show duplicates. But we still want to show
           // rejected pre-propose proposals.

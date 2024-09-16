@@ -1,6 +1,10 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingNativeStakedQueries } from '@dao-dao/state/query'
+import {
+  daoVotingNativeStakedQueries,
+  tokenQueries,
+} from '@dao-dao/state/query'
+import { GenericToken, TokenType } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -56,5 +60,36 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
         height,
       },
     })
+  }
+
+  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+    return {
+      queryKey: [
+        'nativeStakedVotingModule',
+        'governanceToken',
+        {
+          chainId: this.dao.chainId,
+          address: this.address,
+        },
+      ],
+      queryFn: async () => {
+        const { denom } = await this.queryClient.fetchQuery(
+          daoVotingNativeStakedQueries.getConfig(this.queryClient, {
+            chainId: this.dao.chainId,
+            contractAddress: this.address,
+          })
+        )
+
+        const token = await this.queryClient.fetchQuery(
+          tokenQueries.info(this.queryClient, {
+            chainId: this.dao.chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          })
+        )
+
+        return token
+      },
+    }
   }
 }

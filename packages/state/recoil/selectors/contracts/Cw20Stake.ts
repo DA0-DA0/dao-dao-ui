@@ -4,7 +4,7 @@ import { WithChainId } from '@dao-dao/types'
 import {
   Claim,
   ClaimsResponse,
-  GetConfigResponse,
+  Config,
   GetHooksResponse,
   ListStakersResponse,
   StakedBalanceAtHeightResponse,
@@ -243,7 +243,7 @@ export const totalValueSelector = selectorFamily<
     },
 })
 export const getConfigSelector = selectorFamily<
-  GetConfigResponse,
+  Config,
   QueryClientParams & {
     params: Parameters<Cw20StakeQueryClient['getConfig']>
   }

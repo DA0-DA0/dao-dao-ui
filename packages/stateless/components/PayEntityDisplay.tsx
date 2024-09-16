@@ -4,9 +4,11 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 
-import { TokenAmountDisplay, useDetectWrap } from '@dao-dao/stateless'
 import { PayEntityDisplayProps, PayEntityDisplayRowProps } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+
+import { useDetectWrap } from '../hooks'
+import { TokenAmountDisplay } from './token'
 
 export const PayEntityDisplay = ({
   tokens,

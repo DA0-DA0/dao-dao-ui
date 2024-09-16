@@ -24,6 +24,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   makeValidateAddress,
+  transformIpfsUrlToHttpsIfNecessary,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -333,7 +334,7 @@ export const Rate = ({
                             ({ name, url, mimetype }) =>
                               `${mimetype.startsWith('image') ? '!' : ''}[${
                                 name || url
-                              }](${url})`
+                              }](${transformIpfsUrlToHttpsIfNecessary(url)})`
                           ) || []),
                         ].join('\n\n')}
                       />

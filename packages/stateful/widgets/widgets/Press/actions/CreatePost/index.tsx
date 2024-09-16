@@ -1,37 +1,20 @@
-import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { MemoEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, MemoEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
-import {
-  decodePolytoneExecuteMsg,
-  getChainAddressForActionOptions,
-  makeWasmMessage,
-  maybeMakePolytoneExecuteMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { getChainAddressForActionOptions } from '@dao-dao/utils'
 
+import { MintNftAction } from '../../../../../actions/core/actions'
 import { postSelector } from '../../state'
 import { PressData } from '../../types'
 import { CreatePostComponent, CreatePostData } from './Component'
-
-const useDefaults: UseDefaults<CreatePostData> = () => ({
-  tokenId: '',
-  tokenUri: '',
-  uploaded: false,
-  data: {
-    title: '',
-    description: '',
-    content: '',
-  },
-})
 
 const Component: ActionComponent = (props) => {
   const { watch } = useFormContext<CreatePostData>()
@@ -59,97 +42,69 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeCreatePostActionMaker =
-  ({
-    contract,
-    chainId: configuredChainId,
-  }: PressData): ActionMaker<CreatePostData> =>
-  (options) => {
-    const {
-      t,
-      chain: { chain_id: daoChainId },
-    } = options
+export class CreatePostAction extends ActionBase<CreatePostData> {
+  public readonly key = ActionKey.CreatePost
+  public readonly Component = Component
 
-    // The chain that Press is set up on. If chain ID is undefined, default to
-    // native DAO chain for backwards compatibility.
-    const pressChainId = configuredChainId || daoChainId
+  protected _defaults: CreatePostData = {
+    tokenId: '',
+    tokenUri: '',
+    uploaded: false,
+    data: {
+      title: '',
+      description: '',
+      content: '',
+    },
+  }
 
-    const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreatePostData> = (
-      msg: Record<string, any>
-    ) => {
-      let chainId = daoChainId
-      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
-      if (decodedPolytone.match) {
-        chainId = decodedPolytone.chainId
-        msg = decodedPolytone.msg
-      }
+  private mintNftAction: MintNftAction
 
-      return objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              mint: {
-                owner: {},
-                token_id: {},
-                token_uri: {},
-              },
-            },
-          },
-        },
-      }) &&
-        msg.wasm.execute.contract_addr === contract &&
-        msg.wasm.execute.msg.mint.token_uri
-        ? {
-            match: true,
-            data: {
-              tokenId: msg.wasm.execute.msg.mint.token_id,
-              tokenUri: msg.wasm.execute.msg.mint.token_uri,
-              uploaded: true,
-            },
-          }
-        : {
-            match: false,
-          }
+  constructor(options: ActionOptions, private pressData: PressData) {
+    super(options, {
+      Icon: MemoEmoji,
+      label: options.t('title.createPost'),
+      description: options.t('info.createPostDescription'),
+    })
+
+    this.mintNftAction = new MintNftAction(options)
+  }
+
+  encode({ tokenId, tokenUri }: CreatePostData): UnifiedCosmosMsg[] {
+    // If chain ID is undefined, default to native DAO chain for backwards
+    // compatibility.
+    const pressChainId = this.pressData.chainId || this.options.chain.chain_id
+
+    const owner = getChainAddressForActionOptions(this.options, pressChainId)
+    if (!owner) {
+      throw new Error('No minter found for chain.')
     }
 
-    const useTransformToCosmos: UseTransformToCosmos<CreatePostData> = () =>
-      useCallback(
-        ({ tokenId, tokenUri }) =>
-          maybeMakePolytoneExecuteMessage(
-            daoChainId,
-            pressChainId,
-            makeWasmMessage({
-              wasm: {
-                execute: {
-                  contract_addr: contract,
-                  funds: [],
-                  msg: {
-                    mint: {
-                      owner: getChainAddressForActionOptions(
-                        options,
-                        pressChainId
-                      ),
-                      token_id: tokenId,
-                      token_uri: tokenUri,
-                    },
-                  },
-                },
-              },
-            })
-          ),
-        []
-      )
+    return this.mintNftAction.encode({
+      chainId: pressChainId,
+      collectionAddress: this.pressData.contract,
+      mintMsg: {
+        owner,
+        token_id: tokenId,
+        token_uri: tokenUri,
+      },
+      // Unused.
+      contractChosen: true,
+    })
+  }
 
+  match(messages: ProcessedMessage[]): ActionMatch {
+    return (
+      this.mintNftAction.match(messages) &&
+      messages[0].decodedMessage.wasm.execute.contract_addr ===
+        this.pressData.contract
+    )
+  }
+
+  decode([{ decodedMessage }]: ProcessedMessage[]): CreatePostData {
     return {
-      key: ActionKey.CreatePost,
-      Icon: MemoEmoji,
-      label: t('title.createPost'),
-      description: t('info.createPostDescription'),
-      Component,
-      useDefaults,
-      useTransformToCosmos,
-      useDecodedCosmosMsg,
+      tokenId: decodedMessage.wasm.execute.msg.mint.token_id,
+      tokenUri: decodedMessage.wasm.execute.msg.mint.token_uri,
+      uploaded: true,
     }
   }
+}

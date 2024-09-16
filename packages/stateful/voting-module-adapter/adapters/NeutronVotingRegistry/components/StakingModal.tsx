@@ -1,12 +1,13 @@
 import { coins } from '@cosmjs/stargate'
+import { useQueries } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
-  NeutronVaultSelectors,
   genericTokenBalanceSelector,
+  neutronVaultQueries,
   refreshDaoVotingPowerAtom,
   refreshFollowingDaosAtom,
   refreshWalletBalancesIdAtom,
@@ -23,6 +24,7 @@ import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  makeCombineQueryResultsIntoLoadingDataWithError,
   processError,
   tokensEqual,
 } from '@dao-dao/utils'
@@ -66,23 +68,24 @@ const InnerStakingModal = ({
             : []
         )
 
-  const loadingStakedTokens = useCachedLoadingWithError(
-    loadingVaults.loading || loadingVaults.errored || !address
-      ? undefined
-      : waitForAll(
-          realVaults.map(({ address: contractAddress }) =>
-            NeutronVaultSelectors.bondingStatusSelector({
-              contractAddress,
+  const loadingStakedTokens = useQueries({
+    queries:
+      loadingVaults.loading || loadingVaults.errored || !address
+        ? []
+        : realVaults.map(({ address: contractAddress }) =>
+            neutronVaultQueries.bondingStatus({
               chainId,
-              params: [
-                {
-                  address,
-                },
-              ],
+              contractAddress,
+              args: {
+                address,
+              },
             })
-          )
-        )
-  )
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      // Show loading if empty array is passed.
+      loadIfNone: true,
+    }),
+  })
   const loadingUnstakedTokens = useCachedLoadingWithError(
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined

@@ -19,7 +19,7 @@ import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import { getChainForChainId } from '../chain'
 import { transformIpfsUrlToHttpsIfNecessary } from '../conversion'
 import { isValidUrl } from '../isValidUrl'
-import { objectMatchesStructure } from '../objectMatchesStructure'
+import { Structure, objectMatchesStructure } from '../objectMatchesStructure'
 import { isCosmWasmStargateMsg } from './cw'
 
 // Decode governance proposal v1 messages using a protobuf.
@@ -142,13 +142,35 @@ export const decodeGovProposal = async (
   }
 }
 
-export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
+/**
+ * Check if a message is a decoded stargate message, whose value is an object
+ * (decoded from binary). Optionally check if it matches a specific type URL.
+ */
+export const isDecodedStargateMsg = (
+  msg: any,
+  /**
+   * If provided, check if the message's type URL matches this type or any of
+   * the types if it's an array.
+   */
+  typeOrUrl?: string | { typeUrl: string } | (string | { typeUrl: string })[],
+  /**
+   * If provided, check if the message's value matches this structure.
+   */
+  value: Structure = {}
+): msg is DecodedStargateMsg =>
   objectMatchesStructure(msg, {
     stargate: {
       typeUrl: {},
-      value: {},
+      value,
     },
-  }) && typeof msg.stargate.value === 'object'
+  }) &&
+  typeof msg.stargate.value === 'object' &&
+  (!typeOrUrl ||
+    [typeOrUrl]
+      .flat()
+      .some(
+        (t) => msg.stargate.typeUrl === (typeof t === 'string' ? t : t.typeUrl)
+      ))
 
 /**
  * Decode raw JSON data for displaying. Decode any nested protobufs into JSON.

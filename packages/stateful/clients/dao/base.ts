@@ -78,6 +78,17 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
+   * Voting module for the DAO, or undefined if not implemented.
+   */
+  get maybeVotingModule(): IVotingModuleBase | undefined {
+    try {
+      return this.votingModule
+    } catch {
+      return undefined
+    }
+  }
+
+  /**
    * Proposal modules for the DAO.
    */
   get proposalModules(): readonly IProposalModuleBase[] {

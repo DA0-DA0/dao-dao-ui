@@ -528,7 +528,7 @@ export interface VotingPowerAtHeightResponse {
 // Custom
 
 export type ProposalModuleWithInfo = ProposalModule & {
-  info?: ContractVersionInfo
+  info: ContractVersionInfo
 }
 
 export type SubDaoWithChainId = SubDao & {

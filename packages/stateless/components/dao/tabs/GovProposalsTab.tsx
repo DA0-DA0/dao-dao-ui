@@ -10,7 +10,7 @@ import { usePlatform } from '../../../hooks'
 import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface GovProposalsTabProps {
-  ProposalList: ComponentType
+  ProposalList: ComponentType<{ className: string }>
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
@@ -65,7 +65,7 @@ export const GovProposalsTab = ({
         </Tooltip>
       </div>
 
-      <ProposalList />
+      <ProposalList className="border-t border-border-secondary py-6" />
     </>
   )
 }

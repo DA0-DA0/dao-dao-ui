@@ -2,17 +2,18 @@ import { useFormContext } from 'react-hook-form'
 
 import { ProposalContentDisplay, RawActionsRenderer } from '@dao-dao/stateless'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useActionEncodeContext } from '../../../../../actions'
 import { EntityDisplay } from '../../../../../components'
 import { useEntity, useWallet } from '../../../../../hooks'
 import { NewProposalForm } from '../../types'
 
 export const NewProposalPreview = () => {
-  const { loadedActions } = useLoadedActionsAndCategories()
   const { watch } = useFormContext<NewProposalForm>()
 
   const { address: walletAddress = '' } = useWallet()
   const { entity } = useEntity(walletAddress)
+
+  const encodeContext = useActionEncodeContext()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -31,8 +32,8 @@ export const NewProposalPreview = () => {
       innerContentDisplay={
         actionData.length ? (
           <RawActionsRenderer
-            actionData={actionData}
-            loadedActions={loadedActions}
+            actionKeysAndData={actionData}
+            encodeContext={encodeContext}
           />
         ) : undefined
       }

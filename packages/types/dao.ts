@@ -67,7 +67,7 @@ export type DaoInfo = {
   supportedFeatures: SupportedFeatureMap
   votingModuleAddress: string
   votingModuleInfo: ContractVersionInfo
-  proposalModules: ProposalModule[]
+  proposalModules: ProposalModuleInfo[]
   /**
    * Wasm contract-level admin that can migrate.
    */
@@ -202,7 +202,7 @@ export type ProposalModuleTypedConfig =
       config?: undefined
     }
 
-export type ProposalModule = {
+export type ProposalModuleInfo = {
   contractName: string
   version: ContractVersion
   address: string
@@ -569,4 +569,5 @@ export type VotingVaultInfo =
 
 export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
+  totalPower: string
 }

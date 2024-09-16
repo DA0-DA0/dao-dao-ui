@@ -11,13 +11,14 @@ import {
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatusDisplay, StatusDisplayProps } from '@dao-dao/stateless'
 import {
   ProposalStatusEnum,
   ProposalStatusKey,
   ProposalStatus as Status,
 } from '@dao-dao/types'
 import { getProposalStatusKey } from '@dao-dao/utils'
+
+import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 
 export type ProposalStatusProps = {
   status: Status

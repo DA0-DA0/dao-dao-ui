@@ -83,9 +83,17 @@ export const approverIdForPreProposeApprovalIdSelector = selectorFamily<
                 },
               },
             ],
-          }) as RecoilValueReadOnly<number>,
+          }) as RecoilValueReadOnly<number | null>,
         ])
       )
+
+      // If no proposal number found, approver must not have been setup when
+      // this pre-propose approval proposal was created.
+      if (!approverProposalNumber) {
+        throw new Error(
+          'no approver proposal created for this pre-propose approval proposal'
+        )
+      }
 
       // Get prefix of proposal module with dao-pre-propose-approver attached
       // so we can link to the approver proposal.

@@ -19,6 +19,7 @@ import {
   InputLabel,
   TextAreaInput,
   TextInput,
+  useActionOptions,
 } from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
@@ -29,7 +30,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../actions'
 import { MintNftData } from './types'
 
 export const MintNftEditor = ({

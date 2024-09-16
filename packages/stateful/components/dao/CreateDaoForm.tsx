@@ -14,8 +14,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
-import { contractQueries } from '@dao-dao/state/query'
-import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
+import {
+  averageColorSelector,
+  contractQueries,
+  walletChainIdAtom,
+} from '@dao-dao/state'
 import {
   Button,
   ChainProvider,
@@ -78,7 +81,7 @@ import {
   versionGte,
 } from '@dao-dao/utils'
 
-import { CustomData } from '../../actions/core/advanced/Custom/Component'
+import { CustomData } from '../../actions/core/actions/Custom/Component'
 import { CwDao } from '../../clients/dao/CwDao'
 import { SecretCwDao } from '../../clients/dao/SecretCwDao'
 import { getCreatorById, getCreators } from '../../creators'

@@ -5,6 +5,7 @@ import {
   Account,
   AccountType,
   CryptographicMultisigAccount,
+  Cw1WhitelistAccount,
   Cw3MultisigAccount,
   GenericToken,
   MultisigAccount,
@@ -31,7 +32,12 @@ import {
 
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
-import { cw3FlexMultisigQueries, valenceRebalancerQueries } from './contracts'
+import {
+  cw1WhitelistExtraQueries,
+  cw3FlexMultisigQueries,
+  valenceAccountQueries,
+  valenceRebalancerQueries,
+} from './contracts'
 import { daoDaoCoreQueries } from './contracts/DaoDaoCore'
 import { indexerQueries } from './indexer'
 import { polytoneQueries } from './polytone'
@@ -91,7 +97,7 @@ export const fetchAccountList = async (
     : {
         chainId,
         address,
-        type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+        type: isPolytoneProxy ? AccountType.Polytone : AccountType.Base,
       }
 
   const [polytoneProxies, registeredIcas] = await Promise.all([
@@ -128,9 +134,9 @@ export const fetchAccountList = async (
     ),
   ]
 
-  // If main account is native, load ICA accounts.
+  // If main account is base, load ICA accounts.
   const icaChains =
-    mainAccount.type === AccountType.Native
+    mainAccount.type === AccountType.Base
       ? [
           ...(registeredIcas || []).map(([key]) => key),
           ...(includeIcaChains || []),
@@ -431,20 +437,32 @@ export const fetchValenceAccount = async (
   const rebalancerAddress =
     getSupportedChainConfig(chainId)?.valence?.rebalancer
 
-  const rebalancerConfig = rebalancerAddress
-    ? await queryClient
-        .fetchQuery(
-          valenceRebalancerQueries.getConfig({
-            chainId,
-            contractAddress: rebalancerAddress,
-            args: {
-              addr: address,
-            },
-          })
-        )
-        // This will error when no rebalancer is configured.
-        .catch(() => null)
-    : null
+  const [admin, rebalancerConfig] = await Promise.all([
+    queryClient
+      .fetchQuery(
+        valenceAccountQueries.getAdmin({
+          chainId,
+          contractAddress: address,
+        })
+      )
+      // backwards compatibility for old test valence accounts that didn't let
+      // you query the admin
+      .catch(() => ''),
+    rebalancerAddress
+      ? queryClient
+          .fetchQuery(
+            valenceRebalancerQueries.getConfig({
+              chainId,
+              contractAddress: rebalancerAddress,
+              args: {
+                addr: address,
+              },
+            })
+          )
+          // This will error when no rebalancer is configured.
+          .catch(() => null)
+      : null,
+  ])
 
   const uniqueDenoms = rebalancerConfig?.targets.map(({ denom }) => denom) || []
   // Map token denom to token.
@@ -473,6 +491,7 @@ export const fetchValenceAccount = async (
     chainId,
     address,
     config: {
+      admin,
       rebalancer: rebalancerConfig && {
         config: rebalancerConfig,
         targets: rebalancerConfig.targets.map((target) => ({
@@ -526,6 +545,40 @@ export const fetchValenceAccounts = async (
       )
     )
   )
+}
+
+/**
+ * Fetch a cw1-whitelist account.
+ */
+export const fetchCw1WhitelistAccount = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<Cw1WhitelistAccount> => {
+  const admins = await queryClient.fetchQuery(
+    cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
+      chainId,
+      address,
+    })
+  )
+
+  if (!admins) {
+    throw new Error('Not a cw1-whitelist address.')
+  }
+
+  return {
+    type: AccountType.Cw1Whitelist,
+    chainId,
+    address,
+    config: {
+      admins,
+    },
+  }
 }
 
 export const accountQueries = {
@@ -604,5 +657,16 @@ export const accountQueries = {
     queryOptions({
       queryKey: ['account', 'valenceAccounts', options],
       queryFn: () => fetchValenceAccounts(queryClient, options),
+    }),
+  /**
+   * Fetch a cw1-whitelist account.
+   */
+  cw1Whitelist: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchCw1WhitelistAccount>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['account', 'cw1Whitelist', options],
+      queryFn: () => fetchCw1WhitelistAccount(queryClient, options),
     }),
 }

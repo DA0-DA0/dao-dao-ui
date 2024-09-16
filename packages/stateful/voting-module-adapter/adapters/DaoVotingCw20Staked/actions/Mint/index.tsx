@@ -1,87 +1,26 @@
-import { useCallback, useMemo } from 'react'
-
-import { HerbEmoji } from '@dao-dao/stateless'
+import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
+import { GenericToken, TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  makeWasmMessage,
+  makeExecuteSmartContractMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../../components'
 import { useGovernanceTokenInfo } from '../../hooks'
-import { MintComponent as StatelessMintComponent } from './MintComponent'
-
-export interface MintData {
-  to: string
-  amount: number
-}
-
-const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
-  const { governanceToken } = useGovernanceTokenInfo()
-
-  return useCallback(
-    (data: MintData) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: governanceToken.denomOrAddress,
-            msg: {
-              mint: {
-                amount: convertDenomToMicroDenomStringWithDecimals(
-                  data.amount,
-                  governanceToken.decimals
-                ),
-                recipient: data.to,
-              },
-            },
-            funds: [],
-          },
-        },
-      }),
-    [governanceToken]
-  )
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
-  msg: Record<string, any>
-) => {
-  const { governanceToken } = useGovernanceTokenInfo()
-
-  return useMemo(() => {
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      // Mint action only supports minting our own governance token. Let
-      // custom action handle the rest of the mint messages for now.
-      msg.wasm.execute.contract_addr === governanceToken.denomOrAddress &&
-      'mint' in msg.wasm.execute.msg &&
-      'amount' in msg.wasm.execute.msg.mint &&
-      'recipient' in msg.wasm.execute.msg.mint
-    ) {
-      return {
-        match: true,
-        data: {
-          to: msg.wasm.execute.msg.mint.recipient,
-          amount: convertMicroDenomToDenomWithDecimals(
-            msg.wasm.execute.msg.mint.amount,
-            governanceToken.decimals
-          ),
-        },
-      }
-    }
-
-    return { match: false }
-  }, [governanceToken, msg])
-}
+import {
+  MintData,
+  MintComponent as StatelessMintComponent,
+} from './MintComponent'
 
 const Component: ActionComponent = (props) => {
   const { governanceToken } = useGovernanceTokenInfo()
@@ -97,20 +36,88 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
-  const useDefaults: UseDefaults<MintData> = () => ({
-    to: address,
-    amount: 1,
-  })
+export class MintAction extends ActionBase<MintData> {
+  public readonly key = ActionKey.Mint
+  public readonly Component = Component
 
-  return {
-    key: ActionKey.Mint,
-    Icon: HerbEmoji,
-    label: t('title.mint'),
-    description: t('info.mintActionDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
+  private governanceToken?: GenericToken
+
+  constructor(options: ActionOptions) {
+    super(options, {
+      Icon: HerbEmoji,
+      label: options.t('title.mint'),
+      description: options.t('info.mintActionDescription'),
+    })
+
+    this.defaults = {
+      to: options.address,
+      amount: 1,
+    }
+  }
+
+  async setup() {
+    // Type-check.
+    if (
+      this.options.context.type !== ActionContextType.Dao ||
+      !this.options.context.dao.votingModule.getGovernanceTokenQuery
+    ) {
+      throw new Error('Invalid context for mint action')
+    }
+
+    this.governanceToken = await this.options.queryClient.fetchQuery(
+      this.options.context.dao.votingModule.getGovernanceTokenQuery()
+    )
+  }
+
+  encode({ to, amount }: MintData): UnifiedCosmosMsg {
+    if (!this.governanceToken || this.governanceToken.type !== TokenType.Cw20) {
+      throw new Error('Action not ready')
+    }
+
+    return makeExecuteSmartContractMessage({
+      chainId: this.options.chain.chain_id,
+      sender: this.options.address,
+      contractAddress: this.governanceToken.denomOrAddress,
+      msg: {
+        mint: {
+          amount: convertDenomToMicroDenomStringWithDecimals(
+            amount,
+            this.governanceToken.decimals
+          ),
+          recipient: to,
+        },
+      },
+    })
+  }
+
+  match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
+    return objectMatchesStructure(decodedMessage, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            mint: {
+              amount: {},
+              recipient: {},
+            },
+          },
+        },
+      },
+    })
+  }
+
+  decode([{ decodedMessage }]: ProcessedMessage[]): MintData {
+    if (!this.governanceToken || this.governanceToken.type !== TokenType.Cw20) {
+      throw new Error('Action not ready')
+    }
+
+    return {
+      to: decodedMessage.wasm.execute.msg.mint.recipient,
+      amount: convertMicroDenomToDenomWithDecimals(
+        decodedMessage.wasm.execute.msg.mint.amount,
+        this.governanceToken.decimals
+      ),
+    }
   }
 }

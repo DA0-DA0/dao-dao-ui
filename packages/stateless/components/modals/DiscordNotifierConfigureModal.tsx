@@ -2,8 +2,7 @@ import { ArrowOutwardRounded, DeleteRounded } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DiscordNotifierRegistration } from '@dao-dao/state/recoil'
-import { ModalProps } from '@dao-dao/types'
+import { DiscordNotifierRegistration, ModalProps } from '@dao-dao/types'
 
 import { useDaoInfoContext } from '../../contexts'
 import { Button } from '../buttons'

@@ -1,15 +1,18 @@
-import { Coin, coin } from '@cosmjs/stargate'
-import { useCallback, useMemo } from 'react'
+import { coin } from '@cosmjs/stargate'
 
-import { HerbEmoji } from '@dao-dao/stateless'
-import { makeStargateMessage } from '@dao-dao/types'
+import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
+import {
+  GenericToken,
+  UnifiedCosmosMsg,
+  makeStargateMessage,
+} from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
-  ActionMaker,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionMatch,
+  ActionOptions,
+  ProcessedMessage,
 } from '@dao-dao/types/actions'
 import { MsgMint } from '@dao-dao/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 import {
@@ -18,76 +21,11 @@ import {
   isDecodedStargateMsg,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
 import { useGovernanceTokenInfo } from '../../hooks'
-import { MintComponent as StatelessMintComponent } from './MintComponent'
-
-export interface MintData {
-  amount: number
-}
-
-const useDefaults: UseDefaults<MintData> = () => ({
-  amount: 1,
-})
-
-const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
-  const { address } = useActionOptions()
-  const { governanceToken } = useGovernanceTokenInfo()
-
-  return useCallback(
-    (data: MintData) => {
-      return makeStargateMessage({
-        stargate: {
-          typeUrl: MsgMint.typeUrl,
-          value: {
-            sender: address,
-            amount: coin(
-              convertDenomToMicroDenomStringWithDecimals(
-                data.amount,
-                governanceToken.decimals
-              ),
-              governanceToken.denomOrAddress
-            ),
-          } as MsgMint,
-        },
-      })
-    },
-    [address, governanceToken]
-  )
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
-  msg: Record<string, any>
-) => {
-  const { governanceToken } = useGovernanceTokenInfo()
-
-  return useMemo(() => {
-    if (
-      !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== MsgMint.typeUrl
-    ) {
-      return {
-        match: false,
-      }
-    }
-
-    const { denom, amount } = msg.stargate.value.amount as Coin
-
-    return governanceToken.denomOrAddress === denom
-      ? {
-          match: true,
-          data: {
-            amount: convertMicroDenomToDenomWithDecimals(
-              amount,
-              governanceToken.decimals
-            ),
-          },
-        }
-      : {
-          match: false,
-        }
-  }, [governanceToken, msg])
-}
+import {
+  MintData,
+  MintComponent as StatelessMintComponent,
+} from './MintComponent'
 
 const Component: ActionComponent = (props) => {
   const { governanceToken } = useGovernanceTokenInfo()
@@ -102,13 +40,79 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeMintAction: ActionMaker<MintData> = ({ t }) => ({
-  key: ActionKey.Mint,
-  Icon: HerbEmoji,
-  label: t('title.mint'),
-  description: t('info.mintActionDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+export class MintAction extends ActionBase<MintData> {
+  public readonly key = ActionKey.Mint
+  public readonly Component = Component
+
+  protected _defaults: MintData = {
+    amount: 1,
+  }
+
+  private governanceToken?: GenericToken
+
+  constructor(options: ActionOptions) {
+    super(options, {
+      Icon: HerbEmoji,
+      label: options.t('title.mint'),
+      description: options.t('info.mintActionDescription'),
+    })
+  }
+
+  async setup() {
+    // Type-check.
+    if (
+      this.options.context.type !== ActionContextType.Dao ||
+      !this.options.context.dao.votingModule.getGovernanceTokenQuery
+    ) {
+      throw new Error('Invalid context for mint action')
+    }
+
+    this.governanceToken = await this.options.queryClient.fetchQuery(
+      this.options.context.dao.votingModule.getGovernanceTokenQuery()
+    )
+  }
+
+  encode({ amount }: MintData): UnifiedCosmosMsg {
+    if (!this.governanceToken) {
+      throw new Error('Action not ready')
+    }
+
+    return makeStargateMessage({
+      stargate: {
+        typeUrl: MsgMint.typeUrl,
+        value: MsgMint.fromPartial({
+          sender: this.options.address,
+          amount: coin(
+            convertDenomToMicroDenomStringWithDecimals(
+              amount,
+              this.governanceToken.decimals
+            ),
+            this.governanceToken.denomOrAddress
+          ),
+        }),
+      },
+    })
+  }
+
+  match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
+    return (
+      isDecodedStargateMsg(decodedMessage, MsgMint) &&
+      !!this.governanceToken &&
+      decodedMessage.stargate.value.amount.denom ===
+        this.governanceToken.denomOrAddress
+    )
+  }
+
+  decode([{ decodedMessage }]: ProcessedMessage[]): MintData {
+    if (!this.governanceToken) {
+      throw new Error('Action not ready')
+    }
+
+    return {
+      amount: convertMicroDenomToDenomWithDecimals(
+        decodedMessage.stargate.value.amount.amount,
+        this.governanceToken.decimals
+      ),
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
+import { nanoid } from 'nanoid'
 import { atom, atomFamily } from 'recoil'
-import { v4 as uuidv4 } from 'uuid'
 
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
 import {
@@ -27,7 +27,7 @@ import {
 // Avoid cyclic dependencies issues with the adapter modules by using a lazy
 // maker function.
 export const makeDefaultNewDao = (chainId: string): NewDao => ({
-  uuid: uuidv4(),
+  uuid: nanoid(),
   chainId,
   name: '',
   description: '',

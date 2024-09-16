@@ -1,18 +1,16 @@
 import { DataObject } from '@mui/icons-material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
   ActionCardLoader,
-  ActionsRenderer,
+  ActionsMatchAndRender,
   Button,
-  CosmosMessageDisplay,
+  RawActionsRenderer,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
-  ActionAndData,
   ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
   ChainId,
@@ -20,11 +18,7 @@ import {
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import {
-  decodeMessages,
-  decodeRawDataForDisplay,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { decodeMessages, objectMatchesStructure } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
@@ -52,9 +46,7 @@ export const ProposalInnerContentDisplay = (
 
 const InnerProposalInnerContentDisplay = ({
   setDuplicateFormData,
-  actionsForMatching,
   proposal,
-  setSeenAllActionPages,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: Proposal | SingleChoiceProposal
 }) => {
@@ -62,13 +54,9 @@ const InnerProposalInnerContentDisplay = ({
   const [showRaw, setShowRaw] = useState(false)
   const { chainId, coreVersion } = useDaoInfoContext()
 
-  const { decodedMessages, rawDecodedMessages } = useMemo(() => {
-    let decodedMessages = decodeMessages(proposal.msgs)
-    const rawDecodedMessages = JSON.stringify(
-      decodedMessages.map(decodeRawDataForDisplay),
-      null,
-      2
-    )
+  const actionMessagesToDisplay = useMemo(() => {
+    let messages = proposal.msgs
+    const decodedMessages = decodeMessages(messages)
 
     // Unwrap `timelock_proposal` execute in Neutron SubDAOs.
     try {
@@ -112,9 +100,8 @@ const InnerProposalInnerContentDisplay = ({
               },
             })
           ) {
-            decodedMessages = decodeMessages(
+            messages =
               innerDecoded[0].wasm.execute.msg.execute_timelocked_msgs.msgs
-            )
           }
         }
       }
@@ -122,73 +109,25 @@ const InnerProposalInnerContentDisplay = ({
       console.error('Neutron timelock_proposal unwrap error', error)
     }
 
-    return {
-      decodedMessages,
-      rawDecodedMessages,
-    }
+    return messages
   }, [chainId, coreVersion, proposal.msgs])
 
-  // If no msgs, set seen all action pages to true so that the user can vote.
-  const [markedSeen, setMarkedSeen] = useState(false)
-  useEffect(() => {
-    if (markedSeen) {
-      return
-    }
-
-    if (setSeenAllActionPages && !decodedMessages.length) {
-      setSeenAllActionPages()
-      setMarkedSeen(true)
-    }
-  }, [decodedMessages.length, markedSeen, setSeenAllActionPages])
-
-  // Call relevant action hooks in the same order every time.
-  const actionData: ActionAndData[] = decodedMessages.map((message) => {
-    const actionMatch = actionsForMatching
-      .map((action) => ({
-        action,
-        ...action.useDecodedCosmosMsg(message),
+  const onLoad =
+    setDuplicateFormData &&
+    ((data: ActionKeyAndData[]) =>
+      setDuplicateFormData({
+        title: proposal.title,
+        description: proposal.description,
+        actionData: data,
       }))
-      .find(({ match }) => match)
 
-    // There should always be a match since custom matches all. This should
-    // never happen as long as the Custom action exists.
-    if (!actionMatch?.match) {
-      throw new Error(t('error.loadingData'))
-    }
-
-    return {
-      action: actionMatch.action,
-      data: actionMatch.data,
-    }
-  })
-
-  const actionKeyAndData = actionData.map(
-    ({ action, data }, index): ActionKeyAndData => ({
-      _id: index.toString(),
-      actionKey: action.key,
-      data,
-    })
-  )
-  useDeepCompareEffect(() => {
-    setDuplicateFormData?.({
-      title: proposal.title,
-      description: proposal.description,
-      actionData: actionKeyAndData,
-    })
-  }, [
-    actionKeyAndData,
-    proposal.title,
-    proposal.description,
-    setDuplicateFormData,
-  ])
-
-  return decodedMessages?.length ? (
+  return actionMessagesToDisplay.length ? (
     <div className="space-y-3">
-      <ActionsRenderer
+      <ActionsMatchAndRender
         SuspenseLoader={SuspenseLoader}
-        actionData={actionData}
+        messages={actionMessagesToDisplay}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-        setSeenAllActionPages={setSeenAllActionPages}
+        onLoad={onLoad}
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
@@ -198,7 +137,7 @@ const InnerProposalInnerContentDisplay = ({
         </p>
       </Button>
 
-      {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
+      {showRaw && <RawActionsRenderer messages={proposal.msgs} />}
     </div>
   ) : (
     <p className="caption-text italic">{t('info.noProposalActions')}</p>

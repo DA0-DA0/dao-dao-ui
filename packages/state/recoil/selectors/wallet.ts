@@ -427,7 +427,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
           const info: TokenCardInfo = {
             owner: {
-              type: AccountType.Native,
+              type: AccountType.Base,
               chainId,
               address: walletAddress,
             },

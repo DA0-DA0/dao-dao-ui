@@ -15,7 +15,7 @@ import {
   DaoSource,
   Feature,
   InfoResponse,
-  ProposalModule,
+  ProposalModuleInfo,
 } from '@dao-dao/types'
 import {
   getDaoInfoForChainId,
@@ -36,7 +36,7 @@ import { fetchProposalModules } from '../utils'
 export const fetchDaoProposalModules = async (
   queryClient: QueryClient,
   { chainId, coreAddress }: DaoSource
-): Promise<ProposalModule[]> => {
+): Promise<ProposalModuleInfo[]> => {
   const coreVersion = parseContractVersion(
     (
       await queryClient.fetchQuery(
@@ -99,7 +99,7 @@ export const fetchDaoInfo = async (
       })
     ),
     queryClient.fetchQuery(
-      chainQueries.wasmContractAdmin({
+      contractQueries.admin({
         chainId,
         address: coreAddress,
       })

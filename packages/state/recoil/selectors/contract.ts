@@ -6,8 +6,8 @@ import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
 import {
   ContractName,
   DAO_CORE_CONTRACT_NAMES,
-  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   getChainForChainId,
+  isInvalidContractError,
   isSecretNetwork,
   isValidBech32Address,
   parseContractVersion,
@@ -205,12 +205,7 @@ export const isContractSelector = selectorFamily<
           ? contract.includes(nameOrNames.name)
           : nameOrNames.names.some((name) => contract.includes(name))
       } catch (err) {
-        if (
-          err instanceof Error &&
-          INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
-            (err as Error).message.includes(substring)
-          )
-        ) {
+        if (isInvalidContractError(err)) {
           console.error(err)
           return false
         }

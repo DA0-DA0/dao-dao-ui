@@ -10,4 +10,5 @@ export type ProfileCardWrapperProps = {
   childContainerClassName?: string
   compact?: boolean
   className?: string
+  tintColor?: string
 }

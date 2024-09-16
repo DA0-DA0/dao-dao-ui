@@ -95,6 +95,17 @@ export const fetchSkipRecommendedAsset = async (
   return asset
 }
 
+/**
+ * Fetch whether or not pfm is enabled for a chain.
+ */
+export const fetchSkipChainPfmEnabled = async (
+  queryClient: QueryClient,
+  { chainId }: { chainId: string }
+): Promise<boolean> => {
+  const chain = await fetchSkipChain(queryClient, { chainId })
+  return chain?.ibc_capabilities?.cosmos_pfm ?? chain?.pfm_enabled ?? false
+}
+
 export const skipQueries = {
   /**
    * Fetch Skip chain.
@@ -128,5 +139,16 @@ export const skipQueries = {
     queryOptions({
       queryKey: ['skip', 'recommendedAsset', options],
       queryFn: () => fetchSkipRecommendedAsset(queryClient, options),
+    }),
+  /**
+   * Fetch whether or not pfm is enabled for a chain.
+   */
+  chainPfmEnabled: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchSkipChainPfmEnabled>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['skip', 'chainPfmEnabled', options],
+      queryFn: () => fetchSkipChainPfmEnabled(queryClient, options),
     }),
 }

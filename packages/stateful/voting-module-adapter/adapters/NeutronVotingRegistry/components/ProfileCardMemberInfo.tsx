@@ -1,10 +1,11 @@
+import { useQueries } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
-  NeutronVaultSelectors,
-  NeutronVotingRegistrySelectors,
   genericTokenBalanceSelector,
+  neutronVaultQueries,
+  neutronVotingRegistryQueries,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import {
@@ -12,9 +13,12 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  makeCombineQueryResultsIntoLoadingDataWithError,
+} from '@dao-dao/utils'
 
-import { useWallet } from '../../../../hooks'
+import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
 import { useVotingModule } from '../hooks'
 import { StakingModal } from './StakingModal'
@@ -42,43 +46,42 @@ export const ProfileCardMemberInfo = ({
             : []
         )
 
-  const loadingWalletVotingPower = useCachedLoadingWithError(
+  const loadingWalletVotingPower = useQueryLoadingDataWithError(
     !address
       ? undefined
-      : NeutronVotingRegistrySelectors.votingPowerAtHeightSelector({
-          contractAddress: votingRegistryAddress,
+      : neutronVotingRegistryQueries.votingPowerAtHeight({
           chainId,
-          params: [
-            {
-              address,
-            },
-          ],
+          contractAddress: votingRegistryAddress,
+          args: {
+            address,
+          },
         })
   )
-  const loadingTotalVotingPower = useCachedLoadingWithError(
-    NeutronVotingRegistrySelectors.totalPowerAtHeightSelector({
-      contractAddress: votingRegistryAddress,
+  const loadingTotalVotingPower = useQueryLoadingDataWithError(
+    neutronVotingRegistryQueries.totalPowerAtHeight({
       chainId,
-      params: [{}],
+      contractAddress: votingRegistryAddress,
+      args: {},
     })
   )
-  const loadingStakedTokens = useCachedLoadingWithError(
-    loadingVaults.loading || loadingVaults.errored || !address
-      ? undefined
-      : waitForAll(
-          realVaults.map(({ address: contractAddress }) =>
-            NeutronVaultSelectors.bondingStatusSelector({
-              contractAddress,
+  const loadingStakedTokens = useQueries({
+    queries:
+      loadingVaults.loading || loadingVaults.errored || !address
+        ? []
+        : realVaults.map(({ address: contractAddress }) =>
+            neutronVaultQueries.bondingStatus({
               chainId,
-              params: [
-                {
-                  address,
-                },
-              ],
+              contractAddress,
+              args: {
+                address,
+              },
             })
-          )
-        )
-  )
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      // Show loading if empty array is passed.
+      loadIfNone: true,
+    }),
+  })
   const loadingUnstakedTokens = useCachedLoadingWithError(
     loadingVaults.loading || loadingVaults.errored || !address
       ? undefined

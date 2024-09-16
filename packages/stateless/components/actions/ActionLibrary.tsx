@@ -2,21 +2,22 @@ import { Star, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { nanoid } from 'nanoid'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   Action,
-  ActionCategory,
   ActionCategoryKey,
   ActionKey,
   ActionKeyAndData,
-  LoadedActions,
 } from '@dao-dao/types'
+import { processError } from '@dao-dao/utils'
 
-import { useSearchFilter, useUpdatingRef } from '../../hooks'
+import { useActionsContext } from '../../contexts'
+import { useLoadingPromise, useSearchFilter, useUpdatingRef } from '../../hooks'
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { SearchBar } from '../inputs'
@@ -25,16 +26,6 @@ import { NoContent } from '../NoContent'
 import { TooltipInfoIcon } from '../tooltip'
 
 export type ActionLibraryProps = {
-  /**
-   * All action categories to render. Should be loaded from
-   * `useLoadedActionsAndCategories`.
-   */
-  categories: ActionCategory[]
-  /**
-   * Loaded actions in the categories. Should be loaded from
-   * `useLoadedActionsAndCategories`.
-   */
-  loadedActions: LoadedActions
   /**
    * The react-hook-form field name that stores the action data.
    */
@@ -51,14 +42,20 @@ export type ActionLibraryProps = {
   defaultOpen?: boolean
 }
 
+const ACTION_SEARCH_FILTERABLE_KEYS: Fuse.FuseOptionKey<Action>[] = [
+  'key',
+  'metadata.label',
+  'metadata.description',
+  'metadata.keywords',
+]
+
 export const ActionLibrary = ({
-  categories,
-  loadedActions,
   actionDataFieldName,
   onSelect,
   defaultOpen = true,
 }: ActionLibraryProps) => {
   const { t } = useTranslation()
+  const { actions, actionMap, categories } = useActionsContext()
 
   const { control, watch } = useFormContext<{
     actionData: ActionKeyAndData[]
@@ -69,28 +66,40 @@ export const ActionLibrary = ({
   })
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
+  const [, setSelectingActionKey] = useState<ActionKey>()
   const onSelectRef = useUpdatingRef(onSelect)
   const onSelectAction = useCallback(
-    (action: Action) => {
-      const loadedAction = loadedActions[action.key]
-      if (!loadedAction) {
-        return
+    async (action: Action) => {
+      // Trigger state update so that UI updates based on action status.
+      setSelectingActionKey(action.key)
+      try {
+        onSelectRef.current?.(action)
+
+        if (!action.ready) {
+          await action.init()
+        }
+
+        addAction({
+          // See `ActionKeyAndData` comment in `packages/types/actions.ts` for
+          // an explanation of why we need to append with a unique ID.
+          _id: nanoid(),
+          actionKey: action.key,
+          // Clone to prevent the form from mutating the original object.
+          data: cloneDeep(action.defaults),
+        })
+      } catch (err) {
+        console.error(err)
+        toast.error(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+      } finally {
+        // Trigger state update so that UI updates based on action status.
+        setSelectingActionKey(undefined)
       }
-
-      onSelectRef.current?.(action)
-
-      addAction({
-        // See `ActionKeyAndData` comment in
-        // `packages/types/actions.ts` for an explanation of why we need to
-        // append with a unique ID.
-        _id: uuidv4(),
-        actionKey: action.key,
-        // Clone to prevent the form from mutating the original
-        // object.
-        data: cloneDeep(loadedAction.defaults ?? {}),
-      })
     },
-    [addAction, loadedActions, onSelectRef]
+    [addAction, onSelectRef]
   )
 
   const [_categoryKeySelected, setCategoryKeySelected] = useState<
@@ -109,23 +118,31 @@ export const ActionLibrary = ({
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
 
-  const allActions = useMemo(
-    () => Object.values(loadedActions).map(({ action }) => action),
-    [loadedActions]
-  )
   const {
     searchBarProps,
     filteredData: filteredActions,
     filter,
     setFilter,
   } = useSearchFilter({
-    data: allActions,
+    data: actions,
     filterableKeys: ACTION_SEARCH_FILTERABLE_KEYS,
     // If filter is updated, unselect category and select first item.
     onFilterChange: () => {
       setCategoryKeySelected(undefined)
       setSelectedIndex(0)
     },
+  })
+
+  // Initialize all filtered actions and re-render when the promise changes
+  // since this affects the actions displayed.
+  useLoadingPromise({
+    promise: async () =>
+      filter
+        ? Promise.all(
+            filteredActions.map(({ item: action }) => action.init()) || []
+          )
+        : [],
+    deps: [filter, filteredActions],
   })
 
   // If filter exists, unselect category.
@@ -139,26 +156,40 @@ export const ActionLibrary = ({
 
   const filterVisibleActions = (action: Action) =>
     // Never show programmatic actions.
-    !action.programmaticOnly &&
+    !action.metadata.programmaticOnly &&
     // Never show actions that should be hidden from the picker.
-    !action.hideFromPicker &&
+    !action.metadata.hideFromPicker &&
     // Show if reusable or not already used.
-    (!action.notReusable || !actionData.some((a) => a.actionKey === action.key))
+    (!action.metadata.notReusable ||
+      !actionData.some((a) => a.actionKey === action.key))
+
+  const categoryActions = categoryKeySelected
+    ? (selectedCategory || categories[0]).actionKeys.flatMap(
+        (key) => actionMap[key] || []
+      )
+    : undefined
+
+  // Initialize all category actions and re-render when the promise changes
+  // since this affects the actions displayed.
+  useLoadingPromise({
+    promise: async () =>
+      Promise.all(categoryActions?.map((a) => a.init()) || []),
+    deps: [categoryKeySelected],
+  })
 
   const showingActions = (
-    categoryKeySelected
-      ? (selectedCategory || categories[0]).actions.filter(filterVisibleActions)
-      : filteredActions
-          .map(({ item }) => item)
-          .filter(filterVisibleActions)
-          .slice(0, 10)
+    categoryActions?.filter(filterVisibleActions) ||
+    filteredActions
+      .map(({ item }) => item)
+      .filter(filterVisibleActions)
+      .slice(0, 10)
   ).sort((a, b) =>
-    a.order !== undefined && b.order !== undefined
-      ? a.order - b.order
+    a.metadata.listOrder !== undefined && b.metadata.listOrder !== undefined
+      ? a.metadata.listOrder - b.metadata.listOrder
       : // Prioritize the action with an order set.
-      a.order
+      a.metadata.listOrder
       ? -1
-      : b.order
+      : b.metadata.listOrder
       ? 1
       : // Leave them sorted by the original order in the category definition.
         0
@@ -247,22 +278,6 @@ export const ActionLibrary = ({
     }
   }, [handleKeyPress, isActionLibraryActive])
 
-  const loadedActionValues = Object.values(loadedActions)
-  const loadingActionKeys = loadedActionValues.flatMap(
-    ({ action: { key }, defaults }) => (!defaults ? key : [])
-  )
-  const erroredActionKeys = loadedActionValues.reduce(
-    (acc, { action: { key }, defaults }) => ({
-      ...acc,
-      ...(defaults && defaults instanceof Error
-        ? {
-            [key]: defaults,
-          }
-        : {}),
-    }),
-    {} as Partial<Record<ActionKey, Error>>
-  )
-
   return (
     <Collapsible
       containerClassName="mt-2 flex flex-col gap-4 rounded-md border border-dashed border-border-primary p-4 relative"
@@ -309,7 +324,7 @@ export const ActionLibrary = ({
           ))}
         </div>
 
-        <div className="hidden w-[1px] min-w-0 shrink-0 self-stretch bg-border-primary md:block"></div>
+        <div className="bg-border-primary hidden w-[1px] min-w-0 shrink-0 self-stretch md:block"></div>
 
         {showingActions.length > 0 ? (
           <div
@@ -317,43 +332,12 @@ export const ActionLibrary = ({
             ref={itemsListRef}
           >
             {showingActions.map((action, index) => (
-              <Button
-                key={categoryKeySelected + action.key}
-                className={clsx(
-                  selectedIndex === index &&
-                    'bg-background-interactive-selected'
-                )}
-                contentContainerClassName="gap-4 text-left"
-                disabled={
-                  loadingActionKeys.includes(action.key) ||
-                  !!erroredActionKeys[action.key]
-                }
+              <ActionLibraryRow
+                key={action.key + index}
+                action={action}
                 onClick={() => onSelectAction(action)}
-                variant="ghost"
-              >
-                {action.Icon && (
-                  <p className="text-3xl">
-                    <action.Icon />
-                  </p>
-                )}
-
-                <div className="flex grow flex-col items-start gap-1">
-                  <p className="primary-text">{action.label}</p>
-                  <p className="caption-text">{action.description}</p>
-                </div>
-
-                {erroredActionKeys[action.key] && (
-                  <TooltipInfoIcon
-                    size="lg"
-                    title={erroredActionKeys[action.key]!.message}
-                    warning
-                  />
-                )}
-
-                {loadingActionKeys.includes(action.key) && (
-                  <Loader fill={false} size={32} />
-                )}
-              </Button>
+                selected={selectedIndex === index}
+              />
             ))}
           </div>
         ) : (
@@ -368,8 +352,59 @@ export const ActionLibrary = ({
   )
 }
 
-const ACTION_SEARCH_FILTERABLE_KEYS: Fuse.FuseOptionKey<Action>[] = [
-  'label',
-  'description',
-  'keywords',
-]
+export type ActionLibraryRowProps = {
+  /**
+   * The action to display.
+   */
+  action: Action
+  /**
+   * Whether or not the action is selected.
+   */
+  selected: boolean
+  /**
+   * Callback when the action is clicked.
+   */
+  onClick: () => void
+}
+
+export const ActionLibraryRow = ({
+  action,
+  selected,
+  onClick,
+}: ActionLibraryRowProps) => {
+  // If action is not ready, initialize it, and re-render when the promise
+  // changes since this affects the action state (e.g. loading, error, etc.).
+  useLoadingPromise({
+    promise: async () => action.init(),
+    deps: [action],
+  })
+
+  return (
+    <Button
+      className={clsx(selected && 'bg-background-interactive-selected')}
+      contentContainerClassName="gap-4 text-left"
+      disabled={action.status === 'loading' || action.status === 'error'}
+      onClick={onClick}
+      variant="ghost"
+    >
+      {action.metadata.Icon && (
+        <p className="text-3xl">
+          <action.metadata.Icon />
+        </p>
+      )}
+
+      <div className="flex grow flex-col items-start gap-1">
+        <p className="primary-text">{action.metadata.label}</p>
+        <p className="caption-text">{action.metadata.description}</p>
+      </div>
+
+      {action.status === 'error' &&
+        action.error &&
+        action.error instanceof Error && (
+          <TooltipInfoIcon size="lg" title={action.error} warning />
+        )}
+
+      {action.status === 'loading' && <Loader fill={false} size={32} />}
+    </Button>
+  )
+}

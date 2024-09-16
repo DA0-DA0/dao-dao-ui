@@ -295,7 +295,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
           title={
             createCrossChainAccountHref
               ? undefined
-              : t('error.allCrossChainAccountsCreated')
+              : t('info.allCrossChainAccountsCreated')
           }
         >
           <ButtonLink
@@ -350,7 +350,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         <FiatDepositModal
           accountType={
             depositFiatChainId === currentChainId
-              ? AccountType.Native
+              ? AccountType.Base
               : AccountType.Polytone
           }
           chainId={depositFiatChainId}

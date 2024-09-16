@@ -19,7 +19,9 @@ export const LinkWrapper = forwardRef<
       onClick={(event) => {
         onClick?.(event)
         // Update global loading state.
-        updateNavigatingHref(href)
+        if (!props.openInNewTab) {
+          updateNavigatingHref(href)
+        }
       }}
       ref={ref}
     >

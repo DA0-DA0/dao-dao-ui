@@ -101,9 +101,10 @@ export const ProfileCardMemberInfoTokens = ({
   const canBeMemberButIsnt = !isMember && hasUnstaked
 
   const onlyOneToken = !loadingTokens.loading && loadingTokens.data.length === 1
-  const onlyTokenSymbol = loadingTokens.loading
-    ? '...'
-    : loadingTokens.data[0].token.symbol
+  const onlyTokenSymbol =
+    loadingTokens.loading || loadingTokens.data.length === 0
+      ? '...'
+      : loadingTokens.data[0].token.symbol
 
   // If cannot vote on proposal, this means they did not have voting power at
   // the time of proposal creation. Show proposal-specific message when in a
@@ -270,7 +271,9 @@ export const ProfileCardMemberInfoTokens = ({
               canBeMemberButIsnt ? 'secondary' : 'brand'
             }
           >
-            {loadingTokens.loading || !onlyOneToken
+            {loadingTokens.loading ||
+            loadingTokens.data.length === 0 ||
+            !onlyOneToken
               ? t('button.claimYourTokens')
               : t('button.claimNumTokens', {
                   amount: claimableBalance.toLocaleString(undefined, {

@@ -31,7 +31,10 @@ export type TokenAmountDisplayProps = Omit<
   /**
    * If present, will add a rounded icon to the left.
    */
-  iconUrl?: string
+  iconUrl?: string | null
+  /**
+   * If defined, apply a class name to the icon.
+   */
   iconClassName?: string
   /**
    * Overlay the chain logo over the bottom right corner of the token icon and

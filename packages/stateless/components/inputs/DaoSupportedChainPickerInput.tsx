@@ -1,8 +1,10 @@
 import clsx from 'clsx'
+import { ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ChainPickerPopupProps } from '@dao-dao/types'
+import { AccountType, ChainPickerPopupProps } from '@dao-dao/types'
+import { getIbcTransferChainIdsForChain } from '@dao-dao/utils'
 
 import { useChainContext, useDaoInfoContextIfAvailable } from '../../contexts'
 import { ChainPickerPopup } from '../popup'
@@ -27,10 +29,16 @@ export type DaoSupportedChainPickerInputProps = {
   excludeChainIds?: string[]
   /**
    * Whether to include only the chains the DAO has an account on (its native
-   * chain or one of its polytone chains).
+   * chain or one of its cross-chain accounts).
    * Defaults to false.
    */
   onlyDaoChainIds?: boolean
+  /**
+   * Which potential account types of chains for this DAO to include.
+   *
+   * Defaults to Polytone only.
+   */
+  accountTypes?: (AccountType.Polytone | AccountType.Ica)[]
   /**
    * Whether to hide the form label.
    */
@@ -39,6 +47,10 @@ export type DaoSupportedChainPickerInputProps = {
    * Class name applied to container.
    */
   className?: string
+  /**
+   * A component to render if there are no chains to show.
+   */
+  noChainsFallback?: ReactNode
 } & Omit<ChainPickerPopupProps, 'chains' | 'selectedChainId' | 'onSelect'>
 
 /**
@@ -52,9 +64,11 @@ export const DaoSupportedChainPickerInput = ({
   includeChainIds: _includeChainIds,
   excludeChainIds,
   onlyDaoChainIds = false,
+  accountTypes = [AccountType.Polytone],
   hideFormLabel = false,
   className,
   labelMode = 'chain',
+  noChainsFallback,
   ...pickerProps
 }: DaoSupportedChainPickerInputProps) => {
   const { t } = useTranslation()
@@ -67,7 +81,12 @@ export const DaoSupportedChainPickerInput = ({
 
   const includeChainIds =
     onlyDaoChainIds && daoInfo
-      ? [daoInfo.chainId, ...Object.keys(daoInfo.polytoneProxies)]
+      ? [
+          daoInfo.chainId,
+          ...daoInfo.accounts.flatMap(({ type, chainId }) =>
+            accountTypes.includes(type as any) ? chainId : []
+          ),
+        ]
       : _includeChainIds
 
   // Only works on supported chains, so don't render if no supported chain
@@ -79,18 +98,25 @@ export const DaoSupportedChainPickerInput = ({
   const chainIds = [
     chainId,
     // Other chains with Polytone connections to this one.
-    ...Object.keys(config.polytone || {}),
+    ...(accountTypes.includes(AccountType.Polytone)
+      ? Object.keys(config.polytone || {})
+      : []),
+    // Other chains with IBC transfer channels to this one.
+    ...(accountTypes.includes(AccountType.Ica)
+      ? getIbcTransferChainIdsForChain(chainId)
+      : []),
   ].filter(
     (chainId) =>
       !excludeChainIds?.includes(chainId) &&
       (!includeChainIds || includeChainIds.includes(chainId))
   )
 
-  // Don't show if no chains to show or only showing the current chain.
-  if (
-    chainIds.length === 0 ||
-    (chainIds.length === 1 && chainIds[0] === chainId)
-  ) {
+  if (chainIds.length === 0) {
+    return noChainsFallback ? <>{noChainsFallback}</> : null
+  }
+
+  // Don't show if only showing the current chain.
+  if (chainIds.length === 1 && chainIds[0] === chainId) {
     return null
   }
 

@@ -1,2 +1,5 @@
+export * from './ActionMatcher'
+export * from './Actions'
+export * from './ActionsEncoder'
 export * from './Chain'
 export * from './Dao'

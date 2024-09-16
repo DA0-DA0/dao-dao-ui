@@ -4,11 +4,11 @@ import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useInitializedActionForKey,
 } from '@dao-dao/stateless'
 import { ActionKey, Feature } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../../actions'
 import { useMembership, useQueryLoadingDataWithError } from '../../../hooks'
 import { daoQueries } from '../../../queries'
 import { ButtonLink } from '../../ButtonLink'
@@ -29,8 +29,7 @@ export const SubDaosTab = () => {
     enabled: !!supportedFeatures[Feature.SubDaos],
   })
 
-  const upgradeToV2Action = useActionForKey(ActionKey.UpgradeV1ToV2)
-  const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
+  const upgradeToV2Action = useInitializedActionForKey(ActionKey.UpgradeV1ToV2)
 
   return (
     <StatelessSubDaosTab
@@ -39,18 +38,20 @@ export const SubDaosTab = () => {
       createSubDaoHref={getDaoPath(coreAddress, 'create')}
       isMember={isMember}
       subDaos={subDaos}
-      upgradeToV2Href={getDaoProposalPath(coreAddress, 'create', {
-        prefill: getDaoProposalSinglePrefill({
-          actions: upgradeToV2Action
-            ? [
-                {
-                  actionKey: upgradeToV2Action.key,
-                  data: upgradeToV2ActionDefaults,
-                },
-              ]
-            : [],
-        }),
-      })}
+      upgradeToV2Href={
+        upgradeToV2Action.loading || upgradeToV2Action.errored
+          ? undefined
+          : getDaoProposalPath(coreAddress, 'create', {
+              prefill: getDaoProposalSinglePrefill({
+                actions: [
+                  {
+                    actionKey: upgradeToV2Action.data.key,
+                    data: upgradeToV2Action.data.defaults,
+                  },
+                ],
+              }),
+            })
+      }
     />
   )
 }

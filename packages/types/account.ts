@@ -10,9 +10,10 @@ import { GenericToken } from './token'
  */
 export enum AccountType {
   /**
-   * context.
+   * The base account given the context. This is the primary account, in control
+   * of all the other accounts. It is likely the DAO core, a wallet, etc.
    */
-  Native = 'native',
+  Base = 'base',
   /**
    * A Polytone account controlled by an account on another chain.
    */
@@ -33,29 +34,33 @@ export enum AccountType {
    * A Timewave Valence account.
    */
   Valence = 'valence',
+  /**
+   * A cw1-whitelist smart contract.
+   */
+  Cw1Whitelist = 'cw1Whitelist',
 }
 
-export type BaseAccount = {
+export type CommonAccount = {
   chainId: string
   address: string
 }
 
-export type NativeAccount = BaseAccount & {
-  type: AccountType.Native
+export type BaseAccount = CommonAccount & {
+  type: AccountType.Base
   config?: undefined
 }
 
-export type PolytoneAccount = BaseAccount & {
+export type PolytoneAccount = CommonAccount & {
   type: AccountType.Polytone
   config?: undefined
 }
 
-export type IcaAccount = BaseAccount & {
+export type IcaAccount = CommonAccount & {
   type: AccountType.Ica
   config?: undefined
 }
 
-export type CryptographicMultisigAccount = BaseAccount & {
+export type CryptographicMultisigAccount = CommonAccount & {
   type: AccountType.CryptographicMultisig
   config: {
     /**
@@ -76,19 +81,20 @@ export type CryptographicMultisigAccount = BaseAccount & {
   }
 }
 
-export type Cw3MultisigAccount = BaseAccount & {
+export type Cw3MultisigAccount = CommonAccount & {
   type: AccountType.Cw3Multisig
   config: CryptographicMultisigAccount['config']
 }
 
 export type MultisigAccount = CryptographicMultisigAccount | Cw3MultisigAccount
 
-export type ValenceAccount = BaseAccount & {
+export type ValenceAccount = CommonAccount & {
   type: AccountType.Valence
   config: ValenceAccountConfig
 }
 
 export type ValenceAccountConfig = {
+  admin: string
   // If rebalancer setup, this will be defined.
   rebalancer: {
     config: RebalancerConfig
@@ -110,13 +116,24 @@ export type ValenceAccountRebalancerTarget = {
   } & ParsedTarget)[]
 }
 
+export type Cw1WhitelistAccount = CommonAccount & {
+  type: AccountType.Cw1Whitelist
+  config: {
+    /**
+     * The cw1-whitelist admins.
+     */
+    admins: string[]
+  }
+}
+
 export type Account =
-  | NativeAccount
+  | BaseAccount
   | PolytoneAccount
   | IcaAccount
   | CryptographicMultisigAccount
   | Cw3MultisigAccount
   | ValenceAccount
+  | Cw1WhitelistAccount
 
 /**
  * Unique identifier for account tabs, which is used in the URL path.

@@ -7,10 +7,10 @@ import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/typ
 import {
   ContractName,
   DAO_CORE_CONTRACT_NAMES,
-  INVALID_CONTRACT_ERROR_SUBSTRINGS,
   cosmwasmProtoRpcClientRouter,
   getChainForChainId,
   getCosmWasmClientForChainId,
+  isInvalidContractError,
   isSecretNetwork,
   isValidBech32Address,
   objectMatchesStructure,
@@ -128,17 +128,11 @@ export const fetchIsContract = async (
       : contract.includes(nameOrNames)
   } catch (err) {
     if (
-      err instanceof Error &&
-      INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
-        (err as Error).message.includes(substring)
-      )
+      isInvalidContractError(err) ||
+      // On Secret Network, just return false, since there are weird failures
+      // for failed contract queries.
+      isSecretNetwork(chainId)
     ) {
-      return false
-    }
-
-    // On Secret Network, just return, since there are weird failures for
-    // failed contract queries.
-    if (isSecretNetwork(chainId)) {
       return false
     }
 
@@ -237,6 +231,33 @@ export const fetchContractCodeInfo = async ({
   }
 
   return codeInfo
+}
+
+/**
+ * Fetch the wasm contract-level admin for a contract.
+ */
+export const fetchContractAdmin = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<string | null> => {
+  if (isSecretNetwork(chainId)) {
+    const client = await secretCosmWasmClientRouter.connect(chainId)
+    return (await client.getContract(address))?.admin ?? null
+  }
+
+  // CosmWasmClient.getContract is not compatible with Terra Classic for some
+  // reason, so use protobuf query directly.
+  const client = await cosmwasmProtoRpcClientRouter.connect(chainId)
+  return (
+    (
+      await client.wasm.v1.contractInfo({
+        address,
+      })
+    )?.contractInfo?.admin ?? null
+  )
 }
 
 /**
@@ -343,6 +364,14 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'codeInfo', options],
       queryFn: () => fetchContractCodeInfo(options),
+    }),
+  /*
+   * Fetch the wasm contract-level admin for a contract.
+   */
+  admin: (options: Parameters<typeof fetchContractAdmin>[0]) =>
+    queryOptions({
+      queryKey: ['contract', 'admin', options],
+      queryFn: () => fetchContractAdmin(options),
     }),
   /**
    * Fetch the code hash for a Secret Network contract.

@@ -7,8 +7,9 @@ import {
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { TokenSwapStatusProps } from '@dao-dao/types/components/TokenSwapStatus'
+
+import { TokenAmountDisplay } from './token'
 
 export const TokenSwapStatus = ({
   selfParty,

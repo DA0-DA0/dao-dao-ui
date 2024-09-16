@@ -36,8 +36,6 @@ export const DaoVotingSgCommunityNftAdapter: VotingModuleAdapter = {
     },
 
     // Functions
-    fields: {
-      actionCategoryMakers: [],
-    },
+    fields: {},
   }),
 }

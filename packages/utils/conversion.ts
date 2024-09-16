@@ -301,18 +301,25 @@ export const makeCombineQueryResultsIntoLoadingData =
 export const makeCombineQueryResultsIntoLoadingDataWithError =
   <T extends unknown = unknown, R extends unknown = T[]>({
     firstLoad = 'all',
+    loadIfNone = false,
     errorIf = 'any',
     transform = (results: T[]) => results as R,
   }: {
     /**
      * Whether or not to show loading until all of the results are loaded, at
      * least one result is loaded, or none of the results are loaded. If 'one',
-     * will show not loading (just updating) once the first result is loaded. If
-     * 'none', will never show loading.
+     * will show not loading again (just updating) once the first result is
+     * loaded. If 'none', will never show loading.
      *
      * Defaults to 'all'.
      */
     firstLoad?: 'all' | 'one' | 'none'
+    /**
+     * Whether or not to show loading when no queries are passed.
+     *
+     * Defaults to false.
+     */
+    loadIfNone?: boolean
     /**
      * Whether or not to show error if any of the results are errored or all. If
      * set to 'all' but only some of the results are errored, the errored
@@ -329,7 +336,8 @@ export const makeCombineQueryResultsIntoLoadingDataWithError =
   (results: UseQueryResult<T>[]): LoadingDataWithError<R> => {
     const isLoading =
       firstLoad === 'all'
-        ? results.some((r) => r.isPending)
+        ? (loadIfNone && results.length === 0) ||
+          results.some((r) => r.isPending)
         : firstLoad === 'one'
         ? results.length > 0 && results.every((r) => r.isPending)
         : false

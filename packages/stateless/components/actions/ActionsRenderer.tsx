@@ -1,26 +1,37 @@
-import { Check, Link, WarningRounded } from '@mui/icons-material'
-import { ComponentType, Fragment, useEffect, useMemo, useState } from 'react'
+import { Check, Link } from '@mui/icons-material'
+import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import { SuspenseLoaderProps } from '@dao-dao/types'
-import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
+import { SuspenseLoaderProps, UnifiedCosmosMsg } from '@dao-dao/types'
+import {
+  Action,
+  ActionAndData,
+  ActionKeyAndData,
+  IActionDecoder,
+} from '@dao-dao/types/actions'
 
+import { useActionMatcher } from '../../contexts'
+import { useLoadingPromise, useUpdatingRef } from '../../hooks'
+import { ActionMatcherProvider } from '../../providers'
+import { ErrorPage } from '../error'
 import { IconButton } from '../icon_buttons'
-import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
+import { Loader } from '../logo'
 import { ActionCard, ActionCardLoader } from './ActionCard'
 
 export const ACTIONS_PER_PAGE = 20
 
-// The props needed to render an action from a message.
-export interface ActionsRendererProps {
-  actionData: ActionAndData[]
+export type ActionsRendererProps = {
+  /**
+   * Array of actions with data or action decoders from the matcher.
+   */
+  actionData: (ActionAndData | IActionDecoder)[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
-  // If undefined, will not show warning to view all pages. This is likely only
-  // defined when the user can vote.
-  setSeenAllActionPages?: () => void
+  /**
+   * Callback when all actions and data are loaded.
+   */
+  onLoad?: (data: ActionKeyAndData[]) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -29,55 +40,9 @@ export const ActionsRenderer = ({
   actionData,
   hideCopyLink,
   onCopyLink,
-  setSeenAllActionPages,
+  onLoad,
   SuspenseLoader,
 }: ActionsRendererProps) => {
-  const actionKeysWithData = useMemo(
-    () =>
-      actionData.map(
-        ({ action: { key: actionKey }, data }, index): ActionKeyAndData => ({
-          _id: index.toString(),
-          actionKey,
-          data,
-        })
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize([actionData])
-  )
-
-  // Group action data by adjacent action, preserving order.
-  const groupedActionData = useMemo(
-    () =>
-      actionData.reduce((acc, { action, data }, index) => {
-        // If most recent action is the same as the current action, add the
-        // current action's data to the most recent action's data.
-        const lastAction = acc[acc.length - 1]
-        if (lastAction && lastAction.action.key === action.key) {
-          lastAction.all.push({
-            data,
-            // Index in the original array.
-            index,
-          })
-        } else {
-          // Otherwise, add a new action to the list.
-          acc.push({
-            action,
-            all: [
-              {
-                data,
-                // Index in the original array.
-                index,
-              },
-            ],
-          })
-        }
-
-        return acc
-      }, [] as Omit<ActionRendererProps, 'SuspenseLoader' | 'allActionsWithData' | 'setSeenAllPages'>[]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize([actionData])
-  )
-
   const [copied, setCopied] = useState<number>()
   // Unset copied after 2 seconds.
   useEffect(() => {
@@ -86,43 +51,49 @@ export const ActionsRenderer = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
-  // Store for each action group whether the user has seen all pages.
-  const [seenAllPagesForAction, setSeenAllPagesForAction] = useState(() =>
-    groupedActionData.reduce(
-      (acc, { all }, index) => ({
-        ...acc,
-        [index]: all.length <= ACTIONS_PER_PAGE,
-      }),
-      {} as Record<number, boolean | undefined>
-    )
-  )
-  // Check that every action has seen all pages, and if so, call the
-  // `setSeenAllActionPages` callback.
-  const [markedSeen, setMarkedSeen] = useState(false)
-  useEffect(() => {
-    if (markedSeen) {
-      return
-    }
+  const loadingAllActionsWithData = useLoadingPromise({
+    promise: () =>
+      Promise.all(
+        actionData.map(async (data, index): Promise<ActionKeyAndData> => {
+          if ('decode' in data) {
+            return {
+              _id: index.toString(),
+              actionKey: data.action.key,
+              data: await data.decode().catch(() => ({})),
+            }
+          } else {
+            return {
+              _id: index.toString(),
+              actionKey: data.action.key,
+              data: data.data,
+            }
+          }
+        })
+      ),
+    deps: [actionData],
+  })
 
+  // Call onLoad callback once all actions and data are loaded.
+  const onLoadRef = useUpdatingRef(onLoad)
+  const onLoadDefined = !!onLoad
+  useEffect(() => {
     if (
-      setSeenAllActionPages &&
-      [...Array(groupedActionData.length)].every(
-        (_, index) => seenAllPagesForAction[index]
-      )
+      !loadingAllActionsWithData.loading &&
+      !loadingAllActionsWithData.errored &&
+      !loadingAllActionsWithData.updating
     ) {
-      setSeenAllActionPages()
-      setMarkedSeen(true)
+      onLoadRef.current?.(loadingAllActionsWithData.data)
     }
   }, [
-    groupedActionData.length,
-    markedSeen,
-    seenAllPagesForAction,
-    setSeenAllActionPages,
+    loadingAllActionsWithData,
+    onLoadRef,
+    // Make sure to re-run the effect if the callback becomes defined.
+    onLoadDefined,
   ])
 
   return (
     <div className="flex flex-col gap-2">
-      {groupedActionData.map((props, index) => (
+      {actionData.map((data, index) => (
         <div key={index} className="group/action relative" id={`A${index + 1}`}>
           <ActionRenderer
             key={
@@ -136,24 +107,24 @@ export const ActionsRenderer = ({
               // expects to exist inside a FormProvider, and a FormProvider
               // depends on a `useForm` hook return value. Also re-render when
               // the number of action data in the action changes.
-              `${index}-${props.action.key}-${props.all.length}`
+              `${index}-${data.action.key}`
             }
-            {...props}
             SuspenseLoader={SuspenseLoader}
-            allActionsWithData={actionKeysWithData}
-            setSeenAllPages={
-              setSeenAllActionPages &&
-              (() =>
-                setSeenAllPagesForAction((prev) =>
-                  // Don't update if already true.
-                  prev[index]
-                    ? prev
-                    : {
-                        ...prev,
-                        [index]: true,
-                      }
-                ))
+            action={data.action}
+            allActionsWithData={
+              loadingAllActionsWithData.loading ||
+              loadingAllActionsWithData.errored
+                ? []
+                : loadingAllActionsWithData.data
             }
+            index={index}
+            {...('decode' in data
+              ? {
+                  decoder: data,
+                }
+              : {
+                  data: data.data,
+                })}
           />
 
           {!hideCopyLink && (
@@ -177,122 +148,148 @@ export const ActionsRenderer = ({
   )
 }
 
-export type ActionRendererProps = {
-  action: Action
-  all: {
-    // Index of data in `allActionsWithData` list.
-    index: number
-    data: any
-  }[]
+export type ActionRendererProps<
+  Data extends Record<string, any> = Record<string, any>
+> = ({
+  action: Action<Data>
+} & (
+  | {
+      data: Data
+      decoder?: never
+    }
+  | {
+      decoder: IActionDecoder<Data>
+      data?: never
+    }
+)) &
+  Omit<InnerActionRendererProps<Data>, 'data'>
+
+// Renders an action.
+export const ActionRenderer = <
+  Data extends Record<string, any> = Record<string, any>
+>({
+  action,
+  ...props
+}: ActionRendererProps<Data>) => {
+  const { t } = useTranslation()
+  const data = useLoadingPromise({
+    promise: async () => {
+      if (props.decoder) {
+        try {
+          return await props.decoder.decode()
+        } catch (err) {
+          console.error(
+            `Decoder error for ${action.key} at index ${props.index}`,
+            err
+          )
+          throw err
+        }
+      } else {
+        return props.data
+      }
+    },
+    deps: [props.data, props.decoder],
+  })
+
+  return data.loading ? (
+    <ActionCard action={action}>
+      <Loader />
+    </ActionCard>
+  ) : data.errored ? (
+    <ActionCard action={action}>
+      <ErrorPage error={data.error} title={t('title.decoderError')} />
+    </ActionCard>
+  ) : (
+    <InnerActionRenderer<Data> {...props} action={action} data={data.data} />
+  )
+}
+
+type InnerActionRendererProps<
+  Data extends Record<string, any> = Record<string, any>
+> = {
+  action: Action<Data>
+  data: Data
+  index: number
   allActionsWithData: ActionKeyAndData[]
-  // If undefined, will not show warning to view all pages. This is likely only
-  // defined when the user can vote.
-  setSeenAllPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-// Renders a group of data that belong to the same action.
-export const ActionRenderer = ({
+const InnerActionRenderer = <
+  Data extends Record<string, any> = Record<string, any>
+>({
   action,
-  all,
+  data,
+  index,
   allActionsWithData,
-  setSeenAllPages,
   SuspenseLoader,
-}: ActionRendererProps) => {
-  const { t } = useTranslation()
+}: InnerActionRendererProps<Data>) => {
   const form = useForm({
     defaultValues: {
-      data: all.map(({ data }) => data),
+      data: data as any,
     },
   })
 
-  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
-  const minIndex = (page - 1) * ACTIONS_PER_PAGE
-  const maxIndex = page * ACTIONS_PER_PAGE
-  const maxPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
-
-  // Store pages visited so we can check if we've seen all pages. Initialize to
-  // the first page.
-  const [pagesVisited, setPagesVisited] = useState(() => new Set([page]))
-  useEffect(() => {
-    setPagesVisited((prev) => {
-      const next = new Set(prev)
-      next.add(page)
-      return next
-    })
-  }, [page])
-
-  const [markedSeen, setMarkedSeen] = useState(false)
-  useEffect(() => {
-    if (markedSeen) {
-      return
-    }
-
-    // If all pages have been visited, mark as seen.
-    if (setSeenAllPages && pagesVisited.size === maxPage) {
-      setSeenAllPages()
-      setMarkedSeen(true)
-    }
-  }, [markedSeen, maxPage, page, pagesVisited.size, setSeenAllPages])
-
   return (
     <FormProvider {...form}>
-      <ActionCard
-        action={action}
-        actionCount={all.length}
-        childrenContainerClassName="!px-0"
-      >
-        {all.map(
-          ({ index, data }, dataIndex) =>
-            // Paginate manually instead of slicing the array so that the
-            // `dataIndex` matches the index in the `data` array of the form.
-            dataIndex >= minIndex &&
-            dataIndex < maxIndex && (
-              <Fragment key={index}>
-                <div className="flex flex-col gap-4 px-6">
-                  <SuspenseLoader fallback={<ActionCardLoader />}>
-                    <action.Component
-                      allActionsWithData={allActionsWithData}
-                      data={data}
-                      fieldNamePrefix={`data.${dataIndex}.`}
-                      index={index}
-                      isCreating={false}
-                    />
-                  </SuspenseLoader>
-                </div>
-
-                {dataIndex < all.length - 1 && (
-                  <div className="my-3 h-[1px] bg-border-secondary"></div>
-                )}
-              </Fragment>
-            )
-        )}
-
-        {maxPage > PAGINATION_MIN_PAGE && (
-          <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary px-6 pt-5">
-            {setSeenAllPages && (
-              <div className="mt-1 flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
-                <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
-
-                <p className="primary-text text-text-interactive-warning-body">
-                  {t('info.actionPageWarning', {
-                    actions: all.length,
-                    pages: maxPage,
-                  })}
-                </p>
-              </div>
-            )}
-
-            <Pagination
-              className="w-full self-center"
-              page={page}
-              pageSize={ACTIONS_PER_PAGE}
-              setPage={setPage}
-              total={all.length}
-            />
-          </div>
-        )}
+      <ActionCard action={action}>
+        <SuspenseLoader fallback={<Loader />}>
+          <action.Component
+            allActionsWithData={allActionsWithData}
+            data={data}
+            fieldNamePrefix="data."
+            index={index}
+            isCreating={false}
+          />
+        </SuspenseLoader>
       </ActionCard>
     </FormProvider>
+  )
+}
+
+export type ActionsMatchAndRenderProps = Omit<
+  ActionsRendererProps,
+  'actionData'
+> & {
+  /**
+   * The messages to match.
+   */
+  messages: UnifiedCosmosMsg[]
+  /**
+   * Callback when all actions and data are loaded.
+   */
+  onLoad?: (data: ActionKeyAndData[]) => void
+}
+
+/**
+ * An ActionsRenderer wrapper that renders the ActionsRenderer component with
+ * matched actions for the provided messages, or loading/error appropriately.
+ */
+export const ActionsMatchAndRender = ({
+  messages,
+  ...props
+}: ActionsMatchAndRenderProps) => (
+  <ActionMatcherProvider messages={messages}>
+    <InnerActionsMatchAndRender {...props} />
+  </ActionMatcherProvider>
+)
+
+const InnerActionsMatchAndRender = (
+  props: Omit<ActionsMatchAndRenderProps, 'messages'>
+) => {
+  const matcher = useActionMatcher()
+  return (
+    <>
+      {matcher.errored ? (
+        <ErrorPage error={matcher.error} />
+      ) : matcher.ready ? (
+        <ActionsRenderer {...props} actionData={matcher.matches} />
+      ) : (
+        <div className="flex flex-col gap-2">
+          <ActionCardLoader />
+          <ActionCardLoader />
+          <ActionCardLoader />
+        </div>
+      )}
+    </>
   )
 }

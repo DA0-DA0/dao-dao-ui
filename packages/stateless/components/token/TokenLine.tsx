@@ -3,12 +3,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ChainLogo,
-  Modal,
-  TokenAmountDisplay,
-  Tooltip,
-} from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
   getDisplayNameForChainId,
@@ -16,6 +10,11 @@ import {
   shortenTokenSymbol,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
+
+import { ChainLogo } from '../chain'
+import { Modal } from '../modals'
+import { Tooltip } from '../tooltip'
+import { TokenAmountDisplay } from './TokenAmountDisplay'
 
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>

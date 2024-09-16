@@ -12,7 +12,11 @@ import {
 import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useOnWebSocketMessage, useProfile } from '../../../hooks'
+import {
+  useOnWebSocketMessage,
+  useProfile,
+  useRefreshGovProposals,
+} from '../../../hooks'
 import { OpenProposalsProposalLine } from './OpenProposalsProposalLineProps'
 import { feedOpenProposalsSelector } from './state'
 import { OpenProposalsProposalLineProps } from './types'
@@ -21,8 +25,12 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
   id: 'open_proposals',
   Renderer: OpenProposalsProposalLine,
   useData: () => {
-    const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
-    const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
+    const refreshGovProposals = useRefreshGovProposals()
+    const setRefreshOpenProposals = useSetRecoilState(refreshOpenProposalsAtom)
+    const refresh = useCallback(() => {
+      refreshGovProposals()
+      setRefreshOpenProposals((id) => id + 1)
+    }, [refreshGovProposals, setRefreshOpenProposals])
 
     const { chains, uniquePublicKeys } = useProfile()
 

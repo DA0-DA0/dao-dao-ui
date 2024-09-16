@@ -7,6 +7,7 @@ import {
 import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
+  ActionKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
@@ -15,17 +16,13 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { makeUpdateStakingConfigAction } from './actions'
+import { UpdateStakingConfigAction } from './actions'
 import {
   MembersTab,
   NftCollectionTab,
   ProfileCardMemberInfo,
 } from './components'
-import {
-  useCommonGovernanceTokenInfo,
-  useMainDaoInfoCards,
-  useVotingModuleRelevantAddresses,
-} from './hooks'
+import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
 
 export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingCw721Staked',
@@ -36,7 +33,6 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
     hooks: {
       useMainDaoInfoCards,
       useVotingModuleRelevantAddresses,
-      useCommonGovernanceTokenInfo,
     },
 
     // Components
@@ -69,13 +65,16 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
 
     // Functions
     fields: {
-      actionCategoryMakers: [
-        () => ({
+      actions: {
+        actions: [UpdateStakingConfigAction],
+        categoryMakers: [
           // Add to DAO Governance category.
-          key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeUpdateStakingConfigAction],
-        }),
-      ],
+          () => ({
+            key: ActionCategoryKey.DaoGovernance,
+            actionKeys: [ActionKey.UpdateStakingConfig],
+          }),
+        ],
+      },
     },
   }),
 }
