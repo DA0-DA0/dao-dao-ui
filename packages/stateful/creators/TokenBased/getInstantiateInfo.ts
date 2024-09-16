@@ -21,7 +21,15 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   data: {
     tiers,
     tokenType,
-    newInfo: { initialSupply, maxSupply, imageUrl, symbol, name },
+    newInfo: {
+      initialSupply,
+      maxSupply,
+      imageUrl,
+      metadataUrl,
+      metadataUrlImageUrl,
+      symbol,
+      name,
+    },
     existingTokenDenomOrAddress,
     existingToken,
     unstakingDuration: unstakingDurationWithUnits,
@@ -104,6 +112,10 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           throw new Error('Max supply not set')
         }
 
+        if (imageUrl && (imageUrl !== metadataUrlImageUrl || !metadataUrl)) {
+          throw new Error('Image metadata URL not properly set')
+        }
+
         const fantokenExecute: BtsgFtFactoryExecuteMsg = {
           issue: {
             symbol,
@@ -112,8 +124,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
               maxSupply,
               NEW_DAO_TOKEN_DECIMALS
             ),
-            // TODO(bitsong-fantoken)
-            uri: '',
+            uri: metadataUrl || '',
             initial_balances: microInitialBalances,
             initial_dao_balance: microInitialTreasuryBalance,
           },

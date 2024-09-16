@@ -24,6 +24,10 @@ export type CreatorData = {
     // For BitSong which needs an up front max.
     maxSupply?: number
     imageUrl?: string
+    // For Bitsong, which needs a JSON URL containing the image.
+    metadataUrl?: string
+    // Image that the metadata URL was created for.
+    metadataUrlImageUrl?: string
     symbol: string
     name: string
   }

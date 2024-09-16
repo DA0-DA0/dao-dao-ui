@@ -43,7 +43,7 @@ export const ImageUploadInput = ({
         throw new Error('Failed to upload image')
       }
 
-      onChange(`ipfs://${cid}`, file)
+      await onChange(`ipfs://${cid}`, file)
     } catch (err) {
       console.error(err)
       onError?.(err)

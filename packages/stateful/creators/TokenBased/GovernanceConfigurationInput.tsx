@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -40,7 +41,9 @@ import {
   formatPercentOf100,
   isValidBech32Address,
   isValidNativeTokenDenom,
+  isValidUrl,
   makeValidateAddress,
+  transformIpfsUrlToHttpsIfNecessary,
   validateNativeTokenDenom,
   validatePercent,
   validatePositive,
@@ -78,6 +81,9 @@ export const GovernanceConfigurationInput = ({
     config,
   } = useSupportedChainContext()
   const isCw20 = !!config.createWithCw20
+
+  const isBitsong =
+    chainId === ChainId.BitsongMainnet || chainId === ChainId.BitsongTestnet
 
   const {
     fields: tierFields,
@@ -320,6 +326,65 @@ export const GovernanceConfigurationInput = ({
     },
   ]
 
+  const imageUrl = watch('creator.data.newInfo.imageUrl')
+  const metadataUrl = watch('creator.data.newInfo.metadataUrl')
+  const metadataUrlImageUrl = watch('creator.data.newInfo.metadataUrlImageUrl')
+  useEffect(() => {
+    if (
+      !imageUrl ||
+      !isValidUrl(imageUrl, true) ||
+      // if metadata URL set and valid, make sure it's for the right image
+      (metadataUrl &&
+        isValidUrl(imageUrl, true) &&
+        metadataUrlImageUrl === imageUrl)
+    ) {
+      return
+    }
+
+    const uploadImage = async () => {
+      // Next.js API route.
+      const response = await fetch('/api/uploadJson', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image: imageUrl }),
+      })
+
+      if (!response.ok) {
+        const fallback = `Failed to upload image metadata. Status: ${response.status} ${response.statusText}. Please try again.`
+        throw new Error(
+          (await response.json().catch(() => ({ error: fallback })))?.error ||
+            fallback
+        )
+      }
+
+      const { cid } = await response.json()
+      if (!cid) {
+        throw new Error('Failed to upload image metadata. Please try again.')
+      }
+
+      setValue('creator.data.newInfo.metadataUrl', `ipfs://${cid}`)
+      setValue('creator.data.newInfo.metadataUrlImageUrl', imageUrl)
+    }
+
+    // Check that imageUrl points to a valid image.
+    fetch(transformIpfsUrlToHttpsIfNecessary(imageUrl)).then(async (res) => {
+      if (!res.ok || !res.headers.get('content-type')?.includes('image')) {
+        return
+      }
+
+      uploadImage().catch((e) => {
+        console.error(e)
+        toast.error(
+          e instanceof Error
+            ? e.message
+            : 'Failed to upload image metadata. Please try again.'
+        )
+      })
+    })
+  }, [imageUrl, metadataUrl, metadataUrlImageUrl, setValue])
+
   return (
     <>
       <SegmentedControls
@@ -357,7 +422,7 @@ export const GovernanceConfigurationInput = ({
             <div className="flex flex-col items-stretch sm:flex-row">
               <div className="flex flex-col items-stretch sm:flex-row">
                 {/* TODO(tokenfactory-image): add back in once token factory  supports URI metadata */}
-                {isCw20 && (
+                {(isCw20 || isBitsong) && (
                   <div className="flex flex-col items-center gap-5 border-b border-border-secondary py-6 px-10 sm:border-r sm:border-b-0">
                     <InputLabel name={t('form.image')} />
                     <ImageSelector
@@ -411,8 +476,7 @@ export const GovernanceConfigurationInput = ({
             </div>
 
             {/* Max token supply for BitSong fantokens */}
-            {(chainId === ChainId.BitsongMainnet ||
-              chainId === ChainId.BitsongTestnet) && (
+            {isBitsong && (
               <div className="flex flex-col gap-6 border-t border-border-secondary py-7 px-6">
                 <div className="flex flex-row items-center gap-6">
                   <p className="primary-text text-text-body">

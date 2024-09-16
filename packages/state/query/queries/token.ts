@@ -15,6 +15,8 @@ import {
   getTokenForChainIdAndDenom,
   ibcProtoRpcClientRouter,
   isSecretNetwork,
+  isValidUrl,
+  transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
@@ -176,7 +178,30 @@ export const fetchTokenInfo = async (
           denom: denomOrAddress,
         })
       )
+
       if (metaData) {
+        // try to load image from metadata url, otherwise using fallback
+        let imageUrl
+        if (metaData.uri && isValidUrl(metaData.uri, true)) {
+          try {
+            const res = await fetch(
+              transformIpfsUrlToHttpsIfNecessary(metaData.uri)
+            )
+            if (res.ok) {
+              const { image } = await res.json()
+              if (image && isValidUrl(image, true)) {
+                imageUrl = image
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching BitSong Fantoken image', err)
+          }
+        }
+
+        if (!imageUrl) {
+          imageUrl = getFallbackImage(denomOrAddress)
+        }
+
         return {
           chainId,
           type,
@@ -184,8 +209,7 @@ export const fetchTokenInfo = async (
           symbol: metaData.symbol.toUpperCase(),
           // All BitSong Fantokens are assumed to have 6 decimals.
           decimals: 6,
-          // TODO(bitsong-fantoken)
-          imageUrl: metaData.uri || getFallbackImage(denomOrAddress),
+          imageUrl,
           source,
         }
       }
