@@ -724,4 +724,14 @@ export type MessageProcessor = (options: {
    * The query client.
    */
   queryClient: QueryClient
+  /**
+   * Whether or not to error if no remote (polytone or ICA) account is found.
+   * This might be processing a message that is creating a Polytone or ICA
+   * account, and the account may not yet have been created if the proposal
+   * hasn't been executed and relayed. In this case, if false, it will simply
+   * fill in an empty string for the account address.
+   *
+   * Defaults to false.
+   */
+  errorIfNoRemoteAccount?: boolean
 }) => Promise<ProcessedMessage>

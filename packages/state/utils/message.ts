@@ -18,6 +18,7 @@ export const processMessage: MessageProcessor = async ({
   sender,
   message,
   queryClient,
+  errorIfNoRemoteAccount = false,
 }) => {
   const accounts = await queryClient.fetchQuery(
     accountQueries.list(queryClient, {
@@ -52,7 +53,7 @@ export const processMessage: MessageProcessor = async ({
         })
       )
 
-      if (!proxy) {
+      if (errorIfNoRemoteAccount && !proxy) {
         throw new Error(
           `No polytone proxy found on ${decodedPolytone.chainId} controlled by ${sender} on ${chainId}.`
         )
@@ -61,7 +62,7 @@ export const processMessage: MessageProcessor = async ({
       account = {
         type: AccountType.Polytone,
         chainId: decodedPolytone.chainId,
-        address: proxy,
+        address: proxy || '',
       }
     }
 
@@ -104,7 +105,7 @@ export const processMessage: MessageProcessor = async ({
         })
       )
 
-      if (!remoteIcaAddress) {
+      if (errorIfNoRemoteAccount && !remoteIcaAddress) {
         throw new Error(
           `No ICA address found on ${decodedIca.chainId} controlled by ${sender} on ${chainId}.`
         )
@@ -113,7 +114,7 @@ export const processMessage: MessageProcessor = async ({
       account = {
         type: AccountType.Ica,
         chainId: decodedIca.chainId,
-        address: remoteIcaAddress,
+        address: remoteIcaAddress || '',
       }
     }
 
