@@ -10,7 +10,7 @@ import {
 import { encodeActions } from '@dao-dao/utils'
 
 import { useActionsContext } from '../../contexts'
-import { useLoadingPromise } from '../../hooks'
+import { useLoadingPromise, useRateLimitUpdates } from '../../hooks'
 import { InputErrorMessage } from '../inputs'
 import { ActionsEditor } from './ActionsEditor'
 
@@ -30,10 +30,19 @@ export const NestedActionsEditor: ActionComponent<
   const { watch, setValue, clearErrors, setError } =
     useFormContext<NestedActionsEditorFormData>()
 
-  const actionData =
+  const formActionData =
     watch((fieldNamePrefix + '_actionData') as '_actionData') || []
 
-  // Update action msgs from actions form data.
+  // Rate limit updating msgs from form data.
+  const { value: actionData, iteration: actionDataUpdateId } =
+    useRateLimitUpdates({
+      value: formActionData,
+      delay: 1000,
+      // Update whenever the action data changes.
+      deps: [JSON.stringify(formActionData)],
+    })
+
+  // Update msgs from actions form data.
   const msgs = useLoadingPromise({
     promise: actionData.length
       ? () =>
@@ -43,7 +52,8 @@ export const NestedActionsEditor: ActionComponent<
             data: actionData,
           })
       : () => Promise.resolve([]),
-    deps: [actionMap, actionData],
+    // Update whenever the action data debounce updates.
+    deps: [actionMap, actionData, actionDataUpdateId],
   })
 
   useEffect(() => {
