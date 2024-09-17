@@ -67,6 +67,7 @@ export enum ActionKey {
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
+  EnableApprover = 'enableApprover',
   BecomeApprover = 'becomeApprover',
   ManageWidgets = 'manageWidgets',
   FeeShare = 'feeShare',

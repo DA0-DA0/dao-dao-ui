@@ -194,7 +194,9 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       })
 
       isPreProposeApprovalProposal =
-        this.prePropose.contractName === ContractName.PreProposeApprovalSingle
+        this.prePropose.contractName ===
+          ContractName.PreProposeApprovalSingle ||
+        this.prePropose.contractName === ContractName.PreProposeApprovalMultiple
       proposalNumber =
         // pre-propose-approval proposals have a different event
         isPreProposeApprovalProposal
@@ -438,7 +440,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
                   // Convert snip20 to cw20 key.
                   'snip20' in depositInfo.denom
                     ? {
-                        // Code hash.
+                        // [address, code hash]
                         cw20: depositInfo.denom.snip20[0],
                       }
                     : depositInfo.denom,

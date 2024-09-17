@@ -8,7 +8,9 @@ export enum ContractName {
   CwTokenfactoryIssuer = 'cw-tokenfactory-issuer',
   PolytoneProxy = 'crates.io:polytone-proxy',
   PreProposeSingle = 'crates.io:dao-pre-propose-single',
+  PreProposeMultiple = 'crates.io:dao-pre-propose-multiple',
   PreProposeApprovalSingle = 'crates.io:dao-pre-propose-approval-single',
+  PreProposeApprovalMultiple = 'crates.io:dao-pre-propose-approval-multiple',
   PreProposeApprover = 'crates.io:dao-pre-propose-approver',
   NeutronCwdSubdaoCore = 'crates.io:cwd-subdao-core',
   NeutronCwdSubdaoPreProposeSingle = 'crates.io:cwd-subdao-pre-propose-single',
@@ -101,7 +103,7 @@ export const DAO_PROPOSAL_SINGLE_CONTRACT_NAMES = [
 ]
 
 export const DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES = [
-  'crates.io:dao-pre-propose-multiple',
+  ContractName.PreProposeMultiple,
 ]
 
 export const DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES = [

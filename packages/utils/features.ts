@@ -1,4 +1,5 @@
 import semverGte from 'semver/functions/gte'
+import semverLt from 'semver/functions/lt'
 
 import { ContractVersion, Feature, SupportedFeatureMap } from '@dao-dao/types'
 
@@ -61,7 +62,8 @@ export const getSupportedFeatures = (
  *
  * @param {ContractVersion} version - The version to check.
  * @param {ContractVersion} gteThis - The version to compare with.
- * @return {boolean} Returns true if the given version is higher than the specified version, otherwise false.
+ * @return {boolean} Returns true if the given version is greater than or equal
+ * to the specified version.
  */
 export const versionGte = (
   version: ContractVersion,
@@ -69,6 +71,27 @@ export const versionGte = (
 ): boolean => {
   try {
     return semverGte(version, gteThis)
+  } catch {
+    // If throws an error, one of the versions was invalid (likely not a
+    // version, like ContractVersion.Gov), so just return false.
+    return false
+  }
+}
+
+/**
+ * Checks if a given version is less than a specified version.
+ *
+ * @param {ContractVersion} version - The version to check.
+ * @param {ContractVersion} ltThis - The version to compare with.
+ * @return {boolean} Returns true if the given version is less than the
+ * specified version.
+ */
+export const versionLt = (
+  version: ContractVersion,
+  ltThis: ContractVersion
+): boolean => {
+  try {
+    return semverLt(version, ltThis)
   } catch {
     // If throws an error, one of the versions was invalid (likely not a
     // version, like ContractVersion.Gov), so just return false.

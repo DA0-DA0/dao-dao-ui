@@ -419,7 +419,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
                   // Convert snip20 to cw20 key.
                   'snip20' in depositInfo.denom
                     ? {
-                        // Code hash.
+                        // [address, code hash]
                         cw20: depositInfo.denom.snip20[0],
                       }
                     : depositInfo.denom,

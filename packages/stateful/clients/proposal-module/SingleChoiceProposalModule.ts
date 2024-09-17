@@ -241,7 +241,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       )
 
       isPreProposeApprovalProposal =
-        this.prePropose.contractName === ContractName.PreProposeApprovalSingle
+        this.prePropose.contractName ===
+          ContractName.PreProposeApprovalSingle ||
+        this.prePropose.contractName === ContractName.PreProposeApprovalMultiple
       proposalNumber =
         // pre-propose-approval proposals have a different event
         isPreProposeApprovalProposal
