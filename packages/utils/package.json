@@ -8,7 +8,9 @@
     "test": "jest",
     "dump-go-relayer": "tsx ./scripts/dump-go-relayer.ts",
     "dump-hermes-relayer": "tsx ./scripts/dump-hermes-relayer.ts",
-    "log-code-ids": "tsx ./scripts/log-code-ids.ts"
+    "log-code-ids": "tsx ./scripts/log-code-ids.ts",
+    "verify-code-ids": "tsx ./scripts/verify-code-ids.ts",
+    "verify-code-hashes": "tsx ./scripts/verify-code-hashes.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.592.0",

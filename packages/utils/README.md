@@ -59,3 +59,22 @@ Options:
 To dump the entries between two specific chains, specify both chains (with `-a`
 and `-b`). To dump all entries for one or multiple chains, use either `-a`,
 `-b`, or `-m`. To dump all entries for all chains, pass no arguments.
+
+### verify-code-ids
+
+Validate that versions and code IDs in the `codeIds.json` file are correct by
+finding contracts that currently exist on-chain for each code ID and checking
+their version info.
+
+```sh
+Usage: yarn verify-code-ids
+```
+
+### verify-code-hashes
+
+Validate that the code hashes in the `codeHashes.json` file are correct by
+comparing with their on-chain hashes. This is only needed for Secret Network.
+
+```sh
+Usage: yarn verify-code-hashes
+```

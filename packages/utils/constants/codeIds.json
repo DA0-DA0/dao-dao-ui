@@ -111,7 +111,6 @@
     "2.4.2": {
       "Cw1Whitelist": 8725,
       "Cw20Base": 8785,
-      "Cw20Stake": 8786,
       "Cw4Group": 8726,
       "Cw721Base": 8727,
       "CwPayrollFactory": 8729,
@@ -124,7 +123,6 @@
       "DaoPreProposeSingle": 8737,
       "DaoProposalMultiple": 8738,
       "DaoProposalSingle": 8739,
-      "DaoVotingCw20Staked": 8787,
       "DaoVotingCw4": 8740,
       "DaoVotingCw721Staked": 8741
     },
@@ -253,7 +251,6 @@
       "DaoProposalMultiple": 193,
       "DaoProposalSingle": 194,
       "DaoVotingCw4": 195,
-      "DaoVotingOnftStaked": 198,
       "DaoVotingTokenStaked": 197
     },
     "2.5.0": {
@@ -328,7 +325,6 @@
       "CwTokenSwap": 2452,
       "CwVesting": 2453,
       "DaoCore": 2454,
-      "DaoMigrator": 2455,
       "DaoPreProposeMultiple": 2458,
       "DaoPreProposeSingle": 2459,
       "DaoProposalMultiple": 2461,
@@ -346,7 +342,6 @@
       "CwTokenfactoryIssuer": 3824,
       "CwVesting": 3825,
       "DaoCore": 3826,
-      "DaoMigrator": 3827,
       "DaoPreProposeMultiple": 3828,
       "DaoPreProposeSingle": 3829,
       "DaoProposalMultiple": 3830,
@@ -365,7 +360,6 @@
       "CwTokenfactoryIssuer": 4045,
       "CwVesting": 4046,
       "DaoCore": 4047,
-      "DaoMigrator": 4048,
       "DaoPreProposeApprovalSingle": 4049,
       "DaoPreProposeApprover": 4050,
       "DaoPreProposeMultiple": 4051,
