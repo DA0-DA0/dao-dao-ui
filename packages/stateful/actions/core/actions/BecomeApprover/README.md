@@ -1,6 +1,6 @@
 # BecomeApprover
 
-Set up this DAO as an approver for another DAO with a pre-propose-approval-*
+Set up this DAO as an approver for another DAO with a pre-propose-approval-\*
 module whose approver is already set to this DAO. This will automatically create
 proposals in this DAO that decide whether or not to allow proposals in the other
 DAO to open for voting.
