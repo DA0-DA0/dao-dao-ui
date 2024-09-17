@@ -45,8 +45,8 @@ import {
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import {
-  SetUpApproverData,
-  SetUpApproverComponent as StatelessComponent,
+  BecomeApproverData,
+  BecomeApproverComponent as StatelessComponent,
 } from './Component'
 
 const Component: ActionComponent = (props) => {
@@ -55,7 +55,7 @@ const Component: ActionComponent = (props) => {
     chain: { chain_id: chainId },
   } = useActionOptions()
 
-  const { watch, setValue } = useFormContext<SetUpApproverData>()
+  const { watch, setValue } = useFormContext<BecomeApproverData>()
   const preProposeApprovalSingle = watch(
     (props.fieldNamePrefix + 'address') as 'address'
   )
@@ -95,11 +95,11 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export class SetUpApproverAction extends ActionBase<SetUpApproverData> {
-  public readonly key = ActionKey.SetUpApprover
+export class BecomeApproverAction extends ActionBase<BecomeApproverData> {
+  public readonly key = ActionKey.BecomeApprover
   public readonly Component = Component
 
-  protected _defaults: SetUpApproverData = {
+  protected _defaults: BecomeApproverData = {
     address: '',
   }
 
@@ -108,25 +108,25 @@ export class SetUpApproverAction extends ActionBase<SetUpApproverData> {
       options.context.type !== ActionContextType.Dao ||
       !options.context.dao.info.supportedFeatures[Feature.Approval]
     ) {
-      throw new Error('Invalid context for setting up an approver')
+      throw new Error('Invalid context for becoming an approver')
     }
 
     super(options, {
       Icon: PersonRaisingHandEmoji,
-      label: options.t('title.setUpApprover'),
-      description: options.t('info.setUpApproverDescription'),
+      label: options.t('title.becomeApprover'),
+      description: options.t('info.becomeApproverDescription'),
     })
   }
 
   async encode({
     address: preProposeApprovalContract,
-  }: SetUpApproverData): Promise<UnifiedCosmosMsg> {
+  }: BecomeApproverData): Promise<UnifiedCosmosMsg> {
     // Type-check. This is already checked in the constructor.
     if (
       this.options.context.type !== ActionContextType.Dao ||
       this.options.chainContext.type !== ActionChainContextType.Supported
     ) {
-      throw new Error('Invalid context for setting up an approver')
+      throw new Error('Invalid context for becoming an approver')
     }
 
     if (!preProposeApprovalContract) {
@@ -257,7 +257,7 @@ export class SetUpApproverAction extends ActionBase<SetUpApproverData> {
     })
   }
 
-  decode([{ decodedMessage }]: ProcessedMessage[]): SetUpApproverData {
+  decode([{ decodedMessage }]: ProcessedMessage[]): BecomeApproverData {
     const parsedPreProposeMsg = decodeJsonFromBase64(
       decodeJsonFromBase64(
         decodedMessage.wasm.execute.msg.update_proposal_modules.to_add[0].msg,

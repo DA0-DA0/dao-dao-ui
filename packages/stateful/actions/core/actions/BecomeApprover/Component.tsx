@@ -14,13 +14,13 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
-export type SetUpApproverData = {
+export type BecomeApproverData = {
   address: string
   // Loaded once created from `address`.
   dao?: string
 }
 
-export type SetUpApproverOptions = {
+export type BecomeApproverOptions = {
   options: LoadingDataWithError<
     {
       dao: string
@@ -30,14 +30,12 @@ export type SetUpApproverOptions = {
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
-export const SetUpApproverComponent: ActionComponent<SetUpApproverOptions> = ({
-  fieldNamePrefix,
-  isCreating,
-  options: { options, EntityDisplay },
-}) => {
+export const BecomeApproverComponent: ActionComponent<
+  BecomeApproverOptions
+> = ({ fieldNamePrefix, isCreating, options: { options, EntityDisplay } }) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
-  const { watch, setValue } = useFormContext<SetUpApproverData>()
+  const { watch, setValue } = useFormContext<BecomeApproverData>()
 
   const dao = watch((fieldNamePrefix + 'dao') as 'dao')
 
