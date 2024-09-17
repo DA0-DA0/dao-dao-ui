@@ -377,12 +377,12 @@ const main = async () => {
     : ''
 
   log()
-  log(chalk.green('Done! UI config entry:'))
+  log(chalk.green('Done! Config entries:'))
 
   const mainnet = networkType === 'mainnet'
   const explorerUrlDomain = mainnet ? 'ping.pub' : 'testnet.ping.pub'
 
-  const config: SupportedChainConfig = {
+  const config: Omit<SupportedChainConfig, 'codeIds' | 'allCodeIds'> = {
     chainId,
     name: chainName,
     mainnet,
@@ -394,19 +394,28 @@ const main = async () => {
       govProp: `https://${explorerUrlDomain}/${chainName}/gov/REPLACE`,
       wallet: `https://${explorerUrlDomain}/${chainName}/account/REPLACE`,
     },
-    codeIdsVersion: ContractVersion.Unknown,
-    codeIds: Object.fromEntries(
-      Object.entries(codeIdMap).map(([key, value]) => [
-        key
-          .split('_')
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(''),
-        value ?? -1,
-      ])
-    ) as any,
+    latestVersion: ContractVersion.Unknown,
+  }
+
+  const allCodeIds = {
+    [chainId]: {
+      [ContractVersion.Unknown]: Object.fromEntries(
+        Object.entries(codeIdMap).map(([key, value]) => [
+          key
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(''),
+          value ?? -1,
+        ])
+      ),
+    },
   }
 
   log(JSON.stringify(config, null, 2))
+
+  log()
+
+  log(JSON.stringify(allCodeIds, null, 2))
 }
 
 main()

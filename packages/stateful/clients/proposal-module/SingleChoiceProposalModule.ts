@@ -85,13 +85,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       onlyMembersExecute?: boolean
     }
   ): ModuleInstantiateInfo {
-    const { codeIds, codeIdsVersion } = mustGetSupportedChainConfig(chainId)
+    const { codeIds, latestVersion } = mustGetSupportedChainConfig(chainId)
 
     const preProposeCommon = {
       deposit_info: config.deposit,
       ...(isFeatureSupportedByVersion(
         Feature.GranularSubmissionPolicy,
-        codeIdsVersion
+        latestVersion
       )
         ? {
             submission_policy:

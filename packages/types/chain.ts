@@ -130,10 +130,17 @@ export type BaseChainConfig = {
 }
 
 export type ConfiguredChain = BaseChainConfig & {
+  /**
+   * Chain info from chain registry.
+   */
   chain: Chain
 }
 
-export type SupportedChainConfig = BaseChainConfig & {
+export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
+  /**
+   * Chain ID.
+   */
+  chainId: ChainId
   /**
    * The `cw-admin-factory` contract address that instantiates contracts with
    * themselves set as their admin.
@@ -157,17 +164,25 @@ export type SupportedChainConfig = BaseChainConfig & {
     Record<string, 'underDevelopment' | 'unsupported'>
   >
   /**
-   * Version of the code IDs in the config below.
+   * Active (latest) version of the code IDs.
    */
-  codeIdsVersion: ContractVersion
+  latestVersion: ContractVersion
   /**
-   * Code IDs stored on this chain that are used throughout the UI.
+   * Active (latest) code IDs.
    */
   codeIds: CodeIdConfig
   /**
-   * Code hashes for IDs above. Only used by Secret Network.
+   * All deployed versions of the code IDs on this chain.
+   */
+  allCodeIds: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
+  /**
+   * Active (latest) code hashes. Only used by Secret Network.
    */
   codeHashes?: CodeHashConfig
+  /**
+   * All deployed versions of the code hashes on this chain.
+   */
+  allCodeHashes?: Partial<Record<ContractVersion, Partial<CodeHashConfig>>>
   /**
    * Whether or not to create DAOs with CW20s. The alternative is to use token
    * factory native tokens. Defaults to false.
@@ -215,11 +230,6 @@ export type SupportedChainConfig = BaseChainConfig & {
    * are legitimate for safety.
    */
   subDaos?: string[]
-  /**
-   * Past versions of contracts, in case DAOs need a particular version of a
-   * contract.
-   */
-  historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
   /**
    * Polytone connections to other chains from this chain.
    */

@@ -1,0 +1,755 @@
+{
+  "Oraichain": {
+    "cosmoshub-4": {
+      "listener": "orai1h59fpkdvgkng8eh45pk9dy38jdjrnxsv2rq5nj6z3zkjhwjc7djq5g57qy",
+      "localChannel": "channel-266",
+      "localConnection": "connection-22",
+      "note": "orai1gzxhsxnd5etp383jjxqu4zeqv347pck7m9xq6sxv47lmwkwyl9aquec3nz",
+      "remoteChannel": "channel-1013",
+      "remoteConnection": "connection-497",
+      "voice": "cosmos18cyd5amev24hecxlktffagty6gnkvsefphtxtth5adhdsx2fnk9qseeluh"
+    },
+    "juno-1": {
+      "listener": "orai10urjh074nxcmy98sxl98rj63gyexdjvx5w7ttrtwsqsur3ucpk6qftv9ek",
+      "localChannel": "channel-230",
+      "localConnection": "connection-150",
+      "note": "orai1nu034cg5w2eax65n5nx9q92gaahywehjwfagf2cutwndt3jw66rsuj9n5a",
+      "remoteChannel": "channel-530",
+      "remoteConnection": "connection-521",
+      "voice": "juno1r9uz5a35ru3tpsjktd3a7kgj3afmrq993trkpmmxxlxwmtethc0s6s7v2y"
+    },
+    "osmosis-1": {
+      "listener": "orai1efwyc0zlc69n7pvj6yvnem504ynsv4xprquk9rgd65dthhc8n08snhh5my",
+      "localChannel": "channel-216",
+      "localConnection": "connection-21",
+      "note": "orai1hvfzt6f7n7pea803j633089rsh23qhgmexk3j844lsegnyfxjluqt0e9pq",
+      "remoteChannel": "channel-20862",
+      "remoteConnection": "connection-1464",
+      "voice": "osmo1e459dlf6y4xlmlsjfpzpea6p54fx5zkngq203p4eamjhn334h56sspgqhz"
+    }
+  },
+  "bitsong-2b": {
+    "cosmoshub-4": {
+      "listener": "bitsong1zn5zg8flc6jdeyqeludphwjhkw3lkqlc8gcdnhyj9rc9ez5j36qs6ktszm",
+      "localChannel": "channel-37",
+      "localConnection": "connection-2",
+      "note": "bitsong1svze9hf5s42syg9yvfem62vp3affx39ek2wf99ws0sllaxc6zsfsl4vrq0",
+      "remoteChannel": "channel-1014",
+      "remoteConnection": "connection-395",
+      "voice": "cosmos1hkcp8avzchehvt5y8373ac0xyqklz6yalyz2q2t28k0qpvpkeyzsd40y2y"
+    },
+    "juno-1": {
+      "listener": "bitsong1c7w23m0g7eg5l8c6pkdgtv52z39gug9vgnk9x8xtkqh9rawvsanqmwtxrx",
+      "localChannel": "channel-31",
+      "localConnection": "connection-9",
+      "note": "bitsong1ucgr536rjpw3qvt3tkyx2w5w98llfpfe8v6eacud3g7tl3jdh07qkqz6hh",
+      "remoteChannel": "channel-567",
+      "remoteConnection": "connection-26",
+      "voice": "juno1czu3wfaj2a06d392a4jkhvvely6pcrxw397ht63pxamu98gv06zqmq85xz"
+    },
+    "osmosis-1": {
+      "listener": "bitsong1c8pgxceamfzr05yhmlkul9p5a7hz4p0vsmc80ffarvpl89nnlx0qdhqjr7",
+      "localChannel": "channel-32",
+      "localConnection": "connection-0",
+      "note": "bitsong149h0mwrjpgxnq8a6m8xvjkq9aya77a2rdm9ywkq2td6kqxgeu8rspz9sga",
+      "remoteChannel": "channel-78439",
+      "remoteConnection": "connection-1216",
+      "voice": "osmo1ew5q937st3vemnk3cjk85rkceapvtmmk673pt0yc5mqt4ffhfa9qa4xfjn"
+    }
+  },
+  "columbus-5": {
+    "kaiyo-1": {
+      "listener": "terra1s7vmxcrtuuhetl5qjqhc0ldjlwqxd87r4m5uym428mky4s36vwfsl3jcm7",
+      "localChannel": "channel-106",
+      "localConnection": "connection-102",
+      "note": "terra14peyt0qrvayqj3vcy2rtq6tpp2frgw0qyt4stks6enf42gnuwrnsx2skls",
+      "remoteChannel": "channel-166",
+      "remoteConnection": "connection-79",
+      "voice": "kujira1fnv7ar6xt2y8lsnv9zvdfykdnels04vfjwnq4n0edqgvkm9cj2aqss5ftx"
+    },
+    "migaloo-1": {
+      "listener": "terra196xqr5ngsr483lvh4alux0rcnspep45gad484h6pdappqnf70jys7wpmkq",
+      "localChannel": "channel-101",
+      "localConnection": "connection-141",
+      "note": "terra16c0fhcrm0ez0e4an644lynknwxhru9wjeacg9xsplayrzrhs7uxs5y7vtx",
+      "remoteChannel": "channel-121",
+      "remoteConnection": "connection-88",
+      "voice": "migaloo10snk2jzmgxhzg3348gy8tljlah42wcw0jm3wpjsv6zhfz2cdls8sl573w4"
+    },
+    "osmosis-1": {
+      "listener": "terra1d4ge6jklal6enlfjuz8wgzzdlwmtqtuj87rnxf3wzw9ykw3wrl7srzx0lz",
+      "localChannel": "channel-93",
+      "localConnection": "connection-11",
+      "note": "terra1mudpw50amrmmj66j8gcxcvuervrmdpfpskjfjz8ccq2n6vs8messcqc26w",
+      "remoteChannel": "channel-78083",
+      "remoteConnection": "connection-1215",
+      "voice": "osmo1sgyvze8v2jr600pjxll6leg3lpuz2grte0aceelzz0q3r7kv4dtsrgd9y8"
+    },
+    "stargaze-1": {
+      "listener": "terra1306eg6lp30zdet9dkp0td4a2lw6wfp88ufuwppccp2eu7uva8thqv7h5qt",
+      "localChannel": "channel-100",
+      "localConnection": "connection-152",
+      "note": "terra1wnvlwpdgug7sp3gan9cgdplfe9368apunh09dakurgjmvxwhn9gqk3t70u",
+      "remoteChannel": "channel-336",
+      "remoteConnection": "connection-298",
+      "voice": "stars19nlxjdrdqaphvnckuhl50jjdtwe6pflcr7rgjfhcs66nwlfr0ees0dwpqp"
+    }
+  },
+  "cosmoshub-4": {
+    "Oraichain": {
+      "listener": "cosmos15fnweczx7273jc6tmuuacmkl6zk6mq8ffh8r0artxp9srdpctcesfm6z2u",
+      "localChannel": "channel-988",
+      "localConnection": "connection-497",
+      "note": "cosmos1elaymnd2epmfr498h2x9p2nezc4eklv95uv92u9csfs8wl75w7yqmflnyn",
+      "remoteChannel": "channel-265",
+      "remoteConnection": "connection-22",
+      "voice": "orai1zugx655l70dv5y426hlpq29dvaukkdvnfqr8qxtun9mp2mf409eq5aqzs9"
+    },
+    "bitsong-2b": {
+      "listener": "cosmos1sklnkaxkmnhhrqu8e4csx6tzepvpjf4e4qj5qh0sf4aa2ngr3eds2kf2hf",
+      "localChannel": "channel-990",
+      "localConnection": "connection-395",
+      "note": "cosmos153vp64h0jlenzwspje0qza5lz8px9sdf63hcdaljtqcghewgl32sk2sa52",
+      "remoteChannel": "channel-36",
+      "remoteConnection": "connection-2",
+      "voice": "bitsong1ptdgvq2ykp0xxd9njuas2pdj8drlhygpg0mllmewq2w9e0pnkh5qyycvx4"
+    },
+    "injective-1": {
+      "listener": "cosmos1m0z0kk0qqug74n9u9ul23e28x5fszr628h20xwt6jywjpp64xn4quyeg9v",
+      "localChannel": "channel-989",
+      "localConnection": "connection-388",
+      "note": "cosmos1utve8x4s2jq8wua78mtagwusyu0u64ldlx9sc8pff00077rhqwdswlqs87",
+      "remoteChannel": "channel-342",
+      "remoteConnection": "connection-2",
+      "voice": "inj1dd8htv4v9kr0xhty9kg7hnsmlmy2zk8uxkamnd"
+    },
+    "juno-1": {
+      "listener": "cosmos1r22k3my03clkws8phjhfcc3ny45p939hwkh0f05wjyl27a3y8cwskfw8dl",
+      "localChannel": "channel-982",
+      "localConnection": "connection-372",
+      "note": "cosmos1gya5c9y6yehyps5kz9vt2dptgkncvvx76mf05jext4axh9x6vpxqt6yuut",
+      "remoteChannel": "channel-600",
+      "remoteConnection": "connection-2",
+      "voice": "juno13w4mgqg5qxy2x6kt4ke0ednuga0ja7duvnd3tnku4390udv9tnyqdp5mus"
+    },
+    "neutron-1": {
+      "listener": "cosmos15v8jqq6aqhsuykdgdevx3qqcj9lp4h27ypsycds4cmv6er9qv0vsy2vmrm",
+      "localChannel": "channel-985",
+      "localConnection": "connection-809",
+      "note": "cosmos105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74esw0ea9e",
+      "remoteChannel": "channel-4818",
+      "remoteConnection": "connection-0",
+      "voice": "neutron14684aj2x67uuyuafcytfhg9kmyqat4836frg4e3svuzl54pcx4yse5spua"
+    },
+    "omniflixhub-1": {
+      "listener": "cosmos1e6ykfrslyaex794s9wuxyp8cn3gjj5v9wsa7r7nd4g76nluspacq7u6zk4",
+      "localChannel": "channel-991",
+      "localConnection": "connection-501",
+      "note": "cosmos1sxujcvele5eqtx0xc4wuy6jr0m28y0yt8spn7efc3527vc2j2xrqqt7jrf",
+      "remoteChannel": "channel-44",
+      "remoteConnection": "connection-19",
+      "voice": "omniflix1qqlk2773dvj8cyv3ftnzvyrknq78yryghp3uyumnumaxu656yres82laf6"
+    },
+    "osmosis-1": {
+      "listener": "cosmos14nurau9scuqhr3sczktx63sr8kdpvwh00zyftamrrn685vex2uusp827m6",
+      "localChannel": "channel-983",
+      "localConnection": "connection-257",
+      "note": "cosmos188w3894z52ljp85s98lvaqufnql60y9nvpxk8a893qj92s5rqfsqswlr0l",
+      "remoteChannel": "channel-80710",
+      "remoteConnection": "connection-1",
+      "voice": "osmo1s3j43su8937yeng64y5fld3senneh9jqtyme9yh7tg06k67hu4vqgszday"
+    },
+    "phoenix-1": {
+      "listener": "cosmos1csmy3sr5qx58k00cw97sq2h22g7yfwc2frrx73kw0zd93ujsnn2qfu7g3g",
+      "localChannel": "channel-986",
+      "localConnection": "connection-551",
+      "note": "cosmos1lqgdq9u8zhcvwwwz3xjswactrtq6qzptmlzlh6xspl34dxq32uhq56xy20",
+      "remoteChannel": "channel-524",
+      "remoteConnection": "connection-1",
+      "voice": "terra16s3hnkgz3suq45fe084yey7zw62m8en8wgc9fsmhe0gesunsv5jqlvrzjc"
+    },
+    "stargaze-1": {
+      "listener": "cosmos1fxkx7wd4q7z5zgm8qh0vaxptx4gp0ppgjm0ke56jr55azpzecpcsc4teug",
+      "localChannel": "channel-984",
+      "localConnection": "connection-918",
+      "note": "cosmos1gxv4mwdq084q8hrmrvksk9zr8cnlekgwjk27dg2tdgpp7yjd32ls2fy54w",
+      "remoteChannel": "channel-382",
+      "remoteConnection": "connection-256",
+      "voice": "stars1dly5ml5wfmw29t8ycqr6c0vrl2qkt3rvsxdge9xdasqn7vgemydsdgxp6q"
+    }
+  },
+  "juno-1": {
+    "Oraichain": {
+      "listener": "juno1r2hez8nr6yqcxcadpyp6ckjsapn0dxkhgf50mspvez74fhwq4ymqfl776u",
+      "localChannel": "channel-529",
+      "localConnection": "connection-521",
+      "note": "juno1slr28gq9acpjj2dqt90svs6dwlmaev77uupg9fysy6200vkssjfsca266k",
+      "remoteChannel": "channel-229",
+      "remoteConnection": "connection-150",
+      "voice": "orai1chmwuwq4akxcpm0dv2w5rc5qr0d9c7ufpwacrzn7uheyd5c2wxvsff4vsv"
+    },
+    "archway-1": {
+      "listener": "juno1j8hac83mnjtww379wkgffpvqvl3grtyrkmsznav6v0ktyrhfl77seu9mah",
+      "localChannel": "channel-413",
+      "localConnection": "connection-379",
+      "note": "juno129y879p7fc7lwktj5c72cqrxyl6n9t4e3a9knr5mwjfc5algft0sw6ep29",
+      "remoteChannel": "channel-45",
+      "remoteConnection": "connection-19",
+      "voice": "archway16v6tzjhgt5v5mlfmh5x269vz5gc0t09flgzextspnkym6cc79m0qy0z40s"
+    },
+    "bitsong-2b": {
+      "listener": "juno1qypq6yjn4nhrnmmskawnx2rayfchu2nfwlslg2ax68a9883sqmwq5zmq22",
+      "localChannel": "channel-568",
+      "localConnection": "connection-26",
+      "note": "juno184r596nqsl3f0t46muruscv7zjc5edxt5a3xlxwvww6smfkjjatqasj6lx",
+      "remoteChannel": "channel-34",
+      "remoteConnection": "connection-9",
+      "voice": "bitsong1xn9ukrng6pfnkf76rvgsf2c4zkpydjpt6ue2jh6kpea6cnqekkesj662n5"
+    },
+    "cosmoshub-4": {
+      "listener": "juno1gjt9fu3y59dch546vzrktywgmuekyznjc6y7k6v9qdrska08dkss2vdfes",
+      "localChannel": "channel-603",
+      "localConnection": "connection-2",
+      "note": "juno1hwuzgtg682yelk75yvxv8vfqunqvvv5ztwytvvvtenram6rccffs4gkdsg",
+      "remoteChannel": "channel-994",
+      "remoteConnection": "connection-372",
+      "voice": "cosmos1xz4cya4qm2ws6nzperhvc40wdjcq4872fl6d3j2s4cytyx8j80eq0zurq9"
+    },
+    "kaiyo-1": {
+      "listener": "juno15mf52u00eeepjtxwr7hgy52la7enymwx55285tsvcfwera8lq6ls7sfss5",
+      "localChannel": "channel-474",
+      "localConnection": "connection-140",
+      "note": "juno1z0fepsfeeew78uwespyneswt5q9aqntj55xdwdasefxpu7zjed2qa6t582",
+      "remoteChannel": "channel-129",
+      "remoteConnection": "connection-1",
+      "voice": "kujira13nqh8m3394cpm62h8wm0uagqux37zaxs30e6e2zgg3acdx5yr5aq08ezlr"
+    },
+    "migaloo-1": {
+      "listener": "juno1md8sgkt7pjlc92lztlvxwft3eh4lqr98lhf07zftaqfzuxne47rq3adtf3",
+      "localChannel": "channel-457",
+      "localConnection": "connection-282",
+      "note": "juno15mtjtjuxfrr6ez4a2yqfpsa6n86xerxuyal70n5vzdppgjtutyzqaahmzk",
+      "remoteChannel": "channel-63",
+      "remoteConnection": "connection-1",
+      "voice": "migaloo19dfxncujs33vtw2r5jscm7z7xt2lj7de8ar84z8c6h2l8hkysezq9n2shr"
+    },
+    "omniflixhub-1": {
+      "listener": "juno1ts88k8s6he69uew3y89pg7l9e3zjqplctj4nwg6jw40d9le3r4esvp42s9",
+      "localChannel": "channel-566",
+      "localConnection": "connection-104",
+      "note": "juno128ace0g69ghvgw0quxptxmeg8kjex6mrw5fguulssllge6qnca6sjykzsw",
+      "remoteChannel": "channel-41",
+      "remoteConnection": "connection-27",
+      "voice": "omniflix18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3q3wy4uv"
+    },
+    "osmosis-1": {
+      "listener": "juno1f2676a53wxnnp05ezch69hwp5lpxug5qm07lyeywlf57y9ghw46qylrshd",
+      "localChannel": "channel-288",
+      "localConnection": "connection-0",
+      "note": "juno1ads7gcpje0y5jxhtn3ntsqs8kg3ahch9u953jk6v0njq4l39m3us5sxw68",
+      "remoteChannel": "channel-1664",
+      "remoteConnection": "connection-1142",
+      "voice": "osmo1af93h8xcszszes2a0kjms5zpm5ns3fys4aez2f40fgz428hc8aws28klzs"
+    },
+    "phoenix-1": {
+      "listener": "juno1jy0nct4jkmhsfua2fmyna5j9kr80xgytqpgdpzc95pul3l8gcw7q4phsv8",
+      "localChannel": "channel-456",
+      "localConnection": "connection-128",
+      "note": "juno1hhfzyeytvfnunxast867qm36rnsnuugdl7w6vgdaj96r6cvqh6pq6ucxw7",
+      "remoteChannel": "channel-319",
+      "remoteConnection": "connection-6",
+      "voice": "terra1wkdcnhc9h2rm4vjg677t742u6n6pc72cxx2d8pk4qqsyd5ywzc2qvyckyy"
+    },
+    "stargaze-1": {
+      "listener": "juno1w9q8dgfl0n59gpuagn2r8j89w6y5ad4z8yvct096zawksaevx2nqzw3x9q",
+      "localChannel": "channel-305",
+      "localConnection": "connection-30",
+      "note": "juno1vupyxq9q2mmg5jjcd4cl0ujav8a3xn0a9ahyhtmj0zjaje2gfejsyvyf3z",
+      "remoteChannel": "channel-201",
+      "remoteConnection": "connection-11",
+      "voice": "stars1g9u4zmjj3xmu2me3vq07fqedqp7t0d9xjp3tqff9r2awwc2k8wvq7d39he"
+    }
+  },
+  "kaiyo-1": {
+    "archway-1": {
+      "listener": "kujira1fh29pj58cnkgjjnpwqc6rxfy3gnj3tj3hvdsmcn49e4cgz6x0skqldaxms",
+      "localChannel": "channel-133",
+      "localConnection": "connection-110",
+      "note": "kujira1q4r43ywst620wc9valw592nxs8k2a7vlsawkws0tz8x5675aaxxs5etvt8",
+      "remoteChannel": "channel-90",
+      "remoteConnection": "connection-12",
+      "voice": "archway1hnt7vrz40qy8lnz9577z0dxw6nedvgmxtqxqvt0ayts6e256v7cq3yzmlg"
+    },
+    "juno-1": {
+      "listener": "kujira10dpjpmd4jak247hrcupxnn87h77f94kqmgy8rwkspjakxc4paflqd3wnv5",
+      "localChannel": "channel-131",
+      "localConnection": "connection-1",
+      "note": "kujira1kthhh99l9ec60jr4eytnva40ep52tjvjlup9y2a409vgc7sutn6qv4rrxj",
+      "remoteChannel": "channel-475",
+      "remoteConnection": "connection-140",
+      "voice": "juno1vv7s07lcv2de64nphg255y7vsreasg6k89vq48gqf754wpsc5w0qmwupeu"
+    },
+    "neutron-1": {
+      "listener": "kujira1wkv5qgu75crgyn93wmc2hdysn7xacrzzz3spcjcskr469884cn2snp6ffy",
+      "localChannel": "channel-140",
+      "localConnection": "connection-82",
+      "note": "kujira14dckdzh7t30lkpdr0hgdqsqh52erux4tst5rl7jhvc693plnm39qp2r95q",
+      "remoteChannel": "channel-69",
+      "remoteConnection": "connection-2",
+      "voice": "neutron162fvv88dxpsapf3rnux63anruqach36r8qg73ehm2dv3fkat2rusw70nlx"
+    },
+    "osmosis-1": {
+      "listener": "kujira1tcu45eeuklxxkd8s4jsjpp0zlz3f04w9dgyhxxvy2sts8rxd3uksjrm9md",
+      "localChannel": "channel-147",
+      "localConnection": "connection-2",
+      "note": "kujira15454vhqp90cy7u2swyaf79e53hervg0g6h78jgfsgydys5vgqa6shcruhm",
+      "remoteChannel": "channel-16723",
+      "remoteConnection": "connection-1559",
+      "voice": "osmo1546fnys90560am2jzuzsl0csmqc502g8ywgwpf3q9jdfucyr93jq7urvlm"
+    },
+    "phoenix-1": {
+      "listener": "kujira1vgsdqvuxdn229q05f7guhytutcfa0u87l0qnd5xyeyp40e0w6xfqd8y63n",
+      "localChannel": "channel-141",
+      "localConnection": "connection-3",
+      "note": "kujira15u8wevalrxd62y6z549fmkmjdt3k2adr4zzsjgwp0uw365gmy45qkn8s8v",
+      "remoteChannel": "channel-333",
+      "remoteConnection": "connection-13",
+      "voice": "terra14qj6ejeuqmgtx63fujulzcvnr290wcjmmfkvqdqh5p4vjdkuewzsyagufs"
+    },
+    "stargaze-1": {
+      "listener": "kujira1u5c2cn936tqh5rpua7xrscavglwy2g300zwp075wp0fapvs50e0qtwkher",
+      "localChannel": "channel-136",
+      "localConnection": "connection-5",
+      "note": "kujira1wgjpx4d38gt3tc9rvyffk8upgs4sa805r0a3dleehtll67t7jyuqypclff",
+      "remoteChannel": "channel-277",
+      "remoteConnection": "connection-111",
+      "voice": "stars1qm2nv8vx9qf673h9r68vzwce4xf9kvyvkk54a28xnn5x5etcthuswrglxc"
+    }
+  },
+  "migaloo-1": {
+    "chihuahua-1": {
+      "listener": "migaloo1jm58dy8ymmnffdgm3t8clye56qhdmw7g7jgsnarcnzk66jzdcyvqjxj0gn",
+      "localChannel": "channel-111",
+      "localConnection": "connection-21",
+      "note": "migaloo1ezyangwcudgx7vq664g8zqtnrtl6nsvup9yfulewynlx2dru99ls54hxdn",
+      "remoteChannel": "channel-80",
+      "remoteConnection": "connection-81",
+      "voice": "chihuahua1ppjcxp24dw0s6nx94hsnlutxmsqqvds66u968w29x8xuwmw0gntqkcvtq0"
+    },
+    "injective-1": {
+      "listener": "migaloo1v4sw52jhgzuhsr8fmt9an390xevvafec0gd320h2auvfnlr4tftsu99m73",
+      "localChannel": "channel-120",
+      "localConnection": "connection-8",
+      "note": "migaloo190zmewmp5pv2mhv3mqpmvseh55902fae3wn0mraxyrp3cys55jksftxwan",
+      "remoteChannel": "channel-309",
+      "remoteConnection": "connection-123",
+      "voice": "inj1edfqvfyvpce8qm5avph43spnm5plt2en2lgdg6"
+    },
+    "juno-1": {
+      "listener": "migaloo1wtc95908aajnw7rqfjdcmnppzlp70jv32jajp0a6nyk3z4svggsqmrz9ja",
+      "localChannel": "channel-66",
+      "localConnection": "connection-1",
+      "note": "migaloo1v4y8lytcu7q5tmvcqs06km7qra5wlwtt96snmlf4pljn25z0u79smel9hc",
+      "remoteChannel": "channel-458",
+      "remoteConnection": "connection-282",
+      "voice": "juno1j4uvv0r8t4mc2x0s6nrua9um2tkue0efwx8553wxja9ecxj73z4qjqjwm0"
+    },
+    "kaiyo-1": {
+      "listener": "migaloo1s06ndhqa93tmx244e6jefpv0mr0dgzwjkjj0nvvn9jpj0hd756tqrzygkw",
+      "localChannel": "channel-123",
+      "localConnection": "connection-19",
+      "note": "migaloo1ra5czh604fv2k3rhrmesasa45afse97ulnwdz77zx9qkngyzx6jsfmvn6g",
+      "remoteChannel": "channel-167",
+      "remoteConnection": "connection-59",
+      "voice": "kujira1dxcg652grz88gnur0cqelqks8aeazus6l44fejdnzjw2hel8x49skf5c96"
+    },
+    "osmosis-1": {
+      "listener": "migaloo1tx4nc7jhf2zt87v9zy4a54nsw4lqthfkp8fed3ftm7mx8tz0mzwqnuf2s9",
+      "localChannel": "channel-68",
+      "localConnection": "connection-11",
+      "note": "migaloo1zmwmf0l06lnlty5a0xwxnz5yjxf5qm4pw2upznj4mdhfrdx5vjrqv2hz6p",
+      "remoteChannel": "channel-12859",
+      "remoteConnection": "connection-2171",
+      "voice": "osmo1rwaaf55us67nhl8atksgsrlz7pmkgcule3tcex9l44gu3a2dc86s4dk459"
+    },
+    "phoenix-1": {
+      "listener": "migaloo1mep7v7auyjc5wmzf6rgthxwdh3t89d0vzxdu6l9f8k7yhex3rpqsckwz3w",
+      "localChannel": "channel-93",
+      "localConnection": "connection-0",
+      "note": "migaloo1en6cw3qs9stft3dmdh2x3mtmq679wr7d2yvdg20f94m7t5f0ug7qah9pf8",
+      "remoteChannel": "channel-367",
+      "remoteConnection": "connection-93",
+      "voice": "terra16yy3unw92e8qae9495yt480kqmqstapek6uhs42g5020vqhcgx3stukklk"
+    },
+    "stargaze-1": {
+      "listener": "migaloo1sa0l849s9z23cu26lxdmc5waz65stz5m8shgueqvl5yhxzzm79msrsjh70",
+      "localChannel": "channel-71",
+      "localConnection": "connection-90",
+      "note": "migaloo1cnuhn42mf3wy3x3rlkllc03h25eea8jjdt00dqy2mh4ukp7npsaqevswl4",
+      "remoteChannel": "channel-273",
+      "remoteConnection": "connection-287",
+      "voice": "stars1cj9a7p3y0zv3ccg90p9vhv6tr5cucujzf68yvlqwyrsl0pq82dzq5398jw"
+    }
+  },
+  "neutron-1": {
+    "archway-1": {
+      "listener": "neutron1fh522a0x8h2wehc9wfqxwacnz7dqne0423qwrh07q8kz9ewnvdwqrhu0wv",
+      "localChannel": "channel-47",
+      "localConnection": "connection-43",
+      "note": "neutron1kprjz0qusrcxvvhfklw0krn7g6ze36hzjuuhmktkepeyx5shljdqflwe2m",
+      "remoteChannel": "channel-85",
+      "remoteConnection": "connection-58",
+      "voice": "archway1qr94yuptq5h0nj5xctzft3q33262j2ajsquh42tpe0lptpev6rkswtfld5"
+    },
+    "cosmoshub-4": {
+      "listener": "neutron1unsyghg06zt3mqatcwnv4eg23ckswg98um87ectawj0h8ygu6rysanus5d",
+      "localChannel": "channel-4819",
+      "localConnection": "connection-0",
+      "note": "neutron1ca7fwa0yjww52a2pvus8ykzwsgqxfrg6ljkcw74trhg825updqjss4xwy8",
+      "remoteChannel": "channel-1002",
+      "remoteConnection": "connection-809",
+      "voice": "cosmos1yphzt0jh8l5n77e5ytlqh2x84nej92whjl8k72g9wnds3cp59pws3h0mdh"
+    },
+    "injective-1": {
+      "listener": "neutron12x9tc008u8teyg3txy2t70rjxz8cxxuftkk3plmccn0key4mxpuskq02jx",
+      "localChannel": "channel-4498",
+      "localConnection": "connection-58",
+      "note": "neutron1wpt84q6qsjtlv27vgk0pwg3l7dlueknlxz0xrh7teeut9strqyysrxc5a0",
+      "remoteChannel": "channel-304",
+      "remoteConnection": "connection-220",
+      "voice": "inj1v37vgn6y4knzr9e7uc3u9czxj3dcxug7s5lhzh"
+    },
+    "juno-1": {
+      "listener": "neutron16n92xe0336c3tr5fjy42uff39vh2xpdk9zlz24vq0vnuhnu7882q8x5fr6",
+      "localChannel": "channel-4721",
+      "localConnection": "connection-95",
+      "note": "neutron174ne8p7zh539sht8sfjsa9r6uwe3pzlvqedr0yquml9crfzsfnlshvlse8",
+      "remoteChannel": "channel-593",
+      "remoteConnection": "connection-530",
+      "voice": "juno1c9hx3q7sd2d0xgknc52ft6qsqxemkuxh3nt8d4rmdtdua25x5h0sdd2zm5"
+    },
+    "kaiyo-1": {
+      "listener": "neutron1qytmw70y6vaqfa08mzec5m0g8d66e43h5t773xfme0r828chsg9slh6jxc",
+      "localChannel": "channel-68",
+      "localConnection": "connection-2",
+      "note": "neutron1gkrrj668pf84sefae7yqgseeugnfeygrat8tnu06q8vtqfvc6mhqk7sysy",
+      "remoteChannel": "channel-138",
+      "remoteConnection": "connection-82",
+      "voice": "kujira1uexv52ffftauns6v2vlgvahc42k92nn0j0qa94u8re6dgp8zgfgqpw8uef"
+    },
+    "migaloo-1": {
+      "listener": "neutron1ml36whejpprr2ndcd7d3ll8k0p5et2lxmxqpjw4l2zz40f4h08uqvxwz7j",
+      "localChannel": "channel-4720",
+      "localConnection": "connection-93",
+      "note": "neutron1454e3h2ajqa986lwg63hrc3lqdzrcqfn2zxkzrleq9kw342jyndqp0393j",
+      "remoteChannel": "channel-134",
+      "remoteConnection": "connection-105",
+      "voice": "migaloo1zq0zp52lquys72jl49j7vs3jck2et2pjdj874s8sgdwez4rp3p2sjy6kk6"
+    },
+    "osmosis-1": {
+      "listener": "neutron1dvh9s7aa93uyv06hsu6qak238gc3kr6nr6cgejfrplhx3m9f630smfmn0l",
+      "localChannel": "channel-54",
+      "localConnection": "connection-18",
+      "note": "neutron1767kfqeglqyctuqsmvyzgjecs60lpqju2f590smxevk9duq5fhaqgk5eca",
+      "remoteChannel": "channel-12058",
+      "remoteConnection": "connection-2338",
+      "voice": "osmo1vw02frqejfw2v2w7dy6ws35jp9743dwkxy0laalwsuvzzvkszz7s8d93yw"
+    },
+    "phoenix-1": {
+      "listener": "neutron14zjfefmmx78sp4t45ftvx9eptd5gsspmdhm6dqztszdkfq4w4mvqtldzyf",
+      "localChannel": "channel-53",
+      "localConnection": "connection-9",
+      "note": "neutron143aydj5zcgh7fudhsjq7878z7v8dmj0ckn9un2hsrxgnslvgymfsln0tkw",
+      "remoteChannel": "channel-323",
+      "remoteConnection": "connection-192",
+      "voice": "terra1669p39l9gg4ajjwyta5psf5g4aen05d392mzp9efpa06vnaa7j6s3czzd3"
+    },
+    "stargaze-1": {
+      "listener": "neutron1e06n0haqtmlvpj5u7fwkjdhc73ltxq0c3y5t5acdjscwqdf7uavqt6yxv6",
+      "localChannel": "channel-55",
+      "localConnection": "connection-23",
+      "note": "neutron10h7a9s60ytvzeqzffa53dzqk4rdwqchmuue7ezp2txcs7a2ky82qzl203t",
+      "remoteChannel": "channel-253",
+      "remoteConnection": "connection-211",
+      "voice": "stars1f54x5q35vv39xv4dvjdxthj98xttulml2a86src2tf24mcpvq8wshc3px0"
+    }
+  },
+  "omniflixhub-1": {
+    "cosmoshub-4": {
+      "listener": "omniflix1x9zrl4gvf0780rcxnv9fjx2h52jg6zxpxzgq6lhhjqyrg0ue4dyq9n9g2q",
+      "localChannel": "channel-45",
+      "localConnection": "connection-19",
+      "note": "omniflix1cll3u3wuwx0qvnu9lnyu74m233y5xz8yv47jdz6ynmkxgg4gncuqgnfn03",
+      "remoteChannel": "channel-1015",
+      "remoteConnection": "connection-501",
+      "voice": "cosmos1gn59sajfpqdlzxwmnnl69r7k2rxdt52l0nwwgalaa8nn2h8vrjzsw7t83m"
+    }
+  },
+  "osmosis-1": {
+    "Oraichain": {
+      "listener": "osmo128t3k4gfenvxegdjft9r8ctely99drl4hgcvdrgcmlfhlla6ftuqydl0w4",
+      "localChannel": "channel-20861",
+      "localConnection": "connection-1464",
+      "note": "osmo1heyensqmjxare0u3vms5q52czw4j6lwfszyhsfyjmqw54j6n2tnq9l0yh4",
+      "remoteChannel": "channel-214",
+      "remoteConnection": "connection-21",
+      "voice": "orai16wexpcgt9wn88yuu8mdln7lx2l85ygj594jxm9aufjn6qwny49vs6mvcq4"
+    },
+    "archway-1": {
+      "listener": "osmo1hddgcv5efr435d8hmlf6kacthn0xsffdljd3er3yq2nxag7kg8wsytx400",
+      "localChannel": "channel-8144",
+      "localConnection": "connection-2362",
+      "note": "osmo14528h5e3c9knxzp82tex0gehhwx2qmz7fm32ntk6yluas27aknssrqkled",
+      "remoteChannel": "channel-43",
+      "remoteConnection": "connection-1",
+      "voice": "archway1c7vceg88kylv0u6lpqc6fejqkw50shg0mm84kacpkdkwtljked9q0kgkcy"
+    },
+    "bitsong-2b": {
+      "listener": "osmo12nxa03mh0dm6nfdu4uhk8fu8nawd49ljmycfpzt7afr3kn7nvl4sj3485j",
+      "localChannel": "channel-78440",
+      "localConnection": "connection-1216",
+      "note": "osmo1yz3wn53velq6j3xvgd96cuyerxm3ny06tmw0kk47zwhgnlanqdzsyu6grm",
+      "remoteChannel": "channel-33",
+      "remoteConnection": "connection-0",
+      "voice": "bitsong1jea5dydjmjemf7fgesllzuhjg78rv40a0dh7gl2379wtyjq6z4jqs23cks"
+    },
+    "cosmoshub-4": {
+      "listener": "osmo1jz05sz2mc6h7fvuwleruvxaj8ccj7kdn3m6w4vg0xgk83hga8e3sqhs6xg",
+      "localChannel": "channel-80713",
+      "localConnection": "connection-1",
+      "note": "osmo1fnq0y2wdhk92rhnp734yy46cmsuvn5ff5sajgwp9q98ypnjlvw9q7mglzh",
+      "remoteChannel": "channel-996",
+      "remoteConnection": "connection-257",
+      "voice": "cosmos1ed304eumv07zlkc8srffmr3mh8xlk286xex820gyahpgts3c540s23wxu7"
+    },
+    "injective-1": {
+      "listener": "osmo1x0hsnee8we57dn2rspvq7sj30l333v7mmr5kz5r2wg7nhxufrr6skvc4gz",
+      "localChannel": "channel-77133",
+      "localConnection": "connection-1298",
+      "note": "osmo1zc4fdqwswxxwp9rqh9uq3crs5ykerzn2rptsznawsq7wp6jyhj0qddwey7",
+      "remoteChannel": "channel-301",
+      "remoteConnection": "connection-14",
+      "voice": "inj10fxuwynmp9jtuumq27cuw0lw5quajpgxw692g5"
+    },
+    "juno-1": {
+      "listener": "osmo1jhwx9nunu4m3ajhvlm5vl2pltrhkltyawanp9c0qhxmxp940dessqh46k6",
+      "localChannel": "channel-1656",
+      "localConnection": "connection-1142",
+      "note": "osmo1zu9sa2yu9ffdk6pxsgjzgp56wqgyzdh8e0ndn7crr3d0xhvtj8uqdv3dqa",
+      "remoteChannel": "channel-287",
+      "remoteConnection": "connection-0",
+      "voice": "juno1mkq8ggvmr7kzu85c9muud30nmdcv98050uxyqrqmmftlmag044gs3e0d0u"
+    },
+    "kaiyo-1": {
+      "listener": "osmo1hcfg9qv9k6dhkw6us3nca2tuyqqwa7rdfyjf2e667s5hnywnl07qkr69zw",
+      "localChannel": "channel-16722",
+      "localConnection": "connection-1559",
+      "note": "osmo174mke7nylzwylaerfk6j8epzy5yxnvnfvrlx6gy2j0sq8sjf80lsw6skfn",
+      "remoteChannel": "channel-146",
+      "remoteConnection": "connection-2",
+      "voice": "kujira18zwe6dyezfla7p6zevm4wkatrajr4dn9lzf4l07ssdjz39s2322sw6ppuz"
+    },
+    "migaloo-1": {
+      "listener": "osmo1v4lwr23hd5yvnr39nnv7x0zy8ja6nx7su5hwpde9pm5j2x40vnsquck9xh",
+      "localChannel": "channel-12088",
+      "localConnection": "connection-2171",
+      "note": "osmo1gwg378zlvfcx294wvsxqswm6dt33mr6g5f4sdu752vxpcwqkhunqrhljl2",
+      "remoteChannel": "channel-65",
+      "remoteConnection": "connection-11",
+      "voice": "migaloo1x2fzq23trg33s9m37798s342r6p58rvcnya4wn7vcp6az95psl4s0t5563"
+    },
+    "neutron-1": {
+      "listener": "osmo14ww9jlat46msq8j8n9muhhc035aqv0w9rnft98th2a84zx06du3snhpl69",
+      "localChannel": "channel-13106",
+      "localConnection": "connection-2338",
+      "note": "osmo10j4qku3lzsqayyq6uhta4pzkv4fc97w3em9mjaxtvmv84y0fcats96lv89",
+      "remoteChannel": "channel-58",
+      "remoteConnection": "connection-18",
+      "voice": "neutron14wfsdrpp9fhdfeh3wnfedz0jeeguxgz2jh5kk335zc9ghjac7mzs88tfau"
+    },
+    "omniflixhub-1": {
+      "listener": "osmo148g8aue5zvry9wy5zdspcghswqs7gg0qlh9wwzgm4g82t7c6w34qqvs433",
+      "localChannel": "channel-78358",
+      "localConnection": "connection-1431",
+      "note": "osmo19p2k2wdzdvrr0np5jmef4qa2wpsxjgmumu3k35d3myxcwjf9yufq9xl65h",
+      "remoteChannel": "channel-42",
+      "remoteConnection": "connection-8",
+      "voice": "omniflix1wkwy0xh89ksdgj9hr347dyd2dw7zesmtrue6kfzyml4vdtz6e5wsnmv63u"
+    },
+    "phoenix-1": {
+      "listener": "osmo10ql2wj858ejlx6jn46uhxnf5pda7pfxrnqm64drhane78kmtgd4smn544l",
+      "localChannel": "channel-12048",
+      "localConnection": "connection-1536",
+      "note": "osmo1sa5yvr9pvxd8eh2wjmfj4c2cqvsxxs49ztn7e2pxtc4zxeet6e7spawtnd",
+      "remoteChannel": "channel-320",
+      "remoteConnection": "connection-3",
+      "voice": "terra1zgjqvzva5yz56yqa3s8dframcp3xkmxnspncsjq5hlg9dup7wk5smkrza7"
+    },
+    "stargaze-1": {
+      "listener": "osmo1d00cmsk7uym7mtrsrcnhhdza8mpu346klhrpufkzzxkvy9wlegeqw2my6l",
+      "localChannel": "channel-2659",
+      "localConnection": "connection-1223",
+      "note": "osmo1u44zc3vq37npnctdwd35n7ms3wtagfhdvdnpscq86pk6h9rmzpcsdqe992",
+      "remoteChannel": "channel-202",
+      "remoteConnection": "connection-0",
+      "voice": "stars1fr7ccflazj6mfmpt8z2st424kxkpc6uw7t65sx80q5rp0s8kug6sj34avq"
+    }
+  },
+  "phoenix-1": {
+    "archway-1": {
+      "listener": "terra1s5nmuezlqhgu5f063mklygkgde92fjds0trp7eaw55vz0fdzyl5s4qed79",
+      "localChannel": "channel-270",
+      "localConnection": "connection-360",
+      "note": "terra1x366fdkmpd88fvtjq09ksupjjgre6fr08zulwn3qe8mfefxfd3jswdmy3x",
+      "remoteChannel": "channel-54",
+      "remoteConnection": "connection-47",
+      "voice": "archway1ge0zdux54pn8f234l203nvugl4xnsr6hgv3tyah2wwm8qgz4y6esfzpwgg"
+    },
+    "cosmoshub-4": {
+      "listener": "terra13ynfm5p6k3yaavm9rfyffsa4e5rtxsgl9mmtxnqtnwpcy5t5t75ql66wr8",
+      "localChannel": "channel-525",
+      "localConnection": "connection-1",
+      "note": "terra1r7fej5936y57hzhavw6wt6lld5vq27av3ftl7jjvlgcc4lh0ehrs2n9cvy",
+      "remoteChannel": "channel-1007",
+      "remoteConnection": "connection-551",
+      "voice": "cosmos1rsrefjc7xnl6d6fm6avl706nu5y6nkpxaa9qnpqpzs67pk7vzjdq647dhu"
+    },
+    "injective-1": {
+      "listener": "terra1yu9encxx42k6rswr7skl43dhfxqzljddlk3wj250q7uykxzflw7qykt6wt",
+      "localChannel": "channel-488",
+      "localConnection": "connection-311",
+      "note": "terra1vf2janv5s6ywsa8lj4m5q7jdw3wfqpmgtkgdllh24l2shz0qyv4qvtjkuk",
+      "remoteChannel": "channel-289",
+      "remoteConnection": "connection-202",
+      "voice": "inj1tr0uhnh6dwtvaunnpa3zcdrq3gvq9y47jrysu8"
+    },
+    "juno-1": {
+      "listener": "terra1eqk2urjf0yvtpeaqu0r9zhkzptau9ulmwypjt6f3e7ktwtha48gsu3x2ee",
+      "localChannel": "channel-385",
+      "localConnection": "connection-6",
+      "note": "terra1dfwrwcjmsnprmr9938sg3d2885vm84cg2jfxtznf7kr59nrrxdtsdgnqu8",
+      "remoteChannel": "channel-520",
+      "remoteConnection": "connection-128",
+      "voice": "juno1ct0klhzska7h2k74m0pjlyr0u20mm8d3h4antq5fqeqfvavhc2gqcgw847"
+    },
+    "migaloo-1": {
+      "listener": "terra1xftzcyz2s2t0d35985j0w0csqffzczxfm5k3gw6dgd34etw88sxqz6t03k",
+      "localChannel": "channel-389",
+      "localConnection": "connection-93",
+      "note": "terra1pmdg4yq0ew57fdpwckcsey5jw60tth49cm2vpw0r5l6zj368xvhshjurcl",
+      "remoteChannel": "channel-112",
+      "remoteConnection": "connection-0",
+      "voice": "migaloo1ruw9ptkcdrj80npzuhzkryr5uxdf0nxw8w77eytwkvcmuh7al7gs0yaqpe"
+    },
+    "neutron-1": {
+      "listener": "terra1hu8esz9yhfrhj2eyq70refpmmdem95my2rpc2d896nt2a3p34s0qf5chle",
+      "localChannel": "channel-388",
+      "localConnection": "connection-192",
+      "note": "terra1eumwktcszm8p5p3apuxq4mrk008rx8sakntq68a5x6l6my33jl2qfvsfge",
+      "remoteChannel": "channel-994",
+      "remoteConnection": "connection-9",
+      "voice": "neutron1dsxy6h7cfnrguqe09ym599wk09a9zpyzw6r6yttrkquqffp06l6sfptpfp"
+    },
+    "osmosis-1": {
+      "listener": "terra1hudgkhufhp7a20jnk8vvc2x6l8f55tpx7tr8wkqq996zjv9v3yqqcpyaar",
+      "localChannel": "channel-386",
+      "localConnection": "connection-3",
+      "note": "terra13wdx8mgcj73ltfgfq2mazwrryxadzcmwy0l2xmllpgs03hq0q8lqqyy2kn",
+      "remoteChannel": "channel-21185",
+      "remoteConnection": "connection-1536",
+      "voice": "osmo1j3dzaqvaqa6navmz89rdmjrnztvgh5xma25wxchv6f3aj48jg6uqmxkhfu"
+    },
+    "stargaze-1": {
+      "listener": "terra1z4qyl5t3wtv7006chg3ar8hpyzuqsuyj5uqujhskplwtun28ucss23uap7",
+      "localChannel": "channel-387",
+      "localConnection": "connection-408",
+      "note": "terra1ts8j0cwnykrh39nc97mxmzesvnukyru3uua3hych0s345a0wz32qhklzfw",
+      "remoteChannel": "channel-285",
+      "remoteConnection": "connection-275",
+      "voice": "stars1457shfac8965ju277wwukf4qfvf24uqzrjdmw8j5w0xwhp8zps0qal9ure"
+    }
+  },
+  "stargaze-1": {
+    "archway-1": {
+      "listener": "stars14e2xhvph5ccteqxaes243na4dhskm4qx60eja75xg02kcdtg8lysdu7xug",
+      "localChannel": "channel-248",
+      "localConnection": "connection-258",
+      "note": "stars1ny7xvq2l07sgxdrak4qzrcj8eszyk5cwx34fkdshw4gyv84nyeus9cuw45",
+      "remoteChannel": "channel-86",
+      "remoteConnection": "connection-54",
+      "voice": "archway1hd4s3z4ga7f26eae4p44mp70dvr5my39d7l2qrh2hrl74jsv22dquc6h63"
+    },
+    "cosmoshub-4": {
+      "listener": "stars1krf32kcd247urdagcxjfc0h8fxy94h4gf8yczpa94p73gv74yw4s3gyvf6",
+      "localChannel": "channel-383",
+      "localConnection": "connection-256",
+      "note": "stars1jhr5fp88qvjp6arf686td2xr4h6czpgrz4f392uh4x5vn6qsp7sqsp4hq2",
+      "remoteChannel": "channel-1005",
+      "remoteConnection": "connection-918",
+      "voice": "cosmos17aatfk5ktm834djmyk3dsgr48mja54e8hjzcs4c8vyunlpacc7qswcmuwn"
+    },
+    "injective-1": {
+      "listener": "stars1hfhv66uu0t5kcku4rj506vvxp7l7h3aafjfruth5ss3yah76svuq59usx7",
+      "localChannel": "channel-331",
+      "localConnection": "connection-301",
+      "note": "stars1fgdeujlyhymvh2malsdeckcjc9zfar8qc4rw77m4eldxmg4xly7s2n828w",
+      "remoteChannel": "channel-310",
+      "remoteConnection": "connection-270",
+      "voice": "inj147yyg4ccmpwjut9e8marlmupx6myw8lj2wg4gn"
+    },
+    "juno-1": {
+      "listener": "stars18mw7avlq5t0anxsavca5ch7ju0w6mjwu0jz55exfnhp0wz7rchasxurdf8",
+      "localChannel": "channel-199",
+      "localConnection": "connection-11",
+      "note": "stars17vst9ew3vhddgj4je82vdn0evv3dc9gyf0yapjydt9fzqn8c4ecqyunk79",
+      "remoteChannel": "channel-304",
+      "remoteConnection": "connection-30",
+      "voice": "juno13yxra87ltv7gva3z35ktxt0nx3n5tp8ngtkj2p2zxj0qg6n906fs00wgvf"
+    },
+    "kaiyo-1": {
+      "listener": "stars1rxaapnn7nyqtqd6fuyyva3rmdrpfv6kefpl07t7dvtlsv4q26hlqhc3fet",
+      "localChannel": "channel-276",
+      "localConnection": "connection-111",
+      "note": "stars1hp26cl5crsuyt9srmc9qjjmsf2fxv0sykxgvlcwk8qz59plm5xlqzk2n5g",
+      "remoteChannel": "channel-135",
+      "remoteConnection": "connection-5",
+      "voice": "kujira1rd4l7q3c8737g3zjejlwkch3nht4hg00565k9dqezyrtsdn7xhns4thzes"
+    },
+    "migaloo-1": {
+      "listener": "stars19hlknnxdu9xwt9zmcw0f0n84tepvdm2aaek0rfqqfpcxsj6ctc4s8p90w3",
+      "localChannel": "channel-272",
+      "localConnection": "connection-287",
+      "note": "stars1lyy3kkrw0vtgru49wezyhalxymhcs56xuyse835ld3v5hl0jrr3s926rml",
+      "remoteChannel": "channel-70",
+      "remoteConnection": "connection-90",
+      "voice": "migaloo1pddd7q33ht39y9uh3k34lk8nde33sp5apga5hpm6902as83pe72qqfsl7l"
+    },
+    "neutron-1": {
+      "listener": "stars148gj3tqmu3ngrcyf55tms6tf5yyfepr0ru49ag8apkfptcr08z7sdzl76u",
+      "localChannel": "channel-267",
+      "localConnection": "connection-211",
+      "note": "stars14azfhpfxhkshxehex5x7xuq3a9wjqryc2x0kwg4stp6a59zmnpqqzfjl3c",
+      "remoteChannel": "channel-59",
+      "remoteConnection": "connection-23",
+      "voice": "neutron1ageequk45wdfcjufqa5zj5ce2c9qxrssrn8ndgft7kfa7wk2arxscp9chd"
+    },
+    "osmosis-1": {
+      "listener": "stars1cu9nkty3wrg997qnmsdtpcy0m448zu5zj6kxmjfuze7jj2t6m3ns3f7ry5",
+      "localChannel": "channel-198",
+      "localConnection": "connection-0",
+      "note": "stars1p4f96xz9pz8264ccgapz2l6xu82l5cj0jvvng0ltlm3dw2sxqdrs43acfl",
+      "remoteChannel": "channel-2642",
+      "remoteConnection": "connection-1223",
+      "voice": "osmo13w3073l43gwxw77tv2np2katn3jrvet87unyfevg8nrj755m3x7q0aaw63"
+    },
+    "phoenix-1": {
+      "listener": "stars1qd4hzjx8ugvkt5mtds9hxdm4c7hanfakgt80zrszyr9ccannq9zqg0t9tw",
+      "localChannel": "channel-284",
+      "localConnection": "connection-275",
+      "note": "stars1c8xqrx3es7nlzfx94hpsx94tu9mlxpdqv3338m039z0v4zltsl7qg7aglq",
+      "remoteChannel": "channel-383",
+      "remoteConnection": "connection-408",
+      "voice": "terra1xezqw7jhu87ux2g7f2d27hlwt4u3qa8726j833323rrum82jgesq8ux30x"
+    }
+  }
+}
