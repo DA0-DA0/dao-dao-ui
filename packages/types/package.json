@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.5.0-rc.2",
+  "version": "2.5.0-rc.3",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "lint": "eslint .",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.32.3",
     "@cosmology/telescope": "^1.8.3",
-    "@dao-dao/config": "2.5.0-rc.2",
+    "@dao-dao/config": "2.5.0-rc.3",
     "@tanstack/react-query": "^5.40.0"
   },
   "peerDependencies": {
