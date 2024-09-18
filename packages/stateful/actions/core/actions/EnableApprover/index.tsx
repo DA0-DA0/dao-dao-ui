@@ -2,6 +2,7 @@ import { contractQueries } from '@dao-dao/state/query'
 import { ActionBase, PersonRaisingHandEmoji } from '@dao-dao/stateless'
 import {
   Feature,
+  IProposalModuleBase,
   ModuleInstantiateInfo,
   PreProposeModuleType,
   SecretModuleInstantiateInfo,
@@ -44,6 +45,8 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
   public readonly key = ActionKey.EnableApprover
   public readonly Component = Component
 
+  private validProposalModules: IProposalModuleBase[]
+
   protected _defaults = {
     approver: '',
   }
@@ -67,15 +70,18 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
       label: options.t('title.enableApprover'),
       description: options.t('info.enableApproverDescription'),
       notReusable: true,
-      // Disallow creation if:
-      // - approver is already enabled on every proposal module
-      // - no proposal modules are on supported versions
-      hideFromPicker: options.context.dao.proposalModules.every(
-        ({ version, prePropose }) =>
-          prePropose?.type === PreProposeModuleType.Approval ||
-          !isFeatureSupportedByVersion(Feature.Approval, version)
-      ),
     })
+
+    // Can only add approver to proposal modules that are on a supported version
+    // and have no pre-propose module or use the normal pre-propose modules.
+    this.validProposalModules = options.context.dao.proposalModules.filter(
+      (m) =>
+        isFeatureSupportedByVersion(Feature.Approval, m.version) &&
+        (!m.prePropose || m.prePropose.type === PreProposeModuleType.Normal)
+    )
+
+    // Disallow creation if no proposal modules can have approval added.
+    this.metadata.hideFromPicker = this.validProposalModules.length === 0
   }
 
   async encode({ approver }: EnableApproverData): Promise<UnifiedCosmosMsg[]> {
@@ -91,32 +97,20 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
     // multiple choice proposals.
     if (
       this.options.context.dao.proposalModules.some(
-        (module) =>
-          module instanceof MultipleChoiceProposalModule ||
-          module instanceof SecretMultipleChoiceProposalModule
+        (m) =>
+          m instanceof MultipleChoiceProposalModule ||
+          m instanceof SecretMultipleChoiceProposalModule
       )
     ) {
       throw new Error(
-        'Approval does not yet support multiple choice proposals. Disable the multiple choice proposal module before enabling an approver.'
+        this.options.t('error.multipleChoiceApprovalNotYetSupported')
       )
     }
 
     const { allCodeIds, allCodeHashes } = this.options.chainContext.config
 
-    // Can only add approver to proposal modules that are on a supported version
-    // and have no pre-propose module or use the normal pre-propose modules.
-    const validProposalModules =
-      this.options.context.dao.proposalModules.filter(
-        (m) =>
-          isFeatureSupportedByVersion(Feature.Approval, m.version) &&
-          (!m.prePropose || m.prePropose.type === PreProposeModuleType.Normal)
-      )
-    if (!validProposalModules.length) {
-      throw new Error('No valid proposal modules found')
-    }
-
     return await Promise.all(
-      validProposalModules.map(async (m) => {
+      this.validProposalModules.map(async (m) => {
         const isSecretSingle = m instanceof SecretSingleChoiceProposalModule
         const isSecretMultiple = m instanceof SecretMultipleChoiceProposalModule
         const isSecret = isSecretSingle || isSecretMultiple
@@ -133,7 +127,7 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
           codeHash = allCodeHashes?.[m.version]?.DaoPreProposeApprovalSingle
         } else {
           throw new Error(
-            'Approval does not yet support multiple choice proposals. Disable the multiple choice proposal module before enabling an approver.'
+            this.options.t('error.multipleChoiceApprovalNotYetSupported')
           )
 
           // TODO(approver-multiple): not yet ready

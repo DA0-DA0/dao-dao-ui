@@ -479,6 +479,7 @@
     "missingIbcChainAccounts_one": "An account needs to be created on the following chain so it can be used during this multi-hop IBC transaction: {{chains}}. In the event of a catastrophic failure, there is a small chance that a multi-hop IBC transaction will not be reversible, and tokens will end up on one of the intermediary chains. In this case, an account must exist on each intermediary to act as a failsafe. Either a cross-chain or ICA account works and will be automatically detected once created.",
     "missingIbcChainAccounts_other": "Accounts need to be created on the following chains so they can be used during this multi-hop IBC transaction: {{chains}}. In the event of a catastrophic failure, there is a small chance that a multi-hop IBC transaction will not be reversible, and tokens will end up on one of the intermediary chains. In this case, an account must exist on each intermediary to act as a failsafe. Either a cross-chain or ICA account works and will be automatically detected once created.",
     "missingNativeToken": "Missing native token.",
+    "multipleChoiceApprovalNotYetSupported": "Approval does not yet support multiple choice proposals. Disable the multiple choice proposal module before enabling an approver, or wait for multiple choice approval support.",
     "mustBeAtLeastSixtySeconds": "Must be at least 60 seconds.",
     "mustBeMemberToAddMember": "You must be a member of the DAO to propose adding a new member.",
     "mustBeMemberToCreateCompensationCycle": "You must be a member of the DAO to create a compensation cycle.",
