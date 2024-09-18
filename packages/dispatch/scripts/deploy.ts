@@ -66,11 +66,27 @@ program.option(
   '-x, --exclude <substrings>',
   'ignore contracts containing any of these comma-separated substrings (e.g. cw721)'
 )
+program.option(
+  '-i, --include <substrings>',
+  'only deploy contracts containing any of these comma-separated substrings (e.g. cw721)'
+)
+program.option(
+  '-r, --restrict-instantiation',
+  'restrict instantiation to only the uploader; this must be used on some chains to upload contracts, like Kujira'
+)
 
 program.parse(process.argv)
-const { chain: chainId, mode, authz, exclude: _exclude } = program.opts()
+const {
+  chain: chainId,
+  mode,
+  authz,
+  exclude: _exclude,
+  include: _include,
+  restrictInstantiation,
+} = program.opts()
 
 const exclude: string[] | undefined = _exclude?.split(',')
+const include: string[] | undefined = _include?.split(',')
 
 if (!Object.values(Mode).includes(mode)) {
   log(
@@ -118,10 +134,12 @@ const main = async () => {
     id,
     file,
     prefixLength,
+    restrictInstantiation,
   }: {
     id: string
     file: string
     prefixLength: number
+    restrictInstantiation?: boolean
   }) => {
     const wasmData = new Uint8Array(fs.readFileSync(file).buffer)
     const compressedWasmData = await gzipCompress(wasmData)
@@ -129,10 +147,15 @@ const main = async () => {
     const msgStoreCode = MsgStoreCode.fromPartial({
       sender: authz || sender,
       wasmByteCode: compressedWasmData,
-      instantiatePermission: {
-        permission: AccessType.Everybody,
-        addresses: [],
-      },
+      instantiatePermission: restrictInstantiation
+        ? {
+            permission: AccessType.AnyOfAddresses,
+            addresses: [authz || sender],
+          }
+        : {
+            permission: AccessType.Everybody,
+            addresses: [],
+          },
     })
 
     const msg: EncodeObject = authz
@@ -250,6 +273,7 @@ const main = async () => {
         id: contract,
         file,
         prefixLength: 32,
+        restrictInstantiation,
       })
     }
 
@@ -271,29 +295,46 @@ const main = async () => {
     // and longest ID suffix (CONTRACT).
     consolePrefixLength = Math.max(...contracts.map((file) => file.length)) + 10
 
-    for (const contract of contracts) {
-      const id = contract.slice(0, -5)
-      if (exclude?.some((substring) => id.includes(substring))) {
-        continue
-      }
+    try {
+      for (const contract of contracts) {
+        const id = contract.slice(0, -5)
+        if (exclude?.some((substring) => id.includes(substring))) {
+          continue
+        }
+        if (include && !include.some((substring) => id.includes(substring))) {
+          continue
+        }
 
-      const file = path.join(DAO_CONTRACTS_DIR, contract)
+        const file = path.join(DAO_CONTRACTS_DIR, contract)
 
-      if (!(id in codeIdMap)) {
-        codeIdMap[id] = await uploadContract({
-          id,
-          file,
-          prefixLength: consolePrefixLength,
-        })
-      } else {
-        log(
-          chalk.green(
-            `[${id}.CODE_ID]${' '.repeat(
-              consolePrefixLength - id.length - 10
-            )}${codeIdMap[id]}`
+        if (!(id in codeIdMap)) {
+          codeIdMap[id] = await uploadContract({
+            id,
+            file,
+            prefixLength: consolePrefixLength,
+            restrictInstantiation,
+          })
+        } else {
+          log(
+            chalk.green(
+              `[${id}.CODE_ID]${' '.repeat(
+                consolePrefixLength - id.length - 10
+              )}${codeIdMap[id]}`
+            )
           )
-        )
+        }
       }
+    } catch (err) {
+      // Log current Code ID Map to make it easy to restart the script and reuse
+      // already uploaded contracts.
+      log(
+        chalk.red(
+          'Error uploading contracts. Current Code ID Map: \n' +
+            JSON.stringify(codeIdMap, null, 2)
+        )
+      )
+
+      throw err
     }
   }
 
@@ -309,34 +350,39 @@ const main = async () => {
       id: 'cw_admin_factory',
       file,
       prefixLength: consolePrefixLength,
+      restrictInstantiation,
     })
   }
 
   // Instantiate admin factory.
   const cwAdminFactoryCodeId = codeIdMap['cw_admin_factory']
   if (!cwAdminFactoryCodeId) {
-    log(chalk.red('cw_admin_factory.CODE_ID not found'))
-    process.exit(1)
+    log()
+    log(
+      chalk.blueBright('cw_admin_factory.CODE_ID not found, not instantiating')
+    )
   }
 
-  const adminFactoryAddress = await instantiateContract({
-    client,
-    sender,
-    chainId,
-    id: 'cw_admin_factory',
-    codeId: cwAdminFactoryCodeId,
-    msg: {},
-    label: 'daodao_admin_factory',
-    prefixLength: consolePrefixLength,
-  })
+  const adminFactoryAddress = cwAdminFactoryCodeId
+    ? await instantiateContract({
+        client,
+        sender,
+        chainId,
+        id: 'cw_admin_factory',
+        codeId: cwAdminFactoryCodeId,
+        msg: {},
+        label: 'daodao_admin_factory',
+        prefixLength: consolePrefixLength,
+      })
+    : ''
 
   log()
-  log(chalk.green('Done! UI config entry:'))
+  log(chalk.green('Done! Config entries:'))
 
   const mainnet = networkType === 'mainnet'
   const explorerUrlDomain = mainnet ? 'ping.pub' : 'testnet.ping.pub'
 
-  const config: SupportedChainConfig = {
+  const config: Omit<SupportedChainConfig, 'codeIds' | 'allCodeIds'> = {
     chainId,
     name: chainName,
     mainnet,
@@ -348,32 +394,28 @@ const main = async () => {
       govProp: `https://${explorerUrlDomain}/${chainName}/gov/REPLACE`,
       wallet: `https://${explorerUrlDomain}/${chainName}/account/REPLACE`,
     },
-    codeIdsVersion: ContractVersion.Unknown,
-    codeIds: {
-      Cw1Whitelist: codeIdMap['cw1_whitelist'] ?? -1,
-      Cw4Group: codeIdMap['cw4_group'] ?? -1,
-      Cw721Base: codeIdMap['cw721_base'] ?? -1,
-      CwPayrollFactory: codeIdMap['cw_payroll_factory'] ?? -1,
-      CwTokenSwap: codeIdMap['cw_token_swap'] ?? -1,
-      CwTokenfactoryIssuerMain: codeIdMap['cw_tokenfactory_issuer'] ?? -1,
-      CwVesting: codeIdMap['cw_vesting'] ?? -1,
-      DaoCore: codeIdMap['dao_dao_core'] ?? -1,
-      DaoMigrator: -1,
-      DaoPreProposeApprovalSingle:
-        codeIdMap['dao_pre_propose_approval_single'] ?? -1,
-      DaoPreProposeApprover: codeIdMap['dao_pre_propose_approver'] ?? -1,
-      DaoPreProposeMultiple: codeIdMap['dao_pre_propose_multiple'] ?? -1,
-      DaoPreProposeSingle: codeIdMap['dao_pre_propose_single'] ?? -1,
-      DaoProposalMultiple: codeIdMap['dao_proposal_multiple'] ?? -1,
-      DaoProposalSingle: codeIdMap['dao_proposal_single'] ?? -1,
-      DaoRewardsDistributor: codeIdMap['dao_rewards_distributor'] ?? -1,
-      DaoVotingCw4: codeIdMap['dao_voting_cw4'] ?? -1,
-      DaoVotingCw721Staked: codeIdMap['dao_voting_cw721_staked'] ?? -1,
-      DaoVotingTokenStaked: codeIdMap['dao_voting_token_staked'] ?? -1,
+    latestVersion: ContractVersion.Unknown,
+  }
+
+  const allCodeIds = {
+    [chainId]: {
+      [ContractVersion.Unknown]: Object.fromEntries(
+        Object.entries(codeIdMap).map(([key, value]) => [
+          key
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(''),
+          value ?? -1,
+        ])
+      ),
     },
   }
 
   log(JSON.stringify(config, null, 2))
+
+  log()
+
+  log(JSON.stringify(allCodeIds, null, 2))
 }
 
 main()

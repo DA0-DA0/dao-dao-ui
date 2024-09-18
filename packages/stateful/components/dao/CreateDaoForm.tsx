@@ -179,7 +179,7 @@ export const InnerCreateDaoForm = ({
     config: {
       name: chainGovName,
       factoryContractAddress,
-      codeIdsVersion,
+      latestVersion,
       codeIds: { DaoCore: daoCoreCodeId },
       codeHashes,
       createViaGovernance,
@@ -190,7 +190,7 @@ export const InnerCreateDaoForm = ({
   // Only v2.5.0 and above supports instantiate2 in admin factory, so we can set
   // up widgets with the predictable DAO address.
   const supportsInstantiate2 =
-    versionGte(codeIdsVersion, ContractVersion.V250) && !noInstantiate2Create
+    versionGte(latestVersion, ContractVersion.V250) && !noInstantiate2Create
 
   const CreateDaoPages = [
     CreateDaoStart,

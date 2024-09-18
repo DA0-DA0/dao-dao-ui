@@ -207,17 +207,30 @@ export const daoVotingSgCommunityNftQueries = {
     },
     ...options,
   }),
-  hooks: <TData = HooksResponse>({
-    chainId,
-    contractAddress,
-    options,
-  }: DaoVotingSgCommunityNftHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
+  hooks: <TData = HooksResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoVotingSgCommunityNftHooksQuery<TData>
+  ): UseQueryOptions<HooksResponse, Error, TData> => ({
     queryKey: daoVotingSgCommunityNftQueryKeys.hooks(chainId, contractAddress),
     queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoVotingSgCommunityNft/hooks',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
       return new DaoVotingSgCommunityNftQueryClient(
         await getCosmWasmClientForChainId(chainId),
         contractAddress

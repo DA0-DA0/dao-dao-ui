@@ -1,6 +1,10 @@
 import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
-import { daoVotingCw20StakedQueries, tokenQueries } from '@dao-dao/state/query'
+import {
+  cw20StakeQueries,
+  daoVotingCw20StakedQueries,
+  tokenQueries,
+} from '@dao-dao/state/query'
 import {
   ActiveThreshold,
   GenericToken,
@@ -206,5 +210,25 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
         return token
       },
     }
+  }
+
+  async getHookCaller(): Promise<string> {
+    return this.queryClient.fetchQuery(
+      daoVotingCw20StakedQueries.stakingContract(this.queryClient, {
+        chainId: this.dao.chainId,
+        contractAddress: this.address,
+      })
+    )
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        cw20StakeQueries.getHooks(this.queryClient, {
+          chainId: this.dao.chainId,
+          contractAddress: await this.getHookCaller(),
+        })
+      )
+    ).hooks
   }
 }

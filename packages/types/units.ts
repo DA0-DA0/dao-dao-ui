@@ -8,7 +8,9 @@ export enum DurationUnits {
   Years = 'years',
   Blocks = 'blocks',
 }
+
 export const DurationUnitsValues = Object.values(DurationUnits)
+
 /**
  * Exlude blocks from duration units.
  */

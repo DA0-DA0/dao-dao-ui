@@ -4,7 +4,7 @@ import { GasPrice } from '@cosmjs/stargate'
 import { QueryClient } from '@tanstack/react-query'
 
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
-import { maybeGetNativeTokenForChainId } from '@dao-dao/utils'
+import { GAS_OVERRIDES, maybeGetNativeTokenForChainId } from '@dao-dao/utils'
 
 import { chainQueries } from '../query'
 
@@ -24,27 +24,39 @@ export class DynamicGasPrice implements GasPrice {
     private readonly queryClient: QueryClient,
     private readonly chain: Chain
   ) {
-    const feeDenom = maybeGetNativeTokenForChainId(
-      this.chain.chain_id
-    )?.denomOrAddress
-    if (!feeDenom) {
-      throw new Error(`Chain ${chain.chain_id} has no fee token`)
-    }
+    const override =
+      this.chain.chain_id in GAS_OVERRIDES
+        ? GAS_OVERRIDES[this.chain.chain_id as keyof typeof GAS_OVERRIDES]
+        : undefined
 
-    const feeToken = this.chain.fees?.fee_tokens.find(
-      ({ denom }) => denom === feeDenom
-    )
+    if (override) {
+      this.defaultGasPrice = {
+        amount: Decimal.fromUserInput(override.amount.toFixed(18), 18),
+        denom: override.denom,
+      }
+    } else {
+      const feeDenom = maybeGetNativeTokenForChainId(
+        this.chain.chain_id
+      )?.denomOrAddress
+      if (!feeDenom) {
+        throw new Error(`Chain ${chain.chain_id} has no fee token`)
+      }
 
-    const gasPriceAmount =
-      feeToken?.low_gas_price ??
-      feeToken?.average_gas_price ??
-      feeToken?.high_gas_price ??
-      feeToken?.fixed_min_gas_price ??
-      0
+      const feeToken = this.chain.fees?.fee_tokens.find(
+        ({ denom }) => denom === feeDenom
+      )
 
-    this.defaultGasPrice = {
-      amount: Decimal.fromUserInput(Number(gasPriceAmount).toFixed(18), 18),
-      denom: feeDenom,
+      const gasPriceAmount =
+        feeToken?.low_gas_price ??
+        feeToken?.average_gas_price ??
+        feeToken?.high_gas_price ??
+        feeToken?.fixed_min_gas_price ??
+        0
+
+      this.defaultGasPrice = {
+        amount: Decimal.fromUserInput(Number(gasPriceAmount).toFixed(18), 18),
+        denom: feeDenom,
+      }
     }
   }
 

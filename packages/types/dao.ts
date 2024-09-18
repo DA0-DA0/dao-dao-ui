@@ -37,6 +37,7 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
+import { DistributionState } from './contracts/DaoRewardsDistributor'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
@@ -48,7 +49,7 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken } from './token'
+import { GenericToken, GenericTokenBalanceAndValue } from './token'
 import { DurationWithUnits } from './units'
 import { Widget } from './widgets'
 
@@ -570,4 +571,69 @@ export type VotingVaultInfo =
 export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
   totalPower: string
+}
+
+/**
+ * A reward distributor contract for a DAO.
+ */
+export type DaoRewardDistributor = {
+  /**
+   * Unique ID for the reward distributor contract.
+   */
+  id: string
+  /**
+   * Address of the reward distributor contract.
+   */
+  address: string
+}
+
+/**
+ * A reward distribution for a DAO, attached to a reward distributor contract.
+ */
+export type DaoRewardDistribution = {
+  /**
+   * Reward distributor chain ID.
+   */
+  chainId: string
+  /**
+   * Reward distributor contract address.
+   */
+  address: string
+  /**
+   * Token being distributed.
+   */
+  token: GenericToken
+} & DistributionState
+
+/**
+ * A reward distribution with the remaining rewards to be distributed.
+ */
+export type DaoRewardDistributionWithRemaining = DaoRewardDistribution & {
+  /**
+   * Remaining rewards to be distributed.
+   */
+  remaining: number
+}
+
+/**
+ * Pending DAO rewards for a recipient.
+ */
+export type PendingDaoRewards = {
+  /**
+   * Reward distributions with their pending rewards.
+   */
+  distributions: {
+    /**
+     * Reward distribution.
+     */
+    distribution: DaoRewardDistribution
+    /**
+     * Pending rewards for the distribution.
+     */
+    rewards: number
+  }[]
+  /**
+   * Total pending rewards across all distributions, merged by token.
+   */
+  rewards: GenericTokenBalanceAndValue[]
 }

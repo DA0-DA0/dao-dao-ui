@@ -169,7 +169,7 @@ export const convertDurationWithUnitsToHumanReadableString = (
   t: TFunction,
   { units, value }: DurationWithUnits
 ): string =>
-  `${value} ${t(`unit.${units}`, {
+  `${value.toLocaleString()} ${t(`unit.${units}`, {
     count: value,
   }).toLocaleLowerCase()}`
 

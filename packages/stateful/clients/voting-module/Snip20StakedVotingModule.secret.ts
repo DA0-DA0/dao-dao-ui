@@ -2,6 +2,7 @@ import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
 
 import {
   secretDaoVotingSnip20StakedQueries,
+  snip20StakeQueries,
   tokenQueries,
 } from '@dao-dao/state/query'
 import {
@@ -247,5 +248,27 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
         return token
       },
     }
+  }
+
+  async getHookCaller(): Promise<string> {
+    return (
+      await this.queryClient.fetchQuery(
+        secretDaoVotingSnip20StakedQueries.stakingContract({
+          chainId: this.dao.chainId,
+          contractAddress: this.address,
+        })
+      )
+    ).addr
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        snip20StakeQueries.getHooks({
+          chainId: this.dao.chainId,
+          contractAddress: await this.getHookCaller(),
+        })
+      )
+    ).hooks
   }
 }

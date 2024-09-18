@@ -1,5 +1,6 @@
 import {
   ActionKeyAndData,
+  ContractVersion,
   DepositInfoSelector,
   IProposalModuleBase,
   ProcessedTQ,
@@ -115,9 +116,6 @@ export type MultipleChoiceOptionData = {
 }
 
 export type DaoCreationExtraVotingConfig = {
-  // If true, omits the funds field from the creation info objects and uses
-  // v2.1.0 contracts. This is used when enabling multiple choice via the action
-  // for a DAO that is on a version below v2.3.0, since there was a breaking
-  // change on the `funds` field.
-  moduleInstantiateFundsUnsupported?: boolean
+  // If defined, use this version of the contracts instead of the latest.
+  overrideContractVersion?: ContractVersion
 }

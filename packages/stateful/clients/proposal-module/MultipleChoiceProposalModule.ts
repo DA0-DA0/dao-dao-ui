@@ -80,39 +80,41 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     },
     options: {
       /**
-       * If true, omits the funds field from the module instantiate info objects
-       * and uses v2.1.0 contracts. This is used when enabling multiple choice
-       * via the action for a DAO that is on a version below v2.3.0, since there
-       * was a breaking change on the `funds` field.
-       *
-       * Defaults to false.
+       * If defined, use a specific version of the proposal module instead of
+       * the latest. This is needed since different contract versions have
+       * breaking changes, and we should try to use consistent versions across
+       * modules. This is used in the Enable Multiple Choice action, which may
+       * be used by old DAOs.
        */
-      useV210WithoutFunds?: boolean
-    } = {
-      useV210WithoutFunds: false,
-    }
+      overrideContractVersion?: ContractVersion
+    } = {}
   ): ModuleInstantiateInfo {
-    const { codeIds, codeIdsVersion, historicalCodeIds } =
-      mustGetSupportedChainConfig(chainId)
-    const codeIdsToUse = {
-      ...codeIds,
-      ...(options.useV210WithoutFunds &&
-        historicalCodeIds?.[ContractVersion.V210]),
+    const { latestVersion, allCodeIds } = mustGetSupportedChainConfig(chainId)
+
+    const contractVersion = options.overrideContractVersion || latestVersion
+    const {
+      DaoProposalMultiple: daoProposalMultipleCodeId,
+      DaoPreProposeMultiple: daoPreProposeMultipleCodeId,
+    } = allCodeIds[contractVersion] ?? {}
+
+    if (!daoProposalMultipleCodeId || !daoPreProposeMultipleCodeId) {
+      throw new Error(
+        `Code IDs not found for version ${contractVersion} on chain ${chainId}`
+      )
     }
 
     const pre_propose_info: PreProposeInfo = {
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: codeIdsToUse.DaoPreProposeMultiple,
+          code_id: daoPreProposeMultipleCodeId,
           label: `dao-pre-propose-multiple_${Date.now()}`,
           msg: encodeJsonToBase64({
             deposit_info: config.deposit,
             extension: {},
-            ...(!options.useV210WithoutFunds &&
-            isFeatureSupportedByVersion(
+            ...(isFeatureSupportedByVersion(
               Feature.GranularSubmissionPolicy,
-              codeIdsVersion
+              contractVersion
             )
               ? {
                   submission_policy:
@@ -138,7 +140,10 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           // This function is used by the enable multiple choice action, and
           // DAOs before v2.3.0 still might want to enable multiple choice, so
           // make sure to support the old version without the `funds` field.
-          ...(!options.useV210WithoutFunds && {
+          ...(isFeatureSupportedByVersion(
+            Feature.ModuleInstantiateFunds,
+            contractVersion
+          ) && {
             funds: [],
           }),
         },
@@ -147,7 +152,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
     return {
       admin: { core_module: {} },
-      code_id: codeIdsToUse.DaoProposalMultiple,
+      code_id: daoProposalMultipleCodeId,
       label: `dao-proposal-multiple_${Date.now()}`,
       msg: encodeJsonToBase64({
         allow_revoting: config.allowRevoting,
@@ -167,7 +172,10 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       // This function is used by the enable multiple choice action, and DAOs
       // before v2.3.0 still might want to enable multiple choice, so make sure
       // to support the old version without the `funds` field.
-      ...(!options.useV210WithoutFunds && {
+      ...(isFeatureSupportedByVersion(
+        Feature.ModuleInstantiateFunds,
+        contractVersion
+      ) && {
         funds: [],
       }),
     }

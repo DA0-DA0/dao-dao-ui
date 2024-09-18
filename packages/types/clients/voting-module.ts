@@ -57,7 +57,7 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
   ): Pick<FetchQueryOptions<TotalPowerAtHeightResponse>, 'queryKey' | 'queryFn'>
 
   /**
-   * Fetch the total voting power. Optional specify a block height. If
+   * Fetch the total voting power. Optionally specify a block height. If
    * undefined, the latest block height will be used.
    */
   getTotalVotingPower(height?: number): Promise<string>
@@ -70,4 +70,16 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
     FetchQueryOptions<GenericToken>,
     'queryKey' | 'queryFn'
   >
+
+  /**
+   * Fetch the contract responsible for voting power change hooks. This may be
+   * the voting module itself if it handles staking directly, or an underlying
+   * contract that manages voting power, such as cw4-group or cw20-stake.
+   */
+  getHookCaller(): string | Promise<string>
+
+  /**
+   * Fetch the registered hooks.
+   */
+  getHooks(): Promise<string[]>
 }

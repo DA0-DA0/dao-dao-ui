@@ -29,6 +29,7 @@ export enum ActionCategoryKey {
   Rebalancer = 'rebalancer',
   Nfts = 'nfts',
   Press = 'press',
+  Rewards = 'rewards',
   Advanced = 'advanced',
 }
 
@@ -107,6 +108,13 @@ export enum ActionKey {
   // Become SubDAO
   AcceptSubDao = 'acceptSubDao',
   BecomeSubDao = 'becomeSubDao',
+  // Rewards
+  CreateRewardDistribution = 'createRewardDistribution',
+  UpdateRewardDistribution = 'updateRewardDistribution',
+  FundRewardDistribution = 'fundRewardDistribution',
+  WithdrawRewardDistribution = 'withdrawRewardDistribution',
+  PauseRewardDistribution = 'pauseRewardDistribution',
+  ResumeRewardDistribution = 'resumeRewardDistribution',
 }
 
 export type ActionAndData<

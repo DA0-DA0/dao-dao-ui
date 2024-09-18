@@ -110,7 +110,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
                     symbol: config.token.new.symbol,
                   },
                   subdenom: config.token.new.symbol.toLowerCase(),
-                  token_issuer_code_id: codeIds.CwTokenfactoryIssuerMain,
+                  token_issuer_code_id: codeIds.CwTokenfactoryIssuer,
                 },
               }
             : {
@@ -194,5 +194,20 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
         return token
       },
     }
+  }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        daoVotingTokenStakedQueries.getHooks(this.queryClient, {
+          chainId: this.dao.chainId,
+          contractAddress: this.getHookCaller(),
+        })
+      )
+    ).hooks
   }
 }

@@ -26,7 +26,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { moduleInstantiateFundsUnsupported }
+  { overrideContractVersion }
 ) => {
   const commonConfig = {
     quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
@@ -121,11 +121,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           : null,
       },
       {
-        // Omit the funds field from the module instantiate info objects and use
-        // v2.1.0 contracts. This is used when enabling multiple choice via the
-        // action for a DAO that is on a version below v2.3.0, since there was a
-        // breaking change on the `funds` field.
-        useV210WithoutFunds: moduleInstantiateFundsUnsupported,
+        overrideContractVersion,
       }
     )
   }

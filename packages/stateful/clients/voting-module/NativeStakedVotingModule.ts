@@ -92,4 +92,12 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
       },
     }
   }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  getHooks(): Promise<string[]> {
+    throw new Error('Not implemented')
+  }
 }

@@ -1,14 +1,31 @@
 import clsx from 'clsx'
 import { nanoid } from 'nanoid'
-import { ComponentType, useCallback, useEffect, useRef, useState } from 'react'
-import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
+import {
+  ComponentType,
+  MutableRefObject,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
+import {
+  FieldErrors,
+  UseFormClearErrors,
+  useFieldArray,
+  useFormContext,
+} from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
-import { ActionKeyAndData, ActionKeyAndDataNoId } from '@dao-dao/types/actions'
+import {
+  ActionComponentProps,
+  ActionKeyAndData,
+  ActionKeyAndDataNoId,
+  ActionMap,
+} from '@dao-dao/types/actions'
 
 import { useActionsContext, useDaoInfoContextIfAvailable } from '../../contexts'
+import { useLoadingPromise } from '../../hooks'
 import { Loader } from '../logo'
 import { ActionCard } from './ActionCard'
 import { ActionLibrary } from './ActionLibrary'
@@ -16,11 +33,10 @@ import { ActionLibrary } from './ActionLibrary'
 // The props needed to render an action from a message.
 export type ActionsEditorProps = {
   actionDataFieldName: string
-  actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
   className?: string
   hideEmptyPlaceholder?: boolean
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-}
+} & Pick<ActionEditorProps, 'actionDataErrors'>
 
 // Renders editable cards.
 export const ActionsEditor = ({
@@ -42,7 +58,6 @@ export const ActionsEditor = ({
   const actionDataFieldName = _actionDataFieldName as 'actionData'
 
   // All actions from the form.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const actionData = watch(actionDataFieldName) || []
 
   const { append, insert, remove } = useFieldArray({
@@ -80,18 +95,6 @@ export const ActionsEditor = ({
   // page load. Only enable once an action is selected from the library.
   const [scrollToNewActions, setScrollToNewActions] = useState(false)
 
-  // If action is idle, initialize it. This ensures that actions loaded from
-  // saved form state are automatically initialized.
-  useEffect(() => {
-    actionData
-      .flatMap(({ actionKey }) => actionMap[actionKey] || [])
-      .forEach((action) => {
-        if (action.status === 'idle') {
-          action.init()
-        }
-      })
-  }, [actionData, actionMap])
-
   // IDs already seen. This is used to prevent scrolling to the same action more
   // than once.
   const idsSeenRef = useRef<Set<string>>(new Set())
@@ -100,67 +103,28 @@ export const ActionsEditor = ({
     <>
       {actionData.length > 0 ? (
         <div className={clsx('flex flex-col gap-2', className)}>
-          {actionData.map(({ _id, actionKey, data }, index) => {
-            const action = actionMap[actionKey]
-            if (!action) {
-              return null
-            }
-
-            // Clear all errors when the action is removed, in case any manual
-            // errors were not cleaned up. If manual errors persist, the form
-            // gets stuck.
-            const onRemove = () => {
-              clearErrors(`${actionDataFieldName}.${index}`)
-              remove(index)
-            }
-
-            return (
-              <div
-                key={
-                  // If id empty, likely due to an old saved form state, use
-                  // index and action as re-render key. Using a unique `key`
-                  // ensures that the action does not re-render when other parts
-                  // of the form change.
-                  _id || `${index}-${actionKey}`
-                }
-                className="relative"
-                id={`A${index + 1}`}
-              >
-                <ActionCard action={action} onRemove={onRemove}>
-                  <div
-                    className="animate-fade-in flex min-w-0 grow flex-col gap-4"
-                    ref={(node) => {
-                      // Scroll into view when added. If not scrolling, still
-                      // register we saw it so we don't scroll later.
-                      if (node && _id && !idsSeenRef.current.has(_id)) {
-                        idsSeenRef.current.add(_id)
-
-                        if (scrollToNewActions) {
-                          node.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center',
-                          })
-                        }
-                      }
-                    }}
-                  >
-                    <SuspenseLoader fallback={<Loader />}>
-                      <action.Component
-                        addAction={addAction}
-                        allActionsWithData={actionData}
-                        data={data}
-                        errors={actionDataErrors?.[index]?.data || {}}
-                        fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
-                        index={index}
-                        isCreating
-                        remove={onRemove}
-                      />
-                    </SuspenseLoader>
-                  </div>
-                </ActionCard>
-              </div>
-            )
-          })}
+          {actionData.map(({ _id, actionKey }, index) => (
+            <ActionEditor
+              key={
+                // If id empty, likely due to an old saved form state, use
+                // index and action as re-render key. Using a unique `key`
+                // ensures that the action does not re-render when other parts
+                // of the form change.
+                _id || `${index}-${actionKey}`
+              }
+              SuspenseLoader={SuspenseLoader}
+              actionData={actionData}
+              actionDataErrors={actionDataErrors}
+              actionDataFieldName={actionDataFieldName}
+              actionMap={actionMap}
+              addAction={addAction}
+              clearErrors={clearErrors}
+              idsSeenRef={idsSeenRef}
+              index={index}
+              remove={remove}
+              scrollToNewActions={scrollToNewActions}
+            />
+          ))}
         </div>
       ) : (
         !hideEmptyPlaceholder && (
@@ -185,5 +149,97 @@ export const ActionsEditor = ({
         }}
       />
     </>
+  )
+}
+
+type ActionEditorProps = {
+  actionMap: ActionMap
+  actionData: ActionKeyAndData[]
+  actionDataFieldName: 'actionData'
+  actionDataErrors: FieldErrors<ActionKeyAndData[]> | undefined
+  index: number
+  scrollToNewActions: boolean
+  idsSeenRef: MutableRefObject<Set<string>>
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  clearErrors: UseFormClearErrors<{
+    actionData: ActionKeyAndData[]
+  }>
+  remove: (index: number) => void
+  addAction: Required<ActionComponentProps>['addAction']
+}
+
+const ActionEditor = ({
+  actionMap,
+  actionData,
+  actionDataFieldName,
+  actionDataErrors,
+  index,
+  idsSeenRef,
+  scrollToNewActions,
+  SuspenseLoader,
+  clearErrors,
+  remove,
+  addAction,
+}: ActionEditorProps) => {
+  const { _id, actionKey, data } = actionData[index]
+  const action = actionMap[actionKey]
+
+  // Make sure action is initialized before rendering.
+  const { loading } = useLoadingPromise({
+    promise: async () => action?.init(),
+    deps: [action],
+  })
+
+  if (!action) {
+    return null
+  }
+
+  // Clear all errors when the action is removed, in case any manual
+  // errors were not cleaned up. If manual errors persist, the form
+  // gets stuck.
+  const onRemove = () => {
+    clearErrors(`${actionDataFieldName}.${index}`)
+    remove(index)
+  }
+
+  return (
+    <div className="relative" id={`A${index + 1}`}>
+      <ActionCard action={action} onRemove={onRemove}>
+        <div
+          className="animate-fade-in flex min-w-0 grow flex-col gap-4"
+          ref={(node) => {
+            // Scroll into view when added. If not scrolling, still
+            // register we saw it so we don't scroll later.
+            if (node && _id && !idsSeenRef.current.has(_id)) {
+              idsSeenRef.current.add(_id)
+
+              if (scrollToNewActions) {
+                node.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center',
+                })
+              }
+            }
+          }}
+        >
+          <SuspenseLoader fallback={<Loader />}>
+            {loading ? (
+              <Loader className="min-h-32" size={48} />
+            ) : (
+              <action.Component
+                addAction={addAction}
+                allActionsWithData={actionData}
+                data={data}
+                errors={actionDataErrors?.[index]?.data || {}}
+                fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
+                index={index}
+                isCreating
+                remove={onRemove}
+              />
+            )}
+          </SuspenseLoader>
+        </div>
+      </ActionCard>
+    </div>
   )
 }

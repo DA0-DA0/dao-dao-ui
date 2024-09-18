@@ -202,10 +202,7 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       {
         ...makeDefaultNewDao(this.options.chain.chain_id).votingConfig,
         enableMultipleChoice: true,
-        moduleInstantiateFundsUnsupported:
-          !this.options.context.dao.info.supportedFeatures[
-            Feature.ModuleInstantiateFunds
-          ],
+        overrideContractVersion: this.options.context.dao.coreVersion,
       },
       this.options.t
     )

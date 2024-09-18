@@ -292,3 +292,23 @@ export const PufferfishEmoji = (props: EmojiProps) => (
 export const CheckEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="✅" labelI18nKey="emoji.check" {...props} />
 )
+
+export const BucketEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🪣" labelI18nKey="emoji.bucket" {...props} />
+)
+
+export const ConstructionEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🏗️" labelI18nKey="emoji.construction" {...props} />
+)
+
+export const LowBatteryEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🪫" labelI18nKey="emoji.lowBattery" {...props} />
+)
+
+export const OpenMailboxEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="📬" labelI18nKey="emoji.openMailbox" {...props} />
+)
+
+export const PauseEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="⏸︎" labelI18nKey="emoji.pause" {...props} />
+)

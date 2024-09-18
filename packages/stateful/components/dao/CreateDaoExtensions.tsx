@@ -20,7 +20,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
   const { t } = useTranslation()
   const {
     chainId,
-    config: { codeIdsVersion },
+    config: { latestVersion },
   } = useSupportedChainContext()
 
   const {
@@ -47,12 +47,12 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
         : new CreatingDaoPlaceholder({
             chainId,
             coreAddress: predictedDaoAddress.data,
-            coreVersion: codeIdsVersion,
+            coreVersion: latestVersion,
             name,
             description,
             imageUrl: imageUrl || getFallbackImage('placeholderDaoAddress'),
           }),
-    [chainId, codeIdsVersion, description, imageUrl, name, predictedDaoAddress]
+    [chainId, latestVersion, description, imageUrl, name, predictedDaoAddress]
   )
 
   return (

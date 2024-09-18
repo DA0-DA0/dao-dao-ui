@@ -1,24 +1,24 @@
 {
   "name": "@dao-dao/email",
-  "version": "2.5.0-rc.2",
+  "version": "2.5.0-rc.3",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "render": "ts-node ./scripts/render",
-    "ses": "ts-node ./scripts/ses"
+    "render": "tsx ./scripts/render",
+    "ses": "tsx ./scripts/ses"
   },
   "devDependencies": {
     "@aws-sdk/client-ses": "^3.592.0",
-    "@dao-dao/config": "2.5.0-rc.2",
-    "@dao-dao/types": "2.5.0-rc.2",
+    "@dao-dao/config": "2.5.0-rc.3",
+    "@dao-dao/types": "2.5.0-rc.3",
     "@react-email/components": "^0.0.7",
     "@react-email/render": "0.0.7",
     "commander": "^11.0.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.23.1",
     "react": "^18.2.0",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.19.0",
     "typescript": "5.3.3"
   },
   "peerDependencies": {

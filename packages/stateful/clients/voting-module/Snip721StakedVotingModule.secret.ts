@@ -173,4 +173,19 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
       },
     }
   }
+
+  getHookCaller(): string {
+    return this.address
+  }
+
+  async getHooks(): Promise<string[]> {
+    return (
+      await this.queryClient.fetchQuery(
+        secretDaoVotingSnip721StakedQueries.hooks({
+          chainId: this.dao.chainId,
+          contractAddress: this.getHookCaller(),
+        })
+      )
+    ).hooks.map(({ addr }) => addr)
+  }
 }

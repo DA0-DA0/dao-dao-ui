@@ -81,7 +81,7 @@ export const cwPayrollFactoryExtraQueries = {
     options: Parameters<typeof listAllVestingContracts>[1]
   ) =>
     queryOptions({
-      queryKey: ['cwVestingExtra', 'listAllVestingContracts', options],
+      queryKey: ['cwPayrollFactoryExtra', 'listAllVestingContracts', options],
       queryFn: () => listAllVestingContracts(queryClient, options),
     }),
 }

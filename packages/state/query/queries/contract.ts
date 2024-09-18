@@ -1,3 +1,4 @@
+import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
@@ -274,6 +275,42 @@ export const fetchSecretContractCodeHash = async ({
   return client.queryCodeHashForContractAddress(address)
 }
 
+/**
+ * Generate the expected instantiate2 address.
+ */
+export const generateInstantiate2Address = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    creator,
+    codeId,
+    salt,
+  }: {
+    chainId: string
+    creator: string
+    codeId: number
+    salt: string
+  }
+): Promise<string> => {
+  if (isSecretNetwork(chainId)) {
+    throw new Error('Secret Network does not support instantiate2.')
+  }
+
+  const { dataHash } = await queryClient.fetchQuery(
+    contractQueries.codeInfo({
+      chainId,
+      codeId,
+    })
+  )
+
+  return instantiate2Address(
+    dataHash,
+    creator,
+    toUtf8(salt),
+    getChainForChainId(chainId).bech32_prefix
+  )
+}
+
 export const contractQueries = {
   /**
    * Fetch contract info stored in state, which contains its name and version.
@@ -382,5 +419,16 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'secretCodeHash', options],
       queryFn: () => fetchSecretContractCodeHash(options),
+    }),
+  /**
+   * Generate the expected instantiate2 address.
+   */
+  instantiate2Address: (
+    queryClient: QueryClient,
+    options: Parameters<typeof generateInstantiate2Address>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['contract', 'instantiate2Address', options],
+      queryFn: () => generateInstantiate2Address(queryClient, options),
     }),
 }

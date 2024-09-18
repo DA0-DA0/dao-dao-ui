@@ -1,0 +1,25 @@
+{
+  "pulsar-3": {
+    "2.4.2": {
+      "Cw1Whitelist": "f3d79871d3d1dd903128e547b3d9e43d41f8542f67940e06263a533c92b94c92",
+      "Cw20Base": "925eec0afad12c7ad4dab53b453dd03851b80f0bf2825da68ca926c6d0402944",
+      "Cw4Group": "e00df9f492e26fc9eaf012f3f10ab53cf0fd170540992bcd0952ffb5e7f32824",
+      "Cw721Base": "e52847e3bc8aceb7944437b13330c2d39462145b9762703f478c9113fcd68cc9",
+      "CwPayrollFactory": "41491613086efe906bc6d2c15a9668d39f8a0d2fb9010050223b656b14ad96ea",
+      "CwTokenSwap": "00d535cd1c19c61cf79cfe953c2ebb9cdecafeda79f7ac375f1698dd767c4f68",
+      "CwVesting": "b3ef0438a09cb5808a4b0c9cfcb7963c1d405bfb18576cf9f73ec938581fd962",
+      "DaoCore": "35179a7efd2c8f58de91857f84d267f1105acaa1cffd1ebd6702b48db5816c0f",
+      "DaoPreProposeApprovalSingle": "cf662d78a21a3bd1bf71ce1e0dd60b0bc70fc81ca1df736916561ca6f9a1778f",
+      "DaoPreProposeApprover": "c3f243bcfecf8dcfc627893d121fa4e7cf18448bbc56f9bd2567f2f1c4291882",
+      "DaoPreProposeMultiple": "612c77da536f67edadde8d132d7e8e255dee0fcb5a52155163215809b4ac683c",
+      "DaoPreProposeSingle": "e10ae1c3c1ffd3fb3102ed12b6daf0a854885257cca1ad0051ef0dbf992d50fc",
+      "DaoProposalMultiple": "00a5268893a57795c54f6a1d74cc722160ada0c499808078923c02ac93418d21",
+      "DaoProposalSingle": "397df138ed1ce0b46b0d5e8dde6078c6e7a9bbab3eee03648f880422cd0f161c",
+      "DaoVotingCw20Staked": "7c3c071ba1b50504a16d17b111e258ea00bb8b90cc9e449e9890a6006a5188fc",
+      "DaoVotingCw4": "a0f4f3069d8bb0789d90829052c32ec93d16eb1113feb4063f5265c3bda3f6f7",
+      "DaoVotingCw721Staked": "dde8034f510703cb22e4c0de0290467ee79d720e43da92fa34f60da9ee19e0b9",
+      "DaoVotingTokenStaked": "ce95e42541ee0153654e3e222832885560633410e375092380a6d434b3e71db9",
+      "QueryAuth": "f9aeabaaeb830992285330cb96af8f74e797117fb8c49966f43cbc5298ca70bb"
+    }
+  }
+}
