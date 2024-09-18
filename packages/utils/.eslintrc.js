@@ -7,7 +7,7 @@ const eslintConfig = {
   root: true,
   overrides: [
     {
-      files: ['./constants/*.json'],
+      files: ['constants/*.json'],
       plugins: ['i18n-json'],
       rules: {
         'i18n-json/sorted-keys': 'error',
