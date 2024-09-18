@@ -475,6 +475,15 @@
     }
   },
   "omniflixhub-1": {
+    "archway-1": {
+      "listener": "omniflix1g6u7zm0gykqk7aklasatgtrld5heyfqmydvvu5ne6h2lq9zx69ws6l978m",
+      "localChannel": "channel-48",
+      "localConnection": "connection-43",
+      "note": "omniflix18lfweja80494stcfum62q0ussp69rwasp2whc2u3aegauywk6mcqy45hcr",
+      "remoteChannel": "channel-169",
+      "remoteConnection": "connection-42",
+      "voice": "archway17cdx3zuzkwzf4kj0qsvmtz50wlw7kk8u5tp59zpsrldzr6aywerstgxqht"
+    },
     "cosmoshub-4": {
       "listener": "omniflix1x9zrl4gvf0780rcxnv9fjx2h52jg6zxpxzgq6lhhjqyrg0ue4dyq9n9g2q",
       "localChannel": "channel-45",
@@ -483,6 +492,15 @@
       "remoteChannel": "channel-1015",
       "remoteConnection": "connection-501",
       "voice": "cosmos1gn59sajfpqdlzxwmnnl69r7k2rxdt52l0nwwgalaa8nn2h8vrjzsw7t83m"
+    },
+    "osmosis-1": {
+      "listener": "omniflix1fe9ldmu9qy3pyx28esrn0g088jeqvs6jchat2m900fvnxt2wljvsf2264t",
+      "localChannel": "channel-47",
+      "localConnection": "connection-8",
+      "note": "omniflix1a38gxhcjtmwlzjx882yt00wukv9v7mr2z36saqekl9sru2k5e3wqxcr5dj",
+      "remoteChannel": "channel-82572",
+      "remoteConnection": "connection-1431",
+      "voice": "osmo15t9rryuhal4dsryqqp5y88amr9f8phujzqmg9uxv6p94yehxm9ss9d4h00"
     }
   },
   "osmosis-1": {
