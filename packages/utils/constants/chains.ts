@@ -238,14 +238,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
     mainnet: true,
     accentColor: '#8ac3cc',
     factoryContractAddress:
-      'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
+      'stars14reqfce75ayjkdyce0rkfea45y0eh283zgychdjtjkyfxsy28nmqprzf60',
     explorerUrlTemplates: {
       tx: 'https://ping.pub/stargaze/tx/REPLACE',
       gov: 'https://ping.pub/stargaze/gov',
       govProp: 'https://ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://ping.pub/stargaze/account/REPLACE',
     },
-    latestVersion: ContractVersion.V240,
+    latestVersion: ContractVersion.V250,
   },
   {
     chainId: ChainId.MigalooMainnet,

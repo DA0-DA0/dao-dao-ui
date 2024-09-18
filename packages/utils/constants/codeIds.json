@@ -875,6 +875,26 @@
       "DaoVotingCw4": 160,
       "DaoVotingCw721Staked": 161,
       "DaoVotingTokenStaked": 162
+    },
+    "2.5.0": {
+      "Cw1Whitelist": 152,
+      "Cw4Group": 83,
+      "CwAdminFactory": 336,
+      "CwPayrollFactory": 337,
+      "CwTokenSwap": 338,
+      "CwTokenfactoryIssuer": 339,
+      "CwVesting": 340,
+      "DaoCore": 341,
+      "DaoPreProposeApprovalSingle": 342,
+      "DaoPreProposeApprover": 343,
+      "DaoPreProposeMultiple": 344,
+      "DaoPreProposeSingle": 345,
+      "DaoProposalMultiple": 346,
+      "DaoProposalSingle": 347,
+      "DaoRewardsDistributor": 348,
+      "DaoVotingCw4": 349,
+      "DaoVotingCw721Staked": 350,
+      "DaoVotingTokenStaked": 351
     }
   },
   "theta-testnet-001": {
