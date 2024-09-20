@@ -525,9 +525,9 @@ export const fetchValenceAccounts = async (
   }
 ): Promise<ValenceAccount[]> => {
   const addresses = await queryClient.fetchQuery(
-    indexerQueries.queryWallet(queryClient, {
+    indexerQueries.queryAccount(queryClient, {
       chainId,
-      walletAddress: address,
+      address,
       formula: 'valence/accounts',
     })
   )

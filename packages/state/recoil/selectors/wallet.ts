@@ -44,7 +44,7 @@ import { votingModuleSelector } from './contracts/DaoDaoCore'
 import * as DaoVotingTokenStaked from './contracts/DaoVotingTokenStaked'
 import { lazyDaoCardPropsSelector } from './dao'
 import { followingDaosSelector } from './following'
-import { queryWalletIndexerSelector } from './indexer'
+import { queryAccountIndexerSelector } from './indexer'
 import {
   walletLazyNftCardInfosSelector,
   walletStakedLazyNftCardInfosSelector,
@@ -67,7 +67,7 @@ export const walletCw20BalancesSelector = selectorFamily<
         balance: string
       }[] =
         get(
-          queryWalletIndexerSelector({
+          queryAccountIndexerSelector({
             chainId,
             walletAddress,
             formula: 'tokens/list',
@@ -105,7 +105,7 @@ export const walletTokenDaoStakedDenomsSelector = selectorFamily<
     ({ get }) => {
       // Get the DAOs that the wallet is a member of
       const daos = get(
-        queryWalletIndexerSelector({
+        queryAccountIndexerSelector({
           chainId,
           walletAddress,
           formula: 'daos/memberOf',
@@ -327,7 +327,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
         | undefined
       > = get(
         noWait(
-          queryWalletIndexerSelector({
+          queryAccountIndexerSelector({
             chainId,
             walletAddress,
             formula: 'tokens/list',
@@ -512,7 +512,7 @@ export const lazyWalletDaosSelector = selectorFamily<
         config: DaoDaoCoreConfig
         proposalCount: number
       }[] = get(
-        queryWalletIndexerSelector({
+        queryAccountIndexerSelector({
           chainId,
           walletAddress: address,
           formula: 'daos/memberOf',

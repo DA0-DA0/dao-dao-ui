@@ -16,8 +16,8 @@ import {
   daoVetoableDaosSelector,
   followingDaosSelector,
   isDaoSelector,
+  queryAccountIndexerSelector,
   queryClientAtom,
-  queryWalletIndexerSelector,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
@@ -202,7 +202,7 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
         get(
           waitForAll(
             accounts.map(({ chainId, address }) =>
-              queryWalletIndexerSelector({
+              queryAccountIndexerSelector({
                 chainId,
                 walletAddress: address,
                 formula: 'veto/vetoableProposals',

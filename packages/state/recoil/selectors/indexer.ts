@@ -128,6 +128,25 @@ export const indexerUpStatusSelector = selectorFamily<
     },
 })
 
+export const queryAccountIndexerSelector = selectorFamily<
+  any,
+  Omit<QueryIndexerParams, 'type' | 'address'> & {
+    walletAddress: string
+  }
+>({
+  key: 'queryAccountIndexer',
+  get:
+    ({ walletAddress: address, ...params }) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          type: IndexerFormulaType.Account,
+          address,
+          ...params,
+        })
+      ),
+})
+
 export const queryContractIndexerSelector = selectorFamily<
   any,
   Omit<QueryIndexerParams, 'type' | 'address'> & {
@@ -176,25 +195,6 @@ export const queryValidatorIndexerSelector = selectorFamily<
       get(
         queryIndexerSelector({
           type: IndexerFormulaType.Validator,
-          address,
-          ...params,
-        })
-      ),
-})
-
-export const queryWalletIndexerSelector = selectorFamily<
-  any,
-  Omit<QueryIndexerParams, 'type' | 'address'> & {
-    walletAddress: string
-  }
->({
-  key: 'queryWalletIndexer',
-  get:
-    ({ walletAddress: address, ...params }) =>
-    ({ get }) =>
-      get(
-        queryIndexerSelector({
-          type: IndexerFormulaType.Wallet,
           address,
           ...params,
         })
@@ -312,7 +312,7 @@ export const walletProposalStatsSelector = selectorFamily<
     ({ get }) => {
       const id = get(refreshWalletProposalStatsAtom)
       const stats = get(
-        queryWalletIndexerSelector({
+        queryAccountIndexerSelector({
           walletAddress: address,
           formula: 'proposals/stats',
           chainId,
