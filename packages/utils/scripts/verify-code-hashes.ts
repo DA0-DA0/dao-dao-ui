@@ -5,6 +5,8 @@
 
 import chalk from 'chalk'
 
+import { ContractVersion } from '@dao-dao/types'
+
 import { getCosmWasmClientForChainId } from '../client'
 import { SUPPORTED_CHAINS } from '../constants/chains'
 import { retry } from '../network'
@@ -22,7 +24,7 @@ const main = async () => {
       const client = await getCosmWasmClientForChainId(chainId)
 
       for (const [version, codeHashes] of Object.entries(allCodeHashes)) {
-        const codeIds = allCodeIds[version]
+        const codeIds = allCodeIds[version as ContractVersion]
         if (!codeIds) {
           continue
         }
@@ -30,7 +32,7 @@ const main = async () => {
         for (const [key, codeHash] of Object.entries(codeHashes)) {
           const id = `${chainId}:${key}:${version}`
 
-          const codeId = codeIds[key]
+          const codeId = codeIds[key as keyof typeof codeIds]
           if (!codeId) {
             console.log(chalk.red(`${id} no code ID found`))
             continue

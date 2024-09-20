@@ -61,7 +61,8 @@ export const getSupportedFeatures = (
  *
  * @param {ContractVersion} version - The version to check.
  * @param {ContractVersion} gteThis - The version to compare with.
- * @return {boolean} Returns true if the given version is higher than the specified version, otherwise false.
+ * @return {boolean} Returns true if the given version is greater than or equal
+ * to the specified version.
  */
 export const versionGte = (
   version: ContractVersion,

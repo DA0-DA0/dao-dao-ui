@@ -9,6 +9,8 @@ import { PreProposeSubmissionPolicy } from '@dao-dao/types/contracts/DaoPrePropo
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
   ContractName,
+  DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
+  DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
   getCosmWasmClientForChainId,
   parseContractVersion,
 } from '@dao-dao/utils'
@@ -45,7 +47,14 @@ export const fetchPreProposeModule = async (
   const contractVersion = parseContractVersion(contractInfo.version)
 
   let typedConfig: PreProposeModuleTypedConfig = {
-    type: PreProposeModuleType.Other,
+    // If normal DAO DAO pre-propose module, use normal. Otherwise, default to
+    // other.
+    type: [
+      ...DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
+      ...DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
+    ].includes(contractInfo.contract)
+      ? PreProposeModuleType.Normal
+      : PreProposeModuleType.Other,
   }
 
   // All pre-propose modules share the same config.
@@ -61,7 +70,8 @@ export const fetchPreProposeModule = async (
     .catch(() => undefined)
 
   switch (contractInfo.contract) {
-    case ContractName.PreProposeApprovalSingle: {
+    case ContractName.PreProposeApprovalSingle:
+    case ContractName.PreProposeApprovalMultiple: {
       let approver: string | undefined
       let preProposeApproverContract: string | null = null
 

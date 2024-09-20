@@ -114,12 +114,31 @@ export type DaoSource = {
 }
 
 export enum PreProposeModuleType {
+  /**
+   * The normal 'pre-propose-single' or 'pre-propose-multiple' module.
+   */
+  Normal = 'normal',
+  /**
+   * The 'pre-propose-approval-single' or 'pre-propose-approval-multiple'
+   * module.
+   */
   Approval = 'approval',
+  /**
+   * The 'pre-propose-approver' module, attached to an approval pre-propose
+   * module in another DAO.
+   */
   Approver = 'approver',
-  // Neutron fork SubDAOs use timelock.
+  /**
+   * Neutron fork SubDAOs use timelock.
+   */
   NeutronSubdaoSingle = 'neutron_subdao_single',
-  // Neutron fork DAO uses overrule pre-propose paired with SubDAO timelocks.
+  /**
+   * Neutron fork DAO uses overrule pre-propose paired with SubDAO timelocks.
+   */
   NeutronOverruleSingle = 'neutron_overrule_single',
+  /**
+   * An unrecognized pre-propose module.
+   */
   Other = 'other',
 }
 
@@ -150,6 +169,10 @@ export type PreProposeModuleNeutronSubdaoSingleConfig = {
 }
 
 export type PreProposeModuleTypedConfig =
+  | {
+      type: PreProposeModuleType.Normal
+      config?: undefined
+    }
   | {
       type: PreProposeModuleType.Approval
       config: PreProposeModuleApprovalConfig
