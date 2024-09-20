@@ -31,7 +31,7 @@ import {
 } from '../atoms'
 import { accountsSelector } from './account'
 import { CommonNftSelectors, DaoDaoCoreSelectors } from './contracts'
-import { queryWalletIndexerSelector } from './indexer'
+import { queryAccountIndexerSelector } from './indexer'
 import { stargazeWalletUsdValueSelector } from './stargaze'
 import { genericTokenSelector } from './token'
 
@@ -520,7 +520,7 @@ export const walletLazyNftCardInfosSelector = selectorFamily<
       }
 
       const collections: CollectionWithTokens[] = get(
-        queryWalletIndexerSelector({
+        queryAccountIndexerSelector({
           chainId,
           walletAddress,
           formula: 'nft/collections',
@@ -577,7 +577,7 @@ export const walletStakedLazyNftCardInfosSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
       const collections: CollectionWithTokens[] = get(
-        queryWalletIndexerSelector({
+        queryAccountIndexerSelector({
           chainId,
           walletAddress,
           formula: 'nft/stakedWithDaos',

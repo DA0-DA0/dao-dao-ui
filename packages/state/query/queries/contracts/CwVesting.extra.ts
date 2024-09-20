@@ -324,9 +324,9 @@ export const fetchVestingPaymentsOwnedBy = async (
   }
 ): Promise<string[]> => {
   const vestingPayments: string[] = await queryClient.fetchQuery(
-    indexerQueries.queryWallet(queryClient, {
+    indexerQueries.queryAccount(queryClient, {
       chainId,
-      walletAddress: address,
+      address,
       formula: 'vesting/ownerOf',
       noFallback: true,
     })

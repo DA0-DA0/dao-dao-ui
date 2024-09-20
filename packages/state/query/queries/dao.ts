@@ -265,9 +265,9 @@ export const listWalletAdminOfDaos = async (
   }
 ): Promise<string[]> => {
   const walletAdminOfDaos = await queryClient.fetchQuery(
-    indexerQueries.queryWallet(queryClient, {
+    indexerQueries.queryAccount(queryClient, {
       chainId,
-      walletAddress: address,
+      address,
       formula: 'daos/adminOf',
       noFallback: true,
     })

@@ -77,6 +77,23 @@ export const indexerQueries = {
   /**
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
+  queryAccount: <T = any>(
+    queryClient: QueryClient,
+    {
+      address,
+      ...options
+    }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
+      address: string
+    }
+  ) =>
+    indexerQueries.query<T>(queryClient, {
+      ...options,
+      type: IndexerFormulaType.Account,
+      address,
+    }),
+  /**
+   * Fetch indexer query, unless the indexer is behind and there is a fallback.
+   */
   queryContract: <T = any>(
     queryClient: QueryClient,
     {
@@ -117,23 +134,6 @@ export const indexerQueries = {
     indexerQueries.query<T>(queryClient, {
       ...options,
       type: IndexerFormulaType.Validator,
-      address,
-    }),
-  /**
-   * Fetch indexer query, unless the indexer is behind and there is a fallback.
-   */
-  queryWallet: <T = any>(
-    queryClient: QueryClient,
-    {
-      walletAddress: address,
-      ...options
-    }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
-      walletAddress: string
-    }
-  ) =>
-    indexerQueries.query<T>(queryClient, {
-      ...options,
-      type: IndexerFormulaType.Wallet,
       address,
     }),
   /**

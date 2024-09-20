@@ -6,10 +6,10 @@ import {
 } from './contracts/DaoDaoCore'
 
 export enum IndexerFormulaType {
+  Account = 'account',
   Contract = 'contract',
   Generic = 'generic',
   Validator = 'validator',
-  Wallet = 'wallet',
 }
 
 export interface IndexerDumpState
