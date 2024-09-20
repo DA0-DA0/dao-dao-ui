@@ -118,7 +118,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
 
         const fantokenExecute: BtsgFtFactoryExecuteMsg = {
           issue: {
-            symbol,
+            symbol: symbol.toLowerCase(),
             name,
             max_supply: convertDenomToMicroDenomStringWithDecimals(
               maxSupply,
