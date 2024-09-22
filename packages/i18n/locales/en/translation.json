@@ -1291,7 +1291,7 @@
     "priceHistoryRange_year": "Every day for the past year",
     "productVersion": "DAO DAO v{{versionNumber}}",
     "proposalAllAbstainClarification": "When all voters abstain, a proposal will fail.",
-    "proposalDepositTooltip": "The deposit required to create a proposal.",
+    "proposalDepositTooltip": "The deposit the proposer must pay when creating a proposal.",
     "proposalDepositWillBeRefunded": "Proposal deposit will be refunded once closed.",
     "proposalExecutionPolicyDescription": "Who is allowed to execute passed proposals?",
     "proposalFixesChildAdmin": "This proposal fixes that by setting the contract-level admin of {{child}} to {{parent}}.",
