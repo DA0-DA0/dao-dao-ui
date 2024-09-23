@@ -338,7 +338,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
         />
       )}
 
-      <div className="flex flex-col gap-2 max-w-prose items-start">
+      <div className="flex flex-col gap-2 items-start">
         <InputLabel name={t('form.openFunding')} primary />
         <p className="body-text text-text-secondary max-w-prose -mt-1">
           {t('info.openFundingDescription')}
