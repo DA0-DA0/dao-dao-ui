@@ -99,13 +99,12 @@ export const TokenAmountDisplay = ({
     prefix = `< ${prefix || ''}`
   }
 
-  const options: Intl.NumberFormatOptions & { roundingPriority: string } = {
+  const options: Intl.NumberFormatOptions = {
+    // Always show all decimals if USD estimate.
+    minimumFractionDigits: estimatedUsdValue
+      ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
+      : minDecimals,
     maximumFractionDigits: decimals,
-    // Safari (and potentially other non-Chrome browsers) uses only 1 decimal
-    // when notation=compact. roundingPriority=morePrecision tells the formatter
-    // to resolve decimal contraint conflicts with the result with greater
-    // precision.
-    roundingPriority: 'morePrecision',
   }
 
   const maxCompactDecimals =
@@ -117,10 +116,6 @@ export const TokenAmountDisplay = ({
     ...options,
     notation: 'compact',
     maximumFractionDigits: maxCompactDecimals,
-    // Always show all decimals if USD estimate.
-    minimumFractionDigits: estimatedUsdValue
-      ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
-      : minDecimals,
     // notation=compact seems to set maximumSignificantDigits if undefined.
     // Because we are rounding toward more precision above, set
     // maximumSignificantDigits to 1 so that notation=compact does not override
@@ -128,9 +123,15 @@ export const TokenAmountDisplay = ({
     // appears to work fine on both Chrome and Safari, which is good enough for
     // now. This is a crazy hack.
     maximumSignificantDigits: 1,
+    // Safari (and potentially other non-Chrome browsers) uses only 1 decimal
+    // when notation=compact. roundingPriority=morePrecision tells the formatter
+    // to resolve decimal contraint conflicts with the result with greater
+    // precision.
+    roundingPriority: 'morePrecision',
   }
 
   const full = toFixedDown(amount, decimals).toLocaleString(undefined, options)
+
   // Abbreviated number. Example: 1,000,000 => 1M, or 1.2345 => 1.23.
   let compact = toFixedDown(amount, maxCompactDecimals).toLocaleString(
     undefined,
@@ -139,15 +140,16 @@ export const TokenAmountDisplay = ({
 
   const largeNumber = amount >= 1000
 
-  // If this is a large number that is compacted, and maxDecimals is not being
-  // overridden, use fewer decimals because compact notation looks bad with too
-  // many decimals. We first needed to use the same decimals to compare and see
-  // if compact had any effect. If compact changed nothing, we want to keep the
-  // original decimals.
+  // If this is a large number that is compacted, and minDecimals/maxDecimals
+  // are not being overridden, use fewer decimals because compact notation looks
+  // bad with too many decimals. We first needed to use the same decimals to
+  // compare and see if compact had any effect. If compact changed nothing, we
+  // want to keep the original decimals.
   if (
     !showFullAmount &&
     largeNumber &&
     full !== compact &&
+    minDecimals === undefined &&
     maxDecimals === undefined
   ) {
     compact = toFixedDown(amount, LARGE_COMPACT_MAX_DECIMALS).toLocaleString(

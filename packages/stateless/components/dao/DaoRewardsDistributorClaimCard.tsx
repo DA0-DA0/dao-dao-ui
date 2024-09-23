@@ -135,13 +135,13 @@ export const DaoRewardsDistributorClaimCard = ({
                           amount={balance}
                           className="text-text-body"
                           decimals={token.decimals}
-                          hideApprox
                           hideSymbol
                           iconUrl={
                             token.imageUrl ||
                             getFallbackImage(token.denomOrAddress)
                           }
                           minDecimals={token.decimals}
+                          showFullAmount
                           suffix={'  $' + token.symbol}
                           suffixClassName="whitespace-pre text-text-tertiary"
                         />
