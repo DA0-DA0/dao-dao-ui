@@ -1,13 +1,11 @@
-import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  FilterableItemPopup,
+  DaoRewardDistributionPicker,
   InputErrorMessage,
   InputLabel,
-  InputThemedText,
   MarkdownRenderer,
   NumericInput,
   SegmentedControls,
@@ -19,13 +17,11 @@ import {
   DaoRewardDistribution,
   DurationUnitsValues,
   DurationWithUnits,
+  TokenType,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertDurationToDurationWithUnits,
-  getFallbackImage,
-  getHumanReadableRewardDistributionLabel,
-  toAccessibleImageUrl,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -69,87 +65,43 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
   const decimals = selectedDistribution?.token.decimals ?? 0
 
-  const selectedDistributionDisplay = selectedDistribution && (
-    <>
-      <div
-        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${toAccessibleImageUrl(
-            selectedDistribution.token.imageUrl ||
-              getFallbackImage(selectedDistribution.token.denomOrAddress)
-          )})`,
-        }}
-      ></div>
-
-      {getHumanReadableRewardDistributionLabel(t, selectedDistribution)}
-    </>
-  )
-
   return (
     <>
       <div className="flex flex-col gap-2 self-start">
         <InputLabel name={t('title.distribution')} primary />
 
-        {isCreating ? (
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={distributions.map((distribution) => ({
-              key: distribution.address + distribution.id,
-              selected: selectedDistribution === distribution,
-              iconUrl:
-                distribution.token.imageUrl ||
-                getFallbackImage(distribution.token.denomOrAddress),
-              label: getHumanReadableRewardDistributionLabel(t, distribution),
-              ...distribution,
-            }))}
-            onSelect={({ address, id, active_epoch, token, open_funding }) => {
-              setValue((fieldNamePrefix + 'address') as 'address', address)
-              setValue((fieldNamePrefix + 'id') as 'id', id)
+        <DaoRewardDistributionPicker
+          disabled={!isCreating}
+          distributions={distributions}
+          onSelect={({ address, id, active_epoch, token, open_funding }) => {
+            setValue((fieldNamePrefix + 'address') as 'address', address)
+            setValue((fieldNamePrefix + 'id') as 'id', id)
+            setValue(
+              (fieldNamePrefix + 'immediate') as 'immediate',
+              'immediate' in active_epoch.emission_rate
+            )
+            if ('linear' in active_epoch.emission_rate) {
               setValue(
-                (fieldNamePrefix + 'immediate') as 'immediate',
-                'immediate' in active_epoch.emission_rate
+                (fieldNamePrefix + 'rate.amount') as 'rate.amount',
+                HugeDecimal.from(
+                  active_epoch.emission_rate.linear.amount
+                ).toHumanReadableString(token.decimals)
               )
-              if ('linear' in active_epoch.emission_rate) {
-                setValue(
-                  (fieldNamePrefix + 'rate.amount') as 'rate.amount',
-                  HugeDecimal.from(
-                    active_epoch.emission_rate.linear.amount
-                  ).toHumanReadableString(token.decimals)
-                )
-                setValue(
-                  (fieldNamePrefix + 'rate.duration') as 'rate.duration',
-                  convertDurationToDurationWithUnits(
-                    active_epoch.emission_rate.linear.duration
-                  )
-                )
-              }
               setValue(
-                (fieldNamePrefix + 'openFunding') as 'openFunding',
-                open_funding
+                (fieldNamePrefix + 'rate.duration') as 'rate.duration',
+                convertDurationToDurationWithUnits(
+                  active_epoch.emission_rate.linear.duration
+                )
               )
-            }}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'self-start',
-                variant: !address ? 'primary' : 'ghost_outline',
-                size: 'lg',
-                children: selectedDistribution ? (
-                  <>
-                    {selectedDistributionDisplay}
-                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
-                  </>
-                ) : (
-                  t('button.chooseDistribution')
-                ),
-              },
-            }}
-          />
-        ) : (
-          <InputThemedText className="!py-2 !px-3">
-            {selectedDistributionDisplay}
-          </InputThemedText>
-        )}
+            }
+            setValue(
+              (fieldNamePrefix + 'openFunding') as 'openFunding',
+              open_funding
+            )
+          }}
+          selectButtonVariant={!address ? 'primary' : 'ghost_outline'}
+          selectedDistribution={selectedDistribution}
+        />
       </div>
 
       {selectedDistribution && (
@@ -254,39 +206,31 @@ export const UpdateRewardDistributionComponent: ActionComponent<
               </div>
             )}
 
-            {/* Only show open funding switch if a defined boolean. Backwards compatibility for update actions that didn't have the field. */}
-            {typeof openFunding === 'boolean' && (
-              <div className="mt-2 flex flex-col gap-2 items-start">
-                <InputLabel name={t('form.openFunding')} primary />
-                <p className="body-text text-text-secondary max-w-prose -mt-1">
-                  {t('info.openFundingDescription')}
-                </p>
+            {/* Only show open funding switch if defined. Backwards compatibility for update actions that didn't have the field. Also CW20 distributions must have open funding enabled, so disallow changing this if it's not native. */}
+            {typeof openFunding === 'boolean' &&
+              selectedDistribution?.token.type === TokenType.Native && (
+                <div className="mt-2 flex flex-col gap-2 items-start">
+                  <InputLabel name={t('form.openFunding')} primary />
+                  <p className="body-text text-text-secondary max-w-prose -mt-1">
+                    {t('info.openFundingDescription')}
+                  </p>
 
-                <SwitchCard
-                  enabled={openFunding}
-                  onClick={() =>
-                    setValue(
-                      (fieldNamePrefix + 'openFunding') as 'openFunding',
-                      !openFunding
-                    )
-                  }
-                  readOnly={!isCreating}
-                  sizing="md"
-                />
-              </div>
-            )}
+                  <SwitchCard
+                    enabled={openFunding}
+                    onClick={() =>
+                      setValue(
+                        (fieldNamePrefix + 'openFunding') as 'openFunding',
+                        !openFunding
+                      )
+                    }
+                    readOnly={!isCreating}
+                    sizing="md"
+                  />
+                </div>
+              )}
           </div>
         </>
       )}
     </>
   )
 }
-
-const FILTERABLE_KEYS = [
-  'label',
-  'address',
-  'id',
-  'chainId',
-  'token.symbol',
-  'token.denomOrAddress',
-]

@@ -23,6 +23,7 @@ import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { CreateDaoPermit } from '../CreateDaoPermit'
 import { DaoRewardsDistributorClaimCard } from '../DaoRewardsDistributorClaimCard'
+import { DaoRewardsDistributorFundCard } from '../DaoRewardsDistributorFundCard'
 import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
@@ -114,7 +115,11 @@ export const HomeTab = () => {
         {hasRewardDistributors && isWalletConnected && (
           <div className="flex flex-col gap-4 w-full md:w-2/3 lg:w-1/2">
             <p className="title-text">{t('title.rewards')}</p>
-            <DaoRewardsDistributorClaimCard />
+
+            <div className="flex flex-col gap-2">
+              <DaoRewardsDistributorClaimCard />
+              <DaoRewardsDistributorFundCard />
+            </div>
           </div>
         )}
       </div>

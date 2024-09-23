@@ -258,7 +258,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 },
             hook_caller: hookCaller,
             vp_contract: votingModule.address,
-            open_funding: openFunding,
+            // CW20 distributions must have open funding enabled due to a bug in
+            // the contract.
+            open_funding: type === TokenType.Cw20 ? true : openFunding,
           } as CreateMsg,
         },
       })
