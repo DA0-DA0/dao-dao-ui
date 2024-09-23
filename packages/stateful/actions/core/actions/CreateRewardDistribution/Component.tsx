@@ -10,6 +10,7 @@ import {
   SegmentedControls,
   SelectInput,
   StatusCard,
+  SwitchCard,
   TokenAmountDisplay,
   TokenInput,
   useActionOptions,
@@ -42,6 +43,7 @@ export type CreateRewardDistributionData = {
     duration: DurationWithUnits
   }
   initialFunds: number
+  openFunding: boolean
 }
 
 export type CreateRewardDistributionOptions = {
@@ -76,6 +78,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
   const initialFunds = watch(
     (fieldNamePrefix + 'initialFunds') as 'initialFunds'
   )
+  const openFunding = watch((fieldNamePrefix + 'openFunding') as 'openFunding')
 
   const selectedToken =
     tokens.loading || token.loading || token.errored || token.updating
@@ -334,6 +337,25 @@ export const CreateRewardDistributionComponent: ActionComponent<
           style="warning"
         />
       )}
+
+      <div className="flex flex-col gap-2 max-w-prose items-start">
+        <InputLabel name={t('form.openFunding')} primary />
+        <p className="body-text text-text-secondary max-w-prose -mt-1">
+          {t('info.openFundingDescription')}
+        </p>
+
+        <SwitchCard
+          enabled={openFunding}
+          onClick={() =>
+            setValue(
+              (fieldNamePrefix + 'openFunding') as 'openFunding',
+              !openFunding
+            )
+          }
+          readOnly={!isCreating}
+          sizing="md"
+        />
+      </div>
     </>
   )
 }

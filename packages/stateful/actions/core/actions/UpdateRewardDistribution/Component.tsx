@@ -12,6 +12,7 @@ import {
   SegmentedControls,
   SelectInput,
   StatusCard,
+  SwitchCard,
 } from '@dao-dao/stateless'
 import {
   DaoRewardDistribution,
@@ -37,6 +38,7 @@ export type UpdateRewardDistributionData = {
     amount: number
     duration: DurationWithUnits
   }
+  openFunding?: boolean | null
 }
 
 export type UpdateRewardDistributionOptions = {
@@ -59,6 +61,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
   const rateDuration = watch(
     (fieldNamePrefix + 'rate.duration') as 'rate.duration'
   )
+  const openFunding = watch((fieldNamePrefix + 'openFunding') as 'openFunding')
 
   const selectedDistribution = distributions.find(
     (distribution) => distribution.address === address && distribution.id === id
@@ -102,7 +105,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
               label: getHumanReadableRewardDistributionLabel(t, distribution),
               ...distribution,
             }))}
-            onSelect={({ address, id, active_epoch, token }) => {
+            onSelect={({ address, id, active_epoch, token, open_funding }) => {
               setValue((fieldNamePrefix + 'address') as 'address', address)
               setValue((fieldNamePrefix + 'id') as 'id', id)
               setValue(
@@ -124,6 +127,10 @@ export const UpdateRewardDistributionComponent: ActionComponent<
                   )
                 )
               }
+              setValue(
+                (fieldNamePrefix + 'openFunding') as 'openFunding',
+                open_funding
+              )
             }}
             trigger={{
               type: 'button',
@@ -247,6 +254,28 @@ export const UpdateRewardDistributionComponent: ActionComponent<
                     </SelectInput>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Only show open funding switch if a defined boolean. Backwards compatibility for update actions that didn't have the field. */}
+            {typeof openFunding === 'boolean' && (
+              <div className="flex flex-col gap-2 max-w-prose items-start">
+                <InputLabel name={t('form.openFunding')} primary />
+                <p className="body-text text-text-secondary max-w-prose -mt-1">
+                  {t('info.openFundingDescription')}
+                </p>
+
+                <SwitchCard
+                  enabled={openFunding}
+                  onClick={() =>
+                    setValue(
+                      (fieldNamePrefix + 'openFunding') as 'openFunding',
+                      !openFunding
+                    )
+                  }
+                  readOnly={!isCreating}
+                  sizing="md"
+                />
               </div>
             )}
           </div>

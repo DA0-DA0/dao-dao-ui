@@ -114,6 +114,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
                 units: DurationUnits.Hours,
               },
       },
+      openFunding: this.distributions[0]?.open_funding || false,
     }
   }
 
@@ -122,6 +123,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
     id,
     immediate,
     rate,
+    openFunding,
   }: UpdateRewardDistributionData): UnifiedCosmosMsg {
     const distribution = this.distributions.find(
       (d) => d.address === address && d.id === id
@@ -151,6 +153,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
                   continuous: false,
                 },
               },
+          open_funding: openFunding,
         },
       },
     })
@@ -218,6 +221,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
                 units: DurationUnits.Hours,
               },
       },
+      openFunding: updateMsg.open_funding,
     }
   }
 }

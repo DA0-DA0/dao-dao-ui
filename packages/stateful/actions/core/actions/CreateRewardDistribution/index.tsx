@@ -132,6 +132,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         },
       },
       initialFunds: 0,
+      openFunding: true,
     }
   }
 
@@ -146,6 +147,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     immediate,
     rate,
     initialFunds,
+    openFunding,
   }: CreateRewardDistributionData): Promise<UnifiedCosmosMsg[]> {
     if (this.options.context.type !== ActionContextType.Dao) {
       throw new Error('Only DAOs can create reward distributions')
@@ -252,6 +254,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 },
             hook_caller: hookCaller,
             vp_contract: votingModule.address,
+            open_funding: openFunding,
           } as CreateMsg,
         },
       })
@@ -609,6 +612,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         initialFunds === '0'
           ? 0
           : convertMicroDenomToDenomWithDecimals(initialFunds, token.decimals),
+      openFunding: !!createMsg.open_funding,
     }
   }
 }
