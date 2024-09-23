@@ -1,22 +1,15 @@
-import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  FilterableItemPopup,
+  DaoRewardDistributionPicker,
   InputErrorMessage,
   InputLabel,
-  InputThemedText,
   MarkdownRenderer,
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import { DaoRewardDistributionWithRemaining } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  getFallbackImage,
-  getHumanReadableRewardDistributionLabel,
-  toAccessibleImageUrl,
-} from '@dao-dao/utils'
 
 export type WithdrawRewardDistributionData = {
   address: string
@@ -43,22 +36,6 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
     (distribution) => distribution.address === address && distribution.id === id
   )
 
-  const selectedDistributionDisplay = selectedDistribution && (
-    <>
-      <div
-        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${toAccessibleImageUrl(
-            selectedDistribution.token.imageUrl ||
-              getFallbackImage(selectedDistribution.token.denomOrAddress)
-          )})`,
-        }}
-      ></div>
-
-      {getHumanReadableRewardDistributionLabel(t, selectedDistribution)}
-    </>
-  )
-
   return (
     <>
       <MarkdownRenderer
@@ -69,68 +46,38 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
       <div className="flex flex-col gap-2 self-start">
         <InputLabel name={t('title.distribution')} primary />
 
-        {isCreating ? (
-          <>
-            <FilterableItemPopup
-              filterableItemKeys={FILTERABLE_KEYS}
-              items={distributions.map((distribution) => ({
-                key: distribution.address + distribution.id,
-                selected: selectedDistribution === distribution,
-                iconUrl:
-                  distribution.token.imageUrl ||
-                  getFallbackImage(distribution.token.denomOrAddress),
-                label: getHumanReadableRewardDistributionLabel(t, distribution),
-                description: (
-                  <TokenAmountDisplay
-                    amount={distribution.remaining}
-                    className="text-text-interactive-valid"
-                    decimals={distribution.token.decimals}
-                    suffix={' ' + t('info.remaining')}
-                    symbol={distribution.token.symbol}
-                  />
-                ),
-                ...distribution,
-              }))}
-              onSelect={({ address, id }) => {
-                setValue((fieldNamePrefix + 'address') as 'address', address)
-                setValue((fieldNamePrefix + 'id') as 'id', id)
-              }}
-              trigger={{
-                type: 'button',
-                props: {
-                  className: 'self-start',
-                  variant: !address ? 'primary' : 'ghost_outline',
-                  size: 'lg',
-                  children: selectedDistribution ? (
-                    <>
-                      {selectedDistributionDisplay}
-                      <ArrowDropDown className="text-icon-primary !h-6 !w-6" />
-                    </>
-                  ) : (
-                    t('button.chooseDistribution')
-                  ),
-                },
-              }}
+        <DaoRewardDistributionPicker
+          disabled={!isCreating}
+          distributions={distributions}
+          getDescription={(distribution) => (
+            <TokenAmountDisplay
+              amount={distribution.remaining}
+              className="text-text-interactive-valid"
+              decimals={distribution.token.decimals}
+              suffix={' ' + t('info.remaining')}
+              symbol={distribution.token.symbol}
             />
+          )}
+          onSelect={({ address, id }) => {
+            setValue((fieldNamePrefix + 'address') as 'address', address)
+            setValue((fieldNamePrefix + 'id') as 'id', id)
+          }}
+          selectButtonVariant={!address ? 'primary' : 'ghost_outline'}
+          selectedDistribution={selectedDistribution}
+        />
 
-            {selectedDistribution && (
-              <p className="text-text-interactive-valid">
-                {t('info.tokensWillBeWithdrawn', {
-                  amount:
-                    selectedDistribution.remaining.toInternationalizedHumanReadableString(
-                      {
-                        decimals: selectedDistribution.token.decimals,
-                      }
-                    ),
-                  tokenSymbol: selectedDistribution.token.symbol,
-                })}
-              </p>
-            )}
-          </>
-        ) : (
-          <InputThemedText className="!py-2 !px-3">
-            {selectedDistributionDisplay}
-          </InputThemedText>
+        {isCreating && selectedDistribution && (
+          <p className="text-text-interactive-valid">
+            {t('info.tokensWillBeWithdrawn', {
+              amount:
+                selectedDistribution.remaining.toInternationalizedHumanReadableString(
+                  {
+                    decimals: selectedDistribution.token.decimals,
+                  }
+                ),
+              tokenSymbol: selectedDistribution.token.symbol,
+            })}
+          </p>
         )}
       </div>
 
@@ -145,12 +92,3 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
     </>
   )
 }
-
-const FILTERABLE_KEYS = [
-  'label',
-  'address',
-  'id',
-  'chainId',
-  'token.symbol',
-  'token.denomOrAddress',
-]

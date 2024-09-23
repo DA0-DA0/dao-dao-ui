@@ -5,6 +5,7 @@ import {
   DaoRewardDistribution,
   DaoRewardDistributor,
   DurationUnits,
+  TokenType,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import {
@@ -151,7 +152,18 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
                   continuous: false,
                 },
               },
-          open_funding: openFunding,
+          // CW20 distributions must have open funding enabled due to a bug in
+          // the contract.
+          ...(distribution.token.type === TokenType.Cw20 &&
+          !distribution.open_funding
+            ? {
+                open_funding: true,
+              }
+            : distribution.token.type === TokenType.Native
+            ? {
+                open_funding: openFunding,
+              }
+            : {}),
         },
       },
     })

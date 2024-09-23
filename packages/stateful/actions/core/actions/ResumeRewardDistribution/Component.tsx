@@ -1,19 +1,9 @@
-import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  FilterableItemPopup,
-  InputLabel,
-  InputThemedText,
-} from '@dao-dao/stateless'
+import { DaoRewardDistributionPicker, InputLabel } from '@dao-dao/stateless'
 import { DaoRewardDistribution } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  getFallbackImage,
-  getHumanReadableRewardDistributionLabel,
-  toAccessibleImageUrl,
-} from '@dao-dao/utils'
 
 export type ResumeRewardDistributionData = {
   address: string
@@ -40,77 +30,22 @@ export const ResumeRewardDistributionComponent: ActionComponent<
     (distribution) => distribution.address === address && distribution.id === id
   )
 
-  const selectedDistributionDisplay = selectedDistribution && (
-    <>
-      <div
-        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${toAccessibleImageUrl(
-            selectedDistribution.token.imageUrl ||
-              getFallbackImage(selectedDistribution.token.denomOrAddress)
-          )})`,
-        }}
-      ></div>
-
-      {getHumanReadableRewardDistributionLabel(t, selectedDistribution)}
-    </>
-  )
-
   return (
     <>
       <div className="flex flex-col gap-2 self-start">
         <InputLabel name={t('title.distribution')} primary />
 
-        {isCreating ? (
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={distributions
-              .filter((d) => 'paused' in d.active_epoch.emission_rate)
-              .map((distribution) => ({
-                key: distribution.address + distribution.id,
-                selected: selectedDistribution === distribution,
-                iconUrl:
-                  distribution.token.imageUrl ||
-                  getFallbackImage(distribution.token.denomOrAddress),
-                label: getHumanReadableRewardDistributionLabel(t, distribution),
-                ...distribution,
-              }))}
-            onSelect={({ address, id }) => {
-              setValue((fieldNamePrefix + 'address') as 'address', address)
-              setValue((fieldNamePrefix + 'id') as 'id', id)
-            }}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'self-start',
-                variant: !address ? 'primary' : 'ghost_outline',
-                size: 'lg',
-                children: selectedDistribution ? (
-                  <>
-                    {selectedDistributionDisplay}
-                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
-                  </>
-                ) : (
-                  t('button.chooseDistribution')
-                ),
-              },
-            }}
-          />
-        ) : (
-          <InputThemedText className="!py-2 !px-3">
-            {selectedDistributionDisplay}
-          </InputThemedText>
-        )}
+        <DaoRewardDistributionPicker
+          disabled={!isCreating}
+          distributions={distributions}
+          onSelect={({ address, id }) => {
+            setValue((fieldNamePrefix + 'address') as 'address', address)
+            setValue((fieldNamePrefix + 'id') as 'id', id)
+          }}
+          selectButtonVariant={!address ? 'primary' : 'ghost_outline'}
+          selectedDistribution={selectedDistribution}
+        />
       </div>
     </>
   )
 }
-
-const FILTERABLE_KEYS = [
-  'label',
-  'address',
-  'id',
-  'chainId',
-  'token.symbol',
-  'token.denomOrAddress',
-]
