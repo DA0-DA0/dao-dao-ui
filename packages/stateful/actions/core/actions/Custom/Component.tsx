@@ -100,6 +100,7 @@ export const CustomComponent: ActionComponent = ({
                 validateCosmosMsgForChain(chainId, makeCosmosMsg(msg))
               )
             } catch (err) {
+              console.error('Custom error', err)
               return err instanceof Error ? err.message : `${err}`
             }
 
