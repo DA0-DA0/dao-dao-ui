@@ -1,6 +1,6 @@
 import { CloudDownloadRounded, CloudUploadRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, MutableRefObject, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
@@ -12,6 +12,10 @@ export type ImageDropInputProps = Pick<
   FileDropInputProps,
   'onSelect' | 'className' | 'loading'
 > & {
+  /**
+   * Ref that gets set to a function that clears the image.
+   */
+  clearImageRef?: MutableRefObject<() => void>
   currentImage?: string
   Trans: ComponentType<TransProps>
 }
@@ -20,6 +24,7 @@ export const ImageDropInput = ({
   onSelect: _onSelect,
   className,
   loading,
+  clearImageRef,
   currentImage,
   Trans,
 }: ImageDropInputProps) => {
@@ -30,6 +35,10 @@ export const ImageDropInput = ({
     const url = URL.createObjectURL(file)
     setImage(url)
     _onSelect(file, url)
+  }
+
+  if (clearImageRef) {
+    clearImageRef.current = () => setImage(undefined)
   }
 
   // If passed in image changes, update the image.

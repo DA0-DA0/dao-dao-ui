@@ -1,6 +1,7 @@
 import { Close } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -18,6 +19,7 @@ import {
 } from '@dao-dao/stateless'
 import { TransProps } from '@dao-dao/types'
 import {
+  processError,
   transformIpfsUrlToHttpsIfNecessary,
   validateRequired,
 } from '@dao-dao/utils'
@@ -125,6 +127,7 @@ export const ContributionFormInput = ({
                         setValue(`files.${index}.url`, url)
                         setValue(`files.${index}.mimetype`, file.type)
                       }}
+                      onError={(err) => toast.error(processError(err))}
                     />
                   ) : (
                     <FileUploadInput
@@ -134,6 +137,7 @@ export const ContributionFormInput = ({
                         setValue(`files.${index}.url`, url)
                         setValue(`files.${index}.mimetype`, file.type)
                       }}
+                      onError={(err) => toast.error(processError(err))}
                     />
                   ))
                 )}

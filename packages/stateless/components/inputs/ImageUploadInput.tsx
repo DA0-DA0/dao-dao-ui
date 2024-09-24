@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { ImageDropInput, ImageDropInputProps } from './ImageDropInput'
 
@@ -16,6 +16,7 @@ export const ImageUploadInput = ({
   ...props
 }: ImageUploadInputProps) => {
   const [uploading, setUploading] = useState(false)
+  const clearImageRef = useRef<() => void>(() => {})
 
   const uploadFile = async (file: File) => {
     setUploading(true)
@@ -47,10 +48,18 @@ export const ImageUploadInput = ({
     } catch (err) {
       console.error(err)
       onError?.(err)
+      clearImageRef.current()
     } finally {
       setUploading(false)
     }
   }
 
-  return <ImageDropInput loading={uploading} onSelect={uploadFile} {...props} />
+  return (
+    <ImageDropInput
+      clearImageRef={clearImageRef}
+      loading={uploading}
+      onSelect={uploadFile}
+      {...props}
+    />
+  )
 }
