@@ -1,19 +1,21 @@
 //@ts-nocheck
 import { SwapAmountInRoute, SwapAmountInRouteAmino, SwapAmountInRouteSDKType, SwapAmountOutRoute, SwapAmountOutRouteAmino, SwapAmountOutRouteSDKType } from "./swap_route";
+import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
-import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
+import { TakerFeeShareAgreement, TakerFeeShareAgreementAmino, TakerFeeShareAgreementSDKType, TakerFeeSkimAccumulator, TakerFeeSkimAccumulatorAmino, TakerFeeSkimAccumulatorSDKType, AlloyContractTakerFeeShareState, AlloyContractTakerFeeShareStateAmino, AlloyContractTakerFeeShareStateSDKType } from "./taker_fee_share";
 import { Pool as Pool1 } from "../../concentratedliquidity/v1beta1/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentratedliquidity/v1beta1/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentratedliquidity/v1beta1/pool";
 import { CosmWasmPool, CosmWasmPoolProtoMsg, CosmWasmPoolSDKType } from "../../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { Pool as Pool2 } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { Pool as Pool3 } from "../../gamm/v1beta1/balancerPool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/v1beta1/balancerPool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/v1beta1/balancerPool";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 /** =============================== Params */
 export interface ParamsRequest {}
 export interface ParamsRequestProtoMsg {
@@ -47,6 +49,10 @@ export interface ParamsResponseSDKType {
 }
 /** =============================== EstimateSwapExactAmountIn */
 export interface EstimateSwapExactAmountInRequest {
+  /** DEPRECATED */
+  /** @deprecated */
+  sender: string;
+  /** @deprecated */
   poolId: bigint;
   tokenIn: string;
   routes: SwapAmountInRoute[];
@@ -57,6 +63,10 @@ export interface EstimateSwapExactAmountInRequestProtoMsg {
 }
 /** =============================== EstimateSwapExactAmountIn */
 export interface EstimateSwapExactAmountInRequestAmino {
+  /** DEPRECATED */
+  /** @deprecated */
+  sender?: string;
+  /** @deprecated */
   pool_id?: string;
   token_in?: string;
   routes?: SwapAmountInRouteAmino[];
@@ -67,11 +77,15 @@ export interface EstimateSwapExactAmountInRequestAminoMsg {
 }
 /** =============================== EstimateSwapExactAmountIn */
 export interface EstimateSwapExactAmountInRequestSDKType {
+  /** @deprecated */
+  sender: string;
+  /** @deprecated */
   pool_id: bigint;
   token_in: string;
   routes: SwapAmountInRouteSDKType[];
 }
 export interface EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+  /** @deprecated */
   poolId: bigint;
   tokenIn: string;
   routesPoolId: bigint[];
@@ -82,6 +96,7 @@ export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg {
   value: Uint8Array;
 }
 export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino {
+  /** @deprecated */
   pool_id?: string;
   token_in?: string;
   routes_pool_id?: string[];
@@ -92,6 +107,7 @@ export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg {
   value: EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino;
 }
 export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestSDKType {
+  /** @deprecated */
   pool_id: bigint;
   token_in: string;
   routes_pool_id: bigint[];
@@ -139,6 +155,10 @@ export interface EstimateSwapExactAmountInResponseSDKType {
 }
 /** =============================== EstimateSwapExactAmountOut */
 export interface EstimateSwapExactAmountOutRequest {
+  /** DEPRECATED */
+  /** @deprecated */
+  sender: string;
+  /** @deprecated */
   poolId: bigint;
   routes: SwapAmountOutRoute[];
   tokenOut: string;
@@ -149,6 +169,10 @@ export interface EstimateSwapExactAmountOutRequestProtoMsg {
 }
 /** =============================== EstimateSwapExactAmountOut */
 export interface EstimateSwapExactAmountOutRequestAmino {
+  /** DEPRECATED */
+  /** @deprecated */
+  sender?: string;
+  /** @deprecated */
   pool_id?: string;
   routes?: SwapAmountOutRouteAmino[];
   token_out?: string;
@@ -159,11 +183,15 @@ export interface EstimateSwapExactAmountOutRequestAminoMsg {
 }
 /** =============================== EstimateSwapExactAmountOut */
 export interface EstimateSwapExactAmountOutRequestSDKType {
+  /** @deprecated */
+  sender: string;
+  /** @deprecated */
   pool_id: bigint;
   routes: SwapAmountOutRouteSDKType[];
   token_out: string;
 }
 export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+  /** @deprecated */
   poolId: bigint;
   routesPoolId: bigint[];
   routesTokenInDenom: string[];
@@ -174,6 +202,7 @@ export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg {
   value: Uint8Array;
 }
 export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino {
+  /** @deprecated */
   pool_id?: string;
   routes_pool_id?: string[];
   routes_token_in_denom?: string[];
@@ -184,6 +213,7 @@ export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg {
   value: EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino;
 }
 export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestSDKType {
+  /** @deprecated */
   pool_id: bigint;
   routes_pool_id: bigint[];
   routes_token_in_denom: string[];
@@ -335,6 +365,56 @@ export interface AllPoolsResponseSDKType {
   pools: (Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType)[];
 }
 /**
+ * =======================================================
+ * ListPoolsByDenomRequest
+ */
+export interface ListPoolsByDenomRequest {
+  denom: string;
+}
+export interface ListPoolsByDenomRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomRequest";
+  value: Uint8Array;
+}
+/**
+ * =======================================================
+ * ListPoolsByDenomRequest
+ */
+export interface ListPoolsByDenomRequestAmino {
+  denom?: string;
+}
+export interface ListPoolsByDenomRequestAminoMsg {
+  type: "osmosis/poolmanager/list-pools-by-denom-request";
+  value: ListPoolsByDenomRequestAmino;
+}
+/**
+ * =======================================================
+ * ListPoolsByDenomRequest
+ */
+export interface ListPoolsByDenomRequestSDKType {
+  denom: string;
+}
+export interface ListPoolsByDenomResponse {
+  pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
+}
+export interface ListPoolsByDenomResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomResponse";
+  value: Uint8Array;
+}
+export type ListPoolsByDenomResponseEncoded = Omit<ListPoolsByDenomResponse, "pools"> & {
+  pools: (Pool1ProtoMsg | CosmWasmPoolProtoMsg | Pool2ProtoMsg | Pool3ProtoMsg | AnyProtoMsg)[];
+};
+export interface ListPoolsByDenomResponseAmino {
+  pools?: AnyAmino[];
+}
+export interface ListPoolsByDenomResponseAminoMsg {
+  type: "osmosis/poolmanager/list-pools-by-denom-response";
+  value: ListPoolsByDenomResponseAmino;
+}
+export interface ListPoolsByDenomResponseSDKType {
+  pools: (Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType)[];
+}
+/**
+ * ==========================================================
  * SpotPriceRequest defines the gRPC request structure for a SpotPrice
  * query.
  */
@@ -348,6 +428,7 @@ export interface SpotPriceRequestProtoMsg {
   value: Uint8Array;
 }
 /**
+ * ==========================================================
  * SpotPriceRequest defines the gRPC request structure for a SpotPrice
  * query.
  */
@@ -361,6 +442,7 @@ export interface SpotPriceRequestAminoMsg {
   value: SpotPriceRequestAmino;
 }
 /**
+ * ==========================================================
  * SpotPriceRequest defines the gRPC request structure for a SpotPrice
  * query.
  */
@@ -467,6 +549,440 @@ export interface TotalLiquidityResponseAminoMsg {
 }
 export interface TotalLiquidityResponseSDKType {
   liquidity: CoinSDKType[];
+}
+/** =============================== TotalVolumeForPool */
+export interface TotalVolumeForPoolRequest {
+  poolId: bigint;
+}
+export interface TotalVolumeForPoolRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolRequest";
+  value: Uint8Array;
+}
+/** =============================== TotalVolumeForPool */
+export interface TotalVolumeForPoolRequestAmino {
+  pool_id?: string;
+}
+export interface TotalVolumeForPoolRequestAminoMsg {
+  type: "osmosis/poolmanager/total-volume-for-pool-request";
+  value: TotalVolumeForPoolRequestAmino;
+}
+/** =============================== TotalVolumeForPool */
+export interface TotalVolumeForPoolRequestSDKType {
+  pool_id: bigint;
+}
+export interface TotalVolumeForPoolResponse {
+  volume: Coin[];
+}
+export interface TotalVolumeForPoolResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolResponse";
+  value: Uint8Array;
+}
+export interface TotalVolumeForPoolResponseAmino {
+  volume?: CoinAmino[];
+}
+export interface TotalVolumeForPoolResponseAminoMsg {
+  type: "osmosis/poolmanager/total-volume-for-pool-response";
+  value: TotalVolumeForPoolResponseAmino;
+}
+export interface TotalVolumeForPoolResponseSDKType {
+  volume: CoinSDKType[];
+}
+/** =============================== TradingPairTakerFee */
+export interface TradingPairTakerFeeRequest {
+  denom0: string;
+  denom1: string;
+}
+export interface TradingPairTakerFeeRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeRequest";
+  value: Uint8Array;
+}
+/** =============================== TradingPairTakerFee */
+export interface TradingPairTakerFeeRequestAmino {
+  denom_0?: string;
+  denom_1?: string;
+}
+export interface TradingPairTakerFeeRequestAminoMsg {
+  type: "osmosis/poolmanager/trading-pair-taker-fee-request";
+  value: TradingPairTakerFeeRequestAmino;
+}
+/** =============================== TradingPairTakerFee */
+export interface TradingPairTakerFeeRequestSDKType {
+  denom_0: string;
+  denom_1: string;
+}
+export interface TradingPairTakerFeeResponse {
+  takerFee: string;
+}
+export interface TradingPairTakerFeeResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeResponse";
+  value: Uint8Array;
+}
+export interface TradingPairTakerFeeResponseAmino {
+  taker_fee?: string;
+}
+export interface TradingPairTakerFeeResponseAminoMsg {
+  type: "osmosis/poolmanager/trading-pair-taker-fee-response";
+  value: TradingPairTakerFeeResponseAmino;
+}
+export interface TradingPairTakerFeeResponseSDKType {
+  taker_fee: string;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactRequest represents a request to estimate a
+ * trade for Balancer/StableSwap/Concentrated liquidity pool types based on the
+ * given parameters.
+ */
+export interface EstimateTradeBasedOnPriceImpactRequest {
+  /** from_coin is the total amount of tokens that the user wants to sell. */
+  fromCoin: Coin | undefined;
+  /**
+   * to_coin_denom is the denom identifier of the token that the user wants to
+   * buy.
+   */
+  toCoinDenom: string;
+  /**
+   * pool_id is the identifier of the liquidity pool that the trade will occur
+   * on.
+   */
+  poolId: bigint;
+  /**
+   * max_price_impact is the maximum percentage that the user is willing
+   * to affect the price of the liquidity pool.
+   */
+  maxPriceImpact: string;
+  /**
+   * external_price is an optional external price that the user can enter.
+   * It adjusts the MaxPriceImpact as the SpotPrice of a pool can be changed at
+   * any time.
+   */
+  externalPrice: string;
+}
+export interface EstimateTradeBasedOnPriceImpactRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactRequest";
+  value: Uint8Array;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactRequest represents a request to estimate a
+ * trade for Balancer/StableSwap/Concentrated liquidity pool types based on the
+ * given parameters.
+ */
+export interface EstimateTradeBasedOnPriceImpactRequestAmino {
+  /** from_coin is the total amount of tokens that the user wants to sell. */
+  from_coin?: CoinAmino | undefined;
+  /**
+   * to_coin_denom is the denom identifier of the token that the user wants to
+   * buy.
+   */
+  to_coin_denom?: string;
+  /**
+   * pool_id is the identifier of the liquidity pool that the trade will occur
+   * on.
+   */
+  pool_id?: string;
+  /**
+   * max_price_impact is the maximum percentage that the user is willing
+   * to affect the price of the liquidity pool.
+   */
+  max_price_impact?: string;
+  /**
+   * external_price is an optional external price that the user can enter.
+   * It adjusts the MaxPriceImpact as the SpotPrice of a pool can be changed at
+   * any time.
+   */
+  external_price?: string;
+}
+export interface EstimateTradeBasedOnPriceImpactRequestAminoMsg {
+  type: "osmosis/poolmanager/estimate-trade-based-on-price-impact-request";
+  value: EstimateTradeBasedOnPriceImpactRequestAmino;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactRequest represents a request to estimate a
+ * trade for Balancer/StableSwap/Concentrated liquidity pool types based on the
+ * given parameters.
+ */
+export interface EstimateTradeBasedOnPriceImpactRequestSDKType {
+  from_coin: CoinSDKType | undefined;
+  to_coin_denom: string;
+  pool_id: bigint;
+  max_price_impact: string;
+  external_price: string;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactResponse represents the response data
+ * for an estimated trade based on price impact. If a trade fails to be
+ * estimated the response would be 0,0 for input_coin and output_coin and will
+ * not error.
+ */
+export interface EstimateTradeBasedOnPriceImpactResponse {
+  /**
+   * input_coin is the actual input amount that would be tradeable
+   * under the specified price impact.
+   */
+  inputCoin: Coin | undefined;
+  /**
+   * output_coin is the amount of tokens of the ToCoinDenom type
+   * that will be received for the actual InputCoin trade.
+   */
+  outputCoin: Coin | undefined;
+}
+export interface EstimateTradeBasedOnPriceImpactResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactResponse";
+  value: Uint8Array;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactResponse represents the response data
+ * for an estimated trade based on price impact. If a trade fails to be
+ * estimated the response would be 0,0 for input_coin and output_coin and will
+ * not error.
+ */
+export interface EstimateTradeBasedOnPriceImpactResponseAmino {
+  /**
+   * input_coin is the actual input amount that would be tradeable
+   * under the specified price impact.
+   */
+  input_coin?: CoinAmino | undefined;
+  /**
+   * output_coin is the amount of tokens of the ToCoinDenom type
+   * that will be received for the actual InputCoin trade.
+   */
+  output_coin?: CoinAmino | undefined;
+}
+export interface EstimateTradeBasedOnPriceImpactResponseAminoMsg {
+  type: "osmosis/poolmanager/estimate-trade-based-on-price-impact-response";
+  value: EstimateTradeBasedOnPriceImpactResponseAmino;
+}
+/**
+ * EstimateTradeBasedOnPriceImpactResponse represents the response data
+ * for an estimated trade based on price impact. If a trade fails to be
+ * estimated the response would be 0,0 for input_coin and output_coin and will
+ * not error.
+ */
+export interface EstimateTradeBasedOnPriceImpactResponseSDKType {
+  input_coin: CoinSDKType | undefined;
+  output_coin: CoinSDKType | undefined;
+}
+export interface AllTakerFeeShareAgreementsRequest {}
+export interface AllTakerFeeShareAgreementsRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsRequest";
+  value: Uint8Array;
+}
+export interface AllTakerFeeShareAgreementsRequestAmino {}
+export interface AllTakerFeeShareAgreementsRequestAminoMsg {
+  type: "osmosis/poolmanager/all-taker-fee-share-agreements-request";
+  value: AllTakerFeeShareAgreementsRequestAmino;
+}
+export interface AllTakerFeeShareAgreementsRequestSDKType {}
+export interface AllTakerFeeShareAgreementsResponse {
+  takerFeeShareAgreements: TakerFeeShareAgreement[];
+}
+export interface AllTakerFeeShareAgreementsResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsResponse";
+  value: Uint8Array;
+}
+export interface AllTakerFeeShareAgreementsResponseAmino {
+  taker_fee_share_agreements?: TakerFeeShareAgreementAmino[];
+}
+export interface AllTakerFeeShareAgreementsResponseAminoMsg {
+  type: "osmosis/poolmanager/all-taker-fee-share-agreements-response";
+  value: AllTakerFeeShareAgreementsResponseAmino;
+}
+export interface AllTakerFeeShareAgreementsResponseSDKType {
+  taker_fee_share_agreements: TakerFeeShareAgreementSDKType[];
+}
+export interface TakerFeeShareAgreementFromDenomRequest {
+  denom: string;
+}
+export interface TakerFeeShareAgreementFromDenomRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomRequest";
+  value: Uint8Array;
+}
+export interface TakerFeeShareAgreementFromDenomRequestAmino {
+  denom?: string;
+}
+export interface TakerFeeShareAgreementFromDenomRequestAminoMsg {
+  type: "osmosis/poolmanager/taker-fee-share-agreement-from-denom-request";
+  value: TakerFeeShareAgreementFromDenomRequestAmino;
+}
+export interface TakerFeeShareAgreementFromDenomRequestSDKType {
+  denom: string;
+}
+export interface TakerFeeShareAgreementFromDenomResponse {
+  takerFeeShareAgreement: TakerFeeShareAgreement | undefined;
+}
+export interface TakerFeeShareAgreementFromDenomResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomResponse";
+  value: Uint8Array;
+}
+export interface TakerFeeShareAgreementFromDenomResponseAmino {
+  taker_fee_share_agreement?: TakerFeeShareAgreementAmino | undefined;
+}
+export interface TakerFeeShareAgreementFromDenomResponseAminoMsg {
+  type: "osmosis/poolmanager/taker-fee-share-agreement-from-denom-response";
+  value: TakerFeeShareAgreementFromDenomResponseAmino;
+}
+export interface TakerFeeShareAgreementFromDenomResponseSDKType {
+  taker_fee_share_agreement: TakerFeeShareAgreementSDKType | undefined;
+}
+export interface TakerFeeShareDenomsToAccruedValueRequest {
+  denom: string;
+  takerFeeDenom: string;
+}
+export interface TakerFeeShareDenomsToAccruedValueRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueRequest";
+  value: Uint8Array;
+}
+export interface TakerFeeShareDenomsToAccruedValueRequestAmino {
+  denom?: string;
+  takerFeeDenom?: string;
+}
+export interface TakerFeeShareDenomsToAccruedValueRequestAminoMsg {
+  type: "osmosis/poolmanager/taker-fee-share-denoms-to-accrued-value-request";
+  value: TakerFeeShareDenomsToAccruedValueRequestAmino;
+}
+export interface TakerFeeShareDenomsToAccruedValueRequestSDKType {
+  denom: string;
+  takerFeeDenom: string;
+}
+export interface TakerFeeShareDenomsToAccruedValueResponse {
+  amount: string;
+}
+export interface TakerFeeShareDenomsToAccruedValueResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueResponse";
+  value: Uint8Array;
+}
+export interface TakerFeeShareDenomsToAccruedValueResponseAmino {
+  amount?: string;
+}
+export interface TakerFeeShareDenomsToAccruedValueResponseAminoMsg {
+  type: "osmosis/poolmanager/taker-fee-share-denoms-to-accrued-value-response";
+  value: TakerFeeShareDenomsToAccruedValueResponseAmino;
+}
+export interface TakerFeeShareDenomsToAccruedValueResponseSDKType {
+  amount: string;
+}
+export interface AllTakerFeeShareAccumulatorsRequest {}
+export interface AllTakerFeeShareAccumulatorsRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsRequest";
+  value: Uint8Array;
+}
+export interface AllTakerFeeShareAccumulatorsRequestAmino {}
+export interface AllTakerFeeShareAccumulatorsRequestAminoMsg {
+  type: "osmosis/poolmanager/all-taker-fee-share-accumulators-request";
+  value: AllTakerFeeShareAccumulatorsRequestAmino;
+}
+export interface AllTakerFeeShareAccumulatorsRequestSDKType {}
+export interface AllTakerFeeShareAccumulatorsResponse {
+  takerFeeSkimAccumulators: TakerFeeSkimAccumulator[];
+}
+export interface AllTakerFeeShareAccumulatorsResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsResponse";
+  value: Uint8Array;
+}
+export interface AllTakerFeeShareAccumulatorsResponseAmino {
+  taker_fee_skim_accumulators?: TakerFeeSkimAccumulatorAmino[];
+}
+export interface AllTakerFeeShareAccumulatorsResponseAminoMsg {
+  type: "osmosis/poolmanager/all-taker-fee-share-accumulators-response";
+  value: AllTakerFeeShareAccumulatorsResponseAmino;
+}
+export interface AllTakerFeeShareAccumulatorsResponseSDKType {
+  taker_fee_skim_accumulators: TakerFeeSkimAccumulatorSDKType[];
+}
+export interface RegisteredAlloyedPoolFromDenomRequest {
+  denom: string;
+}
+export interface RegisteredAlloyedPoolFromDenomRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomRequest";
+  value: Uint8Array;
+}
+export interface RegisteredAlloyedPoolFromDenomRequestAmino {
+  denom?: string;
+}
+export interface RegisteredAlloyedPoolFromDenomRequestAminoMsg {
+  type: "osmosis/poolmanager/registered-alloyed-pool-from-denom-request";
+  value: RegisteredAlloyedPoolFromDenomRequestAmino;
+}
+export interface RegisteredAlloyedPoolFromDenomRequestSDKType {
+  denom: string;
+}
+export interface RegisteredAlloyedPoolFromDenomResponse {
+  contractState: AlloyContractTakerFeeShareState | undefined;
+}
+export interface RegisteredAlloyedPoolFromDenomResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomResponse";
+  value: Uint8Array;
+}
+export interface RegisteredAlloyedPoolFromDenomResponseAmino {
+  contract_state?: AlloyContractTakerFeeShareStateAmino | undefined;
+}
+export interface RegisteredAlloyedPoolFromDenomResponseAminoMsg {
+  type: "osmosis/poolmanager/registered-alloyed-pool-from-denom-response";
+  value: RegisteredAlloyedPoolFromDenomResponseAmino;
+}
+export interface RegisteredAlloyedPoolFromDenomResponseSDKType {
+  contract_state: AlloyContractTakerFeeShareStateSDKType | undefined;
+}
+export interface RegisteredAlloyedPoolFromPoolIdRequest {
+  poolId: bigint;
+}
+export interface RegisteredAlloyedPoolFromPoolIdRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdRequest";
+  value: Uint8Array;
+}
+export interface RegisteredAlloyedPoolFromPoolIdRequestAmino {
+  pool_id?: string;
+}
+export interface RegisteredAlloyedPoolFromPoolIdRequestAminoMsg {
+  type: "osmosis/poolmanager/registered-alloyed-pool-from-pool-id-request";
+  value: RegisteredAlloyedPoolFromPoolIdRequestAmino;
+}
+export interface RegisteredAlloyedPoolFromPoolIdRequestSDKType {
+  pool_id: bigint;
+}
+export interface RegisteredAlloyedPoolFromPoolIdResponse {
+  contractState: AlloyContractTakerFeeShareState | undefined;
+}
+export interface RegisteredAlloyedPoolFromPoolIdResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdResponse";
+  value: Uint8Array;
+}
+export interface RegisteredAlloyedPoolFromPoolIdResponseAmino {
+  contract_state?: AlloyContractTakerFeeShareStateAmino | undefined;
+}
+export interface RegisteredAlloyedPoolFromPoolIdResponseAminoMsg {
+  type: "osmosis/poolmanager/registered-alloyed-pool-from-pool-id-response";
+  value: RegisteredAlloyedPoolFromPoolIdResponseAmino;
+}
+export interface RegisteredAlloyedPoolFromPoolIdResponseSDKType {
+  contract_state: AlloyContractTakerFeeShareStateSDKType | undefined;
+}
+export interface AllRegisteredAlloyedPoolsRequest {}
+export interface AllRegisteredAlloyedPoolsRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsRequest";
+  value: Uint8Array;
+}
+export interface AllRegisteredAlloyedPoolsRequestAmino {}
+export interface AllRegisteredAlloyedPoolsRequestAminoMsg {
+  type: "osmosis/poolmanager/all-registered-alloyed-pools-request";
+  value: AllRegisteredAlloyedPoolsRequestAmino;
+}
+export interface AllRegisteredAlloyedPoolsRequestSDKType {}
+export interface AllRegisteredAlloyedPoolsResponse {
+  contractStates: AlloyContractTakerFeeShareState[];
+}
+export interface AllRegisteredAlloyedPoolsResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsResponse";
+  value: Uint8Array;
+}
+export interface AllRegisteredAlloyedPoolsResponseAmino {
+  contract_states?: AlloyContractTakerFeeShareStateAmino[];
+}
+export interface AllRegisteredAlloyedPoolsResponseAminoMsg {
+  type: "osmosis/poolmanager/all-registered-alloyed-pools-response";
+  value: AllRegisteredAlloyedPoolsResponseAmino;
+}
+export interface AllRegisteredAlloyedPoolsResponseSDKType {
+  contract_states: AlloyContractTakerFeeShareStateSDKType[];
 }
 function createBaseParamsRequest(): ParamsRequest {
   return {};
@@ -595,6 +1111,7 @@ export const ParamsResponse = {
 };
 function createBaseEstimateSwapExactAmountInRequest(): EstimateSwapExactAmountInRequest {
   return {
+    sender: "",
     poolId: BigInt(0),
     tokenIn: "",
     routes: []
@@ -603,6 +1120,9 @@ function createBaseEstimateSwapExactAmountInRequest(): EstimateSwapExactAmountIn
 export const EstimateSwapExactAmountInRequest = {
   typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountInRequest",
   encode(message: EstimateSwapExactAmountInRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
     if (message.poolId !== BigInt(0)) {
       writer.uint32(16).uint64(message.poolId);
     }
@@ -621,6 +1141,9 @@ export const EstimateSwapExactAmountInRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
         case 2:
           message.poolId = reader.uint64();
           break;
@@ -639,6 +1162,7 @@ export const EstimateSwapExactAmountInRequest = {
   },
   fromPartial(object: Partial<EstimateSwapExactAmountInRequest>): EstimateSwapExactAmountInRequest {
     const message = createBaseEstimateSwapExactAmountInRequest();
+    message.sender = object.sender ?? "";
     message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
     message.tokenIn = object.tokenIn ?? "";
     message.routes = object.routes?.map(e => SwapAmountInRoute.fromPartial(e)) || [];
@@ -646,6 +1170,9 @@ export const EstimateSwapExactAmountInRequest = {
   },
   fromAmino(object: EstimateSwapExactAmountInRequestAmino): EstimateSwapExactAmountInRequest {
     const message = createBaseEstimateSwapExactAmountInRequest();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
     if (object.pool_id !== undefined && object.pool_id !== null) {
       message.poolId = BigInt(object.pool_id);
     }
@@ -657,6 +1184,7 @@ export const EstimateSwapExactAmountInRequest = {
   },
   toAmino(message: EstimateSwapExactAmountInRequest, useInterfaces: boolean = false): EstimateSwapExactAmountInRequestAmino {
     const obj: any = {};
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn === "" ? undefined : message.tokenIn;
     if (message.routes) {
@@ -970,6 +1498,7 @@ export const EstimateSwapExactAmountInResponse = {
 };
 function createBaseEstimateSwapExactAmountOutRequest(): EstimateSwapExactAmountOutRequest {
   return {
+    sender: "",
     poolId: BigInt(0),
     routes: [],
     tokenOut: ""
@@ -978,6 +1507,9 @@ function createBaseEstimateSwapExactAmountOutRequest(): EstimateSwapExactAmountO
 export const EstimateSwapExactAmountOutRequest = {
   typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountOutRequest",
   encode(message: EstimateSwapExactAmountOutRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
     if (message.poolId !== BigInt(0)) {
       writer.uint32(16).uint64(message.poolId);
     }
@@ -996,6 +1528,9 @@ export const EstimateSwapExactAmountOutRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
         case 2:
           message.poolId = reader.uint64();
           break;
@@ -1014,6 +1549,7 @@ export const EstimateSwapExactAmountOutRequest = {
   },
   fromPartial(object: Partial<EstimateSwapExactAmountOutRequest>): EstimateSwapExactAmountOutRequest {
     const message = createBaseEstimateSwapExactAmountOutRequest();
+    message.sender = object.sender ?? "";
     message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
     message.routes = object.routes?.map(e => SwapAmountOutRoute.fromPartial(e)) || [];
     message.tokenOut = object.tokenOut ?? "";
@@ -1021,6 +1557,9 @@ export const EstimateSwapExactAmountOutRequest = {
   },
   fromAmino(object: EstimateSwapExactAmountOutRequestAmino): EstimateSwapExactAmountOutRequest {
     const message = createBaseEstimateSwapExactAmountOutRequest();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
     if (object.pool_id !== undefined && object.pool_id !== null) {
       message.poolId = BigInt(object.pool_id);
     }
@@ -1032,6 +1571,7 @@ export const EstimateSwapExactAmountOutRequest = {
   },
   toAmino(message: EstimateSwapExactAmountOutRequest, useInterfaces: boolean = false): EstimateSwapExactAmountOutRequestAmino {
     const obj: any = {};
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     if (message.routes) {
       obj.routes = message.routes.map(e => e ? SwapAmountOutRoute.toAmino(e, useInterfaces) : undefined);
@@ -1733,6 +2273,146 @@ export const AllPoolsResponse = {
     };
   }
 };
+function createBaseListPoolsByDenomRequest(): ListPoolsByDenomRequest {
+  return {
+    denom: ""
+  };
+}
+export const ListPoolsByDenomRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomRequest",
+  encode(message: ListPoolsByDenomRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ListPoolsByDenomRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListPoolsByDenomRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<ListPoolsByDenomRequest>): ListPoolsByDenomRequest {
+    const message = createBaseListPoolsByDenomRequest();
+    message.denom = object.denom ?? "";
+    return message;
+  },
+  fromAmino(object: ListPoolsByDenomRequestAmino): ListPoolsByDenomRequest {
+    const message = createBaseListPoolsByDenomRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
+  },
+  toAmino(message: ListPoolsByDenomRequest, useInterfaces: boolean = false): ListPoolsByDenomRequestAmino {
+    const obj: any = {};
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    return obj;
+  },
+  fromAminoMsg(object: ListPoolsByDenomRequestAminoMsg): ListPoolsByDenomRequest {
+    return ListPoolsByDenomRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: ListPoolsByDenomRequest, useInterfaces: boolean = false): ListPoolsByDenomRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/list-pools-by-denom-request",
+      value: ListPoolsByDenomRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: ListPoolsByDenomRequestProtoMsg, useInterfaces: boolean = false): ListPoolsByDenomRequest {
+    return ListPoolsByDenomRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: ListPoolsByDenomRequest): Uint8Array {
+    return ListPoolsByDenomRequest.encode(message).finish();
+  },
+  toProtoMsg(message: ListPoolsByDenomRequest): ListPoolsByDenomRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomRequest",
+      value: ListPoolsByDenomRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseListPoolsByDenomResponse(): ListPoolsByDenomResponse {
+  return {
+    pools: []
+  };
+}
+export const ListPoolsByDenomResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomResponse",
+  encode(message: ListPoolsByDenomResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.pools) {
+      Any.encode((v! as Any), writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ListPoolsByDenomResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListPoolsByDenomResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pools.push(useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<ListPoolsByDenomResponse>): ListPoolsByDenomResponse {
+    const message = createBaseListPoolsByDenomResponse();
+    message.pools = object.pools?.map(e => Any.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: ListPoolsByDenomResponseAmino): ListPoolsByDenomResponse {
+    const message = createBaseListPoolsByDenomResponse();
+    message.pools = object.pools?.map(e => PoolI_FromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: ListPoolsByDenomResponse, useInterfaces: boolean = false): ListPoolsByDenomResponseAmino {
+    const obj: any = {};
+    if (message.pools) {
+      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
+    } else {
+      obj.pools = message.pools;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: ListPoolsByDenomResponseAminoMsg): ListPoolsByDenomResponse {
+    return ListPoolsByDenomResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: ListPoolsByDenomResponse, useInterfaces: boolean = false): ListPoolsByDenomResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/list-pools-by-denom-response",
+      value: ListPoolsByDenomResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: ListPoolsByDenomResponseProtoMsg, useInterfaces: boolean = false): ListPoolsByDenomResponse {
+    return ListPoolsByDenomResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: ListPoolsByDenomResponse): Uint8Array {
+    return ListPoolsByDenomResponse.encode(message).finish();
+  },
+  toProtoMsg(message: ListPoolsByDenomResponse): ListPoolsByDenomResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.ListPoolsByDenomResponse",
+      value: ListPoolsByDenomResponse.encode(message).finish()
+    };
+  }
+};
 function createBaseSpotPriceRequest(): SpotPriceRequest {
   return {
     poolId: BigInt(0),
@@ -2162,6 +2842,1439 @@ export const TotalLiquidityResponse = {
     };
   }
 };
+function createBaseTotalVolumeForPoolRequest(): TotalVolumeForPoolRequest {
+  return {
+    poolId: BigInt(0)
+  };
+}
+export const TotalVolumeForPoolRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolRequest",
+  encode(message: TotalVolumeForPoolRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalVolumeForPoolRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTotalVolumeForPoolRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TotalVolumeForPoolRequest>): TotalVolumeForPoolRequest {
+    const message = createBaseTotalVolumeForPoolRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: TotalVolumeForPoolRequestAmino): TotalVolumeForPoolRequest {
+    const message = createBaseTotalVolumeForPoolRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
+  },
+  toAmino(message: TotalVolumeForPoolRequest, useInterfaces: boolean = false): TotalVolumeForPoolRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: TotalVolumeForPoolRequestAminoMsg): TotalVolumeForPoolRequest {
+    return TotalVolumeForPoolRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: TotalVolumeForPoolRequest, useInterfaces: boolean = false): TotalVolumeForPoolRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/total-volume-for-pool-request",
+      value: TotalVolumeForPoolRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TotalVolumeForPoolRequestProtoMsg, useInterfaces: boolean = false): TotalVolumeForPoolRequest {
+    return TotalVolumeForPoolRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TotalVolumeForPoolRequest): Uint8Array {
+    return TotalVolumeForPoolRequest.encode(message).finish();
+  },
+  toProtoMsg(message: TotalVolumeForPoolRequest): TotalVolumeForPoolRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolRequest",
+      value: TotalVolumeForPoolRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseTotalVolumeForPoolResponse(): TotalVolumeForPoolResponse {
+  return {
+    volume: []
+  };
+}
+export const TotalVolumeForPoolResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolResponse",
+  encode(message: TotalVolumeForPoolResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.volume) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalVolumeForPoolResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTotalVolumeForPoolResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.volume.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TotalVolumeForPoolResponse>): TotalVolumeForPoolResponse {
+    const message = createBaseTotalVolumeForPoolResponse();
+    message.volume = object.volume?.map(e => Coin.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: TotalVolumeForPoolResponseAmino): TotalVolumeForPoolResponse {
+    const message = createBaseTotalVolumeForPoolResponse();
+    message.volume = object.volume?.map(e => Coin.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: TotalVolumeForPoolResponse, useInterfaces: boolean = false): TotalVolumeForPoolResponseAmino {
+    const obj: any = {};
+    if (message.volume) {
+      obj.volume = message.volume.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.volume = message.volume;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: TotalVolumeForPoolResponseAminoMsg): TotalVolumeForPoolResponse {
+    return TotalVolumeForPoolResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: TotalVolumeForPoolResponse, useInterfaces: boolean = false): TotalVolumeForPoolResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/total-volume-for-pool-response",
+      value: TotalVolumeForPoolResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TotalVolumeForPoolResponseProtoMsg, useInterfaces: boolean = false): TotalVolumeForPoolResponse {
+    return TotalVolumeForPoolResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TotalVolumeForPoolResponse): Uint8Array {
+    return TotalVolumeForPoolResponse.encode(message).finish();
+  },
+  toProtoMsg(message: TotalVolumeForPoolResponse): TotalVolumeForPoolResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TotalVolumeForPoolResponse",
+      value: TotalVolumeForPoolResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseTradingPairTakerFeeRequest(): TradingPairTakerFeeRequest {
+  return {
+    denom0: "",
+    denom1: ""
+  };
+}
+export const TradingPairTakerFeeRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeRequest",
+  encode(message: TradingPairTakerFeeRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom0 !== "") {
+      writer.uint32(10).string(message.denom0);
+    }
+    if (message.denom1 !== "") {
+      writer.uint32(18).string(message.denom1);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TradingPairTakerFeeRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTradingPairTakerFeeRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom0 = reader.string();
+          break;
+        case 2:
+          message.denom1 = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TradingPairTakerFeeRequest>): TradingPairTakerFeeRequest {
+    const message = createBaseTradingPairTakerFeeRequest();
+    message.denom0 = object.denom0 ?? "";
+    message.denom1 = object.denom1 ?? "";
+    return message;
+  },
+  fromAmino(object: TradingPairTakerFeeRequestAmino): TradingPairTakerFeeRequest {
+    const message = createBaseTradingPairTakerFeeRequest();
+    if (object.denom_0 !== undefined && object.denom_0 !== null) {
+      message.denom0 = object.denom_0;
+    }
+    if (object.denom_1 !== undefined && object.denom_1 !== null) {
+      message.denom1 = object.denom_1;
+    }
+    return message;
+  },
+  toAmino(message: TradingPairTakerFeeRequest, useInterfaces: boolean = false): TradingPairTakerFeeRequestAmino {
+    const obj: any = {};
+    obj.denom_0 = message.denom0 === "" ? undefined : message.denom0;
+    obj.denom_1 = message.denom1 === "" ? undefined : message.denom1;
+    return obj;
+  },
+  fromAminoMsg(object: TradingPairTakerFeeRequestAminoMsg): TradingPairTakerFeeRequest {
+    return TradingPairTakerFeeRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: TradingPairTakerFeeRequest, useInterfaces: boolean = false): TradingPairTakerFeeRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/trading-pair-taker-fee-request",
+      value: TradingPairTakerFeeRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TradingPairTakerFeeRequestProtoMsg, useInterfaces: boolean = false): TradingPairTakerFeeRequest {
+    return TradingPairTakerFeeRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TradingPairTakerFeeRequest): Uint8Array {
+    return TradingPairTakerFeeRequest.encode(message).finish();
+  },
+  toProtoMsg(message: TradingPairTakerFeeRequest): TradingPairTakerFeeRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeRequest",
+      value: TradingPairTakerFeeRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseTradingPairTakerFeeResponse(): TradingPairTakerFeeResponse {
+  return {
+    takerFee: ""
+  };
+}
+export const TradingPairTakerFeeResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeResponse",
+  encode(message: TradingPairTakerFeeResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.takerFee !== "") {
+      writer.uint32(10).string(Decimal.fromUserInput(message.takerFee, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TradingPairTakerFeeResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTradingPairTakerFeeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TradingPairTakerFeeResponse>): TradingPairTakerFeeResponse {
+    const message = createBaseTradingPairTakerFeeResponse();
+    message.takerFee = object.takerFee ?? "";
+    return message;
+  },
+  fromAmino(object: TradingPairTakerFeeResponseAmino): TradingPairTakerFeeResponse {
+    const message = createBaseTradingPairTakerFeeResponse();
+    if (object.taker_fee !== undefined && object.taker_fee !== null) {
+      message.takerFee = object.taker_fee;
+    }
+    return message;
+  },
+  toAmino(message: TradingPairTakerFeeResponse, useInterfaces: boolean = false): TradingPairTakerFeeResponseAmino {
+    const obj: any = {};
+    obj.taker_fee = message.takerFee === "" ? undefined : message.takerFee;
+    return obj;
+  },
+  fromAminoMsg(object: TradingPairTakerFeeResponseAminoMsg): TradingPairTakerFeeResponse {
+    return TradingPairTakerFeeResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: TradingPairTakerFeeResponse, useInterfaces: boolean = false): TradingPairTakerFeeResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/trading-pair-taker-fee-response",
+      value: TradingPairTakerFeeResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TradingPairTakerFeeResponseProtoMsg, useInterfaces: boolean = false): TradingPairTakerFeeResponse {
+    return TradingPairTakerFeeResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TradingPairTakerFeeResponse): Uint8Array {
+    return TradingPairTakerFeeResponse.encode(message).finish();
+  },
+  toProtoMsg(message: TradingPairTakerFeeResponse): TradingPairTakerFeeResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TradingPairTakerFeeResponse",
+      value: TradingPairTakerFeeResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseEstimateTradeBasedOnPriceImpactRequest(): EstimateTradeBasedOnPriceImpactRequest {
+  return {
+    fromCoin: Coin.fromPartial({}),
+    toCoinDenom: "",
+    poolId: BigInt(0),
+    maxPriceImpact: "",
+    externalPrice: ""
+  };
+}
+export const EstimateTradeBasedOnPriceImpactRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactRequest",
+  encode(message: EstimateTradeBasedOnPriceImpactRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.fromCoin !== undefined) {
+      Coin.encode(message.fromCoin, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.toCoinDenom !== "") {
+      writer.uint32(18).string(message.toCoinDenom);
+    }
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(24).uint64(message.poolId);
+    }
+    if (message.maxPriceImpact !== "") {
+      writer.uint32(34).string(Decimal.fromUserInput(message.maxPriceImpact, 18).atomics);
+    }
+    if (message.externalPrice !== "") {
+      writer.uint32(42).string(Decimal.fromUserInput(message.externalPrice, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEstimateTradeBasedOnPriceImpactRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.fromCoin = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 2:
+          message.toCoinDenom = reader.string();
+          break;
+        case 3:
+          message.poolId = reader.uint64();
+          break;
+        case 4:
+          message.maxPriceImpact = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        case 5:
+          message.externalPrice = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<EstimateTradeBasedOnPriceImpactRequest>): EstimateTradeBasedOnPriceImpactRequest {
+    const message = createBaseEstimateTradeBasedOnPriceImpactRequest();
+    message.fromCoin = object.fromCoin !== undefined && object.fromCoin !== null ? Coin.fromPartial(object.fromCoin) : undefined;
+    message.toCoinDenom = object.toCoinDenom ?? "";
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    message.maxPriceImpact = object.maxPriceImpact ?? "";
+    message.externalPrice = object.externalPrice ?? "";
+    return message;
+  },
+  fromAmino(object: EstimateTradeBasedOnPriceImpactRequestAmino): EstimateTradeBasedOnPriceImpactRequest {
+    const message = createBaseEstimateTradeBasedOnPriceImpactRequest();
+    if (object.from_coin !== undefined && object.from_coin !== null) {
+      message.fromCoin = Coin.fromAmino(object.from_coin);
+    }
+    if (object.to_coin_denom !== undefined && object.to_coin_denom !== null) {
+      message.toCoinDenom = object.to_coin_denom;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.max_price_impact !== undefined && object.max_price_impact !== null) {
+      message.maxPriceImpact = object.max_price_impact;
+    }
+    if (object.external_price !== undefined && object.external_price !== null) {
+      message.externalPrice = object.external_price;
+    }
+    return message;
+  },
+  toAmino(message: EstimateTradeBasedOnPriceImpactRequest, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactRequestAmino {
+    const obj: any = {};
+    obj.from_coin = message.fromCoin ? Coin.toAmino(message.fromCoin, useInterfaces) : undefined;
+    obj.to_coin_denom = message.toCoinDenom === "" ? undefined : message.toCoinDenom;
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.max_price_impact = message.maxPriceImpact === "" ? undefined : message.maxPriceImpact;
+    obj.external_price = message.externalPrice === "" ? undefined : message.externalPrice;
+    return obj;
+  },
+  fromAminoMsg(object: EstimateTradeBasedOnPriceImpactRequestAminoMsg): EstimateTradeBasedOnPriceImpactRequest {
+    return EstimateTradeBasedOnPriceImpactRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: EstimateTradeBasedOnPriceImpactRequest, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/estimate-trade-based-on-price-impact-request",
+      value: EstimateTradeBasedOnPriceImpactRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: EstimateTradeBasedOnPriceImpactRequestProtoMsg, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactRequest {
+    return EstimateTradeBasedOnPriceImpactRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: EstimateTradeBasedOnPriceImpactRequest): Uint8Array {
+    return EstimateTradeBasedOnPriceImpactRequest.encode(message).finish();
+  },
+  toProtoMsg(message: EstimateTradeBasedOnPriceImpactRequest): EstimateTradeBasedOnPriceImpactRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactRequest",
+      value: EstimateTradeBasedOnPriceImpactRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseEstimateTradeBasedOnPriceImpactResponse(): EstimateTradeBasedOnPriceImpactResponse {
+  return {
+    inputCoin: Coin.fromPartial({}),
+    outputCoin: Coin.fromPartial({})
+  };
+}
+export const EstimateTradeBasedOnPriceImpactResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactResponse",
+  encode(message: EstimateTradeBasedOnPriceImpactResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.inputCoin !== undefined) {
+      Coin.encode(message.inputCoin, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.outputCoin !== undefined) {
+      Coin.encode(message.outputCoin, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEstimateTradeBasedOnPriceImpactResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.inputCoin = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 2:
+          message.outputCoin = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<EstimateTradeBasedOnPriceImpactResponse>): EstimateTradeBasedOnPriceImpactResponse {
+    const message = createBaseEstimateTradeBasedOnPriceImpactResponse();
+    message.inputCoin = object.inputCoin !== undefined && object.inputCoin !== null ? Coin.fromPartial(object.inputCoin) : undefined;
+    message.outputCoin = object.outputCoin !== undefined && object.outputCoin !== null ? Coin.fromPartial(object.outputCoin) : undefined;
+    return message;
+  },
+  fromAmino(object: EstimateTradeBasedOnPriceImpactResponseAmino): EstimateTradeBasedOnPriceImpactResponse {
+    const message = createBaseEstimateTradeBasedOnPriceImpactResponse();
+    if (object.input_coin !== undefined && object.input_coin !== null) {
+      message.inputCoin = Coin.fromAmino(object.input_coin);
+    }
+    if (object.output_coin !== undefined && object.output_coin !== null) {
+      message.outputCoin = Coin.fromAmino(object.output_coin);
+    }
+    return message;
+  },
+  toAmino(message: EstimateTradeBasedOnPriceImpactResponse, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactResponseAmino {
+    const obj: any = {};
+    obj.input_coin = message.inputCoin ? Coin.toAmino(message.inputCoin, useInterfaces) : undefined;
+    obj.output_coin = message.outputCoin ? Coin.toAmino(message.outputCoin, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: EstimateTradeBasedOnPriceImpactResponseAminoMsg): EstimateTradeBasedOnPriceImpactResponse {
+    return EstimateTradeBasedOnPriceImpactResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: EstimateTradeBasedOnPriceImpactResponse, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/estimate-trade-based-on-price-impact-response",
+      value: EstimateTradeBasedOnPriceImpactResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: EstimateTradeBasedOnPriceImpactResponseProtoMsg, useInterfaces: boolean = false): EstimateTradeBasedOnPriceImpactResponse {
+    return EstimateTradeBasedOnPriceImpactResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: EstimateTradeBasedOnPriceImpactResponse): Uint8Array {
+    return EstimateTradeBasedOnPriceImpactResponse.encode(message).finish();
+  },
+  toProtoMsg(message: EstimateTradeBasedOnPriceImpactResponse): EstimateTradeBasedOnPriceImpactResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.EstimateTradeBasedOnPriceImpactResponse",
+      value: EstimateTradeBasedOnPriceImpactResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseAllTakerFeeShareAgreementsRequest(): AllTakerFeeShareAgreementsRequest {
+  return {};
+}
+export const AllTakerFeeShareAgreementsRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsRequest",
+  encode(_: AllTakerFeeShareAgreementsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllTakerFeeShareAgreementsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllTakerFeeShareAgreementsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<AllTakerFeeShareAgreementsRequest>): AllTakerFeeShareAgreementsRequest {
+    const message = createBaseAllTakerFeeShareAgreementsRequest();
+    return message;
+  },
+  fromAmino(_: AllTakerFeeShareAgreementsRequestAmino): AllTakerFeeShareAgreementsRequest {
+    const message = createBaseAllTakerFeeShareAgreementsRequest();
+    return message;
+  },
+  toAmino(_: AllTakerFeeShareAgreementsRequest, useInterfaces: boolean = false): AllTakerFeeShareAgreementsRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: AllTakerFeeShareAgreementsRequestAminoMsg): AllTakerFeeShareAgreementsRequest {
+    return AllTakerFeeShareAgreementsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllTakerFeeShareAgreementsRequest, useInterfaces: boolean = false): AllTakerFeeShareAgreementsRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-taker-fee-share-agreements-request",
+      value: AllTakerFeeShareAgreementsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllTakerFeeShareAgreementsRequestProtoMsg, useInterfaces: boolean = false): AllTakerFeeShareAgreementsRequest {
+    return AllTakerFeeShareAgreementsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllTakerFeeShareAgreementsRequest): Uint8Array {
+    return AllTakerFeeShareAgreementsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: AllTakerFeeShareAgreementsRequest): AllTakerFeeShareAgreementsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsRequest",
+      value: AllTakerFeeShareAgreementsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseAllTakerFeeShareAgreementsResponse(): AllTakerFeeShareAgreementsResponse {
+  return {
+    takerFeeShareAgreements: []
+  };
+}
+export const AllTakerFeeShareAgreementsResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsResponse",
+  encode(message: AllTakerFeeShareAgreementsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.takerFeeShareAgreements) {
+      TakerFeeShareAgreement.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllTakerFeeShareAgreementsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllTakerFeeShareAgreementsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFeeShareAgreements.push(TakerFeeShareAgreement.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<AllTakerFeeShareAgreementsResponse>): AllTakerFeeShareAgreementsResponse {
+    const message = createBaseAllTakerFeeShareAgreementsResponse();
+    message.takerFeeShareAgreements = object.takerFeeShareAgreements?.map(e => TakerFeeShareAgreement.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: AllTakerFeeShareAgreementsResponseAmino): AllTakerFeeShareAgreementsResponse {
+    const message = createBaseAllTakerFeeShareAgreementsResponse();
+    message.takerFeeShareAgreements = object.taker_fee_share_agreements?.map(e => TakerFeeShareAgreement.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: AllTakerFeeShareAgreementsResponse, useInterfaces: boolean = false): AllTakerFeeShareAgreementsResponseAmino {
+    const obj: any = {};
+    if (message.takerFeeShareAgreements) {
+      obj.taker_fee_share_agreements = message.takerFeeShareAgreements.map(e => e ? TakerFeeShareAgreement.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.taker_fee_share_agreements = message.takerFeeShareAgreements;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: AllTakerFeeShareAgreementsResponseAminoMsg): AllTakerFeeShareAgreementsResponse {
+    return AllTakerFeeShareAgreementsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllTakerFeeShareAgreementsResponse, useInterfaces: boolean = false): AllTakerFeeShareAgreementsResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-taker-fee-share-agreements-response",
+      value: AllTakerFeeShareAgreementsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllTakerFeeShareAgreementsResponseProtoMsg, useInterfaces: boolean = false): AllTakerFeeShareAgreementsResponse {
+    return AllTakerFeeShareAgreementsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllTakerFeeShareAgreementsResponse): Uint8Array {
+    return AllTakerFeeShareAgreementsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: AllTakerFeeShareAgreementsResponse): AllTakerFeeShareAgreementsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAgreementsResponse",
+      value: AllTakerFeeShareAgreementsResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseTakerFeeShareAgreementFromDenomRequest(): TakerFeeShareAgreementFromDenomRequest {
+  return {
+    denom: ""
+  };
+}
+export const TakerFeeShareAgreementFromDenomRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomRequest",
+  encode(message: TakerFeeShareAgreementFromDenomRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTakerFeeShareAgreementFromDenomRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TakerFeeShareAgreementFromDenomRequest>): TakerFeeShareAgreementFromDenomRequest {
+    const message = createBaseTakerFeeShareAgreementFromDenomRequest();
+    message.denom = object.denom ?? "";
+    return message;
+  },
+  fromAmino(object: TakerFeeShareAgreementFromDenomRequestAmino): TakerFeeShareAgreementFromDenomRequest {
+    const message = createBaseTakerFeeShareAgreementFromDenomRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
+  },
+  toAmino(message: TakerFeeShareAgreementFromDenomRequest, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomRequestAmino {
+    const obj: any = {};
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    return obj;
+  },
+  fromAminoMsg(object: TakerFeeShareAgreementFromDenomRequestAminoMsg): TakerFeeShareAgreementFromDenomRequest {
+    return TakerFeeShareAgreementFromDenomRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: TakerFeeShareAgreementFromDenomRequest, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/taker-fee-share-agreement-from-denom-request",
+      value: TakerFeeShareAgreementFromDenomRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TakerFeeShareAgreementFromDenomRequestProtoMsg, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomRequest {
+    return TakerFeeShareAgreementFromDenomRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TakerFeeShareAgreementFromDenomRequest): Uint8Array {
+    return TakerFeeShareAgreementFromDenomRequest.encode(message).finish();
+  },
+  toProtoMsg(message: TakerFeeShareAgreementFromDenomRequest): TakerFeeShareAgreementFromDenomRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomRequest",
+      value: TakerFeeShareAgreementFromDenomRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseTakerFeeShareAgreementFromDenomResponse(): TakerFeeShareAgreementFromDenomResponse {
+  return {
+    takerFeeShareAgreement: TakerFeeShareAgreement.fromPartial({})
+  };
+}
+export const TakerFeeShareAgreementFromDenomResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomResponse",
+  encode(message: TakerFeeShareAgreementFromDenomResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.takerFeeShareAgreement !== undefined) {
+      TakerFeeShareAgreement.encode(message.takerFeeShareAgreement, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTakerFeeShareAgreementFromDenomResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFeeShareAgreement = TakerFeeShareAgreement.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TakerFeeShareAgreementFromDenomResponse>): TakerFeeShareAgreementFromDenomResponse {
+    const message = createBaseTakerFeeShareAgreementFromDenomResponse();
+    message.takerFeeShareAgreement = object.takerFeeShareAgreement !== undefined && object.takerFeeShareAgreement !== null ? TakerFeeShareAgreement.fromPartial(object.takerFeeShareAgreement) : undefined;
+    return message;
+  },
+  fromAmino(object: TakerFeeShareAgreementFromDenomResponseAmino): TakerFeeShareAgreementFromDenomResponse {
+    const message = createBaseTakerFeeShareAgreementFromDenomResponse();
+    if (object.taker_fee_share_agreement !== undefined && object.taker_fee_share_agreement !== null) {
+      message.takerFeeShareAgreement = TakerFeeShareAgreement.fromAmino(object.taker_fee_share_agreement);
+    }
+    return message;
+  },
+  toAmino(message: TakerFeeShareAgreementFromDenomResponse, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomResponseAmino {
+    const obj: any = {};
+    obj.taker_fee_share_agreement = message.takerFeeShareAgreement ? TakerFeeShareAgreement.toAmino(message.takerFeeShareAgreement, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: TakerFeeShareAgreementFromDenomResponseAminoMsg): TakerFeeShareAgreementFromDenomResponse {
+    return TakerFeeShareAgreementFromDenomResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: TakerFeeShareAgreementFromDenomResponse, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/taker-fee-share-agreement-from-denom-response",
+      value: TakerFeeShareAgreementFromDenomResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TakerFeeShareAgreementFromDenomResponseProtoMsg, useInterfaces: boolean = false): TakerFeeShareAgreementFromDenomResponse {
+    return TakerFeeShareAgreementFromDenomResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TakerFeeShareAgreementFromDenomResponse): Uint8Array {
+    return TakerFeeShareAgreementFromDenomResponse.encode(message).finish();
+  },
+  toProtoMsg(message: TakerFeeShareAgreementFromDenomResponse): TakerFeeShareAgreementFromDenomResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareAgreementFromDenomResponse",
+      value: TakerFeeShareAgreementFromDenomResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseTakerFeeShareDenomsToAccruedValueRequest(): TakerFeeShareDenomsToAccruedValueRequest {
+  return {
+    denom: "",
+    takerFeeDenom: ""
+  };
+}
+export const TakerFeeShareDenomsToAccruedValueRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueRequest",
+  encode(message: TakerFeeShareDenomsToAccruedValueRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    if (message.takerFeeDenom !== "") {
+      writer.uint32(18).string(message.takerFeeDenom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTakerFeeShareDenomsToAccruedValueRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        case 2:
+          message.takerFeeDenom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TakerFeeShareDenomsToAccruedValueRequest>): TakerFeeShareDenomsToAccruedValueRequest {
+    const message = createBaseTakerFeeShareDenomsToAccruedValueRequest();
+    message.denom = object.denom ?? "";
+    message.takerFeeDenom = object.takerFeeDenom ?? "";
+    return message;
+  },
+  fromAmino(object: TakerFeeShareDenomsToAccruedValueRequestAmino): TakerFeeShareDenomsToAccruedValueRequest {
+    const message = createBaseTakerFeeShareDenomsToAccruedValueRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.takerFeeDenom !== undefined && object.takerFeeDenom !== null) {
+      message.takerFeeDenom = object.takerFeeDenom;
+    }
+    return message;
+  },
+  toAmino(message: TakerFeeShareDenomsToAccruedValueRequest, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueRequestAmino {
+    const obj: any = {};
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.takerFeeDenom = message.takerFeeDenom === "" ? undefined : message.takerFeeDenom;
+    return obj;
+  },
+  fromAminoMsg(object: TakerFeeShareDenomsToAccruedValueRequestAminoMsg): TakerFeeShareDenomsToAccruedValueRequest {
+    return TakerFeeShareDenomsToAccruedValueRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: TakerFeeShareDenomsToAccruedValueRequest, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/taker-fee-share-denoms-to-accrued-value-request",
+      value: TakerFeeShareDenomsToAccruedValueRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TakerFeeShareDenomsToAccruedValueRequestProtoMsg, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueRequest {
+    return TakerFeeShareDenomsToAccruedValueRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TakerFeeShareDenomsToAccruedValueRequest): Uint8Array {
+    return TakerFeeShareDenomsToAccruedValueRequest.encode(message).finish();
+  },
+  toProtoMsg(message: TakerFeeShareDenomsToAccruedValueRequest): TakerFeeShareDenomsToAccruedValueRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueRequest",
+      value: TakerFeeShareDenomsToAccruedValueRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseTakerFeeShareDenomsToAccruedValueResponse(): TakerFeeShareDenomsToAccruedValueResponse {
+  return {
+    amount: ""
+  };
+}
+export const TakerFeeShareDenomsToAccruedValueResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueResponse",
+  encode(message: TakerFeeShareDenomsToAccruedValueResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.amount !== "") {
+      writer.uint32(10).string(message.amount);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTakerFeeShareDenomsToAccruedValueResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.amount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TakerFeeShareDenomsToAccruedValueResponse>): TakerFeeShareDenomsToAccruedValueResponse {
+    const message = createBaseTakerFeeShareDenomsToAccruedValueResponse();
+    message.amount = object.amount ?? "";
+    return message;
+  },
+  fromAmino(object: TakerFeeShareDenomsToAccruedValueResponseAmino): TakerFeeShareDenomsToAccruedValueResponse {
+    const message = createBaseTakerFeeShareDenomsToAccruedValueResponse();
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    return message;
+  },
+  toAmino(message: TakerFeeShareDenomsToAccruedValueResponse, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueResponseAmino {
+    const obj: any = {};
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    return obj;
+  },
+  fromAminoMsg(object: TakerFeeShareDenomsToAccruedValueResponseAminoMsg): TakerFeeShareDenomsToAccruedValueResponse {
+    return TakerFeeShareDenomsToAccruedValueResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: TakerFeeShareDenomsToAccruedValueResponse, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/taker-fee-share-denoms-to-accrued-value-response",
+      value: TakerFeeShareDenomsToAccruedValueResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: TakerFeeShareDenomsToAccruedValueResponseProtoMsg, useInterfaces: boolean = false): TakerFeeShareDenomsToAccruedValueResponse {
+    return TakerFeeShareDenomsToAccruedValueResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: TakerFeeShareDenomsToAccruedValueResponse): Uint8Array {
+    return TakerFeeShareDenomsToAccruedValueResponse.encode(message).finish();
+  },
+  toProtoMsg(message: TakerFeeShareDenomsToAccruedValueResponse): TakerFeeShareDenomsToAccruedValueResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeShareDenomsToAccruedValueResponse",
+      value: TakerFeeShareDenomsToAccruedValueResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseAllTakerFeeShareAccumulatorsRequest(): AllTakerFeeShareAccumulatorsRequest {
+  return {};
+}
+export const AllTakerFeeShareAccumulatorsRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsRequest",
+  encode(_: AllTakerFeeShareAccumulatorsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllTakerFeeShareAccumulatorsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<AllTakerFeeShareAccumulatorsRequest>): AllTakerFeeShareAccumulatorsRequest {
+    const message = createBaseAllTakerFeeShareAccumulatorsRequest();
+    return message;
+  },
+  fromAmino(_: AllTakerFeeShareAccumulatorsRequestAmino): AllTakerFeeShareAccumulatorsRequest {
+    const message = createBaseAllTakerFeeShareAccumulatorsRequest();
+    return message;
+  },
+  toAmino(_: AllTakerFeeShareAccumulatorsRequest, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: AllTakerFeeShareAccumulatorsRequestAminoMsg): AllTakerFeeShareAccumulatorsRequest {
+    return AllTakerFeeShareAccumulatorsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllTakerFeeShareAccumulatorsRequest, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-taker-fee-share-accumulators-request",
+      value: AllTakerFeeShareAccumulatorsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllTakerFeeShareAccumulatorsRequestProtoMsg, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsRequest {
+    return AllTakerFeeShareAccumulatorsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllTakerFeeShareAccumulatorsRequest): Uint8Array {
+    return AllTakerFeeShareAccumulatorsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: AllTakerFeeShareAccumulatorsRequest): AllTakerFeeShareAccumulatorsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsRequest",
+      value: AllTakerFeeShareAccumulatorsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseAllTakerFeeShareAccumulatorsResponse(): AllTakerFeeShareAccumulatorsResponse {
+  return {
+    takerFeeSkimAccumulators: []
+  };
+}
+export const AllTakerFeeShareAccumulatorsResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsResponse",
+  encode(message: AllTakerFeeShareAccumulatorsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.takerFeeSkimAccumulators) {
+      TakerFeeSkimAccumulator.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllTakerFeeShareAccumulatorsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFeeSkimAccumulators.push(TakerFeeSkimAccumulator.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<AllTakerFeeShareAccumulatorsResponse>): AllTakerFeeShareAccumulatorsResponse {
+    const message = createBaseAllTakerFeeShareAccumulatorsResponse();
+    message.takerFeeSkimAccumulators = object.takerFeeSkimAccumulators?.map(e => TakerFeeSkimAccumulator.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: AllTakerFeeShareAccumulatorsResponseAmino): AllTakerFeeShareAccumulatorsResponse {
+    const message = createBaseAllTakerFeeShareAccumulatorsResponse();
+    message.takerFeeSkimAccumulators = object.taker_fee_skim_accumulators?.map(e => TakerFeeSkimAccumulator.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: AllTakerFeeShareAccumulatorsResponse, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsResponseAmino {
+    const obj: any = {};
+    if (message.takerFeeSkimAccumulators) {
+      obj.taker_fee_skim_accumulators = message.takerFeeSkimAccumulators.map(e => e ? TakerFeeSkimAccumulator.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.taker_fee_skim_accumulators = message.takerFeeSkimAccumulators;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: AllTakerFeeShareAccumulatorsResponseAminoMsg): AllTakerFeeShareAccumulatorsResponse {
+    return AllTakerFeeShareAccumulatorsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllTakerFeeShareAccumulatorsResponse, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-taker-fee-share-accumulators-response",
+      value: AllTakerFeeShareAccumulatorsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllTakerFeeShareAccumulatorsResponseProtoMsg, useInterfaces: boolean = false): AllTakerFeeShareAccumulatorsResponse {
+    return AllTakerFeeShareAccumulatorsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllTakerFeeShareAccumulatorsResponse): Uint8Array {
+    return AllTakerFeeShareAccumulatorsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: AllTakerFeeShareAccumulatorsResponse): AllTakerFeeShareAccumulatorsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllTakerFeeShareAccumulatorsResponse",
+      value: AllTakerFeeShareAccumulatorsResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseRegisteredAlloyedPoolFromDenomRequest(): RegisteredAlloyedPoolFromDenomRequest {
+  return {
+    denom: ""
+  };
+}
+export const RegisteredAlloyedPoolFromDenomRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomRequest",
+  encode(message: RegisteredAlloyedPoolFromDenomRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRegisteredAlloyedPoolFromDenomRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<RegisteredAlloyedPoolFromDenomRequest>): RegisteredAlloyedPoolFromDenomRequest {
+    const message = createBaseRegisteredAlloyedPoolFromDenomRequest();
+    message.denom = object.denom ?? "";
+    return message;
+  },
+  fromAmino(object: RegisteredAlloyedPoolFromDenomRequestAmino): RegisteredAlloyedPoolFromDenomRequest {
+    const message = createBaseRegisteredAlloyedPoolFromDenomRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
+  },
+  toAmino(message: RegisteredAlloyedPoolFromDenomRequest, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomRequestAmino {
+    const obj: any = {};
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    return obj;
+  },
+  fromAminoMsg(object: RegisteredAlloyedPoolFromDenomRequestAminoMsg): RegisteredAlloyedPoolFromDenomRequest {
+    return RegisteredAlloyedPoolFromDenomRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: RegisteredAlloyedPoolFromDenomRequest, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/registered-alloyed-pool-from-denom-request",
+      value: RegisteredAlloyedPoolFromDenomRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: RegisteredAlloyedPoolFromDenomRequestProtoMsg, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomRequest {
+    return RegisteredAlloyedPoolFromDenomRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: RegisteredAlloyedPoolFromDenomRequest): Uint8Array {
+    return RegisteredAlloyedPoolFromDenomRequest.encode(message).finish();
+  },
+  toProtoMsg(message: RegisteredAlloyedPoolFromDenomRequest): RegisteredAlloyedPoolFromDenomRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomRequest",
+      value: RegisteredAlloyedPoolFromDenomRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseRegisteredAlloyedPoolFromDenomResponse(): RegisteredAlloyedPoolFromDenomResponse {
+  return {
+    contractState: AlloyContractTakerFeeShareState.fromPartial({})
+  };
+}
+export const RegisteredAlloyedPoolFromDenomResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomResponse",
+  encode(message: RegisteredAlloyedPoolFromDenomResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.contractState !== undefined) {
+      AlloyContractTakerFeeShareState.encode(message.contractState, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRegisteredAlloyedPoolFromDenomResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.contractState = AlloyContractTakerFeeShareState.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<RegisteredAlloyedPoolFromDenomResponse>): RegisteredAlloyedPoolFromDenomResponse {
+    const message = createBaseRegisteredAlloyedPoolFromDenomResponse();
+    message.contractState = object.contractState !== undefined && object.contractState !== null ? AlloyContractTakerFeeShareState.fromPartial(object.contractState) : undefined;
+    return message;
+  },
+  fromAmino(object: RegisteredAlloyedPoolFromDenomResponseAmino): RegisteredAlloyedPoolFromDenomResponse {
+    const message = createBaseRegisteredAlloyedPoolFromDenomResponse();
+    if (object.contract_state !== undefined && object.contract_state !== null) {
+      message.contractState = AlloyContractTakerFeeShareState.fromAmino(object.contract_state);
+    }
+    return message;
+  },
+  toAmino(message: RegisteredAlloyedPoolFromDenomResponse, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomResponseAmino {
+    const obj: any = {};
+    obj.contract_state = message.contractState ? AlloyContractTakerFeeShareState.toAmino(message.contractState, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: RegisteredAlloyedPoolFromDenomResponseAminoMsg): RegisteredAlloyedPoolFromDenomResponse {
+    return RegisteredAlloyedPoolFromDenomResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: RegisteredAlloyedPoolFromDenomResponse, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/registered-alloyed-pool-from-denom-response",
+      value: RegisteredAlloyedPoolFromDenomResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: RegisteredAlloyedPoolFromDenomResponseProtoMsg, useInterfaces: boolean = false): RegisteredAlloyedPoolFromDenomResponse {
+    return RegisteredAlloyedPoolFromDenomResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: RegisteredAlloyedPoolFromDenomResponse): Uint8Array {
+    return RegisteredAlloyedPoolFromDenomResponse.encode(message).finish();
+  },
+  toProtoMsg(message: RegisteredAlloyedPoolFromDenomResponse): RegisteredAlloyedPoolFromDenomResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromDenomResponse",
+      value: RegisteredAlloyedPoolFromDenomResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseRegisteredAlloyedPoolFromPoolIdRequest(): RegisteredAlloyedPoolFromPoolIdRequest {
+  return {
+    poolId: BigInt(0)
+  };
+}
+export const RegisteredAlloyedPoolFromPoolIdRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdRequest",
+  encode(message: RegisteredAlloyedPoolFromPoolIdRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<RegisteredAlloyedPoolFromPoolIdRequest>): RegisteredAlloyedPoolFromPoolIdRequest {
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: RegisteredAlloyedPoolFromPoolIdRequestAmino): RegisteredAlloyedPoolFromPoolIdRequest {
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
+  },
+  toAmino(message: RegisteredAlloyedPoolFromPoolIdRequest, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: RegisteredAlloyedPoolFromPoolIdRequestAminoMsg): RegisteredAlloyedPoolFromPoolIdRequest {
+    return RegisteredAlloyedPoolFromPoolIdRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: RegisteredAlloyedPoolFromPoolIdRequest, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/registered-alloyed-pool-from-pool-id-request",
+      value: RegisteredAlloyedPoolFromPoolIdRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: RegisteredAlloyedPoolFromPoolIdRequestProtoMsg, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdRequest {
+    return RegisteredAlloyedPoolFromPoolIdRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: RegisteredAlloyedPoolFromPoolIdRequest): Uint8Array {
+    return RegisteredAlloyedPoolFromPoolIdRequest.encode(message).finish();
+  },
+  toProtoMsg(message: RegisteredAlloyedPoolFromPoolIdRequest): RegisteredAlloyedPoolFromPoolIdRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdRequest",
+      value: RegisteredAlloyedPoolFromPoolIdRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseRegisteredAlloyedPoolFromPoolIdResponse(): RegisteredAlloyedPoolFromPoolIdResponse {
+  return {
+    contractState: AlloyContractTakerFeeShareState.fromPartial({})
+  };
+}
+export const RegisteredAlloyedPoolFromPoolIdResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdResponse",
+  encode(message: RegisteredAlloyedPoolFromPoolIdResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.contractState !== undefined) {
+      AlloyContractTakerFeeShareState.encode(message.contractState, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.contractState = AlloyContractTakerFeeShareState.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<RegisteredAlloyedPoolFromPoolIdResponse>): RegisteredAlloyedPoolFromPoolIdResponse {
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdResponse();
+    message.contractState = object.contractState !== undefined && object.contractState !== null ? AlloyContractTakerFeeShareState.fromPartial(object.contractState) : undefined;
+    return message;
+  },
+  fromAmino(object: RegisteredAlloyedPoolFromPoolIdResponseAmino): RegisteredAlloyedPoolFromPoolIdResponse {
+    const message = createBaseRegisteredAlloyedPoolFromPoolIdResponse();
+    if (object.contract_state !== undefined && object.contract_state !== null) {
+      message.contractState = AlloyContractTakerFeeShareState.fromAmino(object.contract_state);
+    }
+    return message;
+  },
+  toAmino(message: RegisteredAlloyedPoolFromPoolIdResponse, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdResponseAmino {
+    const obj: any = {};
+    obj.contract_state = message.contractState ? AlloyContractTakerFeeShareState.toAmino(message.contractState, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: RegisteredAlloyedPoolFromPoolIdResponseAminoMsg): RegisteredAlloyedPoolFromPoolIdResponse {
+    return RegisteredAlloyedPoolFromPoolIdResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: RegisteredAlloyedPoolFromPoolIdResponse, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/registered-alloyed-pool-from-pool-id-response",
+      value: RegisteredAlloyedPoolFromPoolIdResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: RegisteredAlloyedPoolFromPoolIdResponseProtoMsg, useInterfaces: boolean = false): RegisteredAlloyedPoolFromPoolIdResponse {
+    return RegisteredAlloyedPoolFromPoolIdResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: RegisteredAlloyedPoolFromPoolIdResponse): Uint8Array {
+    return RegisteredAlloyedPoolFromPoolIdResponse.encode(message).finish();
+  },
+  toProtoMsg(message: RegisteredAlloyedPoolFromPoolIdResponse): RegisteredAlloyedPoolFromPoolIdResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.RegisteredAlloyedPoolFromPoolIdResponse",
+      value: RegisteredAlloyedPoolFromPoolIdResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseAllRegisteredAlloyedPoolsRequest(): AllRegisteredAlloyedPoolsRequest {
+  return {};
+}
+export const AllRegisteredAlloyedPoolsRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsRequest",
+  encode(_: AllRegisteredAlloyedPoolsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllRegisteredAlloyedPoolsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<AllRegisteredAlloyedPoolsRequest>): AllRegisteredAlloyedPoolsRequest {
+    const message = createBaseAllRegisteredAlloyedPoolsRequest();
+    return message;
+  },
+  fromAmino(_: AllRegisteredAlloyedPoolsRequestAmino): AllRegisteredAlloyedPoolsRequest {
+    const message = createBaseAllRegisteredAlloyedPoolsRequest();
+    return message;
+  },
+  toAmino(_: AllRegisteredAlloyedPoolsRequest, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: AllRegisteredAlloyedPoolsRequestAminoMsg): AllRegisteredAlloyedPoolsRequest {
+    return AllRegisteredAlloyedPoolsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllRegisteredAlloyedPoolsRequest, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-registered-alloyed-pools-request",
+      value: AllRegisteredAlloyedPoolsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllRegisteredAlloyedPoolsRequestProtoMsg, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsRequest {
+    return AllRegisteredAlloyedPoolsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllRegisteredAlloyedPoolsRequest): Uint8Array {
+    return AllRegisteredAlloyedPoolsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: AllRegisteredAlloyedPoolsRequest): AllRegisteredAlloyedPoolsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsRequest",
+      value: AllRegisteredAlloyedPoolsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseAllRegisteredAlloyedPoolsResponse(): AllRegisteredAlloyedPoolsResponse {
+  return {
+    contractStates: []
+  };
+}
+export const AllRegisteredAlloyedPoolsResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsResponse",
+  encode(message: AllRegisteredAlloyedPoolsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.contractStates) {
+      AlloyContractTakerFeeShareState.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllRegisteredAlloyedPoolsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.contractStates.push(AlloyContractTakerFeeShareState.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<AllRegisteredAlloyedPoolsResponse>): AllRegisteredAlloyedPoolsResponse {
+    const message = createBaseAllRegisteredAlloyedPoolsResponse();
+    message.contractStates = object.contractStates?.map(e => AlloyContractTakerFeeShareState.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: AllRegisteredAlloyedPoolsResponseAmino): AllRegisteredAlloyedPoolsResponse {
+    const message = createBaseAllRegisteredAlloyedPoolsResponse();
+    message.contractStates = object.contract_states?.map(e => AlloyContractTakerFeeShareState.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: AllRegisteredAlloyedPoolsResponse, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsResponseAmino {
+    const obj: any = {};
+    if (message.contractStates) {
+      obj.contract_states = message.contractStates.map(e => e ? AlloyContractTakerFeeShareState.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.contract_states = message.contractStates;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: AllRegisteredAlloyedPoolsResponseAminoMsg): AllRegisteredAlloyedPoolsResponse {
+    return AllRegisteredAlloyedPoolsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllRegisteredAlloyedPoolsResponse, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/all-registered-alloyed-pools-response",
+      value: AllRegisteredAlloyedPoolsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllRegisteredAlloyedPoolsResponseProtoMsg, useInterfaces: boolean = false): AllRegisteredAlloyedPoolsResponse {
+    return AllRegisteredAlloyedPoolsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllRegisteredAlloyedPoolsResponse): Uint8Array {
+    return AllRegisteredAlloyedPoolsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: AllRegisteredAlloyedPoolsResponse): AllRegisteredAlloyedPoolsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.AllRegisteredAlloyedPoolsResponse",
+      value: AllRegisteredAlloyedPoolsResponse.encode(message).finish()
+    };
+  }
+};
 export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32(), true);
@@ -2170,9 +4283,9 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return CosmWasmPool.decode(data.value, undefined, true);
-    case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
+      return Pool2.decode(data.value, undefined, true);
+    case "/osmosis.gamm.v1beta1.Pool":
       return Pool3.decode(data.value, undefined, true);
     default:
       return data;
@@ -2190,14 +4303,14 @@ export const PoolI_FromAmino = (content: AnyAmino): Any => {
         typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
         value: CosmWasmPool.encode(CosmWasmPool.fromPartial(CosmWasmPool.fromAmino(content.value))).finish()
       });
-    case "osmosis/gamm/BalancerPool":
-      return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.v1beta1.Pool",
-        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
-      });
     case "osmosis/gamm/StableswapPool":
       return Any.fromPartial({
         typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
+      });
+    case "osmosis/gamm/BalancerPool":
+      return Any.fromPartial({
+        typeUrl: "/osmosis.gamm.v1beta1.Pool",
         value: Pool3.encode(Pool3.fromPartial(Pool3.fromAmino(content.value))).finish()
       });
     default:
@@ -2216,14 +4329,14 @@ export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
         value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
-    case "/osmosis.gamm.v1beta1.Pool":
-      return {
-        type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
-      };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/osmosis.gamm.v1beta1.Pool":
+      return {
+        type: "osmosis/gamm/BalancerPool",
         value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:

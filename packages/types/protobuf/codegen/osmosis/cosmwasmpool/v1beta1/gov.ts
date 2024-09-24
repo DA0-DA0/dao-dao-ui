@@ -8,7 +8,6 @@ import { bytesFromBase64, base64FromBytes } from "../../../helpers";
  * code ids created by this message are eligible for being x/cosmwasmpool pools.
  */
 export interface UploadCosmWasmPoolCodeAndWhiteListProposal {
-  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.UploadCosmWasmPoolCodeAndWhiteListProposal";
   title: string;
   description: string;
   /** WASMByteCode can be raw or gzip compressed */
@@ -39,7 +38,6 @@ export interface UploadCosmWasmPoolCodeAndWhiteListProposalAminoMsg {
  * code ids created by this message are eligible for being x/cosmwasmpool pools.
  */
 export interface UploadCosmWasmPoolCodeAndWhiteListProposalSDKType {
-  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.UploadCosmWasmPoolCodeAndWhiteListProposal";
   title: string;
   description: string;
   wasm_byte_code: Uint8Array;
@@ -73,7 +71,6 @@ export interface UploadCosmWasmPoolCodeAndWhiteListProposalSDKType {
  * be configured by a module parameter so it can be changed by a constant.
  */
 export interface MigratePoolContractsProposal {
-  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.MigratePoolContractsProposal";
   title: string;
   description: string;
   /**
@@ -186,7 +183,6 @@ export interface MigratePoolContractsProposalAminoMsg {
  * be configured by a module parameter so it can be changed by a constant.
  */
 export interface MigratePoolContractsProposalSDKType {
-  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.MigratePoolContractsProposal";
   title: string;
   description: string;
   pool_ids: bigint[];
@@ -196,7 +192,6 @@ export interface MigratePoolContractsProposalSDKType {
 }
 function createBaseUploadCosmWasmPoolCodeAndWhiteListProposal(): UploadCosmWasmPoolCodeAndWhiteListProposal {
   return {
-    $typeUrl: "/osmosis.cosmwasmpool.v1beta1.UploadCosmWasmPoolCodeAndWhiteListProposal",
     title: "",
     description: "",
     wasmByteCode: new Uint8Array()
@@ -290,7 +285,6 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
 };
 function createBaseMigratePoolContractsProposal(): MigratePoolContractsProposal {
   return {
-    $typeUrl: "/osmosis.cosmwasmpool.v1beta1.MigratePoolContractsProposal",
     title: "",
     description: "",
     poolIds: [],

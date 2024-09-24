@@ -12,7 +12,7 @@ import "osmosis/lockup/lock.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/staking/v1beta1/staking.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/superfluid/types";
+option go_package = "github.com/osmosis-labs/osmosis/v26/x/superfluid/types";
 
 // Query defines the gRPC querier service.
 service Query {
@@ -74,14 +74,14 @@ service Query {
         "/osmosis/superfluid/v1beta1/superfluid_delegation_amount";
   }
 
-  // Returns all the delegated superfluid poistions for a specific delegator.
+  // Returns all the delegated superfluid positions for a specific delegator.
   rpc SuperfluidDelegationsByDelegator(SuperfluidDelegationsByDelegatorRequest)
       returns (SuperfluidDelegationsByDelegatorResponse) {
     option (google.api.http).get = "/osmosis/superfluid/v1beta1/"
                                    "superfluid_delegations/{delegator_address}";
   }
 
-  // Returns all the undelegating superfluid poistions for a specific delegator.
+  // Returns all the undelegating superfluid positions for a specific delegator.
   rpc SuperfluidUndelegationsByDelegator(
       SuperfluidUndelegationsByDelegatorRequest)
       returns (SuperfluidUndelegationsByDelegatorResponse) {
@@ -141,6 +141,10 @@ service Query {
                                    "account_undelegating_cl_positions/"
                                    "{delegator_address}";
   }
+
+  rpc RestSupply(QueryRestSupplyRequest) returns (QueryRestSupplyResponse) {
+    option (google.api.http).get = "/osmosis/superfluid/v1beta1/supply";
+  }
 }
 
 message QueryParamsRequest {}
@@ -190,11 +194,13 @@ message QueryTotalDelegationByValidatorForDenomResponse {
 message Delegations {
   string val_addr = 1;
   string amount_sfsd = 2 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount_sfsd\"",
     (gogoproto.nullable) = false
   ];
   string osmo_equivalent = 3 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"osmo_equivalent\"",
     (gogoproto.nullable) = false
@@ -204,6 +210,7 @@ message TotalSuperfluidDelegationsRequest {}
 
 message TotalSuperfluidDelegationsResponse {
   string total_delegations = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"total_superfluid_delegations\"",
     (gogoproto.nullable) = false
@@ -316,4 +323,12 @@ message UserConcentratedSuperfluidPositionsUndelegatingRequest {
 message UserConcentratedSuperfluidPositionsUndelegatingResponse {
   repeated ConcentratedPoolUserPositionRecord cl_pool_user_position_records = 1
       [ (gogoproto.nullable) = false ];
+}
+
+// THIS QUERY IS TEMPORARY
+message QueryRestSupplyRequest { string denom = 1; }
+
+message QueryRestSupplyResponse {
+  // amount is the supply of the coin.
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }

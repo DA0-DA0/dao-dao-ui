@@ -65,7 +65,7 @@ export const createRPCQueryClient = async ({
       incentives: (await import("./incentives/query.rpc.Query")).createRpcQueryExtension(client),
       lockup: (await import("./lockup/query.rpc.Query")).createRpcQueryExtension(client),
       poolincentives: {
-        v1beta1: (await import("./pool-incentives/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
+        v1beta1: (await import("./poolincentives/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
       },
       poolmanager: {
         v1beta1: (await import("./poolmanager/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
@@ -84,7 +84,7 @@ export const createRPCQueryClient = async ({
         v1beta1: (await import("./txfees/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
       },
       valsetpref: {
-        v1beta1: (await import("./valset-pref/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
+        v1beta1: (await import("./valsetpref/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
       }
     }
   };

@@ -22,7 +22,7 @@ export interface MsgCreateConcentratedPoolAmino {
   spread_factor?: string;
 }
 export interface MsgCreateConcentratedPoolAminoMsg {
-  type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool";
+  type: "osmosis/create-concentrated-pool";
   value: MsgCreateConcentratedPoolAmino;
 }
 /** ===================== MsgCreateConcentratedPool */
@@ -153,7 +153,7 @@ export const MsgCreateConcentratedPool = {
   },
   toAminoMsg(message: MsgCreateConcentratedPool, useInterfaces: boolean = false): MsgCreateConcentratedPoolAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool",
+      type: "osmosis/create-concentrated-pool",
       value: MsgCreateConcentratedPool.toAmino(message, useInterfaces)
     };
   },

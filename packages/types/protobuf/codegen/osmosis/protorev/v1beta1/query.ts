@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
-import { RouteStatistics, RouteStatisticsAmino, RouteStatisticsSDKType, TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType } from "./protorev";
+import { RouteStatistics, RouteStatisticsAmino, RouteStatisticsSDKType, TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType, AllProtocolRevenue, AllProtocolRevenueAmino, AllProtocolRevenueSDKType } from "./protorev";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -865,6 +865,34 @@ export interface QueryGetProtoRevPoolResponseAminoMsg {
  */
 export interface QueryGetProtoRevPoolResponseSDKType {
   pool_id: bigint;
+}
+export interface QueryGetAllProtocolRevenueRequest {}
+export interface QueryGetAllProtocolRevenueRequestProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueRequest";
+  value: Uint8Array;
+}
+export interface QueryGetAllProtocolRevenueRequestAmino {}
+export interface QueryGetAllProtocolRevenueRequestAminoMsg {
+  type: "osmosis/protorev/query-get-all-protocol-revenue-request";
+  value: QueryGetAllProtocolRevenueRequestAmino;
+}
+export interface QueryGetAllProtocolRevenueRequestSDKType {}
+export interface QueryGetAllProtocolRevenueResponse {
+  allProtocolRevenue: AllProtocolRevenue | undefined;
+}
+export interface QueryGetAllProtocolRevenueResponseProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueResponse";
+  value: Uint8Array;
+}
+export interface QueryGetAllProtocolRevenueResponseAmino {
+  all_protocol_revenue?: AllProtocolRevenueAmino | undefined;
+}
+export interface QueryGetAllProtocolRevenueResponseAminoMsg {
+  type: "osmosis/protorev/query-get-all-protocol-revenue-response";
+  value: QueryGetAllProtocolRevenueResponseAmino;
+}
+export interface QueryGetAllProtocolRevenueResponseSDKType {
+  all_protocol_revenue: AllProtocolRevenueSDKType | undefined;
 }
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
@@ -2808,6 +2836,131 @@ export const QueryGetProtoRevPoolResponse = {
     return {
       typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolResponse",
       value: QueryGetProtoRevPoolResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryGetAllProtocolRevenueRequest(): QueryGetAllProtocolRevenueRequest {
+  return {};
+}
+export const QueryGetAllProtocolRevenueRequest = {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueRequest",
+  encode(_: QueryGetAllProtocolRevenueRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetAllProtocolRevenueRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetAllProtocolRevenueRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryGetAllProtocolRevenueRequest>): QueryGetAllProtocolRevenueRequest {
+    const message = createBaseQueryGetAllProtocolRevenueRequest();
+    return message;
+  },
+  fromAmino(_: QueryGetAllProtocolRevenueRequestAmino): QueryGetAllProtocolRevenueRequest {
+    const message = createBaseQueryGetAllProtocolRevenueRequest();
+    return message;
+  },
+  toAmino(_: QueryGetAllProtocolRevenueRequest, useInterfaces: boolean = false): QueryGetAllProtocolRevenueRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryGetAllProtocolRevenueRequestAminoMsg): QueryGetAllProtocolRevenueRequest {
+    return QueryGetAllProtocolRevenueRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryGetAllProtocolRevenueRequest, useInterfaces: boolean = false): QueryGetAllProtocolRevenueRequestAminoMsg {
+    return {
+      type: "osmosis/protorev/query-get-all-protocol-revenue-request",
+      value: QueryGetAllProtocolRevenueRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryGetAllProtocolRevenueRequestProtoMsg, useInterfaces: boolean = false): QueryGetAllProtocolRevenueRequest {
+    return QueryGetAllProtocolRevenueRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryGetAllProtocolRevenueRequest): Uint8Array {
+    return QueryGetAllProtocolRevenueRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryGetAllProtocolRevenueRequest): QueryGetAllProtocolRevenueRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueRequest",
+      value: QueryGetAllProtocolRevenueRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryGetAllProtocolRevenueResponse(): QueryGetAllProtocolRevenueResponse {
+  return {
+    allProtocolRevenue: AllProtocolRevenue.fromPartial({})
+  };
+}
+export const QueryGetAllProtocolRevenueResponse = {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueResponse",
+  encode(message: QueryGetAllProtocolRevenueResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.allProtocolRevenue !== undefined) {
+      AllProtocolRevenue.encode(message.allProtocolRevenue, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetAllProtocolRevenueResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetAllProtocolRevenueResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.allProtocolRevenue = AllProtocolRevenue.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryGetAllProtocolRevenueResponse>): QueryGetAllProtocolRevenueResponse {
+    const message = createBaseQueryGetAllProtocolRevenueResponse();
+    message.allProtocolRevenue = object.allProtocolRevenue !== undefined && object.allProtocolRevenue !== null ? AllProtocolRevenue.fromPartial(object.allProtocolRevenue) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryGetAllProtocolRevenueResponseAmino): QueryGetAllProtocolRevenueResponse {
+    const message = createBaseQueryGetAllProtocolRevenueResponse();
+    if (object.all_protocol_revenue !== undefined && object.all_protocol_revenue !== null) {
+      message.allProtocolRevenue = AllProtocolRevenue.fromAmino(object.all_protocol_revenue);
+    }
+    return message;
+  },
+  toAmino(message: QueryGetAllProtocolRevenueResponse, useInterfaces: boolean = false): QueryGetAllProtocolRevenueResponseAmino {
+    const obj: any = {};
+    obj.all_protocol_revenue = message.allProtocolRevenue ? AllProtocolRevenue.toAmino(message.allProtocolRevenue, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryGetAllProtocolRevenueResponseAminoMsg): QueryGetAllProtocolRevenueResponse {
+    return QueryGetAllProtocolRevenueResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryGetAllProtocolRevenueResponse, useInterfaces: boolean = false): QueryGetAllProtocolRevenueResponseAminoMsg {
+    return {
+      type: "osmosis/protorev/query-get-all-protocol-revenue-response",
+      value: QueryGetAllProtocolRevenueResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryGetAllProtocolRevenueResponseProtoMsg, useInterfaces: boolean = false): QueryGetAllProtocolRevenueResponse {
+    return QueryGetAllProtocolRevenueResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryGetAllProtocolRevenueResponse): Uint8Array {
+    return QueryGetAllProtocolRevenueResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryGetAllProtocolRevenueResponse): QueryGetAllProtocolRevenueResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.QueryGetAllProtocolRevenueResponse",
+      value: QueryGetAllProtocolRevenueResponse.encode(message).finish()
     };
   }
 };

@@ -7,8 +7,9 @@ import "google/protobuf/duration.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 import "osmosis/superfluid/superfluid.proto";
+import "cosmos/msg/v1/msg.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/superfluid/types";
+option go_package = "github.com/osmosis-labs/osmosis/v26/x/superfluid/types";
 
 // Msg defines the Msg service.
 service Msg {
@@ -61,6 +62,7 @@ service Msg {
 
 message MsgSuperfluidDelegate {
   option (amino.name) = "osmosis/superfluid-delegate";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   uint64 lock_id = 2;
@@ -70,6 +72,7 @@ message MsgSuperfluidDelegateResponse {}
 
 message MsgSuperfluidUndelegate {
   option (amino.name) = "osmosis/superfluid-undelegate";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   uint64 lock_id = 2;
@@ -78,6 +81,7 @@ message MsgSuperfluidUndelegateResponse {}
 
 message MsgSuperfluidUnbondLock {
   option (amino.name) = "osmosis/superfluid-unbond-lock";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   uint64 lock_id = 2;
@@ -85,6 +89,9 @@ message MsgSuperfluidUnbondLock {
 message MsgSuperfluidUnbondLockResponse {}
 
 message MsgSuperfluidUndelegateAndUnbondLock {
+  option (amino.name) = "osmosis/superfluid-undelegate-unbond-lock";
+  option (cosmos.msg.v1.signer) = "sender";
+
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   uint64 lock_id = 2;
   // Amount of unlocking coin.
@@ -110,6 +117,7 @@ message MsgSuperfluidUndelegateAndUnbondLockResponse {
 // specified validator addr.
 message MsgLockAndSuperfluidDelegate {
   option (amino.name) = "osmosis/lock-and-superfluid-delegate";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   repeated cosmos.base.v1beta1.Coin coins = 2 [
@@ -124,6 +132,7 @@ message MsgLockAndSuperfluidDelegateResponse { uint64 ID = 1; }
 // in a concentrated liquidity pool, then superfluid delegates.
 message MsgCreateFullRangePositionAndSuperfluidDelegate {
   option (amino.name) = "osmosis/full-range-and-sf-delegate";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   repeated cosmos.base.v1beta1.Coin coins = 2 [
@@ -148,6 +157,7 @@ message MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
 // until unbond completion.
 message MsgUnPoolWhitelistedPool {
   option (amino.name) = "osmosis/unpool-whitelisted-pool";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   uint64 pool_id = 2 [ (gogoproto.moretags) = "yaml:\"pool_id\"" ];
@@ -161,6 +171,7 @@ message MsgUnPoolWhitelistedPoolResponse {
 // MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
 message MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
   option (amino.name) = "osmosis/unlock-and-migrate";
+  option (cosmos.msg.v1.signer) = "sender";
 
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   int64 lock_id = 2 [ (gogoproto.moretags) = "yaml:\"lock_id\"" ];
@@ -178,16 +189,19 @@ message MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
 
 message MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
   string amount0 = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount0\"",
     (gogoproto.nullable) = false
   ];
   string amount1 = 2 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount1\"",
     (gogoproto.nullable) = false
   ];
   string liquidity_created = 3 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"liquidity_created\"",
     (gogoproto.nullable) = false
@@ -202,6 +216,7 @@ message MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
 // ===================== MsgAddToConcentratedLiquiditySuperfluidPosition
 message MsgAddToConcentratedLiquiditySuperfluidPosition {
   option (amino.name) = "osmosis/add-to-cl-superfluid-position";
+  option (cosmos.msg.v1.signer) = "sender";
 
   uint64 position_id = 1 [ (gogoproto.moretags) = "yaml:\"position_id\"" ];
   string sender = 2 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
@@ -218,11 +233,13 @@ message MsgAddToConcentratedLiquiditySuperfluidPosition {
 message MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
   uint64 position_id = 1 [ (gogoproto.moretags) = "yaml:\"position_id\"" ];
   string amount0 = 2 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount0\"",
     (gogoproto.nullable) = false
   ];
   string amount1 = 3 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount1\"",
     (gogoproto.nullable) = false
@@ -231,6 +248,7 @@ message MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
   // It includes the liquidity that existed before in the position
   // and the new liquidity that was added to the position.
   string new_liquidity = 5 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"new_liquidity\"",
     (gogoproto.nullable) = false
@@ -241,6 +259,7 @@ message MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
 // ===================== MsgUnbondConvertAndStake
 message MsgUnbondConvertAndStake {
   option (amino.name) = "osmosis/unbond-convert-and-stake";
+  option (cosmos.msg.v1.signer) = "sender";
 
   // lock ID to convert and stake.
   // lock id with 0 should be provided if converting liquid gamm shares to stake
@@ -252,6 +271,7 @@ message MsgUnbondConvertAndStake {
   string val_addr = 3;
   // min_amt_to_stake indicates the minimum amount to stake after conversion
   string min_amt_to_stake = 4 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"min_amt_to_stake\"",
     (gogoproto.nullable) = false
@@ -268,6 +288,7 @@ message MsgUnbondConvertAndStake {
 
 message MsgUnbondConvertAndStakeResponse {
   string total_amt_staked = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"total_amt_staked\"",
     (gogoproto.nullable) = false

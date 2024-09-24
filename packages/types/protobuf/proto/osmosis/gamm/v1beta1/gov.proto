@@ -7,7 +7,7 @@ import "osmosis/gamm/v1beta1/shared.proto";
 import "cosmos_proto/cosmos.proto";
 import "amino/amino.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/gamm/types";
+option go_package = "github.com/osmosis-labs/osmosis/v26/x/gamm/types";
 
 // ReplaceMigrationRecordsProposal is a gov Content type for updating the
 // migration records. If a ReplaceMigrationRecordsProposal passes, the
@@ -30,10 +30,10 @@ message ReplaceMigrationRecordsProposal {
 // UpdateMigrationRecordsProposal is a gov Content type for updating the
 // migration records. If a UpdateMigrationRecordsProposal passes, all the
 // MigrationRecords in the proposals are edited. An existing
-// BalancerToConcentratedPoolLink is not overriden unless explicitly included in
-// the proposal. This differs from a ReplaceMigrationRecordsProposal because it
-// only does an in place update of the MigrationRecords for records explicitly
-// mentioned in the proposal.
+// BalancerToConcentratedPoolLink is not overridden unless explicitly included
+// in the proposal. This differs from a ReplaceMigrationRecordsProposal because
+// it only does an in place update of the MigrationRecords for records
+// explicitly mentioned in the proposal.
 
 // Lastly, if the clPoolId is set to 0, the BalancerToConcentratedPoolLink is
 // deleted
@@ -65,11 +65,13 @@ message PoolRecordWithCFMMLink {
   string denom1 = 2 [ (gogoproto.moretags) = "yaml:\"denom1\"" ];
   uint64 tick_spacing = 3 [ (gogoproto.moretags) = "yaml:\"tick_spacing\"" ];
   string exponent_at_price_one = 4 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"exponent_at_price_one\"",
     (gogoproto.nullable) = false
   ];
   string spread_factor = 5 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"spread_factor\"",
     (gogoproto.nullable) = false

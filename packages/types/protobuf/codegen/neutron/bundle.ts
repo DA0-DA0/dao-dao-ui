@@ -36,32 +36,32 @@ import * as _209 from "./interchaintxs/v1/genesis";
 import * as _210 from "./interchaintxs/v1/params";
 import * as _211 from "./interchaintxs/v1/query";
 import * as _212 from "./interchaintxs/v1/tx";
-import * as _507 from "./cron/tx.amino";
-import * as _508 from "./dex/tx.amino";
-import * as _509 from "./feeburner/tx.amino";
-import * as _510 from "./feerefunder/tx.amino";
-import * as _511 from "./interchainqueries/tx.amino";
-import * as _512 from "./interchaintxs/v1/tx.amino";
-import * as _513 from "./cron/tx.registry";
-import * as _514 from "./dex/tx.registry";
-import * as _515 from "./feeburner/tx.registry";
-import * as _516 from "./feerefunder/tx.registry";
-import * as _517 from "./interchainqueries/tx.registry";
-import * as _518 from "./interchaintxs/v1/tx.registry";
-import * as _519 from "./cron/query.rpc.Query";
-import * as _520 from "./dex/query.rpc.Query";
-import * as _521 from "./feeburner/query.rpc.Query";
-import * as _522 from "./feerefunder/query.rpc.Query";
-import * as _523 from "./interchainqueries/query.rpc.Query";
-import * as _524 from "./interchaintxs/v1/query.rpc.Query";
-import * as _525 from "./cron/tx.rpc.msg";
-import * as _526 from "./dex/tx.rpc.msg";
-import * as _527 from "./feeburner/tx.rpc.msg";
-import * as _528 from "./feerefunder/tx.rpc.msg";
-import * as _529 from "./interchainqueries/tx.rpc.msg";
-import * as _530 from "./interchaintxs/v1/tx.rpc.msg";
-import * as _677 from "./rpc.query";
-import * as _678 from "./rpc.tx";
+import * as _510 from "./cron/tx.amino";
+import * as _511 from "./dex/tx.amino";
+import * as _512 from "./feeburner/tx.amino";
+import * as _513 from "./feerefunder/tx.amino";
+import * as _514 from "./interchainqueries/tx.amino";
+import * as _515 from "./interchaintxs/v1/tx.amino";
+import * as _516 from "./cron/tx.registry";
+import * as _517 from "./dex/tx.registry";
+import * as _518 from "./feeburner/tx.registry";
+import * as _519 from "./feerefunder/tx.registry";
+import * as _520 from "./interchainqueries/tx.registry";
+import * as _521 from "./interchaintxs/v1/tx.registry";
+import * as _522 from "./cron/query.rpc.Query";
+import * as _523 from "./dex/query.rpc.Query";
+import * as _524 from "./feeburner/query.rpc.Query";
+import * as _525 from "./feerefunder/query.rpc.Query";
+import * as _526 from "./interchainqueries/query.rpc.Query";
+import * as _527 from "./interchaintxs/v1/query.rpc.Query";
+import * as _528 from "./cron/tx.rpc.msg";
+import * as _529 from "./dex/tx.rpc.msg";
+import * as _530 from "./feeburner/tx.rpc.msg";
+import * as _531 from "./feerefunder/tx.rpc.msg";
+import * as _532 from "./interchainqueries/tx.rpc.msg";
+import * as _533 from "./interchaintxs/v1/tx.rpc.msg";
+import * as _680 from "./rpc.query";
+import * as _681 from "./rpc.tx";
 export namespace neutron {
   export namespace contractmanager {
     export const v1 = {
@@ -74,10 +74,10 @@ export namespace neutron {
     ..._178,
     ..._179,
     ..._180,
-    ..._507,
-    ..._513,
-    ..._519,
-    ..._525
+    ..._510,
+    ..._516,
+    ..._522,
+    ..._528
   };
   export const dex = {
     ..._181,
@@ -94,10 +94,10 @@ export namespace neutron {
     ..._192,
     ..._193,
     ..._194,
-    ..._508,
-    ..._514,
-    ..._520,
-    ..._526
+    ..._511,
+    ..._517,
+    ..._523,
+    ..._529
   };
   export const feeburner = {
     ..._195,
@@ -105,10 +105,10 @@ export namespace neutron {
     ..._197,
     ..._198,
     ..._199,
-    ..._509,
-    ..._515,
-    ..._521,
-    ..._527
+    ..._512,
+    ..._518,
+    ..._524,
+    ..._530
   };
   export const feerefunder = {
     ..._200,
@@ -116,20 +116,20 @@ export namespace neutron {
     ..._202,
     ..._203,
     ..._204,
-    ..._510,
-    ..._516,
-    ..._522,
-    ..._528
+    ..._513,
+    ..._519,
+    ..._525,
+    ..._531
   };
   export const interchainqueries = {
     ..._205,
     ..._206,
     ..._207,
     ..._208,
-    ..._511,
-    ..._517,
-    ..._523,
-    ..._529
+    ..._514,
+    ..._520,
+    ..._526,
+    ..._532
   };
   export namespace interchaintxs {
     export const v1 = {
@@ -137,14 +137,14 @@ export namespace neutron {
       ..._210,
       ..._211,
       ..._212,
-      ..._512,
-      ..._518,
-      ..._524,
-      ..._530
+      ..._515,
+      ..._521,
+      ..._527,
+      ..._533
     };
   }
   export const ClientFactory = {
-    ..._677,
-    ..._678
+    ..._680,
+    ..._681
   };
 }

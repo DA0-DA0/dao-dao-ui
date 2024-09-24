@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import { TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType, PoolWeights, PoolWeightsAmino, PoolWeightsSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType } from "./protorev";
+import { TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType, PoolWeights, PoolWeightsAmino, PoolWeightsSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType, CyclicArbTracker, CyclicArbTrackerAmino, CyclicArbTrackerSDKType } from "./protorev";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** GenesisState defines the protorev module's genesis state. */
@@ -15,12 +15,11 @@ export interface GenesisState {
    */
   baseDenoms: BaseDenom[];
   /**
-   * The pool weights that are being used to calculate the weight (compute cost)
-   * of each route.
-   * 
-   * DEPRECATED: This field is deprecated and will be removed in the next
-   * release. It is replaced by the `info_by_pool_type` field.
+   * DEPRECATED: pool_weights are weights that are being used to calculate the
+   * compute cost of each route. This field is deprecated.
+   * It is replaced by the `info_by_pool_type` field.
    */
+  /** @deprecated */
   poolWeights: PoolWeights | undefined;
   /** The number of days since module genesis. */
   daysSinceModuleGenesis: bigint;
@@ -49,6 +48,7 @@ export interface GenesisState {
    * consumption of a swap on a given pool type.
    */
   infoByPoolType: InfoByPoolType | undefined;
+  cyclicArbTracker?: CyclicArbTracker | undefined;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.protorev.v1beta1.GenesisState";
@@ -66,12 +66,11 @@ export interface GenesisStateAmino {
    */
   base_denoms?: BaseDenomAmino[];
   /**
-   * The pool weights that are being used to calculate the weight (compute cost)
-   * of each route.
-   * 
-   * DEPRECATED: This field is deprecated and will be removed in the next
-   * release. It is replaced by the `info_by_pool_type` field.
+   * DEPRECATED: pool_weights are weights that are being used to calculate the
+   * compute cost of each route. This field is deprecated.
+   * It is replaced by the `info_by_pool_type` field.
    */
+  /** @deprecated */
   pool_weights?: PoolWeightsAmino | undefined;
   /** The number of days since module genesis. */
   days_since_module_genesis?: string;
@@ -100,6 +99,7 @@ export interface GenesisStateAmino {
    * consumption of a swap on a given pool type.
    */
   info_by_pool_type?: InfoByPoolTypeAmino | undefined;
+  cyclic_arb_tracker?: CyclicArbTrackerAmino | undefined;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/protorev/genesis-state";
@@ -110,6 +110,7 @@ export interface GenesisStateSDKType {
   params: ParamsSDKType | undefined;
   token_pair_arb_routes: TokenPairArbRoutesSDKType[];
   base_denoms: BaseDenomSDKType[];
+  /** @deprecated */
   pool_weights: PoolWeightsSDKType | undefined;
   days_since_module_genesis: bigint;
   developer_fees: CoinSDKType[];
@@ -120,6 +121,7 @@ export interface GenesisStateSDKType {
   point_count_for_block: bigint;
   profits: CoinSDKType[];
   info_by_pool_type: InfoByPoolTypeSDKType | undefined;
+  cyclic_arb_tracker?: CyclicArbTrackerSDKType | undefined;
 }
 function createBaseGenesisState(): GenesisState {
   return {
@@ -135,7 +137,8 @@ function createBaseGenesisState(): GenesisState {
     maxPoolPointsPerTx: BigInt(0),
     pointCountForBlock: BigInt(0),
     profits: [],
-    infoByPoolType: InfoByPoolType.fromPartial({})
+    infoByPoolType: InfoByPoolType.fromPartial({}),
+    cyclicArbTracker: undefined
   };
 }
 export const GenesisState = {
@@ -179,6 +182,9 @@ export const GenesisState = {
     }
     if (message.infoByPoolType !== undefined) {
       InfoByPoolType.encode(message.infoByPoolType, writer.uint32(106).fork()).ldelim();
+    }
+    if (message.cyclicArbTracker !== undefined) {
+      CyclicArbTracker.encode(message.cyclicArbTracker, writer.uint32(114).fork()).ldelim();
     }
     return writer;
   },
@@ -228,6 +234,9 @@ export const GenesisState = {
         case 13:
           message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32(), useInterfaces);
           break;
+        case 14:
+          message.cyclicArbTracker = CyclicArbTracker.decode(reader, reader.uint32(), useInterfaces);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -250,6 +259,7 @@ export const GenesisState = {
     message.pointCountForBlock = object.pointCountForBlock !== undefined && object.pointCountForBlock !== null ? BigInt(object.pointCountForBlock.toString()) : BigInt(0);
     message.profits = object.profits?.map(e => Coin.fromPartial(e)) || [];
     message.infoByPoolType = object.infoByPoolType !== undefined && object.infoByPoolType !== null ? InfoByPoolType.fromPartial(object.infoByPoolType) : undefined;
+    message.cyclicArbTracker = object.cyclicArbTracker !== undefined && object.cyclicArbTracker !== null ? CyclicArbTracker.fromPartial(object.cyclicArbTracker) : undefined;
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -285,6 +295,9 @@ export const GenesisState = {
     if (object.info_by_pool_type !== undefined && object.info_by_pool_type !== null) {
       message.infoByPoolType = InfoByPoolType.fromAmino(object.info_by_pool_type);
     }
+    if (object.cyclic_arb_tracker !== undefined && object.cyclic_arb_tracker !== null) {
+      message.cyclicArbTracker = CyclicArbTracker.fromAmino(object.cyclic_arb_tracker);
+    }
     return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
@@ -318,6 +331,7 @@ export const GenesisState = {
       obj.profits = message.profits;
     }
     obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
+    obj.cyclic_arb_tracker = message.cyclicArbTracker ? CyclicArbTracker.toAmino(message.cyclicArbTracker, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

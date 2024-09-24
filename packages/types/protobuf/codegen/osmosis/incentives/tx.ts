@@ -4,7 +4,7 @@ import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { toTimestamp, fromTimestamp } from "../../helpers";
-/** MsgCreateGauge creates a gague to distribute rewards to users */
+/** MsgCreateGauge creates a gauge to distribute rewards to users */
 export interface MsgCreateGauge {
   /**
    * is_perpetual shows if it's a perpetual or non-perpetual gauge
@@ -45,7 +45,7 @@ export interface MsgCreateGaugeProtoMsg {
   typeUrl: "/osmosis.incentives.MsgCreateGauge";
   value: Uint8Array;
 }
-/** MsgCreateGauge creates a gague to distribute rewards to users */
+/** MsgCreateGauge creates a gauge to distribute rewards to users */
 export interface MsgCreateGaugeAmino {
   /**
    * is_perpetual shows if it's a perpetual or non-perpetual gauge
@@ -86,7 +86,7 @@ export interface MsgCreateGaugeAminoMsg {
   type: "osmosis/incentives/create-gauge";
   value: MsgCreateGaugeAmino;
 }
-/** MsgCreateGauge creates a gague to distribute rewards to users */
+/** MsgCreateGauge creates a gauge to distribute rewards to users */
 export interface MsgCreateGaugeSDKType {
   is_perpetual: boolean;
   owner: string;

@@ -9,7 +9,7 @@ import "osmosis/protorev/v1beta1/protorev.proto";
 
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/protorev/types";
+option go_package = "github.com/osmosis-labs/osmosis/v26/x/protorev/types";
 
 // Query defines the gRPC querier service.
 service Query {
@@ -113,6 +113,13 @@ service Query {
       returns (QueryGetProtoRevPoolResponse) {
     option (google.api.http).get = "/osmosis/protorev/pool";
   }
+
+  // GetAllProtocolRevenue queries all of the protocol revenue that has been
+  // accumulated by any module
+  rpc GetAllProtocolRevenue(QueryGetAllProtocolRevenueRequest)
+      returns (QueryGetAllProtocolRevenueResponse) {
+    option (google.api.http).get = "/osmosis/protorev/all_protocol_revenue";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -136,6 +143,7 @@ message QueryGetProtoRevNumberOfTradesRequest {}
 message QueryGetProtoRevNumberOfTradesResponse {
   // number_of_trades is the number of trades the module has executed
   string number_of_trades = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"number_of_trades\""
@@ -323,4 +331,13 @@ message QueryGetProtoRevPoolRequest {
 message QueryGetProtoRevPoolResponse {
   // pool_id is the pool_id stored for the denom pair
   uint64 pool_id = 1 [ (gogoproto.moretags) = "yaml:\"pool_id\"" ];
+}
+
+message QueryGetAllProtocolRevenueRequest {}
+
+message QueryGetAllProtocolRevenueResponse {
+  AllProtocolRevenue all_protocol_revenue = 1 [
+    (gogoproto.moretags) = "yaml:\"all_protocol_revenue\"",
+    (gogoproto.nullable) = false
+  ];
 }

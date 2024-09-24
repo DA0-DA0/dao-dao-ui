@@ -1,7 +1,7 @@
 import { Rpc } from "../../../helpers";
 import { BinaryReader } from "../../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryParamsRequest, QueryParamsResponse, QueryGetProtoRevNumberOfTradesRequest, QueryGetProtoRevNumberOfTradesResponse, QueryGetProtoRevProfitsByDenomRequest, QueryGetProtoRevProfitsByDenomResponse, QueryGetProtoRevAllProfitsRequest, QueryGetProtoRevAllProfitsResponse, QueryGetProtoRevStatisticsByRouteRequest, QueryGetProtoRevStatisticsByRouteResponse, QueryGetProtoRevAllRouteStatisticsRequest, QueryGetProtoRevAllRouteStatisticsResponse, QueryGetProtoRevTokenPairArbRoutesRequest, QueryGetProtoRevTokenPairArbRoutesResponse, QueryGetProtoRevAdminAccountRequest, QueryGetProtoRevAdminAccountResponse, QueryGetProtoRevDeveloperAccountRequest, QueryGetProtoRevDeveloperAccountResponse, QueryGetProtoRevInfoByPoolTypeRequest, QueryGetProtoRevInfoByPoolTypeResponse, QueryGetProtoRevMaxPoolPointsPerTxRequest, QueryGetProtoRevMaxPoolPointsPerTxResponse, QueryGetProtoRevMaxPoolPointsPerBlockRequest, QueryGetProtoRevMaxPoolPointsPerBlockResponse, QueryGetProtoRevBaseDenomsRequest, QueryGetProtoRevBaseDenomsResponse, QueryGetProtoRevEnabledRequest, QueryGetProtoRevEnabledResponse, QueryGetProtoRevPoolRequest, QueryGetProtoRevPoolResponse } from "./query";
+import { QueryParamsRequest, QueryParamsResponse, QueryGetProtoRevNumberOfTradesRequest, QueryGetProtoRevNumberOfTradesResponse, QueryGetProtoRevProfitsByDenomRequest, QueryGetProtoRevProfitsByDenomResponse, QueryGetProtoRevAllProfitsRequest, QueryGetProtoRevAllProfitsResponse, QueryGetProtoRevStatisticsByRouteRequest, QueryGetProtoRevStatisticsByRouteResponse, QueryGetProtoRevAllRouteStatisticsRequest, QueryGetProtoRevAllRouteStatisticsResponse, QueryGetProtoRevTokenPairArbRoutesRequest, QueryGetProtoRevTokenPairArbRoutesResponse, QueryGetProtoRevAdminAccountRequest, QueryGetProtoRevAdminAccountResponse, QueryGetProtoRevDeveloperAccountRequest, QueryGetProtoRevDeveloperAccountResponse, QueryGetProtoRevInfoByPoolTypeRequest, QueryGetProtoRevInfoByPoolTypeResponse, QueryGetProtoRevMaxPoolPointsPerTxRequest, QueryGetProtoRevMaxPoolPointsPerTxResponse, QueryGetProtoRevMaxPoolPointsPerBlockRequest, QueryGetProtoRevMaxPoolPointsPerBlockResponse, QueryGetProtoRevBaseDenomsRequest, QueryGetProtoRevBaseDenomsResponse, QueryGetProtoRevEnabledRequest, QueryGetProtoRevEnabledResponse, QueryGetProtoRevPoolRequest, QueryGetProtoRevPoolResponse, QueryGetAllProtocolRevenueRequest, QueryGetAllProtocolRevenueResponse } from "./query";
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Params queries the parameters of the module. */
@@ -62,6 +62,11 @@ export interface Query {
    * for arbitrage route building given a pair of denominations
    */
   getProtoRevPool(request: QueryGetProtoRevPoolRequest): Promise<QueryGetProtoRevPoolResponse>;
+  /**
+   * GetAllProtocolRevenue queries all of the protocol revenue that has been
+   * accumulated by any module
+   */
+  getAllProtocolRevenue(request?: QueryGetAllProtocolRevenueRequest): Promise<QueryGetAllProtocolRevenueResponse>;
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
@@ -82,6 +87,7 @@ export class QueryClientImpl implements Query {
     this.getProtoRevBaseDenoms = this.getProtoRevBaseDenoms.bind(this);
     this.getProtoRevEnabled = this.getProtoRevEnabled.bind(this);
     this.getProtoRevPool = this.getProtoRevPool.bind(this);
+    this.getAllProtocolRevenue = this.getAllProtocolRevenue.bind(this);
   }
   params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -158,6 +164,11 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Query", "GetProtoRevPool", data);
     return promise.then(data => QueryGetProtoRevPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
+  getAllProtocolRevenue(request: QueryGetAllProtocolRevenueRequest = {}, useInterfaces: boolean = true): Promise<QueryGetAllProtocolRevenueResponse> {
+    const data = QueryGetAllProtocolRevenueRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.protorev.v1beta1.Query", "GetAllProtocolRevenue", data);
+    return promise.then(data => QueryGetAllProtocolRevenueResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -207,6 +218,9 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     },
     getProtoRevPool(request: QueryGetProtoRevPoolRequest, useInterfaces: boolean = true): Promise<QueryGetProtoRevPoolResponse> {
       return queryService.getProtoRevPool(request, useInterfaces);
+    },
+    getAllProtocolRevenue(request?: QueryGetAllProtocolRevenueRequest, useInterfaces: boolean = true): Promise<QueryGetAllProtocolRevenueResponse> {
+      return queryService.getAllProtocolRevenue(request, useInterfaces);
     }
   };
 };

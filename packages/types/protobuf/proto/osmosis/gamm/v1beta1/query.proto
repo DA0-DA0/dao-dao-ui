@@ -11,8 +11,9 @@ import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
 import "cosmos_proto/cosmos.proto";
 import "osmosis/gamm/v1beta1/shared.proto";
+import "osmosis/gamm/v1beta1/params.proto";
 
-option go_package = "github.com/osmosis-labs/osmosis/v19/x/gamm/types";
+option go_package = "github.com/osmosis-labs/osmosis/v26/x/gamm/types";
 
 service Query {
   rpc Pools(QueryPoolsRequest) returns (QueryPoolsResponse) {
@@ -124,7 +125,16 @@ service Query {
     option (google.api.http).get =
         "/osmosis/gamm/v1beta1/cfmm_concentrated_pool_links";
   }
+
+  // Params returns gamm module params.
+  rpc Params(ParamsRequest) returns (ParamsResponse) {
+    option (google.api.http).get = "/osmosis/gamm/v1beta1/params";
+  }
 }
+
+//=============================== Params
+message ParamsRequest {}
+message ParamsResponse { Params params = 1 [ (gogoproto.nullable) = false ]; }
 
 //=============================== Pool
 // Deprecated: please use the alternative in x/poolmanager
@@ -176,6 +186,7 @@ message QueryCalcJoinPoolSharesRequest {
 }
 message QueryCalcJoinPoolSharesResponse {
   string share_out_amount = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"share_out_amount\"",
     (gogoproto.nullable) = false
@@ -190,6 +201,7 @@ message QueryCalcJoinPoolSharesResponse {
 message QueryCalcExitPoolCoinsFromSharesRequest {
   uint64 pool_id = 1;
   string share_in_amount = 2 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
@@ -249,6 +261,7 @@ message QueryCalcJoinPoolNoSwapSharesResponse {
     (gogoproto.nullable) = false
   ];
   string shares_out = 2 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
@@ -262,14 +275,17 @@ message QuerySpotPriceRequest {
       [ (gogoproto.moretags) = "yaml:\"base_asset_denom\"" ];
   string quote_asset_denom = 3
       [ (gogoproto.moretags) = "yaml:\"quote_asset_denom\"" ];
-  reserved 4;
-  reserved "withSwapFee";
+  // DEPRECATED
+  bool withSwapFee = 4 [
+    (gogoproto.moretags) = "yaml:\"with_swap_fee\",deprecated:\"true\"",
+    deprecated = true
+  ];
 }
 
 //=============================== PoolsWithFilter
 
 message QueryPoolsWithFilterRequest {
-  // String of the coins in single string seperated by comma. Ex)
+  // String of the coins in single string separated by comma. Ex)
   // 10uatom,100uosmo
   string min_liquidity = 1 [ (gogoproto.moretags) = "yaml:\"min_liquidity\"" ];
   string pool_type = 2;
@@ -306,6 +322,7 @@ message QuerySwapExactAmountInRequest {
 message QuerySwapExactAmountInResponse {
   option deprecated = true;
   string token_out_amount = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"token_out_amount\"",
     (gogoproto.nullable) = false
@@ -327,6 +344,7 @@ message QuerySwapExactAmountOutRequest {
 message QuerySwapExactAmountOutResponse {
   option deprecated = true;
   string token_in_amount = 1 [
+
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"token_in_amount\"",
     (gogoproto.nullable) = false

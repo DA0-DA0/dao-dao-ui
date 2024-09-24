@@ -650,6 +650,45 @@ export interface UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg
 export interface UserConcentratedSuperfluidPositionsUndelegatingResponseSDKType {
   cl_pool_user_position_records: ConcentratedPoolUserPositionRecordSDKType[];
 }
+/** THIS QUERY IS TEMPORARY */
+export interface QueryRestSupplyRequest {
+  denom: string;
+}
+export interface QueryRestSupplyRequestProtoMsg {
+  typeUrl: "/osmosis.superfluid.QueryRestSupplyRequest";
+  value: Uint8Array;
+}
+/** THIS QUERY IS TEMPORARY */
+export interface QueryRestSupplyRequestAmino {
+  denom?: string;
+}
+export interface QueryRestSupplyRequestAminoMsg {
+  type: "osmosis/query-rest-supply-request";
+  value: QueryRestSupplyRequestAmino;
+}
+/** THIS QUERY IS TEMPORARY */
+export interface QueryRestSupplyRequestSDKType {
+  denom: string;
+}
+export interface QueryRestSupplyResponse {
+  /** amount is the supply of the coin. */
+  amount: Coin | undefined;
+}
+export interface QueryRestSupplyResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.QueryRestSupplyResponse";
+  value: Uint8Array;
+}
+export interface QueryRestSupplyResponseAmino {
+  /** amount is the supply of the coin. */
+  amount?: CoinAmino | undefined;
+}
+export interface QueryRestSupplyResponseAminoMsg {
+  type: "osmosis/query-rest-supply-response";
+  value: QueryRestSupplyResponseAmino;
+}
+export interface QueryRestSupplyResponseSDKType {
+  amount: CoinSDKType | undefined;
+}
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
 }
@@ -3338,6 +3377,144 @@ export const UserConcentratedSuperfluidPositionsUndelegatingResponse = {
     return {
       typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse",
       value: UserConcentratedSuperfluidPositionsUndelegatingResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryRestSupplyRequest(): QueryRestSupplyRequest {
+  return {
+    denom: ""
+  };
+}
+export const QueryRestSupplyRequest = {
+  typeUrl: "/osmosis.superfluid.QueryRestSupplyRequest",
+  encode(message: QueryRestSupplyRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryRestSupplyRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryRestSupplyRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryRestSupplyRequest>): QueryRestSupplyRequest {
+    const message = createBaseQueryRestSupplyRequest();
+    message.denom = object.denom ?? "";
+    return message;
+  },
+  fromAmino(object: QueryRestSupplyRequestAmino): QueryRestSupplyRequest {
+    const message = createBaseQueryRestSupplyRequest();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    return message;
+  },
+  toAmino(message: QueryRestSupplyRequest, useInterfaces: boolean = false): QueryRestSupplyRequestAmino {
+    const obj: any = {};
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    return obj;
+  },
+  fromAminoMsg(object: QueryRestSupplyRequestAminoMsg): QueryRestSupplyRequest {
+    return QueryRestSupplyRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryRestSupplyRequest, useInterfaces: boolean = false): QueryRestSupplyRequestAminoMsg {
+    return {
+      type: "osmosis/query-rest-supply-request",
+      value: QueryRestSupplyRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryRestSupplyRequestProtoMsg, useInterfaces: boolean = false): QueryRestSupplyRequest {
+    return QueryRestSupplyRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryRestSupplyRequest): Uint8Array {
+    return QueryRestSupplyRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryRestSupplyRequest): QueryRestSupplyRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.superfluid.QueryRestSupplyRequest",
+      value: QueryRestSupplyRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryRestSupplyResponse(): QueryRestSupplyResponse {
+  return {
+    amount: Coin.fromPartial({})
+  };
+}
+export const QueryRestSupplyResponse = {
+  typeUrl: "/osmosis.superfluid.QueryRestSupplyResponse",
+  encode(message: QueryRestSupplyResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.amount !== undefined) {
+      Coin.encode(message.amount, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryRestSupplyResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryRestSupplyResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.amount = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryRestSupplyResponse>): QueryRestSupplyResponse {
+    const message = createBaseQueryRestSupplyResponse();
+    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromPartial(object.amount) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryRestSupplyResponseAmino): QueryRestSupplyResponse {
+    const message = createBaseQueryRestSupplyResponse();
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromAmino(object.amount);
+    }
+    return message;
+  },
+  toAmino(message: QueryRestSupplyResponse, useInterfaces: boolean = false): QueryRestSupplyResponseAmino {
+    const obj: any = {};
+    obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryRestSupplyResponseAminoMsg): QueryRestSupplyResponse {
+    return QueryRestSupplyResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryRestSupplyResponse, useInterfaces: boolean = false): QueryRestSupplyResponseAminoMsg {
+    return {
+      type: "osmosis/query-rest-supply-response",
+      value: QueryRestSupplyResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryRestSupplyResponseProtoMsg, useInterfaces: boolean = false): QueryRestSupplyResponse {
+    return QueryRestSupplyResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryRestSupplyResponse): Uint8Array {
+    return QueryRestSupplyResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryRestSupplyResponse): QueryRestSupplyResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.superfluid.QueryRestSupplyResponse",
+      value: QueryRestSupplyResponse.encode(message).finish()
     };
   }
 };

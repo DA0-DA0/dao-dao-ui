@@ -1,4 +1,4 @@
-import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut, MsgSetDenomPairTakerFee } from "./tx";
+import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut, MsgSetDenomPairTakerFee, MsgSetTakerFeeShareAgreementForDenom, MsgSetRegisteredAlloyedPool } from "./tx";
 export const AminoConverter = {
   "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn": {
     aminoType: "osmosis/poolmanager/swap-exact-amount-in",
@@ -24,5 +24,15 @@ export const AminoConverter = {
     aminoType: "osmosis/poolmanager/set-denom-pair-taker-fee",
     toAmino: MsgSetDenomPairTakerFee.toAmino,
     fromAmino: MsgSetDenomPairTakerFee.fromAmino
+  },
+  "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom": {
+    aminoType: "osmosis/poolmanager/set-taker-fee-share-agreement-for-denom",
+    toAmino: MsgSetTakerFeeShareAgreementForDenom.toAmino,
+    fromAmino: MsgSetTakerFeeShareAgreementForDenom.fromAmino
+  },
+  "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool": {
+    aminoType: "osmosis/poolmanager/set-registered-alloyed-pool",
+    toAmino: MsgSetRegisteredAlloyedPool.toAmino,
+    fromAmino: MsgSetRegisteredAlloyedPool.fromAmino
   }
 };

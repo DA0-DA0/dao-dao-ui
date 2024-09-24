@@ -1,7 +1,7 @@
 import { Rpc } from "../../helpers";
 import { BinaryReader } from "../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { ModuleToDistributeCoinsRequest, ModuleToDistributeCoinsResponse, GaugeByIDRequest, GaugeByIDResponse, GaugesRequest, GaugesResponse, ActiveGaugesRequest, ActiveGaugesResponse, ActiveGaugesPerDenomRequest, ActiveGaugesPerDenomResponse, UpcomingGaugesRequest, UpcomingGaugesResponse, UpcomingGaugesPerDenomRequest, UpcomingGaugesPerDenomResponse, RewardsEstRequest, RewardsEstResponse, QueryLockableDurationsRequest, QueryLockableDurationsResponse, QueryAllGroupsRequest, QueryAllGroupsResponse, QueryAllGroupsGaugesRequest, QueryAllGroupsGaugesResponse, QueryAllGroupsWithGaugeRequest, QueryAllGroupsWithGaugeResponse, QueryGroupByGroupGaugeIDRequest, QueryGroupByGroupGaugeIDResponse, QueryCurrentWeightByGroupGaugeIDRequest, QueryCurrentWeightByGroupGaugeIDResponse } from "./query";
+import { ModuleToDistributeCoinsRequest, ModuleToDistributeCoinsResponse, GaugeByIDRequest, GaugeByIDResponse, GaugesRequest, GaugesResponse, ActiveGaugesRequest, ActiveGaugesResponse, ActiveGaugesPerDenomRequest, ActiveGaugesPerDenomResponse, UpcomingGaugesRequest, UpcomingGaugesResponse, UpcomingGaugesPerDenomRequest, UpcomingGaugesPerDenomResponse, RewardsEstRequest, RewardsEstResponse, QueryLockableDurationsRequest, QueryLockableDurationsResponse, QueryAllGroupsRequest, QueryAllGroupsResponse, QueryAllGroupsGaugesRequest, QueryAllGroupsGaugesResponse, QueryAllGroupsWithGaugeRequest, QueryAllGroupsWithGaugeResponse, QueryGroupByGroupGaugeIDRequest, QueryGroupByGroupGaugeIDResponse, QueryCurrentWeightByGroupGaugeIDRequest, QueryCurrentWeightByGroupGaugeIDResponse, QueryInternalGaugesRequest, QueryInternalGaugesResponse, QueryExternalGaugesRequest, QueryExternalGaugesResponse, QueryGaugesByPoolIDRequest, QueryGaugesByPoolIDResponse, ParamsRequest, ParamsResponse } from "./query";
 /** Query defines the gRPC querier service */
 export interface Query {
   /** ModuleToDistributeCoins returns coins that are going to be distributed */
@@ -45,6 +45,11 @@ export interface Query {
    * the last epoch given a group gauge ID
    */
   currentWeightByGroupGaugeID(request: QueryCurrentWeightByGroupGaugeIDRequest): Promise<QueryCurrentWeightByGroupGaugeIDResponse>;
+  internalGauges(request?: QueryInternalGaugesRequest): Promise<QueryInternalGaugesResponse>;
+  externalGauges(request?: QueryExternalGaugesRequest): Promise<QueryExternalGaugesResponse>;
+  gaugesByPoolID(request: QueryGaugesByPoolIDRequest): Promise<QueryGaugesByPoolIDResponse>;
+  /** Params returns incentives module params. */
+  params(request?: ParamsRequest): Promise<ParamsResponse>;
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
@@ -64,6 +69,10 @@ export class QueryClientImpl implements Query {
     this.allGroupsWithGauge = this.allGroupsWithGauge.bind(this);
     this.groupByGroupGaugeID = this.groupByGroupGaugeID.bind(this);
     this.currentWeightByGroupGaugeID = this.currentWeightByGroupGaugeID.bind(this);
+    this.internalGauges = this.internalGauges.bind(this);
+    this.externalGauges = this.externalGauges.bind(this);
+    this.gaugesByPoolID = this.gaugesByPoolID.bind(this);
+    this.params = this.params.bind(this);
   }
   moduleToDistributeCoins(request: ModuleToDistributeCoinsRequest = {}, useInterfaces: boolean = true): Promise<ModuleToDistributeCoinsResponse> {
     const data = ModuleToDistributeCoinsRequest.encode(request).finish();
@@ -141,6 +150,30 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("osmosis.incentives.Query", "CurrentWeightByGroupGaugeID", data);
     return promise.then(data => QueryCurrentWeightByGroupGaugeIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
+  internalGauges(request: QueryInternalGaugesRequest = {
+    pagination: undefined
+  }, useInterfaces: boolean = true): Promise<QueryInternalGaugesResponse> {
+    const data = QueryInternalGaugesRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.incentives.Query", "InternalGauges", data);
+    return promise.then(data => QueryInternalGaugesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
+  externalGauges(request: QueryExternalGaugesRequest = {
+    pagination: undefined
+  }, useInterfaces: boolean = true): Promise<QueryExternalGaugesResponse> {
+    const data = QueryExternalGaugesRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.incentives.Query", "ExternalGauges", data);
+    return promise.then(data => QueryExternalGaugesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
+  gaugesByPoolID(request: QueryGaugesByPoolIDRequest, useInterfaces: boolean = true): Promise<QueryGaugesByPoolIDResponse> {
+    const data = QueryGaugesByPoolIDRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.incentives.Query", "GaugesByPoolID", data);
+    return promise.then(data => QueryGaugesByPoolIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
+  params(request: ParamsRequest = {}, useInterfaces: boolean = true): Promise<ParamsResponse> {
+    const data = ParamsRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.incentives.Query", "Params", data);
+    return promise.then(data => ParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -187,6 +220,18 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     },
     currentWeightByGroupGaugeID(request: QueryCurrentWeightByGroupGaugeIDRequest, useInterfaces: boolean = true): Promise<QueryCurrentWeightByGroupGaugeIDResponse> {
       return queryService.currentWeightByGroupGaugeID(request, useInterfaces);
+    },
+    internalGauges(request?: QueryInternalGaugesRequest, useInterfaces: boolean = true): Promise<QueryInternalGaugesResponse> {
+      return queryService.internalGauges(request, useInterfaces);
+    },
+    externalGauges(request?: QueryExternalGaugesRequest, useInterfaces: boolean = true): Promise<QueryExternalGaugesResponse> {
+      return queryService.externalGauges(request, useInterfaces);
+    },
+    gaugesByPoolID(request: QueryGaugesByPoolIDRequest, useInterfaces: boolean = true): Promise<QueryGaugesByPoolIDResponse> {
+      return queryService.gaugesByPoolID(request, useInterfaces);
+    },
+    params(request?: ParamsRequest, useInterfaces: boolean = true): Promise<ParamsResponse> {
+      return queryService.params(request, useInterfaces);
     }
   };
 };

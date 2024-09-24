@@ -200,6 +200,49 @@ export interface QueryBeforeSendHookAddressResponseAminoMsg {
 export interface QueryBeforeSendHookAddressResponseSDKType {
   cosmwasm_address: string;
 }
+export interface QueryAllBeforeSendHooksAddressesRequest {}
+export interface QueryAllBeforeSendHooksAddressesRequestProtoMsg {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesRequest";
+  value: Uint8Array;
+}
+export interface QueryAllBeforeSendHooksAddressesRequestAmino {}
+export interface QueryAllBeforeSendHooksAddressesRequestAminoMsg {
+  type: "osmosis/tokenfactory/query-all-before-send-hooks-addresses-request";
+  value: QueryAllBeforeSendHooksAddressesRequestAmino;
+}
+export interface QueryAllBeforeSendHooksAddressesRequestSDKType {}
+/**
+ * QueryAllBeforeSendHooksAddressesResponse defines the response structure for
+ * the AllBeforeSendHooksAddresses gRPC query.
+ */
+export interface QueryAllBeforeSendHooksAddressesResponse {
+  denoms: string[];
+  beforeSendHookAddresses: string[];
+}
+export interface QueryAllBeforeSendHooksAddressesResponseProtoMsg {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesResponse";
+  value: Uint8Array;
+}
+/**
+ * QueryAllBeforeSendHooksAddressesResponse defines the response structure for
+ * the AllBeforeSendHooksAddresses gRPC query.
+ */
+export interface QueryAllBeforeSendHooksAddressesResponseAmino {
+  denoms?: string[];
+  before_send_hook_addresses?: string[];
+}
+export interface QueryAllBeforeSendHooksAddressesResponseAminoMsg {
+  type: "osmosis/tokenfactory/query-all-before-send-hooks-addresses-response";
+  value: QueryAllBeforeSendHooksAddressesResponseAmino;
+}
+/**
+ * QueryAllBeforeSendHooksAddressesResponse defines the response structure for
+ * the AllBeforeSendHooksAddresses gRPC query.
+ */
+export interface QueryAllBeforeSendHooksAddressesResponseSDKType {
+  denoms: string[];
+  before_send_hook_addresses: string[];
+}
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
 }
@@ -738,6 +781,147 @@ export const QueryBeforeSendHookAddressResponse = {
     return {
       typeUrl: "/osmosis.tokenfactory.v1beta1.QueryBeforeSendHookAddressResponse",
       value: QueryBeforeSendHookAddressResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllBeforeSendHooksAddressesRequest(): QueryAllBeforeSendHooksAddressesRequest {
+  return {};
+}
+export const QueryAllBeforeSendHooksAddressesRequest = {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesRequest",
+  encode(_: QueryAllBeforeSendHooksAddressesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllBeforeSendHooksAddressesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryAllBeforeSendHooksAddressesRequest>): QueryAllBeforeSendHooksAddressesRequest {
+    const message = createBaseQueryAllBeforeSendHooksAddressesRequest();
+    return message;
+  },
+  fromAmino(_: QueryAllBeforeSendHooksAddressesRequestAmino): QueryAllBeforeSendHooksAddressesRequest {
+    const message = createBaseQueryAllBeforeSendHooksAddressesRequest();
+    return message;
+  },
+  toAmino(_: QueryAllBeforeSendHooksAddressesRequest, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllBeforeSendHooksAddressesRequestAminoMsg): QueryAllBeforeSendHooksAddressesRequest {
+    return QueryAllBeforeSendHooksAddressesRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllBeforeSendHooksAddressesRequest, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesRequestAminoMsg {
+    return {
+      type: "osmosis/tokenfactory/query-all-before-send-hooks-addresses-request",
+      value: QueryAllBeforeSendHooksAddressesRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllBeforeSendHooksAddressesRequestProtoMsg, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesRequest {
+    return QueryAllBeforeSendHooksAddressesRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllBeforeSendHooksAddressesRequest): Uint8Array {
+    return QueryAllBeforeSendHooksAddressesRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllBeforeSendHooksAddressesRequest): QueryAllBeforeSendHooksAddressesRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesRequest",
+      value: QueryAllBeforeSendHooksAddressesRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryAllBeforeSendHooksAddressesResponse(): QueryAllBeforeSendHooksAddressesResponse {
+  return {
+    denoms: [],
+    beforeSendHookAddresses: []
+  };
+}
+export const QueryAllBeforeSendHooksAddressesResponse = {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesResponse",
+  encode(message: QueryAllBeforeSendHooksAddressesResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.denoms) {
+      writer.uint32(10).string(v!);
+    }
+    for (const v of message.beforeSendHookAddresses) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllBeforeSendHooksAddressesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denoms.push(reader.string());
+          break;
+        case 2:
+          message.beforeSendHookAddresses.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryAllBeforeSendHooksAddressesResponse>): QueryAllBeforeSendHooksAddressesResponse {
+    const message = createBaseQueryAllBeforeSendHooksAddressesResponse();
+    message.denoms = object.denoms?.map(e => e) || [];
+    message.beforeSendHookAddresses = object.beforeSendHookAddresses?.map(e => e) || [];
+    return message;
+  },
+  fromAmino(object: QueryAllBeforeSendHooksAddressesResponseAmino): QueryAllBeforeSendHooksAddressesResponse {
+    const message = createBaseQueryAllBeforeSendHooksAddressesResponse();
+    message.denoms = object.denoms?.map(e => e) || [];
+    message.beforeSendHookAddresses = object.before_send_hook_addresses?.map(e => e) || [];
+    return message;
+  },
+  toAmino(message: QueryAllBeforeSendHooksAddressesResponse, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesResponseAmino {
+    const obj: any = {};
+    if (message.denoms) {
+      obj.denoms = message.denoms.map(e => e);
+    } else {
+      obj.denoms = message.denoms;
+    }
+    if (message.beforeSendHookAddresses) {
+      obj.before_send_hook_addresses = message.beforeSendHookAddresses.map(e => e);
+    } else {
+      obj.before_send_hook_addresses = message.beforeSendHookAddresses;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: QueryAllBeforeSendHooksAddressesResponseAminoMsg): QueryAllBeforeSendHooksAddressesResponse {
+    return QueryAllBeforeSendHooksAddressesResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAllBeforeSendHooksAddressesResponse, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesResponseAminoMsg {
+    return {
+      type: "osmosis/tokenfactory/query-all-before-send-hooks-addresses-response",
+      value: QueryAllBeforeSendHooksAddressesResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: QueryAllBeforeSendHooksAddressesResponseProtoMsg, useInterfaces: boolean = false): QueryAllBeforeSendHooksAddressesResponse {
+    return QueryAllBeforeSendHooksAddressesResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QueryAllBeforeSendHooksAddressesResponse): Uint8Array {
+    return QueryAllBeforeSendHooksAddressesResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAllBeforeSendHooksAddressesResponse): QueryAllBeforeSendHooksAddressesResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.tokenfactory.v1beta1.QueryAllBeforeSendHooksAddressesResponse",
+      value: QueryAllBeforeSendHooksAddressesResponse.encode(message).finish()
     };
   }
 };

@@ -3,7 +3,7 @@ import { BinaryReader, BinaryWriter } from "../../../../binary";
 import { Decimal } from "@cosmjs/math";
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsg {
-  /** get_swap_fee is the query strcuture to get swap fee. */
+  /** get_swap_fee is the query structure to get swap fee. */
   getSwapFee: EmptyStruct | undefined;
 }
 export interface GetSwapFeeQueryMsgProtoMsg {
@@ -12,7 +12,7 @@ export interface GetSwapFeeQueryMsgProtoMsg {
 }
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsgAmino {
-  /** get_swap_fee is the query strcuture to get swap fee. */
+  /** get_swap_fee is the query structure to get swap fee. */
   get_swap_fee?: EmptyStructAmino | undefined;
 }
 export interface GetSwapFeeQueryMsgAminoMsg {

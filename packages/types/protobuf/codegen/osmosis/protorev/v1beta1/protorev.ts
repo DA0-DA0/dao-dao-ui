@@ -1,4 +1,6 @@
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
+import { TakerFeesTracker, TakerFeesTrackerAmino, TakerFeesTrackerSDKType } from "../../poolmanager/v1beta1/genesis";
+import { TxFeesTracker, TxFeesTrackerAmino, TxFeesTrackerSDKType } from "../../txfees/v1beta1/genesis";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** TokenPairArbRoutes tracks all of the hot routes for a given pair of tokens */
 export interface TokenPairArbRoutes {
@@ -35,7 +37,8 @@ export interface TokenPairArbRoutesSDKType {
 /** Route is a hot route for a given pair of tokens */
 export interface Route {
   /**
-   * The pool IDs that are travered in the directed cyclic graph (traversed left
+   * The pool IDs that are traversed in the directed cyclic graph (traversed
+   * left
    * -> right)
    */
   trades: Trade[];
@@ -52,7 +55,8 @@ export interface RouteProtoMsg {
 /** Route is a hot route for a given pair of tokens */
 export interface RouteAmino {
   /**
-   * The pool IDs that are travered in the directed cyclic graph (traversed left
+   * The pool IDs that are traversed in the directed cyclic graph (traversed
+   * left
    * -> right)
    */
   trades?: TradeAmino[];
@@ -448,6 +452,83 @@ export interface BaseDenomAminoMsg {
 export interface BaseDenomSDKType {
   denom: string;
   step_size: string;
+}
+/**
+ * BaseDenoms represents all of the base denoms that the module uses for its
+ * arbitrage trades.
+ */
+export interface BaseDenoms {
+  baseDenoms: BaseDenom[];
+}
+export interface BaseDenomsProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.BaseDenoms";
+  value: Uint8Array;
+}
+/**
+ * BaseDenoms represents all of the base denoms that the module uses for its
+ * arbitrage trades.
+ */
+export interface BaseDenomsAmino {
+  base_denoms?: BaseDenomAmino[];
+}
+export interface BaseDenomsAminoMsg {
+  type: "osmosis/protorev/base-denoms";
+  value: BaseDenomsAmino;
+}
+/**
+ * BaseDenoms represents all of the base denoms that the module uses for its
+ * arbitrage trades.
+ */
+export interface BaseDenomsSDKType {
+  base_denoms: BaseDenomSDKType[];
+}
+export interface AllProtocolRevenue {
+  takerFeesTracker: TakerFeesTracker | undefined;
+  /** DEPRECATED */
+  /** @deprecated */
+  txFeesTracker: TxFeesTracker | undefined;
+  cyclicArbTracker: CyclicArbTracker | undefined;
+}
+export interface AllProtocolRevenueProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.AllProtocolRevenue";
+  value: Uint8Array;
+}
+export interface AllProtocolRevenueAmino {
+  taker_fees_tracker?: TakerFeesTrackerAmino | undefined;
+  /** DEPRECATED */
+  /** @deprecated */
+  tx_fees_tracker?: TxFeesTrackerAmino | undefined;
+  cyclic_arb_tracker?: CyclicArbTrackerAmino | undefined;
+}
+export interface AllProtocolRevenueAminoMsg {
+  type: "osmosis/protorev/all-protocol-revenue";
+  value: AllProtocolRevenueAmino;
+}
+export interface AllProtocolRevenueSDKType {
+  taker_fees_tracker: TakerFeesTrackerSDKType | undefined;
+  /** @deprecated */
+  tx_fees_tracker: TxFeesTrackerSDKType | undefined;
+  cyclic_arb_tracker: CyclicArbTrackerSDKType | undefined;
+}
+export interface CyclicArbTracker {
+  cyclicArb: Coin[];
+  heightAccountingStartsFrom: bigint;
+}
+export interface CyclicArbTrackerProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.CyclicArbTracker";
+  value: Uint8Array;
+}
+export interface CyclicArbTrackerAmino {
+  cyclic_arb?: CoinAmino[];
+  height_accounting_starts_from?: string;
+}
+export interface CyclicArbTrackerAminoMsg {
+  type: "osmosis/protorev/cyclic-arb-tracker";
+  value: CyclicArbTrackerAmino;
+}
+export interface CyclicArbTrackerSDKType {
+  cyclic_arb: CoinSDKType[];
+  height_accounting_starts_from: bigint;
 }
 function createBaseTokenPairArbRoutes(): TokenPairArbRoutes {
   return {
@@ -1485,6 +1566,253 @@ export const BaseDenom = {
     return {
       typeUrl: "/osmosis.protorev.v1beta1.BaseDenom",
       value: BaseDenom.encode(message).finish()
+    };
+  }
+};
+function createBaseBaseDenoms(): BaseDenoms {
+  return {
+    baseDenoms: []
+  };
+}
+export const BaseDenoms = {
+  typeUrl: "/osmosis.protorev.v1beta1.BaseDenoms",
+  encode(message: BaseDenoms, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.baseDenoms) {
+      BaseDenom.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BaseDenoms {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBaseDenoms();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<BaseDenoms>): BaseDenoms {
+    const message = createBaseBaseDenoms();
+    message.baseDenoms = object.baseDenoms?.map(e => BaseDenom.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: BaseDenomsAmino): BaseDenoms {
+    const message = createBaseBaseDenoms();
+    message.baseDenoms = object.base_denoms?.map(e => BaseDenom.fromAmino(e)) || [];
+    return message;
+  },
+  toAmino(message: BaseDenoms, useInterfaces: boolean = false): BaseDenomsAmino {
+    const obj: any = {};
+    if (message.baseDenoms) {
+      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.base_denoms = message.baseDenoms;
+    }
+    return obj;
+  },
+  fromAminoMsg(object: BaseDenomsAminoMsg): BaseDenoms {
+    return BaseDenoms.fromAmino(object.value);
+  },
+  toAminoMsg(message: BaseDenoms, useInterfaces: boolean = false): BaseDenomsAminoMsg {
+    return {
+      type: "osmosis/protorev/base-denoms",
+      value: BaseDenoms.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: BaseDenomsProtoMsg, useInterfaces: boolean = false): BaseDenoms {
+    return BaseDenoms.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: BaseDenoms): Uint8Array {
+    return BaseDenoms.encode(message).finish();
+  },
+  toProtoMsg(message: BaseDenoms): BaseDenomsProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.BaseDenoms",
+      value: BaseDenoms.encode(message).finish()
+    };
+  }
+};
+function createBaseAllProtocolRevenue(): AllProtocolRevenue {
+  return {
+    takerFeesTracker: TakerFeesTracker.fromPartial({}),
+    txFeesTracker: TxFeesTracker.fromPartial({}),
+    cyclicArbTracker: CyclicArbTracker.fromPartial({})
+  };
+}
+export const AllProtocolRevenue = {
+  typeUrl: "/osmosis.protorev.v1beta1.AllProtocolRevenue",
+  encode(message: AllProtocolRevenue, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.takerFeesTracker !== undefined) {
+      TakerFeesTracker.encode(message.takerFeesTracker, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.txFeesTracker !== undefined) {
+      TxFeesTracker.encode(message.txFeesTracker, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.cyclicArbTracker !== undefined) {
+      CyclicArbTracker.encode(message.cyclicArbTracker, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllProtocolRevenue {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllProtocolRevenue();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFeesTracker = TakerFeesTracker.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 2:
+          message.txFeesTracker = TxFeesTracker.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 3:
+          message.cyclicArbTracker = CyclicArbTracker.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<AllProtocolRevenue>): AllProtocolRevenue {
+    const message = createBaseAllProtocolRevenue();
+    message.takerFeesTracker = object.takerFeesTracker !== undefined && object.takerFeesTracker !== null ? TakerFeesTracker.fromPartial(object.takerFeesTracker) : undefined;
+    message.txFeesTracker = object.txFeesTracker !== undefined && object.txFeesTracker !== null ? TxFeesTracker.fromPartial(object.txFeesTracker) : undefined;
+    message.cyclicArbTracker = object.cyclicArbTracker !== undefined && object.cyclicArbTracker !== null ? CyclicArbTracker.fromPartial(object.cyclicArbTracker) : undefined;
+    return message;
+  },
+  fromAmino(object: AllProtocolRevenueAmino): AllProtocolRevenue {
+    const message = createBaseAllProtocolRevenue();
+    if (object.taker_fees_tracker !== undefined && object.taker_fees_tracker !== null) {
+      message.takerFeesTracker = TakerFeesTracker.fromAmino(object.taker_fees_tracker);
+    }
+    if (object.tx_fees_tracker !== undefined && object.tx_fees_tracker !== null) {
+      message.txFeesTracker = TxFeesTracker.fromAmino(object.tx_fees_tracker);
+    }
+    if (object.cyclic_arb_tracker !== undefined && object.cyclic_arb_tracker !== null) {
+      message.cyclicArbTracker = CyclicArbTracker.fromAmino(object.cyclic_arb_tracker);
+    }
+    return message;
+  },
+  toAmino(message: AllProtocolRevenue, useInterfaces: boolean = false): AllProtocolRevenueAmino {
+    const obj: any = {};
+    obj.taker_fees_tracker = message.takerFeesTracker ? TakerFeesTracker.toAmino(message.takerFeesTracker, useInterfaces) : undefined;
+    obj.tx_fees_tracker = message.txFeesTracker ? TxFeesTracker.toAmino(message.txFeesTracker, useInterfaces) : undefined;
+    obj.cyclic_arb_tracker = message.cyclicArbTracker ? CyclicArbTracker.toAmino(message.cyclicArbTracker, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: AllProtocolRevenueAminoMsg): AllProtocolRevenue {
+    return AllProtocolRevenue.fromAmino(object.value);
+  },
+  toAminoMsg(message: AllProtocolRevenue, useInterfaces: boolean = false): AllProtocolRevenueAminoMsg {
+    return {
+      type: "osmosis/protorev/all-protocol-revenue",
+      value: AllProtocolRevenue.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: AllProtocolRevenueProtoMsg, useInterfaces: boolean = false): AllProtocolRevenue {
+    return AllProtocolRevenue.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: AllProtocolRevenue): Uint8Array {
+    return AllProtocolRevenue.encode(message).finish();
+  },
+  toProtoMsg(message: AllProtocolRevenue): AllProtocolRevenueProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.AllProtocolRevenue",
+      value: AllProtocolRevenue.encode(message).finish()
+    };
+  }
+};
+function createBaseCyclicArbTracker(): CyclicArbTracker {
+  return {
+    cyclicArb: [],
+    heightAccountingStartsFrom: BigInt(0)
+  };
+}
+export const CyclicArbTracker = {
+  typeUrl: "/osmosis.protorev.v1beta1.CyclicArbTracker",
+  encode(message: CyclicArbTracker, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.cyclicArb) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.heightAccountingStartsFrom !== BigInt(0)) {
+      writer.uint32(16).int64(message.heightAccountingStartsFrom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CyclicArbTracker {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCyclicArbTracker();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.cyclicArb.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        case 2:
+          message.heightAccountingStartsFrom = reader.int64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<CyclicArbTracker>): CyclicArbTracker {
+    const message = createBaseCyclicArbTracker();
+    message.cyclicArb = object.cyclicArb?.map(e => Coin.fromPartial(e)) || [];
+    message.heightAccountingStartsFrom = object.heightAccountingStartsFrom !== undefined && object.heightAccountingStartsFrom !== null ? BigInt(object.heightAccountingStartsFrom.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: CyclicArbTrackerAmino): CyclicArbTracker {
+    const message = createBaseCyclicArbTracker();
+    message.cyclicArb = object.cyclic_arb?.map(e => Coin.fromAmino(e)) || [];
+    if (object.height_accounting_starts_from !== undefined && object.height_accounting_starts_from !== null) {
+      message.heightAccountingStartsFrom = BigInt(object.height_accounting_starts_from);
+    }
+    return message;
+  },
+  toAmino(message: CyclicArbTracker, useInterfaces: boolean = false): CyclicArbTrackerAmino {
+    const obj: any = {};
+    if (message.cyclicArb) {
+      obj.cyclic_arb = message.cyclicArb.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.cyclic_arb = message.cyclicArb;
+    }
+    obj.height_accounting_starts_from = message.heightAccountingStartsFrom !== BigInt(0) ? message.heightAccountingStartsFrom.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: CyclicArbTrackerAminoMsg): CyclicArbTracker {
+    return CyclicArbTracker.fromAmino(object.value);
+  },
+  toAminoMsg(message: CyclicArbTracker, useInterfaces: boolean = false): CyclicArbTrackerAminoMsg {
+    return {
+      type: "osmosis/protorev/cyclic-arb-tracker",
+      value: CyclicArbTracker.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: CyclicArbTrackerProtoMsg, useInterfaces: boolean = false): CyclicArbTracker {
+    return CyclicArbTracker.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: CyclicArbTracker): Uint8Array {
+    return CyclicArbTracker.encode(message).finish();
+  },
+  toProtoMsg(message: CyclicArbTracker): CyclicArbTrackerProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.CyclicArbTracker",
+      value: CyclicArbTracker.encode(message).finish()
     };
   }
 };

@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tickInfo";
+import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tick_info";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { IncentiveRecord, IncentiveRecordAmino, IncentiveRecordSDKType } from "./incentive_record";
 import { Position, PositionAmino, PositionSDKType } from "./position";
@@ -9,12 +9,12 @@ import { Pool as Pool1 } from "./pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";
 import { PoolSDKType as Pool1SDKType } from "./pool";
 import { CosmWasmPool, CosmWasmPoolProtoMsg, CosmWasmPoolSDKType } from "../../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { Pool as Pool2 } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { Pool as Pool3 } from "../../gamm/v1beta1/balancerPool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/v1beta1/balancerPool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/v1beta1/balancerPool";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /**
  * FullTick contains tick index and pool id along with other tick model
@@ -142,6 +142,8 @@ export interface GenesisState {
   positionData: PositionData[];
   nextPositionId: bigint;
   nextIncentiveRecordId: bigint;
+  incentivesAccumulatorPoolIdMigrationThreshold: bigint;
+  spreadFactorPoolIdMigrationThreshold: bigint;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.GenesisState";
@@ -156,6 +158,8 @@ export interface GenesisStateAmino {
   position_data?: PositionDataAmino[];
   next_position_id?: string;
   next_incentive_record_id?: string;
+  incentives_accumulator_pool_id_migration_threshold?: string;
+  spread_factor_pool_id_migration_threshold?: string;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/concentratedliquidity/genesis-state";
@@ -168,6 +172,8 @@ export interface GenesisStateSDKType {
   position_data: PositionDataSDKType[];
   next_position_id: bigint;
   next_incentive_record_id: bigint;
+  incentives_accumulator_pool_id_migration_threshold: bigint;
+  spread_factor_pool_id_migration_threshold: bigint;
 }
 export interface AccumObject {
   /** Accumulator's name (pulled from AccumulatorContent) */
@@ -520,7 +526,9 @@ function createBaseGenesisState(): GenesisState {
     poolData: [],
     positionData: [],
     nextPositionId: BigInt(0),
-    nextIncentiveRecordId: BigInt(0)
+    nextIncentiveRecordId: BigInt(0),
+    incentivesAccumulatorPoolIdMigrationThreshold: BigInt(0),
+    spreadFactorPoolIdMigrationThreshold: BigInt(0)
   };
 }
 export const GenesisState = {
@@ -540,6 +548,12 @@ export const GenesisState = {
     }
     if (message.nextIncentiveRecordId !== BigInt(0)) {
       writer.uint32(40).uint64(message.nextIncentiveRecordId);
+    }
+    if (message.incentivesAccumulatorPoolIdMigrationThreshold !== BigInt(0)) {
+      writer.uint32(48).uint64(message.incentivesAccumulatorPoolIdMigrationThreshold);
+    }
+    if (message.spreadFactorPoolIdMigrationThreshold !== BigInt(0)) {
+      writer.uint32(56).uint64(message.spreadFactorPoolIdMigrationThreshold);
     }
     return writer;
   },
@@ -565,6 +579,12 @@ export const GenesisState = {
         case 5:
           message.nextIncentiveRecordId = reader.uint64();
           break;
+        case 6:
+          message.incentivesAccumulatorPoolIdMigrationThreshold = reader.uint64();
+          break;
+        case 7:
+          message.spreadFactorPoolIdMigrationThreshold = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -579,6 +599,8 @@ export const GenesisState = {
     message.positionData = object.positionData?.map(e => PositionData.fromPartial(e)) || [];
     message.nextPositionId = object.nextPositionId !== undefined && object.nextPositionId !== null ? BigInt(object.nextPositionId.toString()) : BigInt(0);
     message.nextIncentiveRecordId = object.nextIncentiveRecordId !== undefined && object.nextIncentiveRecordId !== null ? BigInt(object.nextIncentiveRecordId.toString()) : BigInt(0);
+    message.incentivesAccumulatorPoolIdMigrationThreshold = object.incentivesAccumulatorPoolIdMigrationThreshold !== undefined && object.incentivesAccumulatorPoolIdMigrationThreshold !== null ? BigInt(object.incentivesAccumulatorPoolIdMigrationThreshold.toString()) : BigInt(0);
+    message.spreadFactorPoolIdMigrationThreshold = object.spreadFactorPoolIdMigrationThreshold !== undefined && object.spreadFactorPoolIdMigrationThreshold !== null ? BigInt(object.spreadFactorPoolIdMigrationThreshold.toString()) : BigInt(0);
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -593,6 +615,12 @@ export const GenesisState = {
     }
     if (object.next_incentive_record_id !== undefined && object.next_incentive_record_id !== null) {
       message.nextIncentiveRecordId = BigInt(object.next_incentive_record_id);
+    }
+    if (object.incentives_accumulator_pool_id_migration_threshold !== undefined && object.incentives_accumulator_pool_id_migration_threshold !== null) {
+      message.incentivesAccumulatorPoolIdMigrationThreshold = BigInt(object.incentives_accumulator_pool_id_migration_threshold);
+    }
+    if (object.spread_factor_pool_id_migration_threshold !== undefined && object.spread_factor_pool_id_migration_threshold !== null) {
+      message.spreadFactorPoolIdMigrationThreshold = BigInt(object.spread_factor_pool_id_migration_threshold);
     }
     return message;
   },
@@ -611,6 +639,8 @@ export const GenesisState = {
     }
     obj.next_position_id = message.nextPositionId !== BigInt(0) ? message.nextPositionId.toString() : undefined;
     obj.next_incentive_record_id = message.nextIncentiveRecordId !== BigInt(0) ? message.nextIncentiveRecordId.toString() : undefined;
+    obj.incentives_accumulator_pool_id_migration_threshold = message.incentivesAccumulatorPoolIdMigrationThreshold !== BigInt(0) ? message.incentivesAccumulatorPoolIdMigrationThreshold.toString() : undefined;
+    obj.spread_factor_pool_id_migration_threshold = message.spreadFactorPoolIdMigrationThreshold !== BigInt(0) ? message.spreadFactorPoolIdMigrationThreshold.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
@@ -724,9 +754,9 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return CosmWasmPool.decode(data.value, undefined, true);
-    case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
+      return Pool2.decode(data.value, undefined, true);
+    case "/osmosis.gamm.v1beta1.Pool":
       return Pool3.decode(data.value, undefined, true);
     default:
       return data;
@@ -744,14 +774,14 @@ export const PoolI_FromAmino = (content: AnyAmino): Any => {
         typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
         value: CosmWasmPool.encode(CosmWasmPool.fromPartial(CosmWasmPool.fromAmino(content.value))).finish()
       });
-    case "osmosis/gamm/BalancerPool":
-      return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.v1beta1.Pool",
-        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
-      });
     case "osmosis/gamm/StableswapPool":
       return Any.fromPartial({
         typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
+      });
+    case "osmosis/gamm/BalancerPool":
+      return Any.fromPartial({
+        typeUrl: "/osmosis.gamm.v1beta1.Pool",
         value: Pool3.encode(Pool3.fromPartial(Pool3.fromAmino(content.value))).finish()
       });
     default:
@@ -770,14 +800,14 @@ export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
         value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
-    case "/osmosis.gamm.v1beta1.Pool":
-      return {
-        type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
-      };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/osmosis.gamm.v1beta1.Pool":
+      return {
+        type: "osmosis/gamm/BalancerPool",
         value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:

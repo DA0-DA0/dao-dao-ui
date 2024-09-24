@@ -2,19 +2,51 @@
 import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageResponseAmino, PageResponseSDKType } from "../../../cosmos/base/query/v1beta1/pagination";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { SwapAmountInRoute, SwapAmountInRouteAmino, SwapAmountInRouteSDKType, SwapAmountOutRoute, SwapAmountOutRouteAmino, SwapAmountOutRouteSDKType } from "../../poolmanager/v1beta1/swap_route";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { MigrationRecords, MigrationRecordsAmino, MigrationRecordsSDKType } from "./shared";
 import { Pool as Pool1 } from "../../concentratedliquidity/v1beta1/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentratedliquidity/v1beta1/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentratedliquidity/v1beta1/pool";
 import { CosmWasmPool, CosmWasmPoolProtoMsg, CosmWasmPoolSDKType } from "../../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../pool-models/stableswap/stableswap_pool";
+import { Pool as Pool2 } from "../poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolSDKType as Pool2SDKType } from "../poolmodels/stableswap/v1beta1/stableswap_pool";
+import { Pool as Pool3 } from "./balancerPool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "./balancerPool";
+import { PoolSDKType as Pool3SDKType } from "./balancerPool";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+/** =============================== Params */
+export interface ParamsRequest {}
+export interface ParamsRequestProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.ParamsRequest";
+  value: Uint8Array;
+}
+/** =============================== Params */
+export interface ParamsRequestAmino {}
+export interface ParamsRequestAminoMsg {
+  type: "osmosis/gamm/params-request";
+  value: ParamsRequestAmino;
+}
+/** =============================== Params */
+export interface ParamsRequestSDKType {}
+export interface ParamsResponse {
+  params: Params | undefined;
+}
+export interface ParamsResponseProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.ParamsResponse";
+  value: Uint8Array;
+}
+export interface ParamsResponseAmino {
+  params?: ParamsAmino | undefined;
+}
+export interface ParamsResponseAminoMsg {
+  type: "osmosis/gamm/params-response";
+  value: ParamsResponseAmino;
+}
+export interface ParamsResponseSDKType {
+  params: ParamsSDKType | undefined;
+}
 /**
  * =============================== Pool
  * Deprecated: please use the alternative in x/poolmanager
@@ -458,6 +490,9 @@ export interface QuerySpotPriceRequest {
   poolId: bigint;
   baseAssetDenom: string;
   quoteAssetDenom: string;
+  /** DEPRECATED */
+  /** @deprecated */
+  withSwapFee: boolean;
 }
 export interface QuerySpotPriceRequestProtoMsg {
   typeUrl: "/osmosis.gamm.v1beta1.QuerySpotPriceRequest";
@@ -472,6 +507,9 @@ export interface QuerySpotPriceRequestAmino {
   pool_id?: string;
   base_asset_denom?: string;
   quote_asset_denom?: string;
+  /** DEPRECATED */
+  /** @deprecated */
+  withSwapFee?: boolean;
 }
 export interface QuerySpotPriceRequestAminoMsg {
   type: "osmosis/gamm/query-spot-price-request";
@@ -486,10 +524,12 @@ export interface QuerySpotPriceRequestSDKType {
   pool_id: bigint;
   base_asset_denom: string;
   quote_asset_denom: string;
+  /** @deprecated */
+  withSwapFee: boolean;
 }
 export interface QueryPoolsWithFilterRequest {
   /**
-   * String of the coins in single string seperated by comma. Ex)
+   * String of the coins in single string separated by comma. Ex)
    * 10uatom,100uosmo
    */
   minLiquidity: string;
@@ -502,7 +542,7 @@ export interface QueryPoolsWithFilterRequestProtoMsg {
 }
 export interface QueryPoolsWithFilterRequestAmino {
   /**
-   * String of the coins in single string seperated by comma. Ex)
+   * String of the coins in single string separated by comma. Ex)
    * 10uatom,100uosmo
    */
   min_liquidity?: string;
@@ -777,6 +817,131 @@ export interface QueryCFMMConcentratedPoolLinksResponseAminoMsg {
 export interface QueryCFMMConcentratedPoolLinksResponseSDKType {
   migration_records?: MigrationRecordsSDKType | undefined;
 }
+function createBaseParamsRequest(): ParamsRequest {
+  return {};
+}
+export const ParamsRequest = {
+  typeUrl: "/osmosis.gamm.v1beta1.ParamsRequest",
+  encode(_: ParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseParamsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<ParamsRequest>): ParamsRequest {
+    const message = createBaseParamsRequest();
+    return message;
+  },
+  fromAmino(_: ParamsRequestAmino): ParamsRequest {
+    const message = createBaseParamsRequest();
+    return message;
+  },
+  toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: ParamsRequestAminoMsg): ParamsRequest {
+    return ParamsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAminoMsg {
+    return {
+      type: "osmosis/gamm/params-request",
+      value: ParamsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: ParamsRequestProtoMsg, useInterfaces: boolean = false): ParamsRequest {
+    return ParamsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: ParamsRequest): Uint8Array {
+    return ParamsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: ParamsRequest): ParamsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.gamm.v1beta1.ParamsRequest",
+      value: ParamsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseParamsResponse(): ParamsResponse {
+  return {
+    params: Params.fromPartial({})
+  };
+}
+export const ParamsResponse = {
+  typeUrl: "/osmosis.gamm.v1beta1.ParamsResponse",
+  encode(message: ParamsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<ParamsResponse>): ParamsResponse {
+    const message = createBaseParamsResponse();
+    message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
+    return message;
+  },
+  fromAmino(object: ParamsResponseAmino): ParamsResponse {
+    const message = createBaseParamsResponse();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
+  },
+  toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
+    const obj: any = {};
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: ParamsResponseAminoMsg): ParamsResponse {
+    return ParamsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAminoMsg {
+    return {
+      type: "osmosis/gamm/params-response",
+      value: ParamsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: ParamsResponseProtoMsg, useInterfaces: boolean = false): ParamsResponse {
+    return ParamsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: ParamsResponse): Uint8Array {
+    return ParamsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: ParamsResponse): ParamsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.gamm.v1beta1.ParamsResponse",
+      value: ParamsResponse.encode(message).finish()
+    };
+  }
+};
 function createBaseQueryPoolRequest(): QueryPoolRequest {
   return {
     poolId: BigInt(0)
@@ -2234,7 +2399,8 @@ function createBaseQuerySpotPriceRequest(): QuerySpotPriceRequest {
   return {
     poolId: BigInt(0),
     baseAssetDenom: "",
-    quoteAssetDenom: ""
+    quoteAssetDenom: "",
+    withSwapFee: false
   };
 }
 export const QuerySpotPriceRequest = {
@@ -2248,6 +2414,9 @@ export const QuerySpotPriceRequest = {
     }
     if (message.quoteAssetDenom !== "") {
       writer.uint32(26).string(message.quoteAssetDenom);
+    }
+    if (message.withSwapFee === true) {
+      writer.uint32(32).bool(message.withSwapFee);
     }
     return writer;
   },
@@ -2267,6 +2436,9 @@ export const QuerySpotPriceRequest = {
         case 3:
           message.quoteAssetDenom = reader.string();
           break;
+        case 4:
+          message.withSwapFee = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -2279,6 +2451,7 @@ export const QuerySpotPriceRequest = {
     message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
     message.baseAssetDenom = object.baseAssetDenom ?? "";
     message.quoteAssetDenom = object.quoteAssetDenom ?? "";
+    message.withSwapFee = object.withSwapFee ?? false;
     return message;
   },
   fromAmino(object: QuerySpotPriceRequestAmino): QuerySpotPriceRequest {
@@ -2292,6 +2465,9 @@ export const QuerySpotPriceRequest = {
     if (object.quote_asset_denom !== undefined && object.quote_asset_denom !== null) {
       message.quoteAssetDenom = object.quote_asset_denom;
     }
+    if (object.withSwapFee !== undefined && object.withSwapFee !== null) {
+      message.withSwapFee = object.withSwapFee;
+    }
     return message;
   },
   toAmino(message: QuerySpotPriceRequest, useInterfaces: boolean = false): QuerySpotPriceRequestAmino {
@@ -2299,6 +2475,7 @@ export const QuerySpotPriceRequest = {
     obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.base_asset_denom = message.baseAssetDenom === "" ? undefined : message.baseAssetDenom;
     obj.quote_asset_denom = message.quoteAssetDenom === "" ? undefined : message.quoteAssetDenom;
+    obj.withSwapFee = message.withSwapFee === false ? undefined : message.withSwapFee;
     return obj;
   },
   fromAminoMsg(object: QuerySpotPriceRequestAminoMsg): QuerySpotPriceRequest {
@@ -3318,9 +3495,9 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return CosmWasmPool.decode(data.value, undefined, true);
-    case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
+      return Pool2.decode(data.value, undefined, true);
+    case "/osmosis.gamm.v1beta1.Pool":
       return Pool3.decode(data.value, undefined, true);
     default:
       return data;
@@ -3338,14 +3515,14 @@ export const PoolI_FromAmino = (content: AnyAmino): Any => {
         typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
         value: CosmWasmPool.encode(CosmWasmPool.fromPartial(CosmWasmPool.fromAmino(content.value))).finish()
       });
-    case "osmosis/gamm/BalancerPool":
-      return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.v1beta1.Pool",
-        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
-      });
     case "osmosis/gamm/StableswapPool":
       return Any.fromPartial({
         typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
+      });
+    case "osmosis/gamm/BalancerPool":
+      return Any.fromPartial({
+        typeUrl: "/osmosis.gamm.v1beta1.Pool",
         value: Pool3.encode(Pool3.fromPartial(Pool3.fromAmino(content.value))).finish()
       });
     default:
@@ -3364,14 +3541,14 @@ export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
         value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
-    case "/osmosis.gamm.v1beta1.Pool":
-      return {
-        type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
-      };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/osmosis.gamm.v1beta1.Pool":
+      return {
+        type: "osmosis/gamm/BalancerPool",
         value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:

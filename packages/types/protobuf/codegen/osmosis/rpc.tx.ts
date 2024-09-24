@@ -49,10 +49,10 @@ export const createRPCMsgClient = async ({
     gamm: {
       poolmodels: {
         balancer: {
-          v1beta1: new (await import("./gamm/pool-models/balancer/tx/tx.rpc.msg")).MsgClientImpl(rpc)
+          v1beta1: new (await import("./gamm/poolmodels/balancer/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
         },
         stableswap: {
-          v1beta1: new (await import("./gamm/pool-models/stableswap/tx.rpc.msg")).MsgClientImpl(rpc)
+          v1beta1: new (await import("./gamm/poolmodels/stableswap/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
         }
       },
       v1beta1: new (await import("./gamm/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
@@ -76,7 +76,7 @@ export const createRPCMsgClient = async ({
       v1beta1: new (await import("./txfees/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     },
     valsetpref: {
-      v1beta1: new (await import("./valset-pref/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
+      v1beta1: new (await import("./valsetpref/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
     }
   }
 });

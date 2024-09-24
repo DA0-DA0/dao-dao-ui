@@ -4,12 +4,12 @@ import * as _149 from "./ccv/consumer/v1/query";
 import * as _150 from "./ccv/consumer/v1/tx";
 import * as _151 from "./ccv/v1/shared_consumer";
 import * as _152 from "./ccv/v1/wire";
-import * as _486 from "./ccv/consumer/v1/tx.amino";
-import * as _487 from "./ccv/consumer/v1/tx.registry";
-import * as _488 from "./ccv/consumer/v1/query.rpc.Query";
-import * as _489 from "./ccv/consumer/v1/tx.rpc.msg";
-import * as _671 from "./rpc.query";
-import * as _672 from "./rpc.tx";
+import * as _489 from "./ccv/consumer/v1/tx.amino";
+import * as _490 from "./ccv/consumer/v1/tx.registry";
+import * as _491 from "./ccv/consumer/v1/query.rpc.Query";
+import * as _492 from "./ccv/consumer/v1/tx.rpc.msg";
+import * as _674 from "./rpc.query";
+import * as _675 from "./rpc.tx";
 export namespace interchain_security {
   export namespace ccv {
     export namespace consumer {
@@ -18,10 +18,10 @@ export namespace interchain_security {
         ..._148,
         ..._149,
         ..._150,
-        ..._486,
-        ..._487,
-        ..._488,
-        ..._489
+        ..._489,
+        ..._490,
+        ..._491,
+        ..._492
       };
     }
     export const v1 = {
@@ -30,7 +30,7 @@ export namespace interchain_security {
     };
   }
   export const ClientFactory = {
-    ..._671,
-    ..._672
+    ..._674,
+    ..._675
   };
 }

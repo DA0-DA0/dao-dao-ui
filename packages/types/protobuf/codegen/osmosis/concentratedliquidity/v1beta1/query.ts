@@ -4,18 +4,18 @@ import { FullPositionBreakdown, FullPositionBreakdownAmino, FullPositionBreakdow
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Params, ParamsAmino, ParamsSDKType } from "../params";
 import { Coin, CoinAmino, CoinSDKType, DecCoin, DecCoinAmino, DecCoinSDKType } from "../../../cosmos/base/v1beta1/coin";
-import { UptimeTracker, UptimeTrackerAmino, UptimeTrackerSDKType } from "./tickInfo";
+import { UptimeTracker, UptimeTrackerAmino, UptimeTrackerSDKType } from "./tick_info";
 import { IncentiveRecord, IncentiveRecordAmino, IncentiveRecordSDKType } from "./incentive_record";
 import { Pool as Pool1 } from "./pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";
 import { PoolSDKType as Pool1SDKType } from "./pool";
 import { CosmWasmPool, CosmWasmPoolProtoMsg, CosmWasmPoolSDKType } from "../../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { Pool as Pool2 } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { Pool as Pool3 } from "../../gamm/v1beta1/balancerPool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/v1beta1/balancerPool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/v1beta1/balancerPool";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { Decimal } from "@cosmjs/math";
 /** =============================== UserPositions */
@@ -100,6 +100,40 @@ export interface PositionByIdResponseAminoMsg {
 }
 export interface PositionByIdResponseSDKType {
   position: FullPositionBreakdownSDKType | undefined;
+}
+export interface NumPoolPositionsRequest {
+  poolId: bigint;
+}
+export interface NumPoolPositionsRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsRequest";
+  value: Uint8Array;
+}
+export interface NumPoolPositionsRequestAmino {
+  pool_id?: string;
+}
+export interface NumPoolPositionsRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/num-pool-positions-request";
+  value: NumPoolPositionsRequestAmino;
+}
+export interface NumPoolPositionsRequestSDKType {
+  pool_id: bigint;
+}
+export interface NumPoolPositionsResponse {
+  positionCount: bigint;
+}
+export interface NumPoolPositionsResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsResponse";
+  value: Uint8Array;
+}
+export interface NumPoolPositionsResponseAmino {
+  position_count?: string;
+}
+export interface NumPoolPositionsResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/num-pool-positions-response";
+  value: NumPoolPositionsResponseAmino;
+}
+export interface NumPoolPositionsResponseSDKType {
+  position_count: bigint;
 }
 /** =============================== Pools */
 export interface PoolsRequest {
@@ -993,6 +1027,144 @@ export const PositionByIdResponse = {
     return {
       typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionByIdResponse",
       value: PositionByIdResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseNumPoolPositionsRequest(): NumPoolPositionsRequest {
+  return {
+    poolId: BigInt(0)
+  };
+}
+export const NumPoolPositionsRequest = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsRequest",
+  encode(message: NumPoolPositionsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumPoolPositionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNumPoolPositionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<NumPoolPositionsRequest>): NumPoolPositionsRequest {
+    const message = createBaseNumPoolPositionsRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: NumPoolPositionsRequestAmino): NumPoolPositionsRequest {
+    const message = createBaseNumPoolPositionsRequest();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
+  },
+  toAmino(message: NumPoolPositionsRequest, useInterfaces: boolean = false): NumPoolPositionsRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: NumPoolPositionsRequestAminoMsg): NumPoolPositionsRequest {
+    return NumPoolPositionsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: NumPoolPositionsRequest, useInterfaces: boolean = false): NumPoolPositionsRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/num-pool-positions-request",
+      value: NumPoolPositionsRequest.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: NumPoolPositionsRequestProtoMsg, useInterfaces: boolean = false): NumPoolPositionsRequest {
+    return NumPoolPositionsRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: NumPoolPositionsRequest): Uint8Array {
+    return NumPoolPositionsRequest.encode(message).finish();
+  },
+  toProtoMsg(message: NumPoolPositionsRequest): NumPoolPositionsRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsRequest",
+      value: NumPoolPositionsRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseNumPoolPositionsResponse(): NumPoolPositionsResponse {
+  return {
+    positionCount: BigInt(0)
+  };
+}
+export const NumPoolPositionsResponse = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsResponse",
+  encode(message: NumPoolPositionsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.positionCount !== BigInt(0)) {
+      writer.uint32(8).uint64(message.positionCount);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumPoolPositionsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNumPoolPositionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionCount = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<NumPoolPositionsResponse>): NumPoolPositionsResponse {
+    const message = createBaseNumPoolPositionsResponse();
+    message.positionCount = object.positionCount !== undefined && object.positionCount !== null ? BigInt(object.positionCount.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: NumPoolPositionsResponseAmino): NumPoolPositionsResponse {
+    const message = createBaseNumPoolPositionsResponse();
+    if (object.position_count !== undefined && object.position_count !== null) {
+      message.positionCount = BigInt(object.position_count);
+    }
+    return message;
+  },
+  toAmino(message: NumPoolPositionsResponse, useInterfaces: boolean = false): NumPoolPositionsResponseAmino {
+    const obj: any = {};
+    obj.position_count = message.positionCount !== BigInt(0) ? message.positionCount.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: NumPoolPositionsResponseAminoMsg): NumPoolPositionsResponse {
+    return NumPoolPositionsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: NumPoolPositionsResponse, useInterfaces: boolean = false): NumPoolPositionsResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/num-pool-positions-response",
+      value: NumPoolPositionsResponse.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: NumPoolPositionsResponseProtoMsg, useInterfaces: boolean = false): NumPoolPositionsResponse {
+    return NumPoolPositionsResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: NumPoolPositionsResponse): Uint8Array {
+    return NumPoolPositionsResponse.encode(message).finish();
+  },
+  toProtoMsg(message: NumPoolPositionsResponse): NumPoolPositionsResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumPoolPositionsResponse",
+      value: NumPoolPositionsResponse.encode(message).finish()
     };
   }
 };
@@ -3214,9 +3386,9 @@ export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 
       return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return CosmWasmPool.decode(data.value, undefined, true);
-    case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
+      return Pool2.decode(data.value, undefined, true);
+    case "/osmosis.gamm.v1beta1.Pool":
       return Pool3.decode(data.value, undefined, true);
     default:
       return data;
@@ -3234,14 +3406,14 @@ export const PoolI_FromAmino = (content: AnyAmino): Any => {
         typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
         value: CosmWasmPool.encode(CosmWasmPool.fromPartial(CosmWasmPool.fromAmino(content.value))).finish()
       });
-    case "osmosis/gamm/BalancerPool":
-      return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.v1beta1.Pool",
-        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
-      });
     case "osmosis/gamm/StableswapPool":
       return Any.fromPartial({
         typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+        value: Pool2.encode(Pool2.fromPartial(Pool2.fromAmino(content.value))).finish()
+      });
+    case "osmosis/gamm/BalancerPool":
+      return Any.fromPartial({
+        typeUrl: "/osmosis.gamm.v1beta1.Pool",
         value: Pool3.encode(Pool3.fromPartial(Pool3.fromAmino(content.value))).finish()
       });
     default:
@@ -3260,14 +3432,14 @@ export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
         value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
-    case "/osmosis.gamm.v1beta1.Pool":
-      return {
-        type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
-      };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
+      };
+    case "/osmosis.gamm.v1beta1.Pool":
+      return {
+        type: "osmosis/gamm/BalancerPool",
         value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:

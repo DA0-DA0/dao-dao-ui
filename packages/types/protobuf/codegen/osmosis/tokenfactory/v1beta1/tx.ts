@@ -110,7 +110,7 @@ export interface MsgMintProtoMsg {
 export interface MsgMintAmino {
   sender?: string;
   amount?: CoinAmino | undefined;
-  mintToAddress?: string;
+  mintToAddress: string;
 }
 export interface MsgMintAminoMsg {
   type: "osmosis/tokenfactory/mint";
@@ -162,7 +162,7 @@ export interface MsgBurnProtoMsg {
 export interface MsgBurnAmino {
   sender?: string;
   amount?: CoinAmino | undefined;
-  burnFromAddress?: string;
+  burnFromAddress: string;
 }
 export interface MsgBurnAminoMsg {
   type: "osmosis/tokenfactory/burn";
@@ -268,10 +268,10 @@ export interface MsgSetBeforeSendHookProtoMsg {
 export interface MsgSetBeforeSendHookAmino {
   sender?: string;
   denom?: string;
-  cosmwasm_address?: string;
+  cosmwasm_address: string;
 }
 export interface MsgSetBeforeSendHookAminoMsg {
-  type: "osmosis/tokenfactory/set-beforesend-hook";
+  type: "osmosis/tokenfactory/set-bef-send-hook";
   value: MsgSetBeforeSendHookAmino;
 }
 /**
@@ -616,7 +616,7 @@ export const MsgMint = {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
-    obj.mintToAddress = message.mintToAddress === "" ? undefined : message.mintToAddress;
+    obj.mintToAddress = message.mintToAddress ?? "";
     return obj;
   },
   fromAminoMsg(object: MsgMintAminoMsg): MsgMint {
@@ -765,7 +765,7 @@ export const MsgBurn = {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.amount = message.amount ? Coin.toAmino(message.amount, useInterfaces) : undefined;
-    obj.burnFromAddress = message.burnFromAddress === "" ? undefined : message.burnFromAddress;
+    obj.burnFromAddress = message.burnFromAddress ?? "";
     return obj;
   },
   fromAminoMsg(object: MsgBurnAminoMsg): MsgBurn {
@@ -1063,7 +1063,7 @@ export const MsgSetBeforeSendHook = {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.denom = message.denom === "" ? undefined : message.denom;
-    obj.cosmwasm_address = message.cosmwasmAddress === "" ? undefined : message.cosmwasmAddress;
+    obj.cosmwasm_address = message.cosmwasmAddress ?? "";
     return obj;
   },
   fromAminoMsg(object: MsgSetBeforeSendHookAminoMsg): MsgSetBeforeSendHook {
@@ -1071,7 +1071,7 @@ export const MsgSetBeforeSendHook = {
   },
   toAminoMsg(message: MsgSetBeforeSendHook, useInterfaces: boolean = false): MsgSetBeforeSendHookAminoMsg {
     return {
-      type: "osmosis/tokenfactory/set-beforesend-hook",
+      type: "osmosis/tokenfactory/set-bef-send-hook",
       value: MsgSetBeforeSendHook.toAmino(message, useInterfaces)
     };
   },

@@ -26,7 +26,7 @@ export const AminoConverter = {
     fromAmino: MsgSetDenomMetadata.fromAmino
   },
   "/osmosis.tokenfactory.v1beta1.MsgSetBeforeSendHook": {
-    aminoType: "osmosis/tokenfactory/set-beforesend-hook",
+    aminoType: "osmosis/tokenfactory/set-bef-send-hook",
     toAmino: MsgSetBeforeSendHook.toAmino,
     fromAmino: MsgSetBeforeSendHook.fromAmino
   },

@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
-import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut, MsgSetDenomPairTakerFee } from "./tx";
-export const registry: ReadonlyArray<[string, GeneratedType]> = [["/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn", MsgSwapExactAmountIn], ["/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut", MsgSwapExactAmountOut], ["/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn", MsgSplitRouteSwapExactAmountIn], ["/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut", MsgSplitRouteSwapExactAmountOut], ["/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee", MsgSetDenomPairTakerFee]];
+import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut, MsgSetDenomPairTakerFee, MsgSetTakerFeeShareAgreementForDenom, MsgSetRegisteredAlloyedPool } from "./tx";
+export const registry: ReadonlyArray<[string, GeneratedType]> = [["/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn", MsgSwapExactAmountIn], ["/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut", MsgSwapExactAmountOut], ["/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn", MsgSplitRouteSwapExactAmountIn], ["/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut", MsgSplitRouteSwapExactAmountOut], ["/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee", MsgSetDenomPairTakerFee], ["/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom", MsgSetTakerFeeShareAgreementForDenom], ["/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool", MsgSetRegisteredAlloyedPool]];
 export const load = (protoRegistry: Registry) => {
   registry.forEach(([typeUrl, mod]) => {
     protoRegistry.register(typeUrl, mod);
@@ -38,6 +38,18 @@ export const MessageComposer = {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
         value: MsgSetDenomPairTakerFee.encode(value).finish()
       };
+    },
+    setTakerFeeShareAgreementForDenom(value: MsgSetTakerFeeShareAgreementForDenom) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value: MsgSetTakerFeeShareAgreementForDenom.encode(value).finish()
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+        value: MsgSetRegisteredAlloyedPool.encode(value).finish()
+      };
     }
   },
   withTypeUrl: {
@@ -68,6 +80,18 @@ export const MessageComposer = {
     setDenomPairTakerFee(value: MsgSetDenomPairTakerFee) {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
+        value
+      };
+    },
+    setTakerFeeShareAgreementForDenom(value: MsgSetTakerFeeShareAgreementForDenom) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
         value
       };
     }
@@ -101,6 +125,18 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
         value: MsgSetDenomPairTakerFee.fromPartial(value)
+      };
+    },
+    setTakerFeeShareAgreementForDenom(value: MsgSetTakerFeeShareAgreementForDenom) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value: MsgSetTakerFeeShareAgreementForDenom.fromPartial(value)
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+        value: MsgSetRegisteredAlloyedPool.fromPartial(value)
       };
     }
   }

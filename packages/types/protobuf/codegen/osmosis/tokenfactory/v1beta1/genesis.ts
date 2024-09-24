@@ -4,7 +4,7 @@ import { DenomAuthorityMetadata, DenomAuthorityMetadataAmino, DenomAuthorityMeta
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** GenesisState defines the tokenfactory module's genesis state. */
 export interface GenesisState {
-  /** params defines the paramaters of the module. */
+  /** params defines the parameters of the module. */
   params: Params | undefined;
   factoryDenoms: GenesisDenom[];
 }
@@ -14,7 +14,7 @@ export interface GenesisStateProtoMsg {
 }
 /** GenesisState defines the tokenfactory module's genesis state. */
 export interface GenesisStateAmino {
-  /** params defines the paramaters of the module. */
+  /** params defines the parameters of the module. */
   params?: ParamsAmino | undefined;
   factory_denoms?: GenesisDenomAmino[];
 }

@@ -1,16 +1,16 @@
-import * as _374 from "../tariff/genesis";
-import * as _375 from "../tariff/params";
-import * as _376 from "../tariff/query";
-import * as _654 from "../tariff/query.rpc.Query";
-import * as _691 from "./rpc.query";
+import * as _377 from "../tariff/genesis";
+import * as _378 from "../tariff/params";
+import * as _379 from "../tariff/query";
+import * as _657 from "../tariff/query.rpc.Query";
+import * as _694 from "./rpc.query";
 export namespace noble {
   export const tariff = {
-    ..._374,
-    ..._375,
-    ..._376,
-    ..._654
+    ..._377,
+    ..._378,
+    ..._379,
+    ..._657
   };
   export const ClientFactory = {
-    ..._691
+    ..._694
   };
 }
