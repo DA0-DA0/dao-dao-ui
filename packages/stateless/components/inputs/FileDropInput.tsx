@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
@@ -24,6 +25,7 @@ export type FileDropInputProps = {
   style?: CSSProperties
   loading?: boolean
   hideText?: boolean
+  allowedMimetypes?: string[]
 }
 
 export const FileDropInput = ({
@@ -37,6 +39,7 @@ export const FileDropInput = ({
   style,
   loading,
   hideText,
+  allowedMimetypes,
 }: FileDropInputProps) => {
   const { t } = useTranslation()
 
@@ -79,22 +82,47 @@ export const FileDropInput = ({
         // Select file if exists.
         const file = e.dataTransfer.files?.[0]
         if (file) {
+          if (
+            allowedMimetypes?.length &&
+            !allowedMimetypes.includes(file.type)
+          ) {
+            toast.error(
+              t('error.invalidFileTypeAllowed', {
+                types: allowedMimetypes.join(', '),
+              })
+            )
+            return
+          }
+
           onSelect(file, URL.createObjectURL(file))
         }
       }}
       style={style}
     >
       <input
+        accept={allowedMimetypes?.join(',')}
         className="hidden"
         onChange={(e) => {
           // Select file if exists, and then unselect so another file can be
           // selected.
           const file = e.target.files?.[0]
           if (file) {
-            onSelect(file, URL.createObjectURL(file))
-
             // Unselect file.
             e.target.value = ''
+
+            if (
+              allowedMimetypes?.length &&
+              !allowedMimetypes.includes(file.type)
+            ) {
+              toast.error(
+                t('error.invalidFileTypeAllowed', {
+                  types: allowedMimetypes.join(', '),
+                })
+              )
+              return
+            }
+
+            onSelect(file, URL.createObjectURL(file))
           }
         }}
         onClick={(e) => {

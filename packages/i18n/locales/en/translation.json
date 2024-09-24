@@ -460,6 +460,7 @@
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidDuplicateFound": "Invalid. Duplicate found in other list.",
     "invalidExecuteMessage": "Invalid execute message",
+    "invalidFileTypeAllowed": "Invalid file type. Allowed: {{types}}",
     "invalidFileTypeBulkImport": "Invalid file type. Expected JSON or CSV.",
     "invalidImportFormatCsv": "Invalid format. Missing `ACTION` column or all rows are empty.",
     "invalidImportFormatJson": "Invalid format. Expected `actions` array, with each action containing `key` and `data`.",

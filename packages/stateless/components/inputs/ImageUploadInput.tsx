@@ -1,3 +1,4 @@
+import imageCompression from 'browser-image-compression'
 import { useRef, useState } from 'react'
 
 import { ImageDropInput, ImageDropInputProps } from './ImageDropInput'
@@ -22,6 +23,24 @@ export const ImageUploadInput = ({
     setUploading(true)
 
     try {
+      // Compress image to be below 3MB.
+      if (file.size > 3 * 1024 * 1024) {
+        // The image compression library actually returns a Blob, so we need to
+        // wrap it in a File so that its name and file extension are preserved.
+        file = new File(
+          [
+            await imageCompression(file, {
+              maxSizeMB: 3,
+              useWebWorker: true,
+            }),
+          ],
+          file.name,
+          {
+            type: file.type,
+          }
+        )
+      }
+
       const form = new FormData()
       form.append('image', file)
 

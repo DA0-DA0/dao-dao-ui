@@ -9,13 +9,11 @@ export type FileUploadInputProps = Omit<
 > & {
   onChange: (url: string, file: File) => void | Promise<void>
   onError?: (error: unknown) => void
-  allowedMimetypes?: string[]
 }
 
 export const FileUploadInput = ({
   onChange,
   onError,
-  allowedMimetypes,
   ...props
 }: FileUploadInputProps) => {
   const [uploading, setUploading] = useState(false)
@@ -24,12 +22,6 @@ export const FileUploadInput = ({
     setUploading(true)
 
     try {
-      if (allowedMimetypes?.length && !allowedMimetypes.includes(file.type)) {
-        throw new Error(
-          `Invalid file type. Allowed: ${allowedMimetypes.join(', ')}`
-        )
-      }
-
       const form = new FormData()
       form.append('file', file)
 
