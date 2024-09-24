@@ -23,8 +23,11 @@ export const ImageUploadInput = ({
     setUploading(true)
 
     try {
-      // Compress image to be below 3MB.
-      if (file.size > 3 * 1024 * 1024) {
+      // Compress png/jpeg/webp image to be below 3MB.
+      if (
+        file.size > 3 * 1024 * 1024 &&
+        ['image/png', 'image/jpeg', 'image/webp'].includes(file.type)
+      ) {
         // The image compression library actually returns a Blob, so we need to
         // wrap it in a File so that its name and file extension are preserved.
         file = new File(

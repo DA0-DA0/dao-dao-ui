@@ -52,7 +52,13 @@ export const ImageDropInput = ({
     <FileDropInput
       Icon={CloudUploadRounded}
       IconHover={CloudDownloadRounded}
-      allowedMimetypes={['image/png', 'image/jpeg']}
+      allowedMimetypes={[
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/svg',
+        'image/webp',
+      ]}
       className={clsx(className, image && '!outline-solid')}
       dragHereOrSelect={
         <Trans i18nKey="form.dragImageHereOrClick">
