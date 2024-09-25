@@ -291,6 +291,7 @@ export const ProposalList = ({
             })
 
             // Remove erroneous Neutron proposals.
+            // TODO: remove this after october 9
             newProposalInfos = newProposalInfos.filter(
               (info) =>
                 !(
