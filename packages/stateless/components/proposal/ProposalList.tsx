@@ -102,7 +102,7 @@ export const ProposalList = <T extends { proposalId: string }>({
                 ({ title, proposals, total, defaultCollapsed }, index) =>
                   proposals.length > 0 && (
                     <Collapsible
-                      key={index}
+                      key={title + index}
                       containerClassName="gap-3"
                       contentContainerClassName="space-y-1"
                       defaultCollapsed={defaultCollapsed}
