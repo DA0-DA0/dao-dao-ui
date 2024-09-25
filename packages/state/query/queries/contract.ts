@@ -3,6 +3,10 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { InfoResponse } from '@dao-dao/types'
+import {
+  ArrayOfVestingContract,
+  VestingContract,
+} from '@dao-dao/types/contracts/CwPayrollFactory'
 import { CodeInfoResponse } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/query'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
@@ -19,6 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { chainQueries } from './chain'
+import { cwVestingQueries } from './contracts'
 import { indexerQueries } from './indexer'
 
 /**
@@ -311,6 +316,54 @@ export const generateInstantiate2Address = async (
   )
 }
 
+/**
+ * List all vesting contracts owned by a given account.
+ */
+export const listVestingContractsOwnedByAccount = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }
+): Promise<{
+  chainId: string
+  contracts: ArrayOfVestingContract
+}> => {
+  const vestingContracts = await queryClient.fetchQuery(
+    contractQueries.listContractsOwnedByAccount(queryClient, {
+      chainId,
+      address,
+      key: 'cw-vesting',
+    })
+  )
+
+  const contracts = await Promise.all(
+    vestingContracts.map(
+      async (contract): Promise<VestingContract> => ({
+        contract,
+        recipient: (
+          await queryClient.fetchQuery(
+            cwVestingQueries.info(queryClient, {
+              chainId,
+              contractAddress: contract,
+            })
+          )
+        ).recipient,
+        // Ignore.
+        instantiator: '',
+      })
+    )
+  )
+
+  return {
+    chainId,
+    contracts,
+  }
+}
+
 export const contractQueries = {
   /**
    * Fetch contract info stored in state, which contains its name and version.
@@ -430,5 +483,42 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'instantiate2Address', options],
       queryFn: () => generateInstantiate2Address(queryClient, options),
+    }),
+  /**
+   * List all contracts owned by a given account.
+   */
+  listContractsOwnedByAccount: (
+    queryClient: QueryClient,
+    {
+      chainId,
+      address,
+      key,
+    }: {
+      chainId: string
+      address: string
+      /**
+       * Optionally filter by an indexer code ID key.
+       */
+      key?: string
+    }
+  ) =>
+    indexerQueries.queryAccount<string[]>(queryClient, {
+      chainId,
+      address,
+      formula: 'contract/ownedBy',
+      args: {
+        key,
+      },
+    }),
+  /**
+   * List all vesting contracts owned by a given account.
+   */
+  listVestingContractsOwnedByAccount: (
+    queryClient: QueryClient,
+    options: Parameters<typeof listVestingContractsOwnedByAccount>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['contract', 'listVestingContractsOwnedByAccount', options],
+      queryFn: () => listVestingContractsOwnedByAccount(queryClient, options),
     }),
 }

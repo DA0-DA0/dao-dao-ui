@@ -1,6 +1,8 @@
 import { useQueries, useQueryClient } from '@tanstack/react-query'
+import uniqBy from 'lodash.uniqby'
 
 import {
+  contractQueries,
   cwPayrollFactoryExtraQueries,
   cwVestingExtraQueries,
 } from '@dao-dao/state/query'
@@ -31,7 +33,7 @@ import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 export const TabRenderer = ({
   variables: { factories, factory, oldFactories },
 }: WidgetRendererProps<VestingPaymentsWidgetData>) => {
-  const { chainId: defaultChainId, coreAddress } = useDaoInfoContext()
+  const { chainId: defaultChainId, coreAddress, accounts } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership()
 
@@ -67,11 +69,22 @@ export const TabRenderer = ({
           address,
         })
       ),
+
+      // Contracts owned by any of this DAO's accounts. This detects contracts
+      // whose ownership was transferred to this DAO but that are still part of
+      // a different factory.
+      ...accounts.map(({ chainId, address }) =>
+        contractQueries.listVestingContractsOwnedByAccount(queryClient, {
+          chainId,
+          address,
+        })
+      ),
     ],
     combine: makeCombineQueryResultsIntoLoadingDataWithError({
       firstLoad: 'one',
     }),
   })
+
   // Fetch infos individually so they refresh when data is updated elsewhere.
   const vestingInfosLoading = useQueries({
     queries:
@@ -87,6 +100,13 @@ export const TabRenderer = ({
           ),
     combine: makeCombineQueryResultsIntoLoadingDataWithError({
       firstLoad: 'one',
+      // De-dupe since the ownership queries will overlap with the factory list
+      // queries.
+      transform: (infos) =>
+        uniqBy(
+          infos,
+          (info) => info.chainId + ':' + info.vestingContractAddress
+        ),
     }),
   })
 
