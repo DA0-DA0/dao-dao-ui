@@ -556,7 +556,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
             ? data.dst_validator
             : '',
         amount: convertMicroDenomToDenomWithDecimals(
-          data.amount,
+          data.amount.amount,
           nativeToken.decimals
         ),
         withdrawAddress: '',
