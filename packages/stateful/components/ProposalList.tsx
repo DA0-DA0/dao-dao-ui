@@ -16,13 +16,17 @@ import {
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   CommonProposalListInfo,
   ProposalStatus,
   ProposalStatusEnum,
   StatefulProposalLineProps,
   StatefulProposalListProps,
 } from '@dao-dao/types'
-import { webSocketChannelNameForDao } from '@dao-dao/utils'
+import {
+  NEUTRON_GOVERNANCE_DAO,
+  webSocketChannelNameForDao,
+} from '@dao-dao/utils'
 
 import {
   useMembership,
@@ -285,6 +289,17 @@ export const ProposalList = ({
                 type === ProposalType.PreProposeCompleted,
               status,
             })
+
+            // Remove erroneous Neutron proposals.
+            newProposalInfos = newProposalInfos.filter(
+              (info) =>
+                !(
+                  info.proposalModule.dao.chainId === ChainId.NeutronMainnet &&
+                  info.proposalModule.dao.coreAddress ===
+                    NEUTRON_GOVERNANCE_DAO &&
+                  (info.id === 'A47' || info.id === 'A48')
+                )
+            )
 
             newOpenProposals = [
               ...newOpenProposals,
