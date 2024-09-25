@@ -58,8 +58,11 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         </div>
       </div>
 
-      {contractAdmin !== address && (
-        <StatusCard content={t('info.notAdmin')} style="warning" />
+      {isCreating && contractAdmin !== address && (
+        <StatusCard
+          content={t('info.daoNotAdminProposalNotExecutable')}
+          style="warning"
+        />
       )}
     </>
   )

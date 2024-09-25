@@ -85,9 +85,15 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
       </div>
 
-      {!!address && !!contractAdmin && contractAdmin !== address && (
-        <StatusCard content={t('info.notAdmin')} style="warning" />
-      )}
+      {isCreating &&
+        !!address &&
+        !!contractAdmin &&
+        contractAdmin !== address && (
+          <StatusCard
+            content={t('info.daoNotAdminProposalNotExecutable')}
+            style="warning"
+          />
+        )}
 
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.migrateMessage')} />
