@@ -2,13 +2,12 @@ import {
   DeliverTxResponse,
   instantiate2Address,
 } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { toUtf8 } from '@cosmjs/encoding'
 import { nanoid } from 'nanoid'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { codeDetailsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadingWithError } from '@dao-dao/stateless'
+import { contractQueries } from '@dao-dao/state/query'
 import { Coin, UnifiedCosmosMsg, cwMsgToEncodeObject } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -16,6 +15,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from './query'
 import { useWallet } from './useWallet'
 
 export type InstantiateAndExecuteOptions = {
@@ -61,14 +61,14 @@ export const useInstantiateAndExecute = (
   })
 
   // Load checksum of the contract code.
-  const checksum = useCachedLoadingWithError(
+  const checksum = useQueryLoadingDataWithError(
     chainId
-      ? codeDetailsSelector({
+      ? contractQueries.codeInfo({
           chainId,
           codeId,
         })
       : undefined,
-    (data) => fromHex(data.checksum)
+    ({ dataHash }) => dataHash
   )
 
   const instantiateAndExecute: InstantiateAndExecute = useCallback(

@@ -27,6 +27,8 @@ export const useGenerateInstantiate2 = ({
     chainId &&
       creator &&
       codeId &&
+      !isNaN(codeId) &&
+      codeId > 0 &&
       // Instantiate2 not supported on Secret Network, so just don't load.
       !isSecretNetwork(chainId)
       ? contractQueries.instantiate2Address(queryClient, {

@@ -1286,6 +1286,7 @@
     "percentagesRepresentVotingPower": "Percentages represent voting power.",
     "postedOnDate": "Posted on {{date}}",
     "preReleaseExplanation": "This is a pre-release version of DAO DAO running on the {{chain}} chain.",
+    "predictedAddress": "Predicted address",
     "pressDescriptionTooltip": "This description will be included with the post's NFT metadata and may show up in wallets or other places. Think of it as a brief description of the post.",
     "priceHistoryRange_day": "Every 5 minutes for the past day",
     "priceHistoryRange_hour": "Every 5 minutes for the past hour",

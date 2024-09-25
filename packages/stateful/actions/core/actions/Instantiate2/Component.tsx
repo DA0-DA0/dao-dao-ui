@@ -1,4 +1,4 @@
-import { Check, Close } from '@mui/icons-material'
+import { Check, Close, Tag } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +9,7 @@ import {
   Button,
   CodeMirrorInput,
   CopyToClipboard,
+  ErrorPage,
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
@@ -17,7 +18,11 @@ import {
   useActionOptions,
   useChain,
 } from '@dao-dao/stateless'
-import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
+import {
+  GenericTokenBalance,
+  LoadingData,
+  LoadingDataWithError,
+} from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   getNativeTokenForChainId,
@@ -46,14 +51,14 @@ export type Instantiate2Data = {
 
 export type Instantiate2Options = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
-  instantiatedAddress?: string
+  predictedAddress: LoadingDataWithError<string>
 }
 
 export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { instantiatedAddress, nativeBalances },
+  options: { predictedAddress, nativeBalances },
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
@@ -68,6 +73,8 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
     control,
     name: fieldNamePrefix + 'funds',
   })
+
+  const codeId = watch((fieldNamePrefix + 'codeId') as 'codeId')
 
   const nativeToken = getNativeTokenForChainId(chainId)
 
@@ -107,19 +114,6 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
           />
         </div>
       )}
-
-      <div className="flex flex-row items-center gap-6 text-text-primary">
-        <InputLabel name={t('form.instantiatedAddress') + ':'} />
-
-        {instantiatedAddress ? (
-          <CopyToClipboard
-            takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}
-            value={instantiatedAddress}
-          />
-        ) : (
-          <p className="caption-text">...</p>
-        )}
-      </div>
 
       <div className="flex flex-row items-center gap-2">
         <div className="flex flex-col items-stretch gap-1">
@@ -260,6 +254,31 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
         />
         <InputErrorMessage error={errors?.admin} />
       </div>
+
+      {!!codeId && !isNaN(codeId) && codeId > 0 && (
+        <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-background-tertiary border border-border-interactive-hover p-4 mt-1">
+          <div className="flex flex-row gap-1.5 items-center">
+            <Tag className="!h-6 !w-6" />
+
+            <p className="primary-text text-base shrink-0">
+              {t('info.predictedAddress')}
+            </p>
+          </div>
+
+          {predictedAddress.loading ? (
+            <p className="secondary-text">{t('info.loading')}</p>
+          ) : predictedAddress.errored ? (
+            <ErrorPage error={predictedAddress.error} />
+          ) : (
+            <CopyToClipboard
+              className="min-w-0"
+              takeAll
+              tooltip={t('button.clickToCopyAddress')}
+              value={predictedAddress.data}
+            />
+          )}
+        </div>
+      )}
     </>
   )
 }

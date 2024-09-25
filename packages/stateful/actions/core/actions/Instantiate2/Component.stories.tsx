@@ -52,6 +52,10 @@ Default.args = {
         },
       ],
     },
-    instantiatedAddress: '',
+    predictedAddress: {
+      loading: false,
+      errored: false,
+      data: 'contractAddress',
+    },
   },
 }

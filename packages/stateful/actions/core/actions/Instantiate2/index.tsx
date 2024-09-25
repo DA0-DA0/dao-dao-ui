@@ -1,14 +1,11 @@
-import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
+import { fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { nanoid } from 'nanoid'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { tokenQueries } from '@dao-dao/state/query'
-import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
   ActionBase,
   BabyAngelEmoji,
@@ -38,12 +35,12 @@ import {
   getAccountAddress,
   isDecodedStargateMsg,
   isSecretNetwork,
-  maybeGetChainForChainId,
   maybeMakeIcaExecuteMessages,
   maybeMakePolytoneExecuteMessages,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useGenerateInstantiate2 } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks'
 import {
   Instantiate2Data,
@@ -58,7 +55,7 @@ const ALLOWED_ACCOUNT_TYPES: readonly AccountType[] = [
 ]
 
 const Component: ActionComponent = (props) => {
-  const { context, address } = useActionOptions()
+  const { context } = useActionOptions()
 
   const { watch, setValue } = useFormContext<Instantiate2Data>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -87,16 +84,6 @@ const Component: ActionComponent = (props) => {
     }
   }, [chainId, context.accounts, props.fieldNamePrefix, sender, setValue])
 
-  // Load checksum of the contract code.
-  const codeDetailsLoadable = useRecoilValueLoadable(
-    chainId && codeId && !isNaN(codeId)
-      ? codeDetailsSelector({
-          chainId,
-          codeId,
-        })
-      : constSelector(undefined)
-  )
-
   const nativeBalances = useTokenBalances({
     filter: TokenType.Native,
     // Load selected tokens when not creating in case they are no longer
@@ -111,19 +98,12 @@ const Component: ActionComponent = (props) => {
         })),
   })
 
-  const chain = maybeGetChainForChainId(chainId)
-
-  const instantiatedAddress =
-    codeDetailsLoadable.state === 'hasValue' &&
-    codeDetailsLoadable.contents &&
-    chain
-      ? instantiate2Address(
-          fromHex(codeDetailsLoadable.contents.checksum),
-          address,
-          toUtf8(salt),
-          chain.bech32_prefix
-        )
-      : undefined
+  const predictedAddress = useGenerateInstantiate2({
+    chainId,
+    creator: sender,
+    codeId,
+    salt,
+  })
 
   return (
     <>
@@ -163,7 +143,7 @@ const Component: ActionComponent = (props) => {
                       token.chainId === chainId && owner.address === sender
                   ),
                 },
-            instantiatedAddress,
+            predictedAddress,
           }}
         />
       </ChainProvider>
