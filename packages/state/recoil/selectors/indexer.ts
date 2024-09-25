@@ -22,11 +22,11 @@ import {
   QuerySnapperOptions,
   SearchDaoProposalsOptions,
   SearchDaosOptions,
-  getRecentDaoProposals,
   loadMeilisearchClient,
   queryIndexer,
   queryIndexerUpStatus,
   querySnapper,
+  searchDaoProposals,
   searchDaos,
 } from '../../indexer'
 import {
@@ -224,10 +224,15 @@ export const searchDaosSelector = selectorFamily<
  */
 export const chainRecentDaoProposalsSelector = selectorFamily<
   DaoProposalSearchResult[],
-  SearchDaoProposalsOptions
+  Omit<SearchDaoProposalsOptions, 'recentFirst' | 'excludeHidden'>
 >({
   key: 'chainRecentDaoProposals',
-  get: (options) => async () => await getRecentDaoProposals(options),
+  get: (options) => async () =>
+    await searchDaoProposals({
+      ...options,
+      recentFirst: true,
+      excludeHidden: true,
+    }),
 })
 
 /**

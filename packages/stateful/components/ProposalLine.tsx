@@ -18,13 +18,12 @@ import { SuspenseLoader } from './SuspenseLoader'
 export const ProposalLine = ({
   chainId,
   coreAddress,
-  proposalId,
   ...props
 }: StatefulProposalLineProps) => {
   const existingDao = useDaoContextIfAvailable()?.dao
 
   const content = (
-    <ProposalModuleAdapterProvider proposalId={proposalId}>
+    <ProposalModuleAdapterProvider proposalId={props.proposalId}>
       <InnerProposalLine {...props} />
     </ProposalModuleAdapterProvider>
   )
@@ -51,13 +50,13 @@ export const ProposalLine = ({
 
 type InnerProposalLineProps = Pick<
   StatefulProposalLineProps,
-  'proposalViewUrl' | 'isPreProposeProposal' | 'onClick' | 'openInNewTab'
+  'proposalId' | 'proposalViewUrl' | 'onClick' | 'openInNewTab'
 >
 
 const InnerProposalLine = ({
+  proposalId,
   proposalViewUrl,
   onClick,
-  isPreProposeProposal,
   openInNewTab,
 }: InnerProposalLineProps) => {
   const { t } = useTranslation()
@@ -65,7 +64,7 @@ const InnerProposalLine = ({
     components: { ProposalLine, PreProposeApprovalProposalLine },
   } = useProposalModuleAdapter()
 
-  const Component = isPreProposeProposal
+  const Component = proposalId.includes('*')
     ? PreProposeApprovalProposalLine
     : ProposalLine
   if (!Component) {

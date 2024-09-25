@@ -327,7 +327,6 @@ export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
                       dao,
                       `${prefix}${id}`
                     ),
-                    isPreProposeProposal: false,
                   })
                 )
             ),

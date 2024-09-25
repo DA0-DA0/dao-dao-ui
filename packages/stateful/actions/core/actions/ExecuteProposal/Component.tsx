@@ -121,7 +121,6 @@ export const ExecuteProposalComponent: ActionComponent<
           <ProposalLine
             chainId={chainId}
             coreAddress={coreAddress}
-            isPreProposeProposal={false}
             openInNewTab
             proposalId={`${selectedProposalModule.prefix}${proposalId}`}
             proposalViewUrl={getDaoProposalPath(

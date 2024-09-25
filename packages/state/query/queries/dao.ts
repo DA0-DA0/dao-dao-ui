@@ -1,6 +1,7 @@
 import {
   FetchQueryOptions,
   QueryClient,
+  queryOptions,
   skipToken,
 } from '@tanstack/react-query'
 
@@ -22,6 +23,7 @@ import {
   isConfiguredChainName,
 } from '@dao-dao/utils'
 
+import { SearchDaoProposalsOptions, searchDaoProposals } from '../../indexer'
 import { accountQueries } from './account'
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
@@ -409,5 +411,13 @@ export const daoQueries = {
       contractAddress: address,
       formula: 'daoCore/approvalDaos',
       noFallback: true,
+    }),
+  /**
+   * Search DAO proposals.
+   */
+  searchProposals: (options: SearchDaoProposalsOptions) =>
+    queryOptions({
+      queryKey: ['dao', 'searchProposals', options],
+      queryFn: () => searchDaoProposals(options),
     }),
 }

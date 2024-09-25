@@ -58,9 +58,7 @@ export const ProposalList = <T extends { proposalId: string }>({
         <div className="mb-6 flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">{t('title.proposals')}</p>
 
-          {DiscordNotifierConfigureModal && proposalsExist && (
-            <DiscordNotifierConfigureModal />
-          )}
+          {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
         </div>
       )}
 

@@ -189,7 +189,6 @@ export const VetoProposalComponent: ActionComponent<VetoProposalOptions> = ({
               <ProposalLine
                 chainId={chainId}
                 coreAddress={coreAddress}
-                isPreProposeProposal={false}
                 openInNewTab
                 proposalId={`${selectedProposalModule.prefix}${proposalId}`}
                 proposalViewUrl={getDaoProposalPath(
@@ -275,7 +274,6 @@ export const VetoProposalComponent: ActionComponent<VetoProposalOptions> = ({
                 <ProposalLine
                   chainId={chainId}
                   coreAddress={coreAddress}
-                  isPreProposeProposal={false}
                   openInNewTab
                   proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
                   proposalViewUrl=""

@@ -4,6 +4,8 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
+import { ProposalModuleWithInfo } from './DaoDaoCore'
+
 export type Addr = string
 export type Uint128 = string
 export type Duration =
@@ -309,6 +311,7 @@ export interface ProposalResponse {
   hideFromSearch?: boolean
   dao?: string
   daoProposalId?: string
+  proposalModule?: ProposalModuleWithInfo
   createdAt?: string
   completedAt?: string
   executedAt?: string

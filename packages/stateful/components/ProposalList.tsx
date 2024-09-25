@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
+import { daoQueries } from '@dao-dao/state/query'
 import {
   daoVetoableDaosSelector,
   refreshProposalsIdAtom,
@@ -25,6 +26,7 @@ import {
 } from '@dao-dao/types'
 import {
   NEUTRON_GOVERNANCE_DAO,
+  chainIsIndexed,
   webSocketChannelNameForDao,
 } from '@dao-dao/utils'
 
@@ -32,6 +34,7 @@ import {
   useMembership,
   useOnCurrentDaoWebSocketMessage,
   useOnWebSocketMessage,
+  useQueryLoadingDataWithError,
 } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import { daosWithDropdownVetoableProposalListSelector } from '../recoil'
@@ -157,7 +160,7 @@ export const ProposalList = ({
                           limit: PROP_PAGINATE_LIMIT,
                         })
                       )
-                    : undefined
+                    : []
 
                 const preProposeCompletedProposalInfos =
                   selectors.reversePreProposeCompletedProposalInfos
@@ -167,7 +170,7 @@ export const ProposalList = ({
                           limit: PROP_PAGINATE_LIMIT,
                         })
                       )
-                    : undefined
+                    : []
 
                 return [
                   ...proposalInfos.map(
@@ -176,18 +179,18 @@ export const ProposalList = ({
                       ...info,
                     })
                   ),
-                  ...(preProposePendingProposalInfos?.map(
+                  ...preProposePendingProposalInfos.map(
                     (info): CommonProposalListInfoWithType => ({
                       type: ProposalType.PreProposePending,
                       ...info,
                     })
-                  ) ?? []),
-                  ...(preProposeCompletedProposalInfos?.map(
+                  ),
+                  ...preProposeCompletedProposalInfos.map(
                     (info): CommonProposalListInfoWithType => ({
                       type: ProposalType.PreProposeCompleted,
                       ...info,
                     })
-                  ) ?? []),
+                  ),
                 ].map((info) => ({
                   ...info,
                   proposalModule,
@@ -270,7 +273,6 @@ export const ProposalList = ({
 
             const transformIntoProps = ({
               id,
-              type,
               status,
             }: typeof newProposalInfos[number]): StatefulProposalLineProps & {
               status: ProposalStatus
@@ -284,9 +286,6 @@ export const ProposalList = ({
               onClick: onClickRef.current
                 ? () => onClickRef.current?.({ proposalId: id })
                 : undefined,
-              isPreProposeProposal:
-                type === ProposalType.PreProposePending ||
-                type === ProposalType.PreProposeCompleted,
               status,
             })
 
@@ -374,6 +373,21 @@ export const ProposalList = ({
     () => setRefreshProposalsId((id) => id + 1)
   )
 
+  const [search, setSearch] = useState('')
+  // Cannot search without an indexer on the chain.
+  const canSearch = chainIsIndexed(dao.chainId)
+  const showingSearchResults = canSearch && !!search && search.length > 0
+  const searchedProposals = useQueryLoadingDataWithError(
+    showingSearchResults
+      ? daoQueries.searchProposals({
+          chainId: dao.chainId,
+          dao: dao.coreAddress,
+          query: search,
+          limit: 20,
+        })
+      : undefined
+  )
+
   return (
     <StatelessProposalList
       {...props}
@@ -390,23 +404,65 @@ export const ProposalList = ({
           ? []
           : daosWithVetoableProposals.data
       }
+      error={
+        showingSearchResults && searchedProposals.errored
+          ? searchedProposals.error
+          : undefined
+      }
       isMember={isMember}
       loadMore={
         // Force no arguments.
         () => loadMore()
       }
-      loadingMore={loading}
+      loadingMore={
+        showingSearchResults
+          ? searchedProposals.loading || !!searchedProposals.updating
+          : loading
+      }
       openProposals={
-        // Show executable proposals at the top in place of open proposals.
-        onlyExecutable
+        showingSearchResults
+          ? []
+          : // Show executable proposals at the top in place of open proposals.
+          onlyExecutable
           ? historyProposals.filter(
               ({ status }) => status === ProposalStatusEnum.Passed
             )
           : openProposals
       }
+      searchBarProps={
+        canSearch
+          ? {
+              value: search,
+              onChange: (e) => setSearch(e.target.value),
+            }
+          : undefined
+      }
       sections={
-        // Show executable proposals at the top in place of open proposals.
-        onlyExecutable
+        showingSearchResults
+          ? [
+              {
+                title: t('title.results'),
+                proposals:
+                  searchedProposals.loading || searchedProposals.errored
+                    ? []
+                    : searchedProposals.data.flatMap(
+                        (proposal): StatefulProposalLineProps | [] =>
+                          proposal.value.daoProposalId
+                            ? {
+                                chainId: dao.chainId,
+                                coreAddress: dao.coreAddress,
+                                proposalId: proposal.value.daoProposalId,
+                                proposalViewUrl: getDaoProposalPath(
+                                  dao.coreAddress,
+                                  proposal.value.daoProposalId
+                                ),
+                              }
+                            : []
+                      ),
+              },
+            ]
+          : // Show executable proposals at the top in place of open proposals.
+          onlyExecutable
           ? []
           : [
               {
@@ -422,6 +478,7 @@ export const ProposalList = ({
               },
             ]
       }
+      showingSearchResults={showingSearchResults}
     />
   )
 }

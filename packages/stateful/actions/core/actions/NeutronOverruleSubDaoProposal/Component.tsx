@@ -50,7 +50,6 @@ export const NeutronOverruleSubDaoProposalComponent: ActionComponent<
         <ProposalLine
           chainId={chainId}
           coreAddress={coreAddress}
-          isPreProposeProposal={false}
           openInNewTab
           proposalId={proposalId}
           proposalViewUrl={getDaoProposalPath(coreAddress, proposalId)}

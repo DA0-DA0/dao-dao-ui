@@ -308,7 +308,6 @@ export const feedOpenProposalsSelector = selectorFamily<
                               coreAddress,
                               `${proposalModule.prefix}${id}`
                             ),
-                            isPreProposeProposal: false,
                           },
                         },
                         pending:

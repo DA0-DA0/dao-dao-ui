@@ -90,12 +90,35 @@ export type DaoProposalSearchResult = {
 }
 
 export type SearchDaoProposalsOptions = WithChainId<{
-  limit: number
+  /**
+   * Search query.
+   */
+  query?: string
+  /**
+   * Limit number of search results.
+   */
+  limit?: number
+  /**
+   * Only search proposals in a specific DAO.
+   */
+  dao?: string
+  /**
+   * Whether or not to sort by recently created first. Defaults to false.
+   */
+  recentFirst?: boolean
+  /**
+   * Exclude hidden DAOs. Defaults to false.
+   */
+  excludeHidden?: boolean
 }>
 
-export const getRecentDaoProposals = async ({
+export const searchDaoProposals = async ({
   chainId,
+  query,
   limit,
+  dao,
+  recentFirst,
+  excludeHidden,
 }: SearchDaoProposalsOptions): Promise<DaoProposalSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
@@ -106,20 +129,21 @@ export const getRecentDaoProposals = async ({
   const index = client.index(chainId + '_proposals')
 
   const results = await index.search<Omit<DaoProposalSearchResult, 'chainId'>>(
-    null,
+    query,
     {
       limit,
       filter: [
         // Exclude hidden DAOs.
-        'value.hideFromSearch NOT EXISTS OR value.hideFromSearch != true',
+        ...(excludeHidden
+          ? ['value.hideFromSearch NOT EXISTS OR value.hideFromSearch != true']
+          : []),
         // Ensure DAO and proposal ID exist.
-        'value.dao EXISTS',
+        dao ? `value.dao = "${dao}"` : 'value.dao EXISTS',
         'value.daoProposalId EXISTS',
       ]
         .map((filter) => `(${filter})`)
         .join(' AND '),
-      // Most recently created first.
-      sort: ['value.proposal.start_height:desc'],
+      sort: recentFirst ? ['value.proposal.start_height:desc'] : undefined,
     }
   )
 
