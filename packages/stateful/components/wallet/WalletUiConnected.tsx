@@ -22,7 +22,8 @@ const keplrExtensionWallet = keplrExtensionWallets[0]
 
 export const WalletUiConnected = ({
   walletRepo,
-}: Pick<WalletModalProps, 'walletRepo'>) => {
+  setOpen,
+}: WalletModalProps) => {
   const { t } = useTranslation()
 
   const {
@@ -55,7 +56,10 @@ export const WalletUiConnected = ({
           <ProfileImage
             imageUrl={profile.loading ? undefined : profile.data.imageUrl}
             loading={profile.loading}
-            onClick={() => setUpdateProfileNftVisible(true)}
+            onClick={() => {
+              setOpen(false)
+              setUpdateProfileNftVisible(true)
+            }}
             size="lg"
           />
           <Tooltip

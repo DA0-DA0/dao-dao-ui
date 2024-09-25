@@ -119,7 +119,7 @@ export const WalletUi = (props: WalletModalProps) => {
       {showWalletConnectQr ? (
         <WalletUiConnectQr walletRepo={walletRepo} />
       ) : isWalletConnected ? (
-        <WalletUiConnected walletRepo={walletRepo} />
+        <WalletUiConnected {...props} />
       ) : (
         <WalletUiWalletList
           connect={async (wallet) => {
