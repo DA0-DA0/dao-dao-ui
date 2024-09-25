@@ -169,11 +169,10 @@ export const Home = ({
               (chainGovDaos.loading || chainGovDaos.data.length > 0) &&
                 UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
             )}
-            // Margin offsets container padding.
+            contentContainerClassName="px-6"
             itemClassName="w-64"
             items={chainGovDaos}
-            // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
-            shadowClassName="w-[max((100%-64rem)/2,1.5rem)]"
+            shadowClassName="w-6"
           />
         </div>
       )}
@@ -206,10 +205,10 @@ export const Home = ({
             (featuredDaos.loading || featuredDaos.data.length > 0) &&
               UNDO_PAGE_PADDING_HORIZONTAL_CLASSES
           )}
+          contentContainerClassName="px-6"
           itemClassName="w-64"
           items={featuredDaos}
-          // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
-          shadowClassName="w-[max((100%-64rem)/2,1.5rem)]"
+          shadowClassName="w-6"
         />
       </div>
     </>

@@ -14,6 +14,7 @@ export interface HorizontalScrollerProps<P extends {}> {
   itemClassName?: string
   containerClassName?: string
   shadowClassName?: string
+  contentContainerClassName?: string
 }
 
 export const HorizontalScroller = <P extends {}>({
@@ -22,6 +23,7 @@ export const HorizontalScroller = <P extends {}>({
   itemClassName,
   containerClassName,
   shadowClassName,
+  contentContainerClassName,
 }: HorizontalScrollerProps<P>) => {
   const { t } = useTranslation()
 
@@ -76,7 +78,12 @@ export const HorizontalScroller = <P extends {}>({
           className="no-scrollbar w-full overflow-scroll"
           ref={scrollableContainerRef}
         >
-          <div className="flex w-max flex-row gap-2 py-1 sm:gap-3">
+          <div
+            className={clsx(
+              'flex w-max flex-row gap-2 py-1 sm:gap-3',
+              contentContainerClassName
+            )}
+          >
             {items.loading
               ? [...Array(5)].map((_, index) => (
                   <div key={index} className={itemClassName}>
