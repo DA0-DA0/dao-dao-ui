@@ -12,13 +12,13 @@ import {
 import {
   ModalLoader,
   SegmentedControls,
-  StakingMode,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
   LoadingDataWithError,
+  StakingMode,
 } from '@dao-dao/types'
 import { getNftKey, processError } from '@dao-dao/utils'
 

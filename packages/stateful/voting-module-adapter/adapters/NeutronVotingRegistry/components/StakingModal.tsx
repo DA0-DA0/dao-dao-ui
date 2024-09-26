@@ -1,11 +1,11 @@
 import { coins } from '@cosmjs/stargate'
 import { useQueries } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   genericTokenBalanceSelector,
   neutronVaultQueries,
@@ -16,11 +16,14 @@ import {
 } from '@dao-dao/state'
 import {
   ModalLoader,
-  StakingMode,
   StakingModal as StatelessStakingModal,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { BaseStakingModalProps, TokenInputOption } from '@dao-dao/types'
+import {
+  BaseStakingModalProps,
+  StakingMode,
+  TokenInputOption,
+} from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
@@ -262,7 +265,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: BigNumber(selectedVaultUnstakedTokens),
+              data: HugeDecimal.from(selectedVaultUnstakedTokens),
             }
       }
       loadingUnstakableTokens={
@@ -272,7 +275,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: BigNumber(selectedVaultStakedTokens),
+              data: HugeDecimal.from(selectedVaultStakedTokens),
             }
       }
       onAction={onAction}

@@ -1,10 +1,10 @@
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { TFunction } from 'next-i18next'
 import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   InputLabel,
@@ -133,19 +133,19 @@ export const ManageStakingComponent: ActionComponent<
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.amount) ||
-    BigNumber(0)
+    HugeDecimal.zero
   const sourceValidatorPendingRewards =
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.rewards) ||
-    BigNumber(0)
+    HugeDecimal.zero
 
   // If staking, maxAmount is denom treasury balance. Otherwise (for
   // undelegating and redelegating), maxAmount is the staked amount for the
   // source validator.
   const maxAmount =
     type === StakingActionType.Delegate
-      ? BigNumber(nativeBalance)
+      ? HugeDecimal.from(nativeBalance)
       : sourceValidatorStaked
 
   // Manually validate based on context.
@@ -177,8 +177,6 @@ export const ManageStakingComponent: ActionComponent<
       return true
     }
 
-    const humanReadableAmount = maxAmount.toFormat(6)
-
     // Logic for undelegating.
     if (type === StakingActionType.Undelegate) {
       return (
@@ -186,7 +184,7 @@ export const ManageStakingComponent: ActionComponent<
         (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
-              amount: humanReadableAmount,
+              amount: maxAmount.toHumanReadableString(nativeToken.decimals),
               tokenSymbol: nativeToken.symbol,
             }))
       )
@@ -208,7 +206,7 @@ export const ManageStakingComponent: ActionComponent<
         (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
-              amount: humanReadableAmount,
+              amount: maxAmount.toHumanReadableString(nativeToken.decimals),
               tokenSymbol: nativeToken.symbol,
             }))
       )
@@ -223,6 +221,7 @@ export const ManageStakingComponent: ActionComponent<
     t,
     amount,
     nativeToken.symbol,
+    nativeToken.decimals,
     sourceValidatorStaked,
     toValidator,
   ])

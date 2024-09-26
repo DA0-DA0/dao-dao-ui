@@ -1,9 +1,9 @@
-import { coins } from '@cosmjs/amino'
 import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { ComponentType, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   cw1WhitelistExtraQueries,
@@ -46,7 +46,6 @@ import {
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
   chainIsIndexed,
-  convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
@@ -597,10 +596,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
             : null,
         ])
 
-      const total = convertDenomToMicroDenomWithDecimals(
-        begin.amount,
-        token.decimals
-      )
+      const total = HugeDecimal.fromHumanReadable(begin.amount, token.decimals)
 
       const vestingDurationSeconds = begin.steps.reduce(
         (acc, { delay }) => acc + convertDurationWithUnitsToSeconds(delay),
@@ -664,14 +660,13 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
                       ...acc,
                       [
                         lastSeconds + delaySeconds,
-                        BigInt(
+                        HugeDecimal.from(
                           // For the last step, use total to avoid rounding
                           // issues.
                           index === begin.steps.length - 1
                             ? total
-                            : Math.round(
-                                Number(lastAmount) +
-                                  (percent / 100) * Number(total)
+                            : HugeDecimal.from(lastAmount).plus(
+                                total.times(percent / 100)
                               )
                         ).toString(),
                       ],
@@ -687,7 +682,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
               ).toString()
             : '',
         title: begin.title,
-        total: BigInt(total).toString(),
+        total: total.toString(),
         unbonding_duration_seconds:
           token.type === TokenType.Native &&
           token.denomOrAddress ===
@@ -710,7 +705,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
           msg: {
             instantiate_native_payroll_contract: msg,
           } as ExecuteMsg,
-          funds: coins(total, token.denomOrAddress),
+          funds: total.toCoins(token.denomOrAddress),
         })
       } else if (token.type === TokenType.Cw20) {
         // Execute CW20 send message.
@@ -720,7 +715,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
           sender: vestingSource.owner,
           msg: {
             send: {
-              amount: BigInt(total).toString(),
+              amount: total.toString(),
               contract: vestingSource.factory,
               msg: encodeJsonToBase64({
                 instantiate_payroll_contract: msg,

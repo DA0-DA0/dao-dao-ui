@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js'
 import { uniqBy } from 'lodash'
 import {
   selectorFamily,
@@ -7,6 +6,7 @@ import {
   waitForAny,
 } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AmountWithTimestamp,
@@ -392,7 +392,9 @@ export const genericTokenUndelegatingBalancesSelector = selectorFamily<
           }
           acc.push(existing)
         }
-        existing.balance = BigNumber(existing.balance).plus(balance).toString()
+        existing.balance = HugeDecimal.from(existing.balance)
+          .plus(balance)
+          .toString()
 
         return acc
       }, [] as GenericTokenBalance[])
@@ -643,7 +645,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           ({ balance, finishesAt }): UnstakingTask => ({
             token,
             status: UnstakingTaskStatus.Unstaking,
-            amount: BigNumber(balance.amount),
+            amount: HugeDecimal.from(balance.amount),
             date: finishesAt,
           })
         )
@@ -652,18 +654,18 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           ({ validator, delegated, pendingReward }) => ({
             token,
             validator,
-            amount: BigNumber(delegated.amount),
-            rewards: BigNumber(pendingReward.amount),
+            amount: HugeDecimal.from(delegated.amount),
+            rewards: HugeDecimal.from(pendingReward.amount),
           })
         )
 
         const totalStaked = stakes.reduce(
           (acc, stake) => acc.plus(stake.amount),
-          BigNumber(0)
+          HugeDecimal.zero
         )
         const totalPendingRewards = stakes.reduce(
           (acc, stake) => acc.plus(stake.rewards),
-          BigNumber(0)
+          HugeDecimal.zero
         )
         const totalUnstaking = unstakingTasks.reduce(
           (acc, task) =>
@@ -671,9 +673,9 @@ export const tokenCardLazyInfoSelector = selectorFamily<
               // Only include balance of unstaking tasks.
               task.status === UnstakingTaskStatus.Unstaking
                 ? task.amount
-                : BigNumber(0)
+                : HugeDecimal.zero
             ),
-          BigNumber(0)
+          HugeDecimal.zero
         )
 
         stakingInfo = {
@@ -699,7 +701,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           .filter(({ stakedBalance }) => stakedBalance.isPositive())
       }
 
-      const totalBalance = BigNumber(unstakedBalance)
+      const totalBalance = HugeDecimal.from(unstakedBalance)
         .plus(
           // Add staked and unstaking balances.
           stakingInfo
@@ -715,8 +717,9 @@ export const tokenCardLazyInfoSelector = selectorFamily<
             daosGoverned || [],
             ({ stakingContractAddress }) => stakingContractAddress
           ).reduce(
-            (acc, { stakedBalance }) => acc.plus(stakedBalance || BigNumber(0)),
-            BigNumber(0)
+            (acc, { stakedBalance }) =>
+              acc.plus(stakedBalance || HugeDecimal.zero),
+            HugeDecimal.zero
           )
         )
 
@@ -780,7 +783,7 @@ export const tokenDaosWithStakedBalanceSelector = selectorFamily<
   {
     coreAddress: string
     stakingContractAddress: string
-    stakedBalance: BigNumber
+    stakedBalance: HugeDecimal
   }[],
   WithChainId<{
     type: TokenType
@@ -840,7 +843,7 @@ export const tokenDaosWithStakedBalanceSelector = selectorFamily<
         .map(({ coreAddress, stakingContractAddress }, index) => ({
           coreAddress,
           stakingContractAddress,
-          stakedBalance: BigNumber(daosWalletStakedTokens[index]),
+          stakedBalance: HugeDecimal.from(daosWalletStakedTokens[index]),
         }))
         // Sort descending by staked tokens.
         .sort((a, b) => b.stakedBalance.minus(a.stakedBalance).toNumber())

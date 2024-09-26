@@ -19,7 +19,6 @@ import {
 import { ChainWalletBase } from '@cosmos-kit/core'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
@@ -28,6 +27,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   genericTokenBalanceSelector,
@@ -157,7 +157,7 @@ export const SelfRelayExecuteModal = ({
   )
   // Amount funded once funding is complete.
   const [fundedAmount, setFundedAmount] = useState<
-    Record<string, BigNumber | undefined>
+    Record<string, HugeDecimal | undefined>
   >({})
   const [executeTx, setExecuteTx] =
     useState<Pick<IndexedTx, 'events' | 'height'>>()
@@ -167,7 +167,7 @@ export const SelfRelayExecuteModal = ({
   }>()
   // Amount refunded once refunding is complete.
   const [refundedAmount, setRefundedAmount] = useState<
-    Record<string, BigNumber | undefined>
+    Record<string, HugeDecimal | undefined>
   >({})
 
   // If relay fails and user decides to refund and cancel, this will be set to
@@ -458,8 +458,8 @@ export const SelfRelayExecuteModal = ({
 
       const fundsNeeded =
         // Give a little extra to cover the authz tx fee.
-        BigNumber(getRelayerFundsRef.current(chainId) * 1.2).minus(
-          currentBalance.amount
+        HugeDecimal.from(getRelayerFundsRef.current(chainId) * 1.2).minus(
+          currentBalance
         )
 
       let msgs: EncodeObject[] = fundsNeeded.isPositive()
@@ -470,8 +470,7 @@ export const SelfRelayExecuteModal = ({
               {
                 bank: {
                   send: {
-                    amount: coins(
-                      fundsNeeded.toString(),
+                    amount: fundsNeeded.toCoins(
                       relayer.feeToken.denomOrAddress
                     ),
                     to_address: relayer.relayerAddress,
@@ -507,13 +506,11 @@ export const SelfRelayExecuteModal = ({
       }
 
       // Get new balance of relayer wallet.
-      const newBalance = BigNumber(
-        (
-          await relayer.client.query.bank.balance(
-            relayer.relayerAddress,
-            relayer.feeToken.denomOrAddress
-          )
-        ).amount
+      const newBalance = HugeDecimal.from(
+        await relayer.client.query.bank.balance(
+          relayer.relayerAddress,
+          relayer.feeToken.denomOrAddress
+        )
       )
       setFundedAmount((prev) => ({
         ...prev,
@@ -1044,8 +1041,8 @@ export const SelfRelayExecuteModal = ({
         // @ts-ignore
         client.gasPrice
       )
-      const remainingTokensAfterFee = BigNumber(remainingTokens.amount).minus(
-        fee.amount[0].amount
+      const remainingTokensAfterFee = HugeDecimal.from(remainingTokens).minus(
+        fee.amount[0]
       )
 
       // Send remaining tokens if there are more than enough to pay the fee.
@@ -1053,7 +1050,7 @@ export const SelfRelayExecuteModal = ({
         await client.sign.sendTokens(
           relayerAddress,
           wallet.address,
-          coins(remainingTokensAfterFee.toString(), feeDenom),
+          remainingTokensAfterFee.toCoins(feeDenom),
           fee
         )
 
@@ -1173,9 +1170,9 @@ export const SelfRelayExecuteModal = ({
 
                     const funds =
                       !relayerFunds.loading && !relayerFunds.errored
-                        ? BigNumber(relayerFunds.data[index].amount)
+                        ? HugeDecimal.from(relayerFunds.data[index])
                         : // Use the previously funded amount if the step is past.
-                          fundedAmount[chain_id] ?? BigNumber(0)
+                          fundedAmount[chain_id] ?? HugeDecimal.zero
                     const empty = funds.isZero()
 
                     const funded = funds.gte(
@@ -1394,7 +1391,8 @@ export const SelfRelayExecuteModal = ({
                           : 0
                       const empty = funds === 0
 
-                      const refunded = refundedAmount[chain_id] ?? BigNumber(0)
+                      const refunded =
+                        refundedAmount[chain_id] ?? HugeDecimal.zero
 
                       return (
                         <Fragment key={chain_id}>

@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   cwVestingExtraQueries,
@@ -102,7 +102,7 @@ export const VestingPaymentCard = ({
       usdUnitPrice: undefined,
       stakingInfo: undefined,
       // Unused. We just want the USD price and staking info.
-      totalBalance: BigNumber(0),
+      totalBalance: HugeDecimal.zero,
     }
   )
 

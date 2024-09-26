@@ -1,8 +1,8 @@
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
@@ -63,9 +63,9 @@ export const ProfileCardMemberInfoTokens = ({
             // Only include balance of ready to claim tasks.
             task.status === UnstakingTaskStatus.ReadyToClaim
               ? task.amount
-              : BigNumber(0)
+              : HugeDecimal.zero
           ),
-        BigNumber(0)
+        HugeDecimal.zero
       ),
     [unstakingTasks]
   )
@@ -77,9 +77,9 @@ export const ProfileCardMemberInfoTokens = ({
             // Only include balance of unstaking tasks.
             task.status === UnstakingTaskStatus.Unstaking
               ? task.amount
-              : BigNumber(0)
+              : HugeDecimal.zero
           ),
-        BigNumber(0)
+        HugeDecimal.zero
       ),
     [unstakingTasks]
   )
@@ -89,14 +89,14 @@ export const ProfileCardMemberInfoTokens = ({
         (acc, task) => ({
           ...acc,
           [task.token.denomOrAddress]: (
-            acc[task.token.denomOrAddress] || BigNumber(0)
+            acc[task.token.denomOrAddress] || HugeDecimal.zero
           ).plus(
             task.status === UnstakingTaskStatus.Unstaking
               ? task.amount
-              : BigNumber(0)
+              : HugeDecimal.zero
           ),
         }),
-        {} as Partial<Record<string, BigNumber>>
+        {} as Partial<Record<string, HugeDecimal>>
       ),
     [unstakingTasks]
   )

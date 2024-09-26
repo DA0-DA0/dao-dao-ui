@@ -4,13 +4,13 @@ import {
   CopyAll,
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { ComponentType, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
@@ -125,11 +125,11 @@ export const VestingPaymentCard = ({
 
   const totalStaked = lazyStakes.reduce(
     (acc, stake) => acc.plus(stake.amount),
-    BigNumber(0)
+    HugeDecimal.zero
   )
   const pendingRewards = lazyStakes?.reduce(
     (acc, stake) => acc.plus(stake.rewards),
-    BigNumber(0)
+    HugeDecimal.zero
   )
   const unstakingBalance = lazyUnstakingTasks.reduce(
     (acc, task) =>
@@ -137,9 +137,9 @@ export const VestingPaymentCard = ({
         // Only include balance of unstaking tasks.
         task.status === UnstakingTaskStatus.Unstaking
           ? task.amount
-          : BigNumber(0)
+          : HugeDecimal.zero
       ),
-    BigNumber(0)
+    HugeDecimal.zero
   )
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)

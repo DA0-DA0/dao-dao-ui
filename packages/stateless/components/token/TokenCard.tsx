@@ -4,12 +4,12 @@ import {
   CopyAll,
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -58,15 +58,15 @@ export const TokenCard = ({
 
   const totalStaked =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? BigNumber(0)
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalStaked
   const totalPendingRewards =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? BigNumber(0)
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalPendingRewards
   const totalUnstaking =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? BigNumber(0)
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalUnstaking
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)

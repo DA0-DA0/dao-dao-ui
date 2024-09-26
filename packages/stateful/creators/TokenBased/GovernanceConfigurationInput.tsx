@@ -1,5 +1,4 @@
 import { Add } from '@mui/icons-material'
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -8,6 +7,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
   genericTokenSelector,
@@ -278,7 +278,7 @@ export const GovernanceConfigurationInput = ({
     const existingTokenSupply =
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
-          ? BigNumber(existingGovernanceTokenSupply.contents).toString()
+          ? HugeDecimal.from(existingGovernanceTokenSupply.contents).toString()
           : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
     setValue('creator.data.existingTokenSupply', existingTokenSupply)

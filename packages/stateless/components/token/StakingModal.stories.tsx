@@ -1,11 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { CHAIN_ID } from '@dao-dao/storybook'
+import { StakingMode } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { StakingModal, StakingMode } from './StakingModal'
+import { StakingModal } from './StakingModal'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / token / StakingModal',
@@ -24,9 +25,15 @@ StakeUnstake.args = {
   loading: false,
   initialMode: StakingMode.Stake,
   proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: BigNumber(23456) },
+  loadingStakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(23456, 6),
+  },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: BigNumber(65432) },
+  loadingUnstakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(65432, 6),
+  },
   unstakingDuration: {
     time: 86400,
   },
@@ -38,9 +45,15 @@ Claim.args = {
   loading: false,
   initialMode: StakingMode.Claim,
   proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: BigNumber(23456) },
+  loadingStakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(23456, 6),
+  },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: BigNumber(65432) },
+  loadingUnstakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(65432, 6),
+  },
   unstakingDuration: {
     time: 86400,
   },

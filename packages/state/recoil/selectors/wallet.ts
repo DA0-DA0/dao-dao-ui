@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js'
 import {
   Loadable,
   atomFamily,
@@ -8,6 +7,7 @@ import {
   waitForAny,
 } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountTxSave,
   AccountType,
@@ -387,12 +387,12 @@ export const walletTokenCardInfosSelector = selectorFamily<
               owner,
               token,
               isGovernanceToken: false,
-              unstakedBalance: BigNumber(balance),
+              unstakedBalance: HugeDecimal.from(balance),
               hasStakingInfo,
               lazyInfo: loadableToLoadingData(lazyInfo, {
                 usdUnitPrice: undefined,
                 stakingInfo: undefined,
-                totalBalance: BigNumber(balance),
+                totalBalance: HugeDecimal.from(balance),
               }),
             }
 
@@ -405,7 +405,9 @@ export const walletTokenCardInfosSelector = selectorFamily<
             return []
           }
 
-          const unstakedBalance = BigNumber(cw20Contracts[index].balance || '0')
+          const unstakedBalance = HugeDecimal.from(
+            cw20Contracts[index].balance || 0
+          )
 
           const lazyInfo = get(
             noWait(

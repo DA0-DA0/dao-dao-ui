@@ -1,7 +1,7 @@
-import { BigNumber } from 'bignumber.js'
 import { useMemo } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   Loader,
@@ -64,7 +64,7 @@ export const ProfileProposalCard = () => {
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? BigNumber(0)
+      ? HugeDecimal.zero
       : proposalModuleDepositInfosLoadable.contents
           .filter(
             (depositInfo): depositInfo is CheckedDepositInfo =>
@@ -75,8 +75,9 @@ export const ProfileProposalCard = () => {
           )
           // Get max.
           .reduce(
-            (acc, { amount }) => (acc.gt(amount) ? acc : BigNumber(amount)),
-            BigNumber(0)
+            (acc, { amount }) =>
+              acc.gt(amount) ? acc : HugeDecimal.from(amount),
+            HugeDecimal.zero
           )
 
   // If wallet is a member right now as opposed to when the proposal was open.

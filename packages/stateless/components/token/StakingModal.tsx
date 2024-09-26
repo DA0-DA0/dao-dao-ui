@@ -1,7 +1,7 @@
-import { BigNumber } from 'bignumber.js'
 import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { LoadingData } from '@dao-dao/types'
 import {
   StakingModalProps,
@@ -25,8 +25,6 @@ import { Modal } from '../modals/Modal'
 import { Tooltip } from '../tooltip/Tooltip'
 import { ValidatorPicker } from '../ValidatorPicker'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
-
-export * from '@dao-dao/types/components/StakingModal'
 
 export const StakingModal = ({
   initialMode,
@@ -69,14 +67,14 @@ export const StakingModal = ({
       data:
         validatorPicker.stakes?.find(
           (stake) => stake.validator.address === targetValidator
-        )?.amount ?? BigNumber(0),
+        )?.amount ?? HugeDecimal.zero,
     }
   }
   // If not choosing a validator and no unstakable amount passed, assume 0.
   else if (!loadingUnstakableTokens) {
     loadingUnstakableTokens = {
       loading: false,
-      data: BigNumber(0),
+      data: HugeDecimal.zero,
     }
   }
 
@@ -251,7 +249,7 @@ export const StakingModal = ({
 interface StakeUnstakeModesBodyProps {
   amount: number
   mode: StakingMode
-  loadingMax: LoadingData<BigNumber>
+  loadingMax: LoadingData<HugeDecimal>
   setAmount: (newAmount: number) => void
   tokenSymbol: string
   tokenDecimals: number

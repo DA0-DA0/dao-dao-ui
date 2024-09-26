@@ -1,9 +1,9 @@
 import { coin, parseCoins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   nativeUnstakingDurationSecondsSelector,
@@ -94,16 +94,13 @@ const InnerComponent: ActionComponent = (props) => {
     ? { loading: true }
     : {
         loading: false,
-        data: coin(
-          BigInt(
-            balances.data.find(
-              ({ token: { chainId, denomOrAddress } }) =>
-                chainId === nativeToken.chainId &&
-                denomOrAddress === nativeToken.denomOrAddress
-            )?.balance ?? 0
-          ).toString(),
-          nativeToken.denomOrAddress
-        ),
+        data: HugeDecimal.from(
+          balances.data.find(
+            ({ token: { chainId, denomOrAddress } }) =>
+              chainId === nativeToken.chainId &&
+              denomOrAddress === nativeToken.denomOrAddress
+          )?.balance ?? 0
+        ).toCoin(nativeToken.denomOrAddress),
       }
 
   const address = getChainAddressForActionOptions(options, chainId)
@@ -227,8 +224,8 @@ const InnerComponent: ActionComponent = (props) => {
                 ({ validator, delegated, pendingReward }) => ({
                   token: nativeToken,
                   validator,
-                  amount: BigNumber(delegated.amount),
-                  rewards: BigNumber(pendingReward.amount),
+                  amount: HugeDecimal.from(delegated.amount),
+                  rewards: HugeDecimal.from(pendingReward.amount),
                 })
               ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,

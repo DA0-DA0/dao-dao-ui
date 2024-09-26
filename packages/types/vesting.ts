@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js'
+import { HugeDecimal } from '@dao-dao/math'
 
 import { Vest } from './contracts/CwVesting'
 import { GenericToken } from './token'
@@ -112,15 +112,15 @@ export type VestingInfo = {
     | undefined
     | null
   // Amount vested so far.
-  vested: string
+  vested: HugeDecimal
   // Amount available to distribute.
-  distributable: string
+  distributable: HugeDecimal
   // Total amount being vested.
-  total: string
+  total: HugeDecimal
   // The stakable balance. This is the unstaked amount still in the vesting
   // contract. It may be vested or not, but it is definitely not claimed nor
   // staked.
-  stakable: string
+  stakable: HugeDecimal
   // Slashes on staked or unstaked tokens that have occurred during the vest.
   slashes: VestingValidatorWithSlashes[]
   // Whether or not all slashes have been registered.
@@ -137,7 +137,7 @@ export type VestingInfo = {
 export type VestingStep = {
   timestamp: number
   // Total amount vested at this timestamp.
-  amount: BigNumber
+  amount: HugeDecimal
 }
 
 export type CwVestingStakeEvent = {

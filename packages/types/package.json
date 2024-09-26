@@ -13,7 +13,7 @@
   "dependencies": {
     "@chain-registry/types": "^0.41.3",
     "@cosmos-kit/web3auth": "^2.8.0",
-    "bignumber.js": "^9.1.2",
+    "@dao-dao/math": "2.5.0-rc.3",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
     "react": "^18.2.0",

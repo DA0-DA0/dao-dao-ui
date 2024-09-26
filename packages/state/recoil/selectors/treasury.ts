@@ -1,9 +1,9 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { Event, IndexedTx } from '@cosmjs/stargate'
-import { BigNumber } from 'bignumber.js'
 import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AccountType,
@@ -293,12 +293,12 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 owner: account,
                 token,
                 isGovernanceToken,
-                unstakedBalance: BigNumber(balance),
+                unstakedBalance: HugeDecimal.from(balance),
                 hasStakingInfo,
                 lazyInfo: loadableToLoadingData(lazyInfo, {
                   usdUnitPrice: undefined,
                   stakingInfo: undefined,
-                  totalBalance: BigNumber(balance),
+                  totalBalance: HugeDecimal.from(balance),
                 }),
               }
             }

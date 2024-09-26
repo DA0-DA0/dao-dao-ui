@@ -8,13 +8,13 @@ import { stakingLoadingAtom } from '@dao-dao/state'
 import {
   ModalLoader,
   SegmentedControls,
-  StakingMode,
   useDaoContext,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
   LoadingDataWithError,
+  StakingMode,
 } from '@dao-dao/types'
 import { MsgExecuteContract } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { MsgTransferONFT } from '@dao-dao/types/protobuf/codegen/OmniFlix/onft/v1beta1/tx'

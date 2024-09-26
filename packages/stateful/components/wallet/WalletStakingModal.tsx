@@ -1,10 +1,10 @@
 import { coin } from '@cosmjs/stargate'
 import { useQueryClient } from '@tanstack/react-query'
-import BigNumber from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { chainQueries } from '@dao-dao/state/query'
 import {
   nativeUnstakingDurationSecondsSelector,
@@ -12,12 +12,14 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   StakingModal,
-  StakingModalProps,
-  StakingMode,
   useCachedLoadable,
   useChainContext,
 } from '@dao-dao/stateless'
-import { cwMsgToEncodeObject } from '@dao-dao/types'
+import {
+  StakingModalProps,
+  StakingMode,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
@@ -61,9 +63,9 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           address: walletAddress,
         })
       : undefined,
-    BigNumber(0),
+    HugeDecimal.zero,
     {
-      transform: ({ amount }) => BigNumber(amount),
+      transform: ({ amount }) => HugeDecimal.from(amount),
     }
   )
 
@@ -93,8 +95,8 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       delegations.map(({ validator, delegated, pendingReward }) => ({
         token: nativeToken,
         validator,
-        amount: BigNumber(delegated.amount),
-        rewards: BigNumber(pendingReward.amount),
+        amount: HugeDecimal.from(delegated.amount),
+        rewards: HugeDecimal.from(pendingReward.amount),
       }))
   )
   const stakes =

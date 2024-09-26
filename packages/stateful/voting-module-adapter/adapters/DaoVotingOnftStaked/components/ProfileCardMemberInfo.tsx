@@ -1,9 +1,9 @@
-import { BigNumber } from 'bignumber.js'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
@@ -139,7 +139,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsPending ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
-      amount: BigNumber(1),
+      amount: HugeDecimal.one,
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -151,7 +151,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsAvailable ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
-      amount: BigNumber(1),
+      amount: HugeDecimal.one,
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,

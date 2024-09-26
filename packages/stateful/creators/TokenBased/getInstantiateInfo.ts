@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ChainId,
   DaoCreatorGetInstantiateInfo,
@@ -8,7 +9,6 @@ import { InitialBalance } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
   NEW_DAO_TOKEN_DECIMALS,
   convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   isSecretNetwork,
 } from '@dao-dao/utils'
@@ -73,26 +73,26 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ({ weight, members }) =>
         members.map(({ address }) => ({
           address,
-          amount: convertDenomToMicroDenomStringWithDecimals(
-            // Governance Token-based DAOs distribute tier weights evenly
-            // amongst members.
-            (weight / members.length / 100) * initialSupply,
-            NEW_DAO_TOKEN_DECIMALS
-          ),
+          // Governance Token-based DAOs distribute tier weights evenly amongst
+          // members.
+          amount: HugeDecimal.from(
+            (weight / members.length / 100) * initialSupply
+          ).toHumanReadableString(NEW_DAO_TOKEN_DECIMALS),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the remaining tokens
     // after the member weights are distributed.
-    const microInitialTreasuryBalance = BigInt(
-      convertDenomToMicroDenomWithDecimals(
-        initialSupply,
-        NEW_DAO_TOKEN_DECIMALS
-      ) -
+    const microInitialTreasuryBalance = HugeDecimal.fromHumanReadable(
+      initialSupply,
+      NEW_DAO_TOKEN_DECIMALS
+    )
+      .minus(
         microInitialBalances.reduce(
-          (acc, { amount }) => acc + Number(amount),
-          0
+          (acc, { amount }) => acc.plus(amount),
+          HugeDecimal.zero
         )
-    ).toString()
+      )
+      .toString()
 
     // Secret Network only supports creating new CW20 DAOs (SNIP20). Native
     // tokens are supported on other chains. This should never happen, but just

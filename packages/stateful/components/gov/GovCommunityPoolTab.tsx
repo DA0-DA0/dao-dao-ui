@@ -1,6 +1,6 @@
-import { BigNumber } from 'bignumber.js'
 import { waitForAny } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   communityPoolBalancesSelector,
   tokenCardLazyInfoSelector,
@@ -37,7 +37,7 @@ export const GovCommunityPoolTab = () => {
             isGovernanceToken:
               getNativeTokenForChainId(token.chainId).denomOrAddress ===
               token.denomOrAddress,
-            unstakedBalance: BigNumber(balance),
+            unstakedBalance: HugeDecimal.from(balance),
             hasStakingInfo: false,
             lazyInfo: { loading: true },
           })

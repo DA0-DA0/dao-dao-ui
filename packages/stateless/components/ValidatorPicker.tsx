@@ -1,9 +1,9 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   PopupTriggerCustomComponent,
   ValidatorPickerProps,
@@ -42,7 +42,7 @@ export const ValidatorPicker = ({
       ...acc,
       [stake.validator.address]: stake.amount,
     }),
-    {} as Record<string, BigNumber | undefined>
+    {} as Record<string, HugeDecimal | undefined>
   )
 
   // Sort staked first, then by total staked tokens (i.e. voting power and

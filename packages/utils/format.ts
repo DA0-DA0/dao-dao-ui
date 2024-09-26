@@ -78,6 +78,7 @@ export const formatTime = (date: Date) => timeFormatter.format(date)
 export const isoStringForLocalDateString = (dateString: string) =>
   new Date(dateString).toISOString()
 
+// TODO(huge): replace with HugeDecimal
 // Select number of decimal digits, rounding down / truncating.
 export const toFixedDown = (value: number, digits: number) => {
   // If contains scientific notation, truncate and use BigInt to get rid of it.

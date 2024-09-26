@@ -1,5 +1,6 @@
-import { BigNumber } from 'bignumber.js'
 import { ComponentType } from 'react'
+
+import { HugeDecimal } from '@dao-dao/math'
 
 import { Account } from './account'
 import { ChainId, Validator } from './chain'
@@ -131,7 +132,7 @@ export enum UnstakingTaskStatus {
 export type UnstakingTask = {
   token: GenericToken
   status: UnstakingTaskStatus
-  amount: BigNumber
+  amount: HugeDecimal
   // If unstaking or ready to claim, date it will be/was unstaked.
   // If claimed, date it was claimed.
   date?: Date
@@ -140,8 +141,8 @@ export type UnstakingTask = {
 export type TokenStake = {
   token: GenericToken
   validator: Validator
-  amount: BigNumber
-  rewards: BigNumber
+  amount: HugeDecimal
+  rewards: HugeDecimal
 }
 
 export type TokenCardLazyInfo = {
@@ -151,20 +152,20 @@ export type TokenCardLazyInfo = {
         unstakingTasks: UnstakingTask[]
         unstakingDurationSeconds: number | undefined
         stakes: TokenStake[]
-        totalStaked: BigNumber
-        totalPendingRewards: BigNumber
-        totalUnstaking: BigNumber
+        totalStaked: HugeDecimal
+        totalPendingRewards: HugeDecimal
+        totalUnstaking: HugeDecimal
       }
     | undefined
   // unstakedBalance + totalStaked + totalUnstaking
-  totalBalance: BigNumber
+  totalBalance: HugeDecimal
   // Display DAOs that the token is used as governance in, and optionally an
   // amount of staked tokens. This is used to display how much a wallet has
   // staked.
   daosGoverned?: {
     coreAddress: string
     stakingContractAddress: string
-    stakedBalance?: BigNumber
+    stakedBalance?: HugeDecimal
   }[]
 }
 
@@ -173,7 +174,7 @@ export type TokenCardInfo = {
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string
-  unstakedBalance: BigNumber
+  unstakedBalance: HugeDecimal
   /**
    * Only native tokens load staking info for now, so let's show a nice loader.
    */

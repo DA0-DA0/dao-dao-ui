@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +9,7 @@ import {
   waitForAll,
 } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20StakeSelectors,
   refreshDaoVotingPowerAtom,
@@ -18,11 +18,10 @@ import {
 } from '@dao-dao/state'
 import {
   ModalLoader,
-  StakingMode,
   StakingModal as StatelessStakingModal,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { BaseStakingModalProps } from '@dao-dao/types'
+import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
@@ -353,7 +352,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: BigNumber(loadingUnstakedBalance.data),
+              data: HugeDecimal.from(loadingUnstakedBalance.data),
             }
       }
       loadingUnstakableTokens={
@@ -361,7 +360,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: BigNumber(loadingWalletStakedValue.data),
+              data: HugeDecimal.from(loadingWalletStakedValue.data),
             }
       }
       onAction={onAction}

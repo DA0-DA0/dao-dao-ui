@@ -1014,7 +1014,7 @@ export class SpendAction extends ActionBase<SpendData> {
 
         // Nanoseconds to milliseconds.
         _absoluteIbcTimeout: Number(
-          decodedMessage.stargate.value.timeoutTimestamp / BigInt(1e6)
+          BigInt(decodedMessage.stargate.value.timeoutTimestamp) / BigInt(1e6)
         ),
 
         _ibcData: {

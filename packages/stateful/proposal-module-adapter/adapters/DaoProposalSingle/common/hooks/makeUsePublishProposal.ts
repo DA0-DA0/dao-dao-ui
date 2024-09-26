@@ -1,10 +1,10 @@
 import { coins } from '@cosmjs/stargate'
-import { BigNumber } from 'bignumber.js'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { Cw20BaseSelectors, nativeDenomBalanceSelector } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
@@ -60,8 +60,8 @@ export const makeUsePublishProposal =
       'native' in depositInfo.contents.denom
         ? depositInfo.contents.denom.native
         : undefined
-    const requiredProposalDeposit = BigNumber(
-      depositInfo.valueMaybe()?.amount ?? '0'
+    const requiredProposalDeposit = HugeDecimal.from(
+      depositInfo.valueMaybe()?.amount ?? 0
     )
 
     // For checking allowance and increasing if necessary.

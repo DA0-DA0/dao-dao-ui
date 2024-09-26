@@ -67,7 +67,7 @@ export const VestingPaymentLine = ({
 
             <div className="hidden md:block">
               {/* Only show balance available to withdraw if nonzero. */}
-              {distributable !== '0' && (
+              {distributable.isPositive() && (
                 <TokenAmountDisplay
                   amount={convertMicroDenomToDenomWithDecimals(
                     distributable,

@@ -1,9 +1,9 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import uniq from 'lodash.uniq'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AllGovParams,
   ChainId,
@@ -1220,11 +1220,11 @@ export const fetchGovProposalVotes = async (
   /**
    * Paginated votes with staked amounts.
    */
-  votes: (Vote & { staked: BigNumber })[]
+  votes: (Vote & { staked: HugeDecimal })[]
   /**
    * Total votes cast.
    */
-  total: number
+  total: HugeDecimal
 }> => {
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
 
@@ -1253,9 +1253,9 @@ export const fetchGovProposalVotes = async (
   return {
     votes: votes.map((vote, index) => ({
       ...vote,
-      staked: BigNumber(stakes[index].amount),
+      staked: HugeDecimal.from(stakes[index].amount),
     })),
-    total: Number(pagination?.total ?? 0),
+    total: HugeDecimal.from(pagination?.total ?? 0),
   }
 }
 

@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   cwVestingExtraQueries,
@@ -15,12 +15,16 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   StakingModal,
-  StakingModalProps,
-  StakingMode,
   useCachedLoadable,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
+import {
+  ActionKey,
+  StakingModalProps,
+  StakingMode,
+  TokenStake,
+  VestingInfo,
+} from '@dao-dao/types'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   getDaoProposalSinglePrefill,
@@ -300,7 +304,7 @@ export const VestingStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: BigNumber(stakable),
+        data: HugeDecimal.from(stakable),
       }}
       onAction={onAction}
       setAmount={setAmount}

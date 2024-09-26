@@ -1,9 +1,9 @@
 import { fromBech32, toBech32, toHex } from '@cosmjs/encoding'
 import { UseQueryResult } from '@tanstack/react-query'
-import { BigNumber } from 'bignumber.js'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   CachedLoadable,
   Duration,
@@ -17,37 +17,23 @@ import { Expiration } from '@dao-dao/types/contracts/common'
 import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
-// TODO(bignumber): output BigNumber
+// TODO(huge): replace with HugeDecimal
 export const convertMicroDenomToDenomWithDecimals = (
-  amount: number | string | bigint | BigNumber,
+  amount: HugeDecimal.Value,
   decimals: number
-): number => {
-  amount = BigNumber(
-    typeof amount === 'bigint' ? amount.toString() : amount
-  ).div(Math.pow(10, decimals))
-  return amount.isNaN() ? 0 : amount.toNumber()
-}
+): number => HugeDecimal.from(amount).toHumanReadableNumber(decimals)
 
-// TODO(bignumber): output BigNumber
+// TODO(huge): replace with HugeDecimal
 export const convertDenomToMicroDenomWithDecimals = (
-  amount: number | string | bigint | BigNumber,
+  amount: HugeDecimal.Value,
   decimals: number
-) => {
-  amount = BigNumber(typeof amount === 'bigint' ? amount.toString() : amount)
-    .multipliedBy(Math.pow(10, decimals))
-    .integerValue()
-  return amount.isNaN() ? 0 : amount.toNumber()
-}
+) => HugeDecimal.fromHumanReadable(amount, decimals).toNumber()
 
+// TODO(huge): replace with HugeDecimal
 export const convertDenomToMicroDenomStringWithDecimals = (
-  amount: number | string | bigint | BigNumber,
+  amount: HugeDecimal.Value,
   decimals: number
-) => {
-  amount = BigNumber(typeof amount === 'bigint' ? amount.toString() : amount)
-    .multipliedBy(Math.pow(10, decimals))
-    .integerValue()
-  return amount.toString()
-}
+): string => HugeDecimal.fromHumanReadable(amount, decimals).toString()
 
 export function convertFromMicroDenom(denom: string) {
   return denom?.substring(1).toUpperCase()

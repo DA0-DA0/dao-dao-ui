@@ -5,13 +5,13 @@ import {
   SubdirectoryArrowRightRounded,
   WarningRounded,
 } from '@mui/icons-material'
-import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { ComponentType, useCallback, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ChainProvider,
@@ -202,7 +202,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
       const lastMs =
         index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp
-      const lastAmount = index === 0 ? BigNumber(0) : acc[acc.length - 1].amount
+      const lastAmount =
+        index === 0 ? HugeDecimal.zero : acc[acc.length - 1].amount
 
       return [
         ...acc,

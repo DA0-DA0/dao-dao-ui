@@ -1,8 +1,8 @@
-import { BigNumber } from 'bignumber.js'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   DaoSplashHeader,
   useAppContext,
@@ -55,7 +55,7 @@ export const HomeTab = () => {
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? BigNumber(0)
+      ? HugeDecimal.zero
       : proposalModuleDepositInfosLoadable.contents
           .filter(
             (depositInfo): depositInfo is CheckedDepositInfo =>
@@ -66,8 +66,9 @@ export const HomeTab = () => {
           )
           // Get max.
           .reduce(
-            (acc, { amount }) => (acc.gt(amount) ? acc : BigNumber(amount)),
-            BigNumber(0)
+            (acc, { amount }) =>
+              acc.gt(amount) ? acc : HugeDecimal.from(amount),
+            HugeDecimal.zero
           )
 
   const hasRewardDistributors =

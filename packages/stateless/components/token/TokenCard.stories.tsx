@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { BigNumber } from 'bignumber.js'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { EntityDisplay } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import {
@@ -44,14 +44,14 @@ export const token: GenericToken = {
 
 export const makeProps = (isGovernanceToken = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
-  const unstakedBalance = BigNumber(
-    Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
+  const unstakedBalance = HugeDecimal.from(
+    Math.floor(Math.random() * (10000 * 1e6) + 1e6)
   )
   const stakes: TokenStake[] = [
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
+      amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
       validator: {
         address: 'stakefish',
         moniker: 'Stakefish',
@@ -61,12 +61,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: BigNumber(1.23),
+      rewards: HugeDecimal.fromHumanReadable(1.23, 6),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
+      amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
       validator: {
         address: '2x4ben',
         moniker: '2x4 Ben',
@@ -76,12 +76,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: BigNumber(4.56),
+      rewards: HugeDecimal.fromHumanReadable(4.56, 6),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
+      amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
       validator: {
         address: 'cosmostation',
         moniker: 'Cosmostation',
@@ -91,12 +91,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: BigNumber(7.89),
+      rewards: HugeDecimal.fromHumanReadable(7.89, 6),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
+      amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
       validator: {
         address: 'sg1',
         moniker: 'SG-1',
@@ -106,18 +106,18 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: BigNumber(10.11),
+      rewards: HugeDecimal.fromHumanReadable(10.11, 6),
     },
   ]
 
   const unstakingTasks = makeUnstakingModalProps('TOKEN').tasks
   const totalStaked = stakes.reduce(
     (acc, stake) => acc.plus(stake.amount),
-    BigNumber(0)
+    HugeDecimal.zero
   )
   const totalPendingRewards = stakes.reduce(
     (acc, stake) => acc.plus(stake.rewards),
-    BigNumber(0)
+    HugeDecimal.zero
   )
   const totalUnstaking = unstakingTasks.reduce(
     (acc, task) =>
@@ -125,9 +125,9 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         // Only include balance of unstaking tasks.
         task.status === UnstakingTaskStatus.Unstaking
           ? task.amount
-          : BigNumber(0)
+          : HugeDecimal.zero
       ),
-    BigNumber(0)
+    HugeDecimal.zero
   )
 
   return {

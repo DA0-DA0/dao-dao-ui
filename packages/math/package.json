@@ -1,0 +1,18 @@
+{
+  "name": "@dao-dao/math",
+  "version": "2.5.0-rc.3",
+  "license": "BSD-3-Clause-Clear",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "bignumber.js": "^9.1.2"
+  },
+  "devDependencies": {
+    "@dao-dao/config": "2.5.0-rc.3",
+    "typescript": "5.3.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "gitHead": "d7b959f412c3990123b0e2afb11f32acd9c3764c"
+}
