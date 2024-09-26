@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { BigNumber } from 'bignumber.js'
 
 import { ButtonLink, EntityDisplay } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
@@ -69,12 +70,12 @@ Default.args = {
     {
       // Started 2 days ago.
       timestamp: Date.now() - 1000 * 60 * 60 * 24 * 2,
-      amount: 0,
+      amount: BigNumber(0),
     },
     {
       // Ends in 7 days.
       timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7,
-      amount: 403221.5447,
+      amount: BigNumber(403221.5447),
     },
   ],
 }

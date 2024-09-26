@@ -5,6 +5,7 @@ import {
   SubdirectoryArrowRightRounded,
   WarningRounded,
 } from '@mui/icons-material'
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { ComponentType, useCallback, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -201,13 +202,13 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
       const lastMs =
         index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp
-      const lastAmount = index === 0 ? 0 : acc[acc.length - 1].amount
+      const lastAmount = index === 0 ? BigNumber(0) : acc[acc.length - 1].amount
 
       return [
         ...acc,
         {
           timestamp: lastMs + delayMs,
-          amount: lastAmount + (percent / 100) * watchAmount,
+          amount: lastAmount.plus((percent / 100) * watchAmount),
         },
       ]
     }, [] as VestingStep[])

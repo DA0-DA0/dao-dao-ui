@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { TFunction } from 'next-i18next'
 import { ComponentType, useCallback, useEffect } from 'react'
@@ -132,22 +133,19 @@ export const ManageStakingComponent: ActionComponent<
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.amount) ||
-    0
+    BigNumber(0)
   const sourceValidatorPendingRewards =
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.rewards) ||
-    0
+    BigNumber(0)
 
   // If staking, maxAmount is denom treasury balance. Otherwise (for
   // undelegating and redelegating), maxAmount is the staked amount for the
   // source validator.
   const maxAmount =
     type === StakingActionType.Delegate
-      ? convertMicroDenomToDenomWithDecimals(
-          nativeBalance,
-          nativeToken.decimals
-        )
+      ? BigNumber(nativeBalance)
       : sourceValidatorStaked
 
   // Manually validate based on context.
@@ -179,15 +177,13 @@ export const ManageStakingComponent: ActionComponent<
       return true
     }
 
-    const humanReadableAmount = maxAmount.toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    })
+    const humanReadableAmount = maxAmount.toFormat(6)
 
     // Logic for undelegating.
     if (type === StakingActionType.Undelegate) {
       return (
-        Number(amount) <= sourceValidatorStaked ||
-        (sourceValidatorStaked === 0
+        sourceValidatorStaked.gte(amount) ||
+        (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
               amount: humanReadableAmount,
@@ -208,8 +204,8 @@ export const ManageStakingComponent: ActionComponent<
       }
 
       return (
-        Number(amount) <= sourceValidatorStaked ||
-        (sourceValidatorStaked === 0
+        sourceValidatorStaked.gte(amount) ||
+        (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
               amount: humanReadableAmount,
@@ -253,9 +249,12 @@ export const ManageStakingComponent: ActionComponent<
   // high. We don't want to make this an error because often people want to
   // spend funds that a previous action makes available, so just show a warning.
   const delegateWarning =
-    isCreating && amount > maxAmount && type === StakingActionType.Delegate
+    isCreating && maxAmount.lt(amount) && type === StakingActionType.Delegate
       ? t('error.insufficientFundsWarning', {
-          amount: maxAmount.toLocaleString(undefined, {
+          amount: convertMicroDenomToDenomWithDecimals(
+            maxAmount,
+            nativeToken.decimals
+          ).toLocaleString(undefined, {
             maximumFractionDigits: nativeToken.decimals,
           }),
           tokenSymbol: nativeToken.symbol,
@@ -376,7 +375,7 @@ export const ManageStakingComponent: ActionComponent<
           // If claiming rewards, show pending rewards if not executed, and
           // claimed rewards if executed.
           (executed && !!claimedRewards) ||
-          (!executed && sourceValidatorPendingRewards > 0)) &&
+          (!executed && sourceValidatorPendingRewards.isPositive())) &&
         // Only show balance if creating.
         isCreating && (
           <div className="flex flex-row items-center gap-2">
@@ -393,13 +392,14 @@ export const ManageStakingComponent: ActionComponent<
             </p>
 
             <TokenAmountDisplay
-              amount={
+              amount={convertMicroDenomToDenomWithDecimals(
                 type === StakingActionType.WithdrawDelegatorReward
                   ? executed
-                    ? claimedRewards ?? 0
+                    ? claimedRewards ?? 0n
                     : sourceValidatorPendingRewards
-                  : maxAmount
-              }
+                  : maxAmount,
+                nativeToken.decimals
+              )}
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
               showFullAmount

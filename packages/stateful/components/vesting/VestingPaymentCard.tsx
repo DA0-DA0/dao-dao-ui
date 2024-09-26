@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -94,14 +95,14 @@ export const VestingPaymentCard = ({
         owner: vestingContractAddress,
         token,
         // Unused. We just want the USD price and staking info.
-        unstakedBalance: 0,
+        unstakedBalance: '0',
       })
     ),
     {
       usdUnitPrice: undefined,
       stakingInfo: undefined,
       // Unused. We just want the USD price and staking info.
-      totalBalance: 0,
+      totalBalance: BigNumber(0),
     }
   )
 

@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js'
+
 import { Duration } from '../contracts/common'
 import { DOmit, LoadingData } from '../misc'
 import { GenericToken } from '../token'
@@ -25,9 +27,9 @@ export interface StakingModalProps {
   // The number of tokens that are unstakable. If undefined, will not be shown.
   // If `validatorPicker` is present, unstakable tokens will depend on the
   // chosen validator.
-  loadingUnstakableTokens?: LoadingData<number>
+  loadingUnstakableTokens?: LoadingData<BigNumber>
   // The number of tokens that are stakable.
-  loadingStakableTokens: LoadingData<number>
+  loadingStakableTokens: LoadingData<BigNumber>
   // The duration for unstaking.
   unstakingDuration: Duration | null
   // Token that is being staked.

@@ -10,6 +10,7 @@ import {
 } from '@dao-dao/types'
 
 import { getChainForChainName, getIbcTransferInfoFromChannel } from './chain'
+import { convertMicroDenomToDenomWithDecimals } from './conversion'
 import { objectMatchesStructure } from './objectMatchesStructure'
 
 export const tokensEqual = (
@@ -132,11 +133,17 @@ export const sortTokensValueDescending: SortFn<
   const aPrice =
     a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
+      : convertMicroDenomToDenomWithDecimals(
+          a.lazyInfo.data.totalBalance,
+          a.token.decimals
+        ) * a.lazyInfo.data.usdUnitPrice.usdPrice
   const bPrice =
     b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
+      : convertMicroDenomToDenomWithDecimals(
+          b.lazyInfo.data.totalBalance,
+          b.token.decimals
+        ) * b.lazyInfo.data.usdUnitPrice.usdPrice
 
   // If prices are equal, sort alphabetically by symbol.
   return aPrice === bPrice

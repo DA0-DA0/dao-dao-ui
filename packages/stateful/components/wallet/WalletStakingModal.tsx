@@ -1,5 +1,6 @@
 import { coin } from '@cosmjs/stargate'
 import { useQueryClient } from '@tanstack/react-query'
+import BigNumber from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -20,7 +21,6 @@ import { cwMsgToEncodeObject } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
 
@@ -61,10 +61,9 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           address: walletAddress,
         })
       : undefined,
-    0,
+    BigNumber(0),
     {
-      transform: ({ amount }) =>
-        convertMicroDenomToDenomWithDecimals(amount, nativeToken.decimals),
+      transform: ({ amount }) => BigNumber(amount),
     }
   )
 
@@ -94,14 +93,8 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       delegations.map(({ validator, delegated, pendingReward }) => ({
         token: nativeToken,
         validator,
-        amount: convertMicroDenomToDenomWithDecimals(
-          delegated.amount,
-          nativeToken.decimals
-        ),
-        rewards: convertMicroDenomToDenomWithDecimals(
-          pendingReward.amount,
-          nativeToken.decimals
-        ),
+        amount: BigNumber(delegated.amount),
+        rewards: BigNumber(pendingReward.amount),
       }))
   )
   const stakes =

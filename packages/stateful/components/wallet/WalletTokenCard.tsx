@@ -71,7 +71,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     tokenCardLazyInfoSelector({
       owner: props.owner.address,
       token: props.token,
-      unstakedBalance: props.unstakedBalance,
+      unstakedBalance: props.unstakedBalance.toString(),
     }),
     {
       usdUnitPrice: undefined,

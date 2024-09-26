@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +12,7 @@ import {
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 import {
+  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   humanReadableList,
   secondsToWdhms,
@@ -57,22 +59,28 @@ export const ProfileCardMemberInfoTokens = ({
     () =>
       unstakingTasks.reduce(
         (acc, task) =>
-          acc +
-          // Only include balance of ready to claim tasks.
-          (task.status === UnstakingTaskStatus.ReadyToClaim ? task.amount : 0),
-        0
-      ) ?? 0,
+          acc.plus(
+            // Only include balance of ready to claim tasks.
+            task.status === UnstakingTaskStatus.ReadyToClaim
+              ? task.amount
+              : BigNumber(0)
+          ),
+        BigNumber(0)
+      ),
     [unstakingTasks]
   )
   const totalUnstakingBalance = useMemo(
     () =>
       unstakingTasks.reduce(
         (acc, task) =>
-          acc +
-          // Only include balance of unstaking tasks.
-          (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-        0
-      ) ?? 0,
+          acc.plus(
+            // Only include balance of unstaking tasks.
+            task.status === UnstakingTaskStatus.Unstaking
+              ? task.amount
+              : BigNumber(0)
+          ),
+        BigNumber(0)
+      ),
     [unstakingTasks]
   )
   const unstakingBalanceByToken = useMemo(
@@ -80,11 +88,15 @@ export const ProfileCardMemberInfoTokens = ({
       unstakingTasks.reduce(
         (acc, task) => ({
           ...acc,
-          [task.token.denomOrAddress]:
-            (acc[task.token.denomOrAddress] || 0) +
-            (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+          [task.token.denomOrAddress]: (
+            acc[task.token.denomOrAddress] || BigNumber(0)
+          ).plus(
+            task.status === UnstakingTaskStatus.Unstaking
+              ? task.amount
+              : BigNumber(0)
+          ),
         }),
-        {} as Partial<Record<string, number>>
+        {} as Partial<Record<string, BigNumber>>
       ),
     [unstakingTasks]
   )
@@ -223,18 +235,22 @@ export const ProfileCardMemberInfoTokens = ({
 
         {/* Show unstaking balance if any are unstaking or claimable or if they are a member. */}
         {!hideUnstaking &&
-          (isMember || totalUnstakingBalance > 0 || claimableBalance > 0) && (
+          (isMember ||
+            totalUnstakingBalance.isPositive() ||
+            claimableBalance.isPositive()) && (
             <div className="flex flex-row items-center justify-between">
               <p>{t('title.unstakingTokens')}</p>
 
               <Button
                 className={clsx(
                   'text-right font-mono underline-offset-2',
-                  totalUnstakingBalance === 0 && 'text-text-tertiary'
+                  totalUnstakingBalance.isZero() && 'text-text-tertiary'
                 )}
                 contentContainerClassName="justify-end flex flex-col items-end"
                 onClick={() => setShowUnstakingTokens(true)}
-                variant={totalUnstakingBalance > 0 ? 'underline' : 'none'}
+                variant={
+                  totalUnstakingBalance.isPositive() ? 'underline' : 'none'
+                }
               >
                 {!loadingTokens.loading &&
                   (onlyOneToken
@@ -246,9 +262,10 @@ export const ProfileCardMemberInfoTokens = ({
                   ).map(({ token }) => (
                     <TokenAmountDisplay
                       key={token.denomOrAddress}
-                      amount={
-                        unstakingBalanceByToken[token.denomOrAddress] || 0
-                      }
+                      amount={convertMicroDenomToDenomWithDecimals(
+                        unstakingBalanceByToken[token.denomOrAddress] || 0n,
+                        token.decimals
+                      )}
                       decimals={token.decimals}
                       symbol={token.symbol}
                     />
@@ -259,7 +276,7 @@ export const ProfileCardMemberInfoTokens = ({
       </div>
 
       <div className="mt-6 flex flex-col gap-2">
-        {claimableBalance > 0 && (
+        {claimableBalance.isPositive() && (
           <Button
             contentContainerClassName="justify-center"
             disabled={stakingLoading}
@@ -276,7 +293,10 @@ export const ProfileCardMemberInfoTokens = ({
             !onlyOneToken
               ? t('button.claimYourTokens')
               : t('button.claimNumTokens', {
-                  amount: claimableBalance.toLocaleString(undefined, {
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    claimableBalance,
+                    loadingTokens.data[0].token.decimals
+                  ).toLocaleString(undefined, {
                     maximumFractionDigits: loadingTokens.data[0].token.decimals,
                   }),
                   tokenSymbol: onlyTokenSymbol,

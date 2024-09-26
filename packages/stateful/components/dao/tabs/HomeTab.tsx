@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
@@ -54,19 +55,20 @@ export const HomeTab = () => {
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? 0
-      : Math.max(
-          ...proposalModuleDepositInfosLoadable.contents
-            .filter(
-              (depositInfo): depositInfo is CheckedDepositInfo =>
-                !!depositInfo &&
-                ('cw20' in depositInfo.denom
-                  ? depositInfo.denom.cw20
-                  : depositInfo.denom.native) === governanceDenomOrAddress
-            )
-            .map(({ amount }) => Number(amount)),
-          0
-        )
+      ? BigNumber(0)
+      : proposalModuleDepositInfosLoadable.contents
+          .filter(
+            (depositInfo): depositInfo is CheckedDepositInfo =>
+              !!depositInfo &&
+              ('cw20' in depositInfo.denom
+                ? depositInfo.denom.cw20
+                : depositInfo.denom.native) === governanceDenomOrAddress
+          )
+          // Get max.
+          .reduce(
+            (acc, { amount }) => (acc.gt(amount) ? acc : BigNumber(amount)),
+            BigNumber(0)
+          )
 
   const hasRewardDistributors =
     getDaoRewardDistributors(dao.info.items).length > 0
@@ -89,8 +91,8 @@ export const HomeTab = () => {
             {isWalletConnected && !isSecretNetworkPermitNeeded ? (
               <ProfileCardMemberInfo
                 maxGovernanceTokenDeposit={
-                  maxGovernanceTokenProposalModuleDeposit > 0
-                    ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
+                  maxGovernanceTokenProposalModuleDeposit.isPositive()
+                    ? maxGovernanceTokenProposalModuleDeposit.toString()
                     : undefined
                 }
               />

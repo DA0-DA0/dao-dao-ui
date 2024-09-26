@@ -1,4 +1,5 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import uniq from 'lodash.uniq'
 
 import { ChainId, GenericTokenBalance, TokenType } from '@dao-dao/types'
@@ -43,7 +44,7 @@ export const fetchNeutronIbcTransferFee = async (
         token: tokens.find((token) => token.denomOrAddress === denom)!,
         balance: fees
           .filter(({ denom: feeDenom }) => feeDenom === denom)
-          .reduce((acc, { amount }) => acc + BigInt(amount), 0n)
+          .reduce((acc, { amount }) => acc.plus(amount), BigNumber(0))
           .toString(),
       })),
     }

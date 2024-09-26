@@ -1,5 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { Event, IndexedTx } from '@cosmjs/stargate'
+import { BigNumber } from 'bignumber.js'
 import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
@@ -248,11 +249,6 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
               balance,
               isGovernanceToken = false,
             }): TokenCardInfo | [] => {
-              const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-                balance,
-                token.decimals
-              )
-
               let hasStakingInfo = false
               // Staking info only exists for native token.
               if (
@@ -288,7 +284,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                   tokenCardLazyInfoSelector({
                     owner: account.address,
                     token,
-                    unstakedBalance,
+                    unstakedBalance: balance,
                   })
                 )
               )
@@ -297,12 +293,12 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 owner: account,
                 token,
                 isGovernanceToken,
-                unstakedBalance,
+                unstakedBalance: BigNumber(balance),
                 hasStakingInfo,
                 lazyInfo: loadableToLoadingData(lazyInfo, {
                   usdUnitPrice: undefined,
                   stakingInfo: undefined,
-                  totalBalance: unstakedBalance,
+                  totalBalance: BigNumber(balance),
                 }),
               }
             }

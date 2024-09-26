@@ -4,6 +4,7 @@ import {
   CopyAll,
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { ComponentType, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -24,6 +25,7 @@ import {
 } from '@dao-dao/types'
 import {
   abbreviateString,
+  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   isNativeIbcUsdc,
   secondsToWdhms,
@@ -121,18 +123,24 @@ export const VestingPaymentCard = ({
       ? []
       : lazyInfo.data.stakingInfo.unstakingTasks
 
-  const totalStaked =
-    lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-  const pendingRewards =
-    lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-  const unstakingBalance =
-    lazyUnstakingTasks.reduce(
-      (acc, task) =>
-        acc +
+  const totalStaked = lazyStakes.reduce(
+    (acc, stake) => acc.plus(stake.amount),
+    BigNumber(0)
+  )
+  const pendingRewards = lazyStakes?.reduce(
+    (acc, stake) => acc.plus(stake.rewards),
+    BigNumber(0)
+  )
+  const unstakingBalance = lazyUnstakingTasks.reduce(
+    (acc, task) =>
+      acc.plus(
         // Only include balance of unstaking tasks.
-        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-      0
-    ) ?? 0
+        task.status === UnstakingTaskStatus.Unstaking
+          ? task.amount
+          : BigNumber(0)
+      ),
+    BigNumber(0)
+  )
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
@@ -546,7 +554,14 @@ export const VestingPaymentCard = ({
                 <p className="secondary-text">{t('title.staked')}</p>
 
                 <TokenAmountDisplay
-                  amount={lazyInfo.loading ? { loading: true } : totalStaked}
+                  amount={
+                    lazyInfo.loading
+                      ? { loading: true }
+                      : convertMicroDenomToDenomWithDecimals(
+                          totalStaked,
+                          token.decimals
+                        )
+                  }
                   className="caption-text text-right font-mono text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}
@@ -600,20 +615,25 @@ export const VestingPaymentCard = ({
                 <Button
                   className={clsx(
                     'caption-text text-right font-mono underline-offset-2',
-                    unstakingBalance > 0 && 'text-text-body',
+                    unstakingBalance.isPositive() && 'text-text-body',
                     lazyInfo.loading && 'animate-pulse !text-text-body'
                   )}
                   disabled={lazyInfo.loading}
                   onClick={() => setShowUnstakingTokens(true)}
                   variant={
-                    lazyInfo.loading || unstakingBalance === 0
+                    lazyInfo.loading || unstakingBalance.isZero()
                       ? 'none'
                       : 'underline'
                   }
                 >
                   <TokenAmountDisplay
                     amount={
-                      lazyInfo.loading ? { loading: true } : unstakingBalance
+                      lazyInfo.loading
+                        ? { loading: true }
+                        : convertMicroDenomToDenomWithDecimals(
+                            unstakingBalance,
+                            token.decimals
+                          )
                     }
                     decimals={token.decimals}
                     symbol={token.symbol}
@@ -625,7 +645,14 @@ export const VestingPaymentCard = ({
                 <p className="secondary-text">{t('info.pendingRewards')}</p>
 
                 <TokenAmountDisplay
-                  amount={lazyInfo.loading ? { loading: true } : pendingRewards}
+                  amount={
+                    lazyInfo.loading
+                      ? { loading: true }
+                      : convertMicroDenomToDenomWithDecimals(
+                          pendingRewards,
+                          token.decimals
+                        )
+                  }
                   className="caption-text text-right font-mono text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}

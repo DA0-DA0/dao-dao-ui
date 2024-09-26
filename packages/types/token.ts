@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { ComponentType } from 'react'
 
 import { Account } from './account'
@@ -130,7 +131,7 @@ export enum UnstakingTaskStatus {
 export type UnstakingTask = {
   token: GenericToken
   status: UnstakingTaskStatus
-  amount: number
+  amount: BigNumber
   // If unstaking or ready to claim, date it will be/was unstaked.
   // If claimed, date it was claimed.
   date?: Date
@@ -139,8 +140,8 @@ export type UnstakingTask = {
 export type TokenStake = {
   token: GenericToken
   validator: Validator
-  amount: number
-  rewards: number
+  amount: BigNumber
+  rewards: BigNumber
 }
 
 export type TokenCardLazyInfo = {
@@ -150,20 +151,20 @@ export type TokenCardLazyInfo = {
         unstakingTasks: UnstakingTask[]
         unstakingDurationSeconds: number | undefined
         stakes: TokenStake[]
-        totalStaked: number
-        totalPendingRewards: number
-        totalUnstaking: number
+        totalStaked: BigNumber
+        totalPendingRewards: BigNumber
+        totalUnstaking: BigNumber
       }
     | undefined
   // unstakedBalance + totalStaked + totalUnstaking
-  totalBalance: number
+  totalBalance: BigNumber
   // Display DAOs that the token is used as governance in, and optionally an
   // amount of staked tokens. This is used to display how much a wallet has
   // staked.
   daosGoverned?: {
     coreAddress: string
     stakingContractAddress: string
-    stakedBalance?: number
+    stakedBalance?: BigNumber
   }[]
 }
 
@@ -172,11 +173,15 @@ export type TokenCardInfo = {
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string
-  unstakedBalance: number
-  // Only native tokens load staking info for now, so let's show a nice loader.
+  unstakedBalance: BigNumber
+  /**
+   * Only native tokens load staking info for now, so let's show a nice loader.
+   */
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
-  // If defined, adds a color indicator.
+  /**
+   * If defined, adds a color indicator.
+   */
   color?: string
   /**
    * Whether or not to hide the chain icon on tokens.

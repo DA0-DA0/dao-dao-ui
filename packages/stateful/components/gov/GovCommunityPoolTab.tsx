@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { waitForAny } from 'recoil'
 
 import {
@@ -15,11 +16,7 @@ import {
   useTokenSortOptions,
 } from '@dao-dao/stateless'
 import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  getNativeTokenForChainId,
-  loadableToLoadingData,
-} from '@dao-dao/utils'
+import { getNativeTokenForChainId, loadableToLoadingData } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
 import { GovTokenLine } from './GovTokenLine'
@@ -33,23 +30,18 @@ export const GovCommunityPoolTab = () => {
     }),
     (data) =>
       data
-        .map(({ owner, token, balance }): TokenCardInfo => {
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            balance,
-            token.decimals
-          )
-
-          return {
+        .map(
+          ({ owner, token, balance }): TokenCardInfo => ({
             owner,
             token,
             isGovernanceToken:
               getNativeTokenForChainId(token.chainId).denomOrAddress ===
               token.denomOrAddress,
-            unstakedBalance,
+            unstakedBalance: BigNumber(balance),
             hasStakingInfo: false,
             lazyInfo: { loading: true },
-          }
-        })
+          })
+        )
         // Sort governance token first and factory tokens last.
         .sort((a, b) => {
           if (a.isGovernanceToken) {
@@ -83,7 +75,7 @@ export const GovCommunityPoolTab = () => {
             tokenCardLazyInfoSelector({
               owner: owner.address,
               token,
-              unstakedBalance,
+              unstakedBalance: unstakedBalance.toString(),
             })
           )
         )

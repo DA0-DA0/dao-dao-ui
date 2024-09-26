@@ -1,4 +1,5 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -41,7 +42,7 @@ export const ValidatorPicker = ({
       ...acc,
       [stake.validator.address]: stake.amount,
     }),
-    {} as Record<string, number | undefined>
+    {} as Record<string, BigNumber | undefined>
   )
 
   // Sort staked first, then by total staked tokens (i.e. voting power and
@@ -53,7 +54,7 @@ export const ValidatorPicker = ({
 
     // If both validators have a stake, sort by stake.
     if (aStake && bStake) {
-      return bStake - aStake
+      return bStake.minus(aStake).toNumber()
     }
     // If only one validator has a stake, sort that one first.
     else if (aStake) {
@@ -152,7 +153,10 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={existingStake.amount}
+                      amount={convertMicroDenomToDenomWithDecimals(
+                        existingStake.amount,
+                        existingStake.token.decimals
+                      )}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}
@@ -165,7 +169,10 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={existingStake.rewards}
+                      amount={convertMicroDenomToDenomWithDecimals(
+                        existingStake.rewards,
+                        existingStake.token.decimals
+                      )}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}

@@ -1,5 +1,6 @@
 import { coin, parseCoins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -46,7 +47,7 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   StakingActionType,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
@@ -226,14 +227,8 @@ const InnerComponent: ActionComponent = (props) => {
                 ({ validator, delegated, pendingReward }) => ({
                   token: nativeToken,
                   validator,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    delegated.amount,
-                    nativeToken.decimals
-                  ),
-                  rewards: convertMicroDenomToDenomWithDecimals(
-                    pendingReward.amount,
-                    nativeToken.decimals
-                  ),
+                  amount: BigNumber(delegated.amount),
+                  rewards: BigNumber(pendingReward.amount),
                 })
               ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,
@@ -344,12 +339,11 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       chainId
     )
     const nativeToken = getNativeTokenForChainId(chainId)
-    const microAmount = convertDenomToMicroDenomWithDecimals(
-      macroAmount,
-      nativeToken.decimals
-    )
     const amount = coin(
-      BigInt(microAmount).toString(),
+      convertDenomToMicroDenomStringWithDecimals(
+        macroAmount,
+        nativeToken.decimals
+      ),
       nativeToken.denomOrAddress
     )
 

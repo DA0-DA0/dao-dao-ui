@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +23,6 @@ import {
 import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   processError,
@@ -300,10 +300,7 @@ export const VestingStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(
-          stakable,
-          nativeToken.decimals
-        ),
+        data: BigNumber(stakable),
       }}
       onAction={onAction}
       setAmount={setAmount}

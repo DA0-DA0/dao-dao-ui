@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
+  convertMicroDenomToDenomWithDecimals,
   getDisplayNameForChainId,
   getFallbackImage,
   shortenTokenSymbol,
@@ -97,7 +98,12 @@ export const TokenLine = <T extends TokenCardInfo>(
 
         <TokenAmountDisplay
           amount={
-            lazyInfo.loading ? { loading: true } : lazyInfo.data.totalBalance
+            lazyInfo.loading
+              ? { loading: true }
+              : convertMicroDenomToDenomWithDecimals(
+                  lazyInfo.data.totalBalance,
+                  token.decimals
+                )
           }
           className="body-text truncate text-right font-mono"
           decimals={token.decimals}
@@ -113,8 +119,10 @@ export const TokenLine = <T extends TokenCardInfo>(
               amount={
                 lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
                   ? { loading: true }
-                  : lazyInfo.data.totalBalance *
-                    lazyInfo.data.usdUnitPrice.usdPrice
+                  : convertMicroDenomToDenomWithDecimals(
+                      lazyInfo.data.totalBalance,
+                      token.decimals
+                    ) * lazyInfo.data.usdUnitPrice.usdPrice
               }
               className="caption-text font-mono"
               dateFetched={

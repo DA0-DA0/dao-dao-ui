@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -352,10 +353,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                loadingUnstakedBalance.data,
-                governanceToken.decimals
-              ),
+              data: BigNumber(loadingUnstakedBalance.data),
             }
       }
       loadingUnstakableTokens={
@@ -363,10 +361,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                loadingWalletStakedValue.data,
-                governanceToken.decimals
-              ),
+              data: BigNumber(loadingWalletStakedValue.data),
             }
       }
       onAction={onAction}

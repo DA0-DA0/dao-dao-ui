@@ -56,7 +56,7 @@ export const DaoTokenCard = ({
     tokenCardLazyInfoSelector({
       owner: owner.address,
       token,
-      unstakedBalance,
+      unstakedBalance: unstakedBalance.toString(),
     }),
     {
       usdUnitPrice: undefined,
@@ -101,7 +101,9 @@ export const DaoTokenCard = ({
   const lazyStakes = lazyInfo.loading
     ? []
     : lazyInfo.data.stakingInfo?.stakes ?? []
-  const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
+  const stakesWithRewards = lazyStakes.filter(({ rewards }) =>
+    rewards.isPositive()
+  )
 
   const nativeToken = getNativeTokenForChainId(token.chainId)
 
@@ -131,37 +133,36 @@ export const DaoTokenCard = ({
   // Prefill URL is valid if...
   const proposeStakeUnstakeHref =
     // ...there is something to stake or unstake
-    (unstakedBalance > 0 || lazyStakes.length > 0) &&
+    (unstakedBalance.isPositive() || lazyStakes.length > 0) &&
     // ...and this is the native token
     token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: getDaoProposalSinglePrefill({
             // If has unstaked, show stake action by default.
-            actions:
-              unstakedBalance > 0
-                ? [
-                    {
-                      actionKey: ActionKey.ManageStaking,
-                      data: {
-                        chainId: token.chainId,
-                        stakeType: StakingActionType.Delegate,
-                        validator: '',
-                        amount: unstakedBalance,
-                        denom: token.denomOrAddress,
-                      },
-                    },
-                  ]
-                : // If has only staked, show unstake actions by default.
-                  lazyStakes.map(({ validator, amount }) => ({
+            actions: unstakedBalance.isPositive()
+              ? [
+                  {
                     actionKey: ActionKey.ManageStaking,
                     data: {
                       chainId: token.chainId,
-                      stakeType: StakingActionType.Undelegate,
-                      validator,
-                      amount,
+                      stakeType: StakingActionType.Delegate,
+                      validator: '',
+                      amount: unstakedBalance,
                       denom: token.denomOrAddress,
                     },
-                  })),
+                  },
+                ]
+              : // If has only staked, show unstake actions by default.
+                lazyStakes.map(({ validator, amount }) => ({
+                  actionKey: ActionKey.ManageStaking,
+                  data: {
+                    chainId: token.chainId,
+                    stakeType: StakingActionType.Undelegate,
+                    validator,
+                    amount,
+                    denom: token.denomOrAddress,
+                  },
+                })),
           }),
         })
       : undefined

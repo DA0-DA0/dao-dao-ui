@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { BigNumber } from 'bignumber.js'
 import { useState } from 'react'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
@@ -23,9 +24,9 @@ StakeUnstake.args = {
   loading: false,
   initialMode: StakingMode.Stake,
   proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: 23456 },
+  loadingStakableTokens: { loading: false, data: BigNumber(23456) },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: 65432 },
+  loadingUnstakableTokens: { loading: false, data: BigNumber(65432) },
   unstakingDuration: {
     time: 86400,
   },
@@ -37,9 +38,9 @@ Claim.args = {
   loading: false,
   initialMode: StakingMode.Claim,
   proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: 23456 },
+  loadingStakableTokens: { loading: false, data: BigNumber(23456) },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: 65432 },
+  loadingUnstakableTokens: { loading: false, data: BigNumber(65432) },
   unstakingDuration: {
     time: 86400,
   },

@@ -1,5 +1,6 @@
 import { fromBech32, toBech32, toHex } from '@cosmjs/encoding'
 import { UseQueryResult } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
@@ -16,34 +17,37 @@ import { Expiration } from '@dao-dao/types/contracts/common'
 import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
+// TODO(bignumber): output BigNumber
 export const convertMicroDenomToDenomWithDecimals = (
-  amount: number | string,
+  amount: number | string | bigint | BigNumber,
   decimals: number
-) => {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  amount = amount / Math.pow(10, decimals)
-  return isNaN(amount) ? 0 : amount
+): number => {
+  amount = BigNumber(
+    typeof amount === 'bigint' ? amount.toString() : amount
+  ).div(Math.pow(10, decimals))
+  return amount.isNaN() ? 0 : amount.toNumber()
 }
 
+// TODO(bignumber): output BigNumber
 export const convertDenomToMicroDenomWithDecimals = (
-  amount: number | string,
+  amount: number | string | bigint | BigNumber,
   decimals: number
 ) => {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  // Need to round. Example: `8.029409 * Math.pow(10, 6)`.
-  amount = Math.round(amount * Math.pow(10, decimals))
-  return isNaN(amount) ? 0 : amount
+  amount = BigNumber(typeof amount === 'bigint' ? amount.toString() : amount)
+    .multipliedBy(Math.pow(10, decimals))
+    .integerValue()
+  return amount.isNaN() ? 0 : amount.toNumber()
 }
 
-// Using BigInt.toString() ensures the value is not abbreviated. The
-// Number.toString() function abbreviates large numbers like 1e20.
 export const convertDenomToMicroDenomStringWithDecimals = (
-  ...params: Parameters<typeof convertDenomToMicroDenomWithDecimals>
-) => BigInt(convertDenomToMicroDenomWithDecimals(...params)).toString()
+  amount: number | string | bigint | BigNumber,
+  decimals: number
+) => {
+  amount = BigNumber(typeof amount === 'bigint' ? amount.toString() : amount)
+    .multipliedBy(Math.pow(10, decimals))
+    .integerValue()
+  return amount.toString()
+}
 
 export function convertFromMicroDenom(denom: string) {
   return denom?.substring(1).toUpperCase()

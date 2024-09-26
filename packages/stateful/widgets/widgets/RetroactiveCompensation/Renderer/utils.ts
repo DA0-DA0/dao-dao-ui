@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js'
+
 import {
   AnyToken,
   Attribute,
@@ -86,18 +88,20 @@ export const computeCompensation = (
           const nativeTokens = attribute.nativeTokens.map(
             ({ denom, amount }): AnyToken => ({
               denomOrAddress: denom,
-              amount: BigInt(
-                Math.floor(Number(amount) * proportionalCompensation)
-              ).toString(),
+              amount: BigNumber(amount)
+                .times(proportionalCompensation)
+                .integerValue(BigNumber.ROUND_FLOOR)
+                .toString(),
             })
           )
 
           const cw20Tokens = attribute.cw20Tokens.map(
             ({ address, amount }): AnyToken => ({
               denomOrAddress: address,
-              amount: BigInt(
-                Math.floor(Number(amount) * proportionalCompensation)
-              ).toString(),
+              amount: BigNumber(amount)
+                .times(proportionalCompensation)
+                .integerValue(BigNumber.ROUND_FLOOR)
+                .toString(),
             })
           )
 

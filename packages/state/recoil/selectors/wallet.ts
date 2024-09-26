@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import {
   Loadable,
   atomFamily,
@@ -25,7 +26,6 @@ import {
   INACTIVE_DAO_NAMES,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -357,11 +357,6 @@ export const walletTokenCardInfosSelector = selectorFamily<
       const infos: TokenCardInfo[] = [
         ...nativeBalances.flatMap((accountBalances, accountIndex) =>
           accountBalances.map(({ token, balance }) => {
-            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              balance,
-              token.decimals
-            )
-
             // Staking info only exists for native token.
             const hasStakingInfo =
               token.denomOrAddress ===
@@ -383,7 +378,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
                 tokenCardLazyInfoSelector({
                   owner: owner.address,
                   token,
-                  unstakedBalance,
+                  unstakedBalance: balance,
                 })
               )
             )
@@ -392,12 +387,12 @@ export const walletTokenCardInfosSelector = selectorFamily<
               owner,
               token,
               isGovernanceToken: false,
-              unstakedBalance,
+              unstakedBalance: BigNumber(balance),
               hasStakingInfo,
               lazyInfo: loadableToLoadingData(lazyInfo, {
                 usdUnitPrice: undefined,
                 stakingInfo: undefined,
-                totalBalance: unstakedBalance,
+                totalBalance: BigNumber(balance),
               }),
             }
 
@@ -410,17 +405,14 @@ export const walletTokenCardInfosSelector = selectorFamily<
             return []
           }
 
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            cw20Contracts[index].balance || '0',
-            token.decimals
-          )
+          const unstakedBalance = BigNumber(cw20Contracts[index].balance || '0')
 
           const lazyInfo = get(
             noWait(
               tokenCardLazyInfoSelector({
                 owner: walletAddress,
                 token,
-                unstakedBalance,
+                unstakedBalance: unstakedBalance.toString(),
               })
             )
           )

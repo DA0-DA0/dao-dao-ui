@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
 import { SortFn, TokenCardInfo, TypedOption } from '@dao-dao/types'
-import { sortTokensValueDescending } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  sortTokensValueDescending,
+} from '@dao-dao/utils'
 
 /**
  * Options to use with the `useButtonPopupSorter` hook and the `ButtonPopup`
@@ -24,13 +27,17 @@ export const useTokenSortOptions = (): TypedOption<
         const aPrice =
           a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
             ? undefined
-            : a.lazyInfo.data.totalBalance *
-              a.lazyInfo.data.usdUnitPrice.usdPrice
+            : convertMicroDenomToDenomWithDecimals(
+                a.lazyInfo.data.totalBalance,
+                a.token.decimals
+              ) * a.lazyInfo.data.usdUnitPrice.usdPrice
         const bPrice =
           b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
             ? undefined
-            : b.lazyInfo.data.totalBalance *
-              b.lazyInfo.data.usdUnitPrice.usdPrice
+            : convertMicroDenomToDenomWithDecimals(
+                b.lazyInfo.data.totalBalance,
+                b.token.decimals
+              ) * b.lazyInfo.data.usdUnitPrice.usdPrice
 
         // If prices are equal, sort alphabetically by symbol.
         return aPrice === bPrice

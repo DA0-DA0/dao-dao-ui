@@ -19,6 +19,7 @@ import {
 import { ChainWalletBase } from '@cosmos-kit/core'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
@@ -156,7 +157,7 @@ export const SelfRelayExecuteModal = ({
   )
   // Amount funded once funding is complete.
   const [fundedAmount, setFundedAmount] = useState<
-    Record<string, number | undefined>
+    Record<string, BigNumber | undefined>
   >({})
   const [executeTx, setExecuteTx] =
     useState<Pick<IndexedTx, 'events' | 'height'>>()
@@ -166,7 +167,7 @@ export const SelfRelayExecuteModal = ({
   }>()
   // Amount refunded once refunding is complete.
   const [refundedAmount, setRefundedAmount] = useState<
-    Record<string, number | undefined>
+    Record<string, BigNumber | undefined>
   >({})
 
   // If relay fails and user decides to refund and cancel, this will be set to
@@ -457,30 +458,30 @@ export const SelfRelayExecuteModal = ({
 
       const fundsNeeded =
         // Give a little extra to cover the authz tx fee.
-        getRelayerFundsRef.current(chainId) * 1.2 -
-        Number(currentBalance.amount)
+        BigNumber(getRelayerFundsRef.current(chainId) * 1.2).minus(
+          currentBalance.amount
+        )
 
-      let msgs: EncodeObject[] =
-        fundsNeeded > 0
-          ? // Send tokens to relayer wallet if needed.
-            [
-              cwMsgToEncodeObject(
-                chainId,
-                {
-                  bank: {
-                    send: {
-                      amount: coins(
-                        BigInt(fundsNeeded).toString(),
-                        relayer.feeToken.denomOrAddress
-                      ),
-                      to_address: relayer.relayerAddress,
-                    },
+      let msgs: EncodeObject[] = fundsNeeded.isPositive()
+        ? // Send tokens to relayer wallet if needed.
+          [
+            cwMsgToEncodeObject(
+              chainId,
+              {
+                bank: {
+                  send: {
+                    amount: coins(
+                      fundsNeeded.toString(),
+                      relayer.feeToken.denomOrAddress
+                    ),
+                    to_address: relayer.relayerAddress,
                   },
                 },
-                relayer.wallet.address
-              ),
-            ]
-          : []
+              },
+              relayer.wallet.address
+            ),
+          ]
+        : []
 
       // Add execute message if executing and has not already executed.
       if (withExecuteRelay && !executeTx && transaction.type === 'execute') {
@@ -506,7 +507,7 @@ export const SelfRelayExecuteModal = ({
       }
 
       // Get new balance of relayer wallet.
-      const newBalance = Number(
+      const newBalance = BigNumber(
         (
           await relayer.client.query.bank.balance(
             relayer.relayerAddress,
@@ -541,7 +542,7 @@ export const SelfRelayExecuteModal = ({
                 authorization: SendAuthorization.toProtoMsg(
                   SendAuthorization.fromPartial({
                     spendLimit: coins(
-                      BigInt(newBalance).toString(),
+                      newBalance.toString(),
                       relayer.feeToken.denomOrAddress
                     ),
                   })
@@ -1043,15 +1044,16 @@ export const SelfRelayExecuteModal = ({
         // @ts-ignore
         client.gasPrice
       )
-      const remainingTokensAfterFee =
-        Number(remainingTokens.amount) - Number(fee.amount[0].amount)
+      const remainingTokensAfterFee = BigNumber(remainingTokens.amount).minus(
+        fee.amount[0].amount
+      )
 
       // Send remaining tokens if there are more than enough to pay the fee.
-      if (remainingTokensAfterFee > 0) {
+      if (remainingTokensAfterFee.isPositive()) {
         await client.sign.sendTokens(
           relayerAddress,
           wallet.address,
-          coins(BigInt(remainingTokensAfterFee).toString(), feeDenom),
+          coins(remainingTokensAfterFee.toString(), feeDenom),
           fee
         )
 
@@ -1171,12 +1173,14 @@ export const SelfRelayExecuteModal = ({
 
                     const funds =
                       !relayerFunds.loading && !relayerFunds.errored
-                        ? Number(relayerFunds.data[index].amount)
+                        ? BigNumber(relayerFunds.data[index].amount)
                         : // Use the previously funded amount if the step is past.
-                          fundedAmount[chain_id] ?? 0
-                    const empty = funds === 0
+                          fundedAmount[chain_id] ?? BigNumber(0)
+                    const empty = funds.isZero()
 
-                    const funded = funds >= getRelayerFundsRef.current(chain_id)
+                    const funded = funds.gte(
+                      getRelayerFundsRef.current(chain_id)
+                    )
 
                     const isExecute = index === 0
                     // If this is the execute, we need to make sure all
@@ -1390,7 +1394,7 @@ export const SelfRelayExecuteModal = ({
                           : 0
                       const empty = funds === 0
 
-                      const refunded = refundedAmount[chain_id] ?? 0
+                      const refunded = refundedAmount[chain_id] ?? BigNumber(0)
 
                       return (
                         <Fragment key={chain_id}>

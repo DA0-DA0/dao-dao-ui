@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -138,7 +139,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsPending ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
-      amount: Number(1),
+      amount: BigNumber(1),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -150,7 +151,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsAvailable ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
-      amount: Number(1),
+      amount: BigNumber(1),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,

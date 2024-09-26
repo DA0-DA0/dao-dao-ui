@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { BigNumber } from 'bignumber.js'
 
 import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { CHAIN_ID } from '@dao-dao/storybook'
@@ -33,7 +34,7 @@ const stakes: TokenStake[] = [
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
     validator: {
       address: 'sparkIBC',
       moniker: 'Spark IBC',
@@ -43,12 +44,12 @@ const stakes: TokenStake[] = [
       status: 'BOND_STATUS_BONDED',
       tokens: 5,
     },
-    rewards: 1.23,
+    rewards: BigNumber(1.23),
   },
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
     validator: {
       address: 'elsehow',
       moniker: 'elsehow',
@@ -58,12 +59,12 @@ const stakes: TokenStake[] = [
       status: 'BOND_STATUS_BONDED',
       tokens: 6.2,
     },
-    rewards: 4.56,
+    rewards: BigNumber(4.56),
   },
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
     validator: {
       address: 'cosmostation',
       moniker: 'Cosmostation',
@@ -73,7 +74,7 @@ const stakes: TokenStake[] = [
       status: 'BOND_STATUS_BONDED',
       tokens: 7,
     },
-    rewards: 7.89,
+    rewards: BigNumber(7.89),
   },
 ]
 

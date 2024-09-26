@@ -1,6 +1,7 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { BigNumber } from 'bignumber.js'
 import uniq from 'lodash.uniq'
 
 import {
@@ -1219,7 +1220,7 @@ export const fetchGovProposalVotes = async (
   /**
    * Paginated votes with staked amounts.
    */
-  votes: (Vote & { staked: bigint })[]
+  votes: (Vote & { staked: BigNumber })[]
   /**
    * Total votes cast.
    */
@@ -1252,7 +1253,7 @@ export const fetchGovProposalVotes = async (
   return {
     votes: votes.map((vote, index) => ({
       ...vote,
-      staked: BigInt(stakes[index].amount),
+      staked: BigNumber(stakes[index].amount),
     })),
     total: Number(pagination?.total ?? 0),
   }

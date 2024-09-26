@@ -1,4 +1,5 @@
 import { coins } from '@cosmjs/stargate'
+import { BigNumber } from 'bignumber.js'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -60,13 +61,15 @@ export const makeUsePublishProposal =
       'native' in depositInfo.contents.denom
         ? depositInfo.contents.denom.native
         : undefined
-    const requiredProposalDeposit = Number(
+    const requiredProposalDeposit = BigNumber(
       depositInfo.valueMaybe()?.amount ?? '0'
     )
 
     // For checking allowance and increasing if necessary.
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
-      depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
+      depositInfoCw20TokenAddress &&
+        requiredProposalDeposit.isPositive() &&
+        walletAddress
         ? Cw20BaseSelectors.allowanceSelector({
             chainId,
             contractAddress: depositInfoCw20TokenAddress,
@@ -87,7 +90,9 @@ export const makeUsePublishProposal =
         : undefined
 
     const cw20DepositTokenBalanceLoadable = useCachedLoadable(
-      requiredProposalDeposit && walletAddress && depositInfoCw20TokenAddress
+      requiredProposalDeposit.isPositive() &&
+        walletAddress &&
+        depositInfoCw20TokenAddress
         ? Cw20BaseSelectors.balanceSelector({
             chainId,
             contractAddress: depositInfoCw20TokenAddress,
@@ -101,7 +106,9 @@ export const makeUsePublishProposal =
         : undefined
 
     const nativeDepositTokenBalanceLoadable = useCachedLoadable(
-      requiredProposalDeposit && walletAddress && depositInfoNativeTokenDenom
+      requiredProposalDeposit.isPositive() &&
+        walletAddress &&
+        depositInfoNativeTokenDenom
         ? nativeDenomBalanceSelector({
             chainId,
             walletAddress,
@@ -117,16 +124,15 @@ export const makeUsePublishProposal =
     // True if deposit is needed and cannot be paid.
     const depositUnsatisfied =
       // Requires deposit.
-      requiredProposalDeposit > 0 &&
+      requiredProposalDeposit.isPositive() &&
       // Has cw20 deposit and insufficient balance.
       ((!!depositInfoCw20TokenAddress &&
         (!cw20DepositTokenBalance ||
-          Number(cw20DepositTokenBalance.balance) < requiredProposalDeposit)) ||
+          requiredProposalDeposit.gt(cw20DepositTokenBalance.balance))) ||
         // Has native deposit and insufficient balance.
         (!!depositInfoNativeTokenDenom &&
           (!nativeDepositTokenBalance ||
-            Number(nativeDepositTokenBalance.amount) <
-              requiredProposalDeposit)))
+            requiredProposalDeposit.gt(nativeDepositTokenBalance.amount))))
 
     const increaseCw20DepositAllowance = Cw20BaseHooks.useIncreaseAllowance({
       contractAddress: depositInfoCw20TokenAddress ?? '',
@@ -256,22 +262,22 @@ export const makeUsePublishProposal =
             throw new Error(t('error.loadingData'))
           }
 
-          const remainingAllowanceNeeded =
-            requiredProposalDeposit -
+          const remainingAllowanceNeeded = requiredProposalDeposit.minus(
             // If allowance expired, none.
-            (expirationExpired(
+            expirationExpired(
               cw20DepositTokenAllowanceResponse.expires,
               (await (await getSigningClient()).getBlock()).header.height
             )
               ? 0
-              : Number(cw20DepositTokenAllowanceResponse.allowance))
+              : cw20DepositTokenAllowanceResponse.allowance
+          )
 
           // Request to increase the contract's allowance for the proposal
           // deposit if needed.
           if (remainingAllowanceNeeded) {
             try {
               await increaseCw20DepositAllowance({
-                amount: BigInt(remainingAllowanceNeeded).toString(),
+                amount: remainingAllowanceNeeded.toString(),
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
@@ -296,7 +302,7 @@ export const makeUsePublishProposal =
         const proposeFunds =
           requiredProposalDeposit && depositInfoNativeTokenDenom
             ? coins(
-                BigInt(requiredProposalDeposit).toString(),
+                requiredProposalDeposit.toString(),
                 depositInfoNativeTokenDenom
               )
             : undefined

@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { BigNumber } from 'bignumber.js'
 
 import { Button } from '../buttons/Button'
 import { token } from './TokenCard.stories'
@@ -26,7 +27,7 @@ export const makeProps = (
     },
     status,
     // Random number between 0 and 1000, with up to 6 decimals.
-    amount: Math.floor(Math.random() * (1000 * 1e6) + 1e6) / 1e6,
+    amount: BigNumber(Math.floor(Math.random() * (1000 * 1e6) + 1e6) / 1e6),
     date: new Date(
       Date.now() +
         Math.random() *

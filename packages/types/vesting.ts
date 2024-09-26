@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js'
+
 import { Vest } from './contracts/CwVesting'
 import { GenericToken } from './token'
 
@@ -135,7 +137,7 @@ export type VestingInfo = {
 export type VestingStep = {
   timestamp: number
   // Total amount vested at this timestamp.
-  amount: number
+  amount: BigNumber
 }
 
 export type CwVestingStakeEvent = {

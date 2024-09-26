@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js'
 import { useMemo } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
@@ -63,19 +64,20 @@ export const ProfileProposalCard = () => {
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? 0
-      : Math.max(
-          ...proposalModuleDepositInfosLoadable.contents
-            .filter(
-              (depositInfo): depositInfo is CheckedDepositInfo =>
-                !!depositInfo &&
-                ('cw20' in depositInfo.denom
-                  ? depositInfo.denom.cw20
-                  : depositInfo.denom.native) === governanceDenomOrAddress
-            )
-            .map(({ amount }) => Number(amount)),
-          0
-        )
+      ? BigNumber(0)
+      : proposalModuleDepositInfosLoadable.contents
+          .filter(
+            (depositInfo): depositInfo is CheckedDepositInfo =>
+              !!depositInfo &&
+              ('cw20' in depositInfo.denom
+                ? depositInfo.denom.cw20
+                : depositInfo.denom.native) === governanceDenomOrAddress
+          )
+          // Get max.
+          .reduce(
+            (acc, { amount }) => (acc.gt(amount) ? acc : BigNumber(amount)),
+            BigNumber(0)
+          )
 
   // If wallet is a member right now as opposed to when the proposal was open.
   // Relevant for showing them membership join info or not.
@@ -134,8 +136,8 @@ export const ProfileProposalCard = () => {
           <ProfileCardMemberInfo
             cantVoteOnProposal
             maxGovernanceTokenDeposit={
-              maxGovernanceTokenProposalModuleDeposit > 0
-                ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
+              maxGovernanceTokenProposalModuleDeposit.isPositive()
+                ? maxGovernanceTokenProposalModuleDeposit.toString()
                 : undefined
             }
           />

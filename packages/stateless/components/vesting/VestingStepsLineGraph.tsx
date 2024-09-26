@@ -53,7 +53,7 @@ export const VestingStepsLineGraph = ({
       title={t('title.vestingCurve')}
       verticalLineAtX={verticalLineAtX}
       yTitle={'$' + tokenSymbol}
-      yValues={[0, ...steps.map(({ amount }) => amount)]}
+      yValues={[0, ...steps.map(({ amount }) => amount.toNumber())]}
     />
   )
 }

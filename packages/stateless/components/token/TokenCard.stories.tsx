@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { BigNumber } from 'bignumber.js'
 
 import { EntityDisplay } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
@@ -43,12 +44,14 @@ export const token: GenericToken = {
 
 export const makeProps = (isGovernanceToken = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
-  const unstakedBalance = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
+  const unstakedBalance = BigNumber(
+    Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
+  )
   const stakes: TokenStake[] = [
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
       validator: {
         address: 'stakefish',
         moniker: 'Stakefish',
@@ -58,12 +61,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: 1.23,
+      rewards: BigNumber(1.23),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
       validator: {
         address: '2x4ben',
         moniker: '2x4 Ben',
@@ -73,12 +76,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: 4.56,
+      rewards: BigNumber(4.56),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
       validator: {
         address: 'cosmostation',
         moniker: 'Cosmostation',
@@ -88,12 +91,12 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: 7.89,
+      rewards: BigNumber(7.89),
     },
     {
       token,
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      amount: BigNumber(Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6),
       validator: {
         address: 'sg1',
         moniker: 'SG-1',
@@ -103,24 +106,29 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         status: 'BOND_STATUS_BONDED',
         tokens: 7,
       },
-      rewards: 10.11,
+      rewards: BigNumber(10.11),
     },
   ]
 
   const unstakingTasks = makeUnstakingModalProps('TOKEN').tasks
-  const totalStaked = stakes.reduce((acc, stake) => acc + stake.amount, 0)
-  const totalPendingRewards = stakes.reduce(
-    (acc, stake) => acc + stake.rewards,
-    0
+  const totalStaked = stakes.reduce(
+    (acc, stake) => acc.plus(stake.amount),
+    BigNumber(0)
   )
-  const totalUnstaking =
-    unstakingTasks.reduce(
-      (acc, task) =>
-        acc +
+  const totalPendingRewards = stakes.reduce(
+    (acc, stake) => acc.plus(stake.rewards),
+    BigNumber(0)
+  )
+  const totalUnstaking = unstakingTasks.reduce(
+    (acc, task) =>
+      acc.plus(
         // Only include balance of unstaking tasks.
-        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-      0
-    ) ?? 0
+        task.status === UnstakingTaskStatus.Unstaking
+          ? task.amount
+          : BigNumber(0)
+      ),
+    BigNumber(0)
+  )
 
   return {
     owner: {
@@ -152,7 +160,7 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
           totalPendingRewards,
           totalUnstaking,
         },
-        totalBalance: totalStaked + unstakedBalance + totalUnstaking,
+        totalBalance: totalStaked.plus(unstakedBalance).plus(totalUnstaking),
       },
     },
     onClaim: () => alert('claim'),

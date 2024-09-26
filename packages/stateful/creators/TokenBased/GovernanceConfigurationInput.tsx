@@ -1,4 +1,5 @@
 import { Add } from '@mui/icons-material'
+import { BigNumber } from 'bignumber.js'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -277,7 +278,7 @@ export const GovernanceConfigurationInput = ({
     const existingTokenSupply =
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
-          ? BigInt(existingGovernanceTokenSupply.contents).toString()
+          ? BigNumber(existingGovernanceTokenSupply.contents).toString()
           : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
     setValue('creator.data.existingTokenSupply', existingTokenSupply)

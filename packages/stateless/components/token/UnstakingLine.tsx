@@ -3,7 +3,11 @@ import { ReactNode } from 'react'
 import TimeAgo from 'react-timeago'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
-import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  formatDate,
+  formatDateTimeTz,
+} from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Tooltip } from '../tooltip'
@@ -47,7 +51,7 @@ export const UnstakingLine = ({
         </div>
 
         <TokenAmountDisplay
-          amount={amount}
+          amount={convertMicroDenomToDenomWithDecimals(amount, token.decimals)}
           className="body-text truncate"
           decimals={token.decimals}
           symbol={token.symbol}
@@ -73,7 +77,10 @@ export const UnstakingLine = ({
 
         <div className="flex flex-row items-end justify-between gap-4">
           <TokenAmountDisplay
-            amount={amount}
+            amount={convertMicroDenomToDenomWithDecimals(
+              amount,
+              token.decimals
+            )}
             className="body-text break-words"
             decimals={token.decimals}
             symbol={token.symbol}
