@@ -12,7 +12,6 @@ import {
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   humanReadableList,
   secondsToWdhms,
@@ -262,10 +261,9 @@ export const ProfileCardMemberInfoTokens = ({
                   ).map(({ token }) => (
                     <TokenAmountDisplay
                       key={token.denomOrAddress}
-                      amount={convertMicroDenomToDenomWithDecimals(
-                        unstakingBalanceByToken[token.denomOrAddress] || 0n,
-                        token.decimals
-                      )}
+                      amount={HugeDecimal.from(
+                        unstakingBalanceByToken[token.denomOrAddress] || 0n
+                      ).toHumanReadableNumber(token.decimals)}
                       decimals={token.decimals}
                       symbol={token.symbol}
                     />
@@ -293,12 +291,12 @@ export const ProfileCardMemberInfoTokens = ({
             !onlyOneToken
               ? t('button.claimYourTokens')
               : t('button.claimNumTokens', {
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    claimableBalance,
-                    loadingTokens.data[0].token.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: loadingTokens.data[0].token.decimals,
-                  }),
+                  amount: HugeDecimal.from(claimableBalance)
+                    .toHumanReadableNumber(loadingTokens.data[0].token.decimals)
+                    .toLocaleString(undefined, {
+                      maximumFractionDigits:
+                        loadingTokens.data[0].token.decimals,
+                    }),
                   tokenSymbol: onlyTokenSymbol,
                 })}
           </Button>

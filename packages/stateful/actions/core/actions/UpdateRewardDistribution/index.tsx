@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import { ActionBase, ConstructionEmoji } from '@dao-dao/stateless'
 import {
@@ -18,7 +19,6 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
@@ -99,10 +99,9 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
           emissionRate &&
           !('immediate' in emissionRate) &&
           !('paused' in emissionRate)
-            ? convertMicroDenomToDenomWithDecimals(
-                emissionRate.linear.amount,
-                this.distributions[0].token.decimals
-              )
+            ? HugeDecimal.from(
+                emissionRate.linear.amount
+              ).toHumanReadableNumber(this.distributions[0].token.decimals)
             : 1,
         duration:
           emissionRate &&
@@ -206,10 +205,9 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
       rate: {
         amount:
           'linear' in updateMsg.emission_rate
-            ? convertMicroDenomToDenomWithDecimals(
-                updateMsg.emission_rate.linear.amount,
-                distribution.token.decimals
-              )
+            ? HugeDecimal.from(
+                updateMsg.emission_rate.linear.amount
+              ).toHumanReadableNumber(distribution.token.decimals)
             : 1,
         duration:
           'linear' in updateMsg.emission_rate

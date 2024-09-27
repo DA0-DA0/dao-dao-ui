@@ -1,5 +1,6 @@
 import { TFunction } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AccountType,
@@ -14,10 +15,7 @@ import {
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from '@dao-dao/types/contracts/DaoDaoCore'
 
 import { getSupportedChainConfig } from './chain'
-import {
-  convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
-} from './conversion'
+import { convertDurationToHumanReadableString } from './conversion'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -199,12 +197,13 @@ export const getHumanReadableRewardDistributionLabel = (
       : 'paused' in distribution.active_epoch.emission_rate
       ? t('title.paused')
       : t('info.amountEveryDuration', {
-          amount: convertMicroDenomToDenomWithDecimals(
-            distribution.active_epoch.emission_rate.linear.amount,
-            distribution.token.decimals
-          ).toLocaleString(undefined, {
-            maximumFractionDigits: distribution.token.decimals,
-          }),
+          amount: HugeDecimal.from(
+            distribution.active_epoch.emission_rate.linear.amount
+          )
+            .toHumanReadableNumber(distribution.token.decimals)
+            .toLocaleString(undefined, {
+              maximumFractionDigits: distribution.token.decimals,
+            }),
           duration: convertDurationToHumanReadableString(
             t,
             distribution.active_epoch.emission_rate.linear.duration

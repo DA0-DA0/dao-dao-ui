@@ -18,12 +18,6 @@ import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
 // TODO(huge): replace with HugeDecimal
-export const convertMicroDenomToDenomWithDecimals = (
-  amount: HugeDecimal.Value,
-  decimals: number
-): number => HugeDecimal.from(amount).toHumanReadableNumber(decimals)
-
-// TODO(huge): replace with HugeDecimal
 export const convertDenomToMicroDenomWithDecimals = (
   amount: HugeDecimal.Value,
   decimals: number

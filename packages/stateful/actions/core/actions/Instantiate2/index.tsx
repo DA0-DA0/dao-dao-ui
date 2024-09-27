@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -30,7 +31,6 @@ import {
 import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   getAccountAddress,
   isDecodedStargateMsg,
@@ -315,7 +315,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
       salt: data.salt,
       funds: fundsTokens.map(({ denom, amount, decimals }) => ({
         denom,
-        amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+        amount: HugeDecimal.from(amount).toHumanReadableNumber(decimals),
         decimals,
       })),
     }

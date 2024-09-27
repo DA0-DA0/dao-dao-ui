@@ -11,6 +11,7 @@ import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactPlayer from 'react-player'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
@@ -19,7 +20,6 @@ import {
 } from '@dao-dao/types'
 import {
   NFT_VIDEO_EXTENSIONS,
-  convertMicroDenomToDenomWithDecimals,
   getImageUrlForChainId,
   getNftName,
   objectMatchesStructure,
@@ -276,8 +276,9 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                     !isNaN(highestOffer.amount) &&
                     highestOffer.offerToken && (
                       <TokenAmountDisplay
-                        amount={convertMicroDenomToDenomWithDecimals(
-                          highestOffer.amount,
+                        amount={HugeDecimal.from(
+                          highestOffer.amount
+                        ).toHumanReadableNumber(
                           highestOffer.offerToken.decimals
                         )}
                         decimals={highestOffer.offerToken.decimals}

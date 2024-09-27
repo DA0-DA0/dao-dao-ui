@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AddressInput,
   FormSwitchCard,
@@ -21,7 +22,6 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   getNativeTokenForChainId,
   isValidBech32Address,
@@ -124,8 +124,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         token.denomOrAddress === depositInfo.denomOrAddress)
   )
 
-  const minimumDeposit = convertMicroDenomToDenomWithDecimals(
-    1,
+  const minimumDeposit = HugeDecimal.one.toHumanReadableNumber(
     depositInfo.token?.decimals ?? 0
   )
 

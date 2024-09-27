@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   contractQueries,
   daoPreProposeMultipleQueries,
@@ -30,7 +31,6 @@ import {
 import {
   DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   isFeatureSupportedByVersion,
   isValidBech32Address,
@@ -186,10 +186,9 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
       config.deposit_info
         ? {
-            amount: convertMicroDenomToDenomWithDecimals(
-              config.deposit_info.amount,
-              token?.decimals ?? 0
-            ),
+            amount: HugeDecimal.from(
+              config.deposit_info.amount
+            ).toHumanReadableNumber(token?.decimals ?? 0),
             type: isVotingModuleToken
               ? 'voting_module_token'
               : 'native' in config.deposit_info.denom
@@ -406,8 +405,7 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
         : 'cw20'
 
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
-      amount: convertMicroDenomToDenomWithDecimals(
-        configDepositInfo.amount,
+      amount: HugeDecimal.from(configDepositInfo.amount).toHumanReadableNumber(
         token.decimals
       ),
       type,

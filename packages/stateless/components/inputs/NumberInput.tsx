@@ -3,10 +3,10 @@ import clsx from 'clsx'
 import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { NumberInputProps } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
@@ -57,8 +57,7 @@ export const NumberInput = <
     !watchedField && watchedField !== 0 ? watchedField : Number(watchedField)
   const value =
     untransformedValue && transformDecimals
-      ? convertMicroDenomToDenomWithDecimals(
-          untransformedValue,
+      ? HugeDecimal.from(untransformedValue).toHumanReadableNumber(
           transformDecimals
         )
       : untransformedValue

@@ -4,6 +4,7 @@ import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   neutronQueries,
   nobleQueries,
@@ -51,7 +52,6 @@ import {
   MAINNET,
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToSeconds,
-  convertMicroDenomToDenomWithDecimals,
   decodeMessage,
   getAccountAddress,
   getChainForChainId,
@@ -411,10 +411,9 @@ const StatefulSpendComponent: ComponentType<
           loading: false,
           errored: false,
           updating: skipRoute.updating,
-          data: convertMicroDenomToDenomWithDecimals(
-            skipRoute.data.amount_out,
-            selectedToken.token.decimals
-          ),
+          data: HugeDecimal.from(
+            skipRoute.data.amount_out
+          ).toHumanReadableNumber(selectedToken.token.decimals),
         }
     : {
         loading: false,
@@ -1004,10 +1003,9 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId,
         from,
         to,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.stargate.value.token.amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.stargate.value.token.amount
+        ).toHumanReadableNumber(token.decimals),
         denom: token.denomOrAddress,
         // Should always be false.
         cw20: token.type === TokenType.Cw20,
@@ -1028,10 +1026,9 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId: chainId,
         from,
         to: decodedMessage.bank.send.to_address,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.bank.send.amount[0].amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.bank.send.amount[0].amount
+        ).toHumanReadableNumber(token.decimals),
         denom: token.denomOrAddress,
         cw20: false,
       }
@@ -1041,10 +1038,9 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId: chainId,
         from,
         to: decodedMessage.wasm.execute.msg.transfer.recipient,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.wasm.execute.msg.transfer.amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.wasm.execute.msg.transfer.amount
+        ).toHumanReadableNumber(token.decimals),
         denom: decodedMessage.wasm.execute.contract_addr,
         cw20: true,
       }

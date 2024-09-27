@@ -1,6 +1,7 @@
 import { coins } from '@cosmjs/stargate'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, DownArrowEmoji } from '@dao-dao/stateless'
 import {
@@ -19,7 +20,6 @@ import {
 import { MsgFundCommunityPool } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -158,7 +158,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
 
     return {
       chainId,
-      amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+      amount: HugeDecimal.from(amount).toHumanReadableNumber(decimals),
       denom,
     }
   }

@@ -11,7 +11,6 @@ import {
   LoadingData,
   TokenType,
 } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TokenInput } from '../inputs'
@@ -100,10 +99,9 @@ export const NativeCoinSelector = ({
             token.denomOrAddress === watchDenom &&
             (!chainId || token.chainId === chainId)
         )
-  const balance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedToken?.token.decimals ?? 0
-  )
+  const balance = HugeDecimal.from(
+    selectedToken?.balance ?? 0
+  ).toHumanReadableNumber(selectedToken?.token.decimals ?? 0)
 
   const decimals = customToken
     ? watchDecimals
@@ -165,12 +163,11 @@ export const NativeCoinSelector = ({
                       description:
                         t('title.balance') +
                         ': ' +
-                        convertMicroDenomToDenomWithDecimals(
-                          balance,
-                          token.decimals
-                        ).toLocaleString(undefined, {
-                          maximumFractionDigits: token.decimals,
-                        }),
+                        HugeDecimal.from(balance)
+                          .toHumanReadableNumber(token.decimals)
+                          .toLocaleString(undefined, {
+                            maximumFractionDigits: token.decimals,
+                          }),
                     })),
                 }
           }

@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -23,7 +24,6 @@ import {
 } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
@@ -237,8 +237,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
     return {
       distribution,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
+      amount: HugeDecimal.from(amount).toHumanReadableNumber(
         distribution.token.decimals
       ),
     }

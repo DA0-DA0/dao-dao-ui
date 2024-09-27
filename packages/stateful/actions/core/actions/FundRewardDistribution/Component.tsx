@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
   InputErrorMessage,
@@ -20,7 +21,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -68,12 +68,11 @@ export const FundRewardDistributionComponent: ActionComponent<
 
   const selectedBalance =
     selectedDistribution && !tokens.loading
-      ? convertMicroDenomToDenomWithDecimals(
+      ? HugeDecimal.from(
           tokens.data.find((t) =>
             tokensEqual(t.token, selectedDistribution.token)
-          )?.balance || 0,
-          selectedDistribution.token.decimals
-        )
+          )?.balance || 0
+        ).toHumanReadableNumber(selectedDistribution.token.decimals)
       : 0
 
   const warning =
@@ -88,8 +87,7 @@ export const FundRewardDistributionComponent: ActionComponent<
         })
       : undefined
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(
     selectedDistribution?.token.decimals ?? 0
   )
 

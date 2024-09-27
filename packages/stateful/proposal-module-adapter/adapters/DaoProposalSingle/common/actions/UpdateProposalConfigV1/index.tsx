@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { cwProposalSingleV1Queries, tokenQueries } from '@dao-dao/state'
 import { ActionBase, BallotDepositEmoji } from '@dao-dao/stateless'
 import {
@@ -15,7 +16,6 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -142,12 +142,10 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const depositInfo =
       config.deposit_info && token
         ? {
-            deposit: convertMicroDenomToDenomWithDecimals(
-              Number(config.deposit_info.deposit),
-              // A deposit being configured implies that a token will be
-              // present.
-              token.decimals
-            ),
+            // A deposit being configured implies that a token will be present.
+            deposit: HugeDecimal.from(
+              config.deposit_info.deposit
+            ).toHumanReadableNumber(token.decimals),
             refundFailedProposals: config.deposit_info.refund_failed_proposals,
           }
         : {
@@ -263,8 +261,9 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const depositRequired = !!config.deposit_info
     const depositInfo = config.deposit_info
       ? {
-          deposit: convertMicroDenomToDenomWithDecimals(
-            Number(config.deposit_info.deposit),
+          deposit: HugeDecimal.from(
+            config.deposit_info.deposit
+          ).toHumanReadableNumber(
             this.proposalModule.dao.votingModule.getGovernanceTokenQuery
               ? (
                   await this.options.queryClient.fetchQuery(

@@ -2,6 +2,7 @@ import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
   InputErrorMessage,
@@ -22,7 +23,6 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertDurationToDurationWithUnits,
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -67,8 +67,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
     (distribution) => distribution.address === address && distribution.id === id
   )
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(
     selectedDistribution?.token.decimals ?? 0
   )
 
@@ -115,10 +114,9 @@ export const UpdateRewardDistributionComponent: ActionComponent<
               if ('linear' in active_epoch.emission_rate) {
                 setValue(
                   (fieldNamePrefix + 'rate.amount') as 'rate.amount',
-                  convertMicroDenomToDenomWithDecimals(
-                    active_epoch.emission_rate.linear.amount,
-                    token.decimals
-                  )
+                  HugeDecimal.from(
+                    active_epoch.emission_rate.linear.amount
+                  ).toHumanReadableNumber(token.decimals)
                 )
                 setValue(
                   (fieldNamePrefix + 'rate.duration') as 'rate.duration',

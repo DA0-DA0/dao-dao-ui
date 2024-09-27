@@ -3,6 +3,7 @@ import { ComponentType, useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   Checkbox,
@@ -21,7 +22,6 @@ import {
   TransProps,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   makeValidateAddress,
   transformIpfsUrlToHttpsIfNecessary,
@@ -284,8 +284,7 @@ export const Rate = ({
                       ...acc,
                       [denomOrAddress]:
                         (acc[denomOrAddress] ?? 0) +
-                        convertMicroDenomToDenomWithDecimals(
-                          amount,
+                        HugeDecimal.from(amount).toHumanReadableNumber(
                           tokenMap[denomOrAddress]?.token.decimals ?? 0
                         ),
                     }),

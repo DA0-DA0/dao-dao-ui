@@ -21,10 +21,7 @@ import {
   useConfiguredChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -165,10 +162,9 @@ export const InnerDaoTxTreasuryHistory = ({
     })
   )
   const lineGraphValues = useMemo(() => {
-    let runningTotal = convertMicroDenomToDenomWithDecimals(
-      nativeBalance.amount,
-      nativeToken?.decimals ?? 0
-    )
+    let runningTotal = HugeDecimal.from(
+      nativeBalance.amount
+    ).toHumanReadableNumber(nativeToken?.decimals ?? 0)
 
     return (
       transactions

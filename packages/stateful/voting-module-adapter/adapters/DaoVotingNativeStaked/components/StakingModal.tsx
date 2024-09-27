@@ -18,7 +18,6 @@ import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
 
@@ -201,12 +200,11 @@ const InnerStakingModal = ({
           setAmount(0)
 
           toast.success(
-            `Claimed ${convertMicroDenomToDenomWithDecimals(
-              sumClaimsAvailable || 0,
-              governanceToken.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
-            })} $${governanceToken.symbol}`
+            `Claimed ${HugeDecimal.from(sumClaimsAvailable || 0)
+              .toHumanReadableNumber(governanceToken.decimals)
+              .toLocaleString(undefined, {
+                maximumFractionDigits: governanceToken.decimals,
+              })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -252,8 +250,7 @@ const InnerStakingModal = ({
       onClose={onClose}
       proposalDeposit={
         maxDeposit
-          ? convertMicroDenomToDenomWithDecimals(
-              maxDeposit,
+          ? HugeDecimal.from(maxDeposit).toHumanReadableNumber(
               governanceToken.decimals
             )
           : undefined

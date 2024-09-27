@@ -8,10 +8,7 @@ import {
   PopupTriggerCustomComponent,
   ValidatorPickerProps,
 } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from './buttons'
 import { CopyToClipboard } from './CopyToClipboard'
@@ -132,8 +129,7 @@ export const ValidatorPicker = ({
               </p>
 
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  tokens,
+                amount={HugeDecimal.from(tokens).toHumanReadableNumber(
                   token.decimals
                 )}
                 className="inline-block"
@@ -153,10 +149,9 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={convertMicroDenomToDenomWithDecimals(
-                        existingStake.amount,
-                        existingStake.token.decimals
-                      )}
+                      amount={HugeDecimal.from(
+                        existingStake.amount
+                      ).toHumanReadableNumber(existingStake.token.decimals)}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}
@@ -169,10 +164,9 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={convertMicroDenomToDenomWithDecimals(
-                        existingStake.rewards,
-                        existingStake.token.decimals
-                      )}
+                      amount={HugeDecimal.from(
+                        existingStake.rewards
+                      ).toHumanReadableNumber(existingStake.token.decimals)}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}

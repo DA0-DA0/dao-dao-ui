@@ -2,6 +2,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ChainProvider,
@@ -19,7 +20,6 @@ import {
   VestingInfo,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   getChainAddressForActionOptions,
 } from '@dao-dao/utils'
@@ -123,10 +123,9 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                       </p>
 
                       <TokenAmountDisplay
-                        amount={convertMicroDenomToDenomWithDecimals(
-                          Number(total) - Number(vested),
-                          token.decimals
-                        )}
+                        amount={HugeDecimal.from(
+                          Number(total) - Number(vested)
+                        ).toHumanReadableNumber(token.decimals)}
                         decimals={token.decimals}
                         iconUrl={token.imageUrl}
                         symbol={token.symbol}

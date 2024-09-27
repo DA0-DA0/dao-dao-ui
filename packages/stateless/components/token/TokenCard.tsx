@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   isNativeIbcUsdc,
   secondsToWdhms,
@@ -222,10 +221,9 @@ export const TokenCard = ({
               <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    lazyInfo.data.totalBalance,
-                    token.decimals
-                  )}
+                  amount={HugeDecimal.from(
+                    lazyInfo.data.totalBalance
+                  ).toHumanReadableNumber(token.decimals)}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
                   symbol={tokenSymbol}
@@ -239,10 +237,10 @@ export const TokenCard = ({
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
-                          convertMicroDenomToDenomWithDecimals(
-                            lazyInfo.data.totalBalance,
-                            token.decimals
-                          ) * lazyInfo.data.usdUnitPrice.usdPrice
+                          HugeDecimal.from(
+                            lazyInfo.data.totalBalance
+                          ).toHumanReadableNumber(token.decimals) *
+                          lazyInfo.data.usdUnitPrice.usdPrice
                         }
                         dateFetched={lazyInfo.data.usdUnitPrice.timestamp}
                         estimatedUsdValue
@@ -266,10 +264,9 @@ export const TokenCard = ({
               <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    unstakedBalance,
-                    token.decimals
-                  )}
+                  amount={HugeDecimal.from(
+                    unstakedBalance
+                  ).toHumanReadableNumber(token.decimals)}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
                   symbol={tokenSymbol}
@@ -286,10 +283,10 @@ export const TokenCard = ({
                           lazyInfo.loading ||
                           !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
-                            : convertMicroDenomToDenomWithDecimals(
-                                unstakedBalance,
-                                token.decimals
-                              ) * lazyInfo.data.usdUnitPrice.usdPrice
+                            : HugeDecimal.from(
+                                unstakedBalance
+                              ).toHumanReadableNumber(token.decimals) *
+                              lazyInfo.data.usdUnitPrice.usdPrice
                         }
                         dateFetched={
                           lazyInfo.loading || !lazyInfo.data.usdUnitPrice
@@ -321,8 +318,7 @@ export const TokenCard = ({
                 amount={
                   lazyInfo.loading
                     ? { loading: true }
-                    : convertMicroDenomToDenomWithDecimals(
-                        totalStaked,
+                    : HugeDecimal.from(totalStaked).toHumanReadableNumber(
                         token.decimals
                       )
                 }
@@ -394,8 +390,7 @@ export const TokenCard = ({
                   amount={
                     lazyInfo.loading
                       ? { loading: true }
-                      : convertMicroDenomToDenomWithDecimals(
-                          totalUnstaking,
+                      : HugeDecimal.from(totalUnstaking).toHumanReadableNumber(
                           token.decimals
                         )
                   }
@@ -412,10 +407,9 @@ export const TokenCard = ({
                 amount={
                   lazyInfo.loading
                     ? { loading: true }
-                    : convertMicroDenomToDenomWithDecimals(
-                        totalPendingRewards,
-                        token.decimals
-                      )
+                    : HugeDecimal.from(
+                        totalPendingRewards
+                      ).toHumanReadableNumber(token.decimals)
                 }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
@@ -460,10 +454,9 @@ export const TokenCard = ({
                       {/* Only show staked balance if defined and nonzero. */}
                       {!!stakedBalance && (
                         <TokenAmountDisplay
-                          amount={convertMicroDenomToDenomWithDecimals(
-                            stakedBalance,
-                            token.decimals
-                          )}
+                          amount={HugeDecimal.from(
+                            stakedBalance
+                          ).toHumanReadableNumber(token.decimals)}
                           className="caption-text text-right font-mono"
                           decimals={token.decimals}
                           hideSymbol

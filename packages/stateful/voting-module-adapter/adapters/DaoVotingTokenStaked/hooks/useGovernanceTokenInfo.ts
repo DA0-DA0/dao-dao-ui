@@ -1,5 +1,6 @@
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   DaoVotingTokenStakedSelectors,
   genericTokenSelector,
@@ -9,7 +10,6 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -98,8 +98,7 @@ export const useGovernanceTokenInfo = ({
   return {
     tokenFactoryIssuerAddress,
     governanceToken,
-    supply: convertMicroDenomToDenomWithDecimals(
-      supply,
+    supply: HugeDecimal.from(supply).toHumanReadableNumber(
       governanceToken.decimals
     ),
     /// Optional

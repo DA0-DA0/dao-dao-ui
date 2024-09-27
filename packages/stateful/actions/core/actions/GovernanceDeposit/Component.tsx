@@ -3,6 +3,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GovernanceProposalFromProposal,
   InputLabel,
@@ -18,10 +19,7 @@ import {
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  validateRequired,
-} from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
 export type GovernanceDepositOptions = {
   proposals: GovProposalWithDecodedContent[]
@@ -105,12 +103,10 @@ export const GovernanceDepositComponent: ActionComponent<
             fieldName: (fieldNamePrefix +
               'deposit.0.amount') as 'deposit.0.amount',
             error: errors?.deposit?.[0]?.amount,
-            min: convertMicroDenomToDenomWithDecimals(
-              1,
+            min: HugeDecimal.one.toHumanReadableNumber(
               selectedDepositToken?.decimals ?? 0
             ),
-            step: convertMicroDenomToDenomWithDecimals(
-              1,
+            step: HugeDecimal.one.toHumanReadableNumber(
               selectedDepositToken?.decimals ?? 0
             ),
             convertMicroDenom: true,

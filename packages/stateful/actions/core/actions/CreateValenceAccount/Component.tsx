@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   FormCheckbox,
@@ -17,10 +18,7 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { Coin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  getNativeTokenForChainId,
-} from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 export type CreateValenceAccountData = {
   chainId: string
@@ -173,10 +171,9 @@ export const CreateValenceAccountComponent: ActionComponent<
                     ? '<error>'
                     : serviceFee.data
                     ? t('format.token', {
-                        amount: convertMicroDenomToDenomWithDecimals(
-                          serviceFee.data.balance,
-                          serviceFee.data.token.decimals
-                        ),
+                        amount: HugeDecimal.from(
+                          serviceFee.data.balance
+                        ).toHumanReadableNumber(serviceFee.data.token.decimals),
                         symbol: serviceFee.data.token.symbol,
                       })
                     : '',

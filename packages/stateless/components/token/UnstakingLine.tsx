@@ -2,12 +2,9 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import TimeAgo from 'react-timeago'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatDate,
-  formatDateTimeTz,
-} from '@dao-dao/utils'
+import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Tooltip } from '../tooltip'
@@ -51,7 +48,9 @@ export const UnstakingLine = ({
         </div>
 
         <TokenAmountDisplay
-          amount={convertMicroDenomToDenomWithDecimals(amount, token.decimals)}
+          amount={HugeDecimal.from(amount).toHumanReadableNumber(
+            token.decimals
+          )}
           className="body-text truncate"
           decimals={token.decimals}
           symbol={token.symbol}
@@ -77,8 +76,7 @@ export const UnstakingLine = ({
 
         <div className="flex flex-row items-end justify-between gap-4">
           <TokenAmountDisplay
-            amount={convertMicroDenomToDenomWithDecimals(
-              amount,
+            amount={HugeDecimal.from(amount).toHumanReadableNumber(
               token.decimals
             )}
             className="body-text break-words"

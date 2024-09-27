@@ -2,6 +2,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ButtonLink,
   ChainProvider,
@@ -23,7 +24,6 @@ import {
   VestingValidatorSlash,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
@@ -241,10 +241,9 @@ const RenderVest = ({
               validatorOperatorAddress,
               <TokenAmountDisplay
                 key={`${index}-token`}
-                amount={convertMicroDenomToDenomWithDecimals(
-                  slash.unregisteredAmount,
-                  nativeToken.decimals
-                )}
+                amount={HugeDecimal.from(
+                  slash.unregisteredAmount
+                ).toHumanReadableNumber(nativeToken.decimals)}
                 decimals={nativeToken.decimals}
                 iconUrl={nativeToken.imageUrl}
                 symbol={nativeToken.symbol}
@@ -268,8 +267,7 @@ const RenderVest = ({
 
             <TokenAmountDisplay
               key="token"
-              amount={convertMicroDenomToDenomWithDecimals(
-                data.amount,
+              amount={HugeDecimal.from(data.amount).toHumanReadableNumber(
                 nativeToken.decimals
               )}
               decimals={nativeToken.decimals}

@@ -3,6 +3,7 @@ import { ComponentType, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ErrorPage,
@@ -33,7 +34,6 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceRebalancer'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   makeValidateAddress,
   validatePositive,
@@ -354,12 +354,10 @@ export const ConfigureRebalancerComponent: ActionComponent<
                 fieldName: (fieldNamePrefix +
                   'minBalance.amount') as 'minBalance.amount',
                 error: errors?.minBalance?.amount,
-                min: convertMicroDenomToDenomWithDecimals(
-                  1,
+                min: HugeDecimal.one.toHumanReadableNumber(
                   minBalanceToken?.decimals ?? 0
                 ),
-                step: convertMicroDenomToDenomWithDecimals(
-                  1,
+                step: HugeDecimal.one.toHumanReadableNumber(
                   minBalanceToken?.decimals ?? 0
                 ),
               }}
@@ -646,10 +644,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
                   return {
                     symbol: token.symbol,
-                    initialAmount: convertMicroDenomToDenomWithDecimals(
-                      balance,
-                      token.decimals
-                    ),
+                    initialAmount: HugeDecimal.from(
+                      balance
+                    ).toHumanReadableNumber(token.decimals),
                     targetProportion: percent / 100,
                     // Add an extra price to account for the initial balance.
                     prices: new Array(rebalanceTimestamps.length + 1)

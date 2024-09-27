@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   genericTokenSelector,
   tokenQueries,
@@ -48,7 +49,6 @@ import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   getAccount,
   getChainAddressForActionOptions,
@@ -417,10 +417,9 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
         minBalanceTarget?.min_balance && minBalanceToken
           ? {
               denom: minBalanceTarget.denom,
-              amount: convertMicroDenomToDenomWithDecimals(
-                minBalanceTarget.min_balance,
-                minBalanceToken.decimals
-              ),
+              amount: HugeDecimal.from(
+                minBalanceTarget.min_balance
+              ).toHumanReadableNumber(minBalanceToken.decimals),
             }
           : undefined,
       targetOverrideStrategy:
@@ -682,10 +681,9 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
         minBalanceTarget?.min_balance && minBalanceToken
           ? {
               denom: minBalanceTarget.denom,
-              amount: convertMicroDenomToDenomWithDecimals(
-                minBalanceTarget.min_balance,
-                minBalanceToken.decimals
-              ),
+              amount: HugeDecimal.from(
+                minBalanceTarget.min_balance
+              ).toHumanReadableNumber(minBalanceToken.decimals),
             }
           : undefined,
       targetOverrideStrategy: data.target_override_strategy || 'proportional',

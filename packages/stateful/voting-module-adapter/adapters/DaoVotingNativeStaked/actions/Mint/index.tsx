@@ -1,5 +1,6 @@
 import { coin } from '@cosmjs/stargate'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -17,7 +18,6 @@ import {
 import { MsgMint } from '@dao-dao/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   isDecodedStargateMsg,
 } from '@dao-dao/utils'
 
@@ -109,10 +109,9 @@ export class MintAction extends ActionBase<MintData> {
     }
 
     return {
-      amount: convertMicroDenomToDenomWithDecimals(
-        decodedMessage.stargate.value.amount.amount,
-        this.governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(
+        decodedMessage.stargate.value.amount.amount
+      ).toHumanReadableNumber(this.governanceToken.decimals),
     }
   }
 }

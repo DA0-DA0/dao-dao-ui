@@ -48,7 +48,6 @@ import {
 import {
   StakingActionType,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
@@ -192,10 +191,9 @@ const InnerComponent: ActionComponent = (props) => {
       )[0]
 
       if (coin) {
-        claimedRewards = convertMicroDenomToDenomWithDecimals(
-          coin.amount ?? 0,
-          nativeToken.decimals
-        )
+        claimedRewards = HugeDecimal.from(
+          coin.amount ?? 0
+        ).toHumanReadableNumber(nativeToken.decimals)
       }
     }
   }
@@ -546,8 +544,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
           action.type === StakingActionType.Redelegate
             ? data.dst_validator
             : '',
-        amount: convertMicroDenomToDenomWithDecimals(
-          data.amount.amount,
+        amount: HugeDecimal.from(data.amount.amount).toHumanReadableNumber(
           nativeToken.decimals
         ),
         withdrawAddress: '',

@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state/query'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import {
   ButtonLink,
@@ -41,8 +41,7 @@ export const MembersTab = () => {
             loading: false,
             data: {
               token: governanceToken,
-              amount: convertMicroDenomToDenomWithDecimals(
-                balance,
+              amount: HugeDecimal.from(balance).toHumanReadableNumber(
                 governanceToken.decimals
               ),
             },

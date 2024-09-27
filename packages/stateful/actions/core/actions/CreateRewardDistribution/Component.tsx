@@ -27,7 +27,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   isValidBech32Address,
   tokensEqual,
   validateNonNegative,
@@ -89,10 +88,9 @@ export const CreateRewardDistributionComponent: ActionComponent<
 
   const minAmount = HugeDecimal.one.toHumanReadableNumber(decimals)
 
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    decimals
-  )
+  const selectedBalance = HugeDecimal.from(
+    selectedToken?.balance ?? 0
+  ).toHumanReadableNumber(decimals)
   const warning =
     !isCreating ||
     tokens.loading ||
@@ -162,12 +160,11 @@ export const CreateRewardDistributionComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
-                      }),
+                      HugeDecimal.from(balance)
+                        .toHumanReadableNumber(token.decimals)
+                        .toLocaleString(undefined, {
+                          maximumFractionDigits: token.decimals,
+                        }),
                   })),
                 }
           }

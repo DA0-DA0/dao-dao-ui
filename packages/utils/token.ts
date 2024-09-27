@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   GenericTokenSource,
@@ -10,7 +11,6 @@ import {
 } from '@dao-dao/types'
 
 import { getChainForChainName, getIbcTransferInfoFromChannel } from './chain'
-import { convertMicroDenomToDenomWithDecimals } from './conversion'
 import { objectMatchesStructure } from './objectMatchesStructure'
 
 export const tokensEqual = (
@@ -133,17 +133,15 @@ export const sortTokensValueDescending: SortFn<
   const aPrice =
     a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : convertMicroDenomToDenomWithDecimals(
-          a.lazyInfo.data.totalBalance,
-          a.token.decimals
-        ) * a.lazyInfo.data.usdUnitPrice.usdPrice
+      : HugeDecimal.from(a.lazyInfo.data.totalBalance)
+          .times(a.lazyInfo.data.usdUnitPrice.usdPrice)
+          .toHumanReadableNumber(a.token.decimals)
   const bPrice =
     b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : convertMicroDenomToDenomWithDecimals(
-          b.lazyInfo.data.totalBalance,
-          b.token.decimals
-        ) * b.lazyInfo.data.usdUnitPrice.usdPrice
+      : HugeDecimal.from(b.lazyInfo.data.totalBalance)
+          .times(b.lazyInfo.data.usdUnitPrice.usdPrice)
+          .toHumanReadableNumber(b.token.decimals)
 
   // If prices are equal, sort alphabetically by symbol.
   return aPrice === bPrice

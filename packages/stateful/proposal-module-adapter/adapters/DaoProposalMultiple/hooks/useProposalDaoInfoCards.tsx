@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { constSelector } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw1WhitelistSelectors,
   DaoProposalMultipleSelectors,
@@ -18,7 +19,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
@@ -151,10 +151,9 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
           '<error>'
         ) : depositInfo.data && depositTokenInfo.data ? (
           <TokenAmountDisplay
-            amount={convertMicroDenomToDenomWithDecimals(
-              depositInfo.data.amount,
-              depositTokenInfo.data.decimals
-            )}
+            amount={HugeDecimal.from(
+              depositInfo.data.amount
+            ).toHumanReadableNumber(depositTokenInfo.data.decimals)}
             decimals={depositTokenInfo.data.decimals}
             iconUrl={depositTokenInfo.data.imageUrl}
             showFullAmount

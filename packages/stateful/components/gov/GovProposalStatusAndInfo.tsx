@@ -12,6 +12,7 @@ import { ComponentProps, ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GOV_PROPOSAL_STATUS_I18N_KEY_MAP,
@@ -36,7 +37,6 @@ import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/t
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   getDisplayNameForChainId,
   processError,
@@ -133,10 +133,9 @@ const InnerGovProposalStatusAndInfo = ({
     (d) => d.denom === depositToken.denomOrAddress
   )!.amount
 
-  const missingDeposit = convertMicroDenomToDenomWithDecimals(
-    Number(minDepositAmount) - Number(currentDepositAmount),
-    depositToken.decimals
-  )
+  const missingDeposit = HugeDecimal.from(minDepositAmount)
+    .minus(currentDepositAmount)
+    .toHumanReadableNumber(depositToken.decimals)
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -176,12 +175,11 @@ const InnerGovProposalStatusAndInfo = ({
       Value: (props) => (
         <p {...props}>
           {t('format.token', {
-            amount: convertMicroDenomToDenomWithDecimals(
-              currentDepositAmount,
-              depositToken.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: depositToken.decimals,
-            }),
+            amount: HugeDecimal.from(currentDepositAmount)
+              .toHumanReadableNumber(depositToken.decimals)
+              .toLocaleString(undefined, {
+                maximumFractionDigits: depositToken.decimals,
+              }),
             symbol: depositToken.symbol,
           })}
         </p>
@@ -300,8 +298,7 @@ const InnerGovProposalStatusAndInfo = ({
                 <NumberInput
                   containerClassName="-mb-1"
                   max={missingDeposit}
-                  min={convertMicroDenomToDenomWithDecimals(
-                    1,
+                  min={HugeDecimal.one.toHumanReadableNumber(
                     depositToken.decimals
                   )}
                   onInput={(event) =>
@@ -320,8 +317,7 @@ const InnerGovProposalStatusAndInfo = ({
                     }
                   }}
                   setValue={(_, value) => setDepositValue(value)}
-                  step={convertMicroDenomToDenomWithDecimals(
-                    1,
+                  step={HugeDecimal.one.toHumanReadableNumber(
                     depositToken.decimals
                   )}
                   unit={'$' + depositToken.symbol}

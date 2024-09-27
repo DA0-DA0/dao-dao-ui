@@ -52,7 +52,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToSeconds,
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   getChainAddressForActionOptions,
   getChainForChainId,
@@ -239,10 +238,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
   const selectedMicroBalance = selectedToken?.balance ?? 0
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedMicroBalance,
-    selectedDecimals
-  )
+  const selectedBalance =
+    HugeDecimal.from(selectedMicroBalance).toHumanReadableNumber(
+      selectedDecimals
+    )
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const configureVestingPaymentAction = useInitializedActionForKey(
@@ -396,12 +395,11 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
-                      }),
+                      HugeDecimal.from(balance)
+                        .toHumanReadableNumber(token.decimals)
+                        .toLocaleString(undefined, {
+                          maximumFractionDigits: token.decimals,
+                        }),
                   })),
               }}
             />

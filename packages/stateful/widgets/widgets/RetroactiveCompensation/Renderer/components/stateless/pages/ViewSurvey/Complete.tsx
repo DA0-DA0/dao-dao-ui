@@ -11,6 +11,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   CosmosMessageDisplay,
@@ -33,11 +34,7 @@ import {
   StatefulProposalListProps,
 } from '@dao-dao/types'
 import { Boolean } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  decodedMessagesString,
-  validateRequired,
-} from '@dao-dao/utils'
+import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
 
 import { NewProposalData } from '../../../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { CompleteRatings, SurveyWithMetadata } from '../../../../types'
@@ -461,8 +458,7 @@ export const InnerComplete = ({
                         ...acc,
                         [denomOrAddress]:
                           (acc[denomOrAddress] ?? 0) +
-                          convertMicroDenomToDenomWithDecimals(
-                            amount,
+                          HugeDecimal.from(amount).toHumanReadableNumber(
                             tokenMap[denomOrAddress]?.token.decimals ?? 0
                           ),
                       }),

@@ -47,7 +47,6 @@ import {
 } from '@dao-dao/types/actions'
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   formatPercentOf100,
   getAccountAddress,
@@ -269,10 +268,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             token.denomOrAddress === spendDenom &&
             (token.type === TokenType.Cw20) === isCw20
         )
-  const balance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedToken?.token.decimals ?? 0
-  )
+  const balance = HugeDecimal.from(
+    selectedToken?.balance ?? 0
+  ).toHumanReadableNumber(selectedToken?.token.decimals ?? 0)
 
   const decimals = loadedCustomToken
     ? token.data.decimals
@@ -418,12 +416,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                         description:
                           t('title.balance') +
                           ': ' +
-                          convertMicroDenomToDenomWithDecimals(
-                            balance,
-                            token.decimals
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: token.decimals,
-                          }),
+                          HugeDecimal.from(balance)
+                            .toHumanReadableNumber(token.decimals)
+                            .toLocaleString(undefined, {
+                              maximumFractionDigits: token.decimals,
+                            }),
                       })),
                     }
               }
@@ -670,12 +667,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                       fee: neutronTransferFee.data
                         .map(({ token, balance }) =>
                           t('format.token', {
-                            amount: convertMicroDenomToDenomWithDecimals(
-                              balance,
-                              token.decimals
-                            ).toLocaleString(undefined, {
-                              maximumFractionDigits: token.decimals,
-                            }),
+                            amount: HugeDecimal.from(balance)
+                              .toHumanReadableNumber(token.decimals)
+                              .toLocaleString(undefined, {
+                                maximumFractionDigits: token.decimals,
+                              }),
                             symbol: token.symbol,
                           })
                         )
@@ -893,7 +889,8 @@ const NobleTariff = ({
   const { t } = useTranslation()
 
   const feeDecimal = Number(transferFeeBps) / 1e4
-  const maxFee = convertMicroDenomToDenomWithDecimals(transferFeeMax, decimals)
+  const maxFee =
+    HugeDecimal.from(transferFeeMax).toHumanReadableNumber(decimals)
   const fee =
     amount && !isNaN(amount)
       ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)

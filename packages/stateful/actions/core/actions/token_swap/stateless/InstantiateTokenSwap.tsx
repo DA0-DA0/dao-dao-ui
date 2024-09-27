@@ -11,7 +11,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   isValidBech32Address,
   makeValidateAddress,
   validateRequired,
@@ -48,10 +47,9 @@ export const InstantiateTokenSwap: ActionComponent<
   )
   const selfDecimals = selfToken?.token.decimals ?? 0
   const selfMin = HugeDecimal.one.toHumanReadableNumber(selfDecimals)
-  const selfMax = convertMicroDenomToDenomWithDecimals(
-    selfToken?.balance ?? 0,
-    selfDecimals
-  )
+  const selfMax = HugeDecimal.from(
+    selfToken?.balance ?? 0
+  ).toHumanReadableNumber(selfDecimals)
   const selfSymbol = selfToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyToken = counterpartyTokenBalances.loading
@@ -60,14 +58,11 @@ export const InstantiateTokenSwap: ActionComponent<
         ({ token }) => counterparty.denomOrAddress === token.denomOrAddress
       )
   const counterpartyDecimals = counterpartyToken?.token.decimals ?? 0
-  const counterpartyMin = convertMicroDenomToDenomWithDecimals(
-    1,
-    counterpartyDecimals
-  )
-  const counterpartyMax = convertMicroDenomToDenomWithDecimals(
-    counterpartyToken?.balance ?? 0,
-    counterpartyDecimals
-  )
+  const counterpartyMin =
+    HugeDecimal.one.toHumanReadableNumber(counterpartyDecimals)
+  const counterpartyMax = HugeDecimal.from(
+    counterpartyToken?.balance ?? 0
+  ).toHumanReadableNumber(counterpartyDecimals)
   const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =

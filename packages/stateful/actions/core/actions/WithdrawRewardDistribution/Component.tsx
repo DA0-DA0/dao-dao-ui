@@ -2,6 +2,7 @@ import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
   InputErrorMessage,
@@ -13,7 +14,6 @@ import {
 import { DaoRewardDistributionWithRemaining } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -83,10 +83,9 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
                 label: getHumanReadableRewardDistributionLabel(t, distribution),
                 description: (
                   <TokenAmountDisplay
-                    amount={convertMicroDenomToDenomWithDecimals(
-                      distribution.remaining,
-                      distribution.token.decimals
-                    )}
+                    amount={HugeDecimal.from(
+                      distribution.remaining
+                    ).toHumanReadableNumber(distribution.token.decimals)}
                     className="text-text-interactive-valid"
                     decimals={distribution.token.decimals}
                     suffix={' ' + t('info.remaining')}
@@ -120,12 +119,12 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
             {selectedDistribution && (
               <p className="text-text-interactive-valid">
                 {t('info.tokensWillBeWithdrawn', {
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    selectedDistribution.remaining,
-                    selectedDistribution.token.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: selectedDistribution.token.decimals,
-                  }),
+                  amount: HugeDecimal.from(selectedDistribution.remaining)
+                    .toHumanReadableNumber(selectedDistribution.token.decimals)
+                    .toLocaleString(undefined, {
+                      maximumFractionDigits:
+                        selectedDistribution.token.decimals,
+                    }),
                   tokenSymbol: selectedDistribution.token.symbol,
                 })}
               </p>

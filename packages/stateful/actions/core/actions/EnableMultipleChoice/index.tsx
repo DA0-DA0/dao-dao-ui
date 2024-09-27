@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, NumbersEmoji } from '@dao-dao/stateless'
 import {
@@ -23,7 +24,6 @@ import {
   DaoProposalMultipleAdapterId,
   convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
@@ -164,10 +164,9 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
           proposalDeposit: {
             enabled: !!depositInfoWithToken.depositInfo,
             amount: depositInfoWithToken.depositInfo
-              ? convertMicroDenomToDenomWithDecimals(
-                  depositInfoWithToken.depositInfo.amount,
-                  depositInfoWithToken.token.decimals
-                )
+              ? HugeDecimal.from(
+                  depositInfoWithToken.depositInfo.amount
+                ).toHumanReadableNumber(depositInfoWithToken.token.decimals)
               : 10,
             type:
               depositInfoWithToken.depositInfo &&

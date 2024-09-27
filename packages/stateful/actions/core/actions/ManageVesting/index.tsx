@@ -47,7 +47,6 @@ import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contract
 import {
   chainIsIndexed,
   convertDurationWithUnitsToSeconds,
-  convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
   decodeJsonFromBase64,
   encodeJsonToBase64,
@@ -953,8 +952,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
               ).toISOString()
             : '',
           title: instantiateMsg.title,
-          amount: convertMicroDenomToDenomWithDecimals(
-            instantiateMsg.total,
+          amount: HugeDecimal.from(instantiateMsg.total).toHumanReadableNumber(
             token.decimals
           ),
           ownerMode,

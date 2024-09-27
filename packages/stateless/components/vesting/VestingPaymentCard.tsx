@@ -25,7 +25,6 @@ import {
 } from '@dao-dao/types'
 import {
   abbreviateString,
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   isNativeIbcUsdc,
   secondsToWdhms,
@@ -557,8 +556,7 @@ export const VestingPaymentCard = ({
                   amount={
                     lazyInfo.loading
                       ? { loading: true }
-                      : convertMicroDenomToDenomWithDecimals(
-                          totalStaked,
+                      : HugeDecimal.from(totalStaked).toHumanReadableNumber(
                           token.decimals
                         )
                   }
@@ -630,10 +628,9 @@ export const VestingPaymentCard = ({
                     amount={
                       lazyInfo.loading
                         ? { loading: true }
-                        : convertMicroDenomToDenomWithDecimals(
-                            unstakingBalance,
-                            token.decimals
-                          )
+                        : HugeDecimal.from(
+                            unstakingBalance
+                          ).toHumanReadableNumber(token.decimals)
                     }
                     decimals={token.decimals}
                     symbol={token.symbol}
@@ -648,8 +645,7 @@ export const VestingPaymentCard = ({
                   amount={
                     lazyInfo.loading
                       ? { loading: true }
-                      : convertMicroDenomToDenomWithDecimals(
-                          pendingRewards,
+                      : HugeDecimal.from(pendingRewards).toHumanReadableNumber(
                           token.decimals
                         )
                   }

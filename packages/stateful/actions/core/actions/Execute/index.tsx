@@ -3,6 +3,7 @@ import JSON5 from 'json5'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -24,7 +25,6 @@ import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/p
 import {
   bech32DataToAddress,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getAccountAddress,
@@ -364,16 +364,16 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
             ? [
                 {
                   denom: decodedMessage.wasm.execute.contract_addr,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    executeMsg.send.amount,
-                    cw20TokenDecimals
-                  ),
+                  amount: HugeDecimal.from(
+                    executeMsg.send.amount
+                  ).toHumanReadableNumber(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
-                amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+                amount:
+                  HugeDecimal.from(amount).toHumanReadableNumber(decimals),
                 decimals,
               })),
           cw20: isCw20,
@@ -402,16 +402,16 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
                     chainId,
                     decodedMessage.stargate.value.contract
                   ),
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    executeMsg.send.amount,
-                    cw20TokenDecimals
-                  ),
+                  amount: HugeDecimal.from(
+                    executeMsg.send.amount
+                  ).toHumanReadableNumber(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
-                amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+                amount:
+                  HugeDecimal.from(amount).toHumanReadableNumber(decimals),
                 decimals,
               })),
           cw20: isCw20,

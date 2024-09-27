@@ -25,7 +25,6 @@ import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   processError,
 } from '@dao-dao/utils'
@@ -241,10 +240,9 @@ const InnerStakingModal = ({
               )
           ) <= 1
         ) {
-          amountToUnstake = convertMicroDenomToDenomWithDecimals(
-            walletStakedBalance,
-            governanceToken.decimals
-          )
+          amountToUnstake = HugeDecimal.from(
+            walletStakedBalance
+          ).toHumanReadableNumber(governanceToken.decimals)
         }
 
         try {
@@ -316,12 +314,11 @@ const InnerStakingModal = ({
           setAmount(0)
 
           toast.success(
-            `Claimed ${convertMicroDenomToDenomWithDecimals(
-              sumClaimsAvailable || 0,
-              governanceToken.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
-            })} $${governanceToken.symbol}`
+            `Claimed ${HugeDecimal.from(sumClaimsAvailable || 0)
+              .toHumanReadableNumber(governanceToken.decimals)
+              .toLocaleString(undefined, {
+                maximumFractionDigits: governanceToken.decimals,
+              })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -367,8 +364,7 @@ const InnerStakingModal = ({
       onClose={onClose}
       proposalDeposit={
         maxDeposit
-          ? convertMicroDenomToDenomWithDecimals(
-              maxDeposit,
+          ? HugeDecimal.from(maxDeposit).toHumanReadableNumber(
               governanceToken.decimals
             )
           : undefined

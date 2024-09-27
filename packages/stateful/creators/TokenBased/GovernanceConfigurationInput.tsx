@@ -38,7 +38,6 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   humanReadableList,
   isValidBech32Address,
@@ -539,8 +538,7 @@ export const GovernanceConfigurationInput = ({
                         ghost
                         min={data.newInfo.initialSupply}
                         register={register}
-                        step={convertMicroDenomToDenomWithDecimals(
-                          1,
+                        step={HugeDecimal.one.toHumanReadableNumber(
                           NEW_DAO_TOKEN_DECIMALS
                         )}
                         validation={[
@@ -586,8 +584,7 @@ export const GovernanceConfigurationInput = ({
                     fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
-                    step={convertMicroDenomToDenomWithDecimals(
-                      1,
+                    step={HugeDecimal.one.toHumanReadableNumber(
                       NEW_DAO_TOKEN_DECIMALS
                     )}
                     validation={[validatePositive, validateRequired]}

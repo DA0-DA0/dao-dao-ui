@@ -22,7 +22,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertExpirationToDate,
-  convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
   processError,
 } from '@dao-dao/utils'
@@ -136,12 +135,11 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable,
-          governanceToken.decimals
-        ).toLocaleString(undefined, {
-          maximumFractionDigits: governanceToken.decimals,
-        })} $${governanceToken.symbol}`
+        `Claimed ${HugeDecimal.from(sumClaimsAvailable)
+          .toHumanReadableNumber(governanceToken.decimals)
+          .toLocaleString(undefined, {
+            maximumFractionDigits: governanceToken.decimals,
+          })} $${governanceToken.symbol}`
       )
     } catch (err) {
       console.error(err)
@@ -227,14 +225,12 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: convertMicroDenomToDenomWithDecimals(
-                      loadingWalletStakedValue.data,
-                      governanceToken.decimals
-                    ),
-                    unstaked: convertMicroDenomToDenomWithDecimals(
-                      loadingUnstakedBalance.data,
-                      governanceToken.decimals
-                    ),
+                    staked: HugeDecimal.from(
+                      loadingWalletStakedValue.data
+                    ).toHumanReadableNumber(governanceToken.decimals),
+                    unstaked: HugeDecimal.from(
+                      loadingUnstakedBalance.data
+                    ).toHumanReadableNumber(governanceToken.decimals),
                   },
                 ],
               }

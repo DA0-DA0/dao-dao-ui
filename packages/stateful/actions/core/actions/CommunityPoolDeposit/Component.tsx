@@ -9,7 +9,6 @@ import {
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 export type CommunityPoolDepositData = {
   chainId: string
@@ -41,10 +40,9 @@ export const CommunityPoolDepositComponent: ActionComponent<
           token.chainId === spendChainId && token.denomOrAddress === spendDenom
       )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedDecimals
-  )
+  const selectedBalance = HugeDecimal.from(
+    selectedToken?.balance ?? 0
+  ).toHumanReadableNumber(selectedDecimals)
 
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
@@ -93,12 +91,11 @@ export const CommunityPoolDepositComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
-                      }),
+                      HugeDecimal.from(balance)
+                        .toHumanReadableNumber(token.decimals)
+                        .toLocaleString(undefined, {
+                          maximumFractionDigits: token.decimals,
+                        }),
                   })),
                 }
           }

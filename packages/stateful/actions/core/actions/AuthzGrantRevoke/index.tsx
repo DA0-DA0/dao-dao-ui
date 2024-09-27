@@ -2,6 +2,7 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -42,7 +43,6 @@ import {
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -381,10 +381,8 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                   tokens.find((t) => t.denomOrAddress === denom)?.decimals || 0
                 return {
                   denom,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    decimals
-                  ),
+                  amount:
+                    HugeDecimal.from(amount).toHumanReadableNumber(decimals),
                   decimals,
                 }
               }) ?? [],
@@ -424,10 +422,8 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                   tokens.find((t) => t.denomOrAddress === denom)?.decimals || 0
                 return {
                   denom,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    decimals
-                  ),
+                  amount:
+                    HugeDecimal.from(amount).toHumanReadableNumber(decimals),
                   decimals,
                 }
               }) ?? [],

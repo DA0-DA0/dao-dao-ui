@@ -1,11 +1,11 @@
 import { useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   CwTokenSwapSelectors,
   genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { TokenSwapStatusProps, TokenType, WithChainId } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../components'
 
@@ -50,12 +50,11 @@ export const useTokenSwapStatusInfoForContract = ({
           : selfParty.promise.native.denom,
     })
   )
-  const selfPartyAmount = convertMicroDenomToDenomWithDecimals(
+  const selfPartyAmount = HugeDecimal.from(
     'cw20' in selfParty.promise
       ? selfParty.promise.cw20.amount
-      : selfParty.promise.native.amount,
-    selfPartyTokenInfo.decimals
-  )
+      : selfParty.promise.native.amount
+  ).toHumanReadableNumber(selfPartyTokenInfo.decimals)
 
   const counterpartyTokenInfo = useRecoilValue(
     genericTokenSelector({
@@ -67,12 +66,11 @@ export const useTokenSwapStatusInfoForContract = ({
           : counterparty.promise.native.denom,
     })
   )
-  const counterpartyAmount = convertMicroDenomToDenomWithDecimals(
+  const counterpartyAmount = HugeDecimal.from(
     'cw20' in counterparty.promise
       ? counterparty.promise.cw20.amount
-      : counterparty.promise.native.amount,
-    counterpartyTokenInfo.decimals
-  )
+      : counterparty.promise.native.amount
+  ).toHumanReadableNumber(counterpartyTokenInfo.decimals)
 
   const props: TokenSwapStatusProps = {
     selfParty: {

@@ -5,6 +5,7 @@ import { ComponentType, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   CodeMirrorInput,
@@ -43,7 +44,6 @@ import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/types/protobuf/code
 import { ParameterChangeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/params/v1beta1/params'
 import { SoftwareUpgradeProposal } from '@dao-dao/types/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   govProposalActionDataToDecodedContent,
   makeValidateAddress,
@@ -115,11 +115,9 @@ export const GovernanceProposalComponent: ActionComponent<
     : minDeposits.data.find(
         ({ token }) => token.denomOrAddress === data.deposit[0].denom
       )
-  const depositMin =
-    convertMicroDenomToDenomWithDecimals(
-      selectedMinDepositToken?.min ?? 0,
-      selectedMinDepositToken?.token.decimals ?? 0
-    ) * context.params.minInitialDepositRatio
+  const depositMin = HugeDecimal.from(selectedMinDepositToken?.min ?? 0)
+    .times(context.params.minInitialDepositRatio)
+    .toHumanReadableNumber(selectedMinDepositToken?.token.decimals ?? 0)
 
   const {
     fields: spendFields,
@@ -367,13 +365,14 @@ export const GovernanceProposalComponent: ActionComponent<
 
                 <p className="caption-text max-w-sm">
                   {t('info.govDepositDescription', {
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      selectedMinDepositToken?.min ?? 0,
-                      selectedMinDepositToken?.token.decimals ?? 0
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        selectedMinDepositToken?.token.decimals ?? 0,
-                    }),
+                    amount: HugeDecimal.from(selectedMinDepositToken?.min ?? 0)
+                      .toHumanReadableNumber(
+                        selectedMinDepositToken?.token.decimals ?? 0
+                      )
+                      .toLocaleString(undefined, {
+                        maximumFractionDigits:
+                          selectedMinDepositToken?.token.decimals ?? 0,
+                      }),
                     minAmount: depositMin.toLocaleString(undefined, {
                       maximumFractionDigits:
                         selectedMinDepositToken?.token.decimals ?? 0,
@@ -394,8 +393,7 @@ export const GovernanceProposalComponent: ActionComponent<
                       'deposit.0.amount') as 'deposit.0.amount',
                     error: errors?.deposit?.[0]?.amount,
                     min: depositMin,
-                    step: convertMicroDenomToDenomWithDecimals(
-                      1,
+                    step: HugeDecimal.one.toHumanReadableNumber(
                       selectedMinDepositToken?.token.decimals ?? 0
                     ),
                     convertMicroDenom: true,
@@ -406,8 +404,9 @@ export const GovernanceProposalComponent: ActionComponent<
                         !selectedMinDepositToken ||
                         Number(selectedMinDepositToken.balance) >= value ||
                         t('error.insufficientBalance', {
-                          amount: convertMicroDenomToDenomWithDecimals(
-                            selectedMinDepositToken.balance,
+                          amount: HugeDecimal.from(
+                            selectedMinDepositToken.balance
+                          ).toHumanReadableNumber(
                             selectedMinDepositToken.token.decimals
                           ),
                           tokenSymbol: selectedMinDepositToken.token.symbol,
@@ -564,12 +563,14 @@ export const GovernanceProposalComponent: ActionComponent<
                                       `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`,
                                     error:
                                       errors?.legacy?.spends?.[index]?.amount,
-                                    min: convertMicroDenomToDenomWithDecimals(
-                                      1,
+                                    min: HugeDecimal.from(
+                                      1
+                                    ).toHumanReadableNumber(
                                       selectedToken.decimals
                                     ),
-                                    step: convertMicroDenomToDenomWithDecimals(
-                                      1,
+                                    step: HugeDecimal.from(
+                                      1
+                                    ).toHumanReadableNumber(
                                       selectedToken.decimals
                                     ),
                                     convertMicroDenom: true,

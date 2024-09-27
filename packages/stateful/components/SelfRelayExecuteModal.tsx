@@ -61,7 +61,6 @@ import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v
 import { toTimestamp } from '@dao-dao/types/protobuf/codegen/helpers'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -1208,11 +1207,11 @@ export const SelfRelayExecuteModal = ({
                             title={
                               walletCannotAfford && fundTokenWithBalance
                                 ? t('error.insufficientWalletBalance', {
-                                    amount:
-                                      convertMicroDenomToDenomWithDecimals(
-                                        fundTokenWithBalance.balance,
-                                        fundTokenWithBalance.token.decimals
-                                      ),
+                                    amount: HugeDecimal.from(
+                                      fundTokenWithBalance.balance
+                                    ).toHumanReadableNumber(
+                                      fundTokenWithBalance.token.decimals
+                                    ),
                                     tokenSymbol:
                                       fundTokenWithBalance.token.symbol,
                                   })
@@ -1257,8 +1256,9 @@ export const SelfRelayExecuteModal = ({
                                   ? { loading: true }
                                   : {
                                       loading: false,
-                                      data: convertMicroDenomToDenomWithDecimals(
-                                        funds,
+                                      data: HugeDecimal.from(
+                                        funds
+                                      ).toHumanReadableNumber(
                                         walletFunds.data[index].token.decimals
                                       ),
                                     }
@@ -1411,10 +1411,9 @@ export const SelfRelayExecuteModal = ({
 
                           <div className="flex items-center justify-end gap-2">
                             <TokenAmountDisplay
-                              amount={convertMicroDenomToDenomWithDecimals(
-                                empty ? refunded : funds,
-                                feeToken.decimals
-                              )}
+                              amount={HugeDecimal.from(
+                                empty ? refunded : funds
+                              ).toHumanReadableNumber(feeToken.decimals)}
                               decimals={feeToken.decimals}
                               symbol={feeToken.symbol}
                             />

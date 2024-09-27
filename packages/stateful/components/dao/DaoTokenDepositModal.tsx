@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
   nativeDenomBalanceWithTimestampSelector,
@@ -20,7 +21,6 @@ import { Account } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
 
@@ -176,10 +176,9 @@ export const DaoTokenDepositModal = ({
           : {
               loading: false,
               data: {
-                amount: convertMicroDenomToDenomWithDecimals(
-                  loadingBalance.data.amount,
-                  token.decimals
-                ),
+                amount: HugeDecimal.from(
+                  loadingBalance.data.amount
+                ).toHumanReadableNumber(token.decimals),
                 timestamp: loadingBalance.data.timestamp,
               },
             }

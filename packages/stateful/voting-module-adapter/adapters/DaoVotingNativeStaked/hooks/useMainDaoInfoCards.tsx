@@ -1,13 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
-import {
-  convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -76,10 +74,9 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
               ? { loading: true }
               : {
                   loading: false,
-                  data: convertMicroDenomToDenomWithDecimals(
-                    loadingTotalStakedValue.data,
-                    decimals
-                  ),
+                  data: HugeDecimal.from(
+                    loadingTotalStakedValue.data
+                  ).toHumanReadableNumber(decimals),
                 }
           }
           decimals={decimals}

@@ -3,17 +3,14 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   CwTokenSwapSelectors,
   genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { useActionOptions } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  objectMatchesStructure,
-  processError,
-} from '@dao-dao/utils'
+import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
 import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../stateless/ChooseExistingTokenSwap'
 
@@ -151,12 +148,11 @@ export const ChooseExistingTokenSwap: ActionComponent<
           setValue(props.fieldNamePrefix + 'selfParty', {
             type: 'cw20' in selfParty.promise ? 'cw20' : 'native',
             denomOrAddress: selfPartyTokenInfo.denomOrAddress,
-            amount: convertMicroDenomToDenomWithDecimals(
+            amount: HugeDecimal.from(
               'cw20' in selfParty.promise
                 ? selfParty.promise.cw20.amount
-                : selfParty.promise.native.amount,
-              selfPartyTokenInfo.decimals
-            ),
+                : selfParty.promise.native.amount
+            ).toHumanReadableNumber(selfPartyTokenInfo.decimals),
             decimals: selfPartyTokenInfo.decimals,
           })
 

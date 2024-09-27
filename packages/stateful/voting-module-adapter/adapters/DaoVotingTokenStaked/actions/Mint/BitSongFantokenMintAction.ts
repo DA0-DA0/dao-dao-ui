@@ -1,5 +1,6 @@
 import { coin } from '@cosmjs/amino'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
 import {
@@ -17,7 +18,6 @@ import {
 import { MsgMint } from '@dao-dao/types/protobuf/codegen/bitsong/fantoken/v1beta1/tx'
 import {
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   isDecodedStargateMsg,
 } from '@dao-dao/utils'
 
@@ -115,10 +115,9 @@ export class BitSongFantokenMintAction extends ActionBase<MintData> {
 
     return {
       recipient: decodedMessage.stargate.value.recipient,
-      amount: convertMicroDenomToDenomWithDecimals(
-        decodedMessage.stargate.value.coin.amount,
-        this.governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(
+        decodedMessage.stargate.value.coin.amount
+      ).toHumanReadableNumber(this.governanceToken.decimals),
     }
   }
 }

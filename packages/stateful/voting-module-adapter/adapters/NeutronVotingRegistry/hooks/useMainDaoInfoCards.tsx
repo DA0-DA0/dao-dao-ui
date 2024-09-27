@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useVotingModule } from './useVotingModule'
 
@@ -24,8 +24,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
               }),
               value: (
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    totalPower,
+                  amount={HugeDecimal.from(totalPower).toHumanReadableNumber(
                     info.bondToken.decimals
                   )}
                   decimals={info.bondToken.decimals}

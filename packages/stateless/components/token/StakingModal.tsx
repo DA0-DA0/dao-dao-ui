@@ -8,10 +8,7 @@ import {
   StakingMode,
 } from '@dao-dao/types/components/StakingModal'
 import { Duration } from '@dao-dao/types/contracts/common'
-import {
-  convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import {
@@ -278,8 +275,7 @@ const StakeUnstakeModesBody = ({
         max={
           loadingMax.loading
             ? undefined
-            : convertMicroDenomToDenomWithDecimals(
-                loadingMax.data,
+            : HugeDecimal.from(loadingMax.data).toHumanReadableNumber(
                 tokenDecimals
               )
         }
@@ -303,8 +299,7 @@ const StakeUnstakeModesBody = ({
         amount={
           loadingMax.loading
             ? loadingMax
-            : convertMicroDenomToDenomWithDecimals(
-                loadingMax.data,
+            : HugeDecimal.from(loadingMax.data).toHumanReadableNumber(
                 tokenDecimals
               )
         }
@@ -327,10 +322,9 @@ const StakeUnstakeModesBody = ({
                   ? loadingMax
                   : {
                       loading: false,
-                      data: convertMicroDenomToDenomWithDecimals(
-                        loadingMax.data,
-                        tokenDecimals
-                      ),
+                      data: HugeDecimal.from(
+                        loadingMax.data
+                      ).toHumanReadableNumber(tokenDecimals),
                     }
               }
               percent={percent / 100}
@@ -358,10 +352,9 @@ const StakeUnstakeModesBody = ({
                   ? loadingMax
                   : {
                       loading: false,
-                      data: convertMicroDenomToDenomWithDecimals(
-                        loadingMax.data,
-                        tokenDecimals
-                      ),
+                      data: HugeDecimal.from(
+                        loadingMax.data
+                      ).toHumanReadableNumber(tokenDecimals),
                     }
               }
               percent={1}

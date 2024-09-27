@@ -4,8 +4,8 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { PayEntityDisplayProps, PayEntityDisplayRowProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useDetectWrap } from '../hooks'
 import { TokenAmountDisplay } from './token'
@@ -41,7 +41,7 @@ const PayEntityDisplayRow = ({
     >
       <TokenAmountDisplay
         key={token.denomOrAddress}
-        amount={convertMicroDenomToDenomWithDecimals(amount, token.decimals)}
+        amount={HugeDecimal.from(amount).toHumanReadableNumber(token.decimals)}
         decimals={token.decimals}
         iconUrl={token.imageUrl}
         showFullAmount

@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { nanoid } from 'nanoid'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { contractQueries, tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, BucketEmoji, useChain } from '@dao-dao/stateless'
 import {
@@ -28,7 +29,6 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   getNativeTokenForChainId,
@@ -569,9 +569,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
               {
                 fund_latest: {},
               }
-            )?.amount || '0'
-          : '0'
-        : '0'
+            )?.amount || 0
+          : 0
+        : 0
 
     const denomOrAddress =
       'native' in createMsg.denom
@@ -593,10 +593,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       rate: {
         amount:
           'linear' in createMsg.emission_rate
-            ? convertMicroDenomToDenomWithDecimals(
-                createMsg.emission_rate.linear.amount,
-                token.decimals
-              )
+            ? HugeDecimal.from(
+                createMsg.emission_rate.linear.amount
+              ).toHumanReadableNumber(token.decimals)
             : 1,
         duration:
           'linear' in createMsg.emission_rate
@@ -608,10 +607,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 units: DurationUnits.Hours,
               },
       },
-      initialFunds:
-        initialFunds === '0'
-          ? 0
-          : convertMicroDenomToDenomWithDecimals(initialFunds, token.decimals),
+      initialFunds: HugeDecimal.from(initialFunds).toHumanReadableNumber(
+        token.decimals
+      ),
       openFunding: !!createMsg.open_funding,
     }
   }

@@ -24,7 +24,6 @@ import {
   StatefulVestingPaymentCardProps,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -280,17 +279,15 @@ export const VestingPaymentCard = ({
           // Canceled vests have their curves set to constant.
           'constant' in vest.vested
         }
-        claimedAmount={convertMicroDenomToDenomWithDecimals(
-          vest.claimed,
+        claimedAmount={HugeDecimal.from(vest.claimed).toHumanReadableNumber(
           token.decimals
         )}
         claiming={claiming}
         cw20Address={cw20Address}
         description={vest.description}
-        distributableAmount={convertMicroDenomToDenomWithDecimals(
-          distributable,
-          token.decimals
-        )}
+        distributableAmount={HugeDecimal.from(
+          distributable
+        ).toHumanReadableNumber(token.decimals)}
         endDate={endDate}
         isWalletConnected={isWalletConnected}
         lazyInfo={lazyInfoLoading}
@@ -303,10 +300,9 @@ export const VestingPaymentCard = ({
         recipient={vest.recipient}
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
-        remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
-          Number(total) - Number(vested),
-          token.decimals
-        )}
+        remainingBalanceVesting={HugeDecimal.from(
+          Number(total) - Number(vested)
+        ).toHumanReadableNumber(token.decimals)}
         startDate={startDate}
         steps={steps}
         title={vest.title}

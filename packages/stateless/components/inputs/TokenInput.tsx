@@ -4,13 +4,13 @@ import { useCallback, useMemo, useState } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   PopupTriggerCustomComponent,
   TokenInputOption,
   TokenInputProps,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getDisplayNameForChainId,
   getFallbackImage,
   toAccessibleImageUrl,
@@ -63,10 +63,9 @@ export const TokenInput = <
 
   const amount = amountField
     ? amountField.convertMicroDenom
-      ? convertMicroDenomToDenomWithDecimals(
-          amountField.watch(amountField.fieldName),
-          selectedToken?.decimals ?? 0
-        )
+      ? HugeDecimal.from(
+          amountField.watch(amountField.fieldName)
+        ).toHumanReadableNumber(selectedToken?.decimals ?? 0)
       : Number(amountField.watch(amountField.fieldName))
     : 0
 

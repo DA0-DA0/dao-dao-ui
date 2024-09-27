@@ -17,7 +17,6 @@ import {
 } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
   loadableToLoadingData,
@@ -153,8 +152,7 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: convertMicroDenomToDenomWithDecimals(
-              coin.amount,
+            amount: HugeDecimal.from(coin.amount).toHumanReadableNumber(
               token.decimals
             ),
             denomLabel: token.symbol,

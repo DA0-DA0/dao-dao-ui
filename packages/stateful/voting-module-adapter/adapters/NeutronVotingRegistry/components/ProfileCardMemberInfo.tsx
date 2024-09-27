@@ -2,6 +2,7 @@ import { useQueries } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   genericTokenBalanceSelector,
   neutronVaultQueries,
@@ -13,10 +14,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  makeCombineQueryResultsIntoLoadingDataWithError,
-} from '@dao-dao/utils'
+import { makeCombineQueryResultsIntoLoadingDataWithError } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
@@ -117,14 +115,12 @@ export const ProfileCardMemberInfo = ({
                 loading: false,
                 data: realVaults.map(({ bondToken }, index) => ({
                   token: bondToken,
-                  staked: convertMicroDenomToDenomWithDecimals(
-                    loadingStakedTokens.data[index].unbondable_abount,
-                    bondToken.decimals
-                  ),
-                  unstaked: convertMicroDenomToDenomWithDecimals(
-                    loadingUnstakedTokens.data[index].balance,
-                    bondToken.decimals
-                  ),
+                  staked: HugeDecimal.from(
+                    loadingStakedTokens.data[index].unbondable_abount
+                  ).toHumanReadableNumber(bondToken.decimals),
+                  unstaked: HugeDecimal.from(
+                    loadingUnstakedTokens.data[index].balance
+                  ).toHumanReadableNumber(bondToken.decimals),
                 })),
               }
         }

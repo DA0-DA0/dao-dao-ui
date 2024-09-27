@@ -2,12 +2,9 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { VestingPaymentLineProps } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatDate,
-  formatDateTimeTz,
-} from '@dao-dao/utils'
+import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { ChainProvider } from '../chain'
@@ -69,8 +66,7 @@ export const VestingPaymentLine = ({
               {/* Only show balance available to withdraw if nonzero. */}
               {distributable.isPositive() && (
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    distributable,
+                  amount={HugeDecimal.from(distributable).toHumanReadableNumber(
                     token.decimals
                   )}
                   className="body-text truncate font-mono"
@@ -81,8 +77,7 @@ export const VestingPaymentLine = ({
             </div>
 
             <TokenAmountDisplay
-              amount={convertMicroDenomToDenomWithDecimals(
-                total,
+              amount={HugeDecimal.from(total).toHumanReadableNumber(
                 token.decimals
               )}
               className="body-text truncate text-right font-mono"
@@ -122,8 +117,7 @@ export const VestingPaymentLine = ({
 
             <div className="body-text flex flex-row items-center justify-end gap-1 justify-self-end text-right font-mono">
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  vested,
+                amount={HugeDecimal.from(vested).toHumanReadableNumber(
                   token.decimals
                 )}
                 className="truncate"
@@ -134,8 +128,7 @@ export const VestingPaymentLine = ({
               <p>/</p>
 
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  total,
+                amount={HugeDecimal.from(total).toHumanReadableNumber(
                   token.decimals
                 )}
                 className="truncate"

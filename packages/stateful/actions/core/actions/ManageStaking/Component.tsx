@@ -18,7 +18,6 @@ import { AddressInputProps, TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   StakingActionType,
-  convertMicroDenomToDenomWithDecimals,
   isValidValidatorAddress,
   makeValidateAddress,
   makeValidateValidatorAddress,
@@ -123,10 +122,7 @@ export const ManageStakingComponent: ActionComponent<
   }
 
   // Metadata for the given denom.
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
-    nativeToken.decimals
-  )
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(nativeToken.decimals)
 
   // Get how much is staked and pending for the selected validator.
   const sourceValidatorStaked =
@@ -250,12 +246,11 @@ export const ManageStakingComponent: ActionComponent<
   const delegateWarning =
     isCreating && maxAmount.lt(amount) && type === StakingActionType.Delegate
       ? t('error.insufficientFundsWarning', {
-          amount: convertMicroDenomToDenomWithDecimals(
-            maxAmount,
-            nativeToken.decimals
-          ).toLocaleString(undefined, {
-            maximumFractionDigits: nativeToken.decimals,
-          }),
+          amount: HugeDecimal.from(maxAmount)
+            .toHumanReadableNumber(nativeToken.decimals)
+            .toLocaleString(undefined, {
+              maximumFractionDigits: nativeToken.decimals,
+            }),
           tokenSymbol: nativeToken.symbol,
         })
       : undefined
@@ -391,14 +386,13 @@ export const ManageStakingComponent: ActionComponent<
             </p>
 
             <TokenAmountDisplay
-              amount={convertMicroDenomToDenomWithDecimals(
+              amount={HugeDecimal.from(
                 type === StakingActionType.WithdrawDelegatorReward
                   ? executed
                     ? claimedRewards ?? 0n
                     : sourceValidatorPendingRewards
-                  : maxAmount,
-                nativeToken.decimals
-              )}
+                  : maxAmount
+              ).toHumanReadableNumber(nativeToken.decimals)}
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
               showFullAmount

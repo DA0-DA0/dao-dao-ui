@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   averageColorSelector,
   contractQueries,
@@ -62,7 +63,6 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   SECRET_GAS,
   TokenBasedCreatorId,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   findWasmAttributeValue,
@@ -795,8 +795,9 @@ export const InnerCreateDaoForm = ({
                           undefined
                       ? 0
                       : // If using existing token, convert supply from query using decimals.
-                        convertMicroDenomToDenomWithDecimals(
-                          daoVotingTokenBasedCreatorData.existingTokenSupply,
+                        HugeDecimal.from(
+                          daoVotingTokenBasedCreatorData.existingTokenSupply
+                        ).toHumanReadableNumber(
                           daoVotingTokenBasedCreatorData.existingToken.decimals
                         ),
                   tokenSymbol:

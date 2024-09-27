@@ -1,6 +1,7 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   DaoRewardDistribution,
   GenericTokenBalanceAndValue,
@@ -14,7 +15,6 @@ import {
   PendingRewardsResponse,
 } from '@dao-dao/types/contracts/DaoRewardsDistributor'
 import {
-  convertMicroDenomToDenomWithDecimals,
   deserializeTokenSource,
   getRewardDistributorStorageItemKey,
   serializeTokenSource,
@@ -305,10 +305,9 @@ export const fetchPendingDaoRewards = async (
           0
         )
 
-        const balance = convertMicroDenomToDenomWithDecimals(
-          allPendingRewards,
-          token.decimals
-        )
+        const balance = HugeDecimal.from(
+          allPendingRewards
+        ).toHumanReadableNumber(token.decimals)
 
         const usdValue = balance * usdPrice
 

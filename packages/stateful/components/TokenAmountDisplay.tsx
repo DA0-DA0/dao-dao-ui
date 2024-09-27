@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   TokenAmountDisplay as StatelessTokenAmountDisplay,
@@ -5,7 +6,6 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { StatefulTokenAmountDisplayProps, TokenType } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 /**
  * Automatically show a native coin token amount.
@@ -32,8 +32,7 @@ export const TokenAmountDisplay = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                amount,
+              data: HugeDecimal.from(amount).toHumanReadableNumber(
                 loadingGenericToken.data.decimals
               ),
             }

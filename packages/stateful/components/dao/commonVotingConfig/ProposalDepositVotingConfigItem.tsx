@@ -3,6 +3,7 @@ import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GovernanceTokenType,
@@ -33,7 +34,6 @@ import {
 import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
-  convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   isValidBech32Address,
   makeValidateAddress,
@@ -208,8 +208,7 @@ const ProposalDepositInput = ({
                 register,
                 fieldName: 'proposalDeposit.amount',
                 error: errors?.proposalDeposit?.amount,
-                step: convertMicroDenomToDenomWithDecimals(
-                  1,
+                step: HugeDecimal.one.toHumanReadableNumber(
                   tokenLoaded?.decimals ?? 0
                 ),
               }}

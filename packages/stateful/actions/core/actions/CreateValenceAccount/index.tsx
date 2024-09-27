@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   tokenQueries,
   valenceRebalancerExtraQueries,
@@ -33,7 +34,6 @@ import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
   convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getDisplayNameForChainId,
   getSupportedChainConfig,
@@ -280,8 +280,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
 
           return {
             denom,
-            amount: convertMicroDenomToDenomWithDecimals(
-              amount,
+            amount: HugeDecimal.from(amount).toHumanReadableNumber(
               token.decimals
             ),
             decimals: token.decimals,

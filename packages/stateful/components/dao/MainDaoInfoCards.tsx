@@ -2,6 +2,7 @@ import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { Cw1WhitelistSelectors } from '@dao-dao/state'
 import {
   DaoInfoCards as StatelessDaoInfoCards,
@@ -10,11 +11,7 @@ import {
   useDaoContext,
 } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatDate,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+import { formatDate, formatPercentOf100 } from '@dao-dao/utils'
 
 import { useDaoGovernanceToken, useQueryLoadingData } from '../../hooks'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -142,10 +139,9 @@ const InnerMainDaoInfoCards = () => {
                       )
                     : tokenInfo && (
                         <TokenAmountDisplay
-                          amount={convertMicroDenomToDenomWithDecimals(
-                            activeThreshold.absolute_count.count,
-                            tokenInfo.decimals
-                          )}
+                          amount={HugeDecimal.from(
+                            activeThreshold.absolute_count.count
+                          ).toHumanReadableNumber(tokenInfo.decimals)}
                           decimals={tokenInfo.decimals}
                           symbol={tokenInfo.symbol}
                         />
