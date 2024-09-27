@@ -2,16 +2,14 @@ import { WarningRounded } from '@mui/icons-material'
 import { ComponentType, Dispatch, ReactNode, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AmountWithTimestamp,
   GenericToken,
   LoadingData,
   ModalProps,
 } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  shortenTokenSymbol,
-} from '@dao-dao/utils'
+import { shortenTokenSymbol } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { NumberInput, PercentButton } from '../inputs'
@@ -48,7 +46,7 @@ export const TokenDepositModal = ({
 }: TokenDepositModalProps) => {
   const { t } = useTranslation()
 
-  const min = convertMicroDenomToDenomWithDecimals(1, token.decimals)
+  const min = HugeDecimal.one.toHumanReadableNumber(token.decimals)
 
   const { tokenSymbol } = shortenTokenSymbol(token.symbol)
 

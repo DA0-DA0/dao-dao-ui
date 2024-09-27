@@ -3,6 +3,7 @@ import { ComponentProps, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ActionComponent,
   GenericToken,
@@ -130,7 +131,7 @@ export const NativeCoinSelector = ({
         })
       : undefined
 
-  const minUnit = convertMicroDenomToDenomWithDecimals(1, decimals)
+  const minUnit = HugeDecimal.one.toHumanReadableNumber(decimals)
   const minAmount = min ?? minUnit
 
   return (

@@ -4,6 +4,7 @@ import { ComponentType, RefAttributes, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountSelector,
   Button,
@@ -336,8 +337,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
-                min: convertMicroDenomToDenomWithDecimals(1, decimals),
-                step: convertMicroDenomToDenomWithDecimals(1, decimals),
+                min: HugeDecimal.one.toHumanReadableNumber(decimals),
+                step: HugeDecimal.one.toHumanReadableNumber(decimals),
                 // For custom token, show unit if loaded successfully.
                 unit: loadedCustomToken ? token.data.symbol : undefined,
                 unitIconUrl: loadedCustomToken

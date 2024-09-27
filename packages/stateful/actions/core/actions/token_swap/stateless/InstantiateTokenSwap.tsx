@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   InputErrorMessage,
@@ -46,7 +47,7 @@ export const InstantiateTokenSwap: ActionComponent<
     ({ token }) => selfParty.denomOrAddress === token.denomOrAddress
   )
   const selfDecimals = selfToken?.token.decimals ?? 0
-  const selfMin = convertMicroDenomToDenomWithDecimals(1, selfDecimals)
+  const selfMin = HugeDecimal.one.toHumanReadableNumber(selfDecimals)
   const selfMax = convertMicroDenomToDenomWithDecimals(
     selfToken?.balance ?? 0,
     selfDecimals

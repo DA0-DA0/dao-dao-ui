@@ -7,6 +7,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   NumberInput,
@@ -20,7 +21,6 @@ import {
   GenericToken,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   makeValidateAddress,
   validatePositive,
   validateRequired,
@@ -65,10 +65,10 @@ export const MintComponent: ActionComponent<MintOptions> = ({
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={(fieldNamePrefix + 'amount') as 'amount'}
-          min={convertMicroDenomToDenomWithDecimals(1, govToken.decimals)}
+          min={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           register={register}
           setValue={setValue}
-          step={convertMicroDenomToDenomWithDecimals(1, govToken.decimals)}
+          step={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           unit={'$' + govToken.symbol}
           validation={[validateRequired, validatePositive]}
           watch={watch}

@@ -371,8 +371,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
-                min: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
-                step: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+                min: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
+                step: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
               }}
               onSelectToken={({ chainId, type, denomOrAddress }) => {
                 setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)

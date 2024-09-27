@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   TokenAmountDisplay,
@@ -73,8 +74,8 @@ export const CommunityPoolDepositComponent: ActionComponent<
             register,
             fieldName: (fieldNamePrefix + 'amount') as 'amount',
             error: errors?.amount,
-            min: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
-            step: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+            min: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
+            step: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
           }}
           onSelectToken={({ chainId, denomOrAddress }) => {
             setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)

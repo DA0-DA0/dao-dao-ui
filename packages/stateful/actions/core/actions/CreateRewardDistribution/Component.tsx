@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   InputLabel,
@@ -86,7 +87,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
       : tokens.data.find((t) => tokensEqual(t.token, token.data))
   const decimals = selectedToken?.token.decimals ?? 0
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(1, decimals)
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(decimals)
 
   const selectedBalance = convertMicroDenomToDenomWithDecimals(
     selectedToken?.balance ?? 0,
