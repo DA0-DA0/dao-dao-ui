@@ -5,10 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { NumberInputProps } from '@dao-dao/types'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  toAccessibleImageUrl,
-} from '@dao-dao/utils'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 
@@ -174,13 +171,12 @@ export const NumberInput = <
                 typeof value !== 'number' &&
                 (typeof value !== 'string' || value.trim() === '')
                   ? NaN
-                  : // On first load, setValueAs seems to be called with the first value, which is probably default loaded from a save. We
-                  // don't want to transform this first value.
+                  : // On first load, setValueAs seems to be called with the first value, which is probably default loaded from a save. We don't want to transform this first value.
                   transformDecimals && value !== untransformedValue
-                  ? convertDenomToMicroDenomWithDecimals(
+                  ? HugeDecimal.fromHumanReadable(
                       value,
                       transformDecimals
-                    )
+                    ).toNumber()
                   : Number(value)
 
               return newValue

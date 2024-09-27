@@ -45,7 +45,7 @@ export class HugeDecimal {
   /**
    * Create a HugeDecimal from a value that is already in its base/raw format,
    * which means it does not have decimals and describes an amount of some base
-   * unit. For example: `1000000 untrn`.
+   * unit. For example: `1000000untrn`.
    *
    * @param n the value
    * @returns a HugeDecimal instance
@@ -62,7 +62,7 @@ export class HugeDecimal {
   /**
    * Create a HugeDecimal from a value that is already in human-readable format,
    * which means it has decimals and describes a human-readable token amount.
-   * For example: `1.000000 NTRN`.
+   * For example: `1.000000 $NTRN`.
    *
    * @param n the value
    * @param decimals the number of decimals
@@ -153,6 +153,10 @@ export class HugeDecimal {
 
   pow(n: HugeDecimal.Value) {
     return new HugeDecimal(this.value.pow(valueToBigNumber(n)))
+  }
+
+  abs() {
+    return new HugeDecimal(this.value.abs())
   }
 
   /**

@@ -18,11 +18,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { Account } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { Cw20BaseHooks, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
@@ -105,10 +101,10 @@ export const DaoTokenDepositModal = ({
 
       setLoading(true)
       try {
-        const microAmount = convertDenomToMicroDenomStringWithDecimals(
+        const microAmount = HugeDecimal.fromHumanReadable(
           amount,
           token.decimals
-        )
+        ).toString()
 
         if (token.type === 'native') {
           const signingClient = await getSigningStargateClient()

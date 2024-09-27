@@ -16,10 +16,7 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import { MsgMint } from '@dao-dao/types/protobuf/codegen/bitsong/fantoken/v1beta1/tx'
-import {
-  convertDenomToMicroDenomStringWithDecimals,
-  isDecodedStargateMsg,
-} from '@dao-dao/utils'
+import { isDecodedStargateMsg } from '@dao-dao/utils'
 
 import { Component } from './Component'
 import { MintData } from './MintComponent'
@@ -80,10 +77,10 @@ export class BitSongFantokenMintAction extends ActionBase<MintData> {
       throw new Error('Action not ready')
     }
 
-    const amount = convertDenomToMicroDenomStringWithDecimals(
+    const amount = HugeDecimal.fromHumanReadable(
       _amount,
       this.governanceToken.decimals
-    )
+    ).toString()
 
     return makeStargateMessage({
       stargate: {

@@ -30,7 +30,6 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
   DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
-  convertDenomToMicroDenomStringWithDecimals,
   getNativeTokenForChainId,
   isFeatureSupportedByVersion,
   isValidBech32Address,
@@ -241,10 +240,10 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
       update_config: {
         deposit_info: depositRequired
           ? {
-              amount: convertDenomToMicroDenomStringWithDecimals(
+              amount: HugeDecimal.fromHumanReadable(
                 depositInfo.amount,
                 depositInfo.token?.decimals ?? 0
-              ),
+              ).toString(),
               denom:
                 depositInfo.type === 'voting_module_token'
                   ? {

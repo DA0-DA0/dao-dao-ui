@@ -33,7 +33,6 @@ import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwas
 import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
-  convertDenomToMicroDenomStringWithDecimals,
   getChainAddressForActionOptions,
   getDisplayNameForChainId,
   getSupportedChainConfig,
@@ -202,7 +201,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
 
     const convertedFunds = funds.map(({ denom, amount, decimals }) => ({
       denom,
-      amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+      amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
     }))
 
     // Add service fee to funds.

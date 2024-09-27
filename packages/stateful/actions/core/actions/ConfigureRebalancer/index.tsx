@@ -48,7 +48,6 @@ import {
 import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
-  convertDenomToMicroDenomStringWithDecimals,
   encodeJsonToBase64,
   getAccount,
   getChainAddressForActionOptions,
@@ -236,12 +235,12 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
         tokens.map(
           (token): GenericTokenBalance => ({
             token,
-            balance: convertDenomToMicroDenomStringWithDecimals(
+            balance: HugeDecimal.fromHumanReadable(
               existingCreateValenceAccountActionData?.funds
                 .find(({ denom }) => denom === token.denomOrAddress)
                 ?.amount?.toString() || 0,
               token.decimals
-            ),
+            ).toString(),
           })
         ),
     }),
@@ -488,13 +487,13 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
                       denom,
                       min_balance:
                         minBalance && minBalance.denom === denom
-                          ? convertDenomToMicroDenomStringWithDecimals(
+                          ? HugeDecimal.fromHumanReadable(
                               minBalance.amount,
                               // Should always find this.
                               whitelists.denoms.find(
                                 (d) => d.denomOrAddress === denom
                               )?.decimals ?? 0
-                            )
+                            ).toString()
                           : undefined,
                       // BPS
                       bps: percent * 100,

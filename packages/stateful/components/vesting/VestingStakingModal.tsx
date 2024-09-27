@@ -26,7 +26,6 @@ import {
   VestingInfo,
 } from '@dao-dao/types'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   processError,
@@ -118,10 +117,10 @@ export const VestingStakingModal = ({
     try {
       if (mode === StakingMode.Stake) {
         const data = {
-          amount: convertDenomToMicroDenomStringWithDecimals(
+          amount: HugeDecimal.fromHumanReadable(
             amount,
             nativeToken.decimals
-          ),
+          ).toString(),
           validator,
         }
 
@@ -153,10 +152,10 @@ export const VestingStakingModal = ({
         }
       } else if (mode === StakingMode.Unstake) {
         const data = {
-          amount: convertDenomToMicroDenomStringWithDecimals(
+          amount: HugeDecimal.fromHumanReadable(
             amount,
             nativeToken.decimals
-          ),
+          ).toString(),
           validator,
         }
 
@@ -192,10 +191,10 @@ export const VestingStakingModal = ({
           return
         }
 
-        const convertedAmount = convertDenomToMicroDenomStringWithDecimals(
+        const convertedAmount = HugeDecimal.fromHumanReadable(
           amount,
           nativeToken.decimals
-        )
+        ).toString()
         if (recipientIsDao) {
           await goToDaoProposal(recipient, 'create', {
             prefill: getDaoProposalSinglePrefill({

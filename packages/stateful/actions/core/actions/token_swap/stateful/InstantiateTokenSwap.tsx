@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenBalancesSelector } from '@dao-dao/state'
 import { DaoDaoCoreSelectors } from '@dao-dao/state/recoil'
 import { Loader, useActionOptions, useCachedLoading } from '@dao-dao/stateless'
@@ -15,8 +16,6 @@ import {
 } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
   instantiateSmartContract,
   isValidBech32Address,
@@ -78,19 +77,19 @@ export const InstantiateTokenSwap: ActionComponent<
               ? {
                   cw20: {
                     contract_addr: selfParty.denomOrAddress,
-                    amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       selfParty.amount,
                       selfParty.decimals
-                    ),
+                    ).toString(),
                   },
                 }
               : {
                   native: {
                     denom: selfParty.denomOrAddress,
-                    amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       selfParty.amount,
                       selfParty.decimals
-                    ),
+                    ).toString(),
                   },
                 },
         },
@@ -101,7 +100,7 @@ export const InstantiateTokenSwap: ActionComponent<
               ? {
                   cw20: {
                     contract_addr: counterparty.denomOrAddress,
-                    amount: convertDenomToMicroDenomWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       counterparty.amount,
                       counterparty.decimals
                     ).toString(),
@@ -110,7 +109,7 @@ export const InstantiateTokenSwap: ActionComponent<
               : {
                   native: {
                     denom: counterparty.denomOrAddress,
-                    amount: convertDenomToMicroDenomWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       counterparty.amount,
                       counterparty.decimals
                     ).toString(),

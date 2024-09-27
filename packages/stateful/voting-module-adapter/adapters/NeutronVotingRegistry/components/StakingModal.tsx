@@ -26,7 +26,6 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
   makeCombineQueryResultsIntoLoadingDataWithError,
   processError,
   tokensEqual,
@@ -170,10 +169,10 @@ const InnerStakingModal = ({
             CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(
-              convertDenomToMicroDenomStringWithDecimals(
+              HugeDecimal.fromHumanReadable(
                 amount,
                 selectedVault.bondToken.decimals
-              ),
+              ).toString(),
               selectedVault.bondToken.denomOrAddress
             )
           )
@@ -208,10 +207,10 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            amount: convertDenomToMicroDenomStringWithDecimals(
+            amount: HugeDecimal.fromHumanReadable(
               amount,
               selectedVault.bondToken.decimals
-            ),
+            ).toString(),
           })
 
           // New balances will not appear until the next block.

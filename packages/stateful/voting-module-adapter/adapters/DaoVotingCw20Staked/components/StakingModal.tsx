@@ -22,12 +22,7 @@ import {
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
-import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
-  encodeJsonToBase64,
-  processError,
-} from '@dao-dao/utils'
+import { encodeJsonToBase64, processError } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -128,7 +123,7 @@ const InnerStakingModal = ({
   const walletStakedBalance =
     walletStakedBalanceLoadable.state === 'hasValue' &&
     walletStakedBalanceLoadable.contents
-      ? Number(walletStakedBalanceLoadable.contents.balance)
+      ? walletStakedBalanceLoadable.contents.balance
       : undefined
 
   const [amount, setAmount] = useState(0)
@@ -174,10 +169,10 @@ const InnerStakingModal = ({
 
         try {
           await doCw20SendAndExecute({
-            amount: convertDenomToMicroDenomStringWithDecimals(
+            amount: HugeDecimal.fromHumanReadable(
               amount,
               governanceToken.decimals
-            ),
+            ).toString(),
             contract: stakingContractToExecute,
             msg: encodeJsonToBase64({
               [isOraichainCustomStaking ? 'bond' : 'stake']: {},
@@ -232,13 +227,15 @@ const InnerStakingModal = ({
         // down, so division and multiplication don't commute. Handle the common
         // case here where someone is attempting to unstake all of their funds.
         if (
-          Math.abs(
-            walletStakedBalance -
-              convertDenomToMicroDenomWithDecimals(
+          HugeDecimal.from(walletStakedBalance)
+            .minus(
+              HugeDecimal.fromHumanReadable(
                 amountToUnstake,
                 governanceToken.decimals
               )
-          ) <= 1
+            )
+            .abs()
+            .lte(1)
         ) {
           amountToUnstake = HugeDecimal.from(
             walletStakedBalance
@@ -246,10 +243,10 @@ const InnerStakingModal = ({
         }
 
         try {
-          const convertedAmount = convertDenomToMicroDenomStringWithDecimals(
+          const convertedAmount = HugeDecimal.fromHumanReadable(
             amountToUnstake,
             governanceToken.decimals
-          )
+          ).toString()
           if (isOraichainCustomStaking) {
             await doOraichainUnbond({
               amount: convertedAmount,

@@ -10,7 +10,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -78,10 +77,10 @@ export class MintAction extends ActionBase<MintData> {
       throw new Error('Action not ready')
     }
 
-    const amount = convertDenomToMicroDenomStringWithDecimals(
+    const amount = HugeDecimal.fromHumanReadable(
       _amount,
       this.governanceToken.decimals
-    )
+    ).toString()
 
     return [
       // Set DAO minter allowance to the amount we're about to mint.

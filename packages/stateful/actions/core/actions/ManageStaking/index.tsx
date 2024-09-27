@@ -47,7 +47,6 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   StakingActionType,
-  convertDenomToMicroDenomStringWithDecimals,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
@@ -335,10 +334,10 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
     )
     const nativeToken = getNativeTokenForChainId(chainId)
     const amount = coin(
-      convertDenomToMicroDenomStringWithDecimals(
+      HugeDecimal.fromHumanReadable(
         macroAmount,
         nativeToken.decimals
-      ),
+      ).toString(),
       nativeToken.denomOrAddress
     )
 

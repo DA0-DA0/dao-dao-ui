@@ -20,11 +20,7 @@ import {
   StakingMode,
   cwMsgToEncodeObject,
 } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import {
   useAwaitNextBlock,
@@ -121,10 +117,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     try {
       const signingClient = await getSigningStargateClient()
 
-      const microAmount = convertDenomToMicroDenomStringWithDecimals(
+      const microAmount = HugeDecimal.fromHumanReadable(
         amount,
         nativeToken.decimals
-      )
+      ).toString()
 
       if (mode === StakingMode.Stake) {
         await signingClient.signAndBroadcast(

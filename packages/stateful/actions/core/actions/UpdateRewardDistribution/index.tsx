@@ -16,7 +16,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   getDaoRewardDistributors,
@@ -144,10 +143,10 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
               }
             : {
                 linear: {
-                  amount: convertDenomToMicroDenomStringWithDecimals(
+                  amount: HugeDecimal.fromHumanReadable(
                     rate.amount,
                     distribution.token.decimals
-                  ),
+                  ).toString(),
                   duration: convertDurationWithUnitsToDuration(rate.duration),
                   continuous: false,
                 },

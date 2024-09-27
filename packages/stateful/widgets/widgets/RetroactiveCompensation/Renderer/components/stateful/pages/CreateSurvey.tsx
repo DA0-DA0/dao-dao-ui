@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenBalancesSelector } from '@dao-dao/state'
 import {
   Loader,
@@ -13,7 +14,6 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { TokenType, WidgetId } from '@dao-dao/types'
-import { convertDenomToMicroDenomStringWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
@@ -107,18 +107,18 @@ export const CreateSurvey = () => {
               if (cw20Decimals !== undefined) {
                 cw20Tokens.push({
                   address: denomOrAddress,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
+                  amount: HugeDecimal.fromHumanReadable(
                     amount,
                     cw20Decimals
-                  ),
+                  ).toString(),
                 })
               } else if (nativeDecimals !== undefined) {
                 nativeTokens.push({
                   denom: denomOrAddress,
-                  amount: convertDenomToMicroDenomStringWithDecimals(
+                  amount: HugeDecimal.fromHumanReadable(
                     amount,
                     nativeDecimals
-                  ),
+                  ).toString(),
                 })
               } else {
                 // Should never happen, but just in case.

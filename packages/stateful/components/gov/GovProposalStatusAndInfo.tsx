@@ -36,7 +36,6 @@ import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1bet
 import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
   formatPercentOf100,
   getDisplayNameForChainId,
   processError,
@@ -235,10 +234,10 @@ const InnerGovProposalStatusAndInfo = ({
           proposalId,
           depositor: walletAddress,
           amount: coins(
-            convertDenomToMicroDenomStringWithDecimals(
+            HugeDecimal.fromHumanReadable(
               depositValue,
               depositToken.decimals
-            ),
+            ).toString(),
             depositToken.denomOrAddress
           ),
         },

@@ -3,7 +3,6 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
-import { HugeDecimal } from '@dao-dao/math'
 import {
   CachedLoadable,
   Duration,
@@ -16,18 +15,6 @@ import { Expiration } from '@dao-dao/types/contracts/common'
 
 import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
-
-// TODO(huge): replace with HugeDecimal
-export const convertDenomToMicroDenomWithDecimals = (
-  amount: HugeDecimal.Value,
-  decimals: number
-) => HugeDecimal.fromHumanReadable(amount, decimals).toNumber()
-
-// TODO(huge): replace with HugeDecimal
-export const convertDenomToMicroDenomStringWithDecimals = (
-  amount: HugeDecimal.Value,
-  decimals: number
-): string => HugeDecimal.fromHumanReadable(amount, decimals).toString()
 
 export function convertFromMicroDenom(denom: string) {
   return denom?.substring(1).toUpperCase()

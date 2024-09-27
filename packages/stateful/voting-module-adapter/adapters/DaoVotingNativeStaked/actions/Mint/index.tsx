@@ -16,10 +16,7 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import { MsgMint } from '@dao-dao/types/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
-import {
-  convertDenomToMicroDenomStringWithDecimals,
-  isDecodedStargateMsg,
-} from '@dao-dao/utils'
+import { isDecodedStargateMsg } from '@dao-dao/utils'
 
 import { useGovernanceTokenInfo } from '../../hooks'
 import {
@@ -83,10 +80,10 @@ export class MintAction extends ActionBase<MintData> {
         value: MsgMint.fromPartial({
           sender: this.options.address,
           amount: coin(
-            convertDenomToMicroDenomStringWithDecimals(
+            HugeDecimal.fromHumanReadable(
               amount,
               this.governanceToken.decimals
-            ),
+            ).toString(),
             this.governanceToken.denomOrAddress
           ),
         }),

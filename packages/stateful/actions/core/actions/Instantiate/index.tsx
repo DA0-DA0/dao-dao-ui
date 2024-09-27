@@ -33,7 +33,6 @@ import {
 import { MsgInstantiateContract as SecretMsgInstantiateContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   bech32AddressToBase64,
-  convertDenomToMicroDenomStringWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getAccountAddress,
@@ -303,7 +302,7 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
     const convertedFunds = funds
       .map(({ denom, amount, decimals }) => ({
         denom,
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+        amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
       }))
       // Neutron errors with `invalid coins` if the funds list is not
       // alphabetized.

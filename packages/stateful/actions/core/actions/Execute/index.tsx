@@ -24,7 +24,6 @@ import {
 import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   bech32DataToAddress,
-  convertDenomToMicroDenomStringWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getAccountAddress,
@@ -188,10 +187,10 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
         contractAddress: funds[0].denom,
         msg: {
           send: {
-            amount: convertDenomToMicroDenomStringWithDecimals(
+            amount: HugeDecimal.fromHumanReadable(
               funds[0].amount,
               funds[0].decimals
-            ),
+            ).toString(),
             [isSecret ? 'recipient' : 'contract']: address,
             msg: encodeJsonToBase64(msg),
             ...(isSecret && {
@@ -209,10 +208,7 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
         funds: funds
           .map(({ denom, amount, decimals }) => ({
             denom,
-            amount: convertDenomToMicroDenomStringWithDecimals(
-              amount,
-              decimals
-            ),
+            amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
           }))
           // Neutron errors with `invalid coins` if the funds list is not
           // alphabetized.

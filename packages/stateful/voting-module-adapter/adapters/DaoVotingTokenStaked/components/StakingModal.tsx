@@ -15,11 +15,7 @@ import {
   StakingModal as StatelessStakingModal,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -111,10 +107,10 @@ const InnerStakingModal = ({
             CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(
-              convertDenomToMicroDenomStringWithDecimals(
+              HugeDecimal.fromHumanReadable(
                 amount,
                 governanceToken.decimals
-              ),
+              ).toString(),
               governanceToken.denomOrAddress
             )
           )
@@ -149,10 +145,10 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            amount: convertDenomToMicroDenomStringWithDecimals(
+            amount: HugeDecimal.fromHumanReadable(
               amount,
               governanceToken.decimals
-            ),
+            ).toString(),
           })
 
           // New balances will not appear until the next block.

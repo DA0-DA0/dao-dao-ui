@@ -26,7 +26,6 @@ import {
   InstantiateMsg,
 } from '@dao-dao/types/contracts/DaoRewardsDistributor'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   encodeJsonToBase64,
@@ -244,10 +243,10 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 }
               : {
                   linear: {
-                    amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       rate.amount,
                       token.decimals
-                    ),
+                    ).toString(),
                     duration: convertDurationWithUnitsToDuration(rate.duration),
                     continuous: false,
                   },
@@ -262,10 +261,10 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
 
     // Fund if initial funds are set.
     if (initialFunds) {
-      const microAmount = convertDenomToMicroDenomStringWithDecimals(
+      const microAmount = HugeDecimal.fromHumanReadable(
         initialFunds,
         token.decimals
-      )
+      ).toString()
       messages.push(
         type === TokenType.Native
           ? makeExecuteSmartContractMessage({

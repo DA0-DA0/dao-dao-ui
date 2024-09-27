@@ -10,7 +10,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -80,10 +79,10 @@ export class MintAction extends ActionBase<MintData> {
       contractAddress: this.governanceToken.denomOrAddress,
       msg: {
         mint: {
-          amount: convertDenomToMicroDenomStringWithDecimals(
+          amount: HugeDecimal.fromHumanReadable(
             amount,
             this.governanceToken.decimals
-          ),
+          ).toString(),
           recipient: to,
         },
       },

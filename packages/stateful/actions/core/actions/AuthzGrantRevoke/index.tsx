@@ -42,7 +42,6 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -163,7 +162,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
       // MaxFundsLimit
       // CombinedLimit
       amounts: funds.map(({ denom, amount, decimals }) => ({
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+        amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
         denom,
       })),
     })
@@ -177,7 +176,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
         msg: msgTypeUrl,
         // SendAuthorization
         spendLimit: funds.map(({ denom, amount, decimals }) => ({
-          amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+          amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
           denom,
         })),
         allowList: [],

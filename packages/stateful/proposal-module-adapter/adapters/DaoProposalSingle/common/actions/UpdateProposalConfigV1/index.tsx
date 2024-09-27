@@ -13,7 +13,6 @@ import {
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   makeExecuteSmartContractMessage,
@@ -204,7 +203,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
           ...(data.depositInfo &&
             data.depositRequired && {
               deposit_info: {
-                deposit: convertDenomToMicroDenomStringWithDecimals(
+                deposit: HugeDecimal.fromHumanReadable(
                   data.depositInfo.deposit,
                   this.proposalModule.dao.votingModule.getGovernanceTokenQuery
                     ? (
@@ -213,7 +212,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
                         )
                       ).decimals
                     : 0
-                ),
+                ).toString(),
                 refund_failed_proposals: data.depositInfo.refundFailedProposals,
                 token: { voting_module_token: {} },
               },

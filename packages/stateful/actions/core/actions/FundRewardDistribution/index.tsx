@@ -23,7 +23,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
@@ -150,10 +149,10 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
       throw new Error('Distribution not found')
     }
 
-    const microAmount = convertDenomToMicroDenomStringWithDecimals(
+    const microAmount = HugeDecimal.fromHumanReadable(
       amount,
       distribution.token.decimals
-    )
+    ).toString()
 
     return distribution.token.type === TokenType.Native
       ? makeExecuteSmartContractMessage({

@@ -8,7 +8,6 @@ import { ExecuteMsg as BtsgFtFactoryExecuteMsg } from '@dao-dao/types/contracts/
 import { InitialBalance } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
   NEW_DAO_TOKEN_DECIMALS,
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   isSecretNetwork,
 } from '@dao-dao/utils'
@@ -125,10 +124,10 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           issue: {
             symbol: symbol.toLowerCase(),
             name,
-            max_supply: convertDenomToMicroDenomStringWithDecimals(
+            max_supply: HugeDecimal.fromHumanReadable(
               maxSupply,
               NEW_DAO_TOKEN_DECIMALS
-            ),
+            ).toString(),
             uri: metadataUrl || '',
             initial_balances: microInitialBalances,
             initial_dao_balance: microInitialTreasuryBalance,

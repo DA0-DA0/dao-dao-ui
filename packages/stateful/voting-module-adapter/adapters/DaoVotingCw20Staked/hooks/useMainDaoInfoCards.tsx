@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
-  convertDenomToMicroDenomWithDecimals,
   convertDurationToHumanReadableString,
   formatPercentOf100,
   isSecretNetwork,
@@ -77,9 +77,10 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
         totalVotingWeight === undefined
           ? undefined
           : formatPercentOf100(
-              (totalVotingWeight /
-                convertDenomToMicroDenomWithDecimals(supply, decimals)) *
-                100
+              HugeDecimal.from(totalVotingWeight)
+                .div(HugeDecimal.fromHumanReadable(supply, decimals))
+                .times(100)
+                .toNumber()
             ),
     },
     {

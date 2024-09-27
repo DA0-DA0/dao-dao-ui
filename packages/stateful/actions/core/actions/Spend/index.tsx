@@ -50,7 +50,6 @@ import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/tr
 import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/types/protobuf/codegen/neutron/transfer/v1/tx'
 import {
   MAINNET,
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToSeconds,
   decodeMessage,
   getAccountAddress,
@@ -254,10 +253,10 @@ const StatefulSpendComponent: ComponentType<
 
   const amountIn =
     selectedToken && amount
-      ? convertDenomToMicroDenomStringWithDecimals(
+      ? HugeDecimal.fromHumanReadable(
           amount,
           selectedToken.token.decimals
-        )
+        ).toString()
       : undefined
 
   // Get Skip route for IBC transfer.
@@ -592,7 +591,7 @@ export class SpendAction extends ActionBase<SpendData> {
         type: cw20 ? TokenType.Cw20 : TokenType.Native,
       })
     )
-    const amount = convertDenomToMicroDenomStringWithDecimals(_amount, decimals)
+    const amount = HugeDecimal.fromHumanReadable(_amount, decimals).toString()
 
     // Gov module community pool spend.
     if (this.options.context.type === ActionContextType.Gov) {

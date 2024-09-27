@@ -30,7 +30,6 @@ import {
 } from '@dao-dao/types/actions'
 import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   decodeJsonFromBase64,
   getAccountAddress,
   isDecodedStargateMsg,
@@ -206,7 +205,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
     const convertedFunds = funds
       .map(({ denom, amount, decimals }) => ({
         denom,
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+        amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
       }))
       // Neutron errors with `invalid coins` if the funds list is not
       // alphabetized.

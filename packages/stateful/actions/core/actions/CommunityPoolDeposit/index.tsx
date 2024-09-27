@@ -19,7 +19,6 @@ import {
 } from '@dao-dao/types/actions'
 import { MsgFundCommunityPool } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -117,10 +116,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
           value: MsgFundCommunityPool.fromPartial({
             depositor,
             amount: coins(
-              convertDenomToMicroDenomStringWithDecimals(
-                amount,
-                token.decimals
-              ),
+              HugeDecimal.fromHumanReadable(amount, token.decimals).toString(),
               denom
             ),
           }),
