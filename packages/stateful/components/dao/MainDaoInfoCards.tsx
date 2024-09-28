@@ -106,12 +106,7 @@ const InnerMainDaoInfoCards = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                tvlLoading.loading
-                  ? { loading: true }
-                  : {
-                      loading: false,
-                      data: tvlLoading.data.amount,
-                    }
+                tvlLoading.loading ? { loading: true } : tvlLoading.data.amount
               }
               dateFetched={
                 tvlLoading.loading
@@ -141,7 +136,7 @@ const InnerMainDaoInfoCards = () => {
                         <TokenAmountDisplay
                           amount={HugeDecimal.from(
                             activeThreshold.absolute_count.count
-                          ).toHumanReadableNumber(tokenInfo.decimals)}
+                          )}
                           decimals={tokenInfo.decimals}
                           symbol={tokenInfo.symbol}
                         />

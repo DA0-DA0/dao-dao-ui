@@ -12,6 +12,8 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { Account } from './account'
 import { SupportedChainConfig, WithChainId } from './chain'
 import { SecretModuleInstantiateInfo } from './clients'
@@ -593,7 +595,7 @@ export type VotingVaultInfo =
 
 export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
-  totalPower: string
+  totalPower: HugeDecimal
 }
 
 /**
@@ -635,7 +637,7 @@ export type DaoRewardDistributionWithRemaining = DaoRewardDistribution & {
   /**
    * Remaining rewards to be distributed.
    */
-  remaining: number
+  remaining: HugeDecimal
 }
 
 /**
@@ -653,7 +655,7 @@ export type PendingDaoRewards = {
     /**
      * Pending rewards for the distribution.
      */
-    rewards: number
+    rewards: HugeDecimal
   }[]
   /**
    * Total pending rewards across all distributions, merged by token.

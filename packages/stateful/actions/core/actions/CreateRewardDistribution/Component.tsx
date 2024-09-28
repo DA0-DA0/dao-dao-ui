@@ -160,11 +160,9 @@ export const CreateRewardDistributionComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      HugeDecimal.from(balance)
-                        .toHumanReadableNumber(token.decimals)
-                        .toLocaleString(undefined, {
-                          maximumFractionDigits: token.decimals,
-                        }),
+                      HugeDecimal.from(balance).toHumanReadableString(
+                        token.decimals
+                      ),
                   })),
                 }
           }

@@ -25,7 +25,9 @@ import { TokenAmountDisplay } from './TokenAmountDisplay'
 
 export const StakingModal = ({
   initialMode,
+  // macrodenom
   amount,
+  // macrodenom
   setAmount,
   onClose,
   // macrodenom
@@ -36,7 +38,7 @@ export const StakingModal = ({
   loadingUnstakableTokens,
   unstakingDuration,
   token,
-  // macrodenom
+  // microdenom
   proposalDeposit,
   loading,
   error,
@@ -95,7 +97,7 @@ export const StakingModal = ({
     if (maxTx === undefined) {
       return t('error.loadingData')
     }
-    if (maxTx.lt(amount)) {
+    if (amount > maxTx.toHumanReadableNumber(token.decimals)) {
       return t('error.cannotStakeMoreThanYouHave')
     }
   }
@@ -251,7 +253,7 @@ interface StakeUnstakeModesBodyProps {
   tokenSymbol: string
   tokenDecimals: number
   unstakingDuration: Duration | null
-  proposalDeposit?: number
+  proposalDeposit?: HugeDecimal
 }
 
 const StakeUnstakeModesBody = ({
@@ -275,9 +277,7 @@ const StakeUnstakeModesBody = ({
         max={
           loadingMax.loading
             ? undefined
-            : HugeDecimal.from(loadingMax.data).toHumanReadableNumber(
-                tokenDecimals
-              )
+            : loadingMax.data.toHumanReadableNumber(tokenDecimals)
         }
         min={1 / 10 ** tokenDecimals}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -290,19 +290,14 @@ const StakeUnstakeModesBody = ({
         unit={`$${tokenSymbol}`}
         value={amount}
       />
-      {!loadingMax.loading && loadingMax.data.lt(amount) && (
-        <span className="caption-text mt-1 ml-1 text-text-interactive-error">
-          {t('error.cannotStakeMoreThanYouHave')}
-        </span>
-      )}
+      {!loadingMax.loading &&
+        loadingMax.data.toHumanReadableNumber(tokenDecimals) < amount && (
+          <span className="caption-text mt-1 ml-1 text-text-interactive-error">
+            {t('error.cannotStakeMoreThanYouHave')}
+          </span>
+        )}
       <TokenAmountDisplay
-        amount={
-          loadingMax.loading
-            ? loadingMax
-            : HugeDecimal.from(loadingMax.data).toHumanReadableNumber(
-                tokenDecimals
-              )
-        }
+        amount={loadingMax}
         className="caption-text mt-4 font-mono"
         decimals={tokenDecimals}
         prefix={t('info.yourBalance') + ': '}
@@ -322,9 +317,9 @@ const StakeUnstakeModesBody = ({
                   ? loadingMax
                   : {
                       loading: false,
-                      data: HugeDecimal.from(
-                        loadingMax.data
-                      ).toHumanReadableNumber(tokenDecimals),
+                      data: loadingMax.data.toHumanReadableNumber(
+                        tokenDecimals
+                      ),
                     }
               }
               percent={percent / 100}
@@ -342,9 +337,8 @@ const StakeUnstakeModesBody = ({
               className="mt-2"
               decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
-                proposalDeposit: proposalDeposit.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                }),
+                proposalDeposit:
+                  proposalDeposit.toHumanReadableString(tokenDecimals),
                 tokenSymbol,
               })}
               loadingMax={
@@ -352,9 +346,9 @@ const StakeUnstakeModesBody = ({
                   ? loadingMax
                   : {
                       loading: false,
-                      data: HugeDecimal.from(
-                        loadingMax.data
-                      ).toHumanReadableNumber(tokenDecimals),
+                      data: loadingMax.data.toHumanReadableNumber(
+                        tokenDecimals
+                      ),
                     }
               }
               percent={1}

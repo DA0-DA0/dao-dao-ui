@@ -72,12 +72,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
           amount={
             loadingTotalStakedValue.loading
               ? { loading: true }
-              : {
-                  loading: false,
-                  data: HugeDecimal.from(
-                    loadingTotalStakedValue.data
-                  ).toHumanReadableNumber(decimals),
-                }
+              : HugeDecimal.from(loadingTotalStakedValue.data)
           }
           decimals={decimals}
           symbol={symbol}

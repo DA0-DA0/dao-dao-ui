@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 
@@ -24,9 +23,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
               }),
               value: (
                 <TokenAmountDisplay
-                  amount={HugeDecimal.from(totalPower).toHumanReadableNumber(
-                    info.bondToken.decimals
-                  )}
+                  amount={totalPower}
                   decimals={info.bondToken.decimals}
                   symbol={info.bondToken.symbol}
                 />

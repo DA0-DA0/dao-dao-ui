@@ -1209,7 +1209,7 @@ export const SelfRelayExecuteModal = ({
                                 ? t('error.insufficientWalletBalance', {
                                     amount: HugeDecimal.from(
                                       fundTokenWithBalance.balance
-                                    ).toHumanReadableNumber(
+                                    ).toHumanReadableString(
                                       fundTokenWithBalance.token.decimals
                                     ),
                                     tokenSymbol:
@@ -1251,18 +1251,7 @@ export const SelfRelayExecuteModal = ({
                         ) : (
                           <div className="flex items-center justify-end gap-2">
                             <TokenAmountDisplay
-                              amount={
-                                walletFunds.loading || walletFunds.errored
-                                  ? { loading: true }
-                                  : {
-                                      loading: false,
-                                      data: HugeDecimal.from(
-                                        funds
-                                      ).toHumanReadableNumber(
-                                        walletFunds.data[index].token.decimals
-                                      ),
-                                    }
-                              }
+                              amount={funds}
                               decimals={
                                 fundTokenWithBalance?.token.decimals ?? 0
                               }
@@ -1387,9 +1376,9 @@ export const SelfRelayExecuteModal = ({
 
                       const funds =
                         !relayerFunds.loading && !relayerFunds.errored
-                          ? Number(relayerFunds.data[index].amount)
-                          : 0
-                      const empty = funds === 0
+                          ? HugeDecimal.from(relayerFunds.data[index])
+                          : HugeDecimal.zero
+                      const empty = funds.isZero()
 
                       const refunded =
                         refundedAmount[chain_id] ?? HugeDecimal.zero
@@ -1411,9 +1400,7 @@ export const SelfRelayExecuteModal = ({
 
                           <div className="flex items-center justify-end gap-2">
                             <TokenAmountDisplay
-                              amount={HugeDecimal.from(
-                                empty ? refunded : funds
-                              ).toHumanReadableNumber(feeToken.decimals)}
+                              amount={empty ? refunded : funds}
                               decimals={feeToken.decimals}
                               symbol={feeToken.symbol}
                             />

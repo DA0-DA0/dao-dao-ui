@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { TokenAmountDisplayProps } from '@dao-dao/types'
 import {
   formatTime,
@@ -78,6 +79,7 @@ export const TokenAmountDisplay = ({
   if (
     typeof _amount !== 'number' &&
     _amount &&
+    !(_amount instanceof HugeDecimal) &&
     'loading' in _amount &&
     _amount.loading
   ) {
@@ -90,7 +92,15 @@ export const TokenAmountDisplay = ({
 
   // Extract amount from loaded value.
   let amount =
-    typeof _amount === 'number' ? _amount : _amount ? _amount.data : 0
+    typeof _amount === 'number'
+      ? _amount
+      : _amount instanceof HugeDecimal
+      ? _amount.toHumanReadableNumber(decimals)
+      : _amount
+      ? _amount.data instanceof HugeDecimal
+        ? _amount.data.toHumanReadableNumber(decimals)
+        : _amount.data
+      : 0
 
   // If amount too small, set to min and add `< ` to prefix.
   const amountBelowMin = !!minAmount && amount < minAmount

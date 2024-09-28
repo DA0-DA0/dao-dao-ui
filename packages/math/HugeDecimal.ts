@@ -201,4 +201,18 @@ export class HugeDecimal {
   toCoins(denom: string): Coin[] {
     return [this.toCoin(denom)]
   }
+
+  /**
+   * Returns the USD value.
+   *
+   * @param decimals the number of decimals
+   * @param usdUnitPrice the USD unit price of the token (with decimals)
+   * @returns USD value
+   */
+  toUsdValue(decimals: number, usdUnitPrice: BigNumber.Value) {
+    return this.value
+      .div(BigNumber(10).pow(decimals))
+      .times(usdUnitPrice)
+      .toNumber()
+  }
 }

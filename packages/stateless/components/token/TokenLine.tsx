@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
   getDisplayNameForChainId,
@@ -98,11 +97,7 @@ export const TokenLine = <T extends TokenCardInfo>(
 
         <TokenAmountDisplay
           amount={
-            lazyInfo.loading
-              ? { loading: true }
-              : HugeDecimal.from(
-                  lazyInfo.data.totalBalance
-                ).toHumanReadableNumber(token.decimals)
+            lazyInfo.loading ? { loading: true } : lazyInfo.data.totalBalance
           }
           className="body-text truncate text-right font-mono"
           decimals={token.decimals}
@@ -118,10 +113,10 @@ export const TokenLine = <T extends TokenCardInfo>(
               amount={
                 lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
                   ? { loading: true }
-                  : HugeDecimal.from(
-                      lazyInfo.data.totalBalance
-                    ).toHumanReadableNumber(token.decimals) *
-                    lazyInfo.data.usdUnitPrice.usdPrice
+                  : lazyInfo.data.totalBalance.toUsdValue(
+                      token.decimals,
+                      lazyInfo.data.usdUnitPrice.usdPrice
+                    )
               }
               className="caption-text font-mono"
               dateFetched={

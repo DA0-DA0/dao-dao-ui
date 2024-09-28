@@ -11,7 +11,6 @@ import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactPlayer from 'react-player'
 
-import { HugeDecimal } from '@dao-dao/math'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
@@ -272,15 +271,11 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               <div className="space-y-2">
                 <p className="secondary-text">{t('title.highestOffer')}</p>
                 <div className="body-text space-y-1 font-mono">
-                  {typeof highestOffer.amount === 'number' &&
-                    !isNaN(highestOffer.amount) &&
+                  {highestOffer.amount &&
+                    highestOffer.amount.isPositive() &&
                     highestOffer.offerToken && (
                       <TokenAmountDisplay
-                        amount={HugeDecimal.from(
-                          highestOffer.amount
-                        ).toHumanReadableNumber(
-                          highestOffer.offerToken.decimals
-                        )}
+                        amount={highestOffer.amount}
                         decimals={highestOffer.offerToken.decimals}
                         iconUrl={highestOffer.offerToken.imageUrl}
                         symbol={highestOffer.offerToken.symbol}

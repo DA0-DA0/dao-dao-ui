@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   daoRewardsDistributorExtraQueries,
   daoRewardsDistributorQueries,
@@ -89,7 +90,7 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
                 distribution
               ): Promise<DaoRewardDistributionWithRemaining> => ({
                 ...distribution,
-                remaining: Number(
+                remaining: HugeDecimal.from(
                   await this.options.queryClient.fetchQuery(
                     daoRewardsDistributorQueries.undistributedRewards({
                       chainId: this.options.chain.chain_id,

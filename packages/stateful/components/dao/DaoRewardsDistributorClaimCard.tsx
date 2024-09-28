@@ -47,12 +47,12 @@ export const DaoRewardsDistributorClaimCard = ({
     }
 
     const claimableDistributions = rewards.data.distributions.filter(
-      ({ rewards }) => rewards > 0
+      ({ rewards }) => rewards.isPositive()
     )
 
     if (
       claimableDistributions.length === 0 ||
-      claimableDistributions.every(({ rewards }) => rewards === 0)
+      claimableDistributions.every(({ rewards }) => rewards.isZero())
     ) {
       toast.error(t('error.noRewardsToClaim'))
       return

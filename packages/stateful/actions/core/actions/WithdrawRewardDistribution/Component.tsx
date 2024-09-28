@@ -2,7 +2,6 @@ import { ArrowDropDown } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
   InputErrorMessage,
@@ -83,9 +82,7 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
                 label: getHumanReadableRewardDistributionLabel(t, distribution),
                 description: (
                   <TokenAmountDisplay
-                    amount={HugeDecimal.from(
-                      distribution.remaining
-                    ).toHumanReadableNumber(distribution.token.decimals)}
+                    amount={distribution.remaining}
                     className="text-text-interactive-valid"
                     decimals={distribution.token.decimals}
                     suffix={' ' + t('info.remaining')}
@@ -119,12 +116,9 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
             {selectedDistribution && (
               <p className="text-text-interactive-valid">
                 {t('info.tokensWillBeWithdrawn', {
-                  amount: HugeDecimal.from(selectedDistribution.remaining)
-                    .toHumanReadableNumber(selectedDistribution.token.decimals)
-                    .toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        selectedDistribution.token.decimals,
-                    }),
+                  amount: selectedDistribution.remaining.toHumanReadableString(
+                    selectedDistribution.token.decimals
+                  ),
                   tokenSymbol: selectedDistribution.token.symbol,
                 })}
               </p>

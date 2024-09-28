@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { neutronVaultQueries } from '@dao-dao/state'
 import {
   DaoVotingVaultCard as StatelessDaoVotingVaultCard,
@@ -35,9 +36,10 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
               data:
                 props.totalVotingPower.data === 0
                   ? 0
-                  : (Number(props.vault.totalPower) /
-                      props.totalVotingPower.data) *
-                    100,
+                  : props.vault.totalPower
+                      .div(props.totalVotingPower.data)
+                      .times(100)
+                      .toNumber(),
             }
       }
       walletVotingPowerPercent={
@@ -52,12 +54,12 @@ export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
             }
           : {
               loading: false,
-              data:
-                props.vault.totalPower === '0'
-                  ? 0
-                  : (Number(loadingWalletVotingPower.data.power) /
-                      Number(props.vault.totalPower)) *
-                    100,
+              data: props.vault.totalPower.isZero()
+                ? 0
+                : HugeDecimal.from(loadingWalletVotingPower.data.power)
+                    .div(props.vault.totalPower)
+                    .times(100)
+                    .toNumber(),
             }
       }
       {...props}

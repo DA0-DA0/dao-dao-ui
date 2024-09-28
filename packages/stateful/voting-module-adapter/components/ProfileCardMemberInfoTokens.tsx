@@ -256,14 +256,15 @@ export const ProfileCardMemberInfoTokens = ({
                     ? loadingTokens.data
                     : loadingTokens.data.filter(
                         ({ token }) =>
-                          !!unstakingBalanceByToken[token.denomOrAddress]
+                          unstakingBalanceByToken[token.denomOrAddress]
                       )
                   ).map(({ token }) => (
                     <TokenAmountDisplay
                       key={token.denomOrAddress}
-                      amount={HugeDecimal.from(
-                        unstakingBalanceByToken[token.denomOrAddress] || 0n
-                      ).toHumanReadableNumber(token.decimals)}
+                      amount={
+                        unstakingBalanceByToken[token.denomOrAddress] ||
+                        HugeDecimal.zero
+                      }
                       decimals={token.decimals}
                       symbol={token.symbol}
                     />

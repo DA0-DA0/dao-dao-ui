@@ -62,7 +62,7 @@ export const ValidatorPicker = ({
 
     // If neither validator has a stake, sort by total tokens staked (i.e.
     // popularity).
-    return b.tokens - a.tokens
+    return b.tokens.minus(a.tokens).toNumber()
   })
 
   const TriggerRenderer: PopupTriggerCustomComponent = useCallback(
@@ -129,9 +129,7 @@ export const ValidatorPicker = ({
               </p>
 
               <TokenAmountDisplay
-                amount={HugeDecimal.from(tokens).toHumanReadableNumber(
-                  token.decimals
-                )}
+                amount={tokens}
                 className="inline-block"
                 decimals={token.decimals}
                 prefix={t('title.totalStaked') + ': '}
@@ -149,9 +147,7 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={HugeDecimal.from(
-                        existingStake.amount
-                      ).toHumanReadableNumber(existingStake.token.decimals)}
+                      amount={existingStake.amount}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}
@@ -164,9 +160,7 @@ export const ValidatorPicker = ({
                     </p>
 
                     <TokenAmountDisplay
-                      amount={HugeDecimal.from(
-                        existingStake.rewards
-                      ).toHumanReadableNumber(existingStake.token.decimals)}
+                      amount={existingStake.rewards}
                       decimals={existingStake.token.decimals}
                       iconUrl={existingStake.token.imageUrl}
                       symbol={existingStake.token.symbol}

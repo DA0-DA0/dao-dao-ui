@@ -167,9 +167,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
           '<error>'
         ) : depositInfo.data && depositTokenInfo.data ? (
           <TokenAmountDisplay
-            amount={HugeDecimal.from(
-              depositInfo.data.amount
-            ).toHumanReadableNumber(depositTokenInfo.data.decimals)}
+            amount={HugeDecimal.from(depositInfo.data.amount)}
             decimals={depositTokenInfo.data.decimals}
             iconUrl={depositTokenInfo.data.imageUrl}
             showFullAmount

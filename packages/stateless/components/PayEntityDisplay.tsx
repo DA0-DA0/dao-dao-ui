@@ -41,7 +41,7 @@ const PayEntityDisplayRow = ({
     >
       <TokenAmountDisplay
         key={token.denomOrAddress}
-        amount={HugeDecimal.from(amount).toHumanReadableNumber(token.decimals)}
+        amount={HugeDecimal.from(amount)}
         decimals={token.decimals}
         iconUrl={token.imageUrl}
         showFullAmount

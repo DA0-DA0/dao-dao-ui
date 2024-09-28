@@ -24,7 +24,7 @@ StakeUnstake.args = {
   claimableTokens: 20,
   loading: false,
   initialMode: StakingMode.Stake,
-  proposalDeposit: 5,
+  proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),
   loadingStakableTokens: {
     loading: false,
     data: HugeDecimal.fromHumanReadable(23456, 6),
@@ -44,7 +44,7 @@ Claim.args = {
   claimableTokens: 20,
   loading: false,
   initialMode: StakingMode.Claim,
-  proposalDeposit: 5,
+  proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),
   loadingStakableTokens: {
     loading: false,
     data: HugeDecimal.fromHumanReadable(23456, 6),

@@ -553,13 +553,7 @@ export const VestingPaymentCard = ({
                 <p className="secondary-text">{t('title.staked')}</p>
 
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading
-                      ? { loading: true }
-                      : HugeDecimal.from(totalStaked).toHumanReadableNumber(
-                          token.decimals
-                        )
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : totalStaked}
                   className="caption-text text-right font-mono text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}
@@ -626,11 +620,7 @@ export const VestingPaymentCard = ({
                 >
                   <TokenAmountDisplay
                     amount={
-                      lazyInfo.loading
-                        ? { loading: true }
-                        : HugeDecimal.from(
-                            unstakingBalance
-                          ).toHumanReadableNumber(token.decimals)
+                      lazyInfo.loading ? { loading: true } : unstakingBalance
                     }
                     decimals={token.decimals}
                     symbol={token.symbol}
@@ -642,13 +632,7 @@ export const VestingPaymentCard = ({
                 <p className="secondary-text">{t('info.pendingRewards')}</p>
 
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading
-                      ? { loading: true }
-                      : HugeDecimal.from(pendingRewards).toHumanReadableNumber(
-                          token.decimals
-                        )
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : pendingRewards}
                   className="caption-text text-right font-mono text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}

@@ -221,9 +221,7 @@ export const TokenCard = ({
               <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
-                  amount={HugeDecimal.from(
-                    lazyInfo.data.totalBalance
-                  ).toHumanReadableNumber(token.decimals)}
+                  amount={lazyInfo.data.totalBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
                   symbol={tokenSymbol}
@@ -236,12 +234,10 @@ export const TokenCard = ({
                   token.decimals > 0 && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
-                        amount={
-                          HugeDecimal.from(
-                            lazyInfo.data.totalBalance
-                          ).toHumanReadableNumber(token.decimals) *
+                        amount={lazyInfo.data.totalBalance.toUsdValue(
+                          token.decimals,
                           lazyInfo.data.usdUnitPrice.usdPrice
-                        }
+                        )}
                         dateFetched={lazyInfo.data.usdUnitPrice.timestamp}
                         estimatedUsdValue
                       />
@@ -258,15 +254,13 @@ export const TokenCard = ({
 
           {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
           {(lazyInfo.loading ||
-            lazyInfo.data.totalBalance !== unstakedBalance) && (
+            !lazyInfo.data.totalBalance.eq(unstakedBalance)) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
-                  amount={HugeDecimal.from(
-                    unstakedBalance
-                  ).toHumanReadableNumber(token.decimals)}
+                  amount={unstakedBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
                   symbol={tokenSymbol}
@@ -283,10 +277,10 @@ export const TokenCard = ({
                           lazyInfo.loading ||
                           !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
-                            : HugeDecimal.from(
-                                unstakedBalance
-                              ).toHumanReadableNumber(token.decimals) *
-                              lazyInfo.data.usdUnitPrice.usdPrice
+                            : unstakedBalance.toUsdValue(
+                                token.decimals,
+                                lazyInfo.data.usdUnitPrice.usdPrice
+                              )
                         }
                         dateFetched={
                           lazyInfo.loading || !lazyInfo.data.usdUnitPrice
@@ -315,13 +309,7 @@ export const TokenCard = ({
               <p className="secondary-text">{t('title.staked')}</p>
 
               <TokenAmountDisplay
-                amount={
-                  lazyInfo.loading
-                    ? { loading: true }
-                    : HugeDecimal.from(totalStaked).toHumanReadableNumber(
-                        token.decimals
-                      )
-                }
+                amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
                 symbol={tokenSymbol}
@@ -387,13 +375,7 @@ export const TokenCard = ({
                 }
               >
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading
-                      ? { loading: true }
-                      : HugeDecimal.from(totalUnstaking).toHumanReadableNumber(
-                          token.decimals
-                        )
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : totalUnstaking}
                   decimals={token.decimals}
                   symbol={tokenSymbol}
                 />
@@ -405,11 +387,7 @@ export const TokenCard = ({
 
               <TokenAmountDisplay
                 amount={
-                  lazyInfo.loading
-                    ? { loading: true }
-                    : HugeDecimal.from(
-                        totalPendingRewards
-                      ).toHumanReadableNumber(token.decimals)
+                  lazyInfo.loading ? { loading: true } : totalPendingRewards
                 }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
@@ -454,9 +432,7 @@ export const TokenCard = ({
                       {/* Only show staked balance if defined and nonzero. */}
                       {!!stakedBalance && (
                         <TokenAmountDisplay
-                          amount={HugeDecimal.from(
-                            stakedBalance
-                          ).toHumanReadableNumber(token.decimals)}
+                          amount={stakedBalance}
                           className="caption-text text-right font-mono"
                           decimals={token.decimals}
                           hideSymbol

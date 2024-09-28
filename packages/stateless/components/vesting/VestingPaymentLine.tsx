@@ -2,7 +2,6 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { HugeDecimal } from '@dao-dao/math'
 import { VestingPaymentLineProps } from '@dao-dao/types'
 import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
@@ -66,9 +65,7 @@ export const VestingPaymentLine = ({
               {/* Only show balance available to withdraw if nonzero. */}
               {distributable.isPositive() && (
                 <TokenAmountDisplay
-                  amount={HugeDecimal.from(distributable).toHumanReadableNumber(
-                    token.decimals
-                  )}
+                  amount={distributable}
                   className="body-text truncate font-mono"
                   decimals={token.decimals}
                   symbol={token.symbol}
@@ -77,9 +74,7 @@ export const VestingPaymentLine = ({
             </div>
 
             <TokenAmountDisplay
-              amount={HugeDecimal.from(total).toHumanReadableNumber(
-                token.decimals
-              )}
+              amount={total}
               className="body-text truncate text-right font-mono"
               decimals={token.decimals}
               symbol={token.symbol}
@@ -117,9 +112,7 @@ export const VestingPaymentLine = ({
 
             <div className="body-text flex flex-row items-center justify-end gap-1 justify-self-end text-right font-mono">
               <TokenAmountDisplay
-                amount={HugeDecimal.from(vested).toHumanReadableNumber(
-                  token.decimals
-                )}
+                amount={vested}
                 className="truncate"
                 decimals={token.decimals}
                 hideSymbol
@@ -128,9 +121,7 @@ export const VestingPaymentLine = ({
               <p>/</p>
 
               <TokenAmountDisplay
-                amount={HugeDecimal.from(total).toHumanReadableNumber(
-                  token.decimals
-                )}
+                amount={total}
                 className="truncate"
                 decimals={token.decimals}
                 symbol={token.symbol}

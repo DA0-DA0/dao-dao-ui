@@ -26,12 +26,7 @@ export const GovInfoBar = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                tvlLoading.loading
-                  ? { loading: true }
-                  : {
-                      loading: false,
-                      data: tvlLoading.data.amount,
-                    }
+                tvlLoading.loading ? { loading: true } : tvlLoading.data.amount
               }
               dateFetched={
                 tvlLoading.loading

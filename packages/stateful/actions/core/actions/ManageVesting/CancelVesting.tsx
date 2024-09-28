@@ -2,7 +2,6 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ChainProvider,
@@ -123,9 +122,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                       </p>
 
                       <TokenAmountDisplay
-                        amount={HugeDecimal.from(
-                          Number(total) - Number(vested)
-                        ).toHumanReadableNumber(token.decimals)}
+                        amount={total.minus(vested)}
                         decimals={token.decimals}
                         iconUrl={token.imageUrl}
                         symbol={token.symbol}

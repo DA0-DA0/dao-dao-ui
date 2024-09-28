@@ -135,7 +135,7 @@ const InnerComponent: ActionComponent = (props) => {
   // rewards. If in wallet context, will be undefined.
   const executedTxLoadable = useExecutedProposalTxLoadable()
 
-  let claimedRewards: number | undefined
+  let claimedRewards: HugeDecimal | undefined
   if (
     executedTxLoadable.state === 'hasValue' &&
     executedTxLoadable.contents &&
@@ -190,9 +190,7 @@ const InnerComponent: ActionComponent = (props) => {
       )[0]
 
       if (coin) {
-        claimedRewards = HugeDecimal.from(
-          coin.amount ?? 0
-        ).toHumanReadableNumber(nativeToken.decimals)
+        claimedRewards = HugeDecimal.from(coin)
       }
     }
   }

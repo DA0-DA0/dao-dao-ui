@@ -99,7 +99,7 @@ export const TokenDepositModal = ({
             amount={
               loadingBalance.loading
                 ? loadingBalance
-                : { loading: false, data: loadingBalance.data.amount }
+                : loadingBalance.data.amount
             }
             dateFetched={
               loadingBalance.loading

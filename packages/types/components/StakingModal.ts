@@ -35,7 +35,7 @@ export interface StakingModalProps {
   // Token that is being staked.
   token: GenericToken
   // Proposal deposit for the token that is being staked.
-  proposalDeposit?: number
+  proposalDeposit?: HugeDecimal
   // Is there an error?
   error?: string | undefined
   // Are we ready to stake? Ex: is wallet connected?

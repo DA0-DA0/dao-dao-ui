@@ -241,9 +241,7 @@ const RenderVest = ({
               validatorOperatorAddress,
               <TokenAmountDisplay
                 key={`${index}-token`}
-                amount={HugeDecimal.from(
-                  slash.unregisteredAmount
-                ).toHumanReadableNumber(nativeToken.decimals)}
+                amount={HugeDecimal.from(slash.unregisteredAmount)}
                 decimals={nativeToken.decimals}
                 iconUrl={nativeToken.imageUrl}
                 symbol={nativeToken.symbol}
@@ -266,10 +264,7 @@ const RenderVest = ({
             </p>
 
             <TokenAmountDisplay
-              key="token"
-              amount={HugeDecimal.from(data.amount).toHumanReadableNumber(
-                nativeToken.decimals
-              )}
+              amount={HugeDecimal.from(data.amount)}
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
               symbol={nativeToken.symbol}

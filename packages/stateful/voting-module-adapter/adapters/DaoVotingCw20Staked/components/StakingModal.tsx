@@ -359,13 +359,7 @@ const InnerStakingModal = ({
       }
       onAction={onAction}
       onClose={onClose}
-      proposalDeposit={
-        maxDeposit
-          ? HugeDecimal.from(maxDeposit).toHumanReadableNumber(
-              governanceToken.decimals
-            )
-          : undefined
-      }
+      proposalDeposit={maxDeposit ? HugeDecimal.from(maxDeposit) : undefined}
       setAmount={(newAmount) => setAmount(newAmount)}
       token={governanceToken}
       unstakingDuration={unstakingDuration ?? null}

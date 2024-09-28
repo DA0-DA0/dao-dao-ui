@@ -54,17 +54,17 @@ export const getStakeActions = (
   },
 ]
 
-export interface ManageStakingOptions {
+export type ManageStakingOptions = {
   nativeBalance: string
   stakes: TokenStake[]
   validators: Validator[]
   executed: boolean
-  claimedRewards?: number
+  claimedRewards?: HugeDecimal
   nativeUnstakingDurationSeconds: number
   AddressInput: ComponentType<AddressInputProps<ManageStakingData>>
 }
 
-export interface ManageStakingData {
+export type ManageStakingData = {
   chainId: string
   type: StakingActionType
   validator: string
@@ -386,13 +386,13 @@ export const ManageStakingComponent: ActionComponent<
             </p>
 
             <TokenAmountDisplay
-              amount={HugeDecimal.from(
+              amount={
                 type === StakingActionType.WithdrawDelegatorReward
                   ? executed
-                    ? claimedRewards ?? 0n
+                    ? claimedRewards ?? HugeDecimal.zero
                     : sourceValidatorPendingRewards
                   : maxAmount
-              ).toHumanReadableNumber(nativeToken.decimals)}
+              }
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
               showFullAmount

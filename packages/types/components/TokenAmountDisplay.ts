@@ -1,5 +1,7 @@
 import { ComponentPropsWithoutRef } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { Coin } from '../contracts'
 import { LoadingData } from '../misc'
 
@@ -7,7 +9,13 @@ export type TokenAmountDisplayProps = Omit<
   ComponentPropsWithoutRef<'p'>,
   'children'
 > & {
-  amount: number | LoadingData<number>
+  /**
+   * The amount to display. If a HugeDecimal instance is passed, it is assumed
+   * to be a raw number and will be converted to a human-readable number using
+   * the decimals passed. If a number is passed, it must be a human-readable
+   * number (with decimals).
+   */
+  amount: number | HugeDecimal | LoadingData<number | HugeDecimal>
   prefix?: string
   prefixClassName?: string
   suffix?: string

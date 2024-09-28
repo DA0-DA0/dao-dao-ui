@@ -1,5 +1,6 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { VotingVaultWithInfo } from '@dao-dao/types'
 
 import { neutronVaultQueries } from './NeutronVault'
@@ -38,15 +39,17 @@ export const fetchNeutronVaultsWithInfo = async (
               address: vault.address,
             })
           ),
-          totalPower: (
-            await queryClient.fetchQuery(
-              neutronVaultQueries.totalPowerAtHeight({
-                chainId,
-                contractAddress: vault.address,
-                args: {},
-              })
-            )
-          ).power,
+          totalPower: HugeDecimal.from(
+            (
+              await queryClient.fetchQuery(
+                neutronVaultQueries.totalPowerAtHeight({
+                  chainId,
+                  contractAddress: vault.address,
+                  args: {},
+                })
+              )
+            ).power
+          ),
         })
       )
     )
