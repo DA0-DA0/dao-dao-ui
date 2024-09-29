@@ -90,6 +90,7 @@ export const computeCompensation = (
               denomOrAddress: denom,
               amount: HugeDecimal.from(amount)
                 .times(proportionalCompensation)
+                .trunc()
                 .toString(),
             })
           )
@@ -99,6 +100,7 @@ export const computeCompensation = (
               denomOrAddress: address,
               amount: HugeDecimal.from(amount)
                 .times(proportionalCompensation)
+                .trunc()
                 .toString(),
             })
           )

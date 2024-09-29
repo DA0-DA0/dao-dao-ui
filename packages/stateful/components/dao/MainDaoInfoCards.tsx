@@ -114,7 +114,6 @@ const InnerMainDaoInfoCards = () => {
                   : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
-              hideApprox
             />
           ),
         },

@@ -76,7 +76,9 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           // members.
           amount: HugeDecimal.from(
             (weight / members.length / 100) * initialSupply
-          ).toHumanReadableString(NEW_DAO_TOKEN_DECIMALS),
+          ).toInternationalizedHumanReadableString({
+            decimals: NEW_DAO_TOKEN_DECIMALS,
+          }),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the remaining tokens

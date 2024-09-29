@@ -7,7 +7,6 @@ import {
   formatTime,
   getDisplayNameForChainId,
   toAccessibleImageUrl,
-  toFixedDown,
 } from '@dao-dao/utils'
 
 import { ChainLogo } from '../chain/ChainLogo'
@@ -29,11 +28,6 @@ import { Tooltip } from '../tooltip/Tooltip'
 // The only token amounts we intentionally don't show with full decimals are USD
 // value estimates (i.e. USDC) (max 2).
 
-// Default maximum decimals to use in a USD estimate.
-const USD_ESTIMATE_DEFAULT_MAX_DECIMALS = 2
-// Maximum decimals to use in a large compacted value.
-const LARGE_COMPACT_MAX_DECIMALS = 2
-
 export const TokenAmountDisplay = ({
   amount: _amount,
   decimals: _decimals = 0,
@@ -41,12 +35,10 @@ export const TokenAmountDisplay = ({
   prefixClassName,
   suffix,
   suffixClassName,
-  minDecimals,
-  maxDecimals,
-  hideApprox,
   dateFetched,
   minAmount: _minAmount,
-  showFullAmount,
+  showFullAmount = false,
+  showAllDecimals,
   iconUrl,
   iconClassName,
   showChainId,
@@ -62,10 +54,10 @@ export const TokenAmountDisplay = ({
   const tokenTranslation = estimatedUsdValue
     ? 'format.estUsdValue'
     : 'format.token'
-  const decimals = estimatedUsdValue
-    ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
-    : _decimals
+  const decimals = estimatedUsdValue ? 2 : _decimals
   const minAmount = estimatedUsdValue ? 0.01 : _minAmount
+
+  showAllDecimals ||= estimatedUsdValue
 
   const translateOrOmitSymbol = (translationKey: string, amount: string) =>
     hideSymbol
@@ -90,108 +82,40 @@ export const TokenAmountDisplay = ({
     )
   }
 
-  // Extract amount from loaded value.
+  // Extract amount from loaded value and convert to HugeDecimal.
   let amount =
-    typeof _amount === 'number'
+    _amount instanceof HugeDecimal
       ? _amount
-      : _amount instanceof HugeDecimal
-      ? _amount.toHumanReadableNumber(decimals)
+      : typeof _amount === 'number'
+      ? HugeDecimal.fromHumanReadable(_amount, decimals)
       : _amount
       ? _amount.data instanceof HugeDecimal
-        ? _amount.data.toHumanReadableNumber(decimals)
-        : _amount.data
-      : 0
+        ? _amount.data
+        : HugeDecimal.fromHumanReadable(_amount.data, decimals)
+      : HugeDecimal.zero
 
   // If amount too small, set to min and add `< ` to prefix.
-  const amountBelowMin = !!minAmount && amount < minAmount
+  const amountBelowMin = !!minAmount && amount.lt(minAmount)
   if (amountBelowMin) {
-    amount = minAmount
+    amount = HugeDecimal.fromHumanReadable(minAmount, decimals)
     prefix = `< ${prefix || ''}`
   }
 
-  const options: Intl.NumberFormatOptions = {
-    // Always show all decimals if USD estimate.
-    minimumFractionDigits: estimatedUsdValue
-      ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
-      : minDecimals,
-    maximumFractionDigits: decimals,
-  }
+  const minDecimals = showAllDecimals ? decimals : 0
 
-  const maxCompactDecimals =
-    maxDecimals ??
-    (estimatedUsdValue ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS : decimals)
-  const compactOptions: Intl.NumberFormatOptions & {
-    roundingPriority: string
-  } = {
-    ...options,
-    notation: 'compact',
-    maximumFractionDigits: maxCompactDecimals,
-    // notation=compact seems to set maximumSignificantDigits if undefined.
-    // Because we are rounding toward more precision above, set
-    // maximumSignificantDigits to 1 so that notation=compact does not override
-    // it and display extra decimals in case maximumFractionDigits is less. This
-    // appears to work fine on both Chrome and Safari, which is good enough for
-    // now. This is a crazy hack.
-    maximumSignificantDigits: 1,
-    // Safari (and potentially other non-Chrome browsers) uses only 1 decimal
-    // when notation=compact. roundingPriority=morePrecision tells the formatter
-    // to resolve decimal contraint conflicts with the result with greater
-    // precision.
-    roundingPriority: 'morePrecision',
-  }
+  const amountDisplay = amount.toInternationalizedHumanReadableString({
+    decimals,
+    showFullAmount,
+    minDecimals,
+  })
 
-  const full = toFixedDown(amount, decimals).toLocaleString(undefined, options)
+  const display = translateOrOmitSymbol(tokenTranslation, amountDisplay)
 
-  // Abbreviated number. Example: 1,000,000 => 1M, or 1.2345 => 1.23.
-  let compact = toFixedDown(amount, maxCompactDecimals).toLocaleString(
-    undefined,
-    compactOptions
-  )
-
-  const largeNumber = amount >= 1000
-
-  // If this is a large number that is compacted, and minDecimals/maxDecimals
-  // are not being overridden, use fewer decimals because compact notation looks
-  // bad with too many decimals. We first needed to use the same decimals to
-  // compare and see if compact had any effect. If compact changed nothing, we
-  // want to keep the original decimals.
-  if (
-    !showFullAmount &&
-    largeNumber &&
-    full !== compact &&
-    minDecimals === undefined &&
-    maxDecimals === undefined
-  ) {
-    compact = toFixedDown(amount, LARGE_COMPACT_MAX_DECIMALS).toLocaleString(
-      undefined,
-      {
-        ...compactOptions,
-        maximumFractionDigits: LARGE_COMPACT_MAX_DECIMALS,
-      }
-    )
-  }
-
-  const wasCompacted = full !== compact
-
-  // If compact is different from full and not a large number, display
-  // approximation indication (e.g. ~15.34 when the full value is 15.344913).
-  // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
-  // indicate that there is missing info, and we don't need the explicit
-  // approximation indication.
-  const display =
-    (!showFullAmount &&
-    wasCompacted &&
-    !largeNumber &&
-    !hideApprox &&
-    !estimatedUsdValue
-      ? '~'
-      : '') +
-    translateOrOmitSymbol(tokenTranslation, showFullAmount ? full : compact)
-
-  // Show full value in tooltip if different from compact and not an estimated
-  // USD value.
+  // Show full value in tooltip if compacted and not an estimated USD value.
   const shouldShowFullTooltip =
-    !showFullAmount && wasCompacted && !estimatedUsdValue && amount > 0
+    !showFullAmount &&
+    amount.toHumanReadableNumber(decimals) >= 1000 &&
+    !estimatedUsdValue
 
   return (
     <Tooltip
@@ -200,8 +124,14 @@ export const TokenAmountDisplay = ({
         shouldShowFullTooltip || dateFetched ? (
           <>
             {shouldShowFullTooltip &&
-              // eslint-disable-next-line i18next/no-literal-string
-              translateOrOmitSymbol('format.token', full)}
+              translateOrOmitSymbol(
+                // eslint-disable-next-line i18next/no-literal-string
+                'format.token',
+                amount.toInternationalizedHumanReadableString({
+                  decimals,
+                  showFullAmount: true,
+                })
+              )}
 
             {shouldShowFullTooltip && dateFetched && <br />}
 

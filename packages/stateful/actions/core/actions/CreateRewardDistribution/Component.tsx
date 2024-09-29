@@ -160,9 +160,11 @@ export const CreateRewardDistributionComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      HugeDecimal.from(balance).toHumanReadableString(
-                        token.decimals
-                      ),
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
+                      }),
                   })),
                 }
           }

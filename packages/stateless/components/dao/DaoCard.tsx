@@ -121,7 +121,6 @@ export const DaoCard = ({
                   ? { loading: true }
                   : lazyData.data.tokenWithBalance.balance
               }
-              hideApprox
               {...(showingEstimatedUsdValue
                 ? {
                     estimatedUsdValue: true,

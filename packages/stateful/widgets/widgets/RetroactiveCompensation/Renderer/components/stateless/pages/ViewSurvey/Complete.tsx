@@ -537,7 +537,6 @@ export const InnerComplete = ({
                             className="caption-text text-right"
                             dateFetched={tokenPrices[0]?.timestamp}
                             estimatedUsdValue
-                            hideApprox
                             prefix="= "
                           />
                         </div>

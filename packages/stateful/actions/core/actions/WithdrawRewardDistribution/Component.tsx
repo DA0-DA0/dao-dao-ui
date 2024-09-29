@@ -116,9 +116,12 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
             {selectedDistribution && (
               <p className="text-text-interactive-valid">
                 {t('info.tokensWillBeWithdrawn', {
-                  amount: selectedDistribution.remaining.toHumanReadableString(
-                    selectedDistribution.token.decimals
-                  ),
+                  amount:
+                    selectedDistribution.remaining.toInternationalizedHumanReadableString(
+                      {
+                        decimals: selectedDistribution.token.decimals,
+                      }
+                    ),
                   tokenSymbol: selectedDistribution.token.symbol,
                 })}
               </p>

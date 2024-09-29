@@ -99,12 +99,22 @@ export class HugeDecimal {
     return this.value.toNumber()
   }
 
+  /**
+   * Returns a string in base-10 in normal notation.
+   */
   toString() {
-    return this.value.toString()
+    return this.value.toString(10)
   }
 
   valueOf() {
     return this.value.valueOf()
+  }
+
+  /**
+   * Returns the integer value of this HugeDecimal with decimals truncated.
+   */
+  trunc() {
+    return new HugeDecimal(this.value.integerValue(BigNumber.ROUND_DOWN))
   }
 
   plus(n: HugeDecimal.Value) {
@@ -160,13 +170,26 @@ export class HugeDecimal {
   }
 
   /**
+   * Returns a human-readable BigNumber instance with `decimals` decimal places.
+   * This is only meant to be used internally for formatting, since we don't
+   * want to encourage creating HugeDecimal instances with decimal places.
+   * Ideally, the underlying value is always in raw integer format.
+   *
+   * @param decimals the number of decimal places
+   * @returns human-readable BigNumber instance
+   */
+  private toHumanReadable(decimals: number): HugeDecimal {
+    return new HugeDecimal(this.value.div(BigNumber(10).pow(decimals)))
+  }
+
+  /**
    * Returns a human-readable number with `decimals` decimal places.
    *
    * @param decimals the number of decimal places
    * @returns human-readable number
    */
   toHumanReadableNumber(decimals: number): number {
-    return this.value.div(BigNumber(10).pow(decimals)).toNumber()
+    return this.toHumanReadable(decimals).value.toNumber()
   }
 
   /**
@@ -176,7 +199,97 @@ export class HugeDecimal {
    * @returns human-readable string
    */
   toHumanReadableString(decimals: number): string {
-    return this.value.div(BigNumber(10).pow(decimals)).toFormat(decimals)
+    return this.toHumanReadable(decimals).value.toFormat(decimals)
+  }
+
+  /**
+   * Returns an internationalized human-readable string with abbreviation of
+   * large numbers.
+   *
+   * @returns an internationalized human-readable string
+   */
+  toInternationalizedHumanReadableString({
+    decimals,
+    showFullAmount = true,
+    minDecimals = 0,
+  }: {
+    /**
+     * The number of decimals used to make this number human-readable.
+     */
+    decimals: number
+    /**
+     * Whether or not to show the full amount. Large numbers will be abbreviated
+     * if this is false. Defaults to true.
+     */
+    showFullAmount?: boolean
+    /**
+     * The minimum number of decimal places to show. Defaults to the smallest
+     * number of non-zero decimal places less than or equal to `decimals`.
+     */
+    minDecimals?: number
+  }): string {
+    // Get the decimal separator for the current locale.
+    const decimalSeparator = (1.1).toLocaleString()[1]
+
+    // Use BigInt for integer part of the number, and add the decimals manually.
+    // If the number is too large to fit within the size of Number, must use
+    // this BigInt approach even when not showing the full amount.
+    if (showFullAmount || this.gte(Number.MAX_SAFE_INTEGER)) {
+      const human = this.toHumanReadable(decimals)
+
+      const int = human.trunc()
+      const dec = human.minus(int)
+
+      // Show at least minDecimals, up to the exact number of decimal places in
+      // the original number, if showing the full amount. If not showing the
+      // full amount, this number must be very large (based on the conditional
+      // above), and thus none (0) of the actual decimal places are shown, since
+      // the large part of the number will be abbreviated (e.g. 1,234.5678 gets
+      // converted into 1.23K, and the 0.5678 are hidden).
+      const decimalPlacesToShow = showFullAmount
+        ? Math.max(
+            dec.value.toFormat({ decimalSeparator }).split(decimalSeparator)[1]
+              ?.length ?? 0,
+            minDecimals
+          )
+        : 0
+
+      const intStr = BigInt(int.toString()).toLocaleString(
+        undefined,
+        showFullAmount
+          ? undefined
+          : {
+              notation: 'compact',
+              // Cap minDecimals to 20, which is the maximum allowed.
+              maximumFractionDigits: Math.min(
+                Math.max(2, minDecimals),
+                20
+              ) as 20,
+            }
+      )
+      const decStr =
+        decimalPlacesToShow > 0
+          ? decimalSeparator +
+            dec.value
+              .toFormat(decimalPlacesToShow, { decimalSeparator })
+              .split(decimalSeparator)[1]
+          : ''
+
+      return intStr + decStr
+    }
+    // If entire number can fit within the size of Number and not showing the
+    // full amount, use Number for compact internationalized formatting.
+    else {
+      const human = this.toHumanReadableNumber(decimals)
+      return human.toLocaleString(undefined, {
+        notation: 'compact',
+        minimumFractionDigits: minDecimals || (human >= 1000 ? 2 : undefined),
+        maximumFractionDigits: Math.max(
+          minDecimals,
+          human >= 1000 ? 2 : decimals
+        ),
+      })
+    }
   }
 
   /**
@@ -187,7 +300,7 @@ export class HugeDecimal {
    */
   toCoin(denom: string): Coin {
     return {
-      amount: this.value.toString(),
+      amount: this.toString(),
       denom,
     }
   }

@@ -338,7 +338,9 @@ const StakeUnstakeModesBody = ({
               decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
                 proposalDeposit:
-                  proposalDeposit.toHumanReadableString(tokenDecimals),
+                  proposalDeposit.toInternationalizedHumanReadableString({
+                    decimals: tokenDecimals,
+                  }),
                 tokenSymbol,
               })}
               loadingMax={

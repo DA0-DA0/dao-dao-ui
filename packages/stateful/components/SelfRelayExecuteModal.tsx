@@ -1209,9 +1209,10 @@ export const SelfRelayExecuteModal = ({
                                 ? t('error.insufficientWalletBalance', {
                                     amount: HugeDecimal.from(
                                       fundTokenWithBalance.balance
-                                    ).toHumanReadableString(
-                                      fundTokenWithBalance.token.decimals
-                                    ),
+                                    ).toInternationalizedHumanReadableString({
+                                      decimals:
+                                        fundTokenWithBalance.token.decimals,
+                                    }),
                                     tokenSymbol:
                                       fundTokenWithBalance.token.symbol,
                                   })

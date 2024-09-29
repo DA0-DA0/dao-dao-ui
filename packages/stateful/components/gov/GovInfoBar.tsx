@@ -34,7 +34,6 @@ export const GovInfoBar = () => {
                   : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
-              hideApprox
             />
           ),
         },

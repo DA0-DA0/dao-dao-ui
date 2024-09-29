@@ -21,25 +21,9 @@ export type TokenAmountDisplayProps = Omit<
   suffix?: string
   suffixClassName?: string
   /**
-   * Max decimals to display.
-   */
-  maxDecimals?: number
-  /**
-   * Min decimals to display.
-   */
-  minDecimals?: number
-  /**
-   * Don't show approximation indication (like a tilde).
-   */
-  hideApprox?: boolean
-  /**
    * Add to tooltip if present.
    */
   dateFetched?: Date
-  /**
-   * Show full amount if true.
-   */
-  showFullAmount?: boolean
   /**
    * If present, will add a rounded icon to the left.
    */
@@ -74,6 +58,15 @@ export type TokenAmountDisplayProps = Omit<
          * prefix and display this value.
          */
         minAmount?: number
+        /**
+         * Show full amount if true. Defaults to false.
+         */
+        showFullAmount?: boolean
+        /**
+         * Pad decimal places by appending zeros if the value does not have as
+         * many decimals as specified.
+         */
+        showAllDecimals?: boolean
         estimatedUsdValue?: false
       }
     // Alow hiding symbol.
@@ -89,6 +82,15 @@ export type TokenAmountDisplayProps = Omit<
          * prefix and display this value.
          */
         minAmount?: number
+        /**
+         * Show full amount if true. Defaults to false.
+         */
+        showFullAmount?: boolean
+        /**
+         * Pad decimal places by appending zeros if the value does not have as
+         * many decimals as specified.
+         */
+        showAllDecimals?: boolean
         estimatedUsdValue?: false
       }
     // If USD estimate, disallow symbol, decimals, and minAmount.
@@ -97,6 +99,8 @@ export type TokenAmountDisplayProps = Omit<
         hideSymbol?: boolean
         decimals?: never
         minAmount?: never
+        showFullAmount?: never
+        showAllDecimals?: never
         estimatedUsdValue: true
       }
   )
@@ -107,8 +111,6 @@ export type StatefulTokenAmountDisplayProps = Pick<
   | 'prefixClassName'
   | 'suffix'
   | 'suffixClassName'
-  | 'maxDecimals'
-  | 'hideApprox'
   | 'showFullAmount'
   | 'iconClassName'
   | 'onClick'
