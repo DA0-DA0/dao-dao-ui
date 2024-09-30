@@ -133,8 +133,11 @@ export class HugeDecimal {
     return new HugeDecimal(this.value.div(valueToBigNumber(n)))
   }
 
+  /**
+   * Returns whether or not the value is greater than zero.
+   */
   isPositive() {
-    return this.value.isPositive()
+    return this.value.gt(0)
   }
 
   isZero() {
