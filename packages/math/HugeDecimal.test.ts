@@ -138,4 +138,24 @@ test('HugeDecimal', () => {
       minDecimals: 6,
     })
   ).toBe('90.071993T')
+
+  expect(
+    HugeDecimal.fromHumanReadable(
+      11000027,
+      6
+    ).toInternationalizedHumanReadableString({
+      decimals: 6,
+      showFullAmount: false,
+    })
+  ).toBe('11.00M')
+
+  expect(
+    HugeDecimal.fromHumanReadable(
+      12345678,
+      6
+    ).toInternationalizedHumanReadableString({
+      decimals: 6,
+      showFullAmount: false,
+    })
+  ).toBe('12.35M')
 })
