@@ -1,9 +1,11 @@
 import {
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
+  TokenType,
 } from '@dao-dao/types'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
+  TokenBasedCreatorId,
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
@@ -12,13 +14,15 @@ import {
 
 import { SingleChoiceProposalModule } from '../../../../clients/proposal-module/SingleChoiceProposalModule'
 import { SecretSingleChoiceProposalModule } from '../../../../clients/proposal-module/SingleChoiceProposalModule.secret'
+import { CreatorData as TokenBasedCreatorData } from '../../../../creators/TokenBased/types'
 import { DaoCreationExtraVotingConfig } from '../types'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  { chainId, createWithCw20 },
+  { chainId },
   {
+    creator: { id, data },
     votingConfig: {
       quorum,
       votingDuration,
@@ -55,6 +59,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     onlyMembersExecute: onlyMembersExecute,
   } as const
 
+  const votingModuleTokenType =
+    (id === TokenBasedCreatorId &&
+      (data as TokenBasedCreatorData).selectedTokenType) ||
+    undefined
+
   if (isSecretNetwork(chainId)) {
     if (
       proposalDeposit.enabled &&
@@ -78,7 +87,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                 proposalDeposit.type === 'voting_module_token'
                   ? {
                       voting_module_token: {
-                        token_type: createWithCw20 ? 'cw20' : 'native',
+                        token_type:
+                          votingModuleTokenType === TokenType.Cw20
+                            ? 'cw20'
+                            : 'native',
                       },
                     }
                   : {
@@ -116,7 +128,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
               proposalDeposit.type === 'voting_module_token'
                 ? {
                     voting_module_token: {
-                      token_type: createWithCw20 ? 'cw20' : 'native',
+                      token_type:
+                        votingModuleTokenType === TokenType.Cw20
+                          ? 'cw20'
+                          : 'native',
                     },
                   }
                 : {

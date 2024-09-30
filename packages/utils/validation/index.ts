@@ -37,7 +37,7 @@ export const makeValidateAddress =
   (v: any) =>
     (!required && !v) ||
     (v && typeof v === 'string' && isValidBech32Address(v, bech32Prefix)) ||
-    'Invalid address'
+    'Invalid address.'
 
 export const makeValidateValidatorAddress =
   (bech32Prefix: string) => (v: string) =>

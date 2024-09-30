@@ -20,7 +20,7 @@ import { CreatorData, GovernanceTokenType } from './types'
 export const GovernanceConfigurationReview = ({
   data: {
     tiers,
-    tokenType,
+    govTokenType,
     newInfo: { symbol: newSymbol, initialTreasuryPercent },
     existingToken,
     existingTokenDenomOrAddress,
@@ -31,7 +31,7 @@ export const GovernanceConfigurationReview = ({
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const tokenLoadable = useRecoilValueLoadable(
-    tokenType === GovernanceTokenType.Existing &&
+    govTokenType === GovernanceTokenType.Existing &&
       existingTokenDenomOrAddress &&
       existingToken?.denomOrAddress === existingTokenDenomOrAddress
       ? genericTokenSelector({
@@ -44,7 +44,7 @@ export const GovernanceConfigurationReview = ({
 
   // If existing token, just display the token info again since there are no
   // tier distributions to display.
-  if (tokenType === GovernanceTokenType.Existing) {
+  if (govTokenType === GovernanceTokenType.Existing) {
     return (
       <div className="rounded-lg bg-background-tertiary">
         <div className="flex flex-row border-b border-border-base p-4">
@@ -118,7 +118,7 @@ export const GovernanceConfigurationReview = ({
   })
 
   const symbol =
-    (tokenType === GovernanceTokenType.New
+    (govTokenType === GovernanceTokenType.New
       ? newSymbol
       : tokenLoadable.state === 'hasValue' && tokenLoadable.contents?.symbol) ||
     t('info.tokens').toLocaleUpperCase()

@@ -64,7 +64,7 @@ const ProposalDepositInput = ({
     GenericToken | undefined
   >(
     isTokenBasedCreator
-      ? tokenBasedCreatorData.tokenType === GovernanceTokenType.New
+      ? tokenBasedCreatorData.govTokenType === GovernanceTokenType.New
         ? constSelector({
             chainId,
             type: TokenType.Cw20,

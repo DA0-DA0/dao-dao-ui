@@ -17,6 +17,7 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DurationUnitsValues,
+  TokenType,
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToHumanReadableString,
@@ -32,7 +33,12 @@ import { useQueryLoadingDataWithError } from '../../hooks'
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const UnstakingDurationInput = ({
-  data: { tokenType, unstakingDuration, customStakingAddress },
+  data: {
+    govTokenType,
+    selectedTokenType,
+    unstakingDuration,
+    customStakingAddress,
+  },
   register,
   setValue,
   watch,
@@ -45,11 +51,10 @@ export const UnstakingDurationInput = ({
   const {
     chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: { createWithCw20 },
   } = useSupportedChainContext()
 
   const showCustomStakingAddress =
-    createWithCw20 && customStakingAddress !== undefined
+    selectedTokenType === TokenType.Cw20 && customStakingAddress !== undefined
 
   // Load custom staking contract code hash on Secret Network.
   const customStakingCodeHash = useQueryLoadingDataWithError(
@@ -79,8 +84,8 @@ export const UnstakingDurationInput = ({
 
   return (
     <>
-      {createWithCw20 &&
-        tokenType === GovernanceTokenType.Existing &&
+      {selectedTokenType === TokenType.Cw20 &&
+        govTokenType === GovernanceTokenType.Existing &&
         (holdingAltForCustomStaking || showCustomStakingAddress) && (
           <SwitchCard
             containerClassName="mb-4"

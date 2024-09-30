@@ -2,7 +2,7 @@ import { Chain } from '@chain-registry/types'
 
 import { Coin } from './contracts'
 import { ContractVersion } from './features'
-import { GenericToken } from './token'
+import { GenericToken, TokenType } from './token'
 
 export type IChainContext = {
   chainId: string
@@ -184,10 +184,10 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
    */
   allCodeHashes?: Partial<Record<ContractVersion, Partial<CodeHashConfig>>>
   /**
-   * Whether or not to create DAOs with CW20s. The alternative is to use token
-   * factory native tokens. Defaults to false.
+   * Whether to create token DAOs with native tokens (including tokenfactory),
+   * CW20s, or both. Defaults to native tokens.
    */
-  createWithCw20?: boolean
+  tokenDaoType?: TokenType.Native | TokenType.Cw20 | 'both'
   /**
    * Disallow creating new tokens for token-based DAOs and show a tooltip that
    * token creation is under development. Defaults to false.

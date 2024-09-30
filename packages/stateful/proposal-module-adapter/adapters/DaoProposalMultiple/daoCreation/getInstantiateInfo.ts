@@ -1,5 +1,6 @@
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
+import { DaoCreationGetInstantiateInfo, TokenType } from '@dao-dao/types'
 import {
+  TokenBasedCreatorId,
   convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
@@ -8,14 +9,16 @@ import {
 
 import { MultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule'
 import { SecretMultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule.secret'
+import { CreatorData as TokenBasedCreatorData } from '../../../../creators/TokenBased/types'
 import { DaoCreationExtraVotingConfig } from '../types'
 import { convertPercentOrMajorityValueToPercentageThreshold } from '../utils'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  { chainId, createWithCw20 },
+  { chainId },
   {
+    creator: { id, data },
     votingConfig: {
       quorum,
       votingDuration,
@@ -36,6 +39,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     submissionPolicy: anyoneCanPropose ? 'anyone' : 'members',
     onlyMembersExecute: onlyMembersExecute,
   } as const
+
+  const votingModuleTokenType =
+    (id === TokenBasedCreatorId &&
+      (data as TokenBasedCreatorData).selectedTokenType) ||
+    undefined
 
   if (isSecretNetwork(chainId)) {
     if (
@@ -60,7 +68,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                 proposalDeposit.type === 'voting_module_token'
                   ? {
                       voting_module_token: {
-                        token_type: createWithCw20 ? 'cw20' : 'native',
+                        token_type:
+                          votingModuleTokenType === TokenType.Cw20
+                            ? 'cw20'
+                            : 'native',
                       },
                     }
                   : {
@@ -100,7 +111,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                 proposalDeposit.type === 'voting_module_token'
                   ? {
                       voting_module_token: {
-                        token_type: createWithCw20 ? 'cw20' : 'native',
+                        token_type:
+                          votingModuleTokenType === TokenType.Cw20
+                            ? 'cw20'
+                            : 'native',
                       },
                     }
                   : {

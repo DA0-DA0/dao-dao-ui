@@ -1,5 +1,5 @@
 import { DaoEmoji } from '@dao-dao/stateless'
-import { DaoCreator, DurationUnits } from '@dao-dao/types'
+import { DaoCreator, DurationUnits, TokenType } from '@dao-dao/types'
 import { TokenBasedCreatorId } from '@dao-dao/utils'
 
 import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
@@ -21,6 +21,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
   makeDefaultConfig: ({
     tokenCreationUnderDevelopment = false,
     noTokenFactory = false,
+    tokenDaoType = TokenType.Native,
   }) => ({
     tiers: [
       {
@@ -33,10 +34,12 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
         ],
       },
     ],
-    tokenType:
+    govTokenType:
       tokenCreationUnderDevelopment || noTokenFactory
         ? GovernanceTokenType.Existing
         : GovernanceTokenType.New,
+    selectedTokenType:
+      tokenDaoType === 'both' ? TokenType.Native : tokenDaoType,
     newInfo: {
       initialSupply: 10000000,
       initialTreasuryPercent: 90,

@@ -785,7 +785,7 @@ export const InnerCreateDaoForm = ({
               ? //! Display governance token supply if using governance tokens.
                 {
                   tokenBalance:
-                    daoVotingTokenBasedCreatorData.tokenType ===
+                    daoVotingTokenBasedCreatorData.govTokenType ===
                     GovernanceTokenType.New
                       ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
                       : // If using existing token but no token info loaded (should
@@ -800,7 +800,7 @@ export const InnerCreateDaoForm = ({
                           daoVotingTokenBasedCreatorData.existingToken.decimals
                         ),
                   tokenSymbol:
-                    daoVotingTokenBasedCreatorData.tokenType ===
+                    daoVotingTokenBasedCreatorData.govTokenType ===
                     GovernanceTokenType.New
                       ? daoVotingTokenBasedCreatorData.newInfo.symbol
                       : // If using existing token but no token info loaded (should
@@ -812,7 +812,7 @@ export const InnerCreateDaoForm = ({
                       : daoVotingTokenBasedCreatorData.existingToken.symbol ||
                         t('info.token').toLocaleUpperCase(),
                   tokenDecimals:
-                    daoVotingTokenBasedCreatorData.tokenType ===
+                    daoVotingTokenBasedCreatorData.govTokenType ===
                       GovernanceTokenType.Existing &&
                     daoVotingTokenBasedCreatorData.existingToken
                       ? daoVotingTokenBasedCreatorData.existingToken.decimals

@@ -5,6 +5,7 @@ import {
   DurationWithUnits,
   GenericToken,
   NewDaoTier,
+  TokenType,
 } from '@dao-dao/types'
 
 export enum GovernanceTokenType {
@@ -17,7 +18,8 @@ export type CreatorData = {
   tiers: NewDaoTier[]
   // For custom errors.
   _tiersError?: undefined
-  tokenType: GovernanceTokenType
+  govTokenType: GovernanceTokenType
+  selectedTokenType: TokenType
   newInfo: {
     initialSupply: number
     initialTreasuryPercent: number

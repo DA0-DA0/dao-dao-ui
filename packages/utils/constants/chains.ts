@@ -13,6 +13,7 @@ import {
   ContractVersion,
   PolytoneConfig,
   SupportedChainConfig,
+  TokenType,
 } from '@dao-dao/types'
 
 import { NftBasedCreatorId } from './adapters'
@@ -276,6 +277,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://ping.pub/terra/gov/REPLACE',
       wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
     },
+    // tokenDaoType: 'both',
     latestVersion: ContractVersion.V250,
   },
   {
@@ -285,7 +287,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
     name: 'terraclassic',
     mainnet: true,
     accentColor: '#ffd842',
-    createWithCw20: true,
     noInstantiate2Create: true,
     factoryContractAddress:
       'terra18d67ywrfwxq6924xdsg4ahrsjrtuvnu0q5v0ttj07fakw2thspps2fn9yy',
@@ -296,6 +297,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       wallet:
         'https://finder.terra-classic.hexxagon.io/mainnet/address/REPLACE',
     },
+    tokenDaoType: TokenType.Cw20,
     latestVersion: ContractVersion.V250,
   },
   {
@@ -306,13 +308,13 @@ const BASE_SUPPORTED_CHAINS: Omit<
     accentColor: '#ffffff',
     factoryContractAddress:
       'orai1d53g4e9gpnj5asr8kf9pfn7zpg0yr0cksllyaqc75m4rmxwu6sqqnxpjnm',
-    createWithCw20: true,
     explorerUrlTemplates: {
       tx: 'https://scan.orai.io/txs/REPLACE',
       gov: 'https://scan.orai.io/proposals',
       govProp: 'https://scan.orai.io/proposals/REPLACE',
       wallet: 'https://scan.orai.io/account/REPLACE',
     },
+    tokenDaoType: TokenType.Cw20,
     latestVersion: ContractVersion.V250,
   },
   {
@@ -530,7 +532,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
     accentColor: '#000000',
     factoryContractAddress: 'secret15rtkhedsr9gx2z4vq2p7zqk25z4kssju5ae0yy',
     noIndexer: true,
-    createWithCw20: true,
     noInstantiate2Create: true,
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
@@ -538,6 +539,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://testnet.ping.pub/secret/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/secret/account/REPLACE',
     },
+    tokenDaoType: TokenType.Cw20,
     latestVersion: ContractVersion.V242,
   },
 ]

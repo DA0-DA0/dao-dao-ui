@@ -1,4 +1,8 @@
-import { ChainId, DaoCreatorGetInstantiateInfo } from '@dao-dao/types'
+import {
+  ChainId,
+  DaoCreatorGetInstantiateInfo,
+  TokenType,
+} from '@dao-dao/types'
 import { ExecuteMsg as BtsgFtFactoryExecuteMsg } from '@dao-dao/types/contracts/BtsgFtFactory'
 import { InitialBalance } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
@@ -16,11 +20,12 @@ import { SecretTokenStakedVotingModule } from '../../clients/voting-module/Token
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
-  chainConfig: { createWithCw20, tokenCreationFactoryAddress },
+  chainConfig: { tokenCreationFactoryAddress },
   newDao: { chainId },
   data: {
     tiers,
-    tokenType,
+    govTokenType,
+    selectedTokenType,
     newInfo: {
       initialSupply,
       maxSupply,
@@ -40,7 +45,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   },
   t,
 }) => {
-  const isNative = !createWithCw20
+  const isNative = selectedTokenType === TokenType.Native
   const isSecret = isSecretNetwork(chainId)
 
   const commonConfig = {
@@ -63,7 +68,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ? null
       : convertDurationWithUnitsToDuration(unstakingDurationWithUnits)
 
-  if (tokenType === GovernanceTokenType.New) {
+  if (govTokenType === GovernanceTokenType.New) {
     const microInitialBalances: InitialBalance[] = tiers.flatMap(
       ({ weight, members }) =>
         members.map(({ address }) => ({
@@ -178,11 +183,11 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       })
     }
   } else {
-    if (!existingTokenDenomOrAddress) {
+    if (!existingTokenDenomOrAddress || !existingToken) {
       throw new Error(t('error.missingGovernanceTokenDenom'))
     }
 
-    if (isSecret && !isNative && !existingToken?.snip20CodeHash) {
+    if (isSecret && !isNative && !existingToken.snip20CodeHash) {
       throw new Error('SNIP20 code hash not found')
     }
     if (isSecret && !isNative && !customStakingCodeHash) {

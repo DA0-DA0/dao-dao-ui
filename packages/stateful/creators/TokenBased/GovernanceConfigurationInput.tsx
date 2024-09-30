@@ -39,6 +39,7 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
+  humanReadableList,
   isValidBech32Address,
   isValidNativeTokenDenom,
   isValidUrl,
@@ -80,7 +81,6 @@ export const GovernanceConfigurationInput = ({
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
     config,
   } = useSupportedChainContext()
-  const isCw20 = !!config.createWithCw20
 
   const isBitsong =
     chainId === ChainId.BitsongMainnet || chainId === ChainId.BitsongTestnet
@@ -111,7 +111,7 @@ export const GovernanceConfigurationInput = ({
   )
   useEffect(() => {
     if (
-      data.tokenType === GovernanceTokenType.New &&
+      data.govTokenType === GovernanceTokenType.New &&
       !tokenFactoryDenomCreationFeeLoading.loading
     ) {
       setValue(
@@ -122,7 +122,7 @@ export const GovernanceConfigurationInput = ({
       // No fee for using existing token.
       setValue('creator.data.tokenFactoryDenomCreationFee', undefined)
     }
-  }, [data.tokenType, setValue, tokenFactoryDenomCreationFeeLoading])
+  }, [data.govTokenType, setValue, tokenFactoryDenomCreationFeeLoading])
 
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
@@ -209,14 +209,25 @@ export const GovernanceConfigurationInput = ({
   const govTokenPercentsSumTo100 =
     initialTreasuryPercent + totalMemberPercent === 100
 
+  const allowsNative =
+    // default when unset
+    !config.tokenDaoType ||
+    config.tokenDaoType === TokenType.Native ||
+    config.tokenDaoType === 'both'
+  const allowsCw20 =
+    config.tokenDaoType === TokenType.Cw20 || config.tokenDaoType === 'both'
+
   //! Validate existing governance token.
   const existingGovernanceTokenIsCw20 =
-    isCw20 &&
+    allowsCw20 &&
     !!data.existingTokenDenomOrAddress &&
     isValidBech32Address(data.existingTokenDenomOrAddress, bech32Prefix)
   const existingGovernanceTokenIsNative =
-    !isCw20 &&
+    allowsNative &&
     !!data.existingTokenDenomOrAddress &&
+    // Match CW20 contract addresses first, since native tokens typically do not
+    // look like contract addresses.
+    !existingGovernanceTokenIsCw20 &&
     isValidNativeTokenDenom(data.existingTokenDenomOrAddress)
   const existingGovernanceTokenIsValid =
     existingGovernanceTokenIsNative || existingGovernanceTokenIsCw20
@@ -256,18 +267,28 @@ export const GovernanceConfigurationInput = ({
         ? existingGovernanceTokenLoadable.contents
         : undefined
     )
-    setValue(
-      'creator.data.existingTokenSupply',
+
+    // Update token type if token is loaded.
+    const tokenType = existingGovernanceTokenLoadable.valueMaybe()?.type
+    if (tokenType) {
+      setValue('creator.data.selectedTokenType', tokenType)
+    }
+
+    const existingTokenSupply =
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
           ? BigInt(existingGovernanceTokenSupply.contents).toString()
           : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
-    )
+    setValue('creator.data.existingTokenSupply', existingTokenSupply)
+
+    const tokenErrored = existingGovernanceTokenLoadable.state === 'hasError'
+    const supplyErrored = existingGovernanceTokenSupply.state === 'hasError'
 
     if (
-      existingGovernanceTokenLoadable.state !== 'hasError' &&
-      existingGovernanceTokenSupply.state !== 'hasError'
+      !tokenErrored &&
+      !supplyErrored &&
+      (!existingTokenSupply || existingTokenSupply !== '0')
     ) {
       if (errors?.creator?.data?.existingToken?._error) {
         clearErrors('creator.data.existingToken._error')
@@ -278,11 +299,14 @@ export const GovernanceConfigurationInput = ({
     if (!errors?.creator?.data?.existingToken?._error) {
       setError('creator.data.existingToken._error', {
         type: 'manual',
-        message: existingGovernanceTokenIsNative
-          ? t('error.failedToGetFactoryTokenInfo')
-          : t('error.failedToGetTokenInfo', {
-              tokenType: 'CW20',
-            }),
+        message:
+          tokenErrored || supplyErrored
+            ? existingGovernanceTokenIsNative
+              ? t('error.failedToGetFactoryTokenInfo')
+              : t('error.failedToGetTokenInfo', {
+                  tokenType: 'CW20',
+                })
+            : t('error.noTokenSupply'),
       })
     }
   }, [
@@ -292,8 +316,7 @@ export const GovernanceConfigurationInput = ({
     setError,
     setValue,
     t,
-    existingGovernanceTokenSupply.state,
-    existingGovernanceTokenSupply.contents,
+    existingGovernanceTokenSupply,
     existingGovernanceTokenIsNative,
   ])
 
@@ -389,8 +412,10 @@ export const GovernanceConfigurationInput = ({
     <>
       <SegmentedControls
         className="mt-8 mb-4 w-max"
-        onSelect={(tokenType) => setValue('creator.data.tokenType', tokenType)}
-        selected={data.tokenType}
+        onSelect={(tokenType) =>
+          setValue('creator.data.govTokenType', tokenType)
+        }
+        selected={data.govTokenType}
         tabs={[
           {
             label: t('button.createAToken'),
@@ -410,19 +435,39 @@ export const GovernanceConfigurationInput = ({
         ]}
       />
 
-      {data.tokenType === GovernanceTokenType.New ? (
+      {data.govTokenType === GovernanceTokenType.New ? (
         <>
           <div className="mb-10 rounded-lg bg-background-tertiary">
-            <div className="flex h-14 flex-row border-b border-border-base p-4">
+            <div className="flex flex-row justify-between items-center flex-wrap gap-x-16 gap-y-4 border-b border-border-base p-4">
               <p className="primary-text text-text-body">
                 {t('form.tokenDefinition')}
               </p>
+
+              {config.tokenDaoType === 'both' && (
+                <SegmentedControls
+                  className="w-max"
+                  onSelect={(type) =>
+                    setValue('creator.data.selectedTokenType', type)
+                  }
+                  selected={data.selectedTokenType}
+                  tabs={[
+                    {
+                      label: t('form.native'),
+                      value: TokenType.Native,
+                    },
+                    {
+                      label: 'CW20',
+                      value: TokenType.Cw20,
+                    },
+                  ]}
+                />
+              )}
             </div>
 
             <div className="flex flex-col items-stretch sm:flex-row">
               <div className="flex flex-col items-stretch sm:flex-row">
                 {/* TODO(tokenfactory-image): add back in once token factory  supports URI metadata */}
-                {(isCw20 || isBitsong) && (
+                {(data.selectedTokenType === TokenType.Cw20 || isBitsong) && (
                   <div className="flex flex-col items-center gap-5 border-b border-border-secondary py-6 px-10 sm:border-r sm:border-b-0">
                     <InputLabel name={t('form.image')} />
                     <ImageSelector
@@ -666,7 +711,7 @@ export const GovernanceConfigurationInput = ({
             </div>
           </div>
         </>
-      ) : data.tokenType === GovernanceTokenType.Existing ? (
+      ) : data.govTokenType === GovernanceTokenType.Existing ? (
         <div className="rounded-lg bg-background-tertiary">
           <div className="flex h-14 flex-row items-center border-b border-border-base p-4">
             <p className="primary-text text-text-body">
@@ -681,15 +726,36 @@ export const GovernanceConfigurationInput = ({
                 error={errors.creator?.data?.existingTokenDenomOrAddress}
                 fieldName="creator.data.existingTokenDenomOrAddress"
                 ghost
-                placeholder={
-                  isCw20 ? bech32Prefix + '...' : `denom OR ibc/HASH`
-                }
+                placeholder={humanReadableList(
+                  [
+                    // eslint-disable-next-line i18next/no-literal-string
+                    ...(allowsNative ? ['denom', 'ibc/HASH'] : []),
+                    ...(allowsCw20 ? [bech32Prefix + '...'] : []),
+                  ],
+                  'OR'
+                )}
                 register={register}
                 validation={[
                   validateRequired,
-                  ...(isCw20
-                    ? [makeValidateAddress(bech32Prefix)]
-                    : [validateNativeTokenDenom]),
+                  (value) => {
+                    let validation = ''
+                    if (allowsCw20) {
+                      const v = makeValidateAddress(bech32Prefix)(value)
+                      if (v === true) {
+                        return true
+                      }
+                      validation = v
+                    }
+                    if (allowsNative) {
+                      const v = validateNativeTokenDenom(value)
+                      if (v === true) {
+                        return true
+                      }
+                      // Concat both validation error strings if present.
+                      validation = `${validation} ${v}`.trim()
+                    }
+                    return validation || 'Invalid token identifier.'
+                  },
                 ]}
               />
               <InputErrorMessage
