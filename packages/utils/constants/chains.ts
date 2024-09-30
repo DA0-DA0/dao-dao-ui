@@ -377,6 +377,8 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://explorer.polypore.xyz/theta-testnet-001/gov/REPLACE',
       wallet: 'https://explorer.polypore.xyz/theta-testnet-001/account/REPLACE',
     },
+    // Disable token creation.
+    noTokenFactory: true,
     daoCreatorDisabled: {
       // No NFTs on the Hub.
       [NftBasedCreatorId]: 'unsupported',
@@ -396,6 +398,8 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://explorer.polypore.xyz/provider/gov/REPLACE',
       wallet: 'https://explorer.polypore.xyz/provider/account/REPLACE',
     },
+    // Disable token creation.
+    noTokenFactory: true,
     daoCreatorDisabled: {
       // No NFTs on the Hub.
       [NftBasedCreatorId]: 'unsupported',
