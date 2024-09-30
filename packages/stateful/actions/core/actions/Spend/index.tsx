@@ -1,4 +1,3 @@
-import { coin, coins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
 import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -394,7 +393,7 @@ const StatefulSpendComponent: ComponentType<
         errored: false,
       }
   // Get the amount out from an IBC path.
-  const ibcAmountOut: LoadingDataWithError<number | undefined> = isIbc
+  const ibcAmountOut: LoadingDataWithError<HugeDecimal | undefined> = isIbc
     ? skipRoute.loading || !selectedToken
       ? {
           loading: true,
@@ -410,9 +409,7 @@ const StatefulSpendComponent: ComponentType<
           loading: false,
           errored: false,
           updating: skipRoute.updating,
-          data: HugeDecimal.from(
-            skipRoute.data.amount_out
-          ).toHumanReadableNumber(selectedToken.token.decimals),
+          data: HugeDecimal.from(skipRoute.data.amount_out),
         }
     : {
         loading: false,
@@ -591,7 +588,7 @@ export class SpendAction extends ActionBase<SpendData> {
         type: cw20 ? TokenType.Cw20 : TokenType.Native,
       })
     )
-    const amount = HugeDecimal.fromHumanReadable(_amount, decimals).toString()
+    const amount = HugeDecimal.fromHumanReadable(_amount, decimals)
 
     // Gov module community pool spend.
     if (this.options.context.type === ActionContextType.Gov) {
@@ -601,7 +598,7 @@ export class SpendAction extends ActionBase<SpendData> {
           value: MsgCommunityPoolSpend.fromPartial({
             authority: this.options.address,
             recipient: to,
-            amount: coins(amount, denom),
+            amount: amount.toCoins(denom),
           }),
         },
       })
@@ -671,7 +668,7 @@ export class SpendAction extends ActionBase<SpendData> {
             value: {
               sourcePort: 'transfer',
               sourceChannel,
-              token: coin(amount, denom),
+              token: amount.toCoin(denom),
               sender: from,
               receiver: to,
               timeoutTimestamp,
@@ -741,7 +738,7 @@ export class SpendAction extends ActionBase<SpendData> {
       }
     } else if (!cw20) {
       msg = {
-        bank: makeBankMessage(amount, to, denom),
+        bank: makeBankMessage(amount.toFixed(0), to, denom),
       }
     } else {
       msg = makeWasmMessage({
@@ -752,7 +749,7 @@ export class SpendAction extends ActionBase<SpendData> {
             msg: {
               transfer: {
                 recipient: to,
-                amount,
+                amount: amount.toFixed(0),
               },
             },
           },

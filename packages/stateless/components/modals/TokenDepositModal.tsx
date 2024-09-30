@@ -19,10 +19,10 @@ import { Modal } from './Modal'
 export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
   token: GenericToken
   loadingBalance: LoadingData<AmountWithTimestamp>
-  onDeposit: (amount: number) => void | Promise<void>
+  onDeposit: (amount: HugeDecimal) => void | Promise<void>
   loading: boolean
-  amount: number
-  setAmount: Dispatch<SetStateAction<number>>
+  amount: HugeDecimal
+  setAmount: Dispatch<SetStateAction<HugeDecimal>>
   connected: boolean
   ConnectWallet?: ComponentType
   subtitle?: string | ReactNode
@@ -68,7 +68,7 @@ export const TokenDepositModal = ({
               disabled
             }
             loading={loading}
-            onClick={() => amount > 0 && onDeposit(amount)}
+            onClick={() => amount.isPositive() && onDeposit(amount)}
           >
             {t('button.deposit')}
           </Button>
@@ -122,10 +122,9 @@ export const TokenDepositModal = ({
         min={min}
         onInput={(event) =>
           setAmount(
-            Number(
-              Number((event.target as HTMLInputElement).value).toFixed(
-                token.decimals
-              )
+            HugeDecimal.fromHumanReadable(
+              (event.target as HTMLInputElement).value,
+              token.decimals
             )
           )
         }
@@ -135,10 +134,12 @@ export const TokenDepositModal = ({
             onDeposit(amount)
           }
         }}
-        setValue={(_, value) => setAmount(value)}
+        setValue={(_, value) =>
+          setAmount(HugeDecimal.fromHumanReadable(value, token.decimals))
+        }
         step={min}
         unit={'$' + tokenSymbol}
-        value={amount}
+        value={amount.toHumanReadableNumber(token.decimals)}
       />
 
       <div className="grid grid-cols-5 gap-2">
@@ -146,14 +147,18 @@ export const TokenDepositModal = ({
           <PercentButton
             key={percent}
             amount={amount}
-            decimals={token.decimals}
-            label={`${percent}%`}
             loadingMax={
               loadingBalance.loading
                 ? loadingBalance
-                : { loading: false, data: loadingBalance.data.amount }
+                : {
+                    loading: false,
+                    data: HugeDecimal.fromHumanReadable(
+                      loadingBalance.data.amount,
+                      token.decimals
+                    ),
+                  }
             }
-            percent={percent / 100}
+            percent={percent}
             setAmount={setAmount}
           />
         ))}

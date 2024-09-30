@@ -121,7 +121,7 @@ export type SpendOptions = {
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
   // If this is an IBC transfer, show the expected receive amount.
-  ibcAmountOut: LoadingDataWithError<number | undefined>
+  ibcAmountOut: LoadingDataWithError<HugeDecimal | undefined>
   // If this is an IBC transfer and a multi-TX route exists that unwinds the
   // tokens correctly but doesn't use PFM, this is the better path.
   betterNonPfmIbcPath: LoadingData<string[] | undefined>
@@ -268,13 +268,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             token.denomOrAddress === spendDenom &&
             (token.type === TokenType.Cw20) === isCw20
         )
-  const balance = HugeDecimal.from(
-    selectedToken?.balance ?? 0
-  ).toHumanReadableNumber(selectedToken?.token.decimals ?? 0)
 
   const decimals = loadedCustomToken
     ? token.data.decimals
     : selectedToken?.token.decimals || 0
+
+  const balance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
@@ -285,10 +284,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: spendDenom })
-      : spendAmount > balance
+      : balance.toHumanReadable(decimals).lt(spendAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: balance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: balance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: symbol,
         })
@@ -479,27 +478,31 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   decimals={selectedToken.token.decimals}
                   iconUrl={selectedToken.token.imageUrl}
                   onClick={() =>
-                    setValue((fieldNamePrefix + 'amount') as 'amount', balance)
+                    setValue(
+                      (fieldNamePrefix + 'amount') as 'amount',
+                      balance.toHumanReadableNumber(decimals)
+                    )
                   }
                   showFullAmount
                   symbol={selectedToken.token.symbol}
                 />
               </div>
 
-              {balance > 0 && (
+              {balance.isPositive() && (
                 <div className="grid grid-cols-5 gap-1">
                   {[10, 25, 50, 75, 100].map((percent) => (
                     <PercentButton
                       key={percent}
-                      amount={spendAmount}
-                      decimals={selectedToken.token.decimals}
-                      label={`${percent}%`}
+                      amount={HugeDecimal.fromHumanReadable(
+                        spendAmount,
+                        decimals
+                      )}
                       loadingMax={{ loading: false, data: balance }}
-                      percent={percent / 100}
+                      percent={percent}
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount
+                          amount.toHumanReadableNumber(decimals)
                         )
                       }
                     />
@@ -667,11 +670,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                       fee: neutronTransferFee.data
                         .map(({ token, balance }) =>
                           t('format.token', {
-                            amount: HugeDecimal.from(balance)
-                              .toHumanReadableNumber(token.decimals)
-                              .toLocaleString(undefined, {
-                                maximumFractionDigits: token.decimals,
-                              }),
+                            amount: HugeDecimal.from(
+                              balance
+                            ).toInternationalizedHumanReadableString({
+                              decimals: token.decimals,
+                            }),
                             symbol: token.symbol,
                           })
                         )
@@ -856,7 +859,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             !ibcAmountOut.loading &&
             !ibcAmountOut.errored &&
             ibcAmountOut.data &&
-            ibcAmountOut.data !== spendAmount && (
+            !ibcAmountOut.data.eq(spendAmount) && (
               <div className="flex flex-col gap-2 mt-1">
                 <InputLabel name={t('form.amountReceived')} />
 

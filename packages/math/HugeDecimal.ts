@@ -78,6 +78,26 @@ export class HugeDecimal {
   }
 
   /**
+   * Returns a HugeDecimal whose value is the maximum of the arguments.
+   *
+   * @param n values
+   * @returns a HugeDecimal instance
+   */
+  static max(...n: HugeDecimal.Value[]) {
+    return new HugeDecimal(BigNumber.max(...n.map(valueToBigNumber)))
+  }
+
+  /**
+   * Returns a HugeDecimal whose value is the minimum of the arguments.
+   *
+   * @param n values
+   * @returns a HugeDecimal instance
+   */
+  static min(...n: HugeDecimal.Value[]) {
+    return new HugeDecimal(BigNumber.min(...n.map(valueToBigNumber)))
+  }
+
+  /**
    * Returns a HugeDecimal instance with value 0.
    */
   static get zero() {
@@ -104,6 +124,16 @@ export class HugeDecimal {
    */
   toString() {
     return this.value.toString(10)
+  }
+
+  /**
+   * Returns a string in normal notation with exactly `decimals` decimal places.
+   *
+   * @param decimals decimals
+   * @returns a string
+   */
+  toFixed(decimals: number) {
+    return this.value.toFixed(decimals, BigNumber.ROUND_DOWN)
   }
 
   valueOf() {
@@ -173,16 +203,23 @@ export class HugeDecimal {
   }
 
   /**
-   * Returns a human-readable BigNumber instance with `decimals` decimal places.
-   * This is only meant to be used internally for formatting, since we don't
-   * want to encourage creating HugeDecimal instances with decimal places.
-   * Ideally, the underlying value is always in raw integer format.
+   * Returns a HugeDecimal whose value is the value of this HugeDecimal negated,
+   * i.e. multiplied by -1.
+   */
+  negated() {
+    return new HugeDecimal(this.value.negated())
+  }
+
+  /**
+   * Returns a HugeDecimal instance with `decimals` decimal places.
    *
    * @param decimals the number of decimal places
-   * @returns human-readable BigNumber instance
+   * @returns HugeDecimal instance
    */
-  private toHumanReadable(decimals: number): HugeDecimal {
-    return new HugeDecimal(this.value.div(BigNumber(10).pow(decimals)))
+  toHumanReadable(decimals: number): HugeDecimal {
+    return new HugeDecimal(
+      this.value.div(BigNumber(10).pow(decimals)).toFixed(decimals)
+    )
   }
 
   /**
@@ -257,7 +294,7 @@ export class HugeDecimal {
           )
         : 0
 
-      const intStr = BigInt(int.toString()).toLocaleString(
+      const intStr = BigInt(int.toFixed(0)).toLocaleString(
         undefined,
         showFullAmount
           ? undefined
@@ -303,7 +340,7 @@ export class HugeDecimal {
    */
   toCoin(denom: string): Coin {
     return {
-      amount: this.toString(),
+      amount: this.toFixed(0),
       denom,
     }
   }
@@ -326,9 +363,6 @@ export class HugeDecimal {
    * @returns USD value
    */
   toUsdValue(decimals: number, usdUnitPrice: BigNumber.Value) {
-    return this.value
-      .div(BigNumber(10).pow(decimals))
-      .times(usdUnitPrice)
-      .toNumber()
+    return this.toHumanReadable(decimals).times(usdUnitPrice).toNumber()
   }
 }

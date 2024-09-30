@@ -88,9 +88,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
 
   const minAmount = HugeDecimal.one.toHumanReadableNumber(decimals)
 
-  const selectedBalance = HugeDecimal.from(
-    selectedToken?.balance ?? 0
-  ).toHumanReadableNumber(decimals)
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
   const warning =
     !isCreating ||
     tokens.loading ||
@@ -100,10 +98,11 @@ export const CreateRewardDistributionComponent: ActionComponent<
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: denomOrAddress })
-      : initialFunds && initialFunds > selectedBalance
+      : initialFunds &&
+        selectedBalance.toHumanReadable(decimals).lt(initialFunds)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: selectedToken.token.symbol,
         })
@@ -297,7 +296,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
               onClick={() =>
                 setValue(
                   (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                  selectedBalance
+                  selectedBalance.toHumanReadableNumber(decimals)
                 )
               }
               showFullAmount
@@ -305,20 +304,21 @@ export const CreateRewardDistributionComponent: ActionComponent<
             />
           </div>
 
-          {selectedBalance > 0 && (
+          {selectedBalance.isPositive() && (
             <div className="grid grid-cols-5 gap-1">
               {[10, 25, 50, 75, 100].map((percent) => (
                 <PercentButton
                   key={percent}
-                  amount={initialFunds}
-                  decimals={decimals}
-                  label={`${percent}%`}
+                  amount={HugeDecimal.fromHumanReadable(
+                    initialFunds,
+                    selectedToken.token.decimals
+                  )}
                   loadingMax={{ loading: false, data: selectedBalance }}
-                  percent={percent / 100}
+                  percent={percent}
                   setAmount={(amount) =>
                     setValue(
                       (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                      amount
+                      amount.toHumanReadableNumber(selectedToken.token.decimals)
                     )
                   }
                 />

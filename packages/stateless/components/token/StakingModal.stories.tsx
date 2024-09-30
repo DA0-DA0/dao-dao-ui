@@ -14,14 +14,14 @@ export default {
 } as ComponentMeta<typeof StakingModal>
 
 const Template: ComponentStory<typeof StakingModal> = (args) => {
-  const [amount, setAmount] = useState(50)
+  const [amount, setAmount] = useState(HugeDecimal.fromHumanReadable(50, 6))
 
   return <StakingModal {...args} amount={amount} setAmount={setAmount} />
 }
 
 export const StakeUnstake = Template.bind({})
 StakeUnstake.args = {
-  claimableTokens: 20,
+  claimableTokens: HugeDecimal.fromHumanReadable(20, 6),
   loading: false,
   initialMode: StakingMode.Stake,
   proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),
@@ -41,7 +41,7 @@ StakeUnstake.args = {
 
 export const Claim = Template.bind({})
 Claim.args = {
-  claimableTokens: 20,
+  claimableTokens: HugeDecimal.fromHumanReadable(20, 6),
   loading: false,
   initialMode: StakingMode.Claim,
   proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),

@@ -1,4 +1,3 @@
-import { coin } from '@cosmjs/stargate'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -67,7 +66,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const validatorsLoadable = useCachedLoadable(
@@ -100,7 +99,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
   const onAction = async (
     mode: StakingMode,
-    amount: number,
+    amount: HugeDecimal,
     validator?: string | undefined
   ) => {
     // Should never happen.
@@ -117,11 +116,6 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     try {
       const signingClient = await getSigningStargateClient()
 
-      const microAmount = HugeDecimal.fromHumanReadable(
-        amount,
-        nativeToken.decimals
-      ).toString()
-
       if (mode === StakingMode.Stake) {
         await signingClient.signAndBroadcast(
           walletAddress,
@@ -131,7 +125,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               {
                 staking: {
                   delegate: {
-                    amount: coin(microAmount, nativeToken.denomOrAddress),
+                    amount: amount.toCoin(nativeToken.denomOrAddress),
                     validator,
                   },
                 },
@@ -150,7 +144,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               {
                 staking: {
                   undelegate: {
-                    amount: coin(microAmount, nativeToken.denomOrAddress),
+                    amount: amount.toCoin(nativeToken.denomOrAddress),
                     validator,
                   },
                 },
@@ -183,7 +177,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       amount={amount}
       claimableTokens={
         // Tokens are claimable somewhere else.
-        0
+        HugeDecimal.zero
       }
       initialMode={StakingMode.Stake}
       loading={loading}

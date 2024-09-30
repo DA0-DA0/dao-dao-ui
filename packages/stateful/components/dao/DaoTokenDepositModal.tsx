@@ -1,4 +1,3 @@
-import { coins } from '@cosmjs/stargate'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -79,7 +78,7 @@ export const DaoTokenDepositModal = ({
     }
   )
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const transferCw20 = Cw20BaseHooks.useTransfer({
@@ -88,7 +87,7 @@ export const DaoTokenDepositModal = ({
   })
 
   const onDeposit = useCallback(
-    async (amount: number) => {
+    async (amount: HugeDecimal) => {
       if (!address) {
         toast.error(t('error.logInToContinue'))
         return
@@ -101,22 +100,17 @@ export const DaoTokenDepositModal = ({
 
       setLoading(true)
       try {
-        const microAmount = HugeDecimal.fromHumanReadable(
-          amount,
-          token.decimals
-        ).toString()
-
         if (token.type === 'native') {
           const signingClient = await getSigningStargateClient()
           await signingClient.sendTokens(
             address,
             depositAddress,
-            coins(microAmount, token.denomOrAddress),
+            amount.toCoins(token.denomOrAddress),
             CHAIN_GAS_MULTIPLIER
           )
         } else if (token.type === 'cw20') {
           await transferCw20({
-            amount: microAmount,
+            amount: amount.toFixed(0),
             recipient: depositAddress,
           })
         }
@@ -126,8 +120,8 @@ export const DaoTokenDepositModal = ({
 
         toast.success(
           t('success.depositedTokenIntoDao', {
-            amount: amount.toLocaleString(undefined, {
-              maximumFractionDigits: token.decimals,
+            amount: amount.toInternationalizedHumanReadableString({
+              decimals: token.decimals,
             }),
             tokenSymbol: token.symbol,
             daoName,
@@ -136,7 +130,7 @@ export const DaoTokenDepositModal = ({
 
         onClose?.()
         // Clear amount after a timeout to allow closing.
-        setTimeout(() => setAmount(0), 500)
+        setTimeout(() => setAmount(HugeDecimal.zero), 500)
       } catch (err) {
         console.error(err)
         toast.error(processError(err))

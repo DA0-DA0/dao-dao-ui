@@ -72,16 +72,19 @@ export const FundRewardDistributionComponent: ActionComponent<
           tokens.data.find((t) =>
             tokensEqual(t.token, selectedDistribution.token)
           )?.balance || 0
-        ).toHumanReadableNumber(selectedDistribution.token.decimals)
-      : 0
+        )
+      : HugeDecimal.zero
 
   const warning =
     !isCreating || tokens.loading || tokens.updating || !selectedDistribution
       ? undefined
-      : amount && amount > selectedBalance
+      : amount &&
+        selectedBalance
+          .toHumanReadable(selectedDistribution.token.decimals)
+          .lt(amount)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDistribution.token.decimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals: selectedDistribution.token.decimals,
           }),
           tokenSymbol: selectedDistribution.token.symbol,
         })
@@ -185,7 +188,9 @@ export const FundRewardDistributionComponent: ActionComponent<
                   onClick={() =>
                     setValue(
                       (fieldNamePrefix + 'amount') as 'amount',
-                      selectedBalance
+                      selectedBalance.toHumanReadableNumber(
+                        selectedDistribution.token.decimals
+                      )
                     )
                   }
                   showFullAmount
@@ -193,20 +198,23 @@ export const FundRewardDistributionComponent: ActionComponent<
                 />
               </div>
 
-              {selectedBalance > 0 && (
+              {selectedBalance.isPositive() && (
                 <div className="grid grid-cols-5 gap-1">
                   {[10, 25, 50, 75, 100].map((percent) => (
                     <PercentButton
                       key={percent}
-                      amount={amount}
-                      decimals={selectedDistribution.token.decimals}
-                      label={`${percent}%`}
+                      amount={HugeDecimal.fromHumanReadable(
+                        amount,
+                        selectedDistribution.token.decimals
+                      )}
                       loadingMax={{ loading: false, data: selectedBalance }}
-                      percent={percent / 100}
+                      percent={percent}
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount
+                          amount.toHumanReadableNumber(
+                            selectedDistribution.token.decimals
+                          )
                         )
                       }
                     />

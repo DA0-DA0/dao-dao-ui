@@ -76,7 +76,7 @@ export const VestingStakingModal = ({
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const { address: walletAddress = '' } = useWallet({
@@ -103,7 +103,7 @@ export const VestingStakingModal = ({
 
   const onAction = async (
     mode: StakingMode,
-    amount: number,
+    amount: HugeDecimal,
     validator?: string,
     fromValidator?: string
   ) => {
@@ -117,10 +117,7 @@ export const VestingStakingModal = ({
     try {
       if (mode === StakingMode.Stake) {
         const data = {
-          amount: HugeDecimal.fromHumanReadable(
-            amount,
-            nativeToken.decimals
-          ).toString(),
+          amount: amount.toFixed(0),
           validator,
         }
 
@@ -152,10 +149,7 @@ export const VestingStakingModal = ({
         }
       } else if (mode === StakingMode.Unstake) {
         const data = {
-          amount: HugeDecimal.fromHumanReadable(
-            amount,
-            nativeToken.decimals
-          ).toString(),
+          amount: amount.toFixed(0),
           validator,
         }
 
@@ -191,10 +185,6 @@ export const VestingStakingModal = ({
           return
         }
 
-        const convertedAmount = HugeDecimal.fromHumanReadable(
-          amount,
-          nativeToken.decimals
-        ).toString()
         if (recipientIsDao) {
           await goToDaoProposal(recipient, 'create', {
             prefill: getDaoProposalSinglePrefill({
@@ -207,7 +197,7 @@ export const VestingStakingModal = ({
                     message: JSON.stringify(
                       {
                         redelegate: {
-                          amount: convertedAmount,
+                          amount: amount.toFixed(0),
                           src_validator: fromValidator,
                           dst_validator: validator,
                         },
@@ -224,7 +214,7 @@ export const VestingStakingModal = ({
           })
         } else {
           await redelegate({
-            amount: convertedAmount,
+            amount: amount.toFixed(0),
             srcValidator: fromValidator,
             dstValidator: validator,
           })
@@ -296,7 +286,7 @@ export const VestingStakingModal = ({
       amount={amount}
       claimableTokens={
         // Tokens are claimable somewhere else.
-        0
+        HugeDecimal.zero
       }
       enableRestaking
       initialMode={StakingMode.Stake}

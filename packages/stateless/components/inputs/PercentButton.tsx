@@ -1,65 +1,71 @@
 import clsx from 'clsx'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { ButtonProps, LoadingData } from '@dao-dao/types'
 
 import { Button } from '../buttons'
 
-export interface PercentButtonProps {
-  label: string
-  loadingMax: LoadingData<number>
+export type PercentButtonProps = {
+  loadingMax: LoadingData<HugeDecimal>
+  /**
+   * Value out of 100 (e.g. 50 = 50%).
+   */
   percent: number
-  amount: number
-  setAmount: (newAmount: number) => void
-  decimals: number
+  amount: HugeDecimal
+  setAmount: (newAmount: HugeDecimal) => void
+  /**
+   * Override the default label of `{percent}%`.
+   */
+  label?: string
   className?: string
-  absoluteOffset?: number
+  absoluteOffset?: HugeDecimal
   size?: ButtonProps['size']
 }
 
 export const PercentButton = ({
-  label,
   loadingMax,
   percent,
   amount,
   setAmount,
-  decimals,
+  label = `${percent}%`,
   className,
   absoluteOffset,
   size,
-}: PercentButtonProps) => (
-  <Button
-    center
-    className={clsx('w-full', className)}
-    disabled={loadingMax.loading}
-    onClick={() =>
-      !loadingMax.loading &&
-      setAmount(
-        Math.min(
-          Math.max(
-            Number(
-              (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
-                decimals
-              )
-            ),
-            1 / Math.pow(10, decimals)
-          ),
-          loadingMax.data
+}: PercentButtonProps) => {
+  const newAmount = loadingMax.loading
+    ? HugeDecimal.zero
+    : loadingMax.data
+        .times(percent)
+        .div(100)
+        .plus(absoluteOffset || 0)
+
+  return (
+    <Button
+      center
+      className={clsx('w-full', className)}
+      disabled={loadingMax.loading}
+      onClick={() =>
+        !loadingMax.loading &&
+        setAmount(
+          HugeDecimal.min(
+            HugeDecimal.max(newAmount, HugeDecimal.one),
+            loadingMax.data
+          )
         )
-      )
-    }
-    pressed={
-      // Only show as pressed if percent and amount are both zero or nonzero. If
-      // one is zero and the other is nonzero, the button should not be pressed.
-      // This ensures that the button doesn't show as pressed when the max is 0,
-      // since all percents of 0 are 0.
-      (percent === 0) === (amount === 0) &&
-      !loadingMax.loading &&
-      (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(decimals) ===
-        amount.toFixed(decimals)
-    }
-    size={size}
-    variant="secondary"
-  >
-    {label}
-  </Button>
-)
+      }
+      pressed={
+        // Only show as pressed if percent and amount are both zero or nonzero.
+        // If one is zero and the other is nonzero, the button should not be
+        // pressed. This ensures that the button doesn't show as pressed when
+        // the max is 0, since all percents of 0 are 0.
+        (percent === 0) === amount.isZero() &&
+        !loadingMax.loading &&
+        newAmount.eq(amount)
+      }
+      size={size}
+      variant="secondary"
+    >
+      {label}
+    </Button>
+  )
+}

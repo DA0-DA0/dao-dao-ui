@@ -126,7 +126,7 @@ const InnerStakingModal = ({
       ? walletStakedBalanceLoadable.contents.balance
       : undefined
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
 
   const doCw20SendAndExecute = Cw20BaseHooks.useSend({
     contractAddress: governanceToken.denomOrAddress,
@@ -155,7 +155,7 @@ const InnerStakingModal = ({
   }
 
   const awaitNextBlock = useAwaitNextBlock()
-  const onAction = async (mode: StakingMode, amount: number) => {
+  const onAction = async (mode: StakingMode, amount: HugeDecimal) => {
     if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
@@ -169,10 +169,7 @@ const InnerStakingModal = ({
 
         try {
           await doCw20SendAndExecute({
-            amount: HugeDecimal.fromHumanReadable(
-              amount,
-              governanceToken.decimals
-            ).toString(),
+            amount: amount.toFixed(0),
             contract: stakingContractToExecute,
             msg: encodeJsonToBase64({
               [isOraichainCustomStaking ? 'bond' : 'stake']: {},
@@ -186,10 +183,11 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
+
           toast.success(
-            `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
+            `Staked ${amount.toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
             })} $${governanceToken.symbol}`
           )
 
@@ -220,41 +218,31 @@ const InnerStakingModal = ({
         // value = amount_staked * total_value / staked_total
         //
         // => amount_staked = staked_total * value / total_value
-        let amountToUnstake =
-          (Number(totalStakedBalance.total) * amount) / Number(totalValue.total)
+        let amountToUnstake = amount
+          .times(totalStakedBalance.total)
+          .div(totalValue.total)
 
         // We have limited precision and on the contract side division rounds
         // down, so division and multiplication don't commute. Handle the common
         // case here where someone is attempting to unstake all of their funds.
         if (
           HugeDecimal.from(walletStakedBalance)
-            .minus(
-              HugeDecimal.fromHumanReadable(
-                amountToUnstake,
-                governanceToken.decimals
-              )
-            )
+            .minus(amountToUnstake)
             .abs()
             .lte(1)
         ) {
-          amountToUnstake = HugeDecimal.from(
-            walletStakedBalance
-          ).toHumanReadableNumber(governanceToken.decimals)
+          amountToUnstake = HugeDecimal.from(walletStakedBalance)
         }
 
         try {
-          const convertedAmount = HugeDecimal.fromHumanReadable(
-            amountToUnstake,
-            governanceToken.decimals
-          ).toString()
           if (isOraichainCustomStaking) {
             await doOraichainUnbond({
-              amount: convertedAmount,
+              amount: amountToUnstake.toFixed(0),
               stakingToken: governanceToken.denomOrAddress,
             })
           } else {
             await doUnstake({
-              amount: convertedAmount,
+              amount: amountToUnstake.toFixed(0),
             })
           }
 
@@ -266,10 +254,10 @@ const InnerStakingModal = ({
           refreshClaims?.()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
           toast.success(
-            `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
+            `Unstaked ${amount.toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
             })} $${governanceToken.symbol}`
           )
 
@@ -308,14 +296,14 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshClaims?.()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
 
           toast.success(
-            `Claimed ${HugeDecimal.from(sumClaimsAvailable || 0)
-              .toHumanReadableNumber(governanceToken.decimals)
-              .toLocaleString(undefined, {
-                maximumFractionDigits: governanceToken.decimals,
-              })} $${governanceToken.symbol}`
+            `Claimed ${HugeDecimal.from(
+              sumClaimsAvailable || 0
+            ).toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -337,7 +325,7 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={sumClaimsAvailable || 0}
+      claimableTokens={HugeDecimal.from(sumClaimsAvailable || 0)}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
@@ -360,7 +348,7 @@ const InnerStakingModal = ({
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={maxDeposit ? HugeDecimal.from(maxDeposit) : undefined}
-      setAmount={(newAmount) => setAmount(newAmount)}
+      setAmount={setAmount}
       token={governanceToken}
       unstakingDuration={unstakingDuration ?? null}
       visible={visible}

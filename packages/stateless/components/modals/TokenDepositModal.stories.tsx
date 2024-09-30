@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { token } from '../token/TokenCard.stories'
 import { TokenDepositModal } from './TokenDepositModal'
 
@@ -11,7 +13,7 @@ export default {
 } as ComponentMeta<typeof TokenDepositModal>
 
 const Template: ComponentStory<typeof TokenDepositModal> = (args) => {
-  const [amount, setAmount] = useState(1)
+  const [amount, setAmount] = useState(HugeDecimal.fromHumanReadable(1, 6))
 
   return <TokenDepositModal {...args} amount={amount} setAmount={setAmount} />
 }

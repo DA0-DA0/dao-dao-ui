@@ -25,20 +25,14 @@ import { TokenAmountDisplay } from './TokenAmountDisplay'
 
 export const StakingModal = ({
   initialMode,
-  // macrodenom
   amount,
-  // macrodenom
   setAmount,
   onClose,
-  // macrodenom
   claimableTokens,
-  // microdenom
   loadingStakableTokens,
-  // microdenom
   loadingUnstakableTokens,
   unstakingDuration,
   token,
-  // microdenom
   proposalDeposit,
   loading,
   error,
@@ -89,15 +83,17 @@ export const StakingModal = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : t('error.cannotTxZeroTokens')
+      return claimableTokens.isPositive()
+        ? undefined
+        : t('error.cannotTxZeroTokens')
     }
-    if (amount <= 0) {
+    if (!amount.isPositive()) {
       return t('error.cannotTxZeroTokens')
     }
     if (maxTx === undefined) {
       return t('error.loadingData')
     }
-    if (amount > maxTx.toHumanReadableNumber(token.decimals)) {
+    if (amount.gt(maxTx)) {
       return t('error.cannotStakeMoreThanYouHave')
     }
   }
@@ -235,7 +231,7 @@ export const StakingModal = ({
           }
           mode={mode}
           proposalDeposit={proposalDeposit}
-          setAmount={(amount: number) => setAmount(amount)}
+          setAmount={setAmount}
           tokenDecimals={token.decimals}
           tokenSymbol={token.symbol}
           unstakingDuration={unstakingDuration}
@@ -246,10 +242,10 @@ export const StakingModal = ({
 }
 
 interface StakeUnstakeModesBodyProps {
-  amount: number
+  amount: HugeDecimal
   mode: StakingMode
   loadingMax: LoadingData<HugeDecimal>
-  setAmount: (newAmount: number) => void
+  setAmount: (newAmount: HugeDecimal) => void
   tokenSymbol: string
   tokenDecimals: number
   unstakingDuration: Duration | null
@@ -279,23 +275,26 @@ const StakeUnstakeModesBody = ({
             ? undefined
             : loadingMax.data.toHumanReadableNumber(tokenDecimals)
         }
-        min={1 / 10 ** tokenDecimals}
+        min={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setAmount(e.target.valueAsNumber)
+          setAmount(
+            HugeDecimal.fromHumanReadable(e.target.value, tokenDecimals)
+          )
         }
         plusMinusButtonSize="lg"
-        setValue={(_, value) => setAmount(value)}
-        step={1 / 10 ** tokenDecimals}
+        setValue={(_, value) =>
+          setAmount(HugeDecimal.fromHumanReadable(value, tokenDecimals))
+        }
+        step={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
         textClassName="font-mono leading-5 symbol-small-body-text"
         unit={`$${tokenSymbol}`}
-        value={amount}
+        value={amount.toHumanReadableNumber(tokenDecimals)}
       />
-      {!loadingMax.loading &&
-        loadingMax.data.toHumanReadableNumber(tokenDecimals) < amount && (
-          <span className="caption-text mt-1 ml-1 text-text-interactive-error">
-            {t('error.cannotStakeMoreThanYouHave')}
-          </span>
-        )}
+      {!loadingMax.loading && loadingMax.data.lt(amount) && (
+        <span className="caption-text text-text-interactive-error mt-1 ml-1">
+          {t('error.cannotStakeMoreThanYouHave')}
+        </span>
+      )}
       <TokenAmountDisplay
         amount={loadingMax}
         className="caption-text mt-4 font-mono"
@@ -310,19 +309,8 @@ const StakeUnstakeModesBody = ({
             <PercentButton
               key={percent}
               amount={amount}
-              decimals={tokenDecimals}
-              label={`${percent}%`}
-              loadingMax={
-                loadingMax.loading
-                  ? loadingMax
-                  : {
-                      loading: false,
-                      data: loadingMax.data.toHumanReadableNumber(
-                        tokenDecimals
-                      ),
-                    }
-              }
-              percent={percent / 100}
+              loadingMax={loadingMax}
+              percent={percent}
               setAmount={setAmount}
             />
           ))}
@@ -332,10 +320,9 @@ const StakeUnstakeModesBody = ({
           !loadingMax.loading &&
           loadingMax.data.gt(proposalDeposit) && (
             <PercentButton
-              absoluteOffset={-proposalDeposit}
+              absoluteOffset={proposalDeposit.negated()}
               amount={amount}
               className="mt-2"
-              decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
                 proposalDeposit:
                   proposalDeposit.toInternationalizedHumanReadableString({
@@ -343,17 +330,8 @@ const StakeUnstakeModesBody = ({
                   }),
                 tokenSymbol,
               })}
-              loadingMax={
-                loadingMax.loading
-                  ? loadingMax
-                  : {
-                      loading: false,
-                      data: loadingMax.data.toHumanReadableNumber(
-                        tokenDecimals
-                      ),
-                    }
-              }
-              percent={1}
+              loadingMax={loadingMax}
+              percent={100}
               setAmount={setAmount}
             />
           )}
@@ -366,7 +344,7 @@ const StakeUnstakeModesBody = ({
         ('height' in unstakingDuration
           ? unstakingDuration.height
           : unstakingDuration.time) > 0 && (
-          <div className="mt-7 space-y-5 border-t border-border-secondary pt-7">
+          <div className="border-border-secondary mt-7 space-y-5 border-t pt-7">
             <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
                 `: ${convertDurationToHumanReadableString(
@@ -389,7 +367,7 @@ const StakeUnstakeModesBody = ({
 }
 
 interface ClaimModeBodyProps {
-  amount: number
+  amount: HugeDecimal
   tokenDecimals: number
   tokenSymbol: string
 }

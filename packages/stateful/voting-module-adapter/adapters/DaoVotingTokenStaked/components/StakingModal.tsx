@@ -1,4 +1,3 @@
-import { coins } from '@cosmjs/stargate'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -65,7 +64,7 @@ const InnerStakingModal = ({
     fetchWalletStakedValue: true,
   })
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
 
   const doStake = DaoVotingTokenStakedHooks.useStake({
     contractAddress: votingModuleAddress,
@@ -90,7 +89,7 @@ const InnerStakingModal = ({
   }
 
   const awaitNextBlock = useAwaitNextBlock()
-  const onAction = async (mode: StakingMode, amount: number) => {
+  const onAction = async (mode: StakingMode, amount: HugeDecimal) => {
     if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
@@ -106,13 +105,7 @@ const InnerStakingModal = ({
           await doStake(
             CHAIN_GAS_MULTIPLIER,
             undefined,
-            coins(
-              HugeDecimal.fromHumanReadable(
-                amount,
-                governanceToken.decimals
-              ).toString(),
-              governanceToken.denomOrAddress
-            )
+            amount.toCoins(governanceToken.denomOrAddress)
           )
 
           // New balances will not appear until the next block.
@@ -122,10 +115,10 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
           toast.success(
-            `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
+            `Staked ${amount.toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
             })} $${governanceToken.symbol}`
           )
 
@@ -145,10 +138,7 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            amount: HugeDecimal.fromHumanReadable(
-              amount,
-              governanceToken.decimals
-            ).toString(),
+            amount: amount.toFixed(0),
           })
 
           // New balances will not appear until the next block.
@@ -159,10 +149,10 @@ const InnerStakingModal = ({
           refreshClaims?.()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
           toast.success(
-            `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceToken.decimals,
+            `Unstaked ${amount.toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
             })} $${governanceToken.symbol}`
           )
 
@@ -193,14 +183,14 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshClaims?.()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
 
           toast.success(
-            `Claimed ${HugeDecimal.from(sumClaimsAvailable || 0)
-              .toHumanReadableNumber(governanceToken.decimals)
-              .toLocaleString(undefined, {
-                maximumFractionDigits: governanceToken.decimals,
-              })} $${governanceToken.symbol}`
+            `Claimed ${HugeDecimal.from(
+              sumClaimsAvailable || 0
+            ).toInternationalizedHumanReadableString({
+              decimals: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -222,7 +212,7 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={sumClaimsAvailable || 0}
+      claimableTokens={HugeDecimal.from(sumClaimsAvailable || 0)}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
