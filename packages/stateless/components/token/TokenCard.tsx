@@ -224,6 +224,7 @@ export const TokenCard = ({
                   amount={lazyInfo.data.totalBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
 
@@ -263,6 +264,7 @@ export const TokenCard = ({
                   amount={unstakedBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
 
@@ -312,6 +314,7 @@ export const TokenCard = ({
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
+                showFullAmount
                 symbol={tokenSymbol}
               />
             </div>
@@ -377,6 +380,7 @@ export const TokenCard = ({
                 <TokenAmountDisplay
                   amount={lazyInfo.loading ? { loading: true } : totalUnstaking}
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
               </Button>
@@ -391,6 +395,7 @@ export const TokenCard = ({
                 }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
+                showFullAmount
                 symbol={tokenSymbol}
               />
             </div>

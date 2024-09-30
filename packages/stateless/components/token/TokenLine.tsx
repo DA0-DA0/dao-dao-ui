@@ -102,7 +102,6 @@ export const TokenLine = <T extends TokenCardInfo>(
           className="body-text truncate text-right font-mono"
           decimals={token.decimals}
           hideSymbol
-          showFullAmount
           wrapperClassName="justify-end"
         />
 

@@ -95,7 +95,8 @@ export const TokenAmountDisplay = ({
       : HugeDecimal.zero
 
   // If amount too small, set to min and add `< ` to prefix.
-  const amountBelowMin = !!minAmount && amount.lt(minAmount)
+  const amountBelowMin =
+    !!minAmount && amount.isPositive() && amount.lt(minAmount)
   if (amountBelowMin) {
     amount = HugeDecimal.fromHumanReadable(minAmount, decimals)
     prefix = `< ${prefix || ''}`
@@ -148,7 +149,7 @@ export const TokenAmountDisplay = ({
     >
       <div
         className={clsx(
-          'flex min-w-0 flex-row items-center gap-2',
+          'flex min-w-0 flex-row items-center gap-2 max-w-full',
           onClick &&
             'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70',
           wrapperClassName
@@ -192,7 +193,7 @@ export const TokenAmountDisplay = ({
         <p
           {...props}
           className={clsx(
-            'min-w-0 max-w-full truncate',
+            'min-w-0 max-w-full truncate whitespace-normal',
             onClick && 'underline',
             props.className
           )}
