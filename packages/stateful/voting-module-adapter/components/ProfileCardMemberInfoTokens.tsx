@@ -206,6 +206,7 @@ export const ProfileCardMemberInfoTokens = ({
                       : 'text-text-tertiary'
                   )}
                   decimals={token.decimals}
+                  suffix={` ${t('info.available')}`}
                   symbol={token.symbol}
                 />
               ))
