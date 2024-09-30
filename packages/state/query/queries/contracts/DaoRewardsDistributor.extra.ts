@@ -18,7 +18,7 @@ import {
   deserializeTokenSource,
   getRewardDistributorStorageItemKey,
   serializeTokenSource,
-  tokensEqual,
+  tokenSourcesEqual,
 } from '@dao-dao/utils'
 
 import { indexerQueries } from '../indexer'
@@ -301,7 +301,7 @@ export const fetchPendingDaoRewards = async (
         // Sum all pending rewards for this token.
         const allPendingRewards = distributions.reduce(
           (acc, { distribution, rewards }) =>
-            acc + (tokensEqual(token, distribution.token) ? rewards : 0),
+            acc + (tokenSourcesEqual(token, distribution.token) ? rewards : 0),
           0
         )
 
