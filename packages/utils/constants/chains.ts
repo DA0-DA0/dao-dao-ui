@@ -277,7 +277,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://ping.pub/terra/gov/REPLACE',
       wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
     },
-    // tokenDaoType: 'both',
+    tokenDaoType: 'both',
     latestVersion: ContractVersion.V250,
   },
   {

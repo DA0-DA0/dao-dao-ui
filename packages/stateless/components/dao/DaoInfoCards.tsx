@@ -24,10 +24,10 @@ export const DaoInfoCards = ({
           loading && 'animate-pulse'
         )}
       >
-        <div className="flex flex-row items-center gap-1">
+        <div className="flex flex-row items-center gap-1.5">
           {Icon && (
             <div className="mr-0.5 !text-xl flex flex-row items-center">
-              <Icon className="!h-4 !w-4" />
+              <Icon />
             </div>
           )}
 

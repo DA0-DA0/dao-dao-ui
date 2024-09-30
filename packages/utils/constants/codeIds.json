@@ -745,6 +745,8 @@
     },
     "2.5.0": {
       "Cw1Whitelist": 2627,
+      "Cw20Base": 3217,
+      "Cw20Stake": 3218,
       "Cw4Group": 2628,
       "Cw721Base": 2629,
       "CwPayrollFactory": 3180,
@@ -759,6 +761,7 @@
       "DaoProposalMultiple": 3189,
       "DaoProposalSingle": 3190,
       "DaoRewardsDistributor": 3191,
+      "DaoVotingCw20Staked": 3219,
       "DaoVotingCw4": 3192,
       "DaoVotingCw721Staked": 3193,
       "DaoVotingTokenStaked": 3194

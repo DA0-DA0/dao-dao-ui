@@ -173,7 +173,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           new: {
             symbol,
             decimals: NEW_DAO_TOKEN_DECIMALS,
-            name: symbol,
+            name,
             initialBalances: microInitialBalances,
             initialDaoBalance: microInitialTreasuryBalance,
             marketingInfo: imageUrl ? { logo: { url: imageUrl } } : null,
