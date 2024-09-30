@@ -1,5 +1,7 @@
 import JSON5 from 'json5'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import {
   isValidBech32Address,
   isValidTokenFactoryDenom,
@@ -21,11 +23,11 @@ export const validateRequired = (v: any) => {
   return (v !== null && v !== undefined) || 'Field is required'
 }
 
-export const validatePositive = (v: string | number | undefined) =>
-  (v && !isNaN(Number(v)) && Number(v) > 0) || 'Must be positive'
+export const validatePositive = (v: HugeDecimal.Value | undefined) =>
+  (v && HugeDecimal.from(v).isPositive()) || 'Must be positive'
 
-export const validateNonNegative = (v: string | number) =>
-  (!isNaN(Number(v)) && Number(v) >= 0) || 'Must be non-negative'
+export const validateNonNegative = (v: HugeDecimal.Value | undefined) =>
+  (v && HugeDecimal.from(v).gte(0)) || 'Must be 0 or more'
 
 export const validatePercent = (v: string | number | undefined) => {
   const p = v ? Number(v) : NaN

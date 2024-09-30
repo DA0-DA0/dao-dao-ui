@@ -130,7 +130,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
           units: DurationUnits.Hours,
         },
       },
-      initialFunds: 0,
+      initialFunds: '0',
       openFunding: true,
     }
   }
@@ -145,7 +145,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     denomOrAddress,
     immediate,
     rate,
-    initialFunds,
+    initialFunds: _initialFunds,
     openFunding,
   }: CreateRewardDistributionData): Promise<UnifiedCosmosMsg[]> {
     if (this.options.context.type !== ActionContextType.Dao) {
@@ -166,6 +166,11 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         type,
         denomOrAddress,
       })
+    )
+
+    const initialFunds = HugeDecimal.fromHumanReadable(
+      _initialFunds,
+      token.decimals
     )
 
     let distributor = this.distributors[0]?.address
@@ -260,11 +265,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     )
 
     // Fund if initial funds are set.
-    if (initialFunds) {
-      const microAmount = HugeDecimal.fromHumanReadable(
-        initialFunds,
-        token.decimals
-      ).toString()
+    if (initialFunds.isPositive()) {
       messages.push(
         type === TokenType.Native
           ? makeExecuteSmartContractMessage({
@@ -279,7 +280,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                   ? [
                       {
                         denom: denomOrAddress,
-                        amount: microAmount,
+                        amount: initialFunds.toString(),
                       },
                     ]
                   : undefined,
@@ -291,7 +292,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
               contractAddress: denomOrAddress,
               msg: {
                 send: {
-                  amount: microAmount,
+                  amount: initialFunds.toString(),
                   contract: distributor,
                   msg: encodeJsonToBase64({
                     fund_latest: {},
@@ -606,10 +607,20 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 units: DurationUnits.Hours,
               },
       },
-      initialFunds: HugeDecimal.from(initialFunds).toHumanReadableNumber(
+      initialFunds: HugeDecimal.from(initialFunds).toHumanReadableString(
         token.decimals
       ),
       openFunding: !!createMsg.open_funding,
+    }
+  }
+
+  transformImportData({
+    initialFunds,
+    ...data
+  }: any): CreateRewardDistributionData {
+    return {
+      ...data,
+      initialFunds: HugeDecimal.from(initialFunds).toString(),
     }
   }
 }

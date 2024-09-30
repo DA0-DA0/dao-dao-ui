@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   MarkdownRenderer,
-  NumberInput,
   PercentButton,
   SegmentedControls,
   SelectInput,
@@ -42,7 +42,7 @@ export type CreateRewardDistributionData = {
     amount: number
     duration: DurationWithUnits
   }
-  initialFunds: number
+  initialFunds: string
   openFunding: boolean
 }
 
@@ -65,7 +65,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
     address,
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
-  const { register, setValue, watch } =
+  const { register, setValue, watch, getValues } =
     useFormContext<CreateRewardDistributionData>()
 
   const denomOrAddress = watch(
@@ -85,8 +85,6 @@ export const CreateRewardDistributionComponent: ActionComponent<
       ? undefined
       : tokens.data.find((t) => tokensEqual(t.token, token.data))
   const decimals = selectedToken?.token.decimals ?? 0
-
-  const minAmount = HugeDecimal.one.toHumanReadableNumber(decimals)
 
   const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
   const warning =
@@ -195,23 +193,23 @@ export const CreateRewardDistributionComponent: ActionComponent<
         />
 
         {!immediate && (
-          <div className="flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 bg-background-tertiary rounded-md max-w-prose">
-            <NumberInput
+          <div className="bg-background-tertiary flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 rounded-md max-w-prose">
+            <HugeDecimalInput
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.rate?.amount}
               fieldName={(fieldNamePrefix + 'rate.amount') as 'rate.amount'}
-              min={minAmount}
+              getValues={getValues}
+              min={HugeDecimal.one.toHumanReadableString(decimals)}
               register={register}
               setValue={setValue}
-              step={minAmount}
+              step={HugeDecimal.one.toHumanReadableString(decimals)}
               unit={
                 selectedToken
                   ? '$' + selectedToken?.token.symbol
                   : t('info.tokens')
               }
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
 
             <div className="flex flex-row grow gap-4 justify-between items-center">
@@ -219,20 +217,21 @@ export const CreateRewardDistributionComponent: ActionComponent<
 
               <div className="flex grow flex-row gap-2">
                 <div className="flex flex-col gap-1 grow">
-                  <NumberInput
+                  <HugeDecimalInput
                     disabled={!isCreating}
                     error={errors?.rate?.duration?.value}
                     fieldName={
                       (fieldNamePrefix +
                         'rate.duration.value') as 'rate.duration.value'
                     }
+                    getValues={getValues}
                     min={1}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="none"
                     step={1}
                     validation={[validatePositive, validateRequired]}
-                    watch={watch}
                   />
                   <InputErrorMessage error={errors?.rate?.duration?.value} />
                 </div>
@@ -266,19 +265,19 @@ export const CreateRewardDistributionComponent: ActionComponent<
           {t('info.initialRewardsFundsDescription')}
         </p>
 
-        <NumberInput
+        <HugeDecimalInput
           containerClassName={!isCreating ? 'self-start' : undefined}
           disabled={!isCreating}
           fieldName={(fieldNamePrefix + 'initialFunds') as 'initialFunds'}
-          min={0}
+          getValues={getValues}
+          min={HugeDecimal.zero.toHumanReadableString(decimals)}
           register={register}
           setValue={setValue}
-          step={minAmount}
+          step={HugeDecimal.one.toHumanReadableString(decimals)}
           unit={
             selectedToken ? '$' + selectedToken?.token.symbol : t('info.tokens')
           }
           validation={[validateRequired, validateNonNegative]}
-          watch={watch}
         />
         <InputErrorMessage error={errors?.initialFunds} />
         <InputErrorMessage error={warning} warning />
@@ -296,7 +295,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
               onClick={() =>
                 setValue(
                   (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                  selectedBalance.toHumanReadableNumber(decimals)
+                  selectedBalance.toHumanReadableString(decimals)
                 )
               }
               showFullAmount
@@ -309,16 +308,13 @@ export const CreateRewardDistributionComponent: ActionComponent<
               {[10, 25, 50, 75, 100].map((percent) => (
                 <PercentButton
                   key={percent}
-                  amount={HugeDecimal.fromHumanReadable(
-                    initialFunds,
-                    selectedToken.token.decimals
-                  )}
+                  amount={HugeDecimal.fromHumanReadable(initialFunds, decimals)}
                   loadingMax={{ loading: false, data: selectedBalance }}
                   percent={percent}
                   setAmount={(amount) =>
                     setValue(
                       (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                      amount.toHumanReadableNumber(selectedToken.token.decimals)
+                      amount.toHumanReadableString(decimals)
                     )
                   }
                 />

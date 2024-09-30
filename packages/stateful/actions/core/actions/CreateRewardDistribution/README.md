@@ -22,7 +22,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
     "amount": <AMOUNT>,
     "unit": "<seconds | minutes | hours | days | weeks | months | years | blocks>"
   },
-  "initialFunds": <AMOUNT>,
+  "initialFunds": "<AMOUNT>",
   "openFunding": <true | false>
 }
 ```

@@ -34,25 +34,25 @@ export const PercentButton = ({
 }: PercentButtonProps) => {
   const newAmount = loadingMax.loading
     ? HugeDecimal.zero
-    : loadingMax.data
-        .times(percent)
-        .div(100)
-        .plus(absoluteOffset || 0)
+    : // Cap between 1 and max
+      HugeDecimal.min(
+        HugeDecimal.max(
+          HugeDecimal.one,
+          loadingMax.data
+            .times(percent)
+            .div(100)
+            .plus(absoluteOffset || 0)
+            .toFixed(0)
+        ),
+        loadingMax.data
+      )
 
   return (
     <Button
       center
       className={clsx('w-full', className)}
       disabled={loadingMax.loading}
-      onClick={() =>
-        !loadingMax.loading &&
-        setAmount(
-          HugeDecimal.min(
-            HugeDecimal.max(newAmount, HugeDecimal.one),
-            loadingMax.data
-          )
-        )
-      }
+      onClick={() => !loadingMax.loading && setAmount(newAmount)}
       pressed={
         // Only show as pressed if percent and amount are both zero or nonzero.
         // If one is zero and the other is nonzero, the button should not be

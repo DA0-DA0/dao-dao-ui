@@ -1,14 +1,14 @@
 import { BigNumber } from 'bignumber.js'
 
-const valueToBigNumber = (n: HugeDecimal.Value) =>
+const valueToBigNumber = (n: HugeDecimal.Value): BigNumber =>
   n instanceof BigNumber
     ? n
     : n instanceof HugeDecimal
-    ? new BigNumber(n['value'])
+    ? n['value']
     : typeof n === 'bigint'
     ? new BigNumber(n.toString())
     : typeof n === 'object' && 'amount' in n
-    ? new BigNumber(n.amount)
+    ? valueToBigNumber(n.amount)
     : new BigNumber(n)
 
 interface AmountWrapper {
@@ -36,33 +36,34 @@ export class HugeDecimal {
    * Returns a new instance of a HugeDecimal object with value `n`, where `n` is
    * a numeric value in base 10.
    *
-   * @param n
+   * @param n the value
+   * @returns a HugeDecimal instance
    */
   constructor(n: HugeDecimal.Value) {
     this.value = valueToBigNumber(n)
   }
 
   /**
-   * Create a HugeDecimal from a value that is already in its base/raw format,
-   * which means it does not have decimals and describes an amount of some base
-   * unit. For example: `1000000untrn`.
+   * Returns a new instance of a HugeDecimal object with value `n`, where `n` is
+   * a numeric value in base 10.
    *
    * @param n the value
    * @returns a HugeDecimal instance
    */
   static from(n: HugeDecimal.Value) {
-    const value = valueToBigNumber(n)
-    if (!value.isInteger()) {
-      throw new Error('Value is not an integer')
+    if (n instanceof HugeDecimal) {
+      return n
     }
-
-    return new HugeDecimal(value)
+    return new HugeDecimal(n)
   }
 
   /**
-   * Create a HugeDecimal from a value that is already in human-readable format,
-   * which means it has decimals and describes a human-readable token amount.
-   * For example: `1.000000 $NTRN`.
+   * Create a HugeDecimal from a value that is in human-readable format, which
+   * means it has decimals and describes a human-readable token amount. For
+   * example: `1.000000 $NTRN`.
+   *
+   * This will convert the value to its raw integer representation by
+   * multiplying by 10^decimals and truncating any remaining decimal places.
    *
    * @param n the value
    * @param decimals the number of decimals
@@ -70,11 +71,7 @@ export class HugeDecimal {
    */
   static fromHumanReadable(n: HugeDecimal.Value, decimals: number) {
     // Multiply by 10^decimals to convert to the integer representation.
-    return new HugeDecimal(
-      valueToBigNumber(n)
-        .times(BigNumber(10).pow(decimals))
-        .integerValue(BigNumber.ROUND_DOWN)
-    )
+    return HugeDecimal.from(n).times(BigNumber(10).pow(decimals)).trunc()
   }
 
   /**
@@ -218,7 +215,7 @@ export class HugeDecimal {
    */
   toHumanReadable(decimals: number): HugeDecimal {
     return new HugeDecimal(
-      this.value.div(BigNumber(10).pow(decimals)).toFixed(decimals)
+      this.div(BigNumber(10).pow(decimals)).toFixed(decimals)
     )
   }
 
@@ -229,7 +226,7 @@ export class HugeDecimal {
    * @returns human-readable number
    */
   toHumanReadableNumber(decimals: number): number {
-    return this.toHumanReadable(decimals).value.toNumber()
+    return this.toHumanReadable(decimals).toNumber()
   }
 
   /**
@@ -239,7 +236,7 @@ export class HugeDecimal {
    * @returns human-readable string
    */
   toHumanReadableString(decimals: number): string {
-    return this.toHumanReadable(decimals).value.toFormat(decimals)
+    return this.toHumanReadable(decimals).toString()
   }
 
   /**
