@@ -169,7 +169,7 @@ const InnerStakingModal = ({
 
         try {
           await doCw20SendAndExecute({
-            amount: amount.toFixed(0),
+            amount: amount.toString(),
             contract: stakingContractToExecute,
             msg: encodeJsonToBase64({
               [isOraichainCustomStaking ? 'bond' : 'stake']: {},
@@ -237,12 +237,12 @@ const InnerStakingModal = ({
         try {
           if (isOraichainCustomStaking) {
             await doOraichainUnbond({
-              amount: amountToUnstake.toFixed(0),
+              amount: amountToUnstake.toString(),
               stakingToken: governanceToken.denomOrAddress,
             })
           } else {
             await doUnstake({
-              amount: amountToUnstake.toFixed(0),
+              amount: amountToUnstake.toString(),
             })
           }
 

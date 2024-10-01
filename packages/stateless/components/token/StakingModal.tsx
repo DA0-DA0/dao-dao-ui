@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -12,8 +12,8 @@ import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import {
+  HugeDecimalInput,
   InputLabel,
-  NumberInput,
   PercentButton,
   SegmentedControls,
   TokenInput,
@@ -267,7 +267,7 @@ const StakeUnstakeModesBody = ({
   return (
     <>
       <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
-      <NumberInput
+      <HugeDecimalInput
         containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
         ghost
         max={
@@ -276,19 +276,14 @@ const StakeUnstakeModesBody = ({
             : loadingMax.data.toHumanReadableNumber(tokenDecimals)
         }
         min={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setAmount(
-            HugeDecimal.fromHumanReadable(e.target.value, tokenDecimals)
-          )
-        }
         plusMinusButtonSize="lg"
         setValue={(_, value) =>
           setAmount(HugeDecimal.fromHumanReadable(value, tokenDecimals))
         }
         step={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
         textClassName="font-mono leading-5 symbol-small-body-text"
-        unit={`$${tokenSymbol}`}
-        value={amount.toHumanReadableNumber(tokenDecimals)}
+        unit={'$' + tokenSymbol}
+        value={amount.toHumanReadableString(tokenDecimals)}
       />
       {!loadingMax.loading && loadingMax.data.lt(amount) && (
         <span className="caption-text text-text-interactive-error mt-1 ml-1">
