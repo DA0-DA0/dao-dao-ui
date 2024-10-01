@@ -16,11 +16,11 @@ import {
 } from '@dao-dao/state'
 import {
   Button,
+  HugeDecimalInput,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
   Loader,
-  NumberInput,
   SegmentedControls,
   TextInput,
   VotingPowerDistribution,
@@ -67,6 +67,7 @@ export const GovernanceConfigurationInput = ({
       formState: { errors },
       register,
       setValue,
+      getValues,
       setError,
       clearErrors,
       watch,
@@ -530,7 +531,7 @@ export const GovernanceConfigurationInput = ({
 
                   <div className="flex grow flex-col">
                     <div className="flex grow flex-row items-center gap-2">
-                      <NumberInput
+                      <HugeDecimalInput
                         className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                         containerClassName="grow"
                         error={errors.creator?.data?.newInfo?.maxSupply}
@@ -545,9 +546,9 @@ export const GovernanceConfigurationInput = ({
                           validatePositive,
                           validateRequired,
                           (maxSupply) =>
-                            (typeof maxSupply === 'number' &&
-                              maxSupply >= data.newInfo.initialSupply) ||
-                            t('error.maxSupplyMustBeAtLeastInitialSupply'),
+                            HugeDecimal.from(maxSupply || 0).gte(
+                              data.newInfo.initialSupply
+                            ) || t('error.maxSupplyMustBeAtLeastInitialSupply'),
                         ]}
                       />
                       <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
@@ -577,7 +578,7 @@ export const GovernanceConfigurationInput = ({
 
               <div className="flex grow flex-col">
                 <div className="flex grow flex-row items-center gap-2">
-                  <NumberInput
+                  <HugeDecimalInput
                     className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                     containerClassName="grow"
                     error={errors.creator?.data?.newInfo?.initialSupply}
@@ -611,7 +612,7 @@ export const GovernanceConfigurationInput = ({
 
                 <div className="flex grow flex-col">
                   <div className="flex grow flex-row items-center gap-2">
-                    <NumberInput
+                    <HugeDecimalInput
                       className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                       containerClassName="grow"
                       error={
@@ -619,6 +620,9 @@ export const GovernanceConfigurationInput = ({
                       }
                       fieldName="creator.data.newInfo.initialTreasuryPercent"
                       ghost
+                      max={100}
+                      min={0}
+                      numericValue
                       register={register}
                       step={0.0001}
                       validation={[
@@ -683,6 +687,7 @@ export const GovernanceConfigurationInput = ({
                 control={control}
                 data={data}
                 errors={errors}
+                getValues={getValues}
                 register={register}
                 remove={
                   tierFields.length === 1 ? undefined : () => removeTier(idx)

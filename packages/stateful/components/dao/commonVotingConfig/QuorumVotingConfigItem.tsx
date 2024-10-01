@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { MegaphoneEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
+import {
+  HugeDecimalInput,
+  MegaphoneEmoji,
+  SelectInput,
+} from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -19,7 +23,7 @@ const QuorumInput = ({
   },
   register,
   setValue,
-  watch,
+  getValues,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithQuorum>) => {
   const { t } = useTranslation()
@@ -27,17 +31,18 @@ const QuorumInput = ({
   return (
     <div className="flex flex-row gap-2">
       {!majority && (
-        <NumberInput
+        <HugeDecimalInput
           containerClassName="grow min-w-[8rem]"
           error={errors?.quorum?.value}
           fieldName="quorum.value"
+          getValues={getValues}
           min={1}
+          numericValue
           register={register}
           setValue={setValue}
           sizing="sm"
           step={0.001}
           validation={[validatePositive, validateRequired]}
-          watch={watch}
         />
       )}
 

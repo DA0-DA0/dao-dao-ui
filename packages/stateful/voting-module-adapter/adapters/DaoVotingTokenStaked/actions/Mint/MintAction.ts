@@ -38,7 +38,7 @@ export class MintAction extends ActionBase<MintData> {
 
     this.defaults = {
       recipient: options.address,
-      amount: 1,
+      amount: '1',
     }
 
     // Fire async init immediately since we may hide this action.
@@ -161,7 +161,7 @@ export class MintAction extends ActionBase<MintData> {
       recipient: decodedMessage.wasm.execute.msg.mint.to_address,
       amount: HugeDecimal.from(
         decodedMessage.wasm.execute.msg.mint.amount
-      ).toHumanReadableNumber(this.governanceToken.decimals),
+      ).toHumanReadableString(this.governanceToken.decimals),
     }
   }
 }

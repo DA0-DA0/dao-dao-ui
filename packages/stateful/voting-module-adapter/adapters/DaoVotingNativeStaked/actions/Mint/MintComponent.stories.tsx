@@ -11,7 +11,7 @@ export default {
   component: MintComponent,
   decorators: [
     makeReactHookFormDecorator<MintData>({
-      amount: 100000,
+      amount: '100000',
     }),
   ],
 } as ComponentMeta<typeof MintComponent>

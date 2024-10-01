@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { contractQueries } from '@dao-dao/state/query'
 import {
   ClockEmoji,
+  HugeDecimalInput,
   InputErrorMessage,
-  NumberInput,
   SelectInput,
   SwitchCard,
   useHoldingKey,
@@ -41,6 +41,7 @@ export const UnstakingDurationInput = ({
   },
   register,
   setValue,
+  getValues,
   watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<CreatorData>) => {
@@ -127,17 +128,18 @@ export const UnstakingDurationInput = ({
         </div>
       ) : (
         <div className="flex flex-row gap-2">
-          <NumberInput
+          <HugeDecimalInput
             containerClassName="grow"
             error={errors?.unstakingDuration?.value}
             fieldName="unstakingDuration.value"
+            getValues={getValues}
             min={1}
+            numericValue
             register={register}
             setValue={setValue}
             sizing="sm"
             step={1}
             validation={[validatePositive, validateRequired]}
-            watch={watch}
           />
 
           <SelectInput

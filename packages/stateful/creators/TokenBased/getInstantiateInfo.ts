@@ -74,11 +74,14 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           address,
           // Governance Token-based DAOs distribute tier weights evenly amongst
           // members.
-          amount: HugeDecimal.from(
-            (weight / members.length / 100) * initialSupply
-          ).toInternationalizedHumanReadableString({
-            decimals: NEW_DAO_TOKEN_DECIMALS,
-          }),
+          amount: HugeDecimal.fromHumanReadable(
+            initialSupply,
+            NEW_DAO_TOKEN_DECIMALS
+          )
+            .times(weight)
+            .div(members.length)
+            .div(100)
+            .toFixed(0),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the remaining tokens
@@ -114,7 +117,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           throw new Error('tokenCreationFactoryAddress not set')
         }
 
-        if (!maxSupply) {
+        if (!maxSupply || maxSupply === '0') {
           throw new Error('Max supply not set')
         }
 

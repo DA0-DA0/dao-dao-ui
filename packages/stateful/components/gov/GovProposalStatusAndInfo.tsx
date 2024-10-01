@@ -1,5 +1,4 @@
 import { EncodeObject } from '@cosmjs/proto-signing'
-import { coins } from '@cosmjs/stargate'
 import {
   AccountCircleOutlined,
   AttachMoney,
@@ -16,8 +15,8 @@ import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GOV_PROPOSAL_STATUS_I18N_KEY_MAP,
+  HugeDecimalInput,
   Logo,
-  NumberInput,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
@@ -132,9 +131,8 @@ const InnerGovProposalStatusAndInfo = ({
     (d) => d.denom === depositToken.denomOrAddress
   )!.amount
 
-  const missingDeposit = HugeDecimal.from(minDepositAmount)
-    .minus(currentDepositAmount)
-    .toHumanReadableNumber(depositToken.decimals)
+  const missingDeposit =
+    HugeDecimal.from(minDepositAmount).minus(currentDepositAmount)
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -233,13 +231,7 @@ const InnerGovProposalStatusAndInfo = ({
         value: {
           proposalId,
           depositor: walletAddress,
-          amount: coins(
-            HugeDecimal.fromHumanReadable(
-              depositValue,
-              depositToken.decimals
-            ).toString(),
-            depositToken.denomOrAddress
-          ),
+          amount: depositValue.toCoins(depositToken.denomOrAddress),
         },
       }
 
@@ -251,7 +243,9 @@ const InnerGovProposalStatusAndInfo = ({
 
       toast.success(
         t('success.deposited', {
-          amount: depositValue,
+          amount: depositValue.toInternationalizedHumanReadableString({
+            decimals: depositToken.decimals,
+          }),
           tokenSymbol: depositToken.symbol,
         })
       )
@@ -294,33 +288,35 @@ const InnerGovProposalStatusAndInfo = ({
         status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ? {
               header: (
-                <NumberInput
+                <HugeDecimalInput
                   containerClassName="-mb-1"
-                  max={missingDeposit}
+                  max={missingDeposit.toHumanReadableString(
+                    depositToken.decimals
+                  )}
                   min={HugeDecimal.one.toHumanReadableNumber(
                     depositToken.decimals
                   )}
-                  onInput={(event) =>
-                    setDepositValue(
-                      Number(
-                        Number(
-                          (event.target as HTMLInputElement).value
-                        ).toFixed(depositToken.decimals)
-                      )
-                    )
-                  }
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
                       deposit()
                     }
                   }}
-                  setValue={(_, value) => setDepositValue(value)}
+                  setValue={(_, value) =>
+                    setDepositValue(
+                      HugeDecimal.fromHumanReadable(
+                        value,
+                        depositToken.decimals
+                      )
+                    )
+                  }
                   step={HugeDecimal.one.toHumanReadableNumber(
                     depositToken.decimals
                   )}
                   unit={'$' + depositToken.symbol}
-                  value={depositValue}
+                  value={depositValue.toHumanReadableString(
+                    depositToken.decimals
+                  )}
                 />
               ),
               label: t('button.deposit'),

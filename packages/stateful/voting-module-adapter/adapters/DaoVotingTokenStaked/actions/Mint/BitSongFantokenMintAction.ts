@@ -1,5 +1,3 @@
-import { coin } from '@cosmjs/amino'
-
 import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
@@ -68,26 +66,24 @@ export class BitSongFantokenMintAction extends ActionBase<MintData> {
 
     this.defaults = {
       recipient: this.options.address,
-      amount: 1,
+      amount: '1',
     }
   }
 
-  encode({ recipient, amount: _amount }: MintData): UnifiedCosmosMsg {
+  encode({ recipient, amount }: MintData): UnifiedCosmosMsg {
     if (!this.governanceToken) {
       throw new Error('Action not ready')
     }
-
-    const amount = HugeDecimal.fromHumanReadable(
-      _amount,
-      this.governanceToken.decimals
-    ).toString()
 
     return makeStargateMessage({
       stargate: {
         typeUrl: MsgMint.typeUrl,
         value: MsgMint.fromPartial({
           recipient,
-          coin: coin(amount, this.governanceToken.denomOrAddress),
+          coin: HugeDecimal.fromHumanReadable(
+            amount,
+            this.governanceToken.decimals
+          ).toCoin(this.governanceToken.denomOrAddress),
           minter: this.options.address,
         }),
       },
@@ -114,7 +110,7 @@ export class BitSongFantokenMintAction extends ActionBase<MintData> {
       recipient: decodedMessage.stargate.value.recipient,
       amount: HugeDecimal.from(
         decodedMessage.stargate.value.coin.amount
-      ).toHumanReadableNumber(this.governanceToken.decimals),
+      ).toHumanReadableString(this.governanceToken.decimals),
     }
   }
 }

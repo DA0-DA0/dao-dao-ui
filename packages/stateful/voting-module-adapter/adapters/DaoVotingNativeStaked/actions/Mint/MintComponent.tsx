@@ -2,12 +2,12 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { InputErrorMessage, NumberInput } from '@dao-dao/stateless'
+import { HugeDecimalInput, InputErrorMessage } from '@dao-dao/stateless'
 import { ActionComponent, GenericToken } from '@dao-dao/types'
 import { validatePositive, validateRequired } from '@dao-dao/utils'
 
 export type MintData = {
-  amount: number
+  amount: string
 }
 
 export type MintOptions = {
@@ -21,15 +21,16 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   options: { govToken },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext()
+  const { register, setValue, getValues } = useFormContext<MintData>()
 
   return (
     <>
-      <NumberInput
+      <HugeDecimalInput
         containerClassName="w-full"
         disabled={!isCreating}
         error={errors?.amount}
-        fieldName={fieldNamePrefix + 'amount'}
+        fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+        getValues={getValues}
         min={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
         register={register}
         setValue={setValue}
@@ -37,7 +38,6 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         step={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
         unit={'$' + govToken.symbol}
         validation={[validateRequired, validatePositive]}
-        watch={watch}
       />
 
       {errors?.amount && (

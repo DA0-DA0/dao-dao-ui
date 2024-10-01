@@ -13,7 +13,7 @@ export default {
   decorators: [
     makeReactHookFormDecorator<MintData>({
       recipient: 'address',
-      amount: 100000,
+      amount: '100000',
     }),
   ],
 } as ComponentMeta<typeof MintComponent>

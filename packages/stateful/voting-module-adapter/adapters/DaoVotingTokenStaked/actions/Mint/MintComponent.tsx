@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
+  HugeDecimalInput,
   InputErrorMessage,
-  NumberInput,
   StatusCard,
   useChain,
   useDetectWrap,
@@ -28,7 +28,7 @@ import {
 
 export type MintData = {
   recipient: string
-  amount: number
+  amount: string
 }
 
 export type MintOptions = {
@@ -43,7 +43,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   options: { govToken, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext<MintData>()
+  const { register, setValue, getValues } = useFormContext<MintData>()
   const { bech32_prefix: bech32Prefix } = useChain()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
@@ -61,17 +61,17 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-1"
         ref={containerRef}
       >
-        <NumberInput
+        <HugeDecimalInput
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+          getValues={getValues}
           min={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           register={register}
           setValue={setValue}
           step={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           unit={'$' + govToken.symbol}
           validation={[validateRequired, validatePositive]}
-          watch={watch}
         />
 
         <div

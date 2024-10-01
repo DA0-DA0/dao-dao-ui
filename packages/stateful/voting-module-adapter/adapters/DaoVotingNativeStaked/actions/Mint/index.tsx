@@ -42,7 +42,7 @@ export class MintAction extends ActionBase<MintData> {
   public readonly Component = Component
 
   protected _defaults: MintData = {
-    amount: 1,
+    amount: '1',
   }
 
   private governanceToken?: GenericToken
@@ -108,7 +108,7 @@ export class MintAction extends ActionBase<MintData> {
     return {
       amount: HugeDecimal.from(
         decodedMessage.stargate.value.amount.amount
-      ).toHumanReadableNumber(this.governanceToken.decimals),
+      ).toHumanReadableString(this.governanceToken.decimals),
     }
   }
 }

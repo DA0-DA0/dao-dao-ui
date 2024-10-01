@@ -50,7 +50,7 @@ export class MintAction extends ActionBase<MintData> {
 
     this.defaults = {
       to: options.address,
-      amount: 1,
+      amount: '1',
     }
   }
 
@@ -115,7 +115,7 @@ export class MintAction extends ActionBase<MintData> {
       to: decodedMessage.wasm.execute.msg.mint.recipient,
       amount: HugeDecimal.from(
         decodedMessage.wasm.execute.msg.mint.amount
-      ).toHumanReadableNumber(this.governanceToken.decimals),
+      ).toHumanReadableString(this.governanceToken.decimals),
     }
   }
 }

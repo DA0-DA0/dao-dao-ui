@@ -2,6 +2,7 @@ import { Add, Close } from '@mui/icons-material'
 import {
   Control,
   FormState,
+  UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
@@ -9,12 +10,13 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
+  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
   TextInput,
   TooltipInfoIcon,
   useChain,
@@ -25,6 +27,7 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   formatPercentOf100,
   makeValidateAddress,
+  validatePercent,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -44,6 +47,7 @@ export interface TierCardProps {
   watch: UseFormWatch<NewDao<CreatorData>>
   errors: FormState<NewDao<CreatorData>>['errors']
   setValue: UseFormSetValue<NewDao<CreatorData>>
+  getValues: UseFormGetValues<NewDao<CreatorData>>
   remove?: () => void
 }
 
@@ -61,6 +65,7 @@ export const TierCard = ({
     watch,
     errors,
     setValue,
+    getValues,
     showColorDotOnMember,
   } = props
 
@@ -139,16 +144,17 @@ export const TierCard = ({
           />
 
           <div className="flex flex-row items-center gap-2">
-            <NumberInput
+            <HugeDecimalInput
               containerClassName="grow"
               error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
               fieldName={`creator.data.tiers.${tierIndex}.weight`}
-              min={1 / 10 ** NEW_DAO_TOKEN_DECIMALS}
+              getValues={getValues}
+              max={100}
+              min={0}
+              numericValue
               register={register}
               setValue={setValue}
-              step={1 / 10 ** NEW_DAO_TOKEN_DECIMALS}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
+              validation={[validatePercent, validatePositive, validateRequired]}
             />
             <InputLabel name="%" />
           </div>
@@ -215,12 +221,16 @@ export const TierCard = ({
 
               <TooltipInfoIcon
                 title={t('info.tierMemberGovTokenAllocationTooltip', {
-                  tokens: (
-                    (tierVotingWeight / members.length / 100) *
-                    data.newInfo.initialSupply
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: NEW_DAO_TOKEN_DECIMALS,
-                  }),
+                  tokens: HugeDecimal.fromHumanReadable(
+                    data.newInfo.initialSupply,
+                    NEW_DAO_TOKEN_DECIMALS
+                  )
+                    .times(tierVotingWeight)
+                    .div(members.length)
+                    .div(100)
+                    .toInternationalizedHumanReadableString({
+                      decimals: NEW_DAO_TOKEN_DECIMALS,
+                    }),
                   tokenSymbol: data.newInfo.symbol || t('info.tokens'),
                 })}
               />

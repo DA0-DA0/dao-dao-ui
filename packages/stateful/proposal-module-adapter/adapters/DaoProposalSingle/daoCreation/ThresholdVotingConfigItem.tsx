@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   BallotDepositEmoji,
   FormSwitchCard,
-  NumberInput,
+  HugeDecimalInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/types'
 import {
   formatPercentOf100,
+  validatePercent,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -26,7 +27,7 @@ const ThresholdInput = ({
   },
   register,
   setValue,
-  watch,
+  getValues,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationExtraVotingConfig>) => {
   const { t } = useTranslation()
@@ -35,17 +36,18 @@ const ThresholdInput = ({
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">
         {!majority && (
-          <NumberInput
+          <HugeDecimalInput
             containerClassName="grow min-w-[8rem]"
             error={errors?.threshold?.value}
             fieldName="threshold.value"
-            min={1}
+            getValues={getValues}
+            max={100}
+            min={0}
+            numericValue
             register={register}
             setValue={setValue}
             sizing="sm"
-            step={0.001}
-            validation={[validatePositive, validateRequired]}
-            watch={watch}
+            validation={[validatePercent, validatePositive, validateRequired]}
           />
         )}
 

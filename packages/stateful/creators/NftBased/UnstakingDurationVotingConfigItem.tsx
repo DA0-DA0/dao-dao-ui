@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { ClockEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
+import { ClockEmoji, HugeDecimalInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -19,24 +19,25 @@ export const UnstakingDurationInput = ({
   data: { unstakingDuration },
   register,
   setValue,
-  watch,
+  getValues,
   errors,
 }: DaoCreationVotingConfigItemInputProps<CreatorData>) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row gap-2">
-      <NumberInput
+      <HugeDecimalInput
         containerClassName="grow"
         error={errors?.unstakingDuration?.value}
         fieldName="unstakingDuration.value"
+        getValues={getValues}
         min={1}
+        numericValue
         register={register}
         setValue={setValue}
         sizing="sm"
         step={1}
         validation={[validatePositive, validateRequired]}
-        watch={watch}
       />
 
       <SelectInput

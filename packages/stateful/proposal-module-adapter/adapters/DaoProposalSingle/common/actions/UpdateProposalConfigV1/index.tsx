@@ -144,11 +144,11 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
             // A deposit being configured implies that a token will be present.
             deposit: HugeDecimal.from(
               config.deposit_info.deposit
-            ).toHumanReadableNumber(token.decimals),
+            ).toHumanReadableString(token.decimals),
             refundFailedProposals: config.deposit_info.refund_failed_proposals,
           }
         : {
-            deposit: 0,
+            deposit: '0',
             refundFailedProposals: false,
           }
 
@@ -262,7 +262,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
       ? {
           deposit: HugeDecimal.from(
             config.deposit_info.deposit
-          ).toHumanReadableNumber(
+          ).toHumanReadableString(
             this.proposalModule.dao.votingModule.getGovernanceTokenQuery
               ? (
                   await this.options.queryClient.fetchQuery(

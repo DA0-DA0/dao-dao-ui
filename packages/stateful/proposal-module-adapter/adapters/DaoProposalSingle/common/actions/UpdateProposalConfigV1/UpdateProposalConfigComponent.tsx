@@ -1,14 +1,15 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ChartEmoji,
   ClockEmoji,
   FormSwitchCard,
+  HugeDecimalInput,
   InputErrorMessage,
   KeyEmoji,
   MoneyEmoji,
-  NumberInput,
   PeopleEmoji,
   RecycleEmoji,
   SelectInput,
@@ -31,7 +32,7 @@ export type UpdateProposalConfigData = {
 
   depositRequired: boolean
   depositInfo?: {
-    deposit: number
+    deposit: string
     refundFailedProposals: boolean
   }
 
@@ -60,7 +61,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   options: { commonGovernanceTokenInfo },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } =
+  const { register, setValue, watch, getValues } =
     useFormContext<UpdateProposalConfigData>()
 
   const onlyMembersExecute = watch(
@@ -118,16 +119,21 @@ export const UpdateProposalConfigComponent: ActionComponent<
           {depositRequired && (
             <div className="flex flex-col gap-1">
               <div className="flex flex-col gap-1">
-                <NumberInput
+                <HugeDecimalInput
                   disabled={!isCreating}
                   error={errors?.depositInfo?.deposit}
                   fieldName={
                     (fieldNamePrefix +
                       'depositInfo.deposit') as 'depositInfo.deposit'
                   }
-                  min={1 / 10 ** commonGovernanceTokenInfo.decimals}
+                  getValues={getValues}
+                  min={HugeDecimal.one.toHumanReadableString(
+                    commonGovernanceTokenInfo.decimals
+                  )}
                   register={register}
-                  step={1 / 10 ** commonGovernanceTokenInfo.decimals}
+                  step={HugeDecimal.one.toHumanReadableString(
+                    commonGovernanceTokenInfo.decimals
+                  )}
                   unit={'$' + commonGovernanceTokenInfo.symbol}
                   validation={[validateRequired, validatePositive]}
                 />
@@ -166,19 +172,25 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex grow flex-row flex-wrap gap-2">
           {percentageThresholdSelected && (
             <div className="flex flex-col gap-1">
-              <NumberInput
+              <HugeDecimalInput
                 disabled={!isCreating}
                 error={errors?.thresholdPercentage}
                 fieldName={
                   (fieldNamePrefix +
                     'thresholdPercentage') as 'thresholdPercentage'
                 }
-                min={1}
+                getValues={getValues}
+                max={100}
+                min={0}
+                numericValue
                 register={register}
                 setValue={setValue}
                 sizing="sm"
-                validation={[validateRequired, validatePercent]}
-                watch={watch}
+                validation={[
+                  validateRequired,
+                  validatePercent,
+                  validatePositive,
+                ]}
               />
               <InputErrorMessage error={errors?.thresholdPercentage} />
             </div>
@@ -222,18 +234,24 @@ export const UpdateProposalConfigComponent: ActionComponent<
           <div className="flex grow flex-row flex-wrap gap-2">
             {percentageQuorumSelected && (
               <div className="flex flex-col gap-1">
-                <NumberInput
+                <HugeDecimalInput
                   disabled={!isCreating}
                   error={errors?.quorumPercentage}
                   fieldName={
                     (fieldNamePrefix + 'quorumPercentage') as 'quorumPercentage'
                   }
-                  min={1}
+                  getValues={getValues}
+                  max={100}
+                  min={0}
+                  numericValue
                   register={register}
                   setValue={setValue}
                   sizing="sm"
-                  validation={[validateRequired, validatePercent]}
-                  watch={watch}
+                  validation={[
+                    validateRequired,
+                    validatePercent,
+                    validatePositive,
+                  ]}
                 />
                 <InputErrorMessage error={errors?.quorumPercentage} />
               </div>
@@ -264,14 +282,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
         <div className="flex grow flex-row flex-wrap gap-2">
           <div className="flex flex-col gap-1">
-            <NumberInput
+            <HugeDecimalInput
               disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={
                 (fieldNamePrefix +
                   'votingDuration.value') as 'votingDuration.value'
               }
+              getValues={getValues}
               min={1}
+              numericValue
               register={register}
               setValue={setValue}
               sizing="sm"
@@ -286,7 +306,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
                   value >= 60 ||
                   t('error.mustBeAtLeastSixtySeconds'),
               ]}
-              watch={watch}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>

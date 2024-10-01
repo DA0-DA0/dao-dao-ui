@@ -6,9 +6,10 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
+  HugeDecimalInput,
   InputErrorMessage,
-  NumberInput,
   useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -25,13 +26,13 @@ import {
 
 export type MintData = {
   to: string
-  amount: number
+  amount: string
 }
 
 export type MintOptions = {
   govToken: GenericToken
   // Used to display the profile of the address receiving minted tokens.
-  AddressInput: ComponentType<AddressInputProps>
+  AddressInput: ComponentType<AddressInputProps<MintData>>
 }
 
 export const MintComponent: ActionComponent<MintOptions> = ({
@@ -43,7 +44,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   const {
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
-  const { register, watch, setValue } = useFormContext()
+  const { register, setValue, getValues } = useFormContext<MintData>()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
@@ -54,19 +55,19 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         className="flex flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
         ref={containerRef}
       >
-        <NumberInput
+        <HugeDecimalInput
           containerClassName="w-full sm:w-auto"
           disabled={!isCreating}
           error={errors?.amount}
-          fieldName={fieldNamePrefix + 'amount'}
-          min={1 / 10 ** govToken.decimals}
+          fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+          getValues={getValues}
+          min={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           register={register}
           setValue={setValue}
           sizing="none"
-          step={1 / 10 ** govToken.decimals}
+          step={HugeDecimal.one.toHumanReadableNumber(govToken.decimals)}
           unit={'$' + govToken.symbol}
           validation={[validateRequired, validatePositive]}
-          watch={watch}
         />
 
         <div
@@ -83,7 +84,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             containerClassName="grow"
             disabled={!isCreating}
             error={errors?.to}
-            fieldName={fieldNamePrefix + 'to'}
+            fieldName={(fieldNamePrefix + 'to') as 'to'}
             register={register}
             validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
