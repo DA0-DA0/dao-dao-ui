@@ -152,16 +152,13 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
             try {
               // Existence validated above.
               const action = actionMap[key as keyof typeof actionMap]!
+              const actionData = merge({}, cloneDeep(action.defaults), data)
               return {
                 action,
                 // Use the action's defaults as a base, and then merge in the
                 // imported data, overriding any defaults. If data is undefined,
                 // then the action's defaults will be used.
-                data: merge(
-                  {},
-                  cloneDeep(action.defaults),
-                  action.transformImportData?.(data) || data
-                ),
+                data: action.transformImportData?.(actionData) || actionData,
               }
             } catch {
               return []
