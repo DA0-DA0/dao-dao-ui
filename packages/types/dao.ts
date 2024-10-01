@@ -7,6 +7,7 @@ import {
   FieldPathValue,
   FieldValues,
   FormState,
+  UseFormGetValues,
   UseFormRegister,
   UseFormReturn,
   UseFormSetValue,
@@ -350,6 +351,7 @@ export interface DaoCreationVotingConfigItemInputProps<
   data: ModuleData
   register: UseFormRegister<ModuleData>
   setValue: UseFormSetValue<ModuleData>
+  getValues: UseFormGetValues<ModuleData>
   watch: <TFieldName extends FieldPath<ModuleData>>(
     name: TFieldName,
     defaultValue?: FieldPathValue<ModuleData, TFieldName>

@@ -12,7 +12,7 @@ import {
 import { shortenTokenSymbol } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
-import { NumberInput, PercentButton } from '../inputs'
+import { HugeDecimalInput, PercentButton } from '../inputs'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Modal } from './Modal'
 
@@ -114,20 +114,12 @@ export const TokenDepositModal = ({
         </div>
       )}
 
-      <NumberInput
+      <HugeDecimalInput
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
         autoFocus={modalProps.visible}
         max={loadingBalance.loading ? undefined : loadingBalance.data.amount}
         min={min}
-        onInput={(event) =>
-          setAmount(
-            HugeDecimal.fromHumanReadable(
-              (event.target as HTMLInputElement).value,
-              token.decimals
-            )
-          )
-        }
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault()
@@ -139,7 +131,7 @@ export const TokenDepositModal = ({
         }
         step={min}
         unit={'$' + tokenSymbol}
-        value={amount.toHumanReadableNumber(token.decimals)}
+        value={amount.toHumanReadableString(token.decimals)}
       />
 
       <div className="grid grid-cols-5 gap-2">

@@ -1,5 +1,6 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useRef } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -60,6 +61,8 @@ export const HugeDecimalInput = <
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
+  const lastValueSet = useRef('')
 
   return (
     <div
@@ -171,8 +174,21 @@ export const HugeDecimalInput = <
           // value change and call `setValue`.
           fieldName && register
             ? undefined
-            : ({ target }) => {
+            : setValue &&
+              (({ target }) => {
                 const value = (target as HTMLInputElement).value
+
+                // If a decimal point is entered, and we already set the same
+                // value without a decimal point, don't set again. We don't want
+                // to clear the decimal point in the case that this input is
+                // controlled and the parent component transforms the value
+                // manually into a number and back (which would clear the
+                // decimal point).
+                if (value === lastValueSet.current + '.') {
+                  return
+                }
+
+                lastValueSet.current = value
                 setValue(
                   fieldName ?? '',
                   numericValue
@@ -182,7 +198,7 @@ export const HugeDecimalInput = <
                       : Number(value)
                     : value
                 )
-              }
+              })
         }
         type="number"
         value={value}

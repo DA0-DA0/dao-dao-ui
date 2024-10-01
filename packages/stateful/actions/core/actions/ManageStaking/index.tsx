@@ -1,4 +1,4 @@
-import { coin, parseCoins } from '@cosmjs/amino'
+import { parseCoins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -313,7 +313,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       // Default to first validator if exists.
       validator: firstValidator,
       toValidator: '',
-      amount: 1,
+      amount: '1',
       withdrawAddress: this.options.address,
     }
   }
@@ -331,13 +331,10 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       chainId
     )
     const nativeToken = getNativeTokenForChainId(chainId)
-    const amount = coin(
-      HugeDecimal.fromHumanReadable(
-        macroAmount,
-        nativeToken.decimals
-      ).toString(),
-      nativeToken.denomOrAddress
-    )
+    const amount = HugeDecimal.fromHumanReadable(
+      macroAmount,
+      nativeToken.decimals
+    ).toCoin(nativeToken.denomOrAddress)
 
     let msg: UnifiedCosmosMsg
     switch (type) {
@@ -503,7 +500,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
             decodedMessage.distribution.withdraw_delegator_reward.validator,
           // Default values, not needed for displaying this type of message.
           toValidator: '',
-          amount: 1,
+          amount: '1',
           withdrawAddress: '',
         }
       } else if (
@@ -516,7 +513,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
             decodedMessage.distribution.set_withdraw_address.address,
           validator: '',
           toValidator: '',
-          amount: 1,
+          amount: '1',
         }
       }
     } else if ('staking' in decodedMessage) {
@@ -541,7 +538,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
           action.type === StakingActionType.Redelegate
             ? data.dst_validator
             : '',
-        amount: HugeDecimal.from(data.amount.amount).toHumanReadableNumber(
+        amount: HugeDecimal.from(data.amount.amount).toHumanReadableString(
           nativeToken.decimals
         ),
         withdrawAddress: '',

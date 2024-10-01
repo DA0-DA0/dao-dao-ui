@@ -124,7 +124,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         .denomOrAddress,
       immediate: false,
       rate: {
-        amount: 1,
+        amount: '1',
         duration: {
           value: 1,
           units: DurationUnits.Hours,
@@ -591,12 +591,11 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       denomOrAddress,
       immediate: 'immediate' in createMsg.emission_rate,
       rate: {
-        amount:
+        amount: HugeDecimal.from(
           'linear' in createMsg.emission_rate
-            ? HugeDecimal.from(
-                createMsg.emission_rate.linear.amount
-              ).toHumanReadableNumber(token.decimals)
-            : 1,
+            ? createMsg.emission_rate.linear.amount
+            : 1
+        ).toHumanReadableString(token.decimals),
         duration:
           'linear' in createMsg.emission_rate
             ? convertDurationToDurationWithUnits(

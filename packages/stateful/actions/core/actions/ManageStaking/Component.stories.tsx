@@ -20,7 +20,7 @@ export default {
       type: StakingActionType.Delegate,
       validator: '',
       toValidator: '',
-      amount: 1,
+      amount: '1',
       withdrawAddress: '',
     }),
   ],

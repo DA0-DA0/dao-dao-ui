@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   FormSwitchCard,
+  HugeDecimalInput,
   InputErrorMessage,
-  NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -26,7 +26,7 @@ export const UpdateStakingConfigComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } =
+  const { register, watch, setValue, getValues } =
     useFormContext<UpdateStakingConfigData>()
 
   const unstakingDurationEnabled = watch(
@@ -57,14 +57,16 @@ export const UpdateStakingConfigComponent: ActionComponent = ({
       {unstakingDurationEnabled && (
         <>
           <div className="flex flex-row gap-2">
-            <NumberInput
+            <HugeDecimalInput
               disabled={!isCreating}
               error={errors?.unstakingDuration?.value}
               fieldName={
                 (fieldNamePrefix +
                   'unstakingDuration.value') as 'unstakingDuration.value'
               }
+              getValues={getValues}
               min={1}
+              numericValue
               register={register}
               setValue={setValue}
               sizing="md"
@@ -77,7 +79,6 @@ export const UpdateStakingConfigComponent: ActionComponent = ({
                   : undefined
               }
               validation={[validatePositive, validateRequired]}
-              watch={watch}
             />
 
             {isCreating && (

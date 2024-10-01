@@ -22,9 +22,9 @@ import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import {
   FormSwitchCard,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
   SelectInput,
 } from '../inputs'
 
@@ -52,7 +52,7 @@ export const ProposalVetoConfigurer = ({
   const { t } = useTranslation()
   const { bech32_prefix: bech32Prefix } = useChain()
 
-  const { control, register, setValue, watch } =
+  const { control, register, setValue, getValues } =
     useFormContext<ProposalVetoConfig>()
 
   const {
@@ -173,7 +173,7 @@ export const ProposalVetoConfigurer = ({
         />
 
         <div className="flex flex-row gap-2">
-          <NumberInput
+          <HugeDecimalInput
             containerClassName="grow"
             disabled={disabled}
             error={errors?.timelockDuration?.value}
@@ -181,13 +181,14 @@ export const ProposalVetoConfigurer = ({
               (fieldNamePrefix +
                 'timelockDuration.value') as 'timelockDuration.value'
             }
+            getValues={getValues}
             min={0}
+            numericValue
             register={register}
             setValue={setValue}
             sizing="sm"
             step={1}
-            validation={[validateNonNegative, validateRequired]}
-            watch={watch}
+            validation={[validateRequired, validateNonNegative]}
           />
 
           <SelectInput

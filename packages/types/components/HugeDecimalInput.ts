@@ -43,7 +43,7 @@ export type HugeDecimalInputProps<
    * clicked. Accepts the react-hook-form `setValue` function, or any custom
    * function.
    */
-  setValue: (
+  setValue?: (
     fieldName: any,
     value: string | number,
     options?: { shouldValidate: boolean }

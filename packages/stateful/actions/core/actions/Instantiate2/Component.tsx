@@ -10,10 +10,10 @@ import {
   CodeMirrorInput,
   CopyToClipboard,
   ErrorPage,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NumberInput,
   TextInput,
   useActionOptions,
   useChain,
@@ -118,10 +118,12 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
       <div className="flex flex-row items-center gap-2">
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel name={t('form.codeId')} />
-          <NumberInput
+          <HugeDecimalInput
             disabled={!isCreating}
             error={errors?.codeId}
             fieldName={fieldNamePrefix + 'codeId'}
+            min={1}
+            numericValue
             register={register}
             sizing="sm"
             step={1}

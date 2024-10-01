@@ -18,10 +18,10 @@ import {
   CopyToClipboard,
   DateTimePicker,
   DateTimePickerNoForm,
+  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
   RadioInput,
   RadioInputOption,
   SelectInput,
@@ -133,8 +133,15 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     throw new Error('Unsupported chain context')
   }
 
-  const { control, register, watch, setValue, setError, clearErrors } =
-    useFormContext<BeginVestingData>()
+  const {
+    control,
+    register,
+    watch,
+    setValue,
+    getValues,
+    setError,
+    clearErrors,
+  } = useFormContext<BeginVestingData>()
   const {
     fields: stepFields,
     append: appendStep,
@@ -603,22 +610,23 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 <div className="flex shrink-0 flex-col gap-1">
                   <InputLabel name={t('form.unlockPercent')} />
 
-                  <NumberInput
+                  <HugeDecimalInput
                     disabled={!isCreating}
                     error={errors?.steps?.[index]?.percent}
                     fieldName={
                       (fieldNamePrefix +
                         `steps.${index}.percent`) as `steps.${number}.percent`
                     }
+                    getValues={getValues}
                     max={100}
                     min={0}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="md"
                     step={0.01}
                     unit="%"
-                    validation={[validateNonNegative, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validateNonNegative]}
                   />
 
                   <InputErrorMessage error={errors?.steps?.[index]?.percent} />
@@ -637,14 +645,16 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                   </div>
 
                   <div className="flex flex-row gap-1">
-                    <NumberInput
+                    <HugeDecimalInput
                       disabled={!isCreating}
                       error={errors?.steps?.[index]?.delay?.value}
                       fieldName={
                         (fieldNamePrefix +
                           `steps.${index}.delay.value`) as `steps.${number}.delay.value`
                       }
+                      getValues={getValues}
                       min={1}
+                      numericValue
                       register={register}
                       setValue={setValue}
                       sizing="md"
@@ -656,8 +666,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                               count: steps[index].delay.value,
                             }).toLocaleLowerCase()
                       }
-                      validation={[validatePositive, validateRequired]}
-                      watch={watch}
+                      validation={[validateRequired, validatePositive]}
                     />
 
                     {isCreating && (

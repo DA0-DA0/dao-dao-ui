@@ -39,7 +39,7 @@ export type CreateRewardDistributionData = {
   denomOrAddress: string
   immediate: boolean
   rate: {
-    amount: number
+    amount: string
     duration: DurationWithUnits
   }
   initialFunds: string

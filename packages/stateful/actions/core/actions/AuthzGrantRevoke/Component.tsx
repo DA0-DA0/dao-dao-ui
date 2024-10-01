@@ -8,10 +8,10 @@ import {
   Button,
   CodeMirrorInput,
   FormSwitchCard,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NumberInput,
   RadioInput,
   SegmentedControlsTitle,
   SelectInput,
@@ -69,7 +69,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const { control, register, setValue, watch } =
+  const { control, register, setValue, getValues, watch } =
     useFormContext<AuthzGrantRevokeData>()
 
   const {
@@ -413,19 +413,21 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   tooltip={t('form.callsDescription')}
                 />
 
-                <NumberInput
+                <HugeDecimalInput
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.calls}
                   fieldName={(fieldNamePrefix + 'calls') as 'calls'}
+                  getValues={getValues}
                   min={0}
+                  numericValue
                   register={register}
                   setValue={setValue}
                   sizing="md"
                   step={1}
-                  validation={[validateNonNegative, validateRequired]}
-                  watch={watch}
+                  validation={[validateRequired, validateNonNegative]}
                 />
+                <InputErrorMessage error={errors?.calls} />
               </div>
             )}
 

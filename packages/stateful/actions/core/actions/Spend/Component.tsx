@@ -12,12 +12,12 @@ import {
   ChainLogo,
   ChainProvider,
   FormSwitchCard,
+  HugeDecimalInput,
   IbcDestinationChainPicker,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
   Loader,
-  NumberInput,
   PercentButton,
   SelectInput,
   StatusCard,
@@ -169,7 +169,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     chain: { chain_id: mainChainId },
   } = useActionOptions()
 
-  const { register, watch, setValue } = useFormContext<SpendData>()
+  const { register, watch, setValue, getValues } = useFormContext<SpendData>()
 
   const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
@@ -795,14 +795,16 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             {isCreating ? (
               <>
                 <div className="flex flex-row gap-1">
-                  <NumberInput
+                  <HugeDecimalInput
                     disabled={!isCreating}
                     error={errors?.ibcTimeout?.value}
                     fieldName={
                       (fieldNamePrefix +
                         'ibcTimeout.value') as 'ibcTimeout.value'
                     }
+                    getValues={getValues}
                     min={1}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="md"
@@ -814,8 +816,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                             count: ibcTimeout?.value,
                           }).toLocaleLowerCase()
                     }
-                    validation={[validatePositive, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validatePositive]}
                   />
 
                   {isCreating && (

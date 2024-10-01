@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   FilmSlateEmoji,
   FormSwitchCard,
-  NumberInput,
+  HugeDecimalInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -28,7 +28,7 @@ const ActiveThresholdInput = ({
   },
   register,
   setValue,
-  watch,
+  getValues,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithActiveThreshold>) => {
   const { t } = useTranslation()
@@ -45,17 +45,18 @@ const ActiveThresholdInput = ({
       {enabled && (
         <>
           <div className="flex flex-row gap-2">
-            <NumberInput
+            <HugeDecimalInput
               containerClassName="grow min-w-[8rem]"
               error={errors?.activeThreshold?.value}
               fieldName="activeThreshold.value"
+              getValues={getValues}
               min={1}
+              numericValue
               register={register}
               setValue={setValue}
               sizing="sm"
               step={type === 'percent' ? 0.001 : 1}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
+              validation={[validateRequired, validatePositive]}
             />
 
             <SelectInput

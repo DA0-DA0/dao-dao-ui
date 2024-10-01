@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
-  NumberInput,
   PercentButton,
   StatusCard,
   TokenAmountDisplay,
@@ -32,7 +32,7 @@ import {
 export type FundRewardDistributionData = {
   address: string
   id: number
-  amount: number
+  amount: string
 }
 
 export type FundRewardDistributionOptions = {
@@ -55,7 +55,7 @@ export const FundRewardDistributionComponent: ActionComponent<
   options: { distributions, tokens },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } =
+  const { register, setValue, watch, getValues } =
     useFormContext<FundRewardDistributionData>()
 
   const address = watch((fieldNamePrefix + 'address') as 'address')
@@ -160,17 +160,19 @@ export const FundRewardDistributionComponent: ActionComponent<
           <div className="flex flex-col gap-2 max-w-prose">
             <InputLabel name={t('form.funds')} primary />
 
-            <NumberInput
+            <HugeDecimalInput
               containerClassName={clsx(!isCreating && 'self-start')}
               disabled={!isCreating}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
-              min={0}
+              getValues={getValues}
+              min={HugeDecimal.one.toHumanReadableString(
+                selectedDistribution.token.decimals
+              )}
               register={register}
               setValue={setValue}
               step={minAmount}
               unit={'$' + selectedDistribution.token.symbol}
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
             <InputErrorMessage error={errors?.amount} />
             <InputErrorMessage error={warning} warning />
@@ -188,7 +190,7 @@ export const FundRewardDistributionComponent: ActionComponent<
                   onClick={() =>
                     setValue(
                       (fieldNamePrefix + 'amount') as 'amount',
-                      selectedBalance.toHumanReadableNumber(
+                      selectedBalance.toHumanReadableString(
                         selectedDistribution.token.decimals
                       )
                     )
@@ -212,7 +214,7 @@ export const FundRewardDistributionComponent: ActionComponent<
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount.toHumanReadableNumber(
+                          amount.toHumanReadableString(
                             selectedDistribution.token.decimals
                           )
                         )

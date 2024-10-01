@@ -14,6 +14,7 @@ export const CreateDaoVoting = ({
     register,
     watch,
     setValue,
+    getValues,
   },
   commonVotingConfig: {
     items: commonVotingConfigItems,
@@ -94,6 +95,24 @@ export const CreateDaoVoting = ({
                       data={creatorData}
                       errors={errors.creator?.data}
                       fieldNamePrefix="creator.data."
+                      getValues={(
+                        fieldNameOrNames?: string | readonly string[]
+                      ) =>
+                        fieldNameOrNames === undefined
+                          ? getValues()
+                          : typeof fieldNameOrNames === 'string'
+                          ? getValues(
+                              ('creator.data.' +
+                                fieldNameOrNames) as `creator.data.${string}`
+                            )
+                          : getValues(
+                              fieldNameOrNames.map(
+                                (fieldName) =>
+                                  ('creator.data.' +
+                                    fieldName) as `creator.data.${string}`
+                              )
+                            )
+                      }
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(
@@ -155,6 +174,24 @@ export const CreateDaoVoting = ({
                           data={proposalModuleAdapters[index].data}
                           errors={errors.proposalModuleAdapters?.[index]?.data}
                           fieldNamePrefix={`proposalModuleAdapters.${index}.data.`}
+                          getValues={(
+                            fieldNameOrNames?: string | readonly string[]
+                          ) =>
+                            fieldNameOrNames === undefined
+                              ? getValues()
+                              : typeof fieldNameOrNames === 'string'
+                              ? getValues(
+                                  (`proposalModuleAdapters.${index}.data.` +
+                                    fieldNameOrNames) as `proposalModuleAdapters.${number}.data.${string}`
+                                )
+                              : getValues(
+                                  fieldNameOrNames.map(
+                                    (fieldName) =>
+                                      (`proposalModuleAdapters.${index}.data.` +
+                                        fieldName) as `proposalModuleAdapters.${number}.data.${string}`
+                                  )
+                                )
+                          }
                           newDao={newDao}
                           register={(fieldName, options) =>
                             register(
@@ -213,6 +250,24 @@ export const CreateDaoVoting = ({
                       data={votingConfig}
                       errors={errors.votingConfig}
                       fieldNamePrefix="votingConfig."
+                      getValues={(
+                        fieldNameOrNames?: string | readonly string[]
+                      ) =>
+                        fieldNameOrNames === undefined
+                          ? getValues()
+                          : typeof fieldNameOrNames === 'string'
+                          ? getValues(
+                              ('votingConfig.' +
+                                fieldNameOrNames) as `votingConfig.${string}`
+                            )
+                          : getValues(
+                              fieldNameOrNames.map(
+                                (fieldName) =>
+                                  ('votingConfig.' +
+                                    fieldName) as `votingConfig.${string}`
+                              )
+                            )
+                      }
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(('votingConfig.' + fieldName) as any, options)
@@ -317,6 +372,24 @@ export const CreateDaoVoting = ({
                         data={creatorData}
                         errors={errors.creator?.data}
                         fieldNamePrefix="creator.data."
+                        getValues={(
+                          fieldNameOrNames?: string | readonly string[]
+                        ) =>
+                          fieldNameOrNames === undefined
+                            ? getValues()
+                            : typeof fieldNameOrNames === 'string'
+                            ? getValues(
+                                ('creator.data.' +
+                                  fieldNameOrNames) as `creator.data.${string}`
+                              )
+                            : getValues(
+                                fieldNameOrNames.map(
+                                  (fieldName) =>
+                                    ('creator.data.' +
+                                      fieldName) as `creator.data.${string}`
+                                )
+                              )
+                        }
                         newDao={newDao}
                         register={(fieldName, options) =>
                           register(
@@ -380,6 +453,24 @@ export const CreateDaoVoting = ({
                               errors.proposalModuleAdapters?.[index]?.data
                             }
                             fieldNamePrefix={`proposalModuleAdapters.${index}.data.`}
+                            getValues={(
+                              fieldNameOrNames?: string | readonly string[]
+                            ) =>
+                              fieldNameOrNames === undefined
+                                ? getValues()
+                                : typeof fieldNameOrNames === 'string'
+                                ? getValues(
+                                    (`proposalModuleAdapters.${index}.data.` +
+                                      fieldNameOrNames) as `proposalModuleAdapters.${number}.data.${string}`
+                                  )
+                                : getValues(
+                                    fieldNameOrNames.map(
+                                      (fieldName) =>
+                                        (`proposalModuleAdapters.${index}.data.` +
+                                          fieldName) as `proposalModuleAdapters.${number}.data.${string}`
+                                    )
+                                  )
+                            }
                             newDao={newDao}
                             register={(fieldName, options) =>
                               register(
@@ -438,6 +529,24 @@ export const CreateDaoVoting = ({
                         data={votingConfig}
                         errors={errors.votingConfig}
                         fieldNamePrefix="votingConfig."
+                        getValues={(
+                          fieldNameOrNames?: string | readonly string[]
+                        ) =>
+                          fieldNameOrNames === undefined
+                            ? getValues()
+                            : typeof fieldNameOrNames === 'string'
+                            ? getValues(
+                                ('votingConfig.' +
+                                  fieldNameOrNames) as `votingConfig.${string}`
+                              )
+                            : getValues(
+                                fieldNameOrNames.map(
+                                  (fieldName) =>
+                                    ('votingConfig.' +
+                                      fieldName) as `votingConfig.${string}`
+                                )
+                              )
+                        }
                         newDao={newDao}
                         register={(fieldName, options) =>
                           register(

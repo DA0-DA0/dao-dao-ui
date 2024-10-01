@@ -100,8 +100,8 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
           !('paused' in emissionRate)
             ? HugeDecimal.from(
                 emissionRate.linear.amount
-              ).toHumanReadableNumber(this.distributions[0].token.decimals)
-            : 1,
+              ).toHumanReadableString(this.distributions[0].token.decimals)
+            : '1',
         duration:
           emissionRate &&
           !('immediate' in emissionRate) &&
@@ -202,12 +202,11 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
       id: updateMsg.id,
       immediate: 'immediate' in updateMsg.emission_rate,
       rate: {
-        amount:
+        amount: HugeDecimal.from(
           'linear' in updateMsg.emission_rate
-            ? HugeDecimal.from(
-                updateMsg.emission_rate.linear.amount
-              ).toHumanReadableNumber(distribution.token.decimals)
-            : 1,
+            ? updateMsg.emission_rate.linear.amount
+            : 1
+        ).toHumanReadableString(distribution.token.decimals),
         duration:
           'linear' in updateMsg.emission_rate
             ? convertDurationToDurationWithUnits(

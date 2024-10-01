@@ -19,7 +19,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "id": <ID>,
   "immediate": <true | false>,
   "rate": {
-    "amount": <AMOUNT>,
+    "amount": "<AMOUNT>",
     "unit": "<seconds | minutes | hours | days | weeks | months | years | blocks>"
   },
   "openFunding": <true | false>

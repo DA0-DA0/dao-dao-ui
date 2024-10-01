@@ -133,7 +133,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
     this.defaults = {
       address: this.distributions[0]?.address || '',
       id: this.distributions[0]?.id || 0,
-      amount: 100,
+      amount: '100',
     }
   }
 
@@ -191,7 +191,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
   breakdownMessage(decodedMessage: any): {
     distribution: DaoRewardDistribution
-    amount: number
+    amount: string
   } {
     const isNativeFund = objectMatchesStructure(decodedMessage, {
       wasm: {
@@ -236,7 +236,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
     return {
       distribution,
-      amount: HugeDecimal.from(amount).toHumanReadableNumber(
+      amount: HugeDecimal.from(amount).toHumanReadableString(
         distribution.token.decimals
       ),
     }

@@ -7,12 +7,12 @@ import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ErrorPage,
+  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
   Loader,
   MarkdownRenderer,
-  NumberInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
   SegmentedControls,
@@ -124,8 +124,15 @@ export const ConfigureRebalancerComponent: ActionComponent<
     chain: { bech32_prefix: bech32Prefix },
   } = useSupportedChainContext()
 
-  const { control, watch, register, setValue, clearErrors, setError } =
-    useFormContext<ConfigureRebalancerData>()
+  const {
+    control,
+    watch,
+    register,
+    setValue,
+    getValues,
+    clearErrors,
+    setError,
+  } = useFormContext<ConfigureRebalancerData>()
   const {
     fields: tokensFields,
     append: appendToken,
@@ -446,12 +453,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="P" />
-                <NumberInput
+                <HugeDecimalInput
                   error={errors?.pid?.kp}
                   fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -463,12 +471,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="I" />
-                <NumberInput
+                <HugeDecimalInput
                   error={errors?.pid?.ki}
                   fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -480,12 +489,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="D" />
-                <NumberInput
+                <HugeDecimalInput
                   error={errors?.pid?.kd}
                   fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -575,19 +585,20 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
               {maxLimitEnabled && (
                 <div className="flex flex-row gap-2 self-start">
-                  <NumberInput
+                  <HugeDecimalInput
                     containerClassName="grow min-w-[min(8rem,50%)]"
                     error={errors?.maxLimit}
                     fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
+                    getValues={getValues}
                     max={100}
                     min={0.01}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="auto"
                     step={0.01}
                     unit="%"
-                    validation={[validatePositive, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validatePositive]}
                   />
                 </div>
               )}

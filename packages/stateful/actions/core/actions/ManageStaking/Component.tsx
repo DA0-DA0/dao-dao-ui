@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
@@ -72,7 +72,7 @@ export type ManageStakingData = {
   toValidator: string
   // For use when setting withdraw address.
   withdrawAddress: string
-  amount: number
+  amount: string
 
   _error?: string
 }
@@ -96,7 +96,7 @@ export const ManageStakingComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setError, clearErrors, setValue } =
+  const { register, watch, setError, clearErrors, setValue, getValues } =
     useFormContext<ManageStakingData>()
   const stakeActions = getStakeActions(t)
 
@@ -176,7 +176,9 @@ export const ManageStakingComponent: ActionComponent<
     // Logic for undelegating.
     if (type === StakingActionType.Undelegate) {
       return (
-        sourceValidatorStaked.gte(amount) ||
+        sourceValidatorStaked
+          .toHumanReadable(nativeToken.decimals)
+          .gte(amount) ||
         (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
@@ -200,7 +202,9 @@ export const ManageStakingComponent: ActionComponent<
       }
 
       return (
-        sourceValidatorStaked.gte(amount) ||
+        sourceValidatorStaked
+          .toHumanReadable(nativeToken.decimals)
+          .gte(amount) ||
         (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
@@ -336,18 +340,18 @@ export const ManageStakingComponent: ActionComponent<
         {/* If not withdrawing reward or updating withdraw address, show amount input. */}
         {type !== StakingActionType.WithdrawDelegatorReward &&
           type !== StakingActionType.SetWithdrawAddress && (
-            <NumberInput
+            <HugeDecimalInput
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.amount}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+              getValues={getValues}
               min={minAmount}
               register={register}
               setValue={setValue}
               step={minAmount}
               unit={'$' + nativeToken.symbol}
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
           )}
       </div>
@@ -399,6 +403,15 @@ export const ManageStakingComponent: ActionComponent<
               }
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
+              onClick={
+                type !== StakingActionType.WithdrawDelegatorReward
+                  ? () =>
+                      setValue(
+                        (fieldNamePrefix + 'amount') as 'amount',
+                        maxAmount.toHumanReadableString(nativeToken.decimals)
+                      )
+                  : undefined
+              }
               showFullAmount
               symbol={nativeToken.symbol}
             />

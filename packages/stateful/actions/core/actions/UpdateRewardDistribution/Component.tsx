@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
   MarkdownRenderer,
-  NumberInput,
   SegmentedControls,
   SelectInput,
   StatusCard,
@@ -35,7 +35,7 @@ export type UpdateRewardDistributionData = {
   id: number
   immediate: boolean
   rate: {
-    amount: number
+    amount: string
     duration: DurationWithUnits
   }
   openFunding?: boolean | null
@@ -52,7 +52,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
   UpdateRewardDistributionOptions
 > = ({ fieldNamePrefix, errors, isCreating, options: { distributions } }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } =
+  const { register, setValue, getValues, watch } =
     useFormContext<UpdateRewardDistributionData>()
 
   const address = watch((fieldNamePrefix + 'address') as 'address')
@@ -67,9 +67,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
     (distribution) => distribution.address === address && distribution.id === id
   )
 
-  const minAmount = HugeDecimal.one.toHumanReadableNumber(
-    selectedDistribution?.token.decimals ?? 0
-  )
+  const decimals = selectedDistribution?.token.decimals ?? 0
 
   const selectedDistributionDisplay = selectedDistribution && (
     <>
@@ -116,7 +114,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
                   (fieldNamePrefix + 'rate.amount') as 'rate.amount',
                   HugeDecimal.from(
                     active_epoch.emission_rate.linear.amount
-                  ).toHumanReadableNumber(token.decimals)
+                  ).toHumanReadableString(token.decimals)
                 )
                 setValue(
                   (fieldNamePrefix + 'rate.duration') as 'rate.duration',
@@ -190,22 +188,22 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
             {!immediate && (
               <div className="flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 bg-background-tertiary rounded-md max-w-prose">
-                <NumberInput
+                <HugeDecimalInput
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.rate?.amount}
                   fieldName={(fieldNamePrefix + 'rate.amount') as 'rate.amount'}
-                  min={minAmount}
+                  getValues={getValues}
+                  min={HugeDecimal.one.toHumanReadableString(decimals)}
                   register={register}
                   setValue={setValue}
-                  step={minAmount}
+                  step={HugeDecimal.one.toHumanReadableString(decimals)}
                   unit={
                     selectedDistribution?.token
                       ? '$' + selectedDistribution.token.symbol
                       : t('info.tokens')
                   }
                   validation={[validateRequired, validatePositive]}
-                  watch={watch}
                 />
 
                 <div className="flex flex-row grow gap-4 justify-between items-center">
@@ -213,20 +211,21 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
                   <div className="flex grow flex-row gap-2">
                     <div className="flex flex-col gap-1 grow">
-                      <NumberInput
+                      <HugeDecimalInput
                         disabled={!isCreating}
                         error={errors?.rate?.duration?.value}
                         fieldName={
                           (fieldNamePrefix +
                             'rate.duration.value') as 'rate.duration.value'
                         }
+                        getValues={getValues}
                         min={1}
+                        numericValue
                         register={register}
                         setValue={setValue}
                         sizing="none"
                         step={1}
                         validation={[validatePositive, validateRequired]}
-                        watch={watch}
                       />
                       <InputErrorMessage
                         error={errors?.rate?.duration?.value}

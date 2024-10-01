@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   FilterableItemPopup,
+  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   Loader,
-  NumberInput,
   SegmentedControlsTitle,
   useActionOptions,
 } from '@dao-dao/stateless'
@@ -35,7 +35,8 @@ export const ManageSubDaoPauseComponent: ActionComponent<
   options: { neutronSubdaos, EntityDisplay },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext<ManageSubDaoPauseData>()
+  const { register, watch, setValue, getValues } =
+    useFormContext<ManageSubDaoPauseData>()
   const { address: daoAddress } = useActionOptions()
 
   const address = watch((fieldNamePrefix + 'address') as 'address')
@@ -112,23 +113,25 @@ export const ManageSubDaoPauseComponent: ActionComponent<
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.blocksToPauseFor')} />
 
-          <NumberInput
+          <HugeDecimalInput
             error={errors?.pauseBlocks}
             fieldName={(fieldNamePrefix + 'pauseBlocks') as 'pauseBlocks'}
+            getValues={getValues}
             max={
               // Hardcoded in contracts:
               // https://github.com/neutron-org/neutron-dao/blob/v0.5.0/packages/exec-control/src/pause.rs#L6-L7
               200000
             }
             min={1}
+            numericValue
             readOnly={!isCreating}
             register={register}
             setValue={setValue}
             sizing="lg"
+            step={1}
             unit={t('unit.blocks', {
               count: pauseBlocks,
             }).toLowerCase()}
-            watch={watch}
           />
 
           <InputErrorMessage error={errors?.pauseBlocks} />
