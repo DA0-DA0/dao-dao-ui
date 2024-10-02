@@ -95,8 +95,7 @@ export const TokenAmountDisplay = ({
       : HugeDecimal.zero
 
   // If amount too small, set to min and add `< ` to prefix.
-  const amountBelowMin =
-    !!minAmount && amount.isPositive() && amount.lt(minAmount)
+  const amountBelowMin = !!minAmount && amount.lt(minAmount)
   if (amountBelowMin) {
     amount = HugeDecimal.fromHumanReadable(minAmount, decimals)
     prefix = `< ${prefix || ''}`

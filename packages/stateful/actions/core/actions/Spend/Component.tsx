@@ -858,6 +858,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
           {selectedToken &&
             !ibcAmountOut.loading &&
+            !ibcAmountOut.updating &&
             !ibcAmountOut.errored &&
             ibcAmountOut.data &&
             !ibcAmountOut.data
