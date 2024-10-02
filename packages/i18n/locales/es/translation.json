@@ -577,8 +577,7 @@
     "unsupportedApprovalFailedRender": "Error al renderizar la propuesta de aprobación. Módulo no soportado.",
     "unsupportedChains_one": "Cadena no soportada: {{chains}}.",
     "unsupportedChains_other": "Cadenas no soportadas: {{chains}}.",
-    "unsupportedValenceChain": "Las cuentas de Valence no son compatibles con esta cadena.",
-    "unsupportedWallet": "Billetera no soportada. Por favor, use una billetera diferente."
+    "unsupportedValenceChain": "Las cuentas de Valence no son compatibles con esta cadena."
   },
   "form": {
     "acceptSubDaoAddressInputLabel": "SubDAO a aceptar",

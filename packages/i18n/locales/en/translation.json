@@ -560,11 +560,12 @@
     "unknownDenom": "Unknown denomination {{denom}}.",
     "unknownError": "An unknown error occurred.",
     "unknownInboxType": "Unknown inbox item type.",
+    "unsupportedAminoWallet": "{{name}} does not support amino signing, which is needed in order to perform this action. Please try a different wallet.",
     "unsupportedApprovalFailedRender": "Failed to render approval proposal. Unsupported module.",
     "unsupportedChains_one": "Unsupported chain: {{chains}}.",
     "unsupportedChains_other": "Unsupported chains: {{chains}}.",
     "unsupportedValenceChain": "Valence accounts are not supported on this chain.",
-    "unsupportedWallet": "Unsupported wallet. Please use a different wallet."
+    "unsupportedWallet": "{{name}} does not support this action. Please try a different wallet."
   },
   "form": {
     "acceptSubDaoAddressInputLabel": "SubDAO to accept",

@@ -52,7 +52,7 @@ export const useCfWorkerAuthPostRequest = (
 
       // If hex public key not loaded, load it from the wallet.
       if (!thisChainWallet) {
-        throw new Error(t('error.loadingData'))
+        throw new Error(t('error.logInToContinue'))
       }
 
       // Attempt to connect if needed.
@@ -70,7 +70,11 @@ export const useCfWorkerAuthPostRequest = (
         await thisChainWallet.client.getAccount?.(thisChainWallet.chainId)
       )?.pubkey
       if (!publicKey) {
-        throw new Error(t('error.unsupportedWallet'))
+        throw new Error(
+          t('error.unsupportedWallet', {
+            name: thisChainWallet.walletPrettyName,
+          })
+        )
       }
 
       return toHex(publicKey)
@@ -127,12 +131,20 @@ export const useCfWorkerAuthPostRequest = (
             )
           : chainWallet
 
+      if (!thisChainWallet?.address) {
+        throw new Error(t('error.logInToContinue'))
+      }
+
       const offlineSignerAmino =
-        await thisChainWallet?.client.getOfflineSignerAmino?.bind(
+        await thisChainWallet.client.getOfflineSignerAmino?.bind(
           thisChainWallet.client
         )?.(thisChainWallet.chainId)
-      if (!thisChainWallet?.address || !offlineSignerAmino) {
-        throw new Error(t('error.unsupportedWallet'))
+      if (!offlineSignerAmino) {
+        throw new Error(
+          t('error.unsupportedAminoWallet', {
+            name: thisChainWallet.walletPrettyName,
+          })
+        )
       }
 
       // Fetch nonce.

@@ -312,7 +312,11 @@ export const useManageProfile = ({
           // If no amino signer, error that wallet is unsupported. This should
           // only happen if there's no amino signer getter defined.
           if (!offlineSignerAmino) {
-            throw new Error(t('error.unsupportedWallet'))
+            throw new Error(
+              t('error.unsupportedAminoWallet', {
+                name: chainWallet.walletPrettyName,
+              })
+            )
           }
 
           const hexPublicKey = toHex(pubkeyData)
