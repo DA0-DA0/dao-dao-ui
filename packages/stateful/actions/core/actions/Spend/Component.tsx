@@ -860,7 +860,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             !ibcAmountOut.loading &&
             !ibcAmountOut.errored &&
             ibcAmountOut.data &&
-            !ibcAmountOut.data.eq(spendAmount) && (
+            !ibcAmountOut.data
+              .toHumanReadable(selectedToken.token.decimals)
+              .eq(spendAmount) && (
               <div className="flex flex-col gap-2 mt-1">
                 <InputLabel name={t('form.amountReceived')} />
 
