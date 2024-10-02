@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   FilmSlateEmoji,
   FormSwitchCard,
-  HugeDecimalInput,
+  NumericInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -45,7 +45,7 @@ const ActiveThresholdInput = ({
       {enabled && (
         <>
           <div className="flex flex-row gap-2">
-            <HugeDecimalInput
+            <NumericInput
               containerClassName="grow min-w-[8rem]"
               error={errors?.activeThreshold?.value}
               fieldName="activeThreshold.value"

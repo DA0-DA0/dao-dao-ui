@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   BallotDepositEmoji,
   FormSwitchCard,
-  HugeDecimalInput,
+  NumericInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -36,7 +36,7 @@ const ThresholdInput = ({
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">
         {!majority && (
-          <HugeDecimalInput
+          <NumericInput
             containerClassName="grow min-w-[8rem]"
             error={errors?.threshold?.value}
             fieldName="threshold.value"

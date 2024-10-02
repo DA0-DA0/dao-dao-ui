@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
+  NumericInput,
   PercentButton,
   StatusCard,
   TokenAmountDisplay,
@@ -160,7 +160,7 @@ export const FundRewardDistributionComponent: ActionComponent<
           <div className="flex flex-col gap-2 max-w-prose">
             <InputLabel name={t('form.funds')} primary />
 
-            <HugeDecimalInput
+            <NumericInput
               containerClassName={clsx(!isCreating && 'self-start')}
               disabled={!isCreating}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}

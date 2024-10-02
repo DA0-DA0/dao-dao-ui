@@ -22,9 +22,9 @@ import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import {
   FormSwitchCard,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   SelectInput,
 } from '../inputs'
 
@@ -173,7 +173,7 @@ export const ProposalVetoConfigurer = ({
         />
 
         <div className="flex flex-row gap-2">
-          <HugeDecimalInput
+          <NumericInput
             containerClassName="grow"
             disabled={disabled}
             error={errors?.timelockDuration?.value}

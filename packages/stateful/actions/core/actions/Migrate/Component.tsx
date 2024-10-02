@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   CodeMirrorInput,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   StatusCard,
   useActionOptions,
   useChain,
@@ -72,7 +72,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.codeId')} />
-          <HugeDecimalInput
+          <NumericInput
             containerClassName="xs:h-full"
             disabled={!isCreating}
             error={errors?.codeId}

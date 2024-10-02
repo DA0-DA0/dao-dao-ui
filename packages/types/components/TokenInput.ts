@@ -11,7 +11,7 @@ import {
 
 import { LoadingData } from '../misc'
 import { GenericToken, TokenType } from '../token'
-import { HugeDecimalInputProps } from './HugeDecimalInput'
+import { NumericInputProps } from './NumericInput'
 
 export type TokenInputOption = Omit<GenericToken, 'type'> & {
   type: TokenType | string
@@ -27,7 +27,7 @@ export type TokenInputProps<
    * The fields that control the amount input.
    */
   amount?: Omit<
-    HugeDecimalInputProps<FV, FieldName>,
+    NumericInputProps<FV, FieldName>,
     | 'containerClassName'
     | 'disabled'
     | 'register'

@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  HugeDecimalInput,
   InputErrorMessage,
+  NumericInput,
   StatusCard,
   useChain,
   useDetectWrap,
@@ -61,7 +61,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-1"
         ref={containerRef}
       >
-        <HugeDecimalInput
+        <NumericInput
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={(fieldNamePrefix + 'amount') as 'amount'}

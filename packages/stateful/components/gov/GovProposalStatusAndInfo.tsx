@@ -15,8 +15,8 @@ import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GOV_PROPOSAL_STATUS_I18N_KEY_MAP,
-  HugeDecimalInput,
   Logo,
+  NumericInput,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
@@ -288,7 +288,7 @@ const InnerGovProposalStatusAndInfo = ({
         status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ? {
               header: (
-                <HugeDecimalInput
+                <NumericInput
                   containerClassName="-mb-1"
                   max={missingDeposit.toHumanReadableString(
                     depositToken.decimals

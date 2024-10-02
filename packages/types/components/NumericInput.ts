@@ -7,35 +7,50 @@ import {
   Validate,
 } from 'react-hook-form'
 
-export type HugeDecimalInputProps<
+export type NumericInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > = Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required' | 'onInput'> & {
-  // The field name for the form.
+  /**
+   * The field name for the form.
+   */
   fieldName?: FieldName
-  // Register function returned by `useForm`/`useFormContext`.
+  /**
+   * Register function returned by `useForm`/`useFormContext`.
+   */
   register?: UseFormRegister<FV>
-  // Validations to apply when registering this input.
+  /**
+   * Validations to apply when registering this input.
+   */
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  // Applies to the input when registering with a form.
+  /**
+   * Applies to the input when registering with a form.
+   */
   required?: boolean
-  // If error present, outline input in red.
+  /**
+   * If error present, outline input in red.
+   */
   error?: any
-  // Hide plus/minus buttons
+  /**
+   * Hide plus/minus buttons
+   */
   hidePlusMinus?: boolean
   /**
    * Whether or not to store the value as a number in the react-hook-form form.
    * This should only be used when not needing to store potentially large
-   * numbers. This is discouraged as it loses the benefits of using
-   * `HugeDecimal` internally.
+   * numbers.
    *
    * Defaults to false.
    */
   numericValue?: boolean
-  // Value passed to the input.
+  /**
+   * Value passed to the input.
+   */
   value?: string
-  // Used to get the value when the plus/minus buttons are clicked. Accepts the
-  // react-hook-form `getValues` function, or any custom function.
+  /**
+   * Used to get the value when the plus/minus buttons are clicked. Accepts the
+   * react-hook-form `getValues` function, or any custom function.
+   */
   getValues?: (fieldName: any) => string | undefined
   /**
    * Used to set the value when the input changes (if `register` is not pased
@@ -48,25 +63,45 @@ export type HugeDecimalInputProps<
     value: string | number,
     options?: { shouldValidate: boolean }
   ) => void
-  // Applies to the outer-most container, which contains the plus/minus buttons,
-  // the input, and the unit.
+  /**
+   * Applies to the outer-most container, which contains the plus/minus buttons,
+   * the input, and the unit.
+   */
   containerClassName?: string
-  // Size of the container.
+  /**
+   * Size of the container.
+   */
   sizing?: 'sm' | 'md' | 'lg' | 'auto' | 'fill' | 'none'
-  // Remove padding, rounded corners, and outline.
+  /**
+   * Remove padding, rounded corners, and outline.
+   */
   ghost?: boolean
-  // A unit to display to the right of the number.
+  /**
+   * A unit to display to the right of the number.
+   */
   unit?: string
-  // A unit icon URL that displays to the left of the unit.
+  /**
+   * A unit icon URL that displays to the left of the unit.
+   */
   unitIconUrl?: string
-  // Applies to both the input text and the unit.
+  /**
+   * Applies to both the input text and the unit.
+   */
   textClassName?: string
-  // Applies to the unit only.
+  /**
+   * Applies to the unit only.
+   */
   unitClassName?: string
-  // Applies to the unit icon only.
+  /**
+   * Applies to the unit icon only.
+   */
   unitIconClassName?: string
-  // Applies to the unit container only.
+  /**
+   * Applies to the unit container only.
+   */
   unitContainerClassName?: string
-  // Size of the plus/minus buttons. Defaults to 'sm'.
+  /**
+   * Size of the plus/minus buttons. Defaults to 'sm'.
+   */
   plusMinusButtonSize?: 'sm' | 'lg'
 }

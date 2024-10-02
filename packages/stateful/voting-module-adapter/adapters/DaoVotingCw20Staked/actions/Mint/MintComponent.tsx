@@ -8,8 +8,8 @@ import { useFormContext } from 'react-hook-form'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  HugeDecimalInput,
   InputErrorMessage,
+  NumericInput,
   useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -55,7 +55,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         className="flex flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
         ref={containerRef}
       >
-        <HugeDecimalInput
+        <NumericInput
           containerClassName="w-full sm:w-auto"
           disabled={!isCreating}
           error={errors?.amount}

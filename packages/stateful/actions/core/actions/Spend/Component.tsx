@@ -11,12 +11,12 @@ import {
   ChainLogo,
   ChainProvider,
   FormSwitchCard,
-  HugeDecimalInput,
   IbcDestinationChainPicker,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
   Loader,
+  NumericInput,
   PercentButton,
   SelectInput,
   StatusCard,
@@ -795,7 +795,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             {isCreating ? (
               <>
                 <div className="flex flex-row gap-1">
-                  <HugeDecimalInput
+                  <NumericInput
                     disabled={!isCreating}
                     error={errors?.ibcTimeout?.value}
                     fieldName={

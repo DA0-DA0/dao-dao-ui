@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { HugeDecimalInput, InputErrorMessage } from '@dao-dao/stateless'
+import { InputErrorMessage, NumericInput } from '@dao-dao/stateless'
 import { ActionComponent, GenericToken } from '@dao-dao/types'
 import { validatePositive, validateRequired } from '@dao-dao/utils'
 
@@ -25,7 +25,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 
   return (
     <>
-      <HugeDecimalInput
+      <NumericInput
         containerClassName="w-full"
         disabled={!isCreating}
         error={errors?.amount}

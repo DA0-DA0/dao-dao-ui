@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
   MarkdownRenderer,
+  NumericInput,
   SegmentedControls,
   SelectInput,
   StatusCard,
@@ -188,7 +188,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
             {!immediate && (
               <div className="flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 bg-background-tertiary rounded-md max-w-prose">
-                <HugeDecimalInput
+                <NumericInput
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.rate?.amount}
@@ -211,7 +211,7 @@ export const UpdateRewardDistributionComponent: ActionComponent<
 
                   <div className="flex grow flex-row gap-2">
                     <div className="flex flex-col gap-1 grow">
-                      <HugeDecimalInput
+                      <NumericInput
                         disabled={!isCreating}
                         error={errors?.rate?.duration?.value}
                         fieldName={

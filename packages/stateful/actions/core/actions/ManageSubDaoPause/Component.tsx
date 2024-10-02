@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   FilterableItemPopup,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   Loader,
+  NumericInput,
   SegmentedControlsTitle,
   useActionOptions,
 } from '@dao-dao/stateless'
@@ -113,7 +113,7 @@ export const ManageSubDaoPauseComponent: ActionComponent<
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.blocksToPauseFor')} />
 
-          <HugeDecimalInput
+          <NumericInput
             error={errors?.pauseBlocks}
             fieldName={(fieldNamePrefix + 'pauseBlocks') as 'pauseBlocks'}
             getValues={getValues}

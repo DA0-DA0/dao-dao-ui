@@ -18,10 +18,10 @@ import {
   CopyToClipboard,
   DateTimePicker,
   DateTimePickerNoForm,
-  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   RadioInput,
   RadioInputOption,
   SelectInput,
@@ -610,7 +610,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 <div className="flex shrink-0 flex-col gap-1">
                   <InputLabel name={t('form.unlockPercent')} />
 
-                  <HugeDecimalInput
+                  <NumericInput
                     disabled={!isCreating}
                     error={errors?.steps?.[index]?.percent}
                     fieldName={
@@ -645,7 +645,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                   </div>
 
                   <div className="flex flex-row gap-1">
-                    <HugeDecimalInput
+                    <NumericInput
                       disabled={!isCreating}
                       error={errors?.steps?.[index]?.delay?.value}
                       fieldName={

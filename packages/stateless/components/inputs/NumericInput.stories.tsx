@@ -3,20 +3,19 @@ import { useFormContext } from 'react-hook-form'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
-import { HugeDecimalInput } from './HugeDecimalInput'
+import { NumericInput } from './NumericInput'
 
 export default {
-  title:
-    'DAO DAO / packages / stateless / components / inputs / HugeDecimalInput',
-  component: HugeDecimalInput,
+  title: 'DAO DAO / packages / stateless / components / inputs / NumericInput',
+  component: NumericInput,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof HugeDecimalInput>
+} as ComponentMeta<typeof NumericInput>
 
-const Template: ComponentStory<typeof HugeDecimalInput> = (args) => {
+const Template: ComponentStory<typeof NumericInput> = (args) => {
   const { register, setValue, getValues } = useFormContext()
 
   return (
-    <HugeDecimalInput
+    <NumericInput
       {...args}
       getValues={getValues}
       register={register}

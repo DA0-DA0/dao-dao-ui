@@ -26,7 +26,7 @@ import { ChainLogo } from '../chain/ChainLogo'
 import { IconButton } from '../icon_buttons'
 import { FilterableItem, FilterableItemPopup } from '../popup'
 import { Tooltip } from '../tooltip'
-import { HugeDecimalInput } from './HugeDecimalInput'
+import { NumericInput } from './NumericInput'
 import { TextInput } from './TextInput'
 
 /**
@@ -247,7 +247,7 @@ export const TokenInput = <
       ) : (
         <>
           {amountField && (
-            <HugeDecimalInput
+            <NumericInput
               {...amountField}
               containerClassName="min-w-[12rem] grow basis-[12rem]"
               disabled={disabled || (!selectedToken && !customSelected)}

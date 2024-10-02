@@ -5,17 +5,18 @@ import { FieldValues, Path } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { HugeDecimalInputProps } from '@dao-dao/types'
+import { NumericInputProps } from '@dao-dao/types'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 
 /**
- * This is input is designed for numeric values and takes advantage of the
- * HugeDecimal class to handle large decimal numbers gracefully. It expects the
- * underlying value to be a human-readable string. You can optionally store the
- * underlying value as a number by setting the `numericValue` prop—this should
- * only be used when not needing to store potentially large numbers.
+ * This input is designed for numeric values and takes advantage of the
+ * HugeDecimal class to handle large decimal numbers gracefully.
+ *
+ * By default, it uses human-readable strings for value storage. You can instead
+ * use a number by setting the `numericValue` prop, but this should only be used
+ * when not needing to store potentially large numbers.
  *
  * There is no need to provide `value` when providing `fieldName` and `register`
  * via react-hook-form.
@@ -27,7 +28,7 @@ import { IconButton } from '../icon_buttons'
  * function can easily be mocked, and its first argument (`fieldName`) can be
  * ignored.
  */
-export const HugeDecimalInput = <
+export const NumericInput = <
   FV extends FieldValues,
   FieldName extends Path<FV>
 >({
@@ -54,7 +55,7 @@ export const HugeDecimalInput = <
   unitContainerClassName,
   plusMinusButtonSize = 'sm',
   ...props
-}: HugeDecimalInputProps<FV, FieldName>) => {
+}: NumericInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),

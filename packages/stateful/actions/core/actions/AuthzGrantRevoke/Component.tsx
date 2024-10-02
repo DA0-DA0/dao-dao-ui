@@ -8,10 +8,10 @@ import {
   Button,
   CodeMirrorInput,
   FormSwitchCard,
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
+  NumericInput,
   RadioInput,
   SegmentedControlsTitle,
   SelectInput,
@@ -413,7 +413,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   tooltip={t('form.callsDescription')}
                 />
 
-                <HugeDecimalInput
+                <NumericInput
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.calls}

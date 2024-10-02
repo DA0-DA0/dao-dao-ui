@@ -7,12 +7,12 @@ import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ErrorPage,
-  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
   Loader,
   MarkdownRenderer,
+  NumericInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
   SegmentedControls,
@@ -456,7 +456,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="P" />
-                <HugeDecimalInput
+                <NumericInput
                   error={errors?.pid?.kp}
                   fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
                   hidePlusMinus
@@ -474,7 +474,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="I" />
-                <HugeDecimalInput
+                <NumericInput
                   error={errors?.pid?.ki}
                   fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
                   hidePlusMinus
@@ -492,7 +492,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="D" />
-                <HugeDecimalInput
+                <NumericInput
                   error={errors?.pid?.kd}
                   fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
                   hidePlusMinus
@@ -588,7 +588,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
               {maxLimitEnabled && (
                 <div className="flex flex-row gap-2 self-start">
-                  <HugeDecimalInput
+                  <NumericInput
                     containerClassName="grow min-w-[min(8rem,50%)]"
                     error={errors?.maxLimit}
                     fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}

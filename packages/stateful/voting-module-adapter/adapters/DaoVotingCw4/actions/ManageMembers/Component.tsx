@@ -12,11 +12,11 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   Checkbox,
-  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
   Loader,
+  NumericInput,
   useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -102,7 +102,7 @@ export const ManageMembersComponent: ActionComponent<
                   >
                     <div className="flex flex-col gap-1">
                       <InputLabel name={t('form.votingWeightPlaceholder')} />
-                      <HugeDecimalInput
+                      <NumericInput
                         disabled={!isCreating}
                         error={errors?.toAdd?.[index]?.weight}
                         fieldName={weightFieldName}

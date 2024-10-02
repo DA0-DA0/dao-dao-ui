@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  HugeDecimalInput,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
@@ -340,7 +340,7 @@ export const ManageStakingComponent: ActionComponent<
         {/* If not withdrawing reward or updating withdraw address, show amount input. */}
         {type !== StakingActionType.WithdrawDelegatorReward &&
           type !== StakingActionType.SetWithdrawAddress && (
-            <HugeDecimalInput
+            <NumericInput
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.amount}

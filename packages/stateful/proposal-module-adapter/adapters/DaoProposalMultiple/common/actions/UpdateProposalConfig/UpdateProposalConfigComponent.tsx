@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import {
   ClockEmoji,
   FormSwitchCard,
-  HugeDecimalInput,
   InputErrorMessage,
   KeyEmoji,
+  NumericInput,
   PeopleEmoji,
   ProposalVetoConfigurer,
   RecycleEmoji,
@@ -99,7 +99,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex grow flex-row flex-wrap gap-2">
           {percentageQuorumSelected && (
             <div className="flex flex-col gap-1">
-              <HugeDecimalInput
+              <NumericInput
                 disabled={!isCreating}
                 error={errors?.quorumPercentage}
                 fieldName={
@@ -145,7 +145,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
         <div className="flex grow flex-row flex-wrap gap-2">
           <div className="flex flex-col gap-1">
-            <HugeDecimalInput
+            <NumericInput
               disabled={!isCreating}
               error={errors?.votingDuration?.value}
               fieldName={

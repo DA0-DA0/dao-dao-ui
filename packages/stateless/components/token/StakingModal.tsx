@@ -12,8 +12,8 @@ import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import {
-  HugeDecimalInput,
   InputLabel,
+  NumericInput,
   PercentButton,
   SegmentedControls,
   TokenInput,
@@ -267,7 +267,7 @@ const StakeUnstakeModesBody = ({
   return (
     <>
       <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
-      <HugeDecimalInput
+      <NumericInput
         containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
         ghost
         max={

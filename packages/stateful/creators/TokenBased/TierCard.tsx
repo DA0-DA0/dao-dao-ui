@@ -13,10 +13,10 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
-  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   TextInput,
   TooltipInfoIcon,
   useChain,
@@ -144,7 +144,7 @@ export const TierCard = ({
           />
 
           <div className="flex flex-row items-center gap-2">
-            <HugeDecimalInput
+            <NumericInput
               containerClassName="grow"
               error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
               fieldName={`creator.data.tiers.${tierIndex}.weight`}

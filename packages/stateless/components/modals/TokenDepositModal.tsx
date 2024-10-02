@@ -12,7 +12,7 @@ import {
 import { shortenTokenSymbol } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
-import { HugeDecimalInput, PercentButton } from '../inputs'
+import { NumericInput, PercentButton } from '../inputs'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Modal } from './Modal'
 
@@ -114,7 +114,7 @@ export const TokenDepositModal = ({
         </div>
       )}
 
-      <HugeDecimalInput
+      <NumericInput
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
         autoFocus={modalProps.visible}

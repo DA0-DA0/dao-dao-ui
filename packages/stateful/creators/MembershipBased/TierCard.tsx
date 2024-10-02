@@ -12,10 +12,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  HugeDecimalInput,
   IconButton,
   InputErrorMessage,
   InputLabel,
+  NumericInput,
   TextInput,
   useChain,
 } from '@dao-dao/stateless'
@@ -138,7 +138,7 @@ export const TierCard = ({
             })}
           />
 
-          <HugeDecimalInput
+          <NumericInput
             error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
             fieldName={`creator.data.tiers.${tierIndex}.weight`}
             getValues={getValues}

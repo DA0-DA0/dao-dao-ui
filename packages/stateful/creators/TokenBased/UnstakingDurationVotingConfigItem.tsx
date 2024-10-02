@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { contractQueries } from '@dao-dao/state/query'
 import {
   ClockEmoji,
-  HugeDecimalInput,
   InputErrorMessage,
+  NumericInput,
   SelectInput,
   SwitchCard,
   useHoldingKey,
@@ -128,7 +128,7 @@ export const UnstakingDurationInput = ({
         </div>
       ) : (
         <div className="flex flex-row gap-2">
-          <HugeDecimalInput
+          <NumericInput
             containerClassName="grow"
             error={errors?.unstakingDuration?.value}
             fieldName="unstakingDuration.value"

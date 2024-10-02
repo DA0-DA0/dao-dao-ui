@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   FormSwitchCard,
-  HugeDecimalInput,
   InputErrorMessage,
+  NumericInput,
   SelectInput,
 } from '@dao-dao/stateless'
 import {
@@ -57,7 +57,7 @@ export const UpdateStakingConfigComponent: ActionComponent = ({
       {unstakingDurationEnabled && (
         <>
           <div className="flex flex-row gap-2">
-            <HugeDecimalInput
+            <NumericInput
               disabled={!isCreating}
               error={errors?.unstakingDuration?.value}
               fieldName={

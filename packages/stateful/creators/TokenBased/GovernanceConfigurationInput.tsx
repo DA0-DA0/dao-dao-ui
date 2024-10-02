@@ -16,11 +16,11 @@ import {
 } from '@dao-dao/state'
 import {
   Button,
-  HugeDecimalInput,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
   Loader,
+  NumericInput,
   SegmentedControls,
   TextInput,
   VotingPowerDistribution,
@@ -531,7 +531,7 @@ export const GovernanceConfigurationInput = ({
 
                   <div className="flex grow flex-col">
                     <div className="flex grow flex-row items-center gap-2">
-                      <HugeDecimalInput
+                      <NumericInput
                         className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                         containerClassName="grow"
                         error={errors.creator?.data?.newInfo?.maxSupply}
@@ -578,7 +578,7 @@ export const GovernanceConfigurationInput = ({
 
               <div className="flex grow flex-col">
                 <div className="flex grow flex-row items-center gap-2">
-                  <HugeDecimalInput
+                  <NumericInput
                     className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                     containerClassName="grow"
                     error={errors.creator?.data?.newInfo?.initialSupply}
@@ -612,7 +612,7 @@ export const GovernanceConfigurationInput = ({
 
                 <div className="flex grow flex-col">
                   <div className="flex grow flex-row items-center gap-2">
-                    <HugeDecimalInput
+                    <NumericInput
                       className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                       containerClassName="grow"
                       error={
