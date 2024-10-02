@@ -166,7 +166,10 @@ const InnerStakingModal = ({
           refreshTotals()
 
           toast.success(
-            `Staked ${stakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.stakedTokens', {
+              amount: stakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setStakeTokenIds([])
 
@@ -210,7 +213,10 @@ const InnerStakingModal = ({
           refreshClaims?.()
 
           toast.success(
-            `Unstaked ${unstakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.unstakedTokens', {
+              amount: unstakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setUnstakeTokenIds([])
 

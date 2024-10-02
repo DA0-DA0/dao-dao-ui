@@ -186,9 +186,12 @@ const InnerStakingModal = ({
           setAmount(HugeDecimal.zero)
 
           toast.success(
-            `Staked ${amount.toInternationalizedHumanReadableString({
-              decimals: governanceToken.decimals,
-            })} $${governanceToken.symbol}`
+            t('success.stakedTokens', {
+              amount: amount.toInternationalizedHumanReadableString({
+                decimals: governanceToken.decimals,
+              }),
+              tokenSymbol: governanceToken.symbol,
+            })
           )
 
           // Close once done.
@@ -256,9 +259,12 @@ const InnerStakingModal = ({
 
           setAmount(HugeDecimal.zero)
           toast.success(
-            `Unstaked ${amount.toInternationalizedHumanReadableString({
-              decimals: governanceToken.decimals,
-            })} $${governanceToken.symbol}`
+            t('success.unstakedTokens', {
+              amount: amount.toInternationalizedHumanReadableString({
+                decimals: governanceToken.decimals,
+              }),
+              tokenSymbol: governanceToken.symbol,
+            })
           )
 
           // Close once done.
@@ -274,7 +280,8 @@ const InnerStakingModal = ({
       }
       case StakingMode.Claim: {
         if (sumClaimsAvailable === 0) {
-          return toast.error('No claims available.')
+          toast.error(t('error.noClaimsAvailable'))
+          return
         }
 
         setStakingLoading(true)
@@ -299,11 +306,14 @@ const InnerStakingModal = ({
           setAmount(HugeDecimal.zero)
 
           toast.success(
-            `Claimed ${HugeDecimal.from(
-              sumClaimsAvailable || 0
-            ).toInternationalizedHumanReadableString({
-              decimals: governanceToken.decimals,
-            })} $${governanceToken.symbol}`
+            t('success.claimedTokens', {
+              amount: HugeDecimal.from(
+                sumClaimsAvailable || 0
+              ).toInternationalizedHumanReadableString({
+                decimals: governanceToken.decimals,
+              }),
+              tokenSymbol: governanceToken.symbol,
+            })
           )
 
           // Close once done.

@@ -54,9 +54,9 @@ export type VestingPaymentCardProps = {
 
   title: string | undefined | null
   description: string | undefined | null
-  remainingBalanceVesting: number
-  distributableAmount: number
-  claimedAmount: number
+  remainingBalanceVesting: HugeDecimal
+  distributableAmount: HugeDecimal
+  claimedAmount: HugeDecimal
   startDate: Date
   endDate: Date
   steps: VestingStep[]
@@ -158,7 +158,7 @@ export const VestingPaymentCard = ({
   const canWithdraw =
     isWalletConnected &&
     (recipientIsWallet || recipientIsDao) &&
-    distributableAmount > 0
+    distributableAmount.isPositive()
 
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
@@ -427,7 +427,8 @@ export const VestingPaymentCard = ({
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           {/* Show available balance to withdraw if it is nonzero OR if there is still a balance vesting. This ensures that it explicitly displays that there is no balance to withdraw when the vest is not yet over. There may not be any balance if all vested tokens are staked or still unstaking, and it might be confusing if this line remains hidden in that case. */}
-          {(distributableAmount > 0 || remainingBalanceVesting > 0) && (
+          {(distributableAmount.isPositive() ||
+            remainingBalanceVesting.isPositive()) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
 
@@ -450,8 +451,9 @@ export const VestingPaymentCard = ({
                           lazyInfo.loading ||
                           !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
-                            : distributableAmount *
-                              lazyInfo.data.usdUnitPrice.usdPrice
+                            : distributableAmount
+                                .times(lazyInfo.data.usdUnitPrice.usdPrice)
+                                .toHumanReadableNumber(token.decimals)
                         }
                         dateFetched={
                           lazyInfo.loading || !lazyInfo.data.usdUnitPrice
@@ -471,7 +473,7 @@ export const VestingPaymentCard = ({
             </div>
           )}
 
-          {remainingBalanceVesting > 0 && (
+          {remainingBalanceVesting.isPositive() && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.remainingBalanceVesting')}</p>
 
@@ -494,8 +496,9 @@ export const VestingPaymentCard = ({
                           lazyInfo.loading ||
                           !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
-                            : remainingBalanceVesting *
-                              lazyInfo.data.usdUnitPrice.usdPrice
+                            : remainingBalanceVesting
+                                .times(lazyInfo.data.usdUnitPrice.usdPrice)
+                                .toHumanReadableNumber(token.decimals)
                         }
                         dateFetched={
                           lazyInfo.loading || !lazyInfo.data.usdUnitPrice

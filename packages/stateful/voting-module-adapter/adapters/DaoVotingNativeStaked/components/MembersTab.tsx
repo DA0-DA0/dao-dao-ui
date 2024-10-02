@@ -40,9 +40,7 @@ export const MembersTab = () => {
           balance: {
             loading: false,
             data: {
-              amount: HugeDecimal.from(balance).toHumanReadableNumber(
-                governanceToken.decimals
-              ),
+              amount: HugeDecimal.from(balance),
               token: governanceToken,
             },
           },

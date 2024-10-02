@@ -144,7 +144,10 @@ const InnerStakingModal = ({
           refreshDaoVotingPower()
 
           toast.success(
-            `Staked ${stakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.stakedTokens', {
+              amount: stakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setStakeTokenIds([])
 
@@ -181,7 +184,10 @@ const InnerStakingModal = ({
           refreshDaoVotingPower()
 
           toast.success(
-            `Unstaked ${unstakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.unstakedTokens', {
+              amount: unstakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setUnstakeTokenIds([])
 
@@ -266,11 +272,11 @@ const InnerStakingModal = ({
             selected={mode}
             tabs={[
               {
-                label: t(`title.stakingModeNfts.stake`),
+                label: t('title.stakingModeNfts.stake'),
                 value: StakingMode.Stake,
               },
               {
-                label: t(`title.stakingModeNfts.unstake`),
+                label: t('title.stakingModeNfts.unstake'),
                 value: StakingMode.Unstake,
               },
             ]}

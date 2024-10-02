@@ -18,11 +18,12 @@ import {
   CopyToClipboard,
   LineGraph,
   Loader,
+  TokenAmountDisplay,
   useChainContext,
   useConfiguredChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { processError } from '@dao-dao/utils'
+import { processError, tokensEqual } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -163,28 +164,29 @@ export const InnerDaoTxTreasuryHistory = ({
     })
   )
   const lineGraphValues = useMemo(() => {
+    if (!nativeToken) {
+      return []
+    }
+
     let runningTotal = HugeDecimal.from(
       nativeBalance.amount
-    ).toHumanReadableNumber(nativeToken?.decimals ?? 0)
+    ).toHumanReadableNumber(nativeToken.decimals)
 
     return (
       transactions
-        .filter(({ denomLabel }) => denomLabel === nativeToken?.symbol)
+        .filter(({ token }) => tokensEqual(token, nativeToken))
         .map(({ amount, outgoing }) => {
           let currentTotal = runningTotal
-          runningTotal -= (outgoing ? -1 : 1) * amount
+          runningTotal -= amount
+            .times(outgoing ? -1 : 1)
+            .toHumanReadableNumber(nativeToken.decimals)
           return currentTotal
         })
         // Reverse since transactions are descending, but we want the graph to
         // display ascending balance.
         .reverse()
     )
-  }, [
-    nativeBalance.amount,
-    nativeToken?.decimals,
-    nativeToken?.symbol,
-    transactions,
-  ])
+  }, [nativeBalance.amount, nativeToken, transactions])
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -254,7 +256,7 @@ const TransactionRenderer = ({
     sender,
     recipient,
     amount,
-    denomLabel,
+    token,
     outgoing,
   },
 }: TransactionRendererProps) => {
@@ -270,9 +272,11 @@ const TransactionRenderer = ({
         ) : (
           <East className="!h-4 !w-4" />
         )}
-        <p>
-          {amount} ${denomLabel}
-        </p>
+        <TokenAmountDisplay
+          amount={amount}
+          decimals={token.decimals}
+          symbol={token.symbol}
+        />
       </div>
 
       <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">

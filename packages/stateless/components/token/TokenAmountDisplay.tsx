@@ -114,7 +114,7 @@ export const TokenAmountDisplay = ({
   // Show full value in tooltip if compacted and not an estimated USD value.
   const shouldShowFullTooltip =
     !showFullAmount &&
-    amount.toHumanReadableNumber(decimals) >= 1000 &&
+    amount.toHumanReadable(decimals).gte(1000) &&
     !estimatedUsdValue
 
   return (

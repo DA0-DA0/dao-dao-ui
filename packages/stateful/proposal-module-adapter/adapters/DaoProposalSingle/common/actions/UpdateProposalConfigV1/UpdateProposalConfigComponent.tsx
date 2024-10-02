@@ -127,11 +127,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
                       'depositInfo.deposit') as 'depositInfo.deposit'
                   }
                   getValues={getValues}
-                  min={HugeDecimal.one.toHumanReadableString(
+                  min={HugeDecimal.one.toHumanReadableNumber(
                     commonGovernanceTokenInfo.decimals
                   )}
                   register={register}
-                  step={HugeDecimal.one.toHumanReadableString(
+                  step={HugeDecimal.one.toHumanReadableNumber(
                     commonGovernanceTokenInfo.decimals
                   )}
                   unit={'$' + commonGovernanceTokenInfo.symbol}

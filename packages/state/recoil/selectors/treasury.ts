@@ -103,8 +103,8 @@ export interface TransformedTreasuryTransaction {
   timestamp: Date | undefined
   sender: string
   recipient: string
-  amount: number
-  denomLabel: string
+  amount: HugeDecimal
+  token: GenericToken
   outgoing: boolean
 }
 
@@ -152,10 +152,8 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: HugeDecimal.from(coin.amount).toHumanReadableNumber(
-              token.decimals
-            ),
-            denomLabel: token.symbol,
+            amount: HugeDecimal.from(coin),
+            token,
             outgoing: sender === params.address,
           }
         })

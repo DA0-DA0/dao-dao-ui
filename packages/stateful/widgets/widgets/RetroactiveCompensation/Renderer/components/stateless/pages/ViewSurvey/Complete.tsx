@@ -456,18 +456,19 @@ export const InnerComplete = ({
                     .reduce(
                       (acc, { denomOrAddress, amount }) => ({
                         ...acc,
-                        [denomOrAddress]:
-                          (acc[denomOrAddress] ?? 0) +
-                          HugeDecimal.from(amount).toHumanReadableNumber(
-                            tokenMap[denomOrAddress]?.token.decimals ?? 0
-                          ),
+                        [denomOrAddress]: (
+                          acc[denomOrAddress] ?? HugeDecimal.zero
+                        ).plus(amount),
                       }),
-                      {} as Record<string, number>
+                      {} as Record<string, HugeDecimal>
                     )
                   const totalUsdc = Object.entries(tokens)
-                    .map(
-                      ([denomOrAddress, amount]) =>
-                        (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
+                    .map(([denomOrAddress, amount]) =>
+                      amount
+                        .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
+                        .toHumanReadableNumber(
+                          tokenMap[denomOrAddress]?.token.decimals ?? 0
+                        )
                     )
                     .reduce((acc, amount) => acc + amount, 0)
 

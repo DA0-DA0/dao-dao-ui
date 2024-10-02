@@ -165,7 +165,7 @@ export const FundRewardDistributionComponent: ActionComponent<
               disabled={!isCreating}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
               getValues={getValues}
-              min={HugeDecimal.one.toHumanReadableString(
+              min={HugeDecimal.one.toHumanReadableNumber(
                 selectedDistribution.token.decimals
               )}
               register={register}

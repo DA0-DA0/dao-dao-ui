@@ -1,6 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
 
-import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   GenericTokenSource,
@@ -133,15 +132,15 @@ export const sortTokensValueDescending: SortFn<
   const aPrice =
     a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : HugeDecimal.from(a.lazyInfo.data.totalBalance)
-          .times(a.lazyInfo.data.usdUnitPrice.usdPrice)
-          .toHumanReadableNumber(a.token.decimals)
+      : a.lazyInfo.data.totalBalance.times(
+          a.lazyInfo.data.usdUnitPrice.usdPrice
+        )
   const bPrice =
     b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
-      : HugeDecimal.from(b.lazyInfo.data.totalBalance)
-          .times(b.lazyInfo.data.usdUnitPrice.usdPrice)
-          .toHumanReadableNumber(b.token.decimals)
+      : b.lazyInfo.data.totalBalance.times(
+          b.lazyInfo.data.usdUnitPrice.usdPrice
+        )
 
   // If prices are equal, sort alphabetically by symbol.
   return aPrice === bPrice
@@ -152,5 +151,9 @@ export const sortTokensValueDescending: SortFn<
     ? 1
     : bPrice === undefined
     ? -1
-    : bPrice - aPrice
+    : aPrice.eq(bPrice)
+    ? 0
+    : aPrice.gt(bPrice)
+    ? 1
+    : -1
 }

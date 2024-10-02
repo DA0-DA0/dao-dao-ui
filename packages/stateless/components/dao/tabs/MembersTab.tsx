@@ -4,6 +4,7 @@ import { ComponentType, Fragment, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ButtonLinkProps,
   LoadingDataWithError,
@@ -298,7 +299,13 @@ export const MembersTab = ({
               ...members.data.map(
                 ({ address, balance, votingPowerPercent }) => [
                   address,
-                  balance.loading ? '...' : balance.data.amount.toString(),
+                  balance.loading
+                    ? '...'
+                    : HugeDecimal.from(
+                        balance.data.amount
+                      ).toHumanReadableString(
+                        balance.data.token?.decimals ?? 0
+                      ),
                   votingPowerPercent.loading ? '...' : votingPowerPercent.data,
                 ]
               ),

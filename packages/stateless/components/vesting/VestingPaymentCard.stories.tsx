@@ -59,9 +59,9 @@ Default.args = {
   claiming: false,
   onManageStake: () => alert('manage stake'),
   onAddToken: () => alert('add token'),
-  remainingBalanceVesting: 401239.5123,
-  distributableAmount: 1942.7984,
-  claimedAmount: 39.234,
+  remainingBalanceVesting: HugeDecimal.fromHumanReadable(401239.5123, 6),
+  distributableAmount: HugeDecimal.fromHumanReadable(1942.7984, 6),
+  claimedAmount: HugeDecimal.fromHumanReadable(39.234, 6),
   // Started 2 days ago.
   startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
   // Ends in 7 days.

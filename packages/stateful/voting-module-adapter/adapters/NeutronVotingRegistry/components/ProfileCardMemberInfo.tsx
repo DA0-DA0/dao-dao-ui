@@ -117,10 +117,10 @@ export const ProfileCardMemberInfo = ({
                   token: bondToken,
                   staked: HugeDecimal.from(
                     loadingStakedTokens.data[index].unbondable_abount
-                  ).toHumanReadableNumber(bondToken.decimals),
+                  ),
                   unstaked: HugeDecimal.from(
                     loadingUnstakedTokens.data[index].balance
-                  ).toHumanReadableNumber(bondToken.decimals),
+                  ),
                 })),
               }
         }

@@ -100,9 +100,10 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${sumClaimsAvailable.toLocaleString()} $${
-          collectionInfo.symbol
-        }`
+        t('success.claimedTokens', {
+          amount: sumClaimsAvailable.toLocaleString(),
+          tokenSymbol: collectionInfo.symbol,
+        })
       )
     } catch (err) {
       console.error(err)
@@ -178,8 +179,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token,
-                    staked: loadingWalletStakedValue.data,
-                    unstaked: loadingUnstakedBalance.data,
+                    staked: HugeDecimal.from(loadingWalletStakedValue.data),
+                    unstaked: HugeDecimal.from(loadingUnstakedBalance.data),
                   },
                 ],
               }

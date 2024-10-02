@@ -135,11 +135,14 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${HugeDecimal.from(sumClaimsAvailable)
-          .toHumanReadableNumber(governanceToken.decimals)
-          .toLocaleString(undefined, {
-            maximumFractionDigits: governanceToken.decimals,
-          })} $${governanceToken.symbol}`
+        t('success.claimedTokens', {
+          amount: HugeDecimal.from(
+            sumClaimsAvailable
+          ).toInternationalizedHumanReadableString({
+            decimals: governanceToken.decimals,
+          }),
+          tokenSymbol: governanceToken.symbol,
+        })
       )
     } catch (err) {
       console.error(err)
@@ -225,12 +228,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: HugeDecimal.from(
-                      loadingWalletStakedValue.data
-                    ).toHumanReadableNumber(governanceToken.decimals),
-                    unstaked: HugeDecimal.from(
-                      loadingUnstakedBalance.data
-                    ).toHumanReadableNumber(governanceToken.decimals),
+                    staked: HugeDecimal.from(loadingWalletStakedValue.data),
+                    unstaked: HugeDecimal.from(loadingUnstakedBalance.data),
                   },
                 ],
               }

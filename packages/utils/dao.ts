@@ -199,11 +199,9 @@ export const getHumanReadableRewardDistributionLabel = (
       : t('info.amountEveryDuration', {
           amount: HugeDecimal.from(
             distribution.active_epoch.emission_rate.linear.amount
-          )
-            .toHumanReadableNumber(distribution.token.decimals)
-            .toLocaleString(undefined, {
-              maximumFractionDigits: distribution.token.decimals,
-            }),
+          ).toInternationalizedHumanReadableString({
+            decimals: distribution.token.decimals,
+          }),
           duration: convertDurationToHumanReadableString(
             t,
             distribution.active_epoch.emission_rate.linear.duration

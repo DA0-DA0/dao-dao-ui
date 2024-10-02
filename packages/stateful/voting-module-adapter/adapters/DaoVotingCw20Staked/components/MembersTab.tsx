@@ -41,9 +41,7 @@ export const MembersTab = () => {
             loading: false,
             data: {
               token: governanceToken,
-              amount: HugeDecimal.from(balance).toHumanReadableNumber(
-                governanceToken.decimals
-              ),
+              amount: HugeDecimal.from(balance),
             },
           },
           votingPowerPercent: {

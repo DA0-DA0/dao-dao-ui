@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import { SortFn, TokenCardInfo, TypedOption } from '@dao-dao/types'
 import { sortTokensValueDescending } from '@dao-dao/utils'
 
@@ -25,17 +24,15 @@ export const useTokenSortOptions = (): TypedOption<
         const aPrice =
           a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
             ? undefined
-            : HugeDecimal.from(
-                a.lazyInfo.data.totalBalance
-              ).toHumanReadableNumber(a.token.decimals) *
-              a.lazyInfo.data.usdUnitPrice.usdPrice
+            : a.lazyInfo.data.totalBalance.times(
+                a.lazyInfo.data.usdUnitPrice.usdPrice
+              )
         const bPrice =
           b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
             ? undefined
-            : HugeDecimal.from(
-                b.lazyInfo.data.totalBalance
-              ).toHumanReadableNumber(b.token.decimals) *
-              b.lazyInfo.data.usdUnitPrice.usdPrice
+            : b.lazyInfo.data.totalBalance.times(
+                b.lazyInfo.data.usdUnitPrice.usdPrice
+              )
 
         // If prices are equal, sort alphabetically by symbol.
         return aPrice === bPrice
@@ -46,7 +43,11 @@ export const useTokenSortOptions = (): TypedOption<
           ? 1
           : bPrice === undefined
           ? -1
-          : aPrice - bPrice
+          : aPrice.eq(bPrice)
+          ? 0
+          : aPrice.gt(bPrice)
+          ? 1
+          : -1
       },
     },
     {

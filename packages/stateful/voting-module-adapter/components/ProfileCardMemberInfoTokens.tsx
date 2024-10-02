@@ -31,8 +31,8 @@ export interface ProfileCardMemberInfoTokensProps
   loadingTokens: LoadingData<
     {
       token: GenericToken
-      staked: number
-      unstaked: number
+      staked: HugeDecimal
+      unstaked: HugeDecimal
     }[]
   >
   hideUnstaking?: boolean
@@ -104,10 +104,10 @@ export const ProfileCardMemberInfoTokens = ({
 
   const hasStaked =
     !loadingTokens.loading &&
-    loadingTokens.data.some(({ staked }) => staked > 0)
+    loadingTokens.data.some(({ staked }) => staked.isPositive())
   const hasUnstaked =
     !loadingTokens.loading &&
-    loadingTokens.data.some(({ unstaked }) => unstaked > 0)
+    loadingTokens.data.some(({ unstaked }) => unstaked.isPositive())
   const isMember = !loadingVotingPower.loading && loadingVotingPower.data > 0
   const canBeMemberButIsnt = !isMember && hasUnstaked
 
@@ -293,11 +293,9 @@ export const ProfileCardMemberInfoTokens = ({
             !onlyOneToken
               ? t('button.claimYourTokens')
               : t('button.claimNumTokens', {
-                  amount: HugeDecimal.from(claimableBalance)
-                    .toHumanReadableNumber(loadingTokens.data[0].token.decimals)
-                    .toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        loadingTokens.data[0].token.decimals,
+                  amount:
+                    claimableBalance.toInternationalizedHumanReadableString({
+                      decimals: loadingTokens.data[0].token.decimals,
                     }),
                   tokenSymbol: onlyTokenSymbol,
                 })}

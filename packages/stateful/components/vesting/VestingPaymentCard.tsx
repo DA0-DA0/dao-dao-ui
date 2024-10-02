@@ -279,15 +279,11 @@ export const VestingPaymentCard = ({
           // Canceled vests have their curves set to constant.
           'constant' in vest.vested
         }
-        claimedAmount={HugeDecimal.from(vest.claimed).toHumanReadableNumber(
-          token.decimals
-        )}
+        claimedAmount={HugeDecimal.from(vest.claimed)}
         claiming={claiming}
         cw20Address={cw20Address}
         description={vest.description}
-        distributableAmount={HugeDecimal.from(
-          distributable
-        ).toHumanReadableNumber(token.decimals)}
+        distributableAmount={distributable}
         endDate={endDate}
         isWalletConnected={isWalletConnected}
         lazyInfo={lazyInfoLoading}
@@ -300,9 +296,7 @@ export const VestingPaymentCard = ({
         recipient={vest.recipient}
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
-        remainingBalanceVesting={HugeDecimal.from(
-          Number(total) - Number(vested)
-        ).toHumanReadableNumber(token.decimals)}
+        remainingBalanceVesting={total.minus(vested)}
         startDate={startDate}
         steps={steps}
         title={vest.title}

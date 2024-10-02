@@ -194,10 +194,10 @@ export const UpdateRewardDistributionComponent: ActionComponent<
                   error={errors?.rate?.amount}
                   fieldName={(fieldNamePrefix + 'rate.amount') as 'rate.amount'}
                   getValues={getValues}
-                  min={HugeDecimal.one.toHumanReadableString(decimals)}
+                  min={HugeDecimal.one.toHumanReadableNumber(decimals)}
                   register={register}
                   setValue={setValue}
-                  step={HugeDecimal.one.toHumanReadableString(decimals)}
+                  step={HugeDecimal.one.toHumanReadableNumber(decimals)}
                   unit={
                     selectedDistribution?.token
                       ? '$' + selectedDistribution.token.symbol

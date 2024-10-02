@@ -173,7 +173,9 @@ export const CreateValenceAccountComponent: ActionComponent<
                     ? t('format.token', {
                         amount: HugeDecimal.from(
                           serviceFee.data.balance
-                        ).toHumanReadableNumber(serviceFee.data.token.decimals),
+                        ).toInternationalizedHumanReadableString({
+                          decimals: serviceFee.data.token.decimals,
+                        }),
                         symbol: serviceFee.data.token.symbol,
                       })
                     : '',

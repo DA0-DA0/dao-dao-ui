@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { makeProps as makeUnstakingLineProps } from '@dao-dao/stateless/components/token/UnstakingLine.stories'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { TokenType, UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
@@ -48,8 +49,8 @@ export const makeProps = (
           decimals: 6,
           imageUrl: undefined,
         },
-        staked: stakedTokens ?? 50,
-        unstaked: 45.413,
+        staked: HugeDecimal.fromHumanReadable(stakedTokens ?? 50, 6),
+        unstaked: HugeDecimal.fromHumanReadable(45.413, 6),
       },
     ],
   },
@@ -85,8 +86,8 @@ export const makeCantVoteOnProposalProps = (
           decimals: 6,
           imageUrl: undefined,
         },
-        staked: 0,
-        unstaked: 45.413,
+        staked: HugeDecimal.zero,
+        unstaked: HugeDecimal.fromHumanReadable(45.413, 6),
       },
     ],
   },

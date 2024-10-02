@@ -172,11 +172,11 @@ const InnerGovProposalStatusAndInfo = ({
       Value: (props) => (
         <p {...props}>
           {t('format.token', {
-            amount: HugeDecimal.from(currentDepositAmount)
-              .toHumanReadableNumber(depositToken.decimals)
-              .toLocaleString(undefined, {
-                maximumFractionDigits: depositToken.decimals,
-              }),
+            amount: HugeDecimal.from(
+              currentDepositAmount
+            ).toInternationalizedHumanReadableString({
+              decimals: depositToken.decimals,
+            }),
             symbol: depositToken.symbol,
           })}
         </p>

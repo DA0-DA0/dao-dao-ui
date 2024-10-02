@@ -166,8 +166,8 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
             amount: depositInfoWithToken.depositInfo
               ? HugeDecimal.from(
                   depositInfoWithToken.depositInfo.amount
-                ).toHumanReadableNumber(depositInfoWithToken.token.decimals)
-              : 10,
+                ).toHumanReadableString(depositInfoWithToken.token.decimals)
+              : '10',
             type:
               depositInfoWithToken.depositInfo &&
               'cw20' in depositInfoWithToken.depositInfo.denom
