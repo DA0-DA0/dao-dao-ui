@@ -11,19 +11,18 @@ import { toAccessibleImageUrl } from '@dao-dao/utils'
 import { IconButton } from '../icon_buttons'
 
 /**
- * This is an input designed for numeric values, similar to NumberInput, but it
- * takes advantage of the HugeDecimal class to handle large numbers more
- * gracefully. It expects the underlying value to be a human-readable string.
- * You can optionally convert the underlying value to a number with the
- * `numericValue` prop, which should only be used when not needing to store
- * potentially large numbers.
+ * This is input is designed for numeric values and takes advantage of the
+ * HugeDecimal class to handle large decimal numbers gracefully. It expects the
+ * underlying value to be a human-readable string. You can optionally store the
+ * underlying value as a number by setting the `numericValue` prop—this should
+ * only be used when not needing to store potentially large numbers.
  *
  * There is no need to provide `value` when providing `fieldName` and `register`
  * via react-hook-form.
  *
  * To show plus/minus buttons, make sure to provide `setValue` and either
  * `fieldName`+`getValues` or `value`. When using a react-hook-form form,
- * `setValue`, and `getValues` can be retrieved easily from `useForm` or
+ * `setValue` and `getValues` can be retrieved easily from `useForm` or
  * `useFormContext`. When not using a react-hook-form form, the `setValue`
  * function can easily be mocked, and its first argument (`fieldName`) can be
  * ignored.
@@ -120,7 +119,7 @@ export const HugeDecimalInput = <
               )
             }
             size={
-              // The larger button size for this NumberInput corresponds to the
+              // The larger button size for this input corresponds to the
               // default icon button size.
               plusMinusButtonSize === 'lg' ? 'default' : plusMinusButtonSize
             }
@@ -153,7 +152,7 @@ export const HugeDecimalInput = <
               )
             }
             size={
-              // The larger button size for this NumberInput corresponds to the
+              // The larger button size for this input corresponds to the
               // default icon button size.
               plusMinusButtonSize === 'lg' ? 'default' : plusMinusButtonSize
             }

@@ -206,10 +206,9 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
         contractAddress: address,
         msg,
         funds: funds
-          .map(({ denom, amount, decimals }) => ({
-            denom,
-            amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
-          }))
+          .map(({ denom, amount, decimals }) =>
+            HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+          )
           // Neutron errors with `invalid coins` if the funds list is not
           // alphabetized.
           .sort((a, b) => a.denom.localeCompare(b.denom)),
@@ -362,14 +361,14 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
                   denom: decodedMessage.wasm.execute.contract_addr,
                   amount: HugeDecimal.from(
                     executeMsg.send.amount
-                  ).toHumanReadableNumber(cw20TokenDecimals),
+                  ).toHumanReadableString(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
                 amount:
-                  HugeDecimal.from(amount).toHumanReadableNumber(decimals),
+                  HugeDecimal.from(amount).toHumanReadableString(decimals),
                 decimals,
               })),
           cw20: isCw20,
@@ -400,14 +399,14 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
                   ),
                   amount: HugeDecimal.from(
                     executeMsg.send.amount
-                  ).toHumanReadableNumber(cw20TokenDecimals),
+                  ).toHumanReadableString(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
                 amount:
-                  HugeDecimal.from(amount).toHumanReadableNumber(decimals),
+                  HugeDecimal.from(amount).toHumanReadableString(decimals),
                 decimals,
               })),
           cw20: isCw20,

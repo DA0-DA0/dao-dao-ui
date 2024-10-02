@@ -19,7 +19,7 @@ export default {
     makeReactHookFormDecorator<UpdatePreProposeConfigData>({
       depositRequired: true,
       depositInfo: {
-        amount: Math.pow(10, 6),
+        amount: Math.pow(10, 6).toString(),
         type: 'native',
         denomOrAddress: '',
         token: undefined,

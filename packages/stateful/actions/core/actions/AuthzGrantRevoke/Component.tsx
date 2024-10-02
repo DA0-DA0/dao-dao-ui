@@ -255,7 +255,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               className="mt-2 self-start"
               onClick={() =>
                 appendCoin({
-                  amount: 1,
+                  amount: '1',
                   denom: nativeToken.denomOrAddress,
                   decimals: nativeToken.decimals,
                 })
@@ -467,7 +467,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     className="mt-2 self-start"
                     onClick={() =>
                       appendCoin({
-                        amount: 1,
+                        amount: '1',
                         denom: nativeToken.denomOrAddress,
                         decimals: nativeToken.decimals,
                       })

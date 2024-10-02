@@ -78,7 +78,7 @@ Default.args = {
     deposit: [
       {
         denom: 'JUNOX',
-        amount: 1,
+        amount: '1',
       },
     ],
   },
@@ -86,7 +86,7 @@ Default.args = {
   errors: {},
   options: {
     proposals: [makeProposal(), makeProposal(), makeProposal(), makeProposal()],
-    depositTokens: { loading: false, data: [] },
+    depositTokens: { loading: false, errored: false, data: [] },
     TokenAmountDisplay,
     GovProposalActionDisplay,
   },

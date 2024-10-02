@@ -65,7 +65,7 @@ import {
 
 export type BeginVestingData = {
   chainId: string
-  amount: number
+  amount: string
   type: TokenType
   denomOrAddress: string
   recipient: string
@@ -215,7 +215,9 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         ...acc,
         {
           timestamp: lastMs + delayMs,
-          amount: lastAmount.plus((percent / 100) * watchAmount),
+          amount: lastAmount.plus(
+            HugeDecimal.from(watchAmount).times(percent).div(100)
+          ),
         },
       ]
     }, [] as VestingStep[])
@@ -244,11 +246,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
   )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
-  const selectedMicroBalance = selectedToken?.balance ?? 0
-  const selectedBalance =
-    HugeDecimal.from(selectedMicroBalance).toHumanReadableNumber(
-      selectedDecimals
-    )
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const configureVestingPaymentAction = useInitializedActionForKey(
@@ -295,16 +293,17 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   // A warning if the amount is too high. We don't want to make this an error
   // because often people want to spend funds that a previous action makes
   // available, so just show a warning.
-  const insufficientFundsWarning =
-    watchAmount > selectedBalance
-      ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDecimals,
-          }),
-          tokenSymbol:
-            selectedToken?.token.symbol ?? t('info.token').toLocaleUpperCase(),
-        })
-      : undefined
+  const insufficientFundsWarning = selectedBalance
+    .toHumanReadable(selectedDecimals)
+    .lt(watchAmount)
+    ? t('error.insufficientFundsWarning', {
+        amount: selectedBalance.toInternationalizedHumanReadableString({
+          decimals: selectedDecimals,
+        }),
+        tokenSymbol:
+          selectedToken?.token.symbol ?? t('info.token').toLocaleUpperCase(),
+      })
+    : undefined
 
   return (
     <ChainProvider chainId={chainId}>
@@ -374,6 +373,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
@@ -402,11 +402,11 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                     description:
                       t('title.balance') +
                       ': ' +
-                      HugeDecimal.from(balance)
-                        .toHumanReadableNumber(token.decimals)
-                        .toLocaleString(undefined, {
-                          maximumFractionDigits: token.decimals,
-                        }),
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
+                      }),
                   })),
               }}
             />

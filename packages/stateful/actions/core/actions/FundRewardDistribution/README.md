@@ -17,6 +17,6 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 {
   "address": "<ADDRESS>",
   "id": <ID>,
-  "amount": <AMOUNT>
+  "amount": "<AMOUNT>"
 }
 ```

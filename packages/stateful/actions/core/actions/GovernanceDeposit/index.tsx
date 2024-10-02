@@ -2,16 +2,15 @@ import { Coin } from '@cosmjs/stargate'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { waitForAll } from 'recoil'
 
-import { chainQueries, genericTokenSelector } from '@dao-dao/state'
+import { HugeDecimal } from '@dao-dao/math'
+import { chainQueries, tokenQueries } from '@dao-dao/state'
 import {
   ActionBase,
   BankEmoji,
   ChainProvider,
   DaoSupportedChainPickerInput,
   useActionOptions,
-  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -37,7 +36,7 @@ import {
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
-import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { useQueryLoadingDataWithError, useQueryTokens } from '../../../../hooks'
 import { GovActionsProvider } from '../../../providers/gov'
 import {
   GovernanceDepositData,
@@ -129,8 +128,26 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
       : undefined
   )
 
+  const depositTokens = useQueryTokens(
+    context.params.minDeposit.map(({ denom }) => ({
+      chainId,
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    }))
+  )
+
+  const minDeposit = context.params.minDeposit[0]
+  const minDepositToken =
+    depositTokens.loading || depositTokens.errored
+      ? undefined
+      : depositTokens.data.find((t) => t.denomOrAddress === minDeposit.denom)
+
   // On proposal change, update deposit to remaining needed.
   useEffect(() => {
+    if (!minDepositToken) {
+      return
+    }
+
     const proposalSelected =
       proposalId &&
       !proposalOptions.loading &&
@@ -140,24 +157,31 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
       return
     }
 
-    const minDeposit = context.params.minDeposit[0]
-    const missingDeposit =
-      BigInt(minDeposit.amount) -
-      BigInt(
-        proposalSelected.proposal.totalDeposit.find(
-          ({ denom }) => minDeposit.denom === denom
-        )?.amount ?? 0
-      )
+    const missingDeposit = HugeDecimal.from(minDeposit.amount).minus(
+      proposalSelected.proposal.totalDeposit.find(
+        ({ denom }) => denom === minDeposit.denom
+      )?.amount ?? 0
+    )
 
-    if (missingDeposit > 0) {
+    if (missingDeposit.isPositive()) {
       setValue((fieldNamePrefix + 'deposit') as 'deposit', [
         {
           denom: minDeposit.denom,
-          amount: Number(missingDeposit),
+          amount: missingDeposit.toHumanReadableString(
+            minDepositToken.decimals
+          ),
         },
       ])
     }
-  }, [proposalId, proposalOptions, context.params, setValue, fieldNamePrefix])
+  }, [
+    proposalId,
+    proposalOptions,
+    context.params,
+    setValue,
+    fieldNamePrefix,
+    minDepositToken,
+    minDeposit,
+  ])
 
   // Select first proposal once loaded if nothing selected.
   useEffect(() => {
@@ -174,19 +198,6 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
       )
     }
   }, [isCreating, proposalOptions, proposalId, setValue, fieldNamePrefix])
-
-  const depositTokens = useCachedLoading(
-    waitForAll(
-      context.params.minDeposit.map(({ denom }) =>
-        genericTokenSelector({
-          type: TokenType.Native,
-          denomOrAddress: denom,
-          chainId,
-        })
-      )
-    ),
-    []
-  )
 
   return (
     <StatelessGovernanceDepositComponent
@@ -233,15 +244,29 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
     }
   }
 
-  encode({
+  async encode({
     chainId,
     proposalId,
     deposit,
-  }: GovernanceDepositData): UnifiedCosmosMsg[] {
+  }: GovernanceDepositData): Promise<UnifiedCosmosMsg[]> {
     const depositor = getChainAddressForActionOptions(this.options, chainId)
     if (!depositor) {
       throw new Error('Depositor address not found for chain.')
     }
+
+    const amount = await Promise.all(
+      deposit.map(async ({ denom, amount }) => {
+        const { decimals } = await this.options.queryClient.fetchQuery(
+          tokenQueries.info(this.options.queryClient, {
+            chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          })
+        )
+
+        return HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      })
+    )
 
     return maybeMakePolytoneExecuteMessages(
       this.options.chain.chain_id,
@@ -249,14 +274,11 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
       makeStargateMessage({
         stargate: {
           typeUrl: MsgDeposit.typeUrl,
-          value: {
+          value: MsgDeposit.fromPartial({
             proposalId: BigInt(proposalId || '0'),
             depositor,
-            amount: deposit.map(({ denom, amount }) => ({
-              denom,
-              amount: BigInt(amount).toString(),
-            })),
-          } as MsgDeposit,
+            amount,
+          }),
         },
       })
     )
@@ -270,21 +292,35 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
     })
   }
 
-  decode([
+  async decode([
     {
       decodedMessage,
       account: { chainId },
     },
-  ]: ProcessedMessage[]): GovernanceDepositData {
+  ]: ProcessedMessage[]): Promise<GovernanceDepositData> {
+    const deposit = await Promise.all(
+      (decodedMessage.stargate.value.amount as Coin[]).map(
+        async ({ denom, amount }) => {
+          const { decimals } = await this.options.queryClient.fetchQuery(
+            tokenQueries.info(this.options.queryClient, {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+            })
+          )
+
+          return {
+            denom,
+            amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
+          }
+        }
+      )
+    )
+
     return {
       chainId,
       proposalId: decodedMessage.stargate.value.proposalId.toString(),
-      deposit: (decodedMessage.stargate.value.amount as Coin[]).map(
-        ({ denom, amount }) => ({
-          denom,
-          amount: Number(amount),
-        })
-      ),
+      deposit,
     }
   }
 }

@@ -1,5 +1,4 @@
 import { ArrowRightAltRounded } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ComponentType, RefAttributes, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -74,7 +73,7 @@ export type SpendData = {
    */
   from: string
   to: string
-  amount: number
+  amount: string
   denom: string
   /**
    * Whether or not `denom` is a CW20 token address. CW20 tokens cannot be sent
@@ -331,6 +330,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
@@ -343,7 +343,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   : undefined,
                 unitClassName: '!text-text-primary',
               }}
-              containerClassName={clsx('grow !max-w-full')}
+              containerClassName="grow !max-w-full"
               onCustomTokenChange={(custom) => {
                 setValue((fieldNamePrefix + 'denom') as 'denom', custom)
                 // If denom entered is a valid contract address, it's most
@@ -480,7 +480,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   onClick={() =>
                     setValue(
                       (fieldNamePrefix + 'amount') as 'amount',
-                      balance.toHumanReadableNumber(decimals)
+                      balance.toHumanReadableString(decimals)
                     )
                   }
                   showFullAmount
@@ -502,7 +502,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount.toHumanReadableNumber(decimals)
+                          amount.toHumanReadableString(decimals)
                         )
                       }
                     />
@@ -566,7 +566,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       ) : (
         <div className="flex flex-row gap-3 items-center">
           <TokenAmountDisplay
-            amount={spendAmount}
+            amount={HugeDecimal.fromHumanReadable(spendAmount, decimals)}
             decimals={decimals}
             iconClassName="!h-6 !w-6"
             iconUrl={
@@ -881,26 +881,27 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
 type NobleTariffProps = {
   token: GenericToken
-  amount: number
+  amount: string
   params: NobleTariffParams
 }
 
 const NobleTariff = ({
   token: { symbol, decimals },
-  amount,
+  amount: _amount,
   params: { transferFeeBps, transferFeeMax },
 }: NobleTariffProps) => {
   const { t } = useTranslation()
 
-  const feeDecimal = Number(transferFeeBps) / 1e4
-  const maxFee =
-    HugeDecimal.from(transferFeeMax).toHumanReadableNumber(decimals)
-  const fee =
-    amount && !isNaN(amount)
-      ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)
-      : 0
+  const amount = HugeDecimal.fromHumanReadable(_amount, decimals)
 
-  if (fee === 0) {
+  const feeDecimal = Number(transferFeeBps) / 1e4
+  const maxFee = HugeDecimal.from(transferFeeMax)
+  const fee =
+    _amount && !amount.isNaN()
+      ? HugeDecimal.min(amount.times(feeDecimal), maxFee)
+      : HugeDecimal.zero
+
+  if (fee.isZero()) {
     return null
   }
 
@@ -909,14 +910,14 @@ const NobleTariff = ({
       {t('info.nobleTariffApplied', {
         feePercent: formatPercentOf100(feeDecimal * 100),
         tokenSymbol: symbol,
-        maxFee: maxFee.toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        maxFee: maxFee.toInternationalizedHumanReadableString({
+          decimals,
         }),
-        fee: fee.toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        fee: fee.toInternationalizedHumanReadableString({
+          decimals,
         }),
-        output: (amount - fee).toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        output: amount.minus(fee).toInternationalizedHumanReadableString({
+          decimals,
         }),
       })}
     </p>

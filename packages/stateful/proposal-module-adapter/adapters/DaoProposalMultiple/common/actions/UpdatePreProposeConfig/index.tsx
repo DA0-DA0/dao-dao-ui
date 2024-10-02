@@ -187,7 +187,7 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
         ? {
             amount: HugeDecimal.from(
               config.deposit_info.amount
-            ).toHumanReadableNumber(token?.decimals ?? 0),
+            ).toHumanReadableString(token?.decimals ?? 0),
             type: isVotingModuleToken
               ? 'voting_module_token'
               : 'native' in config.deposit_info.denom
@@ -202,7 +202,7 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
             refundPolicy: config.deposit_info.refund_policy,
           }
         : {
-            amount: 1,
+            amount: '1',
             type: 'native',
             denomOrAddress: getNativeTokenForChainId(
               this.proposalModule.dao.chainId
@@ -387,7 +387,7 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
       return {
         depositRequired: false,
         depositInfo: {
-          amount: 1,
+          amount: '1',
           type: 'native',
           denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
           refundPolicy: DepositRefundPolicy.OnlyPassed,
@@ -404,7 +404,7 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
         : 'cw20'
 
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
-      amount: HugeDecimal.from(configDepositInfo.amount).toHumanReadableNumber(
+      amount: HugeDecimal.from(configDepositInfo.amount).toHumanReadableString(
         token.decimals
       ),
       type,

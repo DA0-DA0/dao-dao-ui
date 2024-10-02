@@ -556,7 +556,7 @@ export class SpendAction extends ActionBase<SpendData> {
       toChainId: this.options.chain.chain_id,
       from: this.options.address,
       to: '',
-      amount: 1,
+      amount: '1',
       denom: nativeToken?.denomOrAddress || '',
       cw20: nativeToken?.type === TokenType.Cw20,
       ibcTimeout: {
@@ -738,7 +738,7 @@ export class SpendAction extends ActionBase<SpendData> {
       }
     } else if (!cw20) {
       msg = {
-        bank: makeBankMessage(amount.toFixed(0), to, denom),
+        bank: makeBankMessage(amount.toString(), to, denom),
       }
     } else {
       msg = makeWasmMessage({
@@ -749,7 +749,7 @@ export class SpendAction extends ActionBase<SpendData> {
             msg: {
               transfer: {
                 recipient: to,
-                amount: amount.toFixed(0),
+                amount: amount.toString(),
               },
             },
           },
@@ -1001,7 +1001,7 @@ export class SpendAction extends ActionBase<SpendData> {
         to,
         amount: HugeDecimal.from(
           decodedMessage.stargate.value.token.amount
-        ).toHumanReadableNumber(token.decimals),
+        ).toHumanReadableString(token.decimals),
         denom: token.denomOrAddress,
         // Should always be false.
         cw20: token.type === TokenType.Cw20,
@@ -1024,7 +1024,7 @@ export class SpendAction extends ActionBase<SpendData> {
         to: decodedMessage.bank.send.to_address,
         amount: HugeDecimal.from(
           decodedMessage.bank.send.amount[0].amount
-        ).toHumanReadableNumber(token.decimals),
+        ).toHumanReadableString(token.decimals),
         denom: token.denomOrAddress,
         cw20: false,
       }
@@ -1036,7 +1036,7 @@ export class SpendAction extends ActionBase<SpendData> {
         to: decodedMessage.wasm.execute.msg.transfer.recipient,
         amount: HugeDecimal.from(
           decodedMessage.wasm.execute.msg.transfer.amount
-        ).toHumanReadableNumber(token.decimals),
+        ).toHumanReadableString(token.decimals),
         denom: decodedMessage.wasm.execute.contract_addr,
         cw20: true,
       }
@@ -1048,8 +1048,8 @@ export class SpendAction extends ActionBase<SpendData> {
   transformImportData(data: any): SpendData {
     return {
       ...data,
-      // Ensure amount is a number.
-      amount: Number(data.amount),
+      // Ensure amount is a string.
+      amount: HugeDecimal.from(data.amount).toString(),
     }
   }
 }

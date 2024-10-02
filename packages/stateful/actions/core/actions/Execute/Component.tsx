@@ -34,7 +34,7 @@ export type ExecuteData = {
   message: string
   funds: {
     denom: string
-    amount: number
+    amount: string
     // Will multiply `amount` by 10^decimals when generating the message.
     decimals: number
   }[]
@@ -58,7 +58,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
   const { context } = useActionOptions()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const { register, control, watch, setValue } = useFormContext()
+  const { register, control, watch, setValue, getValues } = useFormContext()
   const {
     fields: coins,
     append: appendCoin,
@@ -192,6 +192,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
                 amount={{
                   watch,
                   setValue,
+                  getValues,
                   register,
                   fieldName: fieldNamePrefix + 'funds.0.amount',
                   error: errors?.funds?.[0]?.amount,

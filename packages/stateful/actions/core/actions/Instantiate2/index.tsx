@@ -203,10 +203,9 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
     const msg = JSON5.parse(message)
 
     const convertedFunds = funds
-      .map(({ denom, amount, decimals }) => ({
-        denom,
-        amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
-      }))
+      .map(({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      )
       // Neutron errors with `invalid coins` if the funds list is not
       // alphabetized.
       .sort((a, b) => a.denom.localeCompare(b.denom))
@@ -314,7 +313,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
       salt: data.salt,
       funds: fundsTokens.map(({ denom, amount, decimals }) => ({
         denom,
-        amount: HugeDecimal.from(amount).toHumanReadableNumber(decimals),
+        amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
         decimals,
       })),
     }

@@ -207,7 +207,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
         denomOrAddress: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.denomOrAddress
           : nativeToken.denomOrAddress,
-        amount: 0,
+        amount: '0',
         decimals: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.decimals
           : nativeToken.decimals,
@@ -218,7 +218,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
         address: '',
         type: 'native',
         denomOrAddress: nativeToken.denomOrAddress,
-        amount: 0,
+        amount: '0',
         decimals: nativeToken.decimals,
       },
     })

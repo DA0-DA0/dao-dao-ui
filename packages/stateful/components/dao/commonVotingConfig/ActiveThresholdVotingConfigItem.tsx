@@ -23,7 +23,7 @@ const ActiveThresholdInput = ({
     activeThreshold: { enabled, type } = {
       enabled: false,
       type: 'percent',
-      value: 10,
+      value: '10',
     },
   },
   register,
@@ -51,7 +51,6 @@ const ActiveThresholdInput = ({
               fieldName="activeThreshold.value"
               getValues={getValues}
               min={1}
-              numericValue
               register={register}
               setValue={setValue}
               sizing="sm"
@@ -82,7 +81,7 @@ const ActiveThresholdReview = ({
     activeThreshold: { enabled, type, value } = {
       enabled: false,
       type: 'percent',
-      value: 10,
+      value: '10',
     },
   },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithActiveThreshold>) => {

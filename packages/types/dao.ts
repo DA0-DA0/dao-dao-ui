@@ -414,7 +414,7 @@ export type DaoCreationVotingConfigWithAllowRevoting = {
 export type DaoCreationVotingConfigWithProposalDeposit = {
   proposalDeposit: {
     enabled: boolean
-    amount: number
+    amount: string
     // Token input fields.
     type: 'native' | 'cw20' | 'voting_module_token'
     denomOrAddress: string
@@ -444,7 +444,7 @@ export type DaoCreationVotingConfigWithActiveThreshold = {
   activeThreshold: {
     enabled: boolean
     type: 'percent' | 'absolute'
-    value: number
+    value: string
   }
 }
 

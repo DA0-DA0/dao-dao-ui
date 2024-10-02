@@ -112,8 +112,20 @@ export class HugeDecimal {
     return this.value.toJSON()
   }
 
-  toNumber() {
-    return this.value.toNumber()
+  /**
+   * Returns the value of this HugeDecimal instance as a JavaScript primitive
+   * number.
+   *
+   * Pass `truncateDecimals` to truncate to a specific number of decimal places.
+   * Leaving it undefined will preserve all existing decimal places.
+   *
+   * @param truncateDecimals whether or not to truncate the decimal places
+   * @returns a number
+   */
+  toNumber(truncateDecimals?: number) {
+    return truncateDecimals !== undefined
+      ? Number(this.toFixed(truncateDecimals))
+      : this.value.toNumber()
   }
 
   /**
@@ -169,6 +181,10 @@ export class HugeDecimal {
 
   isZero() {
     return this.value.isZero()
+  }
+
+  isNaN() {
+    return this.value.isNaN()
   }
 
   lt(n: HugeDecimal.Value) {

@@ -36,6 +36,7 @@ import {
   GovProposalActionDisplayProps,
   GovernanceProposalActionData,
   LoadingData,
+  LoadingDataWithError,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
@@ -53,7 +54,7 @@ import {
 } from '@dao-dao/utils'
 
 export type GovernanceProposalOptions = {
-  minDeposits: LoadingData<
+  minDeposits: LoadingDataWithError<
     (GenericTokenBalance & {
       min: string
     })[]
@@ -83,8 +84,15 @@ export const GovernanceProposalComponent: ActionComponent<
   } = props
 
   const { t } = useTranslation()
-  const { register, setValue, watch, control, setError, clearErrors } =
-    useFormContext<GovernanceProposalActionData>()
+  const {
+    register,
+    setValue,
+    getValues,
+    watch,
+    control,
+    setError,
+    clearErrors,
+  } = useFormContext<GovernanceProposalActionData>()
 
   const { context } = useActionOptions()
   // Type-check, this action should not be used in a non-gov action context.
@@ -110,14 +118,20 @@ export const GovernanceProposalComponent: ActionComponent<
     nativeToken,
   } = useChainContext()
 
-  const selectedMinDepositToken = minDeposits.loading
-    ? undefined
-    : minDeposits.data.find(
-        ({ token }) => token.denomOrAddress === data.deposit[0].denom
-      )
-  const depositMin = HugeDecimal.from(selectedMinDepositToken?.min ?? 0)
-    .times(context.params.minInitialDepositRatio)
-    .toHumanReadableNumber(selectedMinDepositToken?.token.decimals ?? 0)
+  const selectedMinDepositToken =
+    minDeposits.loading || minDeposits.errored
+      ? undefined
+      : minDeposits.data.find(
+          ({ token }) => token.denomOrAddress === data.deposit[0].denom
+        )
+  const minDepositTokenDecimals = selectedMinDepositToken?.token.decimals ?? 0
+  const depositVotingMin = HugeDecimal.from(selectedMinDepositToken?.min ?? 0)
+  const depositSubmitMin = depositVotingMin.times(
+    context.params.minInitialDepositRatio
+  )
+  const depositTokenBalance = HugeDecimal.from(
+    selectedMinDepositToken?.balance ?? 0
+  )
 
   const {
     fields: spendFields,
@@ -170,6 +184,10 @@ export const GovernanceProposalComponent: ActionComponent<
       const parsedUpgradePlan = JSON5.parse(upgradePlan)
       const parsedCustom = JSON5.parse(custom)
 
+      const spendAmount = spends.map(({ amount, denom, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      )
+
       const content =
         typeUrl === GOVERNANCE_PROPOSAL_TYPE_CUSTOM
           ? Cosmos_govv1beta1Content_FromAmino({
@@ -188,10 +206,7 @@ export const GovernanceProposalComponent: ActionComponent<
               title,
               description,
               // CommunityPoolSpendProposal
-              amount: spends.map(({ amount, denom }) => ({
-                denom,
-                amount: BigInt(amount).toString(),
-              })),
+              amount: spendAmount,
               recipient: spendRecipient,
               // ParameterChangeProposal
               changes: JSON5.parse(parameterChanges),
@@ -365,18 +380,14 @@ export const GovernanceProposalComponent: ActionComponent<
 
                 <p className="caption-text max-w-sm">
                   {t('info.govDepositDescription', {
-                    amount: HugeDecimal.from(selectedMinDepositToken?.min ?? 0)
-                      .toHumanReadableNumber(
-                        selectedMinDepositToken?.token.decimals ?? 0
-                      )
-                      .toLocaleString(undefined, {
-                        maximumFractionDigits:
-                          selectedMinDepositToken?.token.decimals ?? 0,
+                    amount:
+                      depositVotingMin.toInternationalizedHumanReadableString({
+                        decimals: minDepositTokenDecimals,
                       }),
-                    minAmount: depositMin.toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        selectedMinDepositToken?.token.decimals ?? 0,
-                    }),
+                    minAmount:
+                      depositSubmitMin.toInternationalizedHumanReadableString({
+                        decimals: minDepositTokenDecimals,
+                      }),
                     symbol:
                       selectedMinDepositToken?.token.symbol ?? t('info.tokens'),
                   })}
@@ -388,43 +399,53 @@ export const GovernanceProposalComponent: ActionComponent<
                   amount={{
                     watch,
                     setValue,
+                    getValues,
                     register,
                     fieldName: (fieldNamePrefix +
                       'deposit.0.amount') as 'deposit.0.amount',
                     error: errors?.deposit?.[0]?.amount,
-                    min: depositMin,
-                    step: HugeDecimal.one.toHumanReadableNumber(
-                      selectedMinDepositToken?.token.decimals ?? 0
+                    min: depositSubmitMin.toHumanReadableNumber(
+                      minDepositTokenDecimals
                     ),
-                    convertMicroDenom: true,
+                    step: HugeDecimal.one.toHumanReadableNumber(
+                      minDepositTokenDecimals
+                    ),
                     // Validate that balance is sufficient to pay the deposit.
                     validations: [
                       (value) =>
                         isNaN(value) ||
                         !selectedMinDepositToken ||
-                        Number(selectedMinDepositToken.balance) >= value ||
+                        depositTokenBalance.gte(value) ||
                         t('error.insufficientBalance', {
-                          amount: HugeDecimal.from(
-                            selectedMinDepositToken.balance
-                          ).toHumanReadableNumber(
-                            selectedMinDepositToken.token.decimals
-                          ),
+                          amount:
+                            depositTokenBalance.toInternationalizedHumanReadableString(
+                              {
+                                decimals: minDepositTokenDecimals,
+                              }
+                            ),
                           tokenSymbol: selectedMinDepositToken.token.symbol,
                         }),
                     ],
                   }}
-                  onSelectToken={({ denomOrAddress }) =>
+                  onSelectToken={({ denomOrAddress, decimals }) => {
                     setValue(
                       (fieldNamePrefix +
                         'deposit.0.denom') as 'deposit.0.denom',
                       denomOrAddress
                     )
-                  }
+                    setValue(
+                      (fieldNamePrefix +
+                        'deposit.0.decimals') as 'deposit.0.decimals',
+                      decimals
+                    )
+                  }}
                   readOnly={!isCreating}
                   selectedToken={selectedMinDepositToken?.token}
                   tokens={
                     minDeposits.loading
                       ? { loading: true }
+                      : minDeposits.errored
+                      ? { loading: false, data: [] }
                       : {
                           loading: false,
                           data: minDeposits.data.map(({ token }) => token),
@@ -558,30 +579,34 @@ export const GovernanceProposalComponent: ActionComponent<
                                   amount={{
                                     watch,
                                     setValue,
+                                    getValues,
                                     register,
                                     fieldName: (fieldNamePrefix +
                                       `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`,
                                     error:
                                       errors?.legacy?.spends?.[index]?.amount,
-                                    min: HugeDecimal.from(
-                                      1
-                                    ).toHumanReadableNumber(
+                                    min: HugeDecimal.one.toHumanReadableNumber(
                                       selectedToken.decimals
                                     ),
-                                    step: HugeDecimal.from(
-                                      1
-                                    ).toHumanReadableNumber(
+                                    step: HugeDecimal.one.toHumanReadableNumber(
                                       selectedToken.decimals
                                     ),
-                                    convertMicroDenom: true,
                                   }}
-                                  onSelectToken={({ denomOrAddress }) =>
+                                  onSelectToken={({
+                                    denomOrAddress,
+                                    decimals,
+                                  }) => {
                                     setValue(
                                       (fieldNamePrefix +
                                         `legacy.spends.${index}.denom`) as `legacy.spends.${number}.denom`,
                                       denomOrAddress
                                     )
-                                  }
+                                    setValue(
+                                      (fieldNamePrefix +
+                                        `legacy.spends.${index}.decimals`) as `legacy.spends.${number}.decimals`,
+                                      decimals
+                                    )
+                                  }}
                                   selectedToken={selectedToken}
                                   tokens={{
                                     loading: false,
@@ -604,7 +629,7 @@ export const GovernanceProposalComponent: ActionComponent<
                               className="self-start"
                               onClick={() =>
                                 appendSpend({
-                                  amount: 1,
+                                  amount: '1',
                                   denom: nativeToken?.denomOrAddress || '',
                                 })
                               }
@@ -704,9 +729,9 @@ export const GovernanceProposalComponent: ActionComponent<
           GovProposalActionDisplay={GovProposalActionDisplay}
           TokenAmountDisplay={TokenAmountDisplay}
           content={govProposalActionDataToDecodedContent(data)}
-          deposit={data.deposit.map(({ denom, amount }) => ({
+          deposit={data.deposit.map(({ denom, amount, decimals }) => ({
             denom,
-            amount: isNaN(amount) ? '0' : BigInt(amount).toString(),
+            amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
           }))}
         />
       )}

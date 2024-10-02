@@ -83,7 +83,8 @@ export const NativeCoinSelector = ({
   const amountField = (fieldNamePrefix + 'amount') as 'amount'
   const decimalsField = (fieldNamePrefix + 'decimals') as 'decimals'
 
-  const { register, setValue, watch } = useFormContext<NativeCoinForm>()
+  const { register, setValue, getValues, watch } =
+    useFormContext<NativeCoinForm>()
   const watchDenom = watch(denomField)
   const watchAmount = watch(amountField)
   const watchDecimals = watch(decimalsField) || 0
@@ -99,9 +100,7 @@ export const NativeCoinSelector = ({
             token.denomOrAddress === watchDenom &&
             (!chainId || token.chainId === chainId)
         )
-  const balance = HugeDecimal.from(
-    selectedToken?.balance ?? 0
-  ).toHumanReadableNumber(selectedToken?.token.decimals ?? 0)
+  const balance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   const decimals = customToken
     ? watchDecimals
@@ -120,10 +119,10 @@ export const NativeCoinSelector = ({
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: watchDenom })
-      : watchAmount > balance
+      : balance.toHumanReadable(decimals).lt(watchAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: balance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: balance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: symbol,
         })
@@ -139,6 +138,7 @@ export const NativeCoinSelector = ({
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: amountField,
             error: errors?.amount || errors?._error,
@@ -163,11 +163,11 @@ export const NativeCoinSelector = ({
                       description:
                         t('title.balance') +
                         ': ' +
-                        HugeDecimal.from(balance)
-                          .toHumanReadableNumber(token.decimals)
-                          .toLocaleString(undefined, {
-                            maximumFractionDigits: token.decimals,
-                          }),
+                        HugeDecimal.from(
+                          balance
+                        ).toInternationalizedHumanReadableString({
+                          decimals: token.decimals,
+                        }),
                     })),
                 }
           }

@@ -500,7 +500,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
       mode: this.widgetData ? 'begin' : 'cancel',
       begin: {
         chainId: this.options.chain.chain_id,
-        amount: 1,
+        amount: '1',
         type: TokenType.Native,
         denomOrAddress: getNativeTokenForChainId(this.options.chain.chain_id)
           .denomOrAddress,
@@ -952,7 +952,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
               ).toISOString()
             : '',
           title: instantiateMsg.title,
-          amount: HugeDecimal.from(instantiateMsg.total).toHumanReadableNumber(
+          amount: HugeDecimal.from(instantiateMsg.total).toHumanReadableString(
             token.decimals
           ),
           ownerMode,
@@ -1007,13 +1007,11 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
                     return [
                       ...acc,
                       {
-                        percent: Number(
-                          (
-                            ((Number(amount) - Number(pastAmount)) /
-                              Number(instantiateMsg!.total)) *
-                            100
-                          ).toFixed(2)
-                        ),
+                        percent: HugeDecimal.from(amount)
+                          .minus(pastAmount)
+                          .div(instantiateMsg!.total)
+                          .times(100)
+                          .toNumber(2),
                         delay: convertSecondsToDurationWithUnits(
                           seconds - pastTimestamp
                         ),

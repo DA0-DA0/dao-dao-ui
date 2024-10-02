@@ -152,7 +152,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
               'cw20' in selfParty.promise
                 ? selfParty.promise.cw20.amount
                 : selfParty.promise.native.amount
-            ).toHumanReadableNumber(selfPartyTokenInfo.decimals),
+            ).toHumanReadableString(selfPartyTokenInfo.decimals),
             decimals: selfPartyTokenInfo.decimals,
           })
 

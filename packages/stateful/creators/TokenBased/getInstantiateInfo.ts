@@ -52,12 +52,17 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ? !activeThreshold.type || activeThreshold.type === 'percent'
         ? {
             percentage: {
-              percent: (activeThreshold.value / 100).toString(),
+              percent: (Number(activeThreshold.value) / 100).toString(),
             },
           }
         : {
             absolute_count: {
-              count: BigInt(activeThreshold.value).toString(),
+              count: HugeDecimal.fromHumanReadable(
+                activeThreshold.value,
+                govTokenType === GovernanceTokenType.New
+                  ? NEW_DAO_TOKEN_DECIMALS
+                  : existingToken?.decimals ?? 0
+              ).toString(),
             },
           }
       : null,

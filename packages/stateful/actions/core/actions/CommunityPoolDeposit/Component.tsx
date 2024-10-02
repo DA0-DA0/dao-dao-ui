@@ -12,7 +12,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 
 export type CommunityPoolDepositData = {
   chainId: string
-  amount: number
+  amount: string
   denom: string
   _error?: string
 }
@@ -26,7 +26,7 @@ export const CommunityPoolDepositComponent: ActionComponent<
 > = ({ fieldNamePrefix, isCreating, errors, options: { tokens } }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setValue } =
+  const { register, watch, setValue, getValues } =
     useFormContext<CommunityPoolDepositData>()
 
   const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
@@ -40,9 +40,7 @@ export const CommunityPoolDepositComponent: ActionComponent<
           token.chainId === spendChainId && token.denomOrAddress === spendDenom
       )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
-  const selectedBalance = HugeDecimal.from(
-    selectedToken?.balance ?? 0
-  ).toHumanReadableNumber(selectedDecimals)
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
@@ -53,10 +51,10 @@ export const CommunityPoolDepositComponent: ActionComponent<
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: spendDenom })
-      : spendAmount > selectedBalance
+      : selectedBalance.toHumanReadable(selectedDecimals).lt(spendAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDecimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals: selectedDecimals,
           }),
           tokenSymbol: symbol,
         })
@@ -69,6 +67,7 @@ export const CommunityPoolDepositComponent: ActionComponent<
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: (fieldNamePrefix + 'amount') as 'amount',
             error: errors?.amount,
@@ -91,11 +90,11 @@ export const CommunityPoolDepositComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      HugeDecimal.from(balance)
-                        .toHumanReadableNumber(token.decimals)
-                        .toLocaleString(undefined, {
-                          maximumFractionDigits: token.decimals,
-                        }),
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
+                      }),
                   })),
                 }
           }

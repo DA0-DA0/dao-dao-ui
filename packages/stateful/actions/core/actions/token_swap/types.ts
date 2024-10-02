@@ -12,7 +12,7 @@ export interface Counterparty {
   address: string
   type: TokenType
   denomOrAddress: string
-  amount: number
+  amount: string
   decimals: number
 }
 

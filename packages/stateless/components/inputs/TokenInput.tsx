@@ -26,7 +26,7 @@ import { ChainLogo } from '../chain/ChainLogo'
 import { IconButton } from '../icon_buttons'
 import { FilterableItem, FilterableItemPopup } from '../popup'
 import { Tooltip } from '../tooltip'
-import { NumberInput } from './NumberInput'
+import { HugeDecimalInput } from './HugeDecimalInput'
 import { TextInput } from './TextInput'
 
 /**
@@ -61,13 +61,10 @@ export const TokenInput = <
       ? undefined
       : tokens.data.find((token) => tokensEqual(token, _selectedToken))
 
-  const amount = amountField
-    ? amountField.convertMicroDenom
-      ? HugeDecimal.from(
-          amountField.watch(amountField.fieldName)
-        ).toHumanReadableNumber(selectedToken?.decimals ?? 0)
-      : Number(amountField.watch(amountField.fieldName))
-    : 0
+  const amount = HugeDecimal.fromHumanReadable(
+    amountField?.watch(amountField.fieldName) || '0',
+    selectedToken?.decimals ?? 0
+  )
 
   // All tokens from same chain.
   const allTokensOnSameChain =
@@ -109,9 +106,8 @@ export const TokenInput = <
           <p className="min-w-[4rem] grow truncate text-left">
             {readOnly &&
               amountField &&
-              amount.toLocaleString(undefined, {
-                // Show as many decimals as possible (max is 20).
-                maximumFractionDigits: 20,
+              amount.toInternationalizedHumanReadableString({
+                decimals: selectedToken.decimals,
               }) +
                 (amountField.unit ? amountField.unit : '') +
                 ' $'}
@@ -122,7 +118,10 @@ export const TokenInput = <
         tokenFallback ?? (
           <p className="text-text-secondary">
             {readOnly
-              ? t('info.token', { count: amount })
+              ? t('info.token', {
+                  // Plural if amount is not 1.
+                  count: amount.eq(1) ? 1 : 2,
+                })
               : disabled
               ? t('info.noTokenSelected')
               : t('button.selectToken')}
@@ -248,20 +247,17 @@ export const TokenInput = <
       ) : (
         <>
           {amountField && (
-            <NumberInput
+            <HugeDecimalInput
               {...amountField}
               containerClassName="min-w-[12rem] grow basis-[12rem]"
               disabled={disabled || (!selectedToken && !customSelected)}
               setValue={(fieldName, value, options) =>
                 amountField.setValue(fieldName, value as any, options)
               }
-              transformDecimals={
-                amountField.convertMicroDenom
-                  ? selectedToken?.decimals
-                  : undefined
-              }
               validation={[
-                amountField.min ? validatePositive : validateNonNegative,
+                HugeDecimal.from(amountField.min || 0).isZero()
+                  ? validateNonNegative
+                  : validatePositive,
                 ...(required ? [validateRequired] : []),
                 ...(amountField.validations ?? []),
               ]}

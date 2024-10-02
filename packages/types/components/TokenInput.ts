@@ -2,6 +2,7 @@ import { ReactNode, RefCallback } from 'react'
 import {
   FieldValues,
   Path,
+  UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
@@ -10,14 +11,11 @@ import {
 
 import { LoadingData } from '../misc'
 import { GenericToken, TokenType } from '../token'
-import { NumberInputProps } from './NumberInput'
+import { HugeDecimalInputProps } from './HugeDecimalInput'
 
-export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
+export type TokenInputOption = Omit<GenericToken, 'type'> & {
   type: TokenType | string
   description?: string
-  // Only necessary if `convertMicroDenom` is true so the input can
-  // intelligently convert the value. 0 will be used if not provided.
-  decimals?: number
 }
 
 export type TokenInputProps<
@@ -29,27 +27,20 @@ export type TokenInputProps<
    * The fields that control the amount input.
    */
   amount?: Omit<
-    NumberInputProps<FV, FieldName>,
+    HugeDecimalInputProps<FV, FieldName>,
     | 'containerClassName'
     | 'disabled'
-    | 'transformDecimals'
     | 'register'
-    | 'watch'
+    | 'getValues'
     | 'setValue'
     | 'fieldName'
   > & {
     register: UseFormRegister<FV>
     watch: UseFormWatch<FV>
     setValue: UseFormSetValue<FV>
+    getValues: UseFormGetValues<FV>
     fieldName: FieldName
     validations?: Validate<number>[]
-    /*
-     * If true, will convert the amount to micro-denom using the token's
-     * decimals value for the form. Thus, the input will display the macro-denom
-     * amount, but the form will receive the micro-denom amount. Default is
-     * false.
-     */
-    convertMicroDenom?: boolean
   }
   /**
    * The available tokens and selection handlers for the token. Various

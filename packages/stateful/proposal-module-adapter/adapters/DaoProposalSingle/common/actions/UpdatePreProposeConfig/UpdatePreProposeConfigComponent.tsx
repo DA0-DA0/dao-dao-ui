@@ -34,7 +34,7 @@ const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 export interface UpdatePreProposeConfigData {
   depositRequired: boolean
   depositInfo: {
-    amount: number
+    amount: string
     // Token input fields.
     type: 'native' | 'cw20' | 'voting_module_token'
     denomOrAddress: string
@@ -65,7 +65,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  const { register, setValue, watch } =
+  const { register, setValue, getValues, watch } =
     useFormContext<UpdatePreProposeConfigData>()
 
   const depositRequired = watch(
@@ -99,6 +99,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       chainId,
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
+      decimals: depositInfo.token?.decimals ?? 0,
       symbol:
         (depositInfo.type === TokenType.Cw20 && depositInfo.token?.symbol) ||
         t('form.cw20Token'),
@@ -161,6 +162,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix +
                   'depositInfo.amount') as 'depositInfo.amount',

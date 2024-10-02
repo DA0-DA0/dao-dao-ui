@@ -163,7 +163,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
     funds: [
       {
         denom: 'untrn',
-        amount: 10,
+        amount: '10',
         decimals: 6,
       },
     ],
@@ -199,18 +199,17 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
       )
     }
 
-    const convertedFunds = funds.map(({ denom, amount, decimals }) => ({
-      denom,
-      amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
-    }))
+    const convertedFunds = funds.map(({ denom, amount, decimals }) =>
+      HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+    )
 
     // Add service fee to funds.
     if (serviceFee && serviceFee.amount !== '0') {
       const existing = convertedFunds.find((f) => f.denom === serviceFee.denom)
       if (existing) {
-        existing.amount = (
-          BigInt(existing.amount) + BigInt(serviceFee.amount)
-        ).toString()
+        existing.amount = HugeDecimal.from(existing.amount)
+          .plus(serviceFee.amount)
+          .toString()
       } else {
         convertedFunds.push({
           denom: serviceFee.denom,
@@ -279,7 +278,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
 
           return {
             denom,
-            amount: HugeDecimal.from(amount).toHumanReadableNumber(
+            amount: HugeDecimal.from(amount).toHumanReadableString(
               token.decimals
             ),
             decimals: token.decimals,

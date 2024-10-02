@@ -619,6 +619,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
   }: any): CreateRewardDistributionData {
     return {
       ...data,
+      // Ensure initialFunds is a string.
       initialFunds: HugeDecimal.from(initialFunds).toString(),
     }
   }

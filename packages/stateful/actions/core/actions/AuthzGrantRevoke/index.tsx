@@ -161,10 +161,9 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
       callsRemaining: BigInt(calls),
       // MaxFundsLimit
       // CombinedLimit
-      amounts: funds.map(({ denom, amount, decimals }) => ({
-        amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
-        denom,
-      })),
+      amounts: funds.map(({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      ),
     })
 
     let authorization: Any | undefined
@@ -381,7 +380,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                 return {
                   denom,
                   amount:
-                    HugeDecimal.from(amount).toHumanReadableNumber(decimals),
+                    HugeDecimal.from(amount).toHumanReadableString(decimals),
                   decimals,
                 }
               }) ?? [],
@@ -422,7 +421,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                 return {
                   denom,
                   amount:
-                    HugeDecimal.from(amount).toHumanReadableNumber(decimals),
+                    HugeDecimal.from(amount).toHumanReadableString(decimals),
                   decimals,
                 }
               }) ?? [],

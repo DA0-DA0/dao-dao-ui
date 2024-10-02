@@ -18,7 +18,7 @@ export default {
 } as ComponentMeta<typeof TokenInput>
 
 const Template: ComponentStory<typeof TokenInput> = (args) => {
-  const { register, watch, setValue } = useFormContext()
+  const { register, watch, setValue, getValues } = useFormContext()
 
   return (
     <div className="max-w-sm">
@@ -27,6 +27,7 @@ const Template: ComponentStory<typeof TokenInput> = (args) => {
         amount={{
           watch,
           setValue,
+          getValues,
           register,
           fieldName: 'amount',
           min: 0.00001,

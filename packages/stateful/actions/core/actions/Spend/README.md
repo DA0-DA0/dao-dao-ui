@@ -19,7 +19,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "toChainId": "<CHAIN ID>",
   "from": "<FROM ADDRESS>",
   "to": "<RECIPIENT ADDRESS>",
-  "amount": <AMOUNT>,
+  "amount": "<AMOUNT>",
   "denom": "<DENOM>",
   "cw20": "<true | false>",
   "ibcTimeout": {

@@ -35,6 +35,7 @@ export const NewAttribute = ({
     register,
     formState: { errors },
     setValue,
+    getValues,
     watch,
   } = useFormContext<NewSurveyFormData>()
 
@@ -124,11 +125,15 @@ export const NewAttribute = ({
                   amount={{
                     watch,
                     setValue,
+                    getValues,
                     register,
                     fieldName: `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
                     error:
                       errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
                         ?.amount,
+                    min: HugeDecimal.one.toHumanReadableNumber(
+                      selectedToken?.decimals ?? 0
+                    ),
                     step: HugeDecimal.one.toHumanReadableNumber(
                       selectedToken?.decimals ?? 0
                     ),

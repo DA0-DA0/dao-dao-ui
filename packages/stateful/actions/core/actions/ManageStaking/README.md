@@ -21,7 +21,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "toValidator": "<REDELEGATE TO VALIDATOR ADDRESS>",
   // Only used when setting withdraw address.
   "withdrawAddress": "<WITHDRAWER ADDRESS>",
-  "amount": <AMOUNT>
+  "amount": "<AMOUNT>"
 }
 ```
 

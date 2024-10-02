@@ -252,13 +252,13 @@ export const ManageStakingComponent: ActionComponent<
   // high. We don't want to make this an error because often people want to
   // spend funds that a previous action makes available, so just show a warning.
   const delegateWarning =
-    isCreating && maxAmount.lt(amount) && type === StakingActionType.Delegate
+    isCreating &&
+    maxAmount.toHumanReadable(nativeToken.decimals).lt(amount) &&
+    type === StakingActionType.Delegate
       ? t('error.insufficientFundsWarning', {
-          amount: HugeDecimal.from(maxAmount)
-            .toHumanReadableNumber(nativeToken.decimals)
-            .toLocaleString(undefined, {
-              maximumFractionDigits: nativeToken.decimals,
-            }),
+          amount: maxAmount.toInternationalizedHumanReadableString({
+            decimals: nativeToken.decimals,
+          }),
           tokenSymbol: nativeToken.symbol,
         })
       : undefined

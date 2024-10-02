@@ -55,7 +55,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     activeThreshold: {
       enabled: false,
       type: 'percent',
-      value: 10,
+      value: '10',
     },
   }),
   governanceConfig: {

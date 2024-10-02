@@ -24,7 +24,7 @@ export type CreateValenceAccountData = {
   chainId: string
   funds: {
     denom: string
-    amount: number
+    amount: string
     // Will multiply `amount` by 10^decimals when generating the message.
     decimals: number
   }[]
@@ -133,7 +133,7 @@ export const CreateValenceAccountComponent: ActionComponent<
               className="self-start"
               onClick={() =>
                 appendCoin({
-                  amount: 1,
+                  amount: '1',
                   denom: nativeToken.denomOrAddress,
                   decimals: nativeToken.decimals,
                 })

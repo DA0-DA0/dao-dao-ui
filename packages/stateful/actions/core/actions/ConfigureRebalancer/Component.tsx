@@ -90,7 +90,7 @@ export type ConfigureRebalancerData = {
   maxLimit?: number
   minBalance?: {
     denom: string
-    amount: number
+    amount: string
   }
   targetOverrideStrategy: TargetOverrideStrategy
 }
@@ -237,10 +237,12 @@ export const ConfigureRebalancerComponent: ActionComponent<
                   amount={{
                     watch,
                     setValue,
+                    getValues,
                     register,
                     fieldName: (fieldNamePrefix +
                       `tokens.${index}.percent`) as `tokens.${number}.percent`,
                     error: errors?.tokens?.[index]?.percent,
+                    numericValue: true,
                     min: 0.01,
                     max: 100,
                     step: 0.01,
@@ -339,7 +341,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     ? undefined
                     : {
                         denom: tokens[0]?.denom ?? '',
-                        amount: 1,
+                        amount: '1',
                       }
                 )
               }
@@ -357,6 +359,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix +
                   'minBalance.amount') as 'minBalance.amount',

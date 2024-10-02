@@ -41,7 +41,7 @@ export type InstantiateData = {
   message: string
   funds: {
     denom: string
-    amount: number
+    amount: string
     // Will multiply `amount` by 10^decimals when generating the message.
     decimals: number
   }[]

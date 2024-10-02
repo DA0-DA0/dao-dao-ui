@@ -418,7 +418,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
               denom: minBalanceTarget.denom,
               amount: HugeDecimal.from(
                 minBalanceTarget.min_balance
-              ).toHumanReadableNumber(minBalanceToken.decimals),
+              ).toHumanReadableString(minBalanceToken.decimals),
             }
           : undefined,
       targetOverrideStrategy:
@@ -682,7 +682,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
               denom: minBalanceTarget.denom,
               amount: HugeDecimal.from(
                 minBalanceTarget.min_balance
-              ).toHumanReadableNumber(minBalanceToken.decimals),
+              ).toHumanReadableString(minBalanceToken.decimals),
             }
           : undefined,
       targetOverrideStrategy: data.target_override_strategy || 'proportional',
