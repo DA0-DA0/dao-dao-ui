@@ -293,6 +293,7 @@ const InnerNewGovProposal = ({
   const chainContext = useConfiguredChainContext()
   const {
     isWalletConnected,
+    getOfflineSigner,
     getOfflineSignerAmino,
     getOfflineSignerDirect,
     chain,
@@ -419,9 +420,15 @@ const InnerNewGovProposal = ({
 
       setLoading(true)
       try {
-        const signer = holdingAltForDirectSign
-          ? getOfflineSignerDirect()
-          : getOfflineSignerAmino()
+        let signer
+        try {
+          signer = holdingAltForDirectSign
+            ? getOfflineSignerDirect()
+            : getOfflineSignerAmino()
+        } catch {
+          signer = getOfflineSigner()
+        }
+
         const signingClient = await SigningStargateClient.connectWithSigner(
           getRpcForChainId(chain.chain_id),
           signer,
@@ -519,6 +526,7 @@ const InnerNewGovProposal = ({
       t,
       action,
       walletAddress,
+      getOfflineSigner,
       getOfflineSignerAmino,
       getOfflineSignerDirect,
       holdingAltForDirectSign,

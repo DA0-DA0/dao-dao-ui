@@ -49,6 +49,7 @@ export const ProfileActions = () => {
   const {
     address: walletAddress = '',
     hexPublicKey,
+    getOfflineSigner,
     getOfflineSignerAmino,
     getOfflineSignerDirect,
     chain,
@@ -134,9 +135,14 @@ export const ProfileActions = () => {
       setTxHash('')
 
       try {
-        const signer = holdingAltForDirectSign
-          ? getOfflineSignerDirect()
-          : getOfflineSignerAmino()
+        let signer
+        try {
+          signer = holdingAltForDirectSign
+            ? getOfflineSignerDirect()
+            : getOfflineSignerAmino()
+        } catch {
+          signer = getOfflineSigner()
+        }
 
         const signingCosmWasmClient =
           await SigningCosmWasmClient.connectWithSigner(
@@ -164,6 +170,7 @@ export const ProfileActions = () => {
     },
     [
       chain,
+      getOfflineSigner,
       getOfflineSignerAmino,
       getOfflineSignerDirect,
       holdingAltForDirectSign,

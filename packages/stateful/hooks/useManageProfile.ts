@@ -306,12 +306,13 @@ export const useManageProfile = ({
           }
 
           const offlineSignerAmino =
-            await chainWallet.client.getOfflineSignerAmino?.(
+            (await chainWallet.client.getOfflineSignerAmino?.(
               chainWallet.chainId
-            )
-          // If no amino signer, error that wallet is unsupported. This should
-          // only happen if there's no amino signer getter defined.
-          if (!offlineSignerAmino) {
+            )) ||
+            // Fallback to normal signer function in case amino signer getter is
+            // undefined. This may still return an amino signer, so let's check.
+            (await chainWallet.client.getOfflineSigner?.(chainWallet.chainId))
+          if (!offlineSignerAmino || !('signAmino' in offlineSignerAmino)) {
             throw new Error(
               t('error.unsupportedAminoWallet', {
                 name: chainWallet.walletPrettyName,

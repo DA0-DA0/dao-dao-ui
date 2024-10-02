@@ -136,10 +136,15 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       const offlineSignerAmino =
-        await thisChainWallet.client.getOfflineSignerAmino?.bind(
+        (await thisChainWallet.client.getOfflineSignerAmino?.bind(
           thisChainWallet.client
-        )?.(thisChainWallet.chainId)
-      if (!offlineSignerAmino) {
+        )?.(thisChainWallet.chainId)) ||
+        // Fallback to normal signer function in case amino signer getter is
+        // undefined. This may still return an amino signer, so let's check.
+        (await thisChainWallet.client.getOfflineSigner?.bind(
+          thisChainWallet.client
+        )?.(thisChainWallet.chainId))
+      if (!offlineSignerAmino || !('signAmino' in offlineSignerAmino)) {
         throw new Error(
           t('error.unsupportedAminoWallet', {
             name: thisChainWallet.walletPrettyName,
