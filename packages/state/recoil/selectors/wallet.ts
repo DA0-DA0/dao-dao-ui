@@ -362,14 +362,14 @@ export const walletTokenCardInfosSelector = selectorFamily<
               token.denomOrAddress ===
                 getNativeTokenForChainId(chainId).denomOrAddress &&
               // Check if anything staked.
-              Number(
+              HugeDecimal.from(
                 get(
                   nativeDelegatedBalanceSelector({
                     address: walletAddress,
                     chainId,
                   })
                 ).amount
-              ) > 0
+              ).isPositive()
 
             const owner = allAccounts[accountIndex]
 

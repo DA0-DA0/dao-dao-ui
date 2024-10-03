@@ -646,7 +646,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     nativeBalances.data.find(
                       ({ token }) => token.denomOrAddress === denom
                     ) ?? {}
-                  const balance = Number(_balance) || 0
+                  const balance = HugeDecimal.from(_balance || 0)
                   const price = prices.data.find(
                     ({ token: { denomOrAddress: priceDenom } }) =>
                       priceDenom === denom
@@ -658,9 +658,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
                   return {
                     symbol: token.symbol,
-                    initialAmount: HugeDecimal.from(
-                      balance
-                    ).toHumanReadableNumber(token.decimals),
+                    initialAmount: balance.toHumanReadableNumber(
+                      token.decimals
+                    ),
                     targetProportion: percent / 100,
                     // Add an extra price to account for the initial balance.
                     prices: new Array(rebalanceTimestamps.length + 1)
