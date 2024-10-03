@@ -216,3 +216,19 @@ export const SECRET_GAS = {
   UNSTAKE: 100_000,
   CLAIM: 100_000,
 }
+
+/**
+ * DAO addresses to manually hide from search.
+ *
+ * A DAO can hide itself from search by setting the `hideFromSearch` storage
+ * item. Sometimes a DAO is created with a misconfigured module (typically a
+ * voting module with a nonexistent token) that bricks it immediately,
+ * preventing anyone from being able to join and submit a proposal to hide it
+ * from search. On request, we manually add these addresses to the hidden list
+ * so users do not confuse the real DAO for a bricked one with the same name
+ * when searching for it.
+ */
+export const DAOS_HIDDEN_FROM_SEARCH = [
+  // Lion DAO
+  'terra1a9ur9jyvg9kqfsl6euqdkv02v2klqnppzv4jpw93xzp5tr0xhkvschdnm5',
+]

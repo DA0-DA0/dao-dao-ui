@@ -6,6 +6,7 @@ import { ProposalResponse as SingleChoiceProposalResponse } from '@dao-dao/types
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   CommonError,
+  DAOS_HIDDEN_FROM_SEARCH,
   INACTIVE_DAO_NAMES,
   SEARCH_API_KEY,
   SEARCH_HOST,
@@ -45,7 +46,7 @@ export const searchDaos = async ({
   chainId,
   query,
   limit,
-  exclude,
+  exclude = [],
 }: SearchDaosOptions): Promise<DaoSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
@@ -55,6 +56,8 @@ export const searchDaos = async ({
 
   const index = client.index(chainId + '_daos')
 
+  exclude.push(...DAOS_HIDDEN_FROM_SEARCH)
+
   const results = await index.search<Omit<DaoSearchResult, 'chainId'>>(query, {
     limit,
     filter: [
@@ -62,10 +65,8 @@ export const searchDaos = async ({
       `NOT value.config.name IN ["${INACTIVE_DAO_NAMES.join('", "')}"]`,
       // Exclude hidden DAOs.
       'value.hideFromSearch NOT EXISTS OR value.hideFromSearch != true',
-      ...(exclude?.length
-        ? // Exclude DAOs that are in the exclude list.
-          [`NOT id IN ["${exclude.join('", "')}"]`]
-        : []),
+      // Exclude DAOs that are in the exclude list.
+      `NOT id IN ["${exclude.join('", "')}"]`,
     ]
       .map((filter) => `(${filter})`)
       .join(' AND '),
